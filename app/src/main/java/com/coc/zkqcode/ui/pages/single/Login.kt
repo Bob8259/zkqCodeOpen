@@ -24,11 +24,5 @@ fun LoginScreen(configStates: Map<String, MutableState<String>>) {
         onValueChange = { configStates["password"]?.value = it },
         key = "password"
     )
-    InputRow(
-        label = Schema.GLOBAL_SETTINGS.first { it.key == "config_count" }.displayName,
-        value = configStates["config_count"]?.value ?: "",
-        onValueChange = { configStates["config_count"]?.value = it },
-        key = "config_count"
-    )
-    Text("这是主页内容", modifier = Modifier.padding(top = 16.dp))
+
 }
