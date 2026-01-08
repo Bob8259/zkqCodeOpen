@@ -231,8 +231,8 @@ fun AccountConfig(
             onValueChange = { configStates["start_method${index}"]?.value = it }
         )
         when (configStates["start_method${index}"]?.value ?: "") {
-            "游戏存档" -> GameFiles(index, configStates)//存档上号
-            "上号器" -> UsePackage(index, configStates)//上号器
+            "1" -> GameFiles(index, configStates)//存档上号
+            "2" -> UsePackage(index, configStates)//上号器
         }
     }
     HorizontalDivider(
@@ -244,7 +244,7 @@ fun AccountConfig(
 fun UsePackage(
     index: Int, configStates: Map<String, MutableState<String>>
 ) {
-    if (configStates["game_version${index}"]?.value == "国服") {
+    if (configStates["game_version${index}"]?.value == "0") {
         Column {
             Text(
                 text = "换机或设备到期前，务必清空数据号信息！\n否则有被盗号风险！",
@@ -280,15 +280,19 @@ fun GameFiles(
             style = MaterialTheme.typography.labelMedium
         )
         // 从 configStates 中获取当前游戏版本
-        val currentVersion = configStates["game_version${index}"]?.value ?: "国服"
+        val currentVersion = configStates["game_version${index}"]?.value ?: "0"
         // 使用 remember 来保存当前选中的选项
-        var selectedOption by remember { mutableStateOf("国服") }
+        var selectedOption by remember {
+            mutableStateOf(
+                configStates["game_version${index}"]?.value ?: "0"
+            )
+        }
 
         // 监听 currentVersion 的变化，并更新 selectedOption
         LaunchedEffect(currentVersion) {
-            selectedOption = configStates["game_version${index}"]?.value ?: "国服"
+            selectedOption = configStates["game_version${index}"]?.value ?: "0"
         }
-        if (selectedOption == "国服") {//0表示国服
+        if (selectedOption == "0") {//0表示国服
             InputRow(
                 label = Schema.ACCOUNT_SETTINGS.first { it.key == "cn_path" }.displayName,
                 value = configStates["cn_path${index}"]?.value ?: "",

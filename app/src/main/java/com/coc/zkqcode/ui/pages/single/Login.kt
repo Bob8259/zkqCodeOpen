@@ -31,7 +31,6 @@ import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
 import java.io.IOException
-import java.security.MessageDigest
 import java.util.Locale
 
 @Suppress("AssignedValueIsNeverRead")
@@ -101,7 +100,8 @@ fun LoginScreen(configStates: Map<String, MutableState<String>>) {
                                     responseBody.substring(hashIndex + 6, hashIndex + 22)
                                 println(serverHash)
                                 // 对比哈希值和 Nonce，返回接近 10 的 Double
-                                val verifyResult = NativeTools.verifyHash(contentBeforeHash, serverHash)
+                                val verifyResult =
+                                    NativeTools.verifyHash(contentBeforeHash, serverHash)
                                 if (kotlin.math.abs(verifyResult - 10.0) < 0.001) {
                                     // 提取用户ID
                                     val idRegex = Regex("id=([a-f0-9]+)")
@@ -115,7 +115,7 @@ fun LoginScreen(configStates: Map<String, MutableState<String>>) {
                                     val passwordRegex = """password=([a-zA-Z0-9]+)""".toRegex()
                                     val passwordHash =
                                         passwordRegex.find(responseBody)?.groupValues?.get(1)
-                                    if (gemMatch != null && passwordHash != null && passwordHash.length == 32) {
+                                    if (gemMatch != null && passwordHash != null && passwordHash.length == 16) {
                                         val gem = gemMatch.groupValues[1]
                                         formattedGem =
                                             String.format(Locale.US, "%.4f", gem.toDouble())
