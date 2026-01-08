@@ -176,7 +176,8 @@ fun HomeScreen(onSaveSuccess: () -> Unit = {}) {
                         baseDir,
                         "global_config.json",
                         keys = listOf("GLOBAL_SETTINGS", "ACCOUNT_SETTINGS"),
-                        accountCount = currentAccountCount
+                        accountCount = currentAccountCount,
+                        configStates = configStates
                     )
                     // 执行保存后的回调，用于关闭悬浮窗
                     onSaveSuccess()

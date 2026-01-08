@@ -10,8 +10,13 @@ object SchemaExporter {
      * 将指定的 Schema 定义导出为 JSON 字符串（key-value 格式）
      * @param keys 需要导出的模块 Key 列表。如果为空，则默认导出全部。
      * @param accountCount 账户数量，用于导出账户配置
+     * @param configStates UI 层维护的状态，如果提供，则优先从此处获取最新值
      */
-    fun exportSchemasToJson(keys: List<String> = emptyList(), accountCount: Int = 0): String {
+    fun exportSchemasToJson(
+        keys: List<String> = emptyList(),
+        accountCount: Int = 0,
+        configStates: Map<String, androidx.compose.runtime.MutableState<String>>? = null
+    ): String {
         val jsonObject = JsonObject()
 
         // 定义所有的映射关系
@@ -31,10 +36,15 @@ object SchemaExporter {
         }
 
         // 将每个 SettingDef 转换为 key-value 对
+
         schemasToExport.forEach { settingDef ->
-            // 尝试从 GlobalVars.fileActions 获取当前值，如果没有则使用默认值
-            val currentValue = GlobalVars.fileActions?.getValue(settingDef.key)
+            // 优先从 configStates 获取，其次从 GlobalVars.fileActions 获取，最后使用默认值
+            val currentValue = configStates?.get(settingDef.key)?.value
+                ?: GlobalVars.fileActions?.getValue(settingDef.key)
                 ?: settingDef.defaultValue.toString()
+
+            if (settingDef.key == "gem_count")
+                println("value:" + currentValue)
             jsonObject.addProperty(settingDef.key, currentValue)
         }
 
@@ -43,7 +53,8 @@ object SchemaExporter {
             for (i in 1..accountCount) {
                 Schema.ACCOUNT_SETTINGS.forEach { settingDef ->
                     val key = "${settingDef.key}${i}"
-                    val currentValue = GlobalVars.fileActions?.getValue(key)
+                    val currentValue = configStates?.get(key)?.value
+                        ?: GlobalVars.fileActions?.getValue(key)
                         ?: settingDef.defaultValue.toString()
                     jsonObject.addProperty(key, currentValue)
                 }
@@ -57,14 +68,16 @@ object SchemaExporter {
     /**
      * 通过 WebSocket 告知服务器写入文件
      * @param accountCount 账户数量，用于导出账户配置
+     * @param configStates UI 层维护的状态
      */
     fun saveSchemaViaServer(
         directory: String,
         fileName: String,
         keys: List<String> = emptyList(),
-        accountCount: Int = 0
+        accountCount: Int = 0,
+        configStates: Map<String, androidx.compose.runtime.MutableState<String>>? = null
     ) {
-        val jsonContent = exportSchemasToJson(keys, accountCount)
+        val jsonContent = exportSchemasToJson(keys, accountCount, configStates)
         val fullPath =
             if (directory.endsWith("/")) "$directory$fileName" else "$directory/$fileName"
 

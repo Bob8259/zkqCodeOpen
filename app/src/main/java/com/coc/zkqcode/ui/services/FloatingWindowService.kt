@@ -12,6 +12,7 @@ import android.view.WindowManager
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -29,6 +30,7 @@ import androidx.savedstate.SavedStateRegistry
 import androidx.savedstate.SavedStateRegistryController
 import androidx.savedstate.SavedStateRegistryOwner
 import androidx.savedstate.setViewTreeSavedStateRegistryOwner
+import com.coc.zkqcode.ui.components.CustomButton
 import com.coc.zkqcode.ui.components.GlobalVars
 import com.coc.zkqcode.ui.pages.single.HomeScreen
 import com.coc.zkqcode.utils.fileactions.FileActions
@@ -147,6 +149,10 @@ class FloatingWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner
                     })
                 } else {
                     Text("正在加载配置...", modifier = Modifier.padding(16.dp))
+                    CustomButton(
+                        text = "停止加载并退出",
+                        onClick = { stopSelf() }
+                    )
                 }
             }
         }
