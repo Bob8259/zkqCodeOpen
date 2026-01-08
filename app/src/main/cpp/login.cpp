@@ -6,12 +6,10 @@
 #include <android/log.h>
 #include <fcntl.h>
 #include <unistd.h>
-
-#define LOG_TAG "NativeLogin"
-#define LOGI(...) __android_log_print(ANDROID_LOG_INFO, LOG_TAG, __VA_ARGS__)
+#include <random>
 
 // Global variable to store the nonce
-static std::string g_nonce = "";
+static std::string g_nonce;
 
 /**
  * 私有加固哈希算法 - Native 版
@@ -53,14 +51,17 @@ generateNonce(JNIEnv *env, jobject thiz) {
     unsigned char buffer[16];
     if (!get_random_bytes(buffer, sizeof(buffer))) {
         // Fallback if /dev/urandom is not available
-        for (int i = 0; i < sizeof(buffer); i++) {
-            buffer[i] = static_cast<unsigned char>(rand() % 256);
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        std::uniform_int_distribution<> dis(0, 255);
+        for (unsigned char &i: buffer) {
+            i = static_cast<unsigned char>(dis(gen));
         }
     }
 
     std::stringstream ss;
-    for (int i = 0; i < sizeof(buffer); i++) {
-        ss << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(buffer[i]);
+    for (unsigned char i: buffer) {
+        ss << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(i);
     }
 
     g_nonce = ss.str();
