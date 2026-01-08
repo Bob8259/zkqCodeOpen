@@ -6,6 +6,7 @@ add_library(
     native-lib
     SHARED
     native-lib.cpp
+    login.cpp
 )
 
 find_library(
