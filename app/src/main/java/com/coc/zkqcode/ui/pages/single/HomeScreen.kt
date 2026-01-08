@@ -1,4 +1,4 @@
-package com.coc.zkqcode.ui.pages
+package com.coc.zkqcode.ui.pages.single
 
 import android.os.Environment
 import androidx.compose.foundation.layout.Column
@@ -6,8 +6,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.PrimaryScrollableTabRow
@@ -40,12 +39,29 @@ fun HomeScreen(onSaveSuccess: () -> Unit = {}) {
 
     // Initialize states from Schema
     LaunchedEffect(GlobalVars.fileActions?.configJson) {
-        Schema.GLOBAL_SETTINGS.forEach { def ->
-            val savedValue = GlobalVars.fileActions?.getValue(def.key)
-            if (savedValue != null) {
-                configStates[def.key]?.value = savedValue
-            } else if (!configStates.containsKey(def.key)) {
-                configStates[def.key] = mutableStateOf(def.defaultValue.toString())
+        val actions = GlobalVars.fileActions
+        if (actions != null && actions.configJson.size() > 0) {
+            Schema.GLOBAL_SETTINGS.forEach { def ->
+                val savedValue = actions.getValue(def.key)
+                if (savedValue != null) {
+                    configStates[def.key]?.value = savedValue
+                } else if (!configStates.containsKey(def.key)) {
+                    configStates[def.key] = mutableStateOf(def.defaultValue.toString())
+                }
+            }
+
+            // Also initialize account settings if account_count is present
+            val accountCount = actions.getValue("account_count")?.toIntOrNull() ?: 3
+            for (i in 1..accountCount) {
+                Schema.ACCOUNT_SETTINGS.forEach { def ->
+                    val key = "${def.key}${i}"
+                    val savedValue = actions.getValue(key)
+                    if (savedValue != null) {
+                        configStates[key]?.value = savedValue
+                    } else if (!configStates.containsKey(key)) {
+                        configStates[key] = mutableStateOf(def.defaultValue.toString())
+                    }
+                }
             }
         }
     }
@@ -97,40 +113,45 @@ fun HomeScreen(onSaveSuccess: () -> Unit = {}) {
         }
 
         // 2. 中间的内容区域 (使用 weight 占据剩余空间)
-        Column(
+        LazyColumn(
             modifier = Modifier
                 .weight(1f)
                 .padding(4.dp)
-                .verticalScroll(rememberScrollState())
         ) {
             when (selectedTabIndex) {
                 0 -> {
-                    LoginScreen(configStates)
-                    InputRow(
-                        label = Schema.GLOBAL_SETTINGS.first { it.key == "config_count" }.displayName,
-                        value = configStates["config_count"]?.value ?: "",
-                        onValueChange = { configStates["config_count"]?.value = it },
-                        key = "config_count"
-                    )
-                    InputRow(
-                        label = Schema.GLOBAL_SETTINGS.first { it.key == "account_count" }.displayName,
-                        value = configStates["account_count"]?.value ?: "",
-                        onValueChange = { configStates["account_count"]?.value = it },
-                        key = "account_count"
-                    )
-                    HorizontalDivider(
-                        thickness = 1.dp,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 1f)
-                    )
+                    item { LoginScreen(configStates) }
+                    item {
+                        InputRow(
+                            label = Schema.GLOBAL_SETTINGS.first { it.key == "config_count" }.displayName,
+                            value = configStates["config_count"]?.value ?: "",
+                            onValueChange = { configStates["config_count"]?.value = it },
+                            key = "config_count"
+                        )
+                    }
+                    item {
+                        InputRow(
+                            label = Schema.GLOBAL_SETTINGS.first { it.key == "account_count" }.displayName,
+                            value = configStates["account_count"]?.value ?: "",
+                            onValueChange = { configStates["account_count"]?.value = it },
+                            key = "account_count"
+                        )
+                    }
+                    item {
+                        HorizontalDivider(
+                            thickness = 1.dp,
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 1f)
+                        )
+                    }
                     // Display account configurations based on account_count
                     val currentAccountCount = accountCountStr.toIntOrNull() ?: 3
-                    for (i in 1..currentAccountCount) {
-                        AccountConfig(configStates = configStates, index = i)
+                    items(count = currentAccountCount, key = { it + 1 }) { i ->
+                        AccountConfig(configStates = configStates, index = i + 1)
                     }
                 }
 
                 else -> {
-                    Text("这是配置 $selectedTabIndex 的内容")
+                    item { Text("这是配置 $selectedTabIndex 的内容") }
                 }
             }
         }
