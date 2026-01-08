@@ -1,4 +1,4 @@
-package com.coc.zkqcode.ui.pages
+package com.coc.zkqcode.ui.pages.control
 
 import android.graphics.BitmapFactory
 import androidx.compose.foundation.Image

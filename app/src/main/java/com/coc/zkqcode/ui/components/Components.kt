@@ -345,14 +345,15 @@ fun DropdownButton(
     options: List<String>,
     key: String,
     label: String,
+    onValueChange: (String) -> Unit = {}
 ) {
     val scope = rememberCoroutineScope()
-    val currentVersion = configStates["${key}${index}"]?.value ?: "0"
+    val state = configStates["${key}${index}"]
+    val currentVersion = state?.value ?: "0"
 
-    var selectedOption by remember { mutableStateOf(options[currentVersion.toInt()]) }
-
-    LaunchedEffect(currentVersion) {
-        selectedOption = options[currentVersion.toInt()]
+    val selectedOption = remember(currentVersion, options) {
+        val idx = currentVersion.toIntOrNull() ?: 0
+        if (idx in options.indices) options[idx] else options.getOrElse(0) { "" }
     }
 
     var expanded by remember { mutableStateOf(false) }
@@ -381,20 +382,18 @@ fun DropdownButton(
             }
 
             DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-                options.forEach { option ->
+                options.forEachIndexed { idx, option ->
                     DropdownMenuItem(text = {
                         Text(
                             option, style = MaterialTheme.typography.labelMedium
                         )
                     }, onClick = {
-                        selectedOption = option
-                        configStates["${key}${index}"]?.value =
-                            options.indexOf(option).toString()
+                        val newValue = idx.toString()
+                        state?.value = newValue
+                        onValueChange(newValue)
                         expanded = false
                         scope.launch {
-                            saveState(
-                                "${key}${index}", options.indexOf(option).toString()
-                            )
+                            saveState("${key}${index}", newValue)
                         }
                     }, modifier = Modifier.height(30.dp))
                 }
@@ -408,13 +407,16 @@ fun DropdownButton(
     configStates: Map<String, MutableState<String>>,
     options: List<String>,
     filePath: String,
-    label: String
+    label: String,
+    onValueChange: (String) -> Unit = {}
 ) {
-    val currentVersion = configStates[filePath]?.value ?: "0"
-    var selectedOption by remember { mutableStateOf(options[currentVersion.toInt()]) }
-
-    LaunchedEffect(currentVersion) {
-        selectedOption = options[currentVersion.toInt()]
+    val scope = rememberCoroutineScope()
+    val state = configStates[filePath]
+    val currentVersion = state?.value ?: "0"
+    
+    val selectedOption = remember(currentVersion, options) {
+        val idx = currentVersion.toIntOrNull() ?: 0
+        if (idx in options.indices) options[idx] else options.getOrElse(0) { "" }
     }
 
     var expanded by remember { mutableStateOf(false) }
@@ -443,15 +445,19 @@ fun DropdownButton(
             }
 
             DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-                options.forEach { option ->
+                options.forEachIndexed { idx, option ->
                     DropdownMenuItem(text = {
                         Text(
                             option, style = MaterialTheme.typography.labelMedium
                         )
                     }, onClick = {
-                        selectedOption = option
-                        configStates[filePath]?.value = options.indexOf(option).toString()
+                        val newValue = idx.toString()
+                        state?.value = newValue
+                        onValueChange(newValue)
                         expanded = false
+                        scope.launch {
+                            saveState(filePath, newValue)
+                        }
                     }, modifier = Modifier.height(30.dp))
                 }
             }

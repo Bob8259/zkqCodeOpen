@@ -1,17 +1,19 @@
 package com.coc.zkqcode.utils.fileactions
 
 import android.os.Environment
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import com.coc.zkqcode.utils.websocket.ServerConnection
 import com.google.gson.Gson
 import com.google.gson.JsonObject
-import java.io.File
 
 class FileActions(
     private val serverConnection: ServerConnection,
     private val onConfigLoaded: (() -> Unit)? = null
 ) {
     private val gson = Gson()
-    var configJson = JsonObject()
+    var configJson by mutableStateOf(JsonObject())
         private set
 
     fun getValue(key: String): String? {
@@ -44,7 +46,6 @@ class FileActions(
             onMessage = { message ->
                 try {
                     val response = gson.fromJson(message, JsonObject::class.java)
-                    
                     // Handle response based on status and data
                     if (response.has("status") && response.get("status").asString == "success") {
                         if (response.has("data")) {
@@ -95,7 +96,7 @@ class FileActions(
         return this.serverConnection
     }
 
-    fun setConfigJson(json: JsonObject) {
-        configJson = json
-    }
+//    fun updateConfigJson(json: JsonObject) {
+//        configJson = json
+//    }
 }

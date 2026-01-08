@@ -28,7 +28,7 @@ object Schema {
         SettingDef("gem_count", "宝石数量", "", "GLOBAL_SETTINGS"),
         SettingDef("after_kick_option", "顶号后选项", "1", "GLOBAL_SETTINGS"),
         SettingDef("disconnect_notify", "掉线后通知", false, "GLOBAL_SETTINGS"),
-        SettingDef("disconnect_ccreenshot", "掉线后截图", false, "GLOBAL_SETTINGS"),
+        SettingDef("disconnect_screenshot", "掉线后截图", false, "GLOBAL_SETTINGS"),
         SettingDef("uid", "UID", "", "GLOBAL_SETTINGS"),
         SettingDef("device_remark", "设备备注", "", "GLOBAL_SETTINGS"),
         SettingDef("runtime_screenshot", "运行时截图", false, "GLOBAL_SETTINGS")
@@ -37,8 +37,8 @@ object Schema {
         SettingDef("prefix", "开启状态", false, "ACCOUNT_SETTINGS"),
         SettingDef("remark", "备注", "", "ACCOUNT_SETTINGS"),
         SettingDef("game_version", "游戏版本", "0", "ACCOUNT_SETTINGS"),
-        SettingDef("account_config", "账号配置", "1", "ACCOUNT_SETTINGS"),
-        SettingDef("use_save", "是否用存档", false, "ACCOUNT_SETTINGS"),
+        SettingDef("account_config", "配置文件序号", "1", "ACCOUNT_SETTINGS"),
+        SettingDef("start_method", "启动游戏方式", "1", "ACCOUNT_SETTINGS"),
         SettingDef("cn_path", "国服路径", "", "ACCOUNT_SETTINGS"),
         SettingDef("global_path", "国际服路径", "", "ACCOUNT_SETTINGS"),
         SettingDef("data_content", "数据号内容", "", "ACCOUNT_SETTINGS")
