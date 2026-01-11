@@ -19,3 +19,8 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+-assumenosideeffects class java.io.PrintStream {
+    public void println(java.lang.String);
+    public void print(java.lang.String);
+}

@@ -3,17 +3,26 @@ package com.coc.zkqcode
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import com.coc.zkqcode.ui.MainScreen
+import com.coc.zkqcode.jar.code.Test
+import com.coc.zkqcode.utils.CheckRootScreen
 
 class MainActivity : ComponentActivity() {
 
+    private val test = Test()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+
+        test.startColorDetectionLoop()
 
         setContent {
-            MainScreen()
+            CheckRootScreen()
         }
     }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        test.destroy()
+    }
 }
+

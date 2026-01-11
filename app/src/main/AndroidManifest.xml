@@ -13,6 +13,7 @@
         android:name="android.permission.FOREGROUND_SERVICE"
         tools:ignore="ForegroundServicesPolicy" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PROJECTION" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
@@ -37,16 +38,16 @@
         </activity>
 
         <service
-            android:name=".ui.services.FloatingWindowService"
+            android:name="com.coc.zkqcode.utils.services.UIWindowService"
             android:enabled="true"
             android:exported="false"
-            android:foregroundServiceType="specialUse">
+            android:foregroundServiceType="specialUse|mediaProjection">
             <property
                 android:name="android.app.PROPERTY_SPECIAL_USE_FGS_TYPE_DESCRIPTION"
                 android:value="This service maintains a floating window for user interaction and overlay controls while the app is in the background." />
         </service>
         <service
-            android:name=".ui.services.ControlWindowService"
+            android:name="com.coc.zkqcode.utils.services.ControlWindowService"
             android:enabled="true"
             android:exported="false"
             android:foregroundServiceType="specialUse">

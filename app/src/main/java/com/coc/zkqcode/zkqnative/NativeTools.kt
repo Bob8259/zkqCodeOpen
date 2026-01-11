@@ -9,4 +9,7 @@ object NativeTools {
     external fun getNativeTwo(): Int
     external fun verifyHash(contentBeforeHash: String, serverHash: String): Double
     external fun generateNonce(): String
+    external fun xteaEncrypt(data: String, key: String): String
+    external fun xteaDecrypt(data: String, key: String): String
+    external fun nativeXteaHash(data: String, key: String): String
 }

@@ -54,6 +54,9 @@ class FileActions(
                             if (data.trim().startsWith("{") && data.trim().endsWith("}")) {
                                 try {
                                     val loadedJson = gson.fromJson(data, JsonObject::class.java)
+                                    // Update the existing configJson instead of replacing the object
+                                    // to ensure Compose observers are notified correctly if they observe properties
+                                    // Or just replace the whole JsonObject if it's a mutableStateOf
                                     configJson = loadedJson
                                 } catch (e: Exception) {
                                     println("Error parsing data as config: ${e.message}")
@@ -96,7 +99,7 @@ class FileActions(
         return this.serverConnection
     }
 
-//    fun updateConfigJson(json: JsonObject) {
-//        configJson = json
-//    }
+    fun updateConfig(newJson: JsonObject) {
+        configJson = newJson
+    }
 }
