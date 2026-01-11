@@ -28,9 +28,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -43,41 +41,19 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
-import com.coc.zkqcode.ui.database.Schema
 import com.coc.zkqcode.ui.theme.AppColors
+import com.coc.zkqcode.utils.database.Schema
 import com.coc.zkqcode.utils.fileactions.FileActions
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 object GlobalVars {
     var isCounting: Boolean = true
     var isChangFromUpgradePriority: Boolean = false
     var fileActions: FileActions? = null
-    val scope = CoroutineScope(Dispatchers.Main + SupervisorJob())
-    val saveJobs = mutableMapOf<String, Job>()
 }
 
-fun saveState(key: String, content: String, delayMillis: Long = 0L) {
-    if (key.isBlank()) return
-    GlobalVars.isCounting = false // Stop counting after user modifies configuration
-
-    GlobalVars.saveJobs[key]?.cancel()
-    GlobalVars.saveJobs[key] = GlobalVars.scope.launch {
-        if (delayMillis > 0) {
-            delay(delayMillis)
-        }
- 
-        // Only save key-value pairs, not nested category structure
-        GlobalVars.fileActions?.writeToConfigFile(key, content)
-    }
-}
 
 /**
  * Serialize Schema to JSON and save
@@ -129,7 +105,7 @@ fun InputRowWithCheckBox(
     checkBoxPath: String,
     inputPath: String
 ) {
-    val scope = rememberCoroutineScope()
+
     Row(
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -151,7 +127,6 @@ fun InputRowWithCheckBox(
                 .heightIn(max = 120.dp)
                 .verticalScroll(rememberScrollState()), onValueChange = { newValue ->
                 onValueChange(newValue)
-                saveState(inputPath, newValue, 500L)
             })
     }
 }
@@ -206,7 +181,6 @@ fun InputRow(
                 .heightIn(max = 120.dp)
                 .verticalScroll(rememberScrollState()), onValueChange = { newValue ->
                 onValueChange(newValue)
-                saveState(key, newValue, 500L)
             })
     }
 }
@@ -215,7 +189,7 @@ fun InputRow(
 fun CustomButton(
     text: String, onClick: () -> Unit, enable: Boolean = true, explain: String? = null
 ) {
-    val scope = rememberCoroutineScope()
+
     var showExplanation by remember { mutableStateOf(false) }
     Row {
         Button(
@@ -276,17 +250,14 @@ fun CustomCheckBox(
     key: String,
     explain: String? = null
 ) {
-    val scope = rememberCoroutineScope()
+
     var showExplanation by remember { mutableStateOf(false) }
 
     Row(modifier = Modifier.padding(top = 6.dp)) {
         Checkbox(
             checked = checkedState == "1", onCheckedChange = { isChecked ->
                 onCheckStateChange(isChecked)
-                val content = if (isChecked) "1" else "0"
-                scope.launch {
-                    saveState(key, content)
-                }
+
             }, modifier = Modifier
                 .height(20.dp)
                 .width(25.dp),
@@ -300,10 +271,7 @@ fun CustomCheckBox(
             verticalAlignment = Alignment.CenterVertically, modifier = Modifier.clickable {
                 val newCheckedState = checkedState != "1"
                 onCheckStateChange(newCheckedState)
-                val content = if (newCheckedState) "1" else "0"
-                scope.launch {
-                    saveState(key, content)
-                }
+
             }) {
             Text(
                 text = text,
@@ -347,7 +315,7 @@ fun DropdownButton(
     label: String,
     onValueChange: (String) -> Unit = {}
 ) {
-    val scope = rememberCoroutineScope()
+
     val state = configStates["${key}${index}"]
     val currentVersion = state?.value ?: "0"
 
@@ -392,9 +360,6 @@ fun DropdownButton(
                         state?.value = newValue
                         onValueChange(newValue)
                         expanded = false
-                        scope.launch {
-                            saveState("${key}${index}", newValue)
-                        }
                     }, modifier = Modifier.height(30.dp))
                 }
             }
@@ -410,7 +375,7 @@ fun DropdownButton(
     label: String,
     onValueChange: (String) -> Unit = {}
 ) {
-    val scope = rememberCoroutineScope()
+
     val state = configStates[filePath]
     val currentVersion = state?.value ?: "0"
     
@@ -455,9 +420,6 @@ fun DropdownButton(
                         state?.value = newValue
                         onValueChange(newValue)
                         expanded = false
-                        scope.launch {
-                            saveState(filePath, newValue)
-                        }
                     }, modifier = Modifier.height(30.dp))
                 }
             }
