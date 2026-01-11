@@ -1,6 +1,9 @@
-package com.coc.zkqcode.ui.pages.single
+package com.coc.zkqcode.jar.ui.pages.single
 
 import android.os.Environment
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,10 +23,12 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.coc.zkqcode.jar.code.Test
+import com.coc.zkqcode.jar.ui.pages.mainbase.MainBaseConfig
 import com.coc.zkqcode.utils.components.CustomButton
 import com.coc.zkqcode.utils.components.CustomCheckBox
 import com.coc.zkqcode.utils.components.DropdownButton
@@ -31,9 +36,8 @@ import com.coc.zkqcode.utils.components.GlobalVars
 import com.coc.zkqcode.utils.components.InputRow
 import com.coc.zkqcode.utils.database.Schema
 import com.coc.zkqcode.utils.database.SchemaExporter
-import com.coc.zkqcode.ui.theme.AppColors
-
 import com.coc.zkqcode.utils.fileactions.FileActions
+import com.coc.zkqcode.utils.theme.AppColors
 import com.coc.zkqcode.utils.websocket.ServerConnection
 
 @Composable
@@ -47,6 +51,7 @@ fun HomeScreen(onSaveSuccess: () -> Unit = {}) {
     }
 
     val configStates = remember { mutableMapOf<String, MutableState<String>>() }
+    var isLoading by remember { mutableStateOf(true) }
 
     // Initialize states from Schema
     LaunchedEffect(GlobalVars.fileActions?.configJson) {
@@ -74,6 +79,21 @@ fun HomeScreen(onSaveSuccess: () -> Unit = {}) {
                     }
                 }
             }
+
+            // Initialize MAIN_BASE_SETTINGS for each config
+            val configCount = actions.getValue("config_count")?.toIntOrNull() ?: 3
+            for (i in 1..configCount) {
+                Schema.MAIN_BASE_SETTINGS.forEach { def ->
+                    val key = "${def.key}_c$i"
+                    val savedValue = actions.getValue(key)
+                    if (savedValue != null) {
+                        configStates[key]?.value = savedValue
+                    } else if (!configStates.containsKey(key)) {
+                        configStates[key] = mutableStateOf(def.defaultValue.toString())
+                    }
+                }
+            }
+            isLoading = false
         }
     }
 
@@ -101,222 +121,237 @@ fun HomeScreen(onSaveSuccess: () -> Unit = {}) {
         }
     }
 
+    // Initialize MAIN_BASE_SETTINGS dynamically if not loaded from file
+    val currentConfigCount = configCountStr.toIntOrNull() ?: 3
+    for (i in 1..currentConfigCount) {
+        Schema.MAIN_BASE_SETTINGS.forEach { def ->
+            val key = "${def.key}_c$i"
+            if (!configStates.containsKey(key)) {
+                val savedValue = GlobalVars.fileActions?.getValue(key)
+                configStates[key] = mutableStateOf(savedValue ?: def.defaultValue.toString())
+            }
+        }
+    }
+
     val configCount = configCountStr.toIntOrNull() ?: 1
     val tabs = listOf("主页") + List(configCount) { "配置${it + 1}" }
 
-    Column(modifier = Modifier.fillMaxSize()) {
-        // 1. 顶部的 Tab 栏
-        PrimaryScrollableTabRow(
-            selectedTabIndex = selectedTabIndex,
-            edgePadding = 0.dp,
-            modifier = Modifier.padding(top = 8.dp),
-            containerColor = AppColors.Azure
-        ) {
-            tabs.forEachIndexed { index, title ->
-                Tab(
-                    selected = selectedTabIndex == index,
-                    onClick = { selectedTabIndex = index },
-                    text = { Text(text = title) },
-                    selectedContentColor = Color.White,
-                    unselectedContentColor = Color.White.copy(alpha = 0.7f)
-                )
+    val saveAndRun = {
+        // 获取外部存储路径 zkqFiles
+        val baseDir = "${Environment.getExternalStorageDirectory().path}/zkqFiles/"
+
+        // 获取当前账户数量
+        val currentAccountCount = accountCountStr.toIntOrNull() ?: 3
+        // 调用通过服务器保存的方法
+        SchemaExporter.saveSchemaViaServer(
+            baseDir,
+            "global_config.json",
+            keys = listOf("GLOBAL_SETTINGS", "ACCOUNT_SETTINGS", "MAIN_BASE_SETTINGS"),
+            accountCount = currentAccountCount,
+            configCount = configStates["config_count"]?.value?.toIntOrNull() ?: 3,
+            configStates = configStates
+        )
+        // 执行保存后的回调，用于关闭悬浮窗
+        onSaveSuccess()
+        Test().testcode()
+    }
+
+    val cleanMemory = {
+        // TODO: Implement logic to clean account memory
+    }
+
+    val cleanAllData = {
+        // TODO: Implement logic to clean all data
+    }
+
+    // Auto-Run Timer Logic
+    LaunchedEffect(GlobalVars.isAutoRunEnabled, GlobalVars.autoRunTimer) {
+        if (GlobalVars.isAutoRunEnabled && GlobalVars.autoRunTimer > 0) {
+            kotlinx.coroutines.delay(1000L)
+            GlobalVars.autoRunTimer--
+            if (GlobalVars.autoRunTimer <= 0) {
+                saveAndRun()
             }
         }
-
-        // 2. 中间的内容区域 (使用 weight 占据剩余空间)
-        LazyColumn(
-            modifier = Modifier
-                .weight(1f)
-                .padding(4.dp)
-        ) {
-            when (selectedTabIndex) {
-                0 -> {
-                    item { LoginScreen(configStates) }
-                    item {
-                        InputRow(
-                            label = Schema.GLOBAL_SETTINGS.first { it.key == "config_count" }.displayName,
-                            value = configStates["config_count"]?.value ?: "",
-                            onValueChange = { configStates["config_count"]?.value = it },
-                            key = "config_count"
-                        )
-                    }
-                    item {
-                        InputRow(
-                            label = Schema.GLOBAL_SETTINGS.first { it.key == "account_count" }.displayName,
-                            value = configStates["account_count"]?.value ?: "",
-                            onValueChange = { configStates["account_count"]?.value = it },
-                            key = "account_count"
-                        )
-                    }
-                    item {
-                        HorizontalDivider(
-                            thickness = 1.dp,
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 1f)
-                        )
-                    }
-                    // Display account configurations based on account_count
-                    val currentAccountCount = accountCountStr.toIntOrNull() ?: 3
-                    items(count = currentAccountCount, key = { it + 1 }) { i ->
-                        AccountConfig(configStates = configStates, index = i + 1)
-                    }
-                }
-
-                else -> {
-                    item { Text("这是配置 $selectedTabIndex 的内容") }
-                }
-            }
-        }
-
-        // 3. 底部的固定按钮区
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(2.dp)
-        ) {
-            CustomButton(
-                text = "保存所有 Schema",
-                onClick = {
-                    // 获取外部存储路径 zkqFiles
-                    val baseDir = "${Environment.getExternalStorageDirectory().path}/zkqFiles/"
-
-                    // 获取当前账户数量
-                    val currentAccountCount = accountCountStr.toIntOrNull() ?: 3
-                    // 调用通过服务器保存的方法
-                    SchemaExporter.saveSchemaViaServer(
-                        baseDir,
-                        "global_config.json",
-                        keys = listOf("GLOBAL_SETTINGS", "ACCOUNT_SETTINGS"),
-                        accountCount = currentAccountCount,
-                        configStates = configStates
-                    )
-                    // 执行保存后的回调，用于关闭悬浮窗
-                    onSaveSuccess()
-                    println("run code")
-                }
-            )
-        }
     }
-}
 
-@Composable
-fun AccountConfig(
-    configStates: Map<String, MutableState<String>>, index: Int
-) {
-    Column(modifier = Modifier.padding(horizontal = 2.dp)) {
-        Row {
-            CustomCheckBox(
-                checkedState = configStates["prefix${index}"]?.value ?: "",
-                onCheckStateChange = {
-                    configStates["prefix${index}"]?.value = if (it) "1" else "0"
-                },
-                key = "prefix${index}",
-                text = Schema.ACCOUNT_SETTINGS.first { it.key == "prefix" }.displayName + index,
-            )
-            InputRow(
-                label = Schema.ACCOUNT_SETTINGS.first { it.key == "remark" }.displayName,
-                value = configStates["remark${index}"]?.value ?: "",
-                onValueChange = { configStates["remark${index}"]?.value = it },
-                key = "remark${index}"
-            )
-        }
-        DropdownButton(
-            index = index,
-            configStates = configStates,
-            options = listOf("国服", "国际服"),
-            key = "game_version",
-            label = Schema.ACCOUNT_SETTINGS.first { it.key == "game_version" }.displayName,
-            onValueChange = { configStates["game_version${index}"]?.value = it }
-        )
-        InputRow(
-            label = Schema.ACCOUNT_SETTINGS.first { it.key == "account_config" }.displayName,
-            value = configStates["account_config${index}"]?.value ?: "",
-            onValueChange = { configStates["account_config${index}"]?.value = it },
-            key = "account_config${index}"
-        )
-        DropdownButton(
-            index = index,
-            configStates = configStates,
-            options = listOf("游戏存档", "直接启动", "上号器"),
-            key = "start_method",
-            label = Schema.ACCOUNT_SETTINGS.first { it.key == "start_method" }.displayName,
-            onValueChange = { configStates["start_method${index}"]?.value = it }
-        )
-        when (configStates["start_method${index}"]?.value ?: "") {
-            "1" -> GameFiles(index, configStates)//存档上号
-            "2" -> UsePackage(index, configStates)//上号器
-        }
-    }
-    HorizontalDivider(
-        thickness = 1.dp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 1f)
-    )
-}
-
-@Composable
-fun UsePackage(
-    index: Int, configStates: Map<String, MutableState<String>>
-) {
-    if (configStates["game_version${index}"]?.value == "0") {
-        Column {
+    if (isLoading) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.White),
+            contentAlignment = Alignment.Center
+        ) {
             Text(
-                text = "换机或设备到期前，务必清空数据号信息！\n否则有被盗号风险！",
-                modifier = Modifier.padding(end = 10.dp),
-                style = MaterialTheme.typography.labelMedium,
-                color = Color.Red
-            )
-            InputRow(
-                label = Schema.ACCOUNT_SETTINGS.first { it.key == "data_content" }.displayName,
-                value = configStates["data_content${index}"]?.value ?: "",
-                onValueChange = { configStates["data_content${index}"]?.value = it },
-                key = "data_content${index}"
+                text = "加载配置文件中....",
+                style = MaterialTheme.typography.headlineSmall
             )
         }
     } else {
-        Text(
-            text = "国际服不支持上号器，请更换启动游戏方式！",
-            modifier = Modifier.padding(end = 10.dp, bottom = 6.dp),
-            style = MaterialTheme.typography.labelMedium,
-        )
-    }
-}
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.White)
+        ) {
+            // 1. 顶部的 Tab 栏
+            PrimaryScrollableTabRow(
+                selectedTabIndex = selectedTabIndex,
+                edgePadding = 0.dp,
+                modifier = Modifier.padding(top = 8.dp),
+                containerColor = AppColors.Azure
+            ) {
+                tabs.forEachIndexed { index, title ->
+                    Tab(
+                        selected = selectedTabIndex == index,
+                        onClick = { selectedTabIndex = index },
+                        text = { Text(text = title) },
+                        selectedContentColor = Color.White,
+                        unselectedContentColor = Color.White.copy(alpha = 0.7f)
+                    )
+                }
+            }
 
-@Composable
-fun GameFiles(
-    index: Int, configStates: Map<String, MutableState<String>>
-) {
-    Column {
-        Text(
-            text = "存档文件路径",
-            textAlign = TextAlign.Center,
-            modifier = Modifier.padding(end = 10.dp),
-            style = MaterialTheme.typography.labelMedium
-        )
-        // 从 configStates 中获取当前游戏版本
-        val currentVersion = configStates["game_version${index}"]?.value ?: "0"
-        // 使用 remember 来保存当前选中的选项
-        var selectedOption by remember {
-            mutableStateOf(
-                configStates["game_version${index}"]?.value ?: "0"
-            )
-        }
+            // 2. 中间的内容区域 (使用 weight 占据剩余空间)
+            LazyColumn(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(4.dp)
+            ) {
+                when (selectedTabIndex) {
+                    0 -> {
 
-        // 监听 currentVersion 的变化，并更新 selectedOption
-        LaunchedEffect(currentVersion) {
-            selectedOption = configStates["game_version${index}"]?.value ?: "0"
-        }
-        if (selectedOption == "0") {//0表示国服
-            InputRow(
-                label = Schema.ACCOUNT_SETTINGS.first { it.key == "cn_path" }.displayName,
-                value = configStates["cn_path${index}"]?.value ?: "",
-                onValueChange = { configStates["cn_path${index}"]?.value = it },
-                key = "cn_path${index}"
-            )
-        } else {
-            InputRow(
-                label = Schema.ACCOUNT_SETTINGS.first { it.key == "global_path" }.displayName,
-                value = configStates["global_path${index}"]?.value ?: "",
-                onValueChange = { configStates["global_path${index}"]?.value = it },
-                key = "global_path${index}"
-            )
+                        // Auto-Run UI in List
+
+                        item {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 4.dp),
+                                horizontalArrangement = Arrangement.Start,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = if (GlobalVars.isAutoRunEnabled) "${GlobalVars.autoRunTimer}秒后自动运行" else "计时已停止",
+                                    style = MaterialTheme.typography.labelMedium,
+                                    color = Color.Red,
+                                    modifier = Modifier.padding(top = 8.dp)
+                                )
+                                CustomButton(
+                                    text = "修改任意配置停止计时",
+                                    onClick = { GlobalVars.isAutoRunEnabled = false }
+                                )
+                            }
+
+
+                         LoginScreen(configStates)
+
+
+                            InputRow(
+                                label = Schema.GLOBAL_SETTINGS.first { it.key == "config_count" }.displayName,
+                                value = configStates["config_count"]?.value ?: "",
+                                onValueChange = { configStates["config_count"]?.value = it },
+                                key = "config_count"
+                            )
+
+                            InputRow(
+                                label = Schema.GLOBAL_SETTINGS.first { it.key == "account_count" }.displayName,
+                                value = configStates["account_count"]?.value ?: "",
+                                onValueChange = { configStates["account_count"]?.value = it },
+                                key = "account_count"
+                            )
+
+                            HorizontalDivider(
+                                thickness = 1.dp,
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 1f)
+                            )
+
+                            InputRow(
+                                label = "延时倍率（低性能设备调为1.2-2倍）",
+                                value = configStates["delay_Multiplier"]?.value ?: "1",
+                                onValueChange = { configStates["delay_Multiplier"]?.value = it },
+                                key = "delay_Multiplier"
+                            )
+
+                            Row {
+                                CustomCheckBox(
+                                    checkedState = configStates["debug_mode"]?.value ?: "0",
+                                    onCheckStateChange = { configStates["debug_mode"]?.value = if (it) "1" else "0" },
+                                    key = "debug_mode",
+                                    text = "慢速调试模式",
+                                )
+                                CustomCheckBox(
+                                    checkedState = configStates["record_progress"]?.value ?: "0",
+                                    onCheckStateChange = { configStates["record_progress"]?.value = if (it) "1" else "0" },
+                                    key = "record_progress",
+                                    text = "记录账号进度",
+                                )
+                            }
+
+                            DropdownButton(
+                                configStates,
+                                filePath = "after_kick_option",
+                                options = listOf("立刻重连", "切换账号", "原地等待"),
+                                label = "被顶号后"
+                            )
+
+                            InputRow(
+                                label = "当前设备备注",
+                                value = configStates["device_remark"]?.value ?: "",
+                                onValueChange = { configStates["device_remark"]?.value = it },
+                                key = "device_remark"
+                            )
+
+                            Row {
+                                CustomButton(
+                                    text = "清除账号记忆",
+                                    onClick = { cleanMemory() },
+                                    explain = "本辅助会记住账号信息，例如记住当前账号是否已完成突袭，是否已完成部落竞赛等等。如果换号后不清空记忆，那么本辅助就会保留先前账号错误的记忆，进而可能发生某些异常操作。"
+                                )
+                                CustomButton(
+                                    text = "清空全部数据",
+                                    onClick = { cleanAllData() },
+                                    explain = "点击后将删除所有数据，包括辅助设置，保存的账号信息，数据号信息等等，用于保护用户隐私。"
+                                )
+                            }
+
+                            Text(
+                                text = "换机或设备到期前必须清空全部数据！部分云机在设备到期后不会清空用户数据，严重威胁隐私安全！",
+                                modifier = Modifier.padding(top = 4.dp, bottom = 2.dp),
+                                style = MaterialTheme.typography.labelMedium,
+                            )
+
+                            HorizontalDivider(
+                                thickness = 1.dp,
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 1f)
+                            )
+                        }
+                        // Display account configurations based on account_count
+                        val currentAccountCount = accountCountStr.toIntOrNull() ?: 3
+                        items(count = currentAccountCount, key = { it + 1 }) { i ->
+                            AccountConfig(configStates = configStates, index = i + 1)
+                        }
+                    }
+
+                    else -> {
+                        // Pass the 1-based index (selectedTabIndex) to MainBaseConfig
+                        item {
+                            MainBaseConfig(index = selectedTabIndex, configStates = configStates)
+                        }
+                    }
+                }
+            }
+
+            // 3. 底部的固定按钮区
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(2.dp)
+            ) {
+                CustomButton(
+                    text = "保存并运行",
+                    onClick = { saveAndRun() }
+                )
+            }
         }
     }
 }

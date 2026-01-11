@@ -1,6 +1,3 @@
-import org.gradle.kotlin.dsl.support.serviceOf
-import org.gradle.process.ExecOperations
-
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -60,44 +57,103 @@ android {
 }
 
 // 1. 定义一个独立的 Task 来执行部署
-tasks.register("deployPatch") {
-    // dependsOn("compileDebugKotlin")
+tasks.register<Exec>("deployPatch") {
+    group = "custom"
+    description = "编译并打包 UI 插件到 Assets 目录"
 
-    // doLast {
-    //     // 使用 serviceOf 获取服务，这是处理 ExecOperations 的官方标准方式
-    //     val execOps = project.serviceOf<ExecOperations>()
+    // 确保在执行此任务前先编译出最新的 class 文件
+    dependsOn("assembleDebug")
 
-    //     val patchName = "patch_logic.jar"
-    //     val rootDir = project.rootDir
-    //     val buildDir = project.layout.buildDirectory.get().asFile
-    //     val classDir = File("$buildDir/tmp/kotlin-classes/debug/com/coc/zkqcode/test")
-    //     val sdkDir = android.sdkDirectory.path
-    //     val buildToolsVersion = android.buildToolsVersion
-    //     val d8Path = File(sdkDir, "build-tools/$buildToolsVersion/d8.bat").absolutePath
+    // --- 路径配置 ---
+    val workingDir = project.projectDir.absolutePath
+    val classDir = "$workingDir/build/tmp/kotlin-classes/debug"
+    val sdkDir = System.getenv("ANDROID_HOME") ?: "C:/Users/Azikaban/AppData/Local/Android/Sdk"
 
-    //     val classFiles = classDir.listFiles()?.filter {
-    //         it.extension == "class" && !it.name.contains("ICalculator")
-    //     }?.map { it.absolutePath } ?: emptyList()
+    // 自动寻找本机安装的最高版本 Build-Tools (例如 36.1.0)
+    val buildToolsDir = file("$sdkDir/build-tools")
+    val highestBuildTools = buildToolsDir.listFiles()
+        ?.filter { it.isDirectory && it.name.contains(".") }
+        ?.maxByOrNull { versionFile ->
+            versionFile.name.split(".").mapNotNull { it.toIntOrNull() }.let { parts ->
+                // 将版本号转为数字列表进行比较，如 [36, 1, 0]
+                parts.fold(0) { acc, i -> acc * 100 + i }
+            }
+        }
 
-    //     if (classFiles.isEmpty()) {
-    //         throw GradleException("未发现类文件，请确认代码已保存并执行了 Build -> Make Project")
-    //     }
+    val d8Path = if (highestBuildTools != null) {
+        "${highestBuildTools.absolutePath}/d8.bat"
+    } else {
+        // 如果没找到，尝试指向你确有的版本作为兜底
+        "$sdkDir/build-tools/36.1.0/d8.bat"
+    }
 
-    //     println("🚀 正在转换 ${classFiles.size} 个类文件...")
+    // 建议使用 android-34 或 35 的 jar 作为类库参考
+    val sdkPlatform = "$sdkDir/platforms/android-34/android.jar"
+    val outputJar = "$workingDir/src/main/assets/code.jar"
+    val flagFile = file("$workingDir/build/tmp/d8_flags.txt")
 
-    //     // 使用 execOps 执行命令
-    //     execOps.exec {
-    //         commandLine(d8Path)
-    //         args("--release", "--output", "$rootDir/$patchName")
-    //         args(classFiles)
-    //     }
+    // --- 准备待转换的文件 ---
+    val dependencyFiles = configurations.getByName("debugRuntimeClasspath").files
+    val classFiles = fileTree(classDir) {
+        include("com/coc/zkqcode/jar/**/*.class")
+    }.files.map { it.absolutePath }
 
-    //     execOps.exec {
-    //         commandLine("adb", "push", "$rootDir/$patchName", "/data/local/tmp/mycalculator.jar")
-    //     }
+    // 设置执行的程序
+    executable = d8Path
 
-    //     println("✅ 部署成功！")
-    // }
+    doFirst {
+        // 清理旧产物
+        val jarFile = file(outputJar)
+        if (jarFile.exists()) jarFile.delete()
+
+        if (classFiles.isEmpty()) {
+            throw GradleException("未找到待转换的 class 文件，请检查路径: $classDir")
+        }
+
+        // 构建 D8 参数列表
+        val content = mutableListOf<String>()
+        content.add("--release")
+        content.add("--min-api")
+        content.add("26")
+        content.add("--lib")
+        content.add(sdkPlatform)
+        content.add("--output")
+        content.add(outputJar)
+
+        // 添加依赖库 (只包含 jar)
+        dependencyFiles.forEach { file ->
+            if (file.extension == "jar") {
+                content.add("--classpath")
+                content.add(file.absolutePath)
+            }
+        }
+
+        // 添加我们自己的类文件
+        classFiles.forEach {
+            content.add(it)
+        }
+
+        // 写入参数文件，解决命令行过长和编码问题
+        flagFile.parentFile.mkdirs()
+        flagFile.writeText(content.joinToString("\n"), Charsets.UTF_8)
+
+        println("--------------------------------------------------")
+        println("Using D8 from: ${highestBuildTools?.name ?: "Default Path"}")
+        println("Target Output: $outputJar")
+        println("Found ${classFiles.size} class files to convert.")
+        println("--------------------------------------------------")
+    }
+
+    // 使用 @ 符号让 d8 读取参数文件
+    args("@${flagFile.absolutePath}")
+
+    doLast {
+        if (file(outputJar).exists()) {
+            println("--- SUCCESS: Patch deployed to assets/ui.jar ---")
+        } else {
+            println("--- ERROR: Output file was not generated ---")
+        }
+    }
 }
 
 dependencies {

@@ -1,4 +1,4 @@
-package com.coc.zkqcode.ui.components
+package com.coc.zkqcode.utils.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -17,9 +17,10 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
@@ -30,6 +31,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -38,61 +40,27 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.IntRect
+import androidx.compose.ui.unit.IntSize
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
-import com.coc.zkqcode.ui.theme.AppColors
-import com.coc.zkqcode.utils.database.Schema
+import androidx.compose.ui.window.PopupPositionProvider
+import androidx.compose.ui.window.PopupProperties
 import com.coc.zkqcode.utils.fileactions.FileActions
-import com.google.gson.GsonBuilder
-import com.google.gson.JsonArray
-import com.google.gson.JsonObject
+import com.coc.zkqcode.utils.theme.AppColors
+
 
 object GlobalVars {
     var isCounting: Boolean = true
     var isChangFromUpgradePriority: Boolean = false
-    var fileActions: FileActions? = null
-}
-
-
-/**
- * Serialize Schema to JSON and save
- */
-fun saveSchemaToJson() {
-    try {
-        val rootJson = JsonObject()
-
-        // Map all Schema lists
-        val schemaMap = mapOf(
-            "GLOBAL_SETTINGS" to Schema.GLOBAL_SETTINGS,
-            "ACCOUNT_SETTINGS" to Schema.ACCOUNT_SETTINGS,
-            "MAIN_BASE_SETTINGS" to Schema.MAIN_BASE_SETTINGS,
-            "MAIN_BASE_TROOPS_AND_SPELLS" to Schema.MAIN_BASE_TROOPS_AND_SPELLS,
-            "MAIN_BASE_PETS" to Schema.MAIN_BASE_PETS,
-            "MAIN_BASE_BUILDINGS" to Schema.MAIN_BASE_BUILDINGS
-        )
-
-        schemaMap.forEach { (categoryName, list) ->
-            val jsonArray = JsonArray()
-            list.forEach { item ->
-                val itemJson = JsonObject()
-                itemJson.addProperty("key", item.key)
-                itemJson.addProperty("displayName", item.displayName)
-                itemJson.addProperty("defaultValue", item.defaultValue.toString())
-                itemJson.addProperty("category", item.category)
-                jsonArray.add(itemJson)
-            }
-            rootJson.add(categoryName, jsonArray)
-        }
-
-        val gson = GsonBuilder().setPrettyPrinting().create()
-        val jsonString = gson.toJson(rootJson)
-
-        GlobalVars.fileActions?.writeToConfigFile("all_schemas_backup", jsonString)
-        println("Schema saved to JSON")
-    } catch (e: Exception) {
-        e.printStackTrace()
-    }
+    var fileActions by mutableStateOf<FileActions?>(null)
+    
+    // Auto-run features
+    var isAutoRunEnabled by mutableStateOf(true)
+    var autoRunTimer by mutableIntStateOf(60)
 }
 
 @Composable
@@ -112,7 +80,10 @@ fun InputRowWithCheckBox(
         CustomCheckBox(
             text = label,
             checkedState = checkedState,
-            onCheckStateChange = onCheckedChange,
+            onCheckStateChange = {
+                GlobalVars.isAutoRunEnabled = false
+                onCheckedChange(it)
+            },
             key = checkBoxPath
         )
         BasicTextField(
@@ -126,6 +97,7 @@ fun InputRowWithCheckBox(
                 .align(Alignment.CenterVertically)
                 .heightIn(max = 120.dp)
                 .verticalScroll(rememberScrollState()), onValueChange = { newValue ->
+                GlobalVars.isAutoRunEnabled = false
                 onValueChange(newValue)
             })
     }
@@ -155,6 +127,64 @@ fun FloatingDialog(message: String) {
 }
 
 @Composable
+fun CustomAlertDialog(
+    onDismissRequest: () -> Unit,
+    title: @Composable (() -> Unit)? = null,
+    text: @Composable (() -> Unit)? = null,
+    confirmButton: @Composable () -> Unit
+) {
+    Popup(
+        popupPositionProvider = WindowCenterPositionProvider(),
+        onDismissRequest = onDismissRequest,
+        properties = PopupProperties(focusable = true)
+    ) {
+        Surface(
+            modifier = Modifier
+                .wrapContentSize()
+                .padding(16.dp),
+            shape = RoundedCornerShape(28.dp),
+            color = MaterialTheme.colorScheme.surface,
+            shadowElevation = 6.dp
+        ) {
+            Column(modifier = Modifier.padding(24.dp)) {
+                title?.let {
+                    Box(modifier = Modifier.padding(bottom = 16.dp)) {
+                        it()
+                    }
+                }
+                text?.let {
+                    Box(modifier = Modifier.padding(bottom = 24.dp)) {
+                        it()
+                    }
+                }
+                Row(modifier = Modifier.align(Alignment.End)) {
+                    confirmButton()
+                }
+            }
+        }
+    }
+}
+
+class WindowCenterPositionProvider : PopupPositionProvider {
+    override fun calculatePosition(
+        anchorBounds: IntRect,
+        windowSize: IntSize,
+        layoutDirection: LayoutDirection,
+        popupContentSize: IntSize
+    ): IntOffset {
+        val windowCenter = IntOffset(
+            windowSize.width / 2,
+            windowSize.height / 2
+        )
+        return IntOffset(
+            windowCenter.x - popupContentSize.width / 2,
+            windowCenter.y - popupContentSize.height / 2
+        )
+    }
+}
+
+
+@Composable
 fun InputRow(
     label: String, value: String, onValueChange: (String) -> Unit, key: String
 ) {
@@ -180,6 +210,7 @@ fun InputRow(
                 .align(Alignment.CenterVertically)
                 .heightIn(max = 120.dp)
                 .verticalScroll(rememberScrollState()), onValueChange = { newValue ->
+                GlobalVars.isAutoRunEnabled = false
                 onValueChange(newValue)
             })
     }
@@ -187,28 +218,21 @@ fun InputRow(
 
 @Composable
 fun CustomButton(
-    text: String, onClick: () -> Unit, enable: Boolean = true, explain: String? = null
+    text: String, onClick: () -> Unit, enable: Boolean = true, explain: String? = null, marginTop: Dp = 8.dp
 ) {
 
     var showExplanation by remember { mutableStateOf(false) }
     Row {
         Button(
             onClick = {
-                // Timer helper logic preserved from original code
-//                scope.launch {
-//                    saveState(
-//                        "计时助手",
-//                        (System.currentTimeMillis() % 50505 + Random.nextInt(1000)).toString()
-//                    )
-//                }
                 onClick()
             },
             modifier = Modifier
-                .padding(start = 8.dp, top = 8.dp)
+                .padding(start = 8.dp, top = marginTop)
                 .height(32.dp),
             shape = RoundedCornerShape(8.dp),
             enabled = enable,
-            colors = androidx.compose.material3.ButtonDefaults.buttonColors(
+            colors = ButtonDefaults.buttonColors(
                 containerColor = AppColors.Azure
             )
         ) {
@@ -226,10 +250,10 @@ fun CustomButton(
                     tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
 
                 if (showExplanation) {
-                    AlertDialog(
+                    CustomAlertDialog(
                         onDismissRequest = { showExplanation = false },
-                        title = { Text(text = "注意事项") },
-                        text = { Text(text = explain) },
+                        title = { Text(text = "注意事项", style = MaterialTheme.typography.titleMedium) },
+                        text = { Text(text = explain, style = MaterialTheme.typography.bodyMedium) },
                         confirmButton = {
                             TextButton(
                                 onClick = { showExplanation = false }) {
@@ -256,12 +280,13 @@ fun CustomCheckBox(
     Row(modifier = Modifier.padding(top = 6.dp)) {
         Checkbox(
             checked = checkedState == "1", onCheckedChange = { isChecked ->
+                GlobalVars.isAutoRunEnabled = false
                 onCheckStateChange(isChecked)
 
             }, modifier = Modifier
                 .height(20.dp)
                 .width(25.dp),
-            colors = androidx.compose.material3.CheckboxDefaults.colors(
+            colors = CheckboxDefaults.colors(
                 checkedColor = AppColors.Azure,
                 checkmarkColor = Color.White
             )
@@ -269,6 +294,7 @@ fun CustomCheckBox(
 
         Row(
             verticalAlignment = Alignment.CenterVertically, modifier = Modifier.clickable {
+                GlobalVars.isAutoRunEnabled = false
                 val newCheckedState = checkedState != "1"
                 onCheckStateChange(newCheckedState)
 
@@ -290,10 +316,10 @@ fun CustomCheckBox(
                     tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
 
                 if (showExplanation) {
-                    AlertDialog(
+                    CustomAlertDialog(
                         onDismissRequest = { showExplanation = false },
-                        title = { Text(text = "注意事项") },
-                        text = { Text(text = explain) },
+                        title = { Text(text = "注意事项", style = MaterialTheme.typography.titleMedium) },
+                        text = { Text(text = explain, style = MaterialTheme.typography.bodyMedium) },
                         confirmButton = {
                             TextButton(
                                 onClick = { showExplanation = false }) {
@@ -341,7 +367,7 @@ fun DropdownButton(
                 onClick = { expanded = true },
                 shape = RoundedCornerShape(8.dp),
                 modifier = Modifier.height(30.dp),
-                colors = androidx.compose.material3.ButtonDefaults.buttonColors(
+                colors = ButtonDefaults.buttonColors(
                     containerColor = AppColors.Azure
                 )
             ) {
@@ -356,6 +382,7 @@ fun DropdownButton(
                             option, style = MaterialTheme.typography.labelMedium
                         )
                     }, onClick = {
+                        GlobalVars.isAutoRunEnabled = false
                         val newValue = idx.toString()
                         state?.value = newValue
                         onValueChange(newValue)
@@ -401,7 +428,7 @@ fun DropdownButton(
                 onClick = { expanded = true },
                 shape = RoundedCornerShape(8.dp),
                 modifier = Modifier.height(30.dp),
-                colors = androidx.compose.material3.ButtonDefaults.buttonColors(
+                colors = ButtonDefaults.buttonColors(
                     containerColor = AppColors.Azure
                 )
             ) {
@@ -416,6 +443,7 @@ fun DropdownButton(
                             option, style = MaterialTheme.typography.labelMedium
                         )
                     }, onClick = {
+                        GlobalVars.isAutoRunEnabled = false
                         val newValue = idx.toString()
                         state?.value = newValue
                         onValueChange(newValue)

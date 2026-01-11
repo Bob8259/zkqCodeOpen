@@ -1,4 +1,5 @@
-package com.coc.zkqcode.ui.services
+package com.coc.zkqcode.utils.services
+
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -9,18 +10,7 @@ import android.os.Build
 import android.os.IBinder
 import android.view.Gravity
 import android.view.WindowManager
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.remember
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.unit.dp
 import androidx.core.app.NotificationCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
@@ -30,13 +20,9 @@ import androidx.savedstate.SavedStateRegistry
 import androidx.savedstate.SavedStateRegistryController
 import androidx.savedstate.SavedStateRegistryOwner
 import androidx.savedstate.setViewTreeSavedStateRegistryOwner
-import com.coc.zkqcode.ui.components.CustomButton
-import com.coc.zkqcode.ui.components.GlobalVars
-import com.coc.zkqcode.ui.pages.single.HomeScreen
-import com.coc.zkqcode.utils.fileactions.FileActions
-import com.coc.zkqcode.utils.websocket.ServerConnection
+import com.coc.zkqcode.loadjar.Loadjar
 
-class FloatingWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner {
+class UIWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner {
 
     private lateinit var windowManager: WindowManager
     private var composeView: ComposeView? = null
@@ -90,7 +76,7 @@ class FloatingWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner
         val screenHeight = displayMetrics.heightPixels
 
         val windowWidth = (screenWidth * 0.95).toInt()
-        val windowHeight = (screenHeight * 0.95).toInt()
+        val windowHeight = (screenHeight * 0.9).toInt()
 
         val windowType = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
@@ -109,62 +95,27 @@ class FloatingWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner
         ).apply {
             gravity = Gravity.CENTER
         }
-
         composeView = ComposeView(this).apply {
-            setViewTreeLifecycleOwner(this@FloatingWindowService)
-            setViewTreeSavedStateRegistryOwner(this@FloatingWindowService)
+            setViewTreeLifecycleOwner(this@UIWindowService)
+            setViewTreeSavedStateRegistryOwner(this@UIWindowService)
 
             setContent {
-                MainScreenContent()
+                Loadjar(context).LoadAndShowUI(onClose = {
+                    closeMainUI()
+                })
             }
         }
 
         windowManager.addView(composeView, params)
     }
 
-    @Composable
-    private fun MainScreenContent() {
-        val actions = GlobalVars.fileActions
-        val configLoaded = remember(actions?.configJson) {
-            actions != null && actions.configJson.size() > 0
-        }
-
-        LaunchedEffect(Unit) {
-            if (GlobalVars.fileActions == null) {
-                val serverConnection = ServerConnection("ws://localhost:6839/zkq")
-                GlobalVars.fileActions = FileActions(serverConnection)
-            }
-        }
-
-        MainUI(configLoaded)
-    }
-
-    @Composable
-    private fun MainUI(configLoaded: Boolean) {
-        Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-            Column(modifier = Modifier.padding(innerPadding)) {
-                if (configLoaded) {
-                    HomeScreen(onSaveSuccess = {
-                        closeMainUI()
-                    })
-                } else {
-                    Text("正在加载配置...", modifier = Modifier.padding(16.dp))
-                    CustomButton(
-                        text = "停止加载并退出",
-                        onClick = { stopSelf() }
-                    )
-                }
-            }
-        }
-    }
 
     private fun closeMainUI() {
         if (composeView != null) {
             windowManager.removeView(composeView)
             composeView = null
         }
-        val intent = Intent(this, ControlWindowService::class.java)
-        startService(intent)
+        startService(Intent(this, ControlWindowService::class.java))
         stopSelf()
     }
 

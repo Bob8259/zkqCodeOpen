@@ -1,7 +1,8 @@
-package com.coc.zkqcode.loadui
+package com.coc.zkqcode.loadjar
 
 import android.content.Context
-import android.content.SharedPreferences
+import androidx.compose.foundation.layout.Column
+import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -9,34 +10,19 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import com.coc.zkqcode.jar.ui.MainUI
+import com.coc.zkqcode.interfaces.MainCode
 import dalvik.system.DexClassLoader
 import java.io.File
 
-class LoadUI(private val context: Context) {
+class Loadjar(private val context: Context) {
 
-    private var pluginUI: MainUI? = null
-
-    // 1. 定义监听器，当插件修改数据时，这里会立即触发 println
-    private val sharedPrefsListener =
-        SharedPreferences.OnSharedPreferenceChangeListener { prefs, key ->
-            if (key == "text") {
-                val newValue = prefs.getString(key, "")
-                println("【宿主收到消息】text 字段已更改为: $newValue")
-            }
-        }
-
-    init {
-        // 2. 注册监听
-        val sp = context.getSharedPreferences("plugin_prefs", Context.MODE_PRIVATE)
-        sp.registerOnSharedPreferenceChangeListener(sharedPrefsListener)
-    }
+    private var pluginUI: MainCode? = null
 
     /**
      * Main composable function that handles all loading logic and displays the UI
      */
     @Composable
-    fun LoadAndShowUI(assetFileName: String = "ui.jar", onClose: () -> Unit) {
+    fun LoadAndShowUI(assetFileName: String = "code.jar", onClose: () -> Unit) {
         var loadStatus by remember { mutableStateOf("Loading...") }
         LaunchedEffect(Unit) {
             // Always create a new assets folder and extract all assets
@@ -54,7 +40,12 @@ class LoadUI(private val context: Context) {
             // Load the UI from jar
             pluginUI?.ShowMainUI(context, onClose)
         } else {
-            Text(text = loadStatus)
+            Column {
+                Text(text = loadStatus)
+                Button(onClick = onClose) {
+                    Text(text = "关闭悬浮窗")
+                }
+            }
         }
 
     }
@@ -86,8 +77,8 @@ class LoadUI(private val context: Context) {
             )
 
             // Load the plugin implementation class
-            val pluginClass = classLoader.loadClass("com.coc.zkqcode.ui.EnterUI")
-            pluginUI = pluginClass.getDeclaredConstructor().newInstance() as MainUI
+            val pluginClass = classLoader.loadClass("com.coc.zkqcode.jar.ui.EnterMainCode")
+            pluginUI = pluginClass.getDeclaredConstructor().newInstance() as MainCode
 
             true
         } catch (e: Exception) {
@@ -103,8 +94,8 @@ class LoadUI(private val context: Context) {
         val privateDir = context.filesDir
         val assetsDir = File(privateDir, "assets")
 
-        // 1. 只有当文件夹不存在时创建，或者为了更新而清理
-        // 注意：如果 jar 在 assets 里，不要在这个方法里删掉它，除非你已经加载完了
+        // 1. Create only if the folder does not exist, or clean up for updates
+        // Note: If the jar is in assets, do not delete it in this method unless you have finished loading it
         if (!assetsDir.exists()) {
             assetsDir.mkdirs()
         }
@@ -112,23 +103,25 @@ class LoadUI(private val context: Context) {
         try {
             val assetList = context.assets.list("") ?: emptyArray()
             for (assetName in assetList) {
-                // 过滤掉系统自带的文件夹和已知的非资源文件
-                if (assetName == "images" || assetName == "webkit" || assetName == "sounds") continue
+                // Filter out system folders, known non-resource files, and all images
+                if (assetName == "images" || assetName == "webkit" || assetName == "sounds" ||
+                    assetName.endsWith(".png", true) || assetName.endsWith(".jpg", true) ||
+                    assetName.endsWith(".jpeg", true) || assetName.endsWith(".webp", true)
+                ) continue
 
-                // 重点：尝试判断是否是文件。assets.open 对文件夹会报错。
+                // Key point: Try to determine if it is a file. assets.open will report an error for folders.
                 try {
                     val outputFile = File(assetsDir, assetName)
 
-                    // 只有文件才进行复制
+                    // Copy only if it is a file
                     context.assets.open(assetName).use { input ->
                         outputFile.outputStream().use { output ->
                             input.copyTo(output)
                         }
                     }
-                    // println("成功释放文件: $assetName")
                 } catch (e: Exception) {
-                    // 如果 open 报错，说明这是一个文件夹，我们跳过它
-                    println("跳过目录或无法读取的文件: $assetName，错误$e")
+                    // If open fails, it means this is a folder, so we skip it
+                    println("Skip directory or unreadable file: $assetName, error: $e")
                 }
             }
         } catch (e: Exception) {

@@ -1,25 +1,27 @@
-package com.coc.zkqcode.ui.database
+package com.coc.zkqcode.utils.database
 
-import com.coc.zkqcode.ui.components.GlobalVars
+import androidx.compose.runtime.MutableState
+import com.coc.zkqcode.utils.components.GlobalVars
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonObject
 
 object SchemaExporter {
 
     /**
-     * 将指定的 Schema 定义导出为 JSON 字符串（key-value 格式）
-     * @param keys 需要导出的模块 Key 列表。如果为空，则默认导出全部。
-     * @param accountCount 账户数量，用于导出账户配置
-     * @param configStates UI 层维护的状态，如果提供，则优先从此处获取最新值
+     * Exports the specified Schema definitions to a JSON string (key-value format)
+     * @param keys List of module Keys to export. If empty, exports all by default.
+     * @param accountCount Number of accounts, used for exporting account configurations
+     * @param configStates States maintained by the UI layer; if provided, priority is given to fetching the latest values from here
      */
     fun exportSchemasToJson(
         keys: List<String> = emptyList(),
         accountCount: Int = 0,
-        configStates: Map<String, androidx.compose.runtime.MutableState<String>>? = null
+        configCount: Int = 0,
+        configStates: Map<String, MutableState<String>>? = null
     ): String {
         val jsonObject = JsonObject()
 
-        // 定义所有的映射关系
+        // Define all mapping relationships
         val sourceMap = mapOf(
             "GLOBAL_SETTINGS" to Schema.GLOBAL_SETTINGS,
             "ACCOUNT_SETTINGS" to Schema.ACCOUNT_SETTINGS,
@@ -31,28 +33,42 @@ object SchemaExporter {
 
         val schemasToExport = if (keys.isEmpty()) {
             sourceMap.values.flatten()
+            
         } else {
             keys.flatMap { key -> sourceMap[key] ?: emptyList() }
         }
 
-        // 将每个 SettingDef 转换为 key-value 对
+        // Convert each SettingDef to key-value pair
 
         schemasToExport.forEach { settingDef ->
-            // 优先从 configStates 获取，其次从 GlobalVars.fileActions 获取，最后使用默认值
+            // Prioritize fetching from configStates, then GlobalVars.fileActions, and finally use the default value
             val currentValue = configStates?.get(settingDef.key)?.value
                 ?: GlobalVars.fileActions?.getValue(settingDef.key)
                 ?: settingDef.defaultValue.toString()
 
             if (settingDef.key == "gem_count")
-                println("value:" + currentValue)
+                println("gem_count value:$currentValue")
             jsonObject.addProperty(settingDef.key, currentValue)
         }
 
-        // 如果需要导出账户配置
+        // If account configurations need to be exported
         if (keys.contains("ACCOUNT_SETTINGS") && accountCount > 0) {
             for (i in 1..accountCount) {
                 Schema.ACCOUNT_SETTINGS.forEach { settingDef ->
                     val key = "${settingDef.key}${i}"
+                    val currentValue = configStates?.get(key)?.value
+                        ?: GlobalVars.fileActions?.getValue(key)
+                        ?: settingDef.defaultValue.toString()
+                    jsonObject.addProperty(key, currentValue)
+                }
+            }
+        }
+
+        // If config Main Base settings need to be exported
+        if (keys.contains("MAIN_BASE_SETTINGS") && configCount > 0) {
+            for (i in 1..configCount) {
+                Schema.MAIN_BASE_SETTINGS.forEach { settingDef ->
+                    val key = "${settingDef.key}_c$i"
                     val currentValue = configStates?.get(key)?.value
                         ?: GlobalVars.fileActions?.getValue(key)
                         ?: settingDef.defaultValue.toString()
@@ -66,18 +82,20 @@ object SchemaExporter {
     }
 
     /**
-     * 通过 WebSocket 告知服务器写入文件
-     * @param accountCount 账户数量，用于导出账户配置
-     * @param configStates UI 层维护的状态
+     * Notify the server to write the file via WebSocket
+     * @param accountCount Number of accounts, used for exporting account configurations
+     * @param configStates States maintained by the UI layer
      */
     fun saveSchemaViaServer(
         directory: String,
         fileName: String,
         keys: List<String> = emptyList(),
         accountCount: Int = 0,
-        configStates: Map<String, androidx.compose.runtime.MutableState<String>>? = null
+        configCount: Int = 0,
+        configStates: Map<String, MutableState<String>>? = null
     ) {
-        val jsonContent = exportSchemasToJson(keys, accountCount, configStates)
+
+        val jsonContent = exportSchemasToJson(keys, accountCount, configCount, configStates)
         val fullPath =
             if (directory.endsWith("/")) "$directory$fileName" else "$directory/$fileName"
 
@@ -91,6 +109,14 @@ object SchemaExporter {
         val connection = GlobalVars.fileActions?.getConnection()
         if (connection != null) {
             connection.sendAction(writeAction)
+            // Update local configJson to keep it in sync
+            try {
+                val gson = com.google.gson.Gson()
+                val newJson = gson.fromJson(jsonContent, JsonObject::class.java)
+                GlobalVars.fileActions?.updateConfig(newJson)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         } else {
             println("ERROR: ServerConnection 为空，请检查初始化")
         }

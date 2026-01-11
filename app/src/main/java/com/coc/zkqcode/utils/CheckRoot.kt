@@ -1,4 +1,4 @@
-package com.coc.zkqcode.ui.pages.single
+package com.coc.zkqcode.utils
 
 import android.content.Context
 import java.io.File
@@ -40,6 +40,8 @@ import com.topjohnwu.superuser.Shell
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.delay
+import com.coc.zkqcode.utils.services.UIWindowService
+import com.coc.zkqcode.utils.components.CustomButton
 
 enum class RootStatus {
     CHECKING,
@@ -51,7 +53,7 @@ enum class RootStatus {
 }
 
 @Composable
-fun CheckRootScreen(content: @Composable () -> Unit) {
+fun CheckRootScreen() {
     val context = LocalContext.current
     var status by remember { mutableStateOf(RootStatus.CHECKING) }
 
@@ -104,7 +106,30 @@ fun CheckRootScreen(content: @Composable () -> Unit) {
         }
 
         RootStatus.GRANTED -> {
-            content()
+            // Start the floating window service when root check passes
+            LaunchedEffect(Unit) {
+                val serviceIntent = Intent(context, UIWindowService::class.java).apply {
+                    putExtra("show_main_ui", true)
+                }
+                context.startService(serviceIntent)
+            }
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                FullScreenMessage("权限检查通过，正在显示主界面...\n若未能自动显示，请手动点击按钮显示主界面")
+                Spacer(modifier = Modifier.height(16.dp))
+                CustomButton(
+                    text = "显示主界面",
+                    onClick = {
+                        val serviceIntent = Intent(context, UIWindowService::class.java).apply {
+                            putExtra("show_main_ui", true)
+                        }
+                        context.startService(serviceIntent)
+                    }
+                )
+            }
         }
     }
 }
@@ -118,7 +143,6 @@ private suspend fun checkAndGrantPermissions(
 ): RootStatus =
     withContext(Dispatchers.IO) {
         val shell = Shell.getShell()
-        println("in check root!!")
         // 1. 先检测 Root 权限
         if (!shell.isRoot) {
             return@withContext RootStatus.ROOT_DENIED
@@ -130,7 +154,7 @@ private suspend fun checkAndGrantPermissions(
             "pm grant $pkg android.permission.SYSTEM_ALERT_WINDOW",
             "appops set $pkg SYSTEM_ALERT_WINDOW allow",
             "pm grant $pkg android.permission.POST_NOTIFICATIONS",
-            "pm grant $pkg android.permission.FOREGROUND_SERVICE"
+            "pm grant $pkg android.permission.FOREGROUND_SERVICE",
         ).exec()
 
         // 3. 再次检测权限是否真的拿到了（因为部分系统 pm grant 对悬浮窗无效）

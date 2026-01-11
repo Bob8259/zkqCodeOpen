@@ -1,6 +1,11 @@
-package com.coc.zkqcode.ui.pages.single
+package com.coc.zkqcode.jar.ui.pages.single
 
+import android.content.Intent
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.ui.platform.LocalContext
+import androidx.core.net.toUri
+import com.coc.zkqcode.utils.components.GlobalVars
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
@@ -32,6 +37,19 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
 import java.io.IOException
 import java.util.Locale
+import kotlin.math.abs
+import androidx.compose.foundation.background
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Icon
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 
 @Suppress("AssignedValueIsNeverRead")
 @Composable
@@ -39,8 +57,11 @@ fun LoginScreen(configStates: Map<String, MutableState<String>>) {
     val scope = rememberCoroutineScope()
     var isLoginButtonEnabled by remember { mutableStateOf(true) }
     var gemInfo by remember { mutableStateOf(configStates["gem_count"]?.value ?: "") }
-//    var showMessage by remember { mutableStateOf(gemInfo.toDouble() < 0.0001) }
-    var showMessage by remember { mutableStateOf(1 < 0.0001) }
+    var showMessage by remember {
+        mutableStateOf(
+            gemInfo.toDoubleOrNull()?.let { it < 0.0001 } ?: true
+        )
+    }
     var failTimesCount by remember { mutableIntStateOf(0) }
     var formattedGem by remember { mutableStateOf("") }
 
@@ -56,7 +77,6 @@ fun LoginScreen(configStates: Map<String, MutableState<String>>) {
             if (!email.contains("@")) {
                 // 更新UI显示错误信息
                 gemInfo = "请输入正确的邮箱！"
-                configStates["uid"]?.value = ""
                 isLoginButtonEnabled = true
                 showMessage = true
                 return@launch // 退出函数
@@ -79,7 +99,6 @@ fun LoginScreen(configStates: Map<String, MutableState<String>>) {
                     // 请求失败处理
                     gemInfo = "登录失败: ${e.message}"
                     showMessage = true
-                    configStates["uid"]?.value = ""
                     configStates["gem_count"]?.value = ""
                     failTimesCount++
                     isLoginButtonEnabled = true
@@ -99,17 +118,10 @@ fun LoginScreen(configStates: Map<String, MutableState<String>>) {
                                 // 提取服务器返回的 hash 值
                                 val serverHash =
                                     responseBody.substring(hashIndex + 6, hashIndex + 22)
-                                println(serverHash)
                                 // 对比哈希值和 Nonce，返回接近 10 的 Double
                                 val verifyResult =
                                     NativeTools.verifyHash(contentBeforeHash, serverHash)
-                                if (kotlin.math.abs(verifyResult - 10.0) < 0.001) {
-                                    // 提取用户ID
-                                    val idRegex = Regex("id=([a-f0-9]+)")
-                                    val idMatch = idRegex.find(responseBody)
-                                    val userId = idMatch?.groupValues?.get(1) ?: ""
-                                    configStates["uid"]?.value = userId
-
+                                if (abs(verifyResult - 10.0) < 0.001) {
                                     // 提取 gem 信息
                                     val gemRegex = """gem=([\d.]+)""".toRegex()
                                     val gemMatch = gemRegex.find(responseBody)
@@ -129,27 +141,23 @@ fun LoginScreen(configStates: Map<String, MutableState<String>>) {
                                     } else {
                                         gemInfo = "登录成功，但无法解析数据，请联系作者"
                                         showMessage = true
-                                        configStates["uid"]?.value = ""
                                         configStates["gem_count"]?.value = ""
                                     }
                                 } else {
                                     gemInfo =
                                         "登录失败：响应数据格式错误。可能是因为开启了代理或抓包，请关闭后重试"
                                     showMessage = true
-                                    configStates["uid"]?.value = ""
                                     configStates["gem_count"]?.value = ""
                                 }
                             } else {
                                 gemInfo =
                                     "登录失败：响应数据格式错误。可能是因为开启了代理或抓包，请关闭后重试"
                                 showMessage = true
-                                configStates["uid"]?.value = ""
                                 configStates["gem_count"]?.value = ""
                             }
                         } else {
                             gemInfo = "登录失败：响应体为空"
                             showMessage = true
-                            configStates["uid"]?.value = ""
                             configStates["gem_count"]?.value = ""
                         }
                     } else {
@@ -158,7 +166,6 @@ fun LoginScreen(configStates: Map<String, MutableState<String>>) {
                         showMessage = true
                         failTimesCount++
                         isLoginButtonEnabled = true
-                        configStates["uid"]?.value = ""
                         configStates["gem_count"]?.value = ""
                     }
                 }
@@ -169,8 +176,7 @@ fun LoginScreen(configStates: Map<String, MutableState<String>>) {
 
     Column(
         modifier = Modifier
-            .fillMaxSize()
-            .padding(4.dp), horizontalAlignment = Alignment.Start
+            .fillMaxSize(), horizontalAlignment = Alignment.Start
     ) {
         if (showMessage) {
             Text(
@@ -214,19 +220,76 @@ fun LoginScreen(configStates: Map<String, MutableState<String>>) {
             onValueChange = { configStates["email"]?.value = it },
             key = "email"
         )
-        InputRow(
-            label = Schema.GLOBAL_SETTINGS.first { it.key == "password" }.displayName,
-            value = configStates["password"]?.value ?: "",
-            onValueChange = { configStates["password"]?.value = it },
-            key = "password"
-        )
-
-        CustomButton(
-            text = "登录", onClick = {
-                login(
-                    configStates["email"]?.value ?: "", configStates["password"]?.value ?: ""
+        var isPasswordVisible by remember { mutableStateOf(false) }
+        Row {
+            Text(
+                text = Schema.GLOBAL_SETTINGS.first { it.key == "password" }.displayName,
+                modifier = Modifier
+                    .padding(end = 16.dp)
+                    .align(Alignment.CenterVertically),
+                style = MaterialTheme.typography.labelMedium
+            )
+            BasicTextField(
+                value = configStates["password"]?.value ?: "",
+                modifier = Modifier
+                    .background(
+                        color = Color.LightGray,
+                        shape = RoundedCornerShape(4.dp)
+                    )
+                    .padding(4.dp)
+                    .align(Alignment.CenterVertically)
+                    .heightIn(max = 120.dp),
+                onValueChange = {
+                    GlobalVars.isAutoRunEnabled = false
+                    configStates["password"]?.value = it
+                },
+                singleLine = true,
+                visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation()
+            )
+            IconButton(
+                onClick = { isPasswordVisible = !isPasswordVisible },
+                modifier = Modifier.align(Alignment.CenterVertically)
+            ) {
+                Icon(
+                    imageVector = if (isPasswordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
+                    contentDescription = if (isPasswordVisible) "Hide password" else "Show password"
                 )
-            }, enable = isLoginButtonEnabled
+            }
+        }
+
+        Row(Modifier.padding(bottom = 4.dp)) {
+            CustomButton(
+                text = "登录", marginTop = 0.dp, onClick = {
+                    login(
+                        configStates["email"]?.value ?: "", configStates["password"]?.value ?: ""
+                    )
+                }, enable = isLoginButtonEnabled
+            )
+            val context = LocalContext.current
+            CustomButton(
+                text = "注册", marginTop = 0.dp, onClick = {
+                    gemInfo = "前往官网即可注册，官网链接zkq.netlify.app。\n如有疑问请加群咨询。"
+                    val url = "https://zkq.netlify.app/signup"
+                    val intent = Intent(Intent.ACTION_VIEW, url.toUri())
+                    context.startActivity(intent)
+                }, enable = isLoginButtonEnabled
+            )
+            CustomButton(
+                text = "退出", marginTop = 0.dp, onClick = {
+                    showMessage = true
+                    scope.launch {
+                        GlobalVars.fileActions?.writeToConfigFile("gem_count", "")
+                        configStates["email"]?.value = ""
+                        configStates["password"]?.value = ""
+                        configStates["gem_count"]?.value = ""
+                    }
+                    gemInfo = "退出成功"
+                }, enable = isLoginButtonEnabled
+            )
+        }
+        HorizontalDivider(
+            thickness = 1.dp,
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 1f)
         )
     }
 }
