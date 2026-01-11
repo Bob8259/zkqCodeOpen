@@ -118,7 +118,7 @@ private suspend fun checkAndGrantPermissions(
 ): RootStatus =
     withContext(Dispatchers.IO) {
         val shell = Shell.getShell()
-
+        println("in check root!!")
         // 1. 先检测 Root 权限
         if (!shell.isRoot) {
             return@withContext RootStatus.ROOT_DENIED

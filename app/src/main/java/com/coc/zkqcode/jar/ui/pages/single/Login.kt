@@ -18,9 +18,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.coc.zkqcode.ui.components.CustomButton
-import com.coc.zkqcode.ui.components.InputRow
-import com.coc.zkqcode.ui.database.Schema
+import com.coc.zkqcode.utils.components.CustomButton
+import com.coc.zkqcode.utils.components.InputRow
+import com.coc.zkqcode.utils.database.Schema
 import com.coc.zkqcode.zkqnative.NativeTools
 import kotlinx.coroutines.launch
 import okhttp3.Call
@@ -39,7 +39,8 @@ fun LoginScreen(configStates: Map<String, MutableState<String>>) {
     val scope = rememberCoroutineScope()
     var isLoginButtonEnabled by remember { mutableStateOf(true) }
     var gemInfo by remember { mutableStateOf(configStates["gem_count"]?.value ?: "") }
-    var showMessage by remember { mutableStateOf(gemInfo.toDouble() < 0.0001) }
+//    var showMessage by remember { mutableStateOf(gemInfo.toDouble() < 0.0001) }
+    var showMessage by remember { mutableStateOf(1 < 0.0001) }
     var failTimesCount by remember { mutableIntStateOf(0) }
     var formattedGem by remember { mutableStateOf("") }
 
@@ -47,7 +48,7 @@ fun LoginScreen(configStates: Map<String, MutableState<String>>) {
         isLoginButtonEnabled = false
         val url: String = if (failTimesCount % 2 == 0) {
 //            "http://45.64.74.97:90/api/mobile-login"
-            "https://db00dd37dd04.ngrok-free.app/api/mobile-login-new"
+            "https://zkqcoc.store/api/mobile-login-new"
         } else {
             "https://zkqcoc.store/api/mobile-login"
         }

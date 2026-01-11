@@ -24,17 +24,28 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.coc.zkqcode.ui.components.CustomButton
-import com.coc.zkqcode.ui.components.CustomCheckBox
-import com.coc.zkqcode.ui.components.DropdownButton
-import com.coc.zkqcode.ui.components.GlobalVars
-import com.coc.zkqcode.ui.components.InputRow
-import com.coc.zkqcode.ui.database.Schema
-import com.coc.zkqcode.ui.database.SchemaExporter
+import com.coc.zkqcode.utils.components.CustomButton
+import com.coc.zkqcode.utils.components.CustomCheckBox
+import com.coc.zkqcode.utils.components.DropdownButton
+import com.coc.zkqcode.utils.components.GlobalVars
+import com.coc.zkqcode.utils.components.InputRow
+import com.coc.zkqcode.utils.database.Schema
+import com.coc.zkqcode.utils.database.SchemaExporter
 import com.coc.zkqcode.ui.theme.AppColors
+
+import com.coc.zkqcode.utils.fileactions.FileActions
+import com.coc.zkqcode.utils.websocket.ServerConnection
 
 @Composable
 fun HomeScreen(onSaveSuccess: () -> Unit = {}) {
+    // Initialize FileActions and store in GlobalVars if not already done
+    LaunchedEffect(Unit) {
+        if (GlobalVars.fileActions == null) {
+            val serverConnection = ServerConnection("ws://localhost:6839/zkq")
+            GlobalVars.fileActions = FileActions(serverConnection)
+        }
+    }
+
     val configStates = remember { mutableMapOf<String, MutableState<String>>() }
 
     // Initialize states from Schema
@@ -170,7 +181,6 @@ fun HomeScreen(onSaveSuccess: () -> Unit = {}) {
 
                     // 获取当前账户数量
                     val currentAccountCount = accountCountStr.toIntOrNull() ?: 3
-
                     // 调用通过服务器保存的方法
                     SchemaExporter.saveSchemaViaServer(
                         baseDir,
@@ -181,6 +191,7 @@ fun HomeScreen(onSaveSuccess: () -> Unit = {}) {
                     )
                     // 执行保存后的回调，用于关闭悬浮窗
                     onSaveSuccess()
+                    println("run code")
                 }
             )
         }
