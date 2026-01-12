@@ -39,6 +39,7 @@ fun ControlWindow(
     externalInteractionCount: Int = 0,
     isAtRightSide: Boolean = false,
     onOpenMainUI: () -> Unit = {},
+    onSwitchAccount: () -> Unit = {},
     onDragStart: () -> Unit = {},
     onDragEnd: () -> Unit = {},
     onDrag: (Float, Float) -> Unit = { _, _ -> }
@@ -46,6 +47,7 @@ fun ControlWindow(
     val context = LocalContext.current
     var controlState by remember { mutableStateOf(ControlState.COLLAPSED) }
     var internalInteractionCount by remember { mutableIntStateOf(0) }
+    var isPlaying by remember { mutableStateOf(false) }
 
     LaunchedEffect(internalInteractionCount, externalInteractionCount) {
         delay(2500)
@@ -59,7 +61,7 @@ fun ControlWindow(
     }
 
     val mainIcon = remember {
-        context.assets.open("main_icon.png").use { 
+        context.assets.open("main_icon.png").use {
             BitmapFactory.decodeStream(it).asImageBitmap()
         }
     }
@@ -78,7 +80,11 @@ fun ControlWindow(
             BitmapFactory.decodeStream(it).asImageBitmap()
         }
     }
-
+    val switchAccountIcon = remember {
+        context.assets.open("switch.png").use {
+            BitmapFactory.decodeStream(it).asImageBitmap()
+        }
+    }
     val dragModifier = Modifier.pointerInput(Unit) {
         detectDragGestures(
             onDragStart = { onDragStart() },
@@ -131,51 +137,53 @@ fun ControlWindow(
                         }
                 )
                 Image(
-                    bitmap = pauseIcon,
-                    contentDescription = "Pause",
+                    bitmap = switchAccountIcon,
+                    contentDescription = "Switch",
                     modifier = Modifier
                         .size(ICON_SIZE)
                         .padding(4.dp)
                         .clickable {
                             internalInteractionCount++
-                            /* Handle pause */
+                            /* Handle switch */
+                            onSwitchAccount()
                         }
                 )
                 Image(
-                    bitmap = playIcon,
-                    contentDescription = "Play",
+                    bitmap = if (isPlaying) pauseIcon else playIcon,
+                    contentDescription = if (isPlaying) "Pause" else "Play",
                     modifier = Modifier
                         .size(ICON_SIZE)
                         .padding(4.dp)
                         .clickable {
                             internalInteractionCount++
-                            /* Handle play */
+                            isPlaying = !isPlaying
                         }
                 )
             }
         } else {
-            // Right side: Play, Pause, Setting, then Main Icon
+            // Right side: Play/Pause, Switch, Setting, then Main Icon
             if (controlState == ControlState.EXPANDED) {
                 Image(
-                    bitmap = playIcon,
-                    contentDescription = "Play",
+                    bitmap = if (isPlaying) pauseIcon else playIcon,
+                    contentDescription = if (isPlaying) "Pause" else "Play",
                     modifier = Modifier
                         .size(ICON_SIZE)
                         .padding(4.dp)
                         .clickable {
                             internalInteractionCount++
-                            /* Handle play */
+                            isPlaying = !isPlaying
                         }
                 )
                 Image(
-                    bitmap = pauseIcon,
-                    contentDescription = "Pause",
+                    bitmap = switchAccountIcon,
+                    contentDescription = "Switch",
                     modifier = Modifier
                         .size(ICON_SIZE)
                         .padding(4.dp)
                         .clickable {
                             internalInteractionCount++
-                            /* Handle pause */
+                            /* Handle switch */
+                            onSwitchAccount()
                         }
                 )
                 Image(

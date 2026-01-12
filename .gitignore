@@ -18,5 +18,4 @@ local.properties
 .agent/rules
 .idea/
 .vscode/
-/app
 /release/
