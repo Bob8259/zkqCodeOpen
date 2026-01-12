@@ -34,6 +34,7 @@ import androidx.savedstate.SavedStateRegistryController
 import androidx.savedstate.SavedStateRegistryOwner
 import androidx.savedstate.setViewTreeSavedStateRegistryOwner
 import com.coc.zkqcode.utils.control.ControlWindow
+import com.coc.zkqcode.utils.components.GlobalVars
 import kotlin.math.roundToInt
 
 class ControlWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner {
@@ -147,6 +148,11 @@ class ControlWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner 
                             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                         }
                     startService(intent)
+                    stopSelf()
+                },
+                onSwitchAccount = {
+                    GlobalVars.showManualMode = true
+                    startService(Intent(this@ControlWindowService, SwitchAccountWindowService::class.java))
                     stopSelf()
                 },
                 onDragStart = {
