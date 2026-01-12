@@ -1,4 +1,4 @@
-package com.coc.zkqcode.utils.services
+package com.coc.zkqcode.utils.floatingwindows
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -23,8 +23,9 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.unit.toSize
-import androidx.core.app.NotificationCompat
 import androidx.lifecycle.Lifecycle
+import com.coc.zkqcode.utils.NotificationHelper
+import com.coc.zkqcode.utils.control.ControlWindow
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
 import androidx.lifecycle.setViewTreeLifecycleOwner
@@ -51,28 +52,8 @@ class ControlWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner 
 
     override fun onCreate() {
         super.onCreate()
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channelId = "control_service_channel"
-            val channelName = "紫孔雀控制服务"
-            val manager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-
-            if (manager.getNotificationChannel(channelId) == null) {
-                val channel = NotificationChannel(
-                    channelId, channelName,
-                    NotificationManager.IMPORTANCE_LOW
-                )
-                manager.createNotificationChannel(channel)
-            }
-
-            val notification = NotificationCompat.Builder(this, channelId)
-                .setContentTitle("紫孔雀")
-                .setContentText("控制窗口正在运行")
-                .setSmallIcon(android.R.drawable.ic_menu_mylocation)
-                .setPriority(NotificationCompat.PRIORITY_LOW)
-                .build()
-
-            startForeground(1002, notification)
-        }
+        val notification = NotificationHelper.createNotification(this)
+        startForeground(1002, notification)
 
         lifecycleRegistry.currentState = Lifecycle.State.CREATED
         windowManager = getSystemService(WINDOW_SERVICE) as WindowManager

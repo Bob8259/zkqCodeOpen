@@ -1,7 +1,6 @@
 package com.coc.zkqcode.utils
 
 import android.content.Context
-import java.io.File
 import android.content.Intent
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -40,7 +39,7 @@ import com.topjohnwu.superuser.Shell
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.delay
-import com.coc.zkqcode.utils.services.UIWindowService
+import com.coc.zkqcode.utils.floatingwindows.UIWindowService
 import com.coc.zkqcode.utils.components.CustomButton
 
 enum class RootStatus {
@@ -161,18 +160,10 @@ private suspend fun checkAndGrantPermissions(
         val hasOverlay = Settings.canDrawOverlays(context)
         val hasNotification = NotificationManagerCompat.from(context).areNotificationsEnabled()
         if (hasOverlay && hasNotification) {
-            val serverFile = File(context.filesDir, "server.apk")
-            if (!serverFile.exists()) {
-                context.assets.open("server.apk").use { input ->
-                    serverFile.outputStream().use { output ->
-                        input.copyTo(output)
-                    }
-                }
-            }
-            val serverPath = serverFile.absolutePath
-
-            Shell.cmd("CLASSPATH=$serverPath app_process /system/bin com.coc.zkqserver.ShellServer > /dev/null 2>&1 &")
-                .exec()
+            val serverStarted = com.coc.zkqcode.utils.daemon.ServerManager.startServer(context)
+             if (!serverStarted) {
+                 return@withContext RootStatus.SERVER_ERROR
+             }
 
             // 等待服务器响应
             withContext(Dispatchers.Main) {
@@ -185,8 +176,7 @@ private suspend fun checkAndGrantPermissions(
                 response = waitForServerResponse()
                 if (response == null) {
                     println("Server not responding, retrying... (Attempt ${attempts + 1})")
-                    Shell.cmd("CLASSPATH=$serverPath app_process /system/bin com.coc.zkqserver.ShellServer > /dev/null 2>&1 &")
-                        .exec()
+                    com.coc.zkqcode.utils.daemon.ServerManager.startServer(context)
                     delay(1000)
                     attempts++
                 }

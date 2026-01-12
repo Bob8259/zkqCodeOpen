@@ -7,6 +7,8 @@ trigger: always_on
 * **Stack:** Kotlin, Jetpack Compose.
 * **Architecture:** The app functions as a host loader. It dynamically builds and loads logic from a specific source directory. This app will be run at Root envrionment. For all UI, try to use the componenets under app\src\main\java\com\coc\zkqcode\utils\components\Components.kt. 
 
+When writing UI, if the UI has a key in Schema.kt, then you should display Schema.GLOBAL_SETTINGS.first { it.key == key }.displayName, instead of displaying hardcoded text.
+
 ## Critical Directory Rules
 * **Dynamic Source Path:** `app/src/main/java/com/coc/zkqcode/jar`
 * **Behavior:** Treat all files in this directory as a standalone module. They are packed into a JAR and loaded dynamically at runtime.

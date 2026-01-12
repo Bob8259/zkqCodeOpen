@@ -1,4 +1,4 @@
-package com.coc.zkqcode.utils.services
+package com.coc.zkqcode.utils.floatingwindows
 
 
 import android.app.NotificationChannel
@@ -11,7 +11,7 @@ import android.os.IBinder
 import android.view.Gravity
 import android.view.WindowManager
 import androidx.compose.ui.platform.ComposeView
-import androidx.core.app.NotificationCompat
+import com.coc.zkqcode.utils.NotificationHelper
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
@@ -39,28 +39,8 @@ class UIWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner {
 
     override fun onCreate() {
         super.onCreate()
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channelId = "floating_service_channel"
-            val channelName = "紫孔雀服务"
-            val manager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-
-            if (manager.getNotificationChannel(channelId) == null) {
-                val channel = NotificationChannel(
-                    channelId, channelName,
-                    NotificationManager.IMPORTANCE_LOW
-                )
-                manager.createNotificationChannel(channel)
-            }
-
-            val notification = NotificationCompat.Builder(this, channelId)
-                .setContentTitle("紫孔雀")
-                .setContentText("紫孔雀服务正在运行")
-                .setSmallIcon(android.R.drawable.ic_menu_mylocation)
-                .setPriority(NotificationCompat.PRIORITY_LOW)
-                .build()
-
-            startForeground(1001, notification)
-        }
+        val notification = NotificationHelper.createNotification(this)
+        startForeground(1001, notification)
 
         lifecycleRegistry.currentState = Lifecycle.State.CREATED
 
@@ -101,7 +81,12 @@ class UIWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner {
 
             setContent {
                 Loadjar(context).LoadAndShowUI(onClose = {
-                    closeMainUI()
+                    if (com.coc.zkqcode.utils.components.GlobalVars.showManualMode) {
+                        closeMainUI(silent = true)
+                        startService(Intent(this@UIWindowService, SwitchAccountWindowService::class.java))
+                    } else {
+                        closeMainUI()
+                    }
                 })
             }
         }
@@ -110,12 +95,14 @@ class UIWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner {
     }
 
 
-    private fun closeMainUI() {
+    private fun closeMainUI(silent: Boolean = false) {
         if (composeView != null) {
             windowManager.removeView(composeView)
             composeView = null
         }
-        startService(Intent(this, ControlWindowService::class.java))
+        if (!silent) {
+            startService(Intent(this, ControlWindowService::class.java))
+        }
         stopSelf()
     }
 
@@ -134,6 +121,9 @@ class UIWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner {
         lifecycleRegistry.currentState = Lifecycle.State.STARTED
         if (intent?.getBooleanExtra("show_main_ui", false) == true) {
             showFloatingWindow()
+        }
+        if (intent?.getBooleanExtra("close_ui_silent", false) == true) {
+            closeMainUI(silent = true)
         }
         return START_STICKY
     }
