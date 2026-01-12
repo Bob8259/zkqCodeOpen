@@ -29,7 +29,6 @@ class ServerConnection(private val url: String) {
             }
 
             override fun onMessage(webSocket: WebSocket, text: String) {
-                Log.d(TAG, "Message Received: $text")
                 onMessageReceived?.invoke(text)
             }
 
@@ -50,7 +49,6 @@ class ServerConnection(private val url: String) {
 
     fun sendAction(action: Any) {
         val json = gson.toJson(action)
-        Log.d(TAG, "Sending Action: $json")
         val sent = webSocket?.send(json) ?: false
         if (!sent) {
             Log.e(TAG, "Failed to send message (WebSocket might be null or closed)")

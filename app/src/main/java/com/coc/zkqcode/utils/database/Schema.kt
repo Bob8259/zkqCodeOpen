@@ -12,13 +12,21 @@ object Schema {
     val GLOBAL_SETTINGS = listOf(
         SettingDef("config_count", "配置文件数量", "3", "GLOBAL_SETTINGS"),
         SettingDef("account_count", "多开账号数量", "3", "GLOBAL_SETTINGS"),
+        SettingDef("auto_start", "开机自启(仅部分设备有效)", 1, "GLOBAL_SETTINGS"),
+        SettingDef("extract_cn", "提取国服存档到此序号", "1", "GLOBAL_SETTINGS"),
+        SettingDef("extract_global", "提取国际服存档到此序号", "1", "GLOBAL_SETTINGS"),
 
         SettingDef("email", "邮箱", "", "GLOBAL_SETTINGS"),
         SettingDef("password", "密码", "", "GLOBAL_SETTINGS"),
         SettingDef("enter_game_timer", "进入游戏计时", "80", "GLOBAL_SETTINGS"),
-        SettingDef("delay_Multiplier", "延时倍率", "1", "GLOBAL_SETTINGS"),
-        SettingDef("debug_mode", "调试模式", 0, "GLOBAL_SETTINGS"),
-        SettingDef("record_progress", "记录进度", 0, "GLOBAL_SETTINGS"),
+        SettingDef(
+            "delay_multiplier",
+            "延时倍率(低性能设备建议设置1.5-2.5)",
+            "1",
+            "GLOBAL_SETTINGS"
+        ),
+        SettingDef("debug_mode", "慢速调试模式", 0, "GLOBAL_SETTINGS"),
+        SettingDef("record_progress", "记录账号进度", 1, "GLOBAL_SETTINGS"),
         SettingDef("batch_create_account", "批量创号设置", 0, "GLOBAL_SETTINGS"),
         SettingDef("create_start_id", "创号开始序号", 0, "GLOBAL_SETTINGS"),
         SettingDef("create_end_id", "创号结束序号", "10", "GLOBAL_SETTINGS"),
@@ -38,8 +46,8 @@ object Schema {
         SettingDef("game_version", "游戏版本", "0", "ACCOUNT_SETTINGS"),
         SettingDef("account_config", "配置文件序号", "1", "ACCOUNT_SETTINGS"),
         SettingDef("start_method", "启动游戏方式", "1", "ACCOUNT_SETTINGS"),
-        SettingDef("cn_path", "国服路径", "", "ACCOUNT_SETTINGS"),
-        SettingDef("global_path", "国际服路径", "", "ACCOUNT_SETTINGS"),
+        SettingDef("cn_path", "国服存档序号", "", "ACCOUNT_SETTINGS"),
+        SettingDef("global_path", "国际服存档序号", "", "ACCOUNT_SETTINGS"),
         SettingDef("data_content", "数据号内容", "", "ACCOUNT_SETTINGS")
     )
 

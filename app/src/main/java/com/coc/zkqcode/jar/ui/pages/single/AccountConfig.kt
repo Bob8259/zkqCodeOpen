@@ -33,37 +33,30 @@ fun AccountConfig(
                 onCheckStateChange = {
                     configStates["prefix${index}"]?.value = if (it) "1" else "0"
                 },
-                key = "prefix${index}",
                 text = Schema.ACCOUNT_SETTINGS.first { it.key == "prefix" }.displayName + index,
             )
             InputRow(
                 label = Schema.ACCOUNT_SETTINGS.first { it.key == "remark" }.displayName,
                 value = configStates["remark${index}"]?.value ?: "",
                 onValueChange = { configStates["remark${index}"]?.value = it },
-                key = "remark${index}"
             )
         }
         DropdownButton(
-            index = index,
-            configStates = configStates,
             options = listOf("国服", "国际服"),
-            key = "game_version",
-            label = Schema.ACCOUNT_SETTINGS.first { it.key == "game_version" }.displayName,
-            onValueChange = { configStates["game_version${index}"]?.value = it }
+            selectedIndex = configStates["game_version${index}"]?.value?.toIntOrNull() ?: 0,
+            onValueChange = { configStates["game_version${index}"]?.value = it.toString() },
+            label = Schema.ACCOUNT_SETTINGS.first { it.key == "game_version" }.displayName
         )
         InputRow(
             label = Schema.ACCOUNT_SETTINGS.first { it.key == "account_config" }.displayName,
             value = configStates["account_config${index}"]?.value ?: "",
             onValueChange = { configStates["account_config${index}"]?.value = it },
-            key = "account_config${index}"
         )
         DropdownButton(
-            index = index,
-            configStates = configStates,
             options = listOf("游戏存档", "直接启动", "上号器"),
-            key = "start_method",
-            label = Schema.ACCOUNT_SETTINGS.first { it.key == "start_method" }.displayName,
-            onValueChange = { configStates["start_method${index}"]?.value = it }
+            selectedIndex = configStates["start_method${index}"]?.value?.toIntOrNull() ?: 0,
+            onValueChange = { configStates["start_method${index}"]?.value = it.toString() },
+            label = Schema.ACCOUNT_SETTINGS.first { it.key == "start_method" }.displayName
         )
         when (configStates["start_method${index}"]?.value ?: "") {
             "1" -> GameFiles(index, configStates)//存档上号
@@ -91,7 +84,6 @@ fun UsePackage(
                 label = Schema.ACCOUNT_SETTINGS.first { it.key == "data_content" }.displayName,
                 value = configStates["data_content${index}"]?.value ?: "",
                 onValueChange = { configStates["data_content${index}"]?.value = it },
-                key = "data_content${index}"
             )
         }
     } else {
@@ -132,14 +124,12 @@ fun GameFiles(
                 label = Schema.ACCOUNT_SETTINGS.first { it.key == "cn_path" }.displayName,
                 value = configStates["cn_path${index}"]?.value ?: "",
                 onValueChange = { configStates["cn_path${index}"]?.value = it },
-                key = "cn_path${index}"
             )
         } else {
             InputRow(
                 label = Schema.ACCOUNT_SETTINGS.first { it.key == "global_path" }.displayName,
                 value = configStates["global_path${index}"]?.value ?: "",
                 onValueChange = { configStates["global_path${index}"]?.value = it },
-                key = "global_path${index}"
             )
         }
     }

@@ -21,7 +21,7 @@ class FileActions(
     }
 
     private val baseDir = "${Environment.getExternalStorageDirectory().path}/zkqFiles/"
-    private val configPath = "${baseDir}global_config.json"
+    private val configPath = "${baseDir}zkq_config.json"
 
     init {
         serverConnection.connect(
@@ -69,7 +69,7 @@ class FileActions(
 
                     if (response.has("status") && response.get("status").asString == "error") {
                         val errorMsg = response.get("message")?.asString ?: ""
-                        if (errorMsg.contains("global_config.json")) {
+                        if (errorMsg.contains("zkq_config.json")) {
                             // If the server returns an error for the config file (e.g., "File not found"),
                             // we still trigger the callback to use default values.
                             onConfigLoaded?.invoke()

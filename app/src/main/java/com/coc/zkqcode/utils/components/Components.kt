@@ -49,6 +49,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupPositionProvider
 import androidx.compose.ui.window.PopupProperties
+import androidx.compose.runtime.LaunchedEffect
+import kotlinx.coroutines.delay
 import com.coc.zkqcode.utils.fileactions.FileActions
 import com.coc.zkqcode.utils.theme.AppColors
 
@@ -61,6 +63,7 @@ object GlobalVars {
     // Auto-run features
     var isAutoRunEnabled by mutableStateOf(true)
     var autoRunTimer by mutableIntStateOf(60)
+    var showManualMode by mutableStateOf(false)
 }
 
 @Composable
@@ -84,7 +87,6 @@ fun InputRowWithCheckBox(
                 GlobalVars.isAutoRunEnabled = false
                 onCheckedChange(it)
             },
-            key = checkBoxPath
         )
         BasicTextField(
             value = value, modifier = Modifier
@@ -165,6 +167,37 @@ fun CustomAlertDialog(
     }
 }
 
+@Composable
+fun CustomNotificationWindow(
+    message: String,
+    onDismissRequest: () -> Unit
+) {
+    LaunchedEffect(message) {
+        delay(2000)
+        onDismissRequest()
+    }
+
+    Popup(
+
+        alignment = Alignment.Center,
+        onDismissRequest = onDismissRequest,
+        properties = PopupProperties(focusable = false)
+    ) {
+        Surface(
+            modifier = Modifier
+                .wrapContentSize()
+                .padding(16.dp),
+            shape = RoundedCornerShape(28.dp),
+            color = MaterialTheme.colorScheme.surface,
+            shadowElevation = 6.dp
+        ) {
+            Box(modifier = Modifier.padding(24.dp), contentAlignment = Alignment.Center) {
+                Text(text = message, style = MaterialTheme.typography.bodyMedium)
+            }
+        }
+    }
+}
+
 class WindowCenterPositionProvider : PopupPositionProvider {
     override fun calculatePosition(
         anchorBounds: IntRect,
@@ -186,9 +219,8 @@ class WindowCenterPositionProvider : PopupPositionProvider {
 
 @Composable
 fun InputRow(
-    label: String, value: String, onValueChange: (String) -> Unit, key: String
+    label: String, value: String, onValueChange: (String) -> Unit
 ) {
-    val scope = rememberCoroutineScope()
     Row(
         modifier = Modifier.padding(vertical = 4.dp)
     ) {
@@ -271,7 +303,6 @@ fun CustomCheckBox(
     text: String,
     checkedState: String,
     onCheckStateChange: (Boolean) -> Unit,
-    key: String,
     explain: String? = null
 ) {
 
@@ -334,22 +365,12 @@ fun CustomCheckBox(
 
 @Composable
 fun DropdownButton(
-    index: Int,
-    configStates: Map<String, MutableState<String>>,
     options: List<String>,
-    key: String,
-    label: String,
-    onValueChange: (String) -> Unit = {}
+    selectedIndex: Int,
+    onValueChange: (Int) -> Unit,
+    label: String
 ) {
-
-    val state = configStates["${key}${index}"]
-    val currentVersion = state?.value ?: "0"
-
-    val selectedOption = remember(currentVersion, options) {
-        val idx = currentVersion.toIntOrNull() ?: 0
-        if (idx in options.indices) options[idx] else options.getOrElse(0) { "" }
-    }
-
+    val selectedOption = if(selectedIndex in options.indices) options[selectedIndex] else options.getOrElse(0) { "" }
     var expanded by remember { mutableStateOf(false) }
 
     Row(
@@ -383,70 +404,7 @@ fun DropdownButton(
                         )
                     }, onClick = {
                         GlobalVars.isAutoRunEnabled = false
-                        val newValue = idx.toString()
-                        state?.value = newValue
-                        onValueChange(newValue)
-                        expanded = false
-                    }, modifier = Modifier.height(30.dp))
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun DropdownButton(
-    configStates: Map<String, MutableState<String>>,
-    options: List<String>,
-    filePath: String,
-    label: String,
-    onValueChange: (String) -> Unit = {}
-) {
-
-    val state = configStates[filePath]
-    val currentVersion = state?.value ?: "0"
-    
-    val selectedOption = remember(currentVersion, options) {
-        val idx = currentVersion.toIntOrNull() ?: 0
-        if (idx in options.indices) options[idx] else options.getOrElse(0) { "" }
-    }
-
-    var expanded by remember { mutableStateOf(false) }
-
-    Row(
-        verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(vertical = 6.dp)
-    ) {
-        Text(
-            text = label,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.padding(end = 10.dp),
-            style = MaterialTheme.typography.labelMedium
-        )
-
-        Box(modifier = Modifier.wrapContentSize(Alignment.TopStart)) {
-            Button(
-                onClick = { expanded = true },
-                shape = RoundedCornerShape(8.dp),
-                modifier = Modifier.height(30.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = AppColors.Azure
-                )
-            ) {
-                Text(selectedOption, style = MaterialTheme.typography.labelMedium)
-                Icon(Icons.Default.ArrowDropDown, contentDescription = null)
-            }
-
-            DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-                options.forEachIndexed { idx, option ->
-                    DropdownMenuItem(text = {
-                        Text(
-                            option, style = MaterialTheme.typography.labelMedium
-                        )
-                    }, onClick = {
-                        GlobalVars.isAutoRunEnabled = false
-                        val newValue = idx.toString()
-                        state?.value = newValue
-                        onValueChange(newValue)
+                        onValueChange(idx)
                         expanded = false
                     }, modifier = Modifier.height(30.dp))
                 }

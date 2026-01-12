@@ -178,6 +178,10 @@ fun LoginScreen(configStates: Map<String, MutableState<String>>) {
         modifier = Modifier
             .fillMaxSize(), horizontalAlignment = Alignment.Start
     ) {
+        Text(
+            text = "欢迎使用紫孔雀3.92\nQQ群:729404054\n使用前请仔细阅读官网教程和注意事项。",
+            style = MaterialTheme.typography.labelMedium
+        )
         if (showMessage) {
             Text(
                 text = "登录后免广告，运行更高效！不登陆也可以运行。免广告每天花费0.2卡班宝石，用多久扣多久。",
@@ -218,7 +222,6 @@ fun LoginScreen(configStates: Map<String, MutableState<String>>) {
             label = Schema.GLOBAL_SETTINGS.first { it.key == "email" }.displayName,
             value = configStates["email"]?.value ?: "",
             onValueChange = { configStates["email"]?.value = it },
-            key = "email"
         )
         var isPasswordVisible by remember { mutableStateOf(false) }
         Row {

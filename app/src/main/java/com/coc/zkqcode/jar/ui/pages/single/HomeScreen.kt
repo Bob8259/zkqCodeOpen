@@ -1,5 +1,6 @@
 package com.coc.zkqcode.jar.ui.pages.single
 
+import android.content.Intent
 import android.os.Environment
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -9,6 +10,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
@@ -18,6 +21,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -56,7 +60,8 @@ fun HomeScreen(onSaveSuccess: () -> Unit = {}) {
     // Initialize states from Schema
     LaunchedEffect(GlobalVars.fileActions?.configJson) {
         val actions = GlobalVars.fileActions
-        if (actions != null && actions.configJson.size() > 0) {
+        if (actions != null) {
+
             Schema.GLOBAL_SETTINGS.forEach { def ->
                 val savedValue = actions.getValue(def.key)
                 if (savedValue != null) {
@@ -74,8 +79,14 @@ fun HomeScreen(onSaveSuccess: () -> Unit = {}) {
                     val savedValue = actions.getValue(key)
                     if (savedValue != null) {
                         configStates[key]?.value = savedValue
-                    } else if (!configStates.containsKey(key)) {
-                        configStates[key] = mutableStateOf(def.defaultValue.toString())
+                    } else {
+                        val defaultValue =
+                            if (def.key.startsWith("global_path") || def.key.startsWith("cn_path")) {
+                                i.toString()
+                            } else {
+                                def.defaultValue.toString()
+                            }
+                        configStates[key] = mutableStateOf(defaultValue)
                     }
                 }
             }
@@ -93,6 +104,7 @@ fun HomeScreen(onSaveSuccess: () -> Unit = {}) {
                     }
                 }
             }
+
             isLoading = false
         }
     }
@@ -116,7 +128,12 @@ fun HomeScreen(onSaveSuccess: () -> Unit = {}) {
             val key = "${def.key}${i}"
             if (!configStates.containsKey(key)) {
                 val savedValue = GlobalVars.fileActions?.getValue(key)
-                configStates[key] = mutableStateOf(savedValue ?: def.defaultValue.toString())
+                val defaultValue = if (def.key == "global_path" || def.key == "data_content") {
+                    i.toString()
+                } else {
+                    def.defaultValue.toString()
+                }
+                configStates[key] = mutableStateOf(savedValue ?: defaultValue)
             }
         }
     }
@@ -134,7 +151,7 @@ fun HomeScreen(onSaveSuccess: () -> Unit = {}) {
     }
 
     val configCount = configCountStr.toIntOrNull() ?: 1
-    val tabs = listOf("主页") + List(configCount) { "配置${it + 1}" }
+    val tabs = listOf("主页", "账号设置", "提取存档") + List(configCount) { "配置文件${it + 1}" }
 
     val saveAndRun = {
         // 获取外部存储路径 zkqFiles
@@ -145,7 +162,7 @@ fun HomeScreen(onSaveSuccess: () -> Unit = {}) {
         // 调用通过服务器保存的方法
         SchemaExporter.saveSchemaViaServer(
             baseDir,
-            "global_config.json",
+            "zkq_config.json",
             keys = listOf("GLOBAL_SETTINGS", "ACCOUNT_SETTINGS", "MAIN_BASE_SETTINGS"),
             accountCount = currentAccountCount,
             configCount = configStates["config_count"]?.value?.toIntOrNull() ?: 3,
@@ -197,16 +214,25 @@ fun HomeScreen(onSaveSuccess: () -> Unit = {}) {
             PrimaryScrollableTabRow(
                 selectedTabIndex = selectedTabIndex,
                 edgePadding = 0.dp,
-                modifier = Modifier.padding(top = 8.dp),
+                minTabWidth = 0.dp,
                 containerColor = AppColors.Azure
             ) {
                 tabs.forEachIndexed { index, title ->
                     Tab(
                         selected = selectedTabIndex == index,
                         onClick = { selectedTabIndex = index },
-                        text = { Text(text = title) },
+                        modifier = Modifier
+                            .wrapContentWidth() // Allows the tab to wrap its content
+                            .widthIn(min = 0.dp), // BREAKS the default minimum width constraint
                         selectedContentColor = Color.White,
-                        unselectedContentColor = Color.White.copy(alpha = 0.7f)
+                        unselectedContentColor = Color.White.copy(alpha = 0.75f),
+                        content = {
+                            Text(
+                                text = title,
+                                style = MaterialTheme.typography.labelLarge,
+                                modifier = Modifier.padding(horizontal = 5.dp, vertical = 5.dp)
+                            )
+                        }
                     )
                 }
             }
@@ -219,9 +245,7 @@ fun HomeScreen(onSaveSuccess: () -> Unit = {}) {
             ) {
                 when (selectedTabIndex) {
                     0 -> {
-
                         // Auto-Run UI in List
-
                         item {
                             Row(
                                 modifier = Modifier
@@ -241,66 +265,55 @@ fun HomeScreen(onSaveSuccess: () -> Unit = {}) {
                                     onClick = { GlobalVars.isAutoRunEnabled = false }
                                 )
                             }
-
-
-                         LoginScreen(configStates)
-
-
+                            LoginScreen(configStates)
+                            CustomButton(text = "启动手动切号模式", onClick = {
+                                GlobalVars.showManualMode = true
+                                onSaveSuccess()
+                            })
                             InputRow(
-                                label = Schema.GLOBAL_SETTINGS.first { it.key == "config_count" }.displayName,
-                                value = configStates["config_count"]?.value ?: "",
-                                onValueChange = { configStates["config_count"]?.value = it },
-                                key = "config_count"
+                                label = Schema.GLOBAL_SETTINGS.first { it.key == "delay_multiplier" }.displayName,
+                                value = configStates["delay_multiplier"]?.value ?: "1",
+                                onValueChange = { configStates["delay_multiplier"]?.value = it },
                             )
-
-                            InputRow(
-                                label = Schema.GLOBAL_SETTINGS.first { it.key == "account_count" }.displayName,
-                                value = configStates["account_count"]?.value ?: "",
-                                onValueChange = { configStates["account_count"]?.value = it },
-                                key = "account_count"
-                            )
-
-                            HorizontalDivider(
-                                thickness = 1.dp,
-                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 1f)
-                            )
-
-                            InputRow(
-                                label = "延时倍率（低性能设备调为1.2-2倍）",
-                                value = configStates["delay_Multiplier"]?.value ?: "1",
-                                onValueChange = { configStates["delay_Multiplier"]?.value = it },
-                                key = "delay_Multiplier"
-                            )
-
                             Row {
                                 CustomCheckBox(
                                     checkedState = configStates["debug_mode"]?.value ?: "0",
-                                    onCheckStateChange = { configStates["debug_mode"]?.value = if (it) "1" else "0" },
-                                    key = "debug_mode",
-                                    text = "慢速调试模式",
+                                    onCheckStateChange = {
+                                        configStates["debug_mode"]?.value = if (it) "1" else "0"
+                                    },
+                                    text = Schema.GLOBAL_SETTINGS.first { it.key == "debug_mode" }.displayName,
                                 )
                                 CustomCheckBox(
                                     checkedState = configStates["record_progress"]?.value ?: "0",
-                                    onCheckStateChange = { configStates["record_progress"]?.value = if (it) "1" else "0" },
-                                    key = "record_progress",
-                                    text = "记录账号进度",
+                                    onCheckStateChange = {
+                                        configStates["record_progress"]?.value =
+                                            if (it) "1" else "0"
+                                    },
+                                    text = Schema.GLOBAL_SETTINGS.first { it.key == "record_progress" }.displayName,
                                 )
                             }
-
-                            DropdownButton(
-                                configStates,
-                                filePath = "after_kick_option",
-                                options = listOf("立刻重连", "切换账号", "原地等待"),
-                                label = "被顶号后"
+                            CustomCheckBox(
+                                checkedState = configStates["auto_start"]?.value ?: "0",
+                                onCheckStateChange = {
+                                    configStates["auto_start"]?.value =
+                                        if (it) "1" else "0"
+                                },
+                                text = Schema.GLOBAL_SETTINGS.first { it.key == "auto_start" }.displayName,
                             )
-
+                            DropdownButton(
+                                options = listOf("立刻重连", "切换账号", "原地等待"),
+                                selectedIndex = configStates["after_kick_option"]?.value?.toIntOrNull()
+                                    ?: 0,
+                                label = Schema.GLOBAL_SETTINGS.first { it.key == "after_kick_option" }.displayName,
+                                onValueChange = {
+                                    configStates["after_kick_option"]?.value = it.toString()
+                                }
+                            )
                             InputRow(
-                                label = "当前设备备注",
+                                label = Schema.GLOBAL_SETTINGS.first { it.key == "device_remark" }.displayName,
                                 value = configStates["device_remark"]?.value ?: "",
                                 onValueChange = { configStates["device_remark"]?.value = it },
-                                key = "device_remark"
                             )
-
                             Row {
                                 CustomButton(
                                     text = "清除账号记忆",
@@ -313,29 +326,36 @@ fun HomeScreen(onSaveSuccess: () -> Unit = {}) {
                                     explain = "点击后将删除所有数据，包括辅助设置，保存的账号信息，数据号信息等等，用于保护用户隐私。"
                                 )
                             }
-
                             Text(
                                 text = "换机或设备到期前必须清空全部数据！部分云机在设备到期后不会清空用户数据，严重威胁隐私安全！",
                                 modifier = Modifier.padding(top = 4.dp, bottom = 2.dp),
                                 style = MaterialTheme.typography.labelMedium,
                             )
-
                             HorizontalDivider(
                                 thickness = 1.dp,
                                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 1f)
                             )
                         }
+
+                    }
+
+                    1 -> {
                         // Display account configurations based on account_count
-                        val currentAccountCount = accountCountStr.toIntOrNull() ?: 3
-                        items(count = currentAccountCount, key = { it + 1 }) { i ->
-                            AccountConfig(configStates = configStates, index = i + 1)
-                        }
+                        AccountSettings(configStates)
+                    }
+
+                    2 -> {
+                        // Display account configurations based on account_count
+                        ExtractGameSave(configStates)
                     }
 
                     else -> {
                         // Pass the 1-based index (selectedTabIndex) to MainBaseConfig
                         item {
-                            MainBaseConfig(index = selectedTabIndex, configStates = configStates)
+                            MainBaseConfig(
+                                index = selectedTabIndex - 1,
+                                configStates = configStates
+                            )
                         }
                     }
                 }
@@ -345,7 +365,7 @@ fun HomeScreen(onSaveSuccess: () -> Unit = {}) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(2.dp)
+                    .padding(bottom = 4.dp)
             ) {
                 CustomButton(
                     text = "保存并运行",
