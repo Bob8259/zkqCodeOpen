@@ -13,3 +13,10 @@
 .externalNativeBuild
 .cxx
 local.properties
+
+# Custom patterns
+.agent/rules
+.idea/
+.vscode/
+/app
+/release/
