@@ -1,6 +1,5 @@
 #include <jni.h>
-#include "encrypt.h"
-#include "xtea_hash.h"
+
 
 // Implementation of the function (not exported directly)
 jint getNativeTwo(JNIEnv *env, jobject thiz) {
@@ -14,52 +13,30 @@ extern "C" JNIEXPORT jstring JNICALL
 generateNonce(JNIEnv *env, jobject thiz);
 
 extern "C" JNIEXPORT jstring JNICALL
-xteaEncrypt(JNIEnv *env, jobject thiz, jstring data, jstring key) {
-    const char *dataChars = env->GetStringUTFChars(data, nullptr);
-    const char *keyChars = env->GetStringUTFChars(key, nullptr);
-
-    std::string encrypted = XTEA_encrypt(dataChars, keyChars);
-
-    env->ReleaseStringUTFChars(data, dataChars);
-    env->ReleaseStringUTFChars(key, keyChars);
-
-    return env->NewStringUTF(encrypted.c_str());
-}
+generateX25519KeyPair(JNIEnv *env, jobject thiz);
 
 extern "C" JNIEXPORT jstring JNICALL
-xteaDecrypt(JNIEnv *env, jobject thiz, jstring data, jstring key) {
-    const char *dataChars = env->GetStringUTFChars(data, nullptr);
-    const char *keyChars = env->GetStringUTFChars(key, nullptr);
-
-    std::string decrypted = XTEA_decrypt(dataChars, keyChars);
-
-    env->ReleaseStringUTFChars(data, dataChars);
-    env->ReleaseStringUTFChars(key, keyChars);
-
-    return env->NewStringUTF(decrypted.c_str());
-}
+chacha20Encrypt(JNIEnv *env, jobject thiz, jstring data, jstring key, jstring nonce);
 
 extern "C" JNIEXPORT jstring JNICALL
-nativeXteaHash(JNIEnv *env, jobject thiz, jstring data, jstring key) {
-    const char *dataChars = env->GetStringUTFChars(data, nullptr);
-    const char *keyChars = env->GetStringUTFChars(key, nullptr);
+chacha20Decrypt(JNIEnv *env, jobject thiz, jstring data, jstring key, jstring nonce);
 
-    std::string result = XTEA_generate_hash(dataChars, keyChars);
+extern "C" JNIEXPORT jstring JNICALL
+blake2b(JNIEnv *env, jobject thiz, jstring data);
 
-    env->ReleaseStringUTFChars(data, dataChars);
-    env->ReleaseStringUTFChars(key, keyChars);
-
-    return env->NewStringUTF(result.c_str());
-}
+extern "C" JNIEXPORT jstring JNICALL
+computeSharedSecret(JNIEnv *env, jobject thiz, jstring your_secret_key, jstring their_public_key);
 
 // Array of native methods to register
 static const JNINativeMethod gMethods[] = {
-        {"getNativeTwo",  "()I",                                     (void *) getNativeTwo},
-        {"verifyHash",    "(Ljava/lang/String;Ljava/lang/String;)D", (void *) verifyHash},
-        {"generateNonce", "()Ljava/lang/String;",                    (void *) generateNonce},
-        {"xteaEncrypt",   "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;", (void *) xteaEncrypt},
-        {"xteaDecrypt",   "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;", (void *) xteaDecrypt},
-        {"nativeXteaHash","(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;", (void *) nativeXteaHash}
+        {"getNativeTwo",           "()I",                                     (void *) getNativeTwo},
+        {"verifyHash",             "(Ljava/lang/String;Ljava/lang/String;)D", (void *) verifyHash},
+        {"generateNonce",          "()Ljava/lang/String;",                    (void *) generateNonce},
+        {"generateX25519KeyPair",  "()Ljava/lang/String;",                    (void *) generateX25519KeyPair},
+        {"chacha20Encrypt",        "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;", (void *) chacha20Encrypt},
+        {"chacha20Decrypt",        "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;", (void *) chacha20Decrypt},
+        {"blake2b",                "(Ljava/lang/String;)Ljava/lang/String;",  (void *) blake2b},
+        {"computeSharedSecret",    "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;", (void *) computeSharedSecret},
 };
 
 // JNI_OnLoad is called when the library is loaded

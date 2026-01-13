@@ -83,6 +83,7 @@ fun LoginScreen(configStates: Map<String, MutableState<String>>) {
             }
             // 获取随机 nonce
             val nonce = NativeTools.generateNonce()
+
             // 构建POST数据
             val postData = "email=$email&password=$password&nonce=$nonce"
             // 创建 OkHttpClient 实例
