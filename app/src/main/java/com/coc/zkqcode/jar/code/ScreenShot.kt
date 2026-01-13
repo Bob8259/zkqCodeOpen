@@ -10,7 +10,7 @@ import java.io.DataOutputStream
 import java.io.InputStream
 import androidx.core.graphics.get
 
-class Test {
+class ScreenShot {
     private var suProcess: Process? = null
     private var dos: DataOutputStream? = null
     private var dis: InputStream? = null

@@ -43,13 +43,17 @@ add_library(
         SHARED
         native-lib.cpp
         login.cpp
-        encrypt.cpp
-        xtea_hash.cpp
+        cypherhelper.cpp
+        monocypher/monocypher.c
 )
 
 find_library(
         log-lib
         log
+)
+
+target_include_directories(native-lib PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
 target_link_libraries(
