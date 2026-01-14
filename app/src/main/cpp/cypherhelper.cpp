@@ -38,7 +38,7 @@ std::vector<uint8_t> hexToBin(const std::string &hex) {
     std::vector<uint8_t> bin;
     for (size_t i = 0; i < hex.length(); i += 2) {
         std::string byteString = hex.substr(i, 2);
-        uint8_t byte = (uint8_t) strtol(byteString.c_str(), nullptr, 16);
+        auto byte = (uint8_t) strtol(byteString.c_str(), nullptr, 16);
         bin.push_back(byte);
     }
     return bin;
