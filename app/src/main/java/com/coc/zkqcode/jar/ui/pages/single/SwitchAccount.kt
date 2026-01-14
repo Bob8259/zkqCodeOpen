@@ -1,6 +1,8 @@
 package com.coc.zkqcode.jar.ui.pages.single
 
+import android.content.Context
 import android.graphics.BitmapFactory
+import android.os.Environment
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -17,6 +19,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -29,13 +32,23 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.coc.zkqcode.utils.components.CustomButton
+import com.coc.zkqcode.utils.components.GlobalVars
+import com.topjohnwu.superuser.Shell
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @Composable
 fun SwitchAccount(onClose: () -> Unit) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
-    var accountNumber by remember { mutableStateOf("1") }
+    val sharedPreferences = remember { context.getSharedPreferences("SwitchAccountPrefs", Context.MODE_PRIVATE) }
+    var accountNumber by remember {
+        mutableStateOf(sharedPreferences.getString("accountNumber", "1") ?: "1")
+    }
+
+    LaunchedEffect(accountNumber) {
+        sharedPreferences.edit().putString("accountNumber", accountNumber).apply()
+    }
 
     val imageBitmap = remember {
         try {
@@ -146,8 +159,92 @@ fun SwitchAccount(onClose: () -> Unit) {
                 CustomButton(
                     text = "确认切号",
                     onClick = {
-                        scope.launch {
+                        scope.launch(Dispatchers.IO) {
+                            println("Start switching account logic")
+                            val accNum = accountNumber.ifEmpty { "1" }
+                            println("Account Number: $accNum")
 
+                            // 1. Get Game Version
+                            val versionKey = "game_version$accNum"
+                            val versionStr = GlobalVars.configStates[versionKey]?.value ?: "0"
+                            val version = versionStr.toIntOrNull() ?: 0
+                            println("Version Key: $versionKey, Version: $version")
+
+                            val sdPath = Environment.getExternalStorageDirectory().path
+
+                            if (version == 0) {
+                                // CN Version
+                                val pathKey = "cn_path$accNum"
+                                val savePathName = GlobalVars.configStates[pathKey]?.value ?: ""
+                                println("CN Path Key: $pathKey, Save Path Name: $savePathName")
+
+                                if (savePathName.isEmpty()) {
+                                    println("Save path name is empty, aborting")
+                                    return@launch
+                                }
+
+                                val sourceDir = "$sdPath/zkqFiles/zkqCNGameSave/$savePathName"
+                                println("Source Directory: $sourceDir")
+
+                                // Check existence
+                                if (!Shell.cmd("[ -d \"$sourceDir\" ]").exec().isSuccess) {
+                                    println("Source directory does not exist: $sourceDir")
+                                    // Handle error (optional: could add a toast here if context was available, but simple return for now as per minimal change)
+                                    return@launch
+                                }
+                                println("Source directory exists")
+
+                                val commands = listOf(
+                                    "am force-stop com.tencent.tmgp.supercell.clashofclans",
+                                    "rm -rf /data/data/com.tencent.tmgp.supercell.clashofclans/shared_prefs/*",
+                                    "rm -rf /data/data/com.tencent.tmgp.supercell.clashofclans/databases/*",
+                                    "cp -r \"$sourceDir/shared_prefs/\"* /data/data/com.tencent.tmgp.supercell.clashofclans/shared_prefs/",
+                                    "cp -r \"$sourceDir/databases/\"* /data/data/com.tencent.tmgp.supercell.clashofclans/databases/",
+                                    "chmod 777 /data/data/com.tencent.tmgp.supercell.clashofclans/shared_prefs/*",
+                                    "chmod 777 /data/data/com.tencent.tmgp.supercell.clashofclans/databases/*",
+                                    "monkey -p com.tencent.tmgp.supercell.clashofclans -c android.intent.category.LAUNCHER 1"
+                                )
+
+                                commands.forEach { cmd ->
+                                    println("Executing: $cmd")
+                                    Shell.cmd(cmd).exec()
+                                }
+
+                            } else {
+                                // Global Version
+                                val pathKey = "global_path$accNum"
+                                val savePathName = GlobalVars.configStates[pathKey]?.value ?: ""
+                                println("Global Path Key: $pathKey, Save Path Name: $savePathName")
+
+                                if (savePathName.isEmpty()) {
+                                    println("Save path name is empty, aborting")
+                                    return@launch
+                                }
+
+                                val sourceDir = "$sdPath/zkqFiles/zkqGlobalGameSave/$savePathName"
+                                println("Source Directory: $sourceDir")
+
+                                // Check existence
+                                if (!Shell.cmd("[ -d \"$sourceDir\" ]").exec().isSuccess) {
+                                    println("Source directory does not exist: $sourceDir")
+                                    return@launch
+                                }
+                                println("Source directory exists")
+
+                                val commands = listOf(
+                                    "am force-stop com.supercell.clashofclans",
+                                    "rm -rf /data/data/com.supercell.clashofclans/shared_prefs/*",
+                                    "cp -r \"$sourceDir/shared_prefs/\"* /data/data/com.supercell.clashofclans/shared_prefs/",
+                                    "chmod 777 /data/data/com.supercell.clashofclans/shared_prefs/*",
+                                    "monkey -p com.supercell.clashofclans -c android.intent.category.LAUNCHER 1"
+                                )
+
+                                commands.forEach { cmd ->
+                                    println("Executing: $cmd")
+                                    Shell.cmd(cmd).exec()
+                                }
+                            }
+                            println("Switch account completed, closing window")
                             onClose()
                         }
                     }
