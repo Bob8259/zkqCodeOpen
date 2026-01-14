@@ -1,17 +1,26 @@
 package com.coc.zkqcode.jar.ui.pages.single
 
-import androidx.compose.foundation.lazy.LazyListScope
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.runtime.MutableState
-import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 import com.coc.zkqcode.utils.components.CustomButton
-import com.coc.zkqcode.utils.components.InputRow
 import com.coc.zkqcode.utils.components.GlobalVars
+import com.coc.zkqcode.utils.components.InputRow
 import com.coc.zkqcode.utils.database.Schema
 
 fun LazyListScope.AccountSettings() {
@@ -67,6 +76,81 @@ fun LazyListScope.AccountSettings() {
                 }
             )
         }
+        var configValue by remember { mutableStateOf("") }
+        var startAccount by remember { mutableStateOf("") }
+        var endAccount by remember { mutableStateOf("") }
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(top = 6.dp)
+        ) {
+            Text(
+                text = "将配置",
+                style = MaterialTheme.typography.labelMedium,
+                modifier = Modifier.padding(end = 4.dp)
+            )
+            BasicTextField(
+                value = configValue,
+                onValueChange = {
+                    GlobalVars.isAutoRunEnabled = false
+                    configValue = it
+                },
+                modifier = Modifier
+                    .width(60.dp)
+                    .background(Color.LightGray, RoundedCornerShape(4.dp))
+                    .padding(4.dp)
+            )
+            Text(
+                text = "应用到账号",
+                style = MaterialTheme.typography.labelMedium,
+                modifier = Modifier.padding(horizontal = 4.dp)
+            )
+            BasicTextField(
+                value = startAccount,
+                onValueChange = {
+                    GlobalVars.isAutoRunEnabled = false
+                    startAccount = it
+                },
+                modifier = Modifier
+                    .width(40.dp)
+                    .background(Color.LightGray, RoundedCornerShape(4.dp))
+                    .padding(4.dp)
+            )
+            Text(
+                text = "-",
+                style = MaterialTheme.typography.labelMedium,
+                modifier = Modifier.padding(horizontal = 4.dp)
+            )
+            BasicTextField(
+                value = endAccount,
+                onValueChange = {
+                    GlobalVars.isAutoRunEnabled = false
+                    endAccount = it
+                },
+                modifier = Modifier
+                    .width(40.dp)
+                    .background(Color.LightGray, RoundedCornerShape(4.dp))
+                    .padding(4.dp)
+            )
+        }
+        CustomButton(
+            text = "确认",
+            marginTop = 6.dp,
+            onClick = {
+                val config = configValue
+                val start = startAccount.toIntOrNull()
+                val end = endAccount.toIntOrNull()
+                if (start != null && end != null && start <= end) {
+                    for (i in start..end) {
+                        val key = "account_config$i"
+                        if (GlobalVars.configStates.containsKey(key)) {
+                            GlobalVars.configStates[key]?.value = config
+                        } else {
+                            GlobalVars.configStates[key] = mutableStateOf(config)
+                        }
+                    }
+                }
+            }
+        )
         HorizontalDivider(
             thickness = 1.dp,
             modifier = Modifier.padding(top = 6.dp),
