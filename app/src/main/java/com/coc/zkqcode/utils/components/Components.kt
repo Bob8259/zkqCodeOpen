@@ -29,12 +29,11 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -49,15 +48,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupPositionProvider
 import androidx.compose.ui.window.PopupProperties
-import androidx.compose.runtime.LaunchedEffect
-import kotlinx.coroutines.delay
 import com.coc.zkqcode.utils.fileactions.FileActions
 import com.coc.zkqcode.utils.theme.AppColors
+import kotlinx.coroutines.delay
 
 
 object GlobalVars {
-    var isCounting: Boolean = true
-    var isChangFromUpgradePriority: Boolean = false
     var fileActions by mutableStateOf<FileActions?>(null)
     
     // Auto-run features

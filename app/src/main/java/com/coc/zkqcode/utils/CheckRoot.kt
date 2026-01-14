@@ -41,6 +41,7 @@ import kotlinx.coroutines.withContext
 import kotlinx.coroutines.delay
 import com.coc.zkqcode.utils.floatingwindows.UIWindowService
 import com.coc.zkqcode.utils.components.CustomButton
+import com.coc.zkqcode.utils.components.GlobalVars
 
 enum class RootStatus {
     CHECKING,
@@ -125,6 +126,8 @@ fun CheckRootScreen() {
                         val serviceIntent = Intent(context, UIWindowService::class.java).apply {
                             putExtra("show_main_ui", true)
                         }
+                        GlobalVars.isAutoRunEnabled = true
+                        GlobalVars.autoRunTimer = 60
                         context.startService(serviceIntent)
                     }
                 )
@@ -161,9 +164,9 @@ private suspend fun checkAndGrantPermissions(
         val hasNotification = NotificationManagerCompat.from(context).areNotificationsEnabled()
         if (hasOverlay && hasNotification) {
             val serverStarted = com.coc.zkqcode.utils.daemon.ServerManager.startServer(context)
-             if (!serverStarted) {
-                 return@withContext RootStatus.SERVER_ERROR
-             }
+            if (!serverStarted) {
+                return@withContext RootStatus.SERVER_ERROR
+            }
 
             // 等待服务器响应
             withContext(Dispatchers.Main) {
