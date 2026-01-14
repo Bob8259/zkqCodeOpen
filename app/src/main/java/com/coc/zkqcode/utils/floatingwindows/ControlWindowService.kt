@@ -51,7 +51,7 @@ class ControlWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner 
     override fun onCreate() {
         super.onCreate()
         val notification = NotificationHelper.createNotification(this)
-        startForeground(1002, notification)
+        startForeground(1000, notification)
 
         lifecycleRegistry.currentState = Lifecycle.State.CREATED
         windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
@@ -100,6 +100,12 @@ class ControlWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner 
                         currentX =
                             params.x //do not remove this. The floating window won't move without this line
                         windowManager.updateViewLayout(this, params)
+                    },
+                    onAutoPosition = { newX, newY ->
+                        params.x = newX
+                        params.y = newY
+                        currentX = params.x
+                        windowManager.updateViewLayout(this, params)
                     }
                 )
             }
@@ -112,7 +118,9 @@ class ControlWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner 
     private fun ControlWindowContainer(
         currentX: Int,
         onPositionUpdate: (Int, Int) -> Unit,
-        onSnapToEdge: (Int) -> Unit
+
+        onSnapToEdge: (Int) -> Unit,
+        onAutoPosition: (Int, Int) -> Unit
     ) {
         var interactionCount by remember { mutableIntStateOf(0) }
         var componentSize by remember { mutableStateOf(Size.Zero) }
@@ -120,6 +128,9 @@ class ControlWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner 
 
         val displayMetrics = resources.displayMetrics
         val screenWidth = displayMetrics.widthPixels
+        val screenHeight = displayMetrics.heightPixels
+
+        var isDragging by remember { mutableStateOf(false) }
 
         val currentXState = rememberUpdatedState(currentX)
         val screenWidthState = rememberUpdatedState(screenWidth)
@@ -128,6 +139,23 @@ class ControlWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner 
             if (isAtRightSide && componentSize.width > 0) {
                 val finalX = screenWidth - componentSize.width.toInt()
                 onSnapToEdge(finalX)
+            }
+        }
+
+        LaunchedEffect(Unit) {
+            while (true) {
+                kotlinx.coroutines.delay(1000)
+                if (GlobalVars.updateWindowPosition && !isDragging) {
+                    val absorbEdge = GlobalVars.absorbEdge
+                    val absorbYPercentage = GlobalVars.absorbYPercentage
+
+                    val newX =
+                        if (absorbEdge == 1) 0 else (screenWidth - componentSize.width).toInt()
+                    val newY = (screenHeight * (absorbYPercentage / 100f)).toInt()
+
+                    isAtRightSide = absorbEdge != 1
+                    onAutoPosition(newX, newY)
+                }
             }
         }
 
@@ -146,18 +174,26 @@ class ControlWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner 
                         }
                     GlobalVars.isAutoRunEnabled = true
                     GlobalVars.autoRunTimer = 60
+                    GlobalVars.updateWindowPosition = false
                     startService(intent)
                     stopSelf()
                 },
                 onSwitchAccount = {
                     GlobalVars.showManualMode = true
-                    startService(Intent(this@ControlWindowService, SwitchAccountWindowService::class.java))
+                    startService(
+                        Intent(
+                            this@ControlWindowService,
+                            SwitchAccountWindowService::class.java
+                        )
+                    )
                     stopSelf()
                 },
                 onDragStart = {
                     interactionCount++
+                    isDragging = true
                 },
                 onDragEnd = {
+                    isDragging = false
                     val currentXVal = currentXState.value
                     val screenWidthVal = screenWidthState.value
                     val finalX = if (currentXVal + componentSize.width / 2 < screenWidthVal / 2) {

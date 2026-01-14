@@ -128,6 +128,7 @@ fun CheckRootScreen() {
                         }
                         GlobalVars.isAutoRunEnabled = true
                         GlobalVars.autoRunTimer = 60
+                        GlobalVars.updateWindowPosition = false
                         context.startService(serviceIntent)
                     }
                 )
