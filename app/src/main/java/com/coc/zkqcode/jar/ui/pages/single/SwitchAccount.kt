@@ -36,6 +36,7 @@ import com.coc.zkqcode.utils.components.GlobalVars
 import com.topjohnwu.superuser.Shell
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import androidx.core.content.edit
 
 @Composable
 fun SwitchAccount(onClose: () -> Unit) {
@@ -47,7 +48,7 @@ fun SwitchAccount(onClose: () -> Unit) {
     }
 
     LaunchedEffect(accountNumber) {
-        sharedPreferences.edit().putString("accountNumber", accountNumber).apply()
+        sharedPreferences.edit { putString("accountNumber", accountNumber) }
     }
 
     val imageBitmap = remember {

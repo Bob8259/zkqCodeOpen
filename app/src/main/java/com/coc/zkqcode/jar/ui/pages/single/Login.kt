@@ -18,7 +18,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -64,10 +64,20 @@ fun LoginScreen() {
     var failTimesCount by remember { mutableIntStateOf(0) }
     var formattedGem by remember { mutableStateOf("") }
     val serverPublicKey = "171abec025499684b76daa59065c0c4e86b6707e7ed3502d95919a0c1dfa305d" //Hex
+    
+    val globalGemCount = GlobalVars.configStates["gem_count"]?.value
+    LaunchedEffect(globalGemCount) {
+        if (!globalGemCount.isNullOrEmpty() && gemInfo.isEmpty()) {
+            gemInfo = globalGemCount
+            globalGemCount.toDoubleOrNull()?.let {
+                showMessage = (it < 0.0001)
+            }
+        }
+    }
     fun login(email: String, password: String) {
         isLoginButtonEnabled = false
         val url: String = if (failTimesCount % 2 == 0) {
-           "http://45.64.74.97:90/api/mobile-login-new"
+            "http://45.64.74.97:90/api/mobile-login-new"
         } else {
             "https://zkqcoc.store/api/mobile-login-new"
         }
@@ -267,7 +277,8 @@ fun LoginScreen() {
             CustomButton(
                 text = "登录", marginTop = 0.dp, onClick = {
                     login(
-                        GlobalVars.configStates["email"]?.value ?: "", GlobalVars.configStates["password"]?.value ?: ""
+                        GlobalVars.configStates["email"]?.value ?: "",
+                        GlobalVars.configStates["password"]?.value ?: ""
                     )
                 }, enable = isLoginButtonEnabled
             )
