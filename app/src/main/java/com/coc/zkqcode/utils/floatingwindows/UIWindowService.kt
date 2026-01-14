@@ -38,7 +38,7 @@ class UIWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner {
     override fun onCreate() {
         super.onCreate()
         val notification = NotificationHelper.createNotification(this)
-        startForeground(1001, notification)
+        startForeground(1000, notification)
 
         lifecycleRegistry.currentState = Lifecycle.State.CREATED
 

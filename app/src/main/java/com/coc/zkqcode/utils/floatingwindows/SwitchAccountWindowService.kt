@@ -37,7 +37,7 @@ class SwitchAccountWindowService : Service(), LifecycleOwner, SavedStateRegistry
     override fun onCreate() {
         super.onCreate()
         val notification = NotificationHelper.createNotification(this)
-        startForeground(1003, notification)
+        startForeground(1000, notification)
 
         lifecycleRegistry.currentState = Lifecycle.State.CREATED
         windowManager = getSystemService(WINDOW_SERVICE) as WindowManager

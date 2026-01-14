@@ -166,6 +166,7 @@ fun HomeScreen(onSaveSuccess: () -> Unit = {}) {
             configCount = configStates["config_count"]?.value?.toIntOrNull() ?: 3,
             configStates = configStates
         )
+        GlobalVars.updateWindowPosition = true
         // 执行保存后的回调，用于关闭悬浮窗
         onSaveSuccess()
         ScreenShot().testcode()
