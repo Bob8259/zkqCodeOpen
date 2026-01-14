@@ -6,8 +6,7 @@ jint getNativeTwo(JNIEnv *env, jobject thiz) {
     return 4;
 }
 
-extern "C" JNIEXPORT jdouble JNICALL
-verifyHash(JNIEnv *env, jobject thiz, jstring content_before_hash, jstring server_hash);
+
 
 extern "C" JNIEXPORT jstring JNICALL
 generateNonce(JNIEnv *env, jobject thiz);
@@ -36,7 +35,7 @@ decryptLoginResponse(JNIEnv *env, jobject thiz, jstring encrypted_response);
 // Array of native methods to register
 static const JNINativeMethod gMethods[] = {
         {"getNativeTwo",           "()I",                                     (void *) getNativeTwo},
-        {"verifyHash",             "(Ljava/lang/String;Ljava/lang/String;)D", (void *) verifyHash},
+
         {"generateNonce",          "()Ljava/lang/String;",                    (void *) generateNonce},
         {"generateX25519KeyPair",  "()Ljava/lang/String;",                    (void *) generateX25519KeyPair},
         {"chacha20Encrypt",        "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;", (void *) chacha20Encrypt},

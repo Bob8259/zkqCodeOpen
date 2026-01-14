@@ -1,13 +1,20 @@
 package com.coc.zkqcode.jar.ui.pages.single
 
 import android.content.Intent
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.ui.platform.LocalContext
-import androidx.core.net.toUri
-import com.coc.zkqcode.utils.components.GlobalVars
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -21,9 +28,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.net.toUri
 import com.coc.zkqcode.utils.components.CustomButton
+import com.coc.zkqcode.utils.components.GlobalVars
 import com.coc.zkqcode.utils.components.InputRow
 import com.coc.zkqcode.utils.database.Schema
 import com.coc.zkqcode.zkqnative.NativeTools
@@ -37,19 +49,6 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
 import java.io.IOException
 import java.util.Locale
-import kotlin.math.abs
-import androidx.compose.foundation.background
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.foundation.layout.heightIn
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Visibility
-import androidx.compose.material.icons.filled.VisibilityOff
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.Icon
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
 
 @Suppress("AssignedValueIsNeverRead")
 @Composable
@@ -64,7 +63,7 @@ fun LoginScreen(configStates: Map<String, MutableState<String>>) {
     }
     var failTimesCount by remember { mutableIntStateOf(0) }
     var formattedGem by remember { mutableStateOf("") }
-    var serverPublicKey = "171abec025499684b76daa59065c0c4e86b6707e7ed3502d95919a0c1dfa305d" //Hex
+    val serverPublicKey = "171abec025499684b76daa59065c0c4e86b6707e7ed3502d95919a0c1dfa305d" //Hex
     fun login(email: String, password: String) {
         isLoginButtonEnabled = false
 //        val url: String = if (failTimesCount % 2 == 0) {
