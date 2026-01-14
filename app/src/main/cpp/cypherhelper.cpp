@@ -4,8 +4,7 @@
 #include <iomanip>
 #include <vector>
 #include "monocypher/monocypher.h"
-
-extern bool get_random_bytes(unsigned char *buffer, size_t size);
+#include "utils.h"
 
 extern "C" JNIEXPORT jstring JNICALL
 generateX25519KeyPair(JNIEnv *env, jobject thiz) {
