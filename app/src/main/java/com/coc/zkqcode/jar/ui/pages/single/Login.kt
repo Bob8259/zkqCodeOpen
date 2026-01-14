@@ -64,15 +64,15 @@ fun LoginScreen(configStates: Map<String, MutableState<String>>) {
     }
     var failTimesCount by remember { mutableIntStateOf(0) }
     var formattedGem by remember { mutableStateOf("") }
-    var serverPublicKey = "81b370e9c120daa059dea600eb202782153be14500eab6918236a4198306c919" //Hex
+    var serverPublicKey = "171abec025499684b76daa59065c0c4e86b6707e7ed3502d95919a0c1dfa305d" //Hex
     fun login(email: String, password: String) {
         isLoginButtonEnabled = false
-        val url: String = if (failTimesCount % 2 == 0) {
-//            "http://45.64.74.97:90/api/mobile-login"
-            "https://zkqcoc.store/api/mobile-login-new"
-        } else {
-            "https://zkqcoc.store/api/mobile-login"
-        }
+//        val url: String = if (failTimesCount % 2 == 0) {
+//           "http://45.64.74.97:90/api/mobile-login"
+//        } else {
+//            "https://zkqcoc.store/api/mobile-login"
+//        }
+        val url = "https://8c7fcf3abfcb.ngrok-free.app/api/mobile-login-new"
         scope.launch {
             if (!email.contains("@")) {
                 // 更新UI显示错误信息
@@ -84,14 +84,21 @@ fun LoginScreen(configStates: Map<String, MutableState<String>>) {
 
             // 1. Prepare Payload
             val timestamp = System.currentTimeMillis()
-            val payload = "email=$email&password=$password&timestamp=$timestamp"
 
+            val payload = "email=$email&password=$password&timestamp=$timestamp"
             // 2. Encrypt Payload via Native Layer
             // Returns: "my_public_key,nonce,ciphertext" (comma separated)
-            val encryptionResult = NativeTools.encryptLoginPayload(payload, serverPublicKey)
+            val encryptionResult = try {
+                NativeTools.encryptLoginPayload(payload, serverPublicKey)
+            } catch (e: Exception) {
+                gemInfo = "加密失败: ${e.message}"
+                isLoginButtonEnabled = true
+                showMessage = true
+                return@launch
+            }
             val parts = encryptionResult.split(",")
             if (parts.size != 3) {
-                gemInfo = "加密失败，请重试"
+                gemInfo = "传输信息失败，请重试"
                 isLoginButtonEnabled = true
                 showMessage = true
                 return@launch
@@ -103,7 +110,6 @@ fun LoginScreen(configStates: Map<String, MutableState<String>>) {
             // 3. Send Request
             // Assuming server expects: public_key, nonce, data (ciphertext)
             val postData = "public_key=$myPublicKey&nonce=$nonce&data=$ciphertext"
-            println("POST DATA: $postData")
             val client = OkHttpClient()
             val requestBody =
                 postData.toRequestBody("application/x-www-form-urlencoded".toMediaTypeOrNull())
@@ -124,8 +130,12 @@ fun LoginScreen(configStates: Map<String, MutableState<String>>) {
                         val responseBody = response.body?.string()
                         if (responseBody != null) {
                             // 4. Decrypt Response via Native Layer
-                            val decrypted = NativeTools.decryptLoginResponse(responseBody)
-                            
+                            val decrypted = try {
+                                NativeTools.decryptLoginResponse(responseBody)
+                            } catch (e: Exception) {
+                                "Error: Decryption exception: ${e.message}"
+                            }
+
                             // 5. Parse Decrypted Result
                             // Expected format: gem=xxx OR Error message
                             if (decrypted.startsWith("Error")) {
@@ -135,7 +145,7 @@ fun LoginScreen(configStates: Map<String, MutableState<String>>) {
                             } else {
                                 val gemRegex = """gem=([\d.]+)""".toRegex()
                                 val gemMatch = gemRegex.find(decrypted)
-                                
+
                                 if (gemMatch != null) {
                                     val gem = gemMatch.groupValues[1]
                                     formattedGem = String.format(Locale.US, "%.4f", gem.toDouble())
@@ -156,7 +166,7 @@ fun LoginScreen(configStates: Map<String, MutableState<String>>) {
                             configStates["gem_count"]?.value = ""
                         }
                     } else {
-                         val responseBody = response.body?.string()
+                        val responseBody = response.body?.string()
                         gemInfo = "登录失败：$responseBody"
                         showMessage = true
                         failTimesCount++
