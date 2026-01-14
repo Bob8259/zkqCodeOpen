@@ -16,8 +16,7 @@ object SchemaExporter {
     fun exportSchemasToJson(
         keys: List<String> = emptyList(),
         accountCount: Int = 0,
-        configCount: Int = 0,
-        configStates: Map<String, MutableState<String>>? = null
+        configCount: Int = 0
     ): String {
         val jsonObject = JsonObject()
 
@@ -42,12 +41,9 @@ object SchemaExporter {
 
         schemasToExport.forEach { settingDef ->
             // Prioritize fetching from configStates, then GlobalVars.fileActions, and finally use the default value
-            val currentValue = configStates?.get(settingDef.key)?.value
+            val currentValue = GlobalVars.configStates[settingDef.key]?.value
                 ?: GlobalVars.fileActions?.getValue(settingDef.key)
                 ?: settingDef.defaultValue.toString()
-
-            if (settingDef.key == "gem_count")
-                println("gem_count value:$currentValue")
             jsonObject.addProperty(settingDef.key, currentValue)
         }
 
@@ -56,7 +52,7 @@ object SchemaExporter {
             for (i in 1..accountCount) {
                 Schema.ACCOUNT_SETTINGS.forEach { settingDef ->
                     val key = "${settingDef.key}${i}"
-                    val currentValue = configStates?.get(key)?.value
+                    val currentValue = GlobalVars.configStates[key]?.value
                         ?: GlobalVars.fileActions?.getValue(key)
                         ?: settingDef.defaultValue.toString()
                     jsonObject.addProperty(key, currentValue)
@@ -69,7 +65,7 @@ object SchemaExporter {
             for (i in 1..configCount) {
                 Schema.MAIN_BASE_SETTINGS.forEach { settingDef ->
                     val key = "${settingDef.key}_c$i"
-                    val currentValue = configStates?.get(key)?.value
+                    val currentValue = GlobalVars.configStates[key]?.value
                         ?: GlobalVars.fileActions?.getValue(key)
                         ?: settingDef.defaultValue.toString()
                     jsonObject.addProperty(key, currentValue)
@@ -91,11 +87,10 @@ object SchemaExporter {
         fileName: String,
         keys: List<String> = emptyList(),
         accountCount: Int = 0,
-        configCount: Int = 0,
-        configStates: Map<String, MutableState<String>>? = null
+        configCount: Int = 0
     ) {
 
-        val jsonContent = exportSchemasToJson(keys, accountCount, configCount, configStates)
+        val jsonContent = exportSchemasToJson(keys, accountCount, configCount)
         val fullPath =
             if (directory.endsWith("/")) "$directory$fileName" else "$directory/$fileName"
 

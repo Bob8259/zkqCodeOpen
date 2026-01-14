@@ -52,7 +52,7 @@ fun HomeScreen(onSaveSuccess: () -> Unit = {}) {
         }
     }
 
-    val configStates = remember { mutableMapOf<String, MutableState<String>>() }
+
     var isLoading by remember { mutableStateOf(true) }
 
     // Initialize states from Schema
@@ -63,9 +63,9 @@ fun HomeScreen(onSaveSuccess: () -> Unit = {}) {
             Schema.GLOBAL_SETTINGS.forEach { def ->
                 val savedValue = actions.getValue(def.key)
                 if (savedValue != null) {
-                    configStates[def.key]?.value = savedValue
-                } else if (!configStates.containsKey(def.key)) {
-                    configStates[def.key] = mutableStateOf(def.defaultValue.toString())
+                    GlobalVars.configStates[def.key]?.value = savedValue
+                } else if (!GlobalVars.configStates.containsKey(def.key)) {
+                    GlobalVars.configStates[def.key] = mutableStateOf(def.defaultValue.toString())
                 }
             }
 
@@ -76,7 +76,7 @@ fun HomeScreen(onSaveSuccess: () -> Unit = {}) {
                     val key = "${def.key}${i}"
                     val savedValue = actions.getValue(key)
                     if (savedValue != null) {
-                        configStates[key]?.value = savedValue
+                        GlobalVars.configStates[key]?.value = savedValue
                     } else {
                         val defaultValue =
                             if (def.key.startsWith("global_path") || def.key.startsWith("cn_path")) {
@@ -84,7 +84,7 @@ fun HomeScreen(onSaveSuccess: () -> Unit = {}) {
                             } else {
                                 def.defaultValue.toString()
                             }
-                        configStates[key] = mutableStateOf(defaultValue)
+                        GlobalVars.configStates[key] = mutableStateOf(defaultValue)
                     }
                 }
             }
@@ -96,9 +96,9 @@ fun HomeScreen(onSaveSuccess: () -> Unit = {}) {
                     val key = "${def.key}_c$i"
                     val savedValue = actions.getValue(key)
                     if (savedValue != null) {
-                        configStates[key]?.value = savedValue
-                    } else if (!configStates.containsKey(key)) {
-                        configStates[key] = mutableStateOf(def.defaultValue.toString())
+                        GlobalVars.configStates[key]?.value = savedValue
+                    } else if (!GlobalVars.configStates.containsKey(key)) {
+                        GlobalVars.configStates[key] = mutableStateOf(def.defaultValue.toString())
                     }
                 }
             }
@@ -109,14 +109,14 @@ fun HomeScreen(onSaveSuccess: () -> Unit = {}) {
 
     // Ensure all keys are initialized even if file hasn't loaded yet
     Schema.GLOBAL_SETTINGS.forEach { def ->
-        if (!configStates.containsKey(def.key)) {
+        if (!GlobalVars.configStates.containsKey(def.key)) {
             val savedValue = GlobalVars.fileActions?.getValue(def.key)
-            configStates[def.key] = mutableStateOf(savedValue ?: def.defaultValue.toString())
+            GlobalVars.configStates[def.key] = mutableStateOf(savedValue ?: def.defaultValue.toString())
         }
     }
 
-    val configCountStr = configStates["config_count"]?.value ?: "3"
-    val accountCountStr = configStates["account_count"]?.value ?: "3"
+    val configCountStr = GlobalVars.configStates["config_count"]?.value ?: "3"
+    val accountCountStr = GlobalVars.configStates["account_count"]?.value ?: "3"
     var selectedTabIndex by remember { mutableIntStateOf(0) }
 
     // Initialize account settings states dynamically
@@ -124,14 +124,14 @@ fun HomeScreen(onSaveSuccess: () -> Unit = {}) {
     for (i in 1..accountCount) {
         Schema.ACCOUNT_SETTINGS.forEach { def ->
             val key = "${def.key}${i}"
-            if (!configStates.containsKey(key)) {
+            if (!GlobalVars.configStates.containsKey(key)) {
                 val savedValue = GlobalVars.fileActions?.getValue(key)
                 val defaultValue = if (def.key == "global_path" || def.key == "data_content") {
                     i.toString()
                 } else {
                     def.defaultValue.toString()
                 }
-                configStates[key] = mutableStateOf(savedValue ?: defaultValue)
+                GlobalVars.configStates[key] = mutableStateOf(savedValue ?: defaultValue)
             }
         }
     }
@@ -141,9 +141,9 @@ fun HomeScreen(onSaveSuccess: () -> Unit = {}) {
     for (i in 1..currentConfigCount) {
         Schema.MAIN_BASE_SETTINGS.forEach { def ->
             val key = "${def.key}_c$i"
-            if (!configStates.containsKey(key)) {
+            if (!GlobalVars.configStates.containsKey(key)) {
                 val savedValue = GlobalVars.fileActions?.getValue(key)
-                configStates[key] = mutableStateOf(savedValue ?: def.defaultValue.toString())
+                GlobalVars.configStates[key] = mutableStateOf(savedValue ?: def.defaultValue.toString())
             }
         }
     }
@@ -163,8 +163,7 @@ fun HomeScreen(onSaveSuccess: () -> Unit = {}) {
             "zkq_config.json",
             keys = listOf("GLOBAL_SETTINGS", "ACCOUNT_SETTINGS", "MAIN_BASE_SETTINGS"),
             accountCount = currentAccountCount,
-            configCount = configStates["config_count"]?.value?.toIntOrNull() ?: 3,
-            configStates = configStates
+            configCount = GlobalVars.configStates["config_count"]?.value?.toIntOrNull() ?: 3
         )
         GlobalVars.updateWindowPosition = true
         // 执行保存后的回调，用于关闭悬浮窗
@@ -264,54 +263,54 @@ fun HomeScreen(onSaveSuccess: () -> Unit = {}) {
                                     onClick = { GlobalVars.isAutoRunEnabled = false }
                                 )
                             }
-                            LoginScreen(configStates)
+                            LoginScreen()
                             CustomButton(text = "启动手动切号模式", onClick = {
                                 GlobalVars.showManualMode = true
                                 onSaveSuccess()
                             })
                             InputRow(
                                 label = Schema.GLOBAL_SETTINGS.first { it.key == "delay_multiplier" }.displayName,
-                                value = configStates["delay_multiplier"]?.value ?: "1",
-                                onValueChange = { configStates["delay_multiplier"]?.value = it },
+                                value = GlobalVars.configStates["delay_multiplier"]?.value ?: "1",
+                                onValueChange = { GlobalVars.configStates["delay_multiplier"]?.value = it },
                             )
                             Row {
                                 CustomCheckBox(
-                                    checkedState = configStates["debug_mode"]?.value ?: "0",
+                                    checkedState = GlobalVars.configStates["debug_mode"]?.value ?: "0",
                                     onCheckStateChange = {
-                                        configStates["debug_mode"]?.value = if (it) "1" else "0"
+                                        GlobalVars.configStates["debug_mode"]?.value = if (it) "1" else "0"
                                     },
                                     text = Schema.GLOBAL_SETTINGS.first { it.key == "debug_mode" }.displayName,
                                 )
                                 CustomCheckBox(
-                                    checkedState = configStates["record_progress"]?.value ?: "0",
+                                    checkedState = GlobalVars.configStates["record_progress"]?.value ?: "0",
                                     onCheckStateChange = {
-                                        configStates["record_progress"]?.value =
+                                        GlobalVars.configStates["record_progress"]?.value =
                                             if (it) "1" else "0"
                                     },
                                     text = Schema.GLOBAL_SETTINGS.first { it.key == "record_progress" }.displayName,
                                 )
                             }
                             CustomCheckBox(
-                                checkedState = configStates["auto_start"]?.value ?: "0",
+                                checkedState = GlobalVars.configStates["auto_start"]?.value ?: "0",
                                 onCheckStateChange = {
-                                    configStates["auto_start"]?.value =
+                                    GlobalVars.configStates["auto_start"]?.value =
                                         if (it) "1" else "0"
                                 },
                                 text = Schema.GLOBAL_SETTINGS.first { it.key == "auto_start" }.displayName,
                             )
                             DropdownButton(
                                 options = listOf("立刻重连", "切换账号", "原地等待"),
-                                selectedIndex = configStates["after_kick_option"]?.value?.toIntOrNull()
+                                selectedIndex = GlobalVars.configStates["after_kick_option"]?.value?.toIntOrNull()
                                     ?: 0,
                                 label = Schema.GLOBAL_SETTINGS.first { it.key == "after_kick_option" }.displayName,
                                 onValueChange = {
-                                    configStates["after_kick_option"]?.value = it.toString()
+                                    GlobalVars.configStates["after_kick_option"]?.value = it.toString()
                                 }
                             )
                             InputRow(
                                 label = Schema.GLOBAL_SETTINGS.first { it.key == "device_remark" }.displayName,
-                                value = configStates["device_remark"]?.value ?: "",
-                                onValueChange = { configStates["device_remark"]?.value = it },
+                                value = GlobalVars.configStates["device_remark"]?.value ?: "",
+                                onValueChange = { GlobalVars.configStates["device_remark"]?.value = it },
                             )
                             Row {
                                 CustomButton(
@@ -340,20 +339,19 @@ fun HomeScreen(onSaveSuccess: () -> Unit = {}) {
 
                     1 -> {
                         // Display account configurations based on account_count
-                        AccountSettings(configStates)
+                        AccountSettings()
                     }
 
                     2 -> {
                         // Display account configurations based on account_count
-                        ExtractGameSave(configStates)
+                        ExtractGameSave()
                     }
 
                     else -> {
                         // Pass the 1-based index (selectedTabIndex) to MainBaseConfig
                         item {
                             MainBaseConfig(
-                                index = selectedTabIndex - 1,
-                                configStates = configStates
+                                index = selectedTabIndex - 2
                             )
                         }
                     }

@@ -11,6 +11,7 @@ import androidx.compose.ui.unit.dp
 import com.coc.zkqcode.utils.components.CustomButton
 import com.coc.zkqcode.utils.components.CustomNotificationWindow
 import com.coc.zkqcode.utils.components.InputRow
+import com.coc.zkqcode.utils.components.GlobalVars
 import com.coc.zkqcode.utils.database.Schema
 import com.topjohnwu.superuser.Shell
 import kotlinx.coroutines.Dispatchers
@@ -40,14 +41,14 @@ private enum class GameVariant(
     )
 }
 
-fun LazyListScope.ExtractGameSave(configStates: Map<String, MutableState<String>>) {
+fun LazyListScope.ExtractGameSave() {
     item {
-        ExtractGameSaveContent(configStates)
+        ExtractGameSaveContent()
     }
 }
 
 @Composable
-private fun ExtractGameSaveContent(configStates: Map<String, MutableState<String>>) {
+private fun ExtractGameSaveContent() {
     // 状态管理
     var showDialog by remember { mutableStateOf(false) }
     var dialogMessage by remember { mutableStateOf("") }
@@ -62,7 +63,7 @@ private fun ExtractGameSaveContent(configStates: Map<String, MutableState<String
     // 提取逻辑
     fun performExtract(variant: GameVariant) {
         coroutineScope.launch(Dispatchers.IO) {
-            val suffix = configStates[variant.settingKey]?.value ?: ""
+            val suffix = GlobalVars.configStates[variant.settingKey]?.value ?: ""
             val sdPath = Environment.getExternalStorageDirectory().path
 
             // 【修改点】基础目录增加了一层 zkqFiles
@@ -107,7 +108,7 @@ private fun ExtractGameSaveContent(configStates: Map<String, MutableState<String
     // 删除逻辑
     fun performDelete(variant: GameVariant) {
         coroutineScope.launch(Dispatchers.IO) {
-            val suffix = configStates[variant.settingKey]?.value ?: ""
+            val suffix = GlobalVars.configStates[variant.settingKey]?.value ?: ""
 
             if (suffix.isEmpty()) {
                 showMsg("错误：未获取到路径序号")
@@ -143,7 +144,6 @@ private fun ExtractGameSaveContent(configStates: Map<String, MutableState<String
         GameVariant.values().forEach { variant ->
             GameConfigSection(
                 variant = variant,
-                configStates = configStates,
                 onExtract = { performExtract(variant) },
                 onDelete = { performDelete(variant) }
             )
@@ -165,7 +165,6 @@ private fun ExtractGameSaveContent(configStates: Map<String, MutableState<String
 @Composable
 private fun GameConfigSection(
     variant: GameVariant,
-    configStates: Map<String, MutableState<String>>,
     onExtract: () -> Unit,
     onDelete: () -> Unit
 ) {
@@ -174,8 +173,8 @@ private fun GameConfigSection(
 
     InputRow(
         label = displayName,
-        value = configStates[variant.settingKey]?.value ?: "",
-        onValueChange = { configStates[variant.settingKey]?.value = it }
+        value = GlobalVars.configStates[variant.settingKey]?.value ?: "",
+        onValueChange = { GlobalVars.configStates[variant.settingKey]?.value = it }
     )
 
     Row {

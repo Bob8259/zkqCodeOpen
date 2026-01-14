@@ -52,10 +52,10 @@ import java.util.Locale
 
 @Suppress("AssignedValueIsNeverRead")
 @Composable
-fun LoginScreen(configStates: Map<String, MutableState<String>>) {
+fun LoginScreen() {
     val scope = rememberCoroutineScope()
     var isLoginButtonEnabled by remember { mutableStateOf(true) }
-    var gemInfo by remember { mutableStateOf(configStates["gem_count"]?.value ?: "") }
+    var gemInfo by remember { mutableStateOf(GlobalVars.configStates["gem_count"]?.value ?: "") }
     var showMessage by remember {
         mutableStateOf(
             gemInfo.toDoubleOrNull()?.let { it < 0.0001 } ?: true
@@ -117,7 +117,7 @@ fun LoginScreen(configStates: Map<String, MutableState<String>>) {
                 override fun onFailure(call: Call, e: IOException) {
                     gemInfo = "登录失败: ${e.message}"
                     showMessage = true
-                    configStates["gem_count"]?.value = ""
+                    GlobalVars.configStates["gem_count"]?.value = ""
                     failTimesCount++
                     isLoginButtonEnabled = true
                 }
@@ -139,7 +139,7 @@ fun LoginScreen(configStates: Map<String, MutableState<String>>) {
                             if (decrypted.startsWith("Error")) {
                                 gemInfo = "登录失败: $decrypted"
                                 showMessage = true
-                                configStates["gem_count"]?.value = ""
+                                GlobalVars.configStates["gem_count"]?.value = ""
                             } else {
                                 val gemRegex = """gem=([\d.]+)""".toRegex()
                                 val gemMatch = gemRegex.find(decrypted)
@@ -150,18 +150,18 @@ fun LoginScreen(configStates: Map<String, MutableState<String>>) {
                                     gem.toDoubleOrNull()?.let {
                                         showMessage = (it < 0.000001)
                                     }
-                                    configStates["gem_count"]?.value = gem
+                                    GlobalVars.configStates["gem_count"]?.value = gem
                                     gemInfo = "登录成功！卡班宝石数量 $formattedGem"
                                 } else {
                                     gemInfo = "登录成功，但无法解析数据: $decrypted"
                                     showMessage = true
-                                    configStates["gem_count"]?.value = ""
+                                    GlobalVars.configStates["gem_count"]?.value = ""
                                 }
                             }
                         } else {
                             gemInfo = "登录失败：响应体为空"
                             showMessage = true
-                            configStates["gem_count"]?.value = ""
+                            GlobalVars.configStates["gem_count"]?.value = ""
                         }
                     } else {
                         val responseBody = response.body?.string()
@@ -169,7 +169,7 @@ fun LoginScreen(configStates: Map<String, MutableState<String>>) {
                         showMessage = true
                         failTimesCount++
                         isLoginButtonEnabled = true
-                        configStates["gem_count"]?.value = ""
+                        GlobalVars.configStates["gem_count"]?.value = ""
                     }
                 }
             })
@@ -223,8 +223,8 @@ fun LoginScreen(configStates: Map<String, MutableState<String>>) {
 
         InputRow(
             label = Schema.GLOBAL_SETTINGS.first { it.key == "email" }.displayName,
-            value = configStates["email"]?.value ?: "",
-            onValueChange = { configStates["email"]?.value = it },
+            value = GlobalVars.configStates["email"]?.value ?: "",
+            onValueChange = { GlobalVars.configStates["email"]?.value = it },
         )
         var isPasswordVisible by remember { mutableStateOf(false) }
         Row {
@@ -236,7 +236,7 @@ fun LoginScreen(configStates: Map<String, MutableState<String>>) {
                 style = MaterialTheme.typography.labelMedium
             )
             BasicTextField(
-                value = configStates["password"]?.value ?: "",
+                value = GlobalVars.configStates["password"]?.value ?: "",
                 modifier = Modifier
                     .background(
                         color = Color.LightGray,
@@ -247,7 +247,7 @@ fun LoginScreen(configStates: Map<String, MutableState<String>>) {
                     .heightIn(max = 120.dp),
                 onValueChange = {
                     GlobalVars.isAutoRunEnabled = false
-                    configStates["password"]?.value = it
+                    GlobalVars.configStates["password"]?.value = it
                 },
                 singleLine = true,
                 visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation()
@@ -267,7 +267,7 @@ fun LoginScreen(configStates: Map<String, MutableState<String>>) {
             CustomButton(
                 text = "登录", marginTop = 0.dp, onClick = {
                     login(
-                        configStates["email"]?.value ?: "", configStates["password"]?.value ?: ""
+                        GlobalVars.configStates["email"]?.value ?: "", GlobalVars.configStates["password"]?.value ?: ""
                     )
                 }, enable = isLoginButtonEnabled
             )
@@ -285,9 +285,9 @@ fun LoginScreen(configStates: Map<String, MutableState<String>>) {
                     showMessage = true
                     scope.launch {
                         GlobalVars.fileActions?.writeToConfigFile("gem_count", "")
-                        configStates["email"]?.value = ""
-                        configStates["password"]?.value = ""
-                        configStates["gem_count"]?.value = ""
+                        GlobalVars.configStates["email"]?.value = ""
+                        GlobalVars.configStates["password"]?.value = ""
+                        GlobalVars.configStates["gem_count"]?.value = ""
                     }
                     gemInfo = "退出成功"
                 }, enable = isLoginButtonEnabled

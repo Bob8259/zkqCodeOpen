@@ -29,7 +29,6 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.coc.zkqcode.utils.components.CustomButton
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
@@ -52,7 +51,7 @@ fun SwitchAccount(onClose: () -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp)
-            .background(Color.White.copy(alpha = 0.9f), shape = RoundedCornerShape(12.dp))
+            .background(Color.White, shape = RoundedCornerShape(12.dp))
             .padding(16.dp),
         contentAlignment = Alignment.Center
     ) {
@@ -97,8 +96,6 @@ fun SwitchAccount(onClose: () -> Unit) {
                 modifier = Modifier.padding(vertical = 8.dp),
                 horizontalArrangement = Arrangement.Center
             ) {
-
-
                 Text(
                     text = "切换到第",
                     modifier = Modifier.padding(horizontal = 8.dp),
@@ -145,15 +142,25 @@ fun SwitchAccount(onClose: () -> Unit) {
                 }, marginTop = 0.dp)
             }
             // Confirm Button aligned to start
-            CustomButton(
-                text = "确认切号",
-                onClick = {
-                    scope.launch {
-                        delay(3000)
-                        onClose()
+            Row {
+                CustomButton(
+                    text = "确认切号",
+                    onClick = {
+                        scope.launch {
+
+                            onClose()
+                        }
                     }
-                }
-            )
+                )
+                CustomButton(
+                    text = "关闭窗口",
+                    onClick = {
+                        scope.launch {
+                            onClose()
+                        }
+                    }
+                )
+            }
         }
     }
 }

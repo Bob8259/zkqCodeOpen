@@ -31,6 +31,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -65,6 +66,9 @@ object GlobalVars {
     var absorbEdge by mutableIntStateOf(1) // 1: Left, 0: Right
     var absorbYPercentage by mutableIntStateOf(50) // Percentage of Y axis
     var updateWindowPosition by mutableStateOf(false)
+
+    // Configuration States
+    val configStates = mutableMapOf<String, MutableState<String>>()
 }
 
 @Composable
