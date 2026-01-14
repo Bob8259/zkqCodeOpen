@@ -18,4 +18,7 @@ object NativeTools {
     external fun chacha20Decrypt(data: String, key: String, nonce: String): String
     external fun blake2b(data: String): String
     external fun computeSharedSecret(yourSecretKey: String, theirPublicKey: String): String
+
+    external fun encryptLoginPayload(payload: String, serverPublicKey: String): String
+    external fun decryptLoginResponse(encryptedResponse: String): String
 }

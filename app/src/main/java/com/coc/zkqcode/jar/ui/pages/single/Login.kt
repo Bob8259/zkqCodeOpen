@@ -64,7 +64,7 @@ fun LoginScreen(configStates: Map<String, MutableState<String>>) {
     }
     var failTimesCount by remember { mutableIntStateOf(0) }
     var formattedGem by remember { mutableStateOf("") }
-
+    var serverPublicKey = "81b370e9c120daa059dea600eb202782153be14500eab6918236a4198306c919" //Hex
     fun login(email: String, password: String) {
         isLoginButtonEnabled = false
         val url: String = if (failTimesCount % 2 == 0) {
@@ -81,23 +81,36 @@ fun LoginScreen(configStates: Map<String, MutableState<String>>) {
                 showMessage = true
                 return@launch // 退出函数
             }
-            // 获取随机 nonce
-            val nonce = NativeTools.generateNonce()
 
-            // 构建POST数据
-            val postData = "email=$email&password=$password&nonce=$nonce"
-            // 创建 OkHttpClient 实例
+            // 1. Prepare Payload
+            val timestamp = System.currentTimeMillis()
+            val payload = "email=$email&password=$password&timestamp=$timestamp"
+
+            // 2. Encrypt Payload via Native Layer
+            // Returns: "my_public_key,nonce,ciphertext" (comma separated)
+            val encryptionResult = NativeTools.encryptLoginPayload(payload, serverPublicKey)
+            val parts = encryptionResult.split(",")
+            if (parts.size != 3) {
+                gemInfo = "加密失败，请重试"
+                isLoginButtonEnabled = true
+                showMessage = true
+                return@launch
+            }
+            val myPublicKey = parts[0]
+            val nonce = parts[1]
+            val ciphertext = parts[2]
+
+            // 3. Send Request
+            // Assuming server expects: public_key, nonce, data (ciphertext)
+            val postData = "public_key=$myPublicKey&nonce=$nonce&data=$ciphertext"
+            println("POST DATA: $postData")
             val client = OkHttpClient()
-            // 创建请求体
             val requestBody =
                 postData.toRequestBody("application/x-www-form-urlencoded".toMediaTypeOrNull())
-            // 创建请求
             val request = Request.Builder().url(url).post(requestBody).build()
 
-            // 发送请求
             client.newCall(request).enqueue(object : Callback {
                 override fun onFailure(call: Call, e: IOException) {
-                    // 请求失败处理
                     gemInfo = "登录失败: ${e.message}"
                     showMessage = true
                     configStates["gem_count"]?.value = ""
@@ -106,55 +119,36 @@ fun LoginScreen(configStates: Map<String, MutableState<String>>) {
                 }
 
                 override fun onResponse(call: Call, response: Response) {
-                    // 请求成功处理
                     if (response.isSuccessful) {
                         isLoginButtonEnabled = true
                         val responseBody = response.body?.string()
-                        // 处理响应数据
                         if (responseBody != null) {
-                            // 提取 hash 之前的内容
-                            val hashIndex = responseBody.indexOf(",hash=")
-                            if (hashIndex != -1) {
-                                val contentBeforeHash = responseBody.take(hashIndex)
-                                // 提取服务器返回的 hash 值
-                                val serverHash =
-                                    responseBody.substring(hashIndex + 6, hashIndex + 22)
-                                // 对比哈希值和 Nonce，返回接近 10 的 Double
-                                val verifyResult =
-                                    NativeTools.verifyHash(contentBeforeHash, serverHash)
-                                if (abs(verifyResult - 10.0) < 0.001) {
-                                    // 提取 gem 信息
-                                    val gemRegex = """gem=([\d.]+)""".toRegex()
-                                    val gemMatch = gemRegex.find(responseBody)
-                                    val passwordRegex = """password=([a-zA-Z0-9]+)""".toRegex()
-                                    val passwordHash =
-                                        passwordRegex.find(responseBody)?.groupValues?.get(1)
-                                    if (gemMatch != null && passwordHash != null && passwordHash.length == 16) {
-                                        val gem = gemMatch.groupValues[1]
-                                        formattedGem =
-                                            String.format(Locale.US, "%.4f", gem.toDouble())
-                                        gem.toDoubleOrNull()?.let {
-                                            showMessage = (it < 0.000001) //如果有宝石，就不展示提示
-                                        }
-                                        configStates["gem_count"]?.value = gem
-                                        configStates["passwordHash"]?.value = passwordHash
-                                        gemInfo = "登录成功！卡班宝石数量 $formattedGem"
-                                    } else {
-                                        gemInfo = "登录成功，但无法解析数据，请联系作者"
-                                        showMessage = true
-                                        configStates["gem_count"]?.value = ""
+                            // 4. Decrypt Response via Native Layer
+                            val decrypted = NativeTools.decryptLoginResponse(responseBody)
+                            
+                            // 5. Parse Decrypted Result
+                            // Expected format: gem=xxx OR Error message
+                            if (decrypted.startsWith("Error")) {
+                                gemInfo = "登录失败: $decrypted"
+                                showMessage = true
+                                configStates["gem_count"]?.value = ""
+                            } else {
+                                val gemRegex = """gem=([\d.]+)""".toRegex()
+                                val gemMatch = gemRegex.find(decrypted)
+                                
+                                if (gemMatch != null) {
+                                    val gem = gemMatch.groupValues[1]
+                                    formattedGem = String.format(Locale.US, "%.4f", gem.toDouble())
+                                    gem.toDoubleOrNull()?.let {
+                                        showMessage = (it < 0.000001)
                                     }
+                                    configStates["gem_count"]?.value = gem
+                                    gemInfo = "登录成功！卡班宝石数量 $formattedGem"
                                 } else {
-                                    gemInfo =
-                                        "登录失败：响应数据格式错误。可能是因为开启了代理或抓包，请关闭后重试"
+                                    gemInfo = "登录成功，但无法解析数据: $decrypted"
                                     showMessage = true
                                     configStates["gem_count"]?.value = ""
                                 }
-                            } else {
-                                gemInfo =
-                                    "登录失败：响应数据格式错误。可能是因为开启了代理或抓包，请关闭后重试"
-                                showMessage = true
-                                configStates["gem_count"]?.value = ""
                             }
                         } else {
                             gemInfo = "登录失败：响应体为空"
@@ -162,7 +156,7 @@ fun LoginScreen(configStates: Map<String, MutableState<String>>) {
                             configStates["gem_count"]?.value = ""
                         }
                     } else {
-                        val responseBody = response.body?.string()
+                         val responseBody = response.body?.string()
                         gemInfo = "登录失败：$responseBody"
                         showMessage = true
                         failTimesCount++
