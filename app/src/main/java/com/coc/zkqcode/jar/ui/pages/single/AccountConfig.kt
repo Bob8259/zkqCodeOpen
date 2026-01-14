@@ -20,47 +20,48 @@ import androidx.compose.ui.unit.dp
 import com.coc.zkqcode.utils.components.CustomCheckBox
 import com.coc.zkqcode.utils.components.DropdownButton
 import com.coc.zkqcode.utils.components.InputRow
+import com.coc.zkqcode.utils.components.GlobalVars
 import com.coc.zkqcode.utils.database.Schema
 
 @Composable
 fun AccountConfig(
-    configStates: Map<String, MutableState<String>>, index: Int
+    index: Int
 ) {
     Column(modifier = Modifier.padding(horizontal = 2.dp)) {
         Row {
             CustomCheckBox(
-                checkedState = configStates["prefix${index}"]?.value ?: "",
+                checkedState = GlobalVars.configStates["prefix${index}"]?.value ?: "",
                 onCheckStateChange = {
-                    configStates["prefix${index}"]?.value = if (it) "1" else "0"
+                    GlobalVars.configStates["prefix${index}"]?.value = if (it) "1" else "0"
                 },
                 text = Schema.ACCOUNT_SETTINGS.first { it.key == "prefix" }.displayName + index,
             )
             InputRow(
                 label = Schema.ACCOUNT_SETTINGS.first { it.key == "remark" }.displayName,
-                value = configStates["remark${index}"]?.value ?: "",
-                onValueChange = { configStates["remark${index}"]?.value = it },
+                value = GlobalVars.configStates["remark${index}"]?.value ?: "",
+                onValueChange = { GlobalVars.configStates["remark${index}"]?.value = it },
             )
         }
         DropdownButton(
             options = listOf("国服", "国际服"),
-            selectedIndex = configStates["game_version${index}"]?.value?.toIntOrNull() ?: 0,
-            onValueChange = { configStates["game_version${index}"]?.value = it.toString() },
+            selectedIndex = GlobalVars.configStates["game_version${index}"]?.value?.toIntOrNull() ?: 0,
+            onValueChange = { GlobalVars.configStates["game_version${index}"]?.value = it.toString() },
             label = Schema.ACCOUNT_SETTINGS.first { it.key == "game_version" }.displayName
         )
         InputRow(
             label = Schema.ACCOUNT_SETTINGS.first { it.key == "account_config" }.displayName,
-            value = configStates["account_config${index}"]?.value ?: "",
-            onValueChange = { configStates["account_config${index}"]?.value = it },
+            value = GlobalVars.configStates["account_config${index}"]?.value ?: "",
+            onValueChange = { GlobalVars.configStates["account_config${index}"]?.value = it },
         )
         DropdownButton(
             options = listOf("游戏存档", "直接启动", "上号器"),
-            selectedIndex = configStates["start_method${index}"]?.value?.toIntOrNull() ?: 0,
-            onValueChange = { configStates["start_method${index}"]?.value = it.toString() },
+            selectedIndex = GlobalVars.configStates["start_method${index}"]?.value?.toIntOrNull() ?: 0,
+            onValueChange = { GlobalVars.configStates["start_method${index}"]?.value = it.toString() },
             label = Schema.ACCOUNT_SETTINGS.first { it.key == "start_method" }.displayName
         )
-        when (configStates["start_method${index}"]?.value ?: "") {
-            "1" -> GameFiles(index, configStates)//存档上号
-            "2" -> UsePackage(index, configStates)//上号器
+        when (GlobalVars.configStates["start_method${index}"]?.value ?: "") {
+            "1" -> GameFiles(index)//存档上号
+            "2" -> UsePackage(index)//上号器
         }
     }
     HorizontalDivider(
@@ -70,9 +71,9 @@ fun AccountConfig(
 
 @Composable
 fun UsePackage(
-    index: Int, configStates: Map<String, MutableState<String>>
+    index: Int
 ) {
-    if (configStates["game_version${index}"]?.value == "0") {
+    if (GlobalVars.configStates["game_version${index}"]?.value == "0") {
         Column {
             Text(
                 text = "换机或设备到期前，务必清空数据号信息！\n否则有被盗号风险！",
@@ -82,8 +83,8 @@ fun UsePackage(
             )
             InputRow(
                 label = Schema.ACCOUNT_SETTINGS.first { it.key == "data_content" }.displayName,
-                value = configStates["data_content${index}"]?.value ?: "",
-                onValueChange = { configStates["data_content${index}"]?.value = it },
+                value = GlobalVars.configStates["data_content${index}"]?.value ?: "",
+                onValueChange = { GlobalVars.configStates["data_content${index}"]?.value = it },
             )
         }
     } else {
@@ -97,7 +98,7 @@ fun UsePackage(
 
 @Composable
 fun GameFiles(
-    index: Int, configStates: Map<String, MutableState<String>>
+    index: Int
 ) {
     Column {
         Text(
@@ -107,29 +108,29 @@ fun GameFiles(
             style = MaterialTheme.typography.labelMedium
         )
         // 从 configStates 中获取当前游戏版本
-        val currentVersion = configStates["game_version${index}"]?.value ?: "0"
+        val currentVersion = GlobalVars.configStates["game_version${index}"]?.value ?: "0"
         // 使用 remember 来保存当前选中的选项
         var selectedOption by remember {
             mutableStateOf(
-                configStates["game_version${index}"]?.value ?: "0"
+                GlobalVars.configStates["game_version${index}"]?.value ?: "0"
             )
         }
 
         // 监听 currentVersion 的变化，并更新 selectedOption
         LaunchedEffect(currentVersion) {
-            selectedOption = configStates["game_version${index}"]?.value ?: "0"
+            selectedOption = GlobalVars.configStates["game_version${index}"]?.value ?: "0"
         }
         if (selectedOption == "0") {//0表示国服
             InputRow(
                 label = Schema.ACCOUNT_SETTINGS.first { it.key == "cn_path" }.displayName,
-                value = configStates["cn_path${index}"]?.value ?: "",
-                onValueChange = { configStates["cn_path${index}"]?.value = it },
+                value = GlobalVars.configStates["cn_path${index}"]?.value ?: "",
+                onValueChange = { GlobalVars.configStates["cn_path${index}"]?.value = it },
             )
         } else {
             InputRow(
                 label = Schema.ACCOUNT_SETTINGS.first { it.key == "global_path" }.displayName,
-                value = configStates["global_path${index}"]?.value ?: "",
-                onValueChange = { configStates["global_path${index}"]?.value = it },
+                value = GlobalVars.configStates["global_path${index}"]?.value ?: "",
+                onValueChange = { GlobalVars.configStates["global_path${index}"]?.value = it },
             )
         }
     }
