@@ -30,11 +30,11 @@ fun AccountConfig(
     Column(modifier = Modifier.padding(horizontal = 2.dp)) {
         Row {
             CustomCheckBox(
-                checkedState = GlobalVars.configStates["prefix${index}"]?.value ?: "",
+                checkedState = GlobalVars.configStates["isopen${index}"]?.value ?: "",
                 onCheckStateChange = {
-                    GlobalVars.configStates["prefix${index}"]?.value = if (it) "1" else "0"
+                    GlobalVars.configStates["isopen${index}"]?.value = if (it) "1" else "0"
                 },
-                text = Schema.ACCOUNT_SETTINGS.first { it.key == "prefix" }.displayName + index,
+                text = Schema.ACCOUNT_SETTINGS.first { it.key == "isopen" }.displayName + index,
             )
             InputRow(
                 label = Schema.ACCOUNT_SETTINGS.first { it.key == "remark" }.displayName,

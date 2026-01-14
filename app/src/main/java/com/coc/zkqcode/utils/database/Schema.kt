@@ -41,7 +41,7 @@ object Schema {
         SettingDef("runtime_screenshot", "运行时截图", 0, "GLOBAL_SETTINGS")
     )
     val ACCOUNT_SETTINGS = listOf(
-        SettingDef("prefix", "开启状态", 0, "ACCOUNT_SETTINGS"),
+        SettingDef("isopen", "开启状态", 0, "ACCOUNT_SETTINGS"),
         SettingDef("remark", "备注", "", "ACCOUNT_SETTINGS"),
         SettingDef("game_version", "游戏版本", "0", "ACCOUNT_SETTINGS"),
         SettingDef("account_config", "配置文件序号", "1", "ACCOUNT_SETTINGS"),
