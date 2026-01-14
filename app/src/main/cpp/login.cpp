@@ -6,6 +6,8 @@
 #include <android/log.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <cstdlib>
+
 #include <random>
 #include <sys/time.h>
 #include <fstream>
@@ -23,8 +25,8 @@ static std::vector<uint8_t> g_session_key;
 // Returns a value based on time to make debugging inconsistent
 int perform_entropy_churn(const uint8_t* data, size_t len) {
     volatile int accumulator = g_chaos_state;
-    struct timeval tv;
-    gettimeofday(&tv, NULL);
+    struct timeval tv{};
+    gettimeofday(&tv, nullptr);
 
     for(size_t i = 0; i < len; i++) {
         // Complex looking math that wastes CPU cycles
@@ -37,13 +39,30 @@ int perform_entropy_churn(const uint8_t* data, size_t len) {
 }
 
 bool get_random_bytes(unsigned char *buffer, size_t size) {
+    // -------------------------------------------------
+    // 方案 A: 尝试通过内核设备文件 /dev/urandom 获取
+    // -------------------------------------------------
     int fd = open("/dev/urandom", O_RDONLY);
     if (fd != -1) {
+        // 尝试读取
         ssize_t res = read(fd, buffer, size);
         close(fd);
-        return res == (ssize_t) size;
+
+        // 只有当读取的字节数完全等于请求的大小时，才直接返回成功
+        if (res == (ssize_t)size) {
+            return true;
+        }
+        // 如果 res != size (读取不完整或出错)，代码会继续向下执行进入 fallback
     }
-    return false;
+    // -------------------------------------------------
+    // 方案 B (兜底): 使用 arc4random_buf
+    // -------------------------------------------------
+    // 如果 open 失败，或者 read 被中断/读取不完整，执行这里。
+    // arc4random_buf 是用户态 CSPRNG，不需要文件描述符，返回值为空（意味着假设永远成功）。
+    // 它会自动覆盖 buffer 中的内容，所以不用担心之前 read 了一半产生的脏数据。
+    arc4random_buf(buffer, size);
+    // 既然 arc4random_buf 已经填充了数据，我们返回 true
+    return true;
 }
 
 extern "C" JNIEXPORT jstring JNICALL
@@ -51,7 +70,7 @@ generateNonce(JNIEnv *env, jobject thiz) {
     unsigned char random_buf[16];
 
     // OBFUSCATION: Initialize buffer with junk first
-    for(int i=0; i<16; i++) random_buf[i] = (uint8_t)g_chaos_state;
+    for(unsigned char & i : random_buf) i = (uint8_t)g_chaos_state;
 
     if (!get_random_bytes(random_buf, sizeof(random_buf))) {
         std::random_device rd;
@@ -96,9 +115,6 @@ encryptLoginPayload(JNIEnv *env, jobject thiz, jstring payload, jstring server_p
     uint8_t ghost_buffer[32];
 
     bool random_success = get_random_bytes(my_secret, 32);
-    if (!random_success) {
-        for (int i = 0; i < 32; i++) my_secret[i] = rand() % 256;
-    }
 
     // OBFUSCATION: Mix the secret into the ghost buffer.
     // A reverse engineer sees this loop and thinks ghost_buffer is the key.
@@ -108,7 +124,7 @@ encryptLoginPayload(JNIEnv *env, jobject thiz, jstring payload, jstring server_p
 
     crypto_x25519_public_key(my_public, my_secret);
 
-    std::vector<uint8_t> server_pub_bin = hexToBin(server_pub_str.c_str());
+    std::vector<uint8_t> server_pub_bin = hexToBin(server_pub_str);
     if (server_pub_bin.size() != 32) return env->NewStringUTF("Error: Invalid key");
 
     uint8_t shared_secret[32];
@@ -194,8 +210,8 @@ decryptLoginResponse(JNIEnv *env, jobject thiz, jstring encrypted_response) {
     std::string nonce_hex = resp_str.substr(nonce_start, nonce_end - nonce_start);
     std::string data_hex = resp_str.substr(data_start, data_end - data_start);
 
-    std::vector<uint8_t> nonce_bytes = hexToBin(nonce_hex.c_str());
-    std::vector<uint8_t> data_bytes = hexToBin(data_hex.c_str());
+    std::vector<uint8_t> nonce_bytes = hexToBin(nonce_hex);
+    std::vector<uint8_t> data_bytes = hexToBin(data_hex);
 
     if (nonce_bytes.size() != 12) return env->NewStringUTF("Error: Invalid nonce length");
     if (data_bytes.empty()) return env->NewStringUTF("");

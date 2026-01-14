@@ -1,7 +1,5 @@
 package com.coc.zkqcode.utils.floatingwindows
 
-import android.app.NotificationChannel
-import android.app.NotificationManager
 import android.app.Service
 import android.content.Intent
 import android.graphics.PixelFormat
@@ -24,8 +22,6 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.unit.toSize
 import androidx.lifecycle.Lifecycle
-import com.coc.zkqcode.utils.NotificationHelper
-import com.coc.zkqcode.utils.control.ControlWindow
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
 import androidx.lifecycle.setViewTreeLifecycleOwner
@@ -33,8 +29,9 @@ import androidx.savedstate.SavedStateRegistry
 import androidx.savedstate.SavedStateRegistryController
 import androidx.savedstate.SavedStateRegistryOwner
 import androidx.savedstate.setViewTreeSavedStateRegistryOwner
-import com.coc.zkqcode.utils.control.ControlWindow
+import com.coc.zkqcode.utils.floatingwindows.NotificationHelper
 import com.coc.zkqcode.utils.components.GlobalVars
+import com.coc.zkqcode.utils.control.ControlWindow
 import kotlin.math.roundToInt
 
 class ControlWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner {
@@ -147,6 +144,8 @@ class ControlWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner 
                             putExtra("show_main_ui", true)
                             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                         }
+                    GlobalVars.isAutoRunEnabled = true
+                    GlobalVars.autoRunTimer = 60
                     startService(intent)
                     stopSelf()
                 },

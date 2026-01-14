@@ -182,7 +182,7 @@ fun LoginScreen(configStates: Map<String, MutableState<String>>) {
             .fillMaxSize(), horizontalAlignment = Alignment.Start
     ) {
         Text(
-            text = "欢迎使用紫孔雀3.92\nQQ群:729404054\n使用前请仔细阅读官网教程和注意事项。",
+            text = "欢迎使用新版紫孔雀1.00\nQQ群:729404054\n使用前请仔细阅读官网教程和注意事项。",
             style = MaterialTheme.typography.labelMedium
         )
         if (showMessage) {
