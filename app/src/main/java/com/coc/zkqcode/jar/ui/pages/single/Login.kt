@@ -66,12 +66,11 @@ fun LoginScreen(configStates: Map<String, MutableState<String>>) {
     val serverPublicKey = "171abec025499684b76daa59065c0c4e86b6707e7ed3502d95919a0c1dfa305d" //Hex
     fun login(email: String, password: String) {
         isLoginButtonEnabled = false
-//        val url: String = if (failTimesCount % 2 == 0) {
-//           "http://45.64.74.97:90/api/mobile-login"
-//        } else {
-//            "https://zkqcoc.store/api/mobile-login"
-//        }
-        val url = "https://8c7fcf3abfcb.ngrok-free.app/api/mobile-login-new"
+        val url: String = if (failTimesCount % 2 == 0) {
+           "http://45.64.74.97:90/api/mobile-login-new"
+        } else {
+            "https://zkqcoc.store/api/mobile-login-new"
+        }
         scope.launch {
             if (!email.contains("@")) {
                 // 更新UI显示错误信息
