@@ -42,7 +42,10 @@ import kotlinx.coroutines.delay
 import com.coc.zkqcode.utils.floatingwindows.UIWindowService
 import com.coc.zkqcode.utils.components.CustomButton
 import com.coc.zkqcode.utils.components.GlobalVars
-
+import com.coc.zkqcode.utils.fileactions.FileActions
+import com.coc.zkqcode.utils.websocket.ServerConnection
+import com.coc.zkqcode.utils.database.Schema
+import com.coc.zkqcode.utils.floatingwindows.MessageBoxHelper
 enum class RootStatus {
     CHECKING,
     ROOT_DENIED,      // 没有Root权限
@@ -56,11 +59,16 @@ enum class RootStatus {
 fun CheckRootScreen() {
     val context = LocalContext.current
     var status by remember { mutableStateOf(RootStatus.CHECKING) }
+    var isConfigInitialized by remember { mutableStateOf(false) }
 
     // 使用 LaunchedEffect 监听并检测
     LaunchedEffect(Unit) {
         status = checkAndGrantPermissions(context) { newStatus ->
             status = newStatus
+            // Reset config initialization if status changes back from granted (though unlikely in this flow)
+            if (newStatus != RootStatus.GRANTED) {
+                isConfigInitialized = false
+            }
         }
     }
 
@@ -106,32 +114,108 @@ fun CheckRootScreen() {
         }
 
         RootStatus.GRANTED -> {
-            // Start the floating window service when root check passes
+            // Initialize FileActions and Configs once Root is GRANTED
             LaunchedEffect(Unit) {
-                val serviceIntent = Intent(context, UIWindowService::class.java).apply {
-                    putExtra("show_main_ui", true)
+                 if (GlobalVars.fileActions == null) {
+                    val serverConnection = ServerConnection("ws://localhost:6839/zkq")
+                    GlobalVars.fileActions = FileActions(serverConnection)
                 }
-                context.startService(serviceIntent)
-            }
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                FullScreenMessage("权限检查通过，正在显示主界面...\n若未能自动显示，请手动点击按钮显示主界面")
-                Spacer(modifier = Modifier.height(16.dp))
-                CustomButton(
-                    text = "显示主界面",
-                    onClick = {
-                        val serviceIntent = Intent(context, UIWindowService::class.java).apply {
-                            putExtra("show_main_ui", true)
+
+                // Initialize states from Schema
+                val actions = GlobalVars.fileActions
+                if (actions != null) {
+
+                    Schema.GLOBAL_SETTINGS.forEach { def ->
+                        val savedValue = actions.getValue(def.key)
+                        if (savedValue != null) {
+                            GlobalVars.configStates[def.key]?.value = savedValue
+                        } else if (!GlobalVars.configStates.containsKey(def.key)) {
+                            GlobalVars.configStates[def.key] =
+                                mutableStateOf(def.defaultValue.toString())
                         }
-                        GlobalVars.isAutoRunEnabled = true
-                        GlobalVars.autoRunTimer = 60
-                        GlobalVars.updateWindowPosition = false
-                        context.startService(serviceIntent)
                     }
-                )
+
+                    // Also initialize account settings if account_count is present
+                    val accountCount = actions.getValue("account_count")?.toIntOrNull() ?: 3
+                    for (i in 1..accountCount) {
+                        Schema.ACCOUNT_SETTINGS.forEach { def ->
+                            val key = "${def.key}${i}"
+                            val savedValue = actions.getValue(key)
+                            if (savedValue != null) {
+                                GlobalVars.configStates[key]?.value = savedValue
+                            } else {
+                                val defaultValue =
+                                    if (def.key.startsWith("global_path") || def.key.startsWith("cn_path")) {
+                                        i.toString()
+                                    } else {
+                                        def.defaultValue.toString()
+                                    }
+                                GlobalVars.configStates[key] = mutableStateOf(defaultValue)
+                            }
+                        }
+                    }
+
+                    // Initialize MAIN_BASE_SETTINGS for each config
+                    val configCount = actions.getValue("config_count")?.toIntOrNull() ?: 3
+                    for (i in 1..configCount) {
+                        Schema.MAIN_BASE_SETTINGS.forEach { def ->
+                            val key = "${def.key}_c$i"
+                            val savedValue = actions.getValue(key)
+                            if (savedValue != null) {
+                                GlobalVars.configStates[key]?.value = savedValue
+                            } else if (!GlobalVars.configStates.containsKey(key)) {
+                                GlobalVars.configStates[key] =
+                                    mutableStateOf(def.defaultValue.toString())
+                            }
+                        }
+                    }
+
+                    isConfigInitialized = true
+                }
+            }
+
+            if (!isConfigInitialized) {
+                 FullScreenMessage("正在初始化配置文件...")
+            } else {
+                // Start the floating window service when root check passes AND config is initialized
+                LaunchedEffect(Unit) {
+                    val serviceIntent = Intent(context, UIWindowService::class.java).apply {
+                        putExtra("show_main_ui", true)
+                    }
+                    context.startService(serviceIntent)
+                }
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    FullScreenMessage("权限检查通过，配置加载完成。\n正在显示主界面...\n若未能自动显示，请手动点击按钮显示主界面")
+                    Spacer(modifier = Modifier.height(16.dp))
+                    CustomButton(
+                        text = "显示主界面",
+                        onClick = {
+                            val serviceIntent = Intent(context, UIWindowService::class.java).apply {
+                                putExtra("show_main_ui", true)
+                            }
+                            GlobalVars.isAutoRunEnabled = true
+                            GlobalVars.autoRunTimer = 60
+                            GlobalVars.updateWindowPosition = false
+                            context.startService(serviceIntent)
+                        }
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    CustomButton(
+                        text = "MsgBox Demo",
+                        onClick = {
+                            MessageBoxHelper.showFloatingMessage(
+                                context = context,
+                                text = "Test Message Box",
+                                x = 720,
+                                y = 1280
+                            )
+                        }
+                    )
+                }
             }
         }
     }

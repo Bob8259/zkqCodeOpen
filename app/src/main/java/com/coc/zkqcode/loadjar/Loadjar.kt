@@ -23,7 +23,7 @@ class Loadjar(private val context: Context) {
      */
     @Composable
     fun LoadAndShowUI(assetFileName: String = "code.jar", onClose: () -> Unit) {
-        var loadStatus by remember { mutableStateOf("Loading...") }
+        var loadStatus by remember { mutableStateOf("加载中...") }
         LaunchedEffect(Unit) {
             // Always create a new assets folder and extract all assets
             extractAllAssets()
