@@ -18,7 +18,6 @@ import androidx.savedstate.SavedStateRegistryController
 import androidx.savedstate.SavedStateRegistryOwner
 import androidx.savedstate.setViewTreeSavedStateRegistryOwner
 import com.coc.zkqcode.loadjar.Loadjar
-import com.coc.zkqcode.utils.floatingwindows.NotificationHelper
 
 class UIWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner {
 
@@ -72,6 +71,7 @@ class UIWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner {
             PixelFormat.TRANSLUCENT
         ).apply {
             gravity = Gravity.CENTER
+            windowAnimations = 0
         }
         composeView = ComposeView(this).apply {
             setViewTreeLifecycleOwner(this@UIWindowService)
@@ -81,7 +81,12 @@ class UIWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner {
                 Loadjar(context).LoadAndShowUI(onClose = {
                     if (com.coc.zkqcode.utils.components.GlobalVars.showManualMode) {
                         closeMainUI(silent = true)
-                        startService(Intent(this@UIWindowService, SwitchAccountWindowService::class.java))
+                        startService(
+                            Intent(
+                                this@UIWindowService,
+                                SwitchAccountWindowService::class.java
+                            )
+                        )
                     } else {
                         closeMainUI()
                     }
@@ -108,7 +113,7 @@ class UIWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner {
         super.onDestroy()
         lifecycleRegistry.currentState = Lifecycle.State.DESTROYED
         if (composeView != null) {
-            windowManager.removeView(composeView)
+            windowManager.removeViewImmediate(composeView)
             composeView = null
         }
     }

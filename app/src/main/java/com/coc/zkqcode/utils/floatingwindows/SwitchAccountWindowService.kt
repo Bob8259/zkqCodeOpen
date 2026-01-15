@@ -59,6 +59,7 @@ class SwitchAccountWindowService : Service(), LifecycleOwner, SavedStateRegistry
             PixelFormat.TRANSLUCENT
         ).apply {
             gravity = Gravity.CENTER
+            windowAnimations = 0
         }
 
         composeView = ComposeView(this).apply {
@@ -81,7 +82,7 @@ class SwitchAccountWindowService : Service(), LifecycleOwner, SavedStateRegistry
         super.onDestroy()
         lifecycleRegistry.currentState = Lifecycle.State.DESTROYED
         if (composeView != null) {
-            windowManager.removeView(composeView)
+            windowManager.removeViewImmediate(composeView)
             composeView = null
         }
     }

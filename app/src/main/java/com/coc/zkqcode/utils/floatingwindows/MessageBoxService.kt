@@ -92,6 +92,7 @@ class MessageBoxService : Service(), LifecycleOwner, SavedStateRegistryOwner {
             gravity = Gravity.TOP or Gravity.START
             x = 0
             y = 0
+            windowAnimations = 0 // Disable animations
         }
 
         composeView = ComposeView(this).apply {
@@ -190,7 +191,7 @@ class MessageBoxService : Service(), LifecycleOwner, SavedStateRegistryOwner {
         lifecycleRegistry.currentState = Lifecycle.State.DESTROYED
         if (composeView != null) {
             try {
-                windowManager.removeView(composeView)
+                windowManager.removeViewImmediate(composeView)
             } catch (_: IllegalArgumentException) {
                 // View not attached
             }
