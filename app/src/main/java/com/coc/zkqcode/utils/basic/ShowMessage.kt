@@ -1,7 +1,6 @@
 package com.coc.zkqcode.utils.basic
 
 import com.coc.zkqcode.utils.floatingwindows.MessageBoxHelper.showFloatingMessage
-
 import java.lang.ref.WeakReference
 
 object ShowMessage {
@@ -18,4 +17,5 @@ object ShowMessage {
             System.err.println("ShowMessage: Context not initialized or released!")
         }
     }
+
 }

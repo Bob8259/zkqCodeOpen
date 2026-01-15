@@ -15,8 +15,11 @@ class FileActions(
     private val gson = Gson()
     var configJson by mutableStateOf(JsonObject())
         private set
+    var isLoading by mutableStateOf(true)
+        private set
 
     fun getValue(key: String): String? {
+
         return if (configJson.has(key)) configJson.get(key).asString else null
     }
 
@@ -55,13 +58,13 @@ class FileActions(
                                 try {
                                     val loadedJson = gson.fromJson(data, JsonObject::class.java)
                                     // Update the existing configJson instead of replacing the object
-                                    // to ensure Compose observers are notified correctly if they observe properties
-                                    // Or just replace the whole JsonObject if it's a mutableStateOf
                                     configJson = loadedJson
+                                    isLoading = false
                                 } catch (e: Exception) {
                                     println("Error parsing data as config: ${e.message}")
                                 }
                             }
+
                         }
                         // Always trigger callback after receiving a success response
                         onConfigLoaded?.invoke()
@@ -73,13 +76,18 @@ class FileActions(
                             // If the server returns an error for the config file (e.g., "File not found"),
                             // we still trigger the callback to use default values.
                             onConfigLoaded?.invoke()
+                            isLoading = false
                         }
                     }
                 } catch (e: Exception) {
                     println("Error parsing message: ${e.message}")
+                    isLoading = false
                 }
             },
-            onFailure = { t -> println("Connection failed: ${t.message}") }
+            onFailure = { t ->
+                println("Connection failed: ${t.message}")
+                isLoading = false
+            }
         )
     }
 
