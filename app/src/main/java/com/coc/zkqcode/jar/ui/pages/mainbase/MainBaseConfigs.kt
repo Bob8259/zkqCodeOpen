@@ -249,6 +249,15 @@ fun MainBaseConfig(index: Int) {
                 },
                 text = Schema.MAIN_BASE_SETTINGS.first { it.key == "research_setting" }.displayName,
             )
+            CustomCheckBox(
+                checkedState = GlobalVars.configStates["collect_clan_castle_c$index"]?.value ?: "",
+                onCheckStateChange = {
+                    GlobalVars.configStates["collect_clan_castle_c$index"]!!.value =
+                        if (it) "1" else "0"
+
+                },
+                text = Schema.MAIN_BASE_SETTINGS.first { it.key == "collect_clan_castle" }.displayName,
+            )
         }
         if (GlobalVars.configStates["donation_setting_c$index"]!!.value == "1") {
             InputRow(
@@ -258,6 +267,75 @@ fun MainBaseConfig(index: Int) {
                     GlobalVars.configStates["donation_times_c$index"]!!.value = it
                 }
             )
+        }
+
+        if (GlobalVars.configStates["research_setting_c$index"]?.value == "1") {
+            ResearchConfigs(index)
+        }
+
+        HorizontalDivider(
+            modifier = Modifier.padding(top = 10.dp, bottom = 10.dp),
+            thickness = 1.dp,
+            color = MaterialTheme.colorScheme.onSurface
+        )
+
+        FlowRow {
+            CustomCheckBox(
+                checkedState = GlobalVars.configStates["build_setting_c$index"]?.value ?: "0",
+                onCheckStateChange = { checked ->
+                    GlobalVars.configStates["build_setting_c$index"]?.value =
+                        if (checked) "1" else "0"
+                },
+                text = Schema.MAIN_BASE_SETTINGS.first { it.key == "build_setting" }.displayName
+            )
+            CustomCheckBox(
+                checkedState = GlobalVars.configStates["wall_upgrade_settings_c$index"]?.value
+                    ?: "0",
+                onCheckStateChange = { checked ->
+                    GlobalVars.configStates["wall_upgrade_settings_c$index"]?.value =
+                        if (checked) "1" else "0"
+                },
+                text = Schema.MAIN_BASE_SETTINGS.first { it.key == "wall_upgrade_settings" }.displayName
+            )
+            CustomCheckBox(
+                checkedState = GlobalVars.configStates["batch_wall_upgrade_settings_c$index"]?.value
+                    ?: "0",
+                onCheckStateChange = { checked ->
+                    GlobalVars.configStates["batch_wall_upgrade_settings_c$index"]?.value =
+                        if (checked) "1" else "0"
+                },
+                text = Schema.MAIN_BASE_SETTINGS.first { it.key == "batch_wall_upgrade_settings" }.displayName
+            )
+            CustomCheckBox(
+                checkedState = GlobalVars.configStates["worker_settings_c$index"]?.value ?: "0",
+                onCheckStateChange = { checked ->
+                    GlobalVars.configStates["worker_settings_c$index"]?.value =
+                        if (checked) "1" else "0"
+                },
+                text = Schema.MAIN_BASE_SETTINGS.first { it.key == "worker_settings" }.displayName
+            )
+            CustomCheckBox(
+                checkedState = GlobalVars.configStates["building_conversion_settings_c$index"]?.value
+                    ?: "0",
+                onCheckStateChange = { checked ->
+                    GlobalVars.configStates["building_conversion_settings_c$index"]?.value =
+                        if (checked) "1" else "0"
+                },
+                text = Schema.MAIN_BASE_SETTINGS.first { it.key == "building_conversion_settings" }.displayName
+            )
+            CustomCheckBox(
+                checkedState = GlobalVars.configStates["upgrade_after_fail_wall_upgrade_c$index"]?.value
+                    ?: "0",
+                onCheckStateChange = { checked ->
+                    GlobalVars.configStates["upgrade_after_fail_wall_upgrade_c$index"]?.value =
+                        if (checked) "1" else "0"
+                },
+                text = Schema.MAIN_BASE_SETTINGS.first { it.key == "upgrade_after_fail_wall_upgrade" }.displayName,
+                explain = "勾选后，若主世界无城墙可升级，则会将所有工人用于建造。"
+            )
+        }
+        if (GlobalVars.configStates["build_setting_c$index"]?.value == "1") {
+            UpgradeConfigs(index)
         }
     }
 }

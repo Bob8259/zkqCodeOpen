@@ -170,6 +170,16 @@ fun CheckRootScreen() {
                                             mutableStateOf(def.defaultValue.toString())
                                     }
                                 }
+                                Schema.MAIN_BASE_TROOPS_AND_SPELLS.forEach { def ->
+                                    val key = "${def.key}_c$i"
+                                    val savedValue = actions.getValue(key)
+                                    if (savedValue != null) {
+                                        GlobalVars.configStates[key]?.value = savedValue
+                                    } else if (!GlobalVars.configStates.containsKey(key)) {
+                                        GlobalVars.configStates[key] =
+                                            mutableStateOf(def.defaultValue.toString())
+                                    }
+                                }
                             }
 
                             isConfigInitialized = true

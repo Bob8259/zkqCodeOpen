@@ -1,4 +1,73 @@
 package com.coc.zkqcode.jar.ui.pages.mainbase
 
-class UpgradeConfigs {
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import com.coc.zkqcode.utils.components.CustomButton
+import com.coc.zkqcode.utils.components.CustomCheckBox
+import com.coc.zkqcode.utils.components.GlobalVars
+import com.coc.zkqcode.utils.database.Schema
+
+@Composable
+fun UpgradeConfigs(index: Int) {
+    val items = Schema.MAIN_BASE_BUILDINGS
+
+    // 一键全选
+    val selectAll = {
+        items.forEach { item ->
+            val key = "${item.key}_c${index}"
+            if (!GlobalVars.configStates.containsKey(key)) {
+                GlobalVars.configStates[key] = androidx.compose.runtime.mutableStateOf("1")
+            } else {
+                GlobalVars.configStates[key]?.value = "1"
+            }
+        }
+    }
+
+    // 一键反选
+    val invertSelection = {
+        items.forEach { item ->
+            val key = "${item.key}_c${index}"
+            val currentState = GlobalVars.configStates[key]?.value
+            val newValue = if (currentState == "1") "0" else "1"
+            if (!GlobalVars.configStates.containsKey(key)) {
+                GlobalVars.configStates[key] = androidx.compose.runtime.mutableStateOf(newValue)
+            } else {
+                GlobalVars.configStates[key]?.value = newValue
+            }
+        }
+    }
+    Row {
+        CustomButton(text = "一键全选", onClick = selectAll)
+        CustomButton(text = "一键反选", onClick = invertSelection)
+    }
+
+    FlowRow {
+        items.forEach { item ->
+            CustomCheckBox(
+                checkedState = GlobalVars.configStates["${item.key}_c${index}"]?.value ?: "1",
+                onCheckStateChange = { isChecked ->
+                    val key = "${item.key}_c${index}"
+                    val newValue = if (isChecked) "1" else "0"
+                    if (!GlobalVars.configStates.containsKey(key)) {
+                        GlobalVars.configStates[key] =
+                            androidx.compose.runtime.mutableStateOf(newValue)
+                    } else {
+                        GlobalVars.configStates[key]?.value = newValue
+                    }
+                },
+                text = item.displayName,
+            )
+        }
+    }
+    HorizontalDivider(
+        modifier = Modifier.padding(top = 6.dp),
+        thickness = 1.dp,
+        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 1f)
+    )
 }
