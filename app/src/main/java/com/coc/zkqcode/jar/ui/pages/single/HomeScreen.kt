@@ -3,7 +3,6 @@ package com.coc.zkqcode.jar.ui.pages.single
 import android.os.Environment
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -37,9 +36,7 @@ import com.coc.zkqcode.utils.components.GlobalVars
 import com.coc.zkqcode.utils.components.InputRow
 import com.coc.zkqcode.utils.database.Schema
 import com.coc.zkqcode.utils.database.SchemaExporter
-import com.coc.zkqcode.utils.fileactions.FileActions
 import com.coc.zkqcode.utils.theme.AppColors
-import com.coc.zkqcode.utils.websocket.ServerConnection
 
 @Composable
 fun HomeScreen(onSaveSuccess: () -> Unit = {}) {
