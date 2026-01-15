@@ -29,9 +29,7 @@ import androidx.savedstate.SavedStateRegistry
 import androidx.savedstate.SavedStateRegistryController
 import androidx.savedstate.SavedStateRegistryOwner
 import androidx.savedstate.setViewTreeSavedStateRegistryOwner
-import com.coc.zkqcode.utils.floatingwindows.NotificationHelper
 import com.coc.zkqcode.utils.components.GlobalVars
-import com.coc.zkqcode.utils.control.ControlWindow
 import kotlin.math.roundToInt
 
 class ControlWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner {
