@@ -55,10 +55,10 @@ class MessageBoxService : Service(), LifecycleOwner, SavedStateRegistryOwner {
     private var messageX by mutableIntStateOf(1280)
     private var messageY by mutableIntStateOf(720)
     private var messageText by mutableStateOf("")
-    private var messageFontSize by mutableStateOf(15.sp)
+    private var messageFontSize by mutableStateOf(8.sp)
     private var messageDuration by mutableLongStateOf(2000L)
     private var isVisible by mutableStateOf(false)
-    
+
     // To handle multiple concurrent requests or updates, we might need a trigger
     private var showTrigger by mutableLongStateOf(0L)
 
@@ -106,44 +106,44 @@ class MessageBoxService : Service(), LifecycleOwner, SavedStateRegistryOwner {
 
         windowManager.addView(composeView, params)
     }
-    
+
     @Composable
     private fun MessageBoxContent() {
         var boxSize by remember { mutableStateOf(IntSize.Zero) }
 
         LaunchedEffect(showTrigger) {
-             if (isVisible) {
-                 delay(messageDuration)
-                 isVisible = false
-                 stopSelf()
-             }
+            if (isVisible) {
+                delay(messageDuration)
+                isVisible = false
+                stopSelf()
+            }
         }
 
         if (isVisible) {
-            
+
             // Effect to update window position based on size and target rb-corner
             LaunchedEffect(messageX, messageY, boxSize) {
                 if (composeView != null && boxSize != IntSize.Zero) {
                     val params = composeView!!.layoutParams as WindowManager.LayoutParams
-                    
+
                     // messageX, messageY is the Right-Bottom corner.
                     // Top-Left = Right-Bottom - Size
                     val targetX = messageX - boxSize.width
                     val targetY = messageY - boxSize.height
-                    
+
                     params.x = targetX
                     params.y = targetY
-                    
+
                     try {
                         windowManager.updateViewLayout(composeView, params)
-                    } catch (_: Exception) { }
+                    } catch (_: Exception) {
+                    }
                 }
             }
-            
+
             Box(
                 modifier = Modifier
-                    .background(Color(0xAA000000), shape = RoundedCornerShape(8.dp))
-                    .padding(8.dp)
+                    .background(Color.Black)
                     .onGloballyPositioned { coordinates ->
                         boxSize = coordinates.size
                     }
@@ -160,12 +160,12 @@ class MessageBoxService : Service(), LifecycleOwner, SavedStateRegistryOwner {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         lifecycleRegistry.currentState = Lifecycle.State.STARTED
-        
+
         intent?.let {
             val text = it.getStringExtra("text") ?: ""
             if (text.isNotEmpty()) {
                 messageText = text
-                
+
                 // Defaults
                 val x = it.getIntExtra("x", 1280)
                 val y = it.getIntExtra("y", 720)
@@ -176,13 +176,13 @@ class MessageBoxService : Service(), LifecycleOwner, SavedStateRegistryOwner {
                 messageY = y
                 messageFontSize = size.sp
                 messageDuration = duration
-                
+
                 isVisible = true
                 showTrigger++
-                
+
             }
         }
-        
+
         return START_NOT_STICKY
     }
 

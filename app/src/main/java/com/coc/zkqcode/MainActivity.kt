@@ -8,6 +8,7 @@ import com.coc.zkqcode.utils.CheckRootScreen
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        com.coc.zkqcode.utils.basic.ShowMessage.init(this)
         setContent {
             CheckRootScreen()
         }

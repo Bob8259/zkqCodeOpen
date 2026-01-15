@@ -45,7 +45,7 @@ import com.coc.zkqcode.utils.components.GlobalVars
 import com.coc.zkqcode.utils.fileactions.FileActions
 import com.coc.zkqcode.utils.websocket.ServerConnection
 import com.coc.zkqcode.utils.database.Schema
-import com.coc.zkqcode.utils.floatingwindows.MessageBoxHelper
+
 enum class RootStatus {
     CHECKING,
     ROOT_DENIED,      // 没有Root权限
@@ -116,7 +116,7 @@ fun CheckRootScreen() {
         RootStatus.GRANTED -> {
             // Initialize FileActions and Configs once Root is GRANTED
             LaunchedEffect(Unit) {
-                 if (GlobalVars.fileActions == null) {
+                if (GlobalVars.fileActions == null) {
                     val serverConnection = ServerConnection("ws://localhost:6839/zkq")
                     GlobalVars.fileActions = FileActions(serverConnection)
                 }
@@ -175,7 +175,7 @@ fun CheckRootScreen() {
             }
 
             if (!isConfigInitialized) {
-                 FullScreenMessage("正在初始化配置文件...")
+                FullScreenMessage("正在初始化配置文件...")
             } else {
                 // Start the floating window service when root check passes AND config is initialized
                 LaunchedEffect(Unit) {
@@ -204,17 +204,6 @@ fun CheckRootScreen() {
                         }
                     )
                     Spacer(modifier = Modifier.height(16.dp))
-                    CustomButton(
-                        text = "MsgBox Demo",
-                        onClick = {
-                            MessageBoxHelper.showFloatingMessage(
-                                context = context,
-                                text = "Test Message Box",
-                                x = 720,
-                                y = 1280
-                            )
-                        }
-                    )
                 }
             }
         }

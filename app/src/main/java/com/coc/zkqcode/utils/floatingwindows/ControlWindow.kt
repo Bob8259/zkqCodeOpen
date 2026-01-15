@@ -1,4 +1,4 @@
-package com.coc.zkqcode.utils.control
+package com.coc.zkqcode.utils.floatingwindows
 
 import android.graphics.BitmapFactory
 import androidx.compose.foundation.Image
