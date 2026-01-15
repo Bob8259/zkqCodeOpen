@@ -19,7 +19,6 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -44,68 +43,7 @@ import com.coc.zkqcode.utils.websocket.ServerConnection
 
 @Composable
 fun HomeScreen(onSaveSuccess: () -> Unit = {}) {
-    // Initialize FileActions and store in GlobalVars if not already done
-    LaunchedEffect(Unit) {
-        if (GlobalVars.fileActions == null) {
-            val serverConnection = ServerConnection("ws://localhost:6839/zkq")
-            GlobalVars.fileActions = FileActions(serverConnection)
-        }
-    }
 
-
-    var isLoading by remember { mutableStateOf(true) }
-
-    // Initialize states from Schema
-    LaunchedEffect(GlobalVars.fileActions?.configJson) {
-        val actions = GlobalVars.fileActions
-        if (actions != null) {
-
-            Schema.GLOBAL_SETTINGS.forEach { def ->
-                val savedValue = actions.getValue(def.key)
-                if (savedValue != null) {
-                    GlobalVars.configStates[def.key]?.value = savedValue
-                } else if (!GlobalVars.configStates.containsKey(def.key)) {
-                    GlobalVars.configStates[def.key] = mutableStateOf(def.defaultValue.toString())
-                }
-            }
-
-            // Also initialize account settings if account_count is present
-            val accountCount = actions.getValue("account_count")?.toIntOrNull() ?: 3
-            for (i in 1..accountCount) {
-                Schema.ACCOUNT_SETTINGS.forEach { def ->
-                    val key = "${def.key}${i}"
-                    val savedValue = actions.getValue(key)
-                    if (savedValue != null) {
-                        GlobalVars.configStates[key]?.value = savedValue
-                    } else {
-                        val defaultValue =
-                            if (def.key.startsWith("global_path") || def.key.startsWith("cn_path")) {
-                                i.toString()
-                            } else {
-                                def.defaultValue.toString()
-                            }
-                        GlobalVars.configStates[key] = mutableStateOf(defaultValue)
-                    }
-                }
-            }
-
-            // Initialize MAIN_BASE_SETTINGS for each config
-            val configCount = actions.getValue("config_count")?.toIntOrNull() ?: 3
-            for (i in 1..configCount) {
-                Schema.MAIN_BASE_SETTINGS.forEach { def ->
-                    val key = "${def.key}_c$i"
-                    val savedValue = actions.getValue(key)
-                    if (savedValue != null) {
-                        GlobalVars.configStates[key]?.value = savedValue
-                    } else if (!GlobalVars.configStates.containsKey(key)) {
-                        GlobalVars.configStates[key] = mutableStateOf(def.defaultValue.toString())
-                    }
-                }
-            }
-
-            isLoading = false
-        }
-    }
 
     // Ensure all keys are initialized even if file hasn't loaded yet
     Schema.GLOBAL_SETTINGS.forEach { def ->
@@ -190,24 +128,11 @@ fun HomeScreen(onSaveSuccess: () -> Unit = {}) {
         }
     }
 
-    if (isLoading) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Color.White),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = "加载配置文件中....",
-                style = MaterialTheme.typography.headlineSmall
-            )
-        }
-    } else {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Color.White)
-        ) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.White)
+    ) {
             // 1. 顶部的 Tab 栏
             PrimaryScrollableTabRow(
                 selectedTabIndex = selectedTabIndex,
@@ -370,5 +295,5 @@ fun HomeScreen(onSaveSuccess: () -> Unit = {}) {
                 )
             }
         }
-    }
+
 }
