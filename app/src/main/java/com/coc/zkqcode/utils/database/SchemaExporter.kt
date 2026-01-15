@@ -1,20 +1,29 @@
 package com.coc.zkqcode.utils.database
 
-import androidx.compose.runtime.MutableState
 import com.coc.zkqcode.utils.components.GlobalVars
+import com.coc.zkqcode.utils.database.SchemaExporter.DEFAULT_KEYS
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonObject
 
 object SchemaExporter {
 
+    private val DEFAULT_KEYS = listOf(
+        "GLOBAL_SETTINGS",
+        "ACCOUNT_SETTINGS",
+        "MAIN_BASE_SETTINGS",
+        "MAIN_BASE_TROOPS_AND_SPELLS",
+        "MAIN_BASE_BUILDINGS",
+        "MAIN_BASE_PETS"
+    )
+
     /**
      * Exports the specified Schema definitions to a JSON string (key-value format)
-     * @param keys List of module Keys to export. If empty, exports all by default.
+     * @param keys List of module Keys to export. If empty, uses [DEFAULT_KEYS].
      * @param accountCount Number of accounts, used for exporting account configurations
-     * @param configStates States maintained by the UI layer; if provided, priority is given to fetching the latest values from here
+     * @param configCount Number of configuration profiles
      */
     fun exportSchemasToJson(
-        keys: List<String> = emptyList(),
+        keys: List<String> = DEFAULT_KEYS,
         accountCount: Int = 0,
         configCount: Int = 0
     ): String {
@@ -30,66 +39,86 @@ object SchemaExporter {
             "MAIN_BASE_BUILDINGS" to Schema.MAIN_BASE_BUILDINGS
         )
 
+        // 1. Export base schemas
         val schemasToExport = if (keys.isEmpty()) {
             sourceMap.values.flatten()
-            
         } else {
             keys.flatMap { key -> sourceMap[key] ?: emptyList() }
         }
 
-        // Convert each SettingDef to key-value pair
-
         schemasToExport.forEach { settingDef ->
-            // Prioritize fetching from configStates, then GlobalVars.fileActions, and finally use the default value
-            val currentValue = GlobalVars.configStates[settingDef.key]?.value
-                ?: GlobalVars.fileActions?.getValue(settingDef.key)
-                ?: settingDef.defaultValue.toString()
-            jsonObject.addProperty(settingDef.key, currentValue)
+            jsonObject.addProperty(
+                settingDef.key,
+                getCurrentValue(settingDef.key, settingDef.defaultValue)
+            )
         }
 
-        // If account configurations need to be exported
+        // 2. Export account-specific configurations
         if (keys.contains("ACCOUNT_SETTINGS") && accountCount > 0) {
             for (i in 1..accountCount) {
                 Schema.ACCOUNT_SETTINGS.forEach { settingDef ->
-                    val key = "${settingDef.key}${i}"
-                    val currentValue = GlobalVars.configStates[key]?.value
-                        ?: GlobalVars.fileActions?.getValue(key)
-                        ?: settingDef.defaultValue.toString()
-                    jsonObject.addProperty(key, currentValue)
+                    val suffixedKey = "${settingDef.key}$i"
+                    jsonObject.addProperty(
+                        suffixedKey,
+                        getCurrentValue(suffixedKey, settingDef.defaultValue)
+                    )
                 }
             }
         }
 
-        // If config Main Base settings need to be exported
-        if (keys.contains("MAIN_BASE_SETTINGS") && configCount > 0) {
-            for (i in 1..configCount) {
-                Schema.MAIN_BASE_SETTINGS.forEach { settingDef ->
-                    val key = "${settingDef.key}_c$i"
-                    val currentValue = GlobalVars.configStates[key]?.value
-                        ?: GlobalVars.fileActions?.getValue(key)
-                        ?: settingDef.defaultValue.toString()
-                    jsonObject.addProperty(key, currentValue)
+        // 3. Export profile-specific configurations (Main Base)
+        val profileKeys = listOf(
+            "MAIN_BASE_SETTINGS",
+            "MAIN_BASE_TROOPS_AND_SPELLS",
+            "MAIN_BASE_BUILDINGS",
+            "MAIN_BASE_PETS"
+        )
+        if (configCount > 0) {
+            profileKeys.filter { keys.contains(it) }.forEach { schemaKey ->
+                sourceMap[schemaKey]?.let { schema ->
+                    for (i in 1..configCount) {
+                        schema.forEach { settingDef ->
+                            val suffixedKey = "${settingDef.key}_c$i"
+                            jsonObject.addProperty(
+                                suffixedKey,
+                                getCurrentValue(suffixedKey, settingDef.defaultValue)
+                            )
+                        }
+                    }
                 }
             }
         }
 
-        val gson = GsonBuilder().setPrettyPrinting().create()
-        return gson.toJson(jsonObject)
+        return GsonBuilder().setPrettyPrinting().create().toJson(jsonObject)
+    }
+
+    /**
+     * Helper to retrieve current value from priority sources:
+     * 1. UI configStates (live data)
+     * 2. fileActions (previously saved)
+     * 3. Default value (fallback)
+     */
+    private fun getCurrentValue(key: String, defaultValue: Any): String {
+        return GlobalVars.configStates[key]?.value
+            ?: GlobalVars.fileActions?.getValue(key)
+            ?: defaultValue.toString()
     }
 
     /**
      * Notify the server to write the file via WebSocket
-     * @param accountCount Number of accounts, used for exporting account configurations
-     * @param configStates States maintained by the UI layer
+     * @param directory Directory path to save the file
+     * @param fileName Name of the file to save
+     * @param keys List of module Keys to export
+     * @param accountCount Number of accounts
+     * @param configCount Number of configuration profiles
      */
     fun saveSchemaViaServer(
         directory: String,
         fileName: String,
-        keys: List<String> = emptyList(),
+        keys: List<String> = DEFAULT_KEYS,
         accountCount: Int = 0,
         configCount: Int = 0
     ) {
-
         val jsonContent = exportSchemasToJson(keys, accountCount, configCount)
         val fullPath =
             if (directory.endsWith("/")) "$directory$fileName" else "$directory/$fileName"
@@ -101,19 +130,16 @@ object SchemaExporter {
             "content" to jsonContent
         )
 
-        val connection = GlobalVars.fileActions?.getConnection()
-        if (connection != null) {
-            connection.sendAction(writeAction)
+        GlobalVars.fileActions?.let { actions ->
+            actions.getConnection().sendAction(writeAction)
             // Update local configJson to keep it in sync
             try {
                 val gson = com.google.gson.Gson()
                 val newJson = gson.fromJson(jsonContent, JsonObject::class.java)
-                GlobalVars.fileActions?.updateConfig(newJson)
+                actions.updateConfig(newJson)
             } catch (e: Exception) {
                 e.printStackTrace()
             }
-        } else {
-            println("ERROR: ServerConnection 为空，请检查初始化")
-        }
+        } ?: println("ERROR: GlobalVars.fileActions is null")
     }
 }

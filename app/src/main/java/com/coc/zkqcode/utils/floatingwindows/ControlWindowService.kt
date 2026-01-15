@@ -21,6 +21,9 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.unit.toSize
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
@@ -124,16 +127,18 @@ class ControlWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner 
         var componentSize by remember { mutableStateOf(Size.Zero) }
         var isAtRightSide by remember { mutableStateOf(false) }
 
-        val displayMetrics = resources.displayMetrics
-        val screenWidth = displayMetrics.widthPixels
-        val screenHeight = displayMetrics.heightPixels
+        val configuration = LocalConfiguration.current
+        val density = LocalDensity.current
+        val screenWidth = with(density) { configuration.screenWidthDp.dp.toPx() }.roundToInt()
+        val screenHeight = with(density) { configuration.screenHeightDp.dp.toPx() }.roundToInt()
 
         var isDragging by remember { mutableStateOf(false) }
 
         val currentXState = rememberUpdatedState(currentX)
         val screenWidthState = rememberUpdatedState(screenWidth)
+        val screenHeightState = rememberUpdatedState(screenHeight)
 
-        LaunchedEffect(componentSize.width, isAtRightSide) {
+        LaunchedEffect(componentSize.width, isAtRightSide, screenWidth) {
             if (isAtRightSide && componentSize.width > 0) {
                 val finalX = screenWidth - componentSize.width.toInt()
                 onSnapToEdge(finalX)
@@ -148,8 +153,8 @@ class ControlWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner 
                     val absorbYPercentage = GlobalVars.absorbYPercentage
 
                     val newX =
-                        if (absorbEdge == 1) 0 else (screenWidth - componentSize.width).toInt()
-                    val newY = (screenHeight * (absorbYPercentage / 100f)).toInt()
+                        if (absorbEdge == 1) 0 else (screenWidthState.value - componentSize.width).toInt()
+                    val newY = (screenHeightState.value * (absorbYPercentage / 100f)).toInt()
 
                     isAtRightSide = absorbEdge != 1
                     onAutoPosition(newX, newY)

@@ -1,6 +1,7 @@
 package com.coc.zkqcode.jar.ui.pages.single
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -79,14 +80,14 @@ fun LazyListScope.AccountSettings() {
         var configValue by remember { mutableStateOf("") }
         var startAccount by remember { mutableStateOf("") }
         var endAccount by remember { mutableStateOf("") }
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
+        FlowRow(
+
             modifier = Modifier.padding(top = 6.dp)
         ) {
             Text(
                 text = "将配置",
                 style = MaterialTheme.typography.labelMedium,
-                modifier = Modifier.padding(end = 4.dp)
+                modifier = Modifier.padding(end = 4.dp).align(Alignment.CenterVertically)
             )
             BasicTextField(
                 value = configValue,
@@ -97,12 +98,12 @@ fun LazyListScope.AccountSettings() {
                 modifier = Modifier
                     .width(60.dp)
                     .background(Color.LightGray, RoundedCornerShape(4.dp))
-                    .padding(4.dp)
+                    .padding(4.dp).align(Alignment.CenterVertically)
             )
             Text(
                 text = "应用到账号",
                 style = MaterialTheme.typography.labelMedium,
-                modifier = Modifier.padding(horizontal = 4.dp)
+                modifier = Modifier.padding(horizontal = 4.dp).align(Alignment.CenterVertically)
             )
             BasicTextField(
                 value = startAccount,
@@ -113,12 +114,12 @@ fun LazyListScope.AccountSettings() {
                 modifier = Modifier
                     .width(40.dp)
                     .background(Color.LightGray, RoundedCornerShape(4.dp))
-                    .padding(4.dp)
+                    .padding(4.dp).align(Alignment.CenterVertically)
             )
             Text(
                 text = "-",
                 style = MaterialTheme.typography.labelMedium,
-                modifier = Modifier.padding(horizontal = 4.dp)
+                modifier = Modifier.padding(horizontal = 4.dp).align(Alignment.CenterVertically)
             )
             BasicTextField(
                 value = endAccount,
@@ -129,28 +130,27 @@ fun LazyListScope.AccountSettings() {
                 modifier = Modifier
                     .width(40.dp)
                     .background(Color.LightGray, RoundedCornerShape(4.dp))
-                    .padding(4.dp)
+                    .padding(4.dp).align(Alignment.CenterVertically)
             )
-        }
-        CustomButton(
-            text = "确认",
-            marginTop = 6.dp,
-            onClick = {
-                val config = configValue
-                val start = startAccount.toIntOrNull()
-                val end = endAccount.toIntOrNull()
-                if (start != null && end != null && start <= end) {
-                    for (i in start..end) {
-                        val key = "account_config$i"
-                        if (GlobalVars.configStates.containsKey(key)) {
-                            GlobalVars.configStates[key]?.value = config
-                        } else {
-                            GlobalVars.configStates[key] = mutableStateOf(config)
+            CustomButton(
+                text = "确认",
+                onClick = {
+                    val config = configValue
+                    val start = startAccount.toIntOrNull()
+                    val end = endAccount.toIntOrNull()
+                    if (start != null && end != null && start <= end) {
+                        for (i in start..end) {
+                            val key = "account_config$i"
+                            if (GlobalVars.configStates.containsKey(key)) {
+                                GlobalVars.configStates[key]?.value = config
+                            } else {
+                                GlobalVars.configStates[key] = mutableStateOf(config)
+                            }
                         }
                     }
                 }
-            }
-        )
+            )
+        }
         HorizontalDivider(
             thickness = 1.dp,
             modifier = Modifier.padding(top = 6.dp),

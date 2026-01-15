@@ -52,7 +52,6 @@ class UIWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner {
         val screenWidth = displayMetrics.widthPixels
         val screenHeight = displayMetrics.heightPixels
 
-        val windowWidth = (screenWidth * 0.95).toInt()
         val windowHeight = (screenHeight * 0.9).toInt()
 
         val windowType = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -63,7 +62,7 @@ class UIWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner {
         }
 
         val params = WindowManager.LayoutParams(
-            windowWidth,
+            screenWidth,
             windowHeight,
             windowType,
             WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or
