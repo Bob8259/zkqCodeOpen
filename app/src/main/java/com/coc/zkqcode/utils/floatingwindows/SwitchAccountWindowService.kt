@@ -17,7 +17,6 @@ import androidx.savedstate.SavedStateRegistryController
 import androidx.savedstate.SavedStateRegistryOwner
 import androidx.savedstate.setViewTreeSavedStateRegistryOwner
 import com.coc.zkqcode.loadjar.Loadjar
-import com.coc.zkqcode.utils.floatingwindows.NotificationHelper
 import com.coc.zkqcode.utils.components.GlobalVars
 
 class SwitchAccountWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner {
