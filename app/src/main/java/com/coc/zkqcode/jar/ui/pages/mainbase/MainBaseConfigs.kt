@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.sp
 import com.coc.zkqcode.utils.components.CustomButton
 import com.coc.zkqcode.utils.components.CustomCheckBox
 import com.coc.zkqcode.utils.components.DropdownButton
+import com.coc.zkqcode.utils.components.ExpandableContent
 import com.coc.zkqcode.utils.components.GlobalVars
 import com.coc.zkqcode.utils.components.InputRow
 import com.coc.zkqcode.utils.database.Schema
@@ -39,8 +40,7 @@ fun MainBaseConfig(index: Int) {
             text = if (isMainBaseExpanded) "▼ 缩起主世界设置" else "▶ 展开主世界设置"
         )
     }
-    if (isMainBaseExpanded) {
-
+    ExpandableContent(isMainBaseExpanded) {
         Text(
             text = "紫孔雀会自动配兵，暂不支持手动配兵。",
             style = MaterialTheme.typography.labelMedium
@@ -112,7 +112,7 @@ fun MainBaseConfig(index: Int) {
                 text = Schema.MAIN_BASE_SETTINGS.first { it.key == "play_ladder" }.displayName,
             )
         }
-        if (GlobalVars.configStates["play_ladder_c$index"]?.value == "1") {
+        ExpandableContent(GlobalVars.configStates["play_ladder_c$index"]?.value == "1") {
             CustomCheckBox(
                 checkedState = GlobalVars.configStates["change_base_c$index"]?.value ?: "",
                 onCheckStateChange = {
@@ -160,7 +160,7 @@ fun MainBaseConfig(index: Int) {
                 explain = "勾选后，辅助会随机更换英雄，宠物以及装备。可能影响到升级穿戴装备的功能，请谨慎勾选。"
             )
         }
-        if (GlobalVars.configStates["ai_deploy_troops_c$index"]!!.value == "0") {
+        ExpandableContent(GlobalVars.configStates["ai_deploy_troops_c$index"]!!.value == "0") {
             DropdownButton(
                 options = listOf("单面一字划", "双面一字划", "四面长按"),
                 selectedIndex = GlobalVars.configStates["tactics_mode_c$index"]?.value?.toIntOrNull()
@@ -180,7 +180,7 @@ fun MainBaseConfig(index: Int) {
             text = Schema.MAIN_BASE_SETTINGS.first { it.key == "ai_deploy_troops" }.displayName,
             explain = "勾选后，需配合AI下兵插件才能正常使用。建议使用前仔细阅读官网教程。"
         )
-        if (GlobalVars.configStates["ai_deploy_troops_c$index"]!!.value == "1") {
+        ExpandableContent(GlobalVars.configStates["ai_deploy_troops_c$index"]!!.value == "1") {
             InputRow(
                 label = Schema.MAIN_BASE_SETTINGS.first { it.key == "lighting_on_air_sweeper" }.displayName + ":",
                 value = GlobalVars.configStates["lighting_on_air_sweeper_c$index"]?.value
@@ -257,7 +257,7 @@ fun MainBaseConfig(index: Int) {
                 text = Schema.MAIN_BASE_SETTINGS.first { it.key == "collect_clan_castle" }.displayName,
             )
         }
-        if (GlobalVars.configStates["donation_setting_c$index"]!!.value == "1") {
+        ExpandableContent(GlobalVars.configStates["donation_setting_c$index"]!!.value == "1") {
             InputRow(
                 label = Schema.MAIN_BASE_SETTINGS.first { it.key == "donation_times" }.displayName + ":",
                 value = GlobalVars.configStates["donation_times_c$index"]?.value ?: "-1",
@@ -267,7 +267,7 @@ fun MainBaseConfig(index: Int) {
             )
         }
 
-        if (GlobalVars.configStates["research_setting_c$index"]?.value == "1") {
+        ExpandableContent(GlobalVars.configStates["research_setting_c$index"]?.value == "1") {
             ResearchConfigs(index)
         }
 
@@ -296,12 +296,12 @@ fun MainBaseConfig(index: Int) {
                 text = Schema.MAIN_BASE_SETTINGS.first { it.key == "wall_upgrade_settings" }.displayName
             )
             CustomCheckBox(
-                checkedState = GlobalVars.configStates["worker_settings_c$index"]?.value ?: "0",
+                checkedState = GlobalVars.configStates["save_worker_c$index"]?.value ?: "0",
                 onCheckStateChange = { checked ->
-                    GlobalVars.configStates["worker_settings_c$index"]?.value =
+                    GlobalVars.configStates["save_worker_c$index"]?.value =
                         if (checked) "1" else "0"
                 },
-                text = Schema.MAIN_BASE_SETTINGS.first { it.key == "worker_settings" }.displayName
+                text = Schema.MAIN_BASE_SETTINGS.first { it.key == "save_worker" }.displayName
             )
             CustomCheckBox(
                 checkedState = GlobalVars.configStates["building_conversion_settings_c$index"]?.value
@@ -323,7 +323,7 @@ fun MainBaseConfig(index: Int) {
                 explain = "勾选后，若主世界无城墙可升级，则会将所有工人用于建造。"
             )
         }
-        if (GlobalVars.configStates["wall_upgrade_settings_c$index"]?.value == "1") {
+        ExpandableContent(GlobalVars.configStates["wall_upgrade_settings_c$index"]?.value == "1") {
             FlowRow {
                 CustomCheckBox(
                     checkedState = GlobalVars.configStates["batch_wall_upgrade_settings_c$index"]?.value
@@ -344,7 +344,7 @@ fun MainBaseConfig(index: Int) {
                 )
             }
         }
-        if (GlobalVars.configStates["build_setting_c$index"]?.value == "1") {
+        ExpandableContent(GlobalVars.configStates["build_setting_c$index"]?.value == "1") {
             UpgradeConfigs(index)
         }
         CustomCheckBox(
@@ -356,7 +356,7 @@ fun MainBaseConfig(index: Int) {
             },
             text = Schema.MAIN_BASE_SETTINGS.first { it.key == "upgrade_pets" }.displayName
         )
-        if (GlobalVars.configStates["upgrade_pets_c$index"]?.value == "1") {
+        ExpandableContent(GlobalVars.configStates["upgrade_pets_c$index"]?.value == "1") {
             PetConfigs(index)
         }
 
@@ -503,23 +503,27 @@ fun MainBaseConfig(index: Int) {
 
         FlowRow {
             CustomCheckBox(
-                checkedState = GlobalVars.configStates["upgrade_wearable_gear_c$index"]?.value ?: "0",
+                checkedState = GlobalVars.configStates["upgrade_wearable_gear_c$index"]?.value
+                    ?: "0",
                 onCheckStateChange = { checked ->
-                    GlobalVars.configStates["upgrade_wearable_gear_c$index"]?.value = if (checked) "1" else "0"
+                    GlobalVars.configStates["upgrade_wearable_gear_c$index"]?.value =
+                        if (checked) "1" else "0"
                 },
                 text = Schema.MAIN_BASE_SETTINGS.first { it.key == "upgrade_wearable_gear" }.displayName
             )
             CustomCheckBox(
                 checkedState = GlobalVars.configStates["upgrade_all_gear_c$index"]?.value ?: "0",
                 onCheckStateChange = { checked ->
-                    GlobalVars.configStates["upgrade_all_gear_c$index"]?.value = if (checked) "1" else "0"
+                    GlobalVars.configStates["upgrade_all_gear_c$index"]?.value =
+                        if (checked) "1" else "0"
                 },
                 text = Schema.MAIN_BASE_SETTINGS.first { it.key == "upgrade_all_gear" }.displayName
             )
             CustomCheckBox(
                 checkedState = GlobalVars.configStates["remove_obstacles_c$index"]?.value ?: "0",
                 onCheckStateChange = { checked ->
-                    GlobalVars.configStates["remove_obstacles_c$index"]?.value = if (checked) "1" else "0"
+                    GlobalVars.configStates["remove_obstacles_c$index"]?.value =
+                        if (checked) "1" else "0"
                 },
                 text = Schema.MAIN_BASE_SETTINGS.first { it.key == "remove_obstacles" }.displayName,
                 explain = "勾选后，当主世界奖杯大于500时生效。有极小概率（约1%）移除稀有物品"
@@ -528,14 +532,16 @@ fun MainBaseConfig(index: Int) {
             CustomCheckBox(
                 checkedState = GlobalVars.configStates["claim_timed_rewards_c$index"]?.value ?: "0",
                 onCheckStateChange = { checked ->
-                    GlobalVars.configStates["claim_timed_rewards_c$index"]?.value = if (checked) "1" else "0"
+                    GlobalVars.configStates["claim_timed_rewards_c$index"]?.value =
+                        if (checked) "1" else "0"
                 },
                 text = Schema.MAIN_BASE_SETTINGS.first { it.key == "claim_timed_rewards" }.displayName
             )
             CustomCheckBox(
                 checkedState = GlobalVars.configStates["claim_token_rewards_c$index"]?.value ?: "0",
                 onCheckStateChange = { checked ->
-                    GlobalVars.configStates["claim_token_rewards_c$index"]?.value = if (checked) "1" else "0"
+                    GlobalVars.configStates["claim_token_rewards_c$index"]?.value =
+                        if (checked) "1" else "0"
                 },
                 text = Schema.MAIN_BASE_SETTINGS.first { it.key == "claim_token_rewards" }.displayName,
                 explain = "仅在资源全满后才会领取"
@@ -544,36 +550,43 @@ fun MainBaseConfig(index: Int) {
             CustomCheckBox(
                 checkedState = GlobalVars.configStates["claim_capital_gold_c$index"]?.value ?: "0",
                 onCheckStateChange = { checked ->
-                    GlobalVars.configStates["claim_capital_gold_c$index"]?.value = if (checked) "1" else "0"
+                    GlobalVars.configStates["claim_capital_gold_c$index"]?.value =
+                        if (checked) "1" else "0"
                 },
                 text = Schema.MAIN_BASE_SETTINGS.first { it.key == "claim_capital_gold" }.displayName
             )
             CustomCheckBox(
                 checkedState = GlobalVars.configStates["donate_capital_gold_c$index"]?.value ?: "0",
                 onCheckStateChange = { checked ->
-                    GlobalVars.configStates["donate_capital_gold_c$index"]?.value = if (checked) "1" else "0"
+                    GlobalVars.configStates["donate_capital_gold_c$index"]?.value =
+                        if (checked) "1" else "0"
                 },
                 text = Schema.MAIN_BASE_SETTINGS.first { it.key == "donate_capital_gold" }.displayName
             )
             CustomCheckBox(
-                checkedState = GlobalVars.configStates["claim_free_shop_rewards_c$index"]?.value ?: "0",
+                checkedState = GlobalVars.configStates["claim_free_shop_rewards_c$index"]?.value
+                    ?: "0",
                 onCheckStateChange = { checked ->
-                    GlobalVars.configStates["claim_free_shop_rewards_c$index"]?.value = if (checked) "1" else "0"
+                    GlobalVars.configStates["claim_free_shop_rewards_c$index"]?.value =
+                        if (checked) "1" else "0"
                 },
                 text = Schema.MAIN_BASE_SETTINGS.first { it.key == "claim_free_shop_rewards" }.displayName
             )
 
             CustomCheckBox(
-                checkedState = GlobalVars.configStates["claim_achievement_gems_c$index"]?.value ?: "0",
+                checkedState = GlobalVars.configStates["claim_achievement_gems_c$index"]?.value
+                    ?: "0",
                 onCheckStateChange = { checked ->
-                    GlobalVars.configStates["claim_achievement_gems_c$index"]?.value = if (checked) "1" else "0"
+                    GlobalVars.configStates["claim_achievement_gems_c$index"]?.value =
+                        if (checked) "1" else "0"
                 },
                 text = Schema.MAIN_BASE_SETTINGS.first { it.key == "claim_achievement_gems" }.displayName
             )
             CustomCheckBox(
                 checkedState = GlobalVars.configStates["auto_join_clan_c$index"]?.value ?: "0",
                 onCheckStateChange = { checked ->
-                    GlobalVars.configStates["auto_join_clan_c$index"]?.value = if (checked) "1" else "0"
+                    GlobalVars.configStates["auto_join_clan_c$index"]?.value =
+                        if (checked) "1" else "0"
                 },
                 text = Schema.MAIN_BASE_SETTINGS.first { it.key == "auto_join_clan" }.displayName,
                 explain = "勾选此选项后，紫孔雀不仅会自动加部落，也会自动建造部落城堡。但若不勾选此选项，就既不会加部落，也不会建造部落城堡。注意：加部落功能仅对未加入部落的账号生效。"
@@ -581,13 +594,14 @@ fun MainBaseConfig(index: Int) {
             CustomCheckBox(
                 checkedState = GlobalVars.configStates["use_temp_items_c$index"]?.value ?: "0",
                 onCheckStateChange = { checked ->
-                    GlobalVars.configStates["use_temp_items_c$index"]?.value = if (checked) "1" else "0"
+                    GlobalVars.configStates["use_temp_items_c$index"]?.value =
+                        if (checked) "1" else "0"
                 },
                 text = Schema.MAIN_BASE_SETTINGS.first { it.key == "use_temp_items" }.displayName,
                 explain = "勾选此选项后，紫孔雀会使用研究浓汤和建筑工人大餐。并且为了防止重复使用导致道具失效，每次只会使用一个道具。"
             )
         }
-        if (GlobalVars.configStates["auto_join_clan_c$index"]?.value == "1") {
+        ExpandableContent(GlobalVars.configStates["auto_join_clan_c$index"]?.value == "1") {
             InputRow(
                 label = Schema.MAIN_BASE_SETTINGS.first { it.key == "clan_tag" }.displayName,
                 value = GlobalVars.configStates["clan_tag_c$index"]?.value ?: "",
@@ -601,9 +615,11 @@ fun MainBaseConfig(index: Int) {
         }
         FlowRow {
             CustomCheckBox(
-                checkedState = GlobalVars.configStates["create_consecutive_clans_c$index"]?.value ?: "0",
+                checkedState = GlobalVars.configStates["create_consecutive_clans_c$index"]?.value
+                    ?: "0",
                 onCheckStateChange = { checked ->
-                    GlobalVars.configStates["create_consecutive_clans_c$index"]?.value = if (checked) "1" else "0"
+                    GlobalVars.configStates["create_consecutive_clans_c$index"]?.value =
+                        if (checked) "1" else "0"
                 },
                 text = Schema.MAIN_BASE_SETTINGS.first { it.key == "create_consecutive_clans" }.displayName,
                 explain = "勾选此选项后，当金币大于总容量80-85%后，紫孔雀将反复创建部落，直到部落标签出现大于或等于用户设定的连续数字或字母为止，或直到金币消耗完为止。\n\n注意：\n必须先建造部落城堡，才能勾选此项，否则会出现异常。\n部分设备使用此功能后，需要手动切换输入法。具体切换方法请参考官网教程。\n部分云手机不支持读取剪贴板，建议在电脑模拟器里使用本功能。"
@@ -611,13 +627,14 @@ fun MainBaseConfig(index: Int) {
             CustomCheckBox(
                 checkedState = GlobalVars.configStates["invite_players_c$index"]?.value ?: "0",
                 onCheckStateChange = { checked ->
-                    GlobalVars.configStates["invite_players_c$index"]?.value = if (checked) "1" else "0"
+                    GlobalVars.configStates["invite_players_c$index"]?.value =
+                        if (checked) "1" else "0"
                 },
                 text = Schema.MAIN_BASE_SETTINGS.first { it.key == "invite_players" }.displayName,
                 explain = "勾选此选项后，紫孔雀将会从公告栏邀请玩家加入部落。\n\n注意：单次邀请耗时约1小时。\n请先加入部落后再开启本功能。\n请确保账号拥有邀请玩家的权限。"
             )
         }
-        if (GlobalVars.configStates["create_consecutive_clans_c$index"]?.value == "1") {
+        ExpandableContent(GlobalVars.configStates["create_consecutive_clans_c$index"]?.value == "1") {
             InputRow(
                 label = Schema.MAIN_BASE_SETTINGS.first { it.key == "clan_name" }.displayName,
                 value = GlobalVars.configStates["clan_name_c$index"]?.value ?: "",

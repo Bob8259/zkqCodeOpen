@@ -16,6 +16,7 @@ import androidx.compose.ui.unit.sp
 import com.coc.zkqcode.utils.components.CustomButton
 import androidx.compose.foundation.layout.Row
 import com.coc.zkqcode.utils.components.CustomCheckBox
+import com.coc.zkqcode.utils.components.ExpandableContent
 import com.coc.zkqcode.utils.components.GlobalVars
 import com.coc.zkqcode.utils.components.InputRow
 
@@ -33,10 +34,10 @@ fun NightBaseConfig(index: Int) {
         // 添加一个按钮来控制缩放
         CustomButton(
             onClick = { isNightBaseExpanded = !isNightBaseExpanded },
-            text = if (isNightBaseExpanded) "▼ 缩起主世界设置" else "▶ 展开主世界设置"
+            text = if (isNightBaseExpanded) "▼ 缩起夜世界设置" else "▶ 展开夜世界设置"
         )
     }
-    if (isNightBaseExpanded) {
+    ExpandableContent(isNightBaseExpanded) {
         CustomCheckBox(
             checkedState = GlobalVars.configStates["no_builder_base_c${index}"]?.value ?: "",
             onCheckStateChange = {
@@ -45,7 +46,7 @@ fun NightBaseConfig(index: Int) {
             text = "不打夜世界",
             explain = "勾选后，紫孔雀将完全不会进入夜世界。换言之，夜世界的所有设置都将失效！\n但因为紫孔雀只会接取夜世界竞赛任务，所以如果接取了部落竞赛的任务，那么就算勾选了不打夜世界，紫孔雀也会打夜世界。"
         )
-        if (GlobalVars.configStates["no_builder_base_c${index}"]?.value == "0") {
+        ExpandableContent(GlobalVars.configStates["no_builder_base_c${index}"]?.value == "0") {
             Row {
                 CustomCheckBox(
                     checkedState = GlobalVars.configStates["builder_base_farming_c${index}"]?.value

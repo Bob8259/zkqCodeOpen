@@ -1,10 +1,12 @@
 package com.coc.zkqcode.utils.components
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
@@ -30,8 +32,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -56,18 +58,36 @@ import kotlinx.coroutines.delay
 
 object GlobalVars {
     var fileActions by mutableStateOf<FileActions?>(null)
-    
+
     // Auto-run features
     var isAutoRunEnabled by mutableStateOf(true)
     var autoRunTimer by mutableIntStateOf(60)
 
-    
+
     // Window positioning
     var absorbEdge by mutableIntStateOf(1) // 1: Left, 0: Right
     var absorbYPercentage by mutableIntStateOf(50) // Percentage of Y axis
     var updateWindowPosition by mutableStateOf(false)
+
     // Configuration States
     val configStates = mutableMapOf<String, MutableState<String>>()
+}
+
+@Composable
+fun ExpandableContent(visible: Boolean, content: @Composable () -> Unit) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            // 关键：当内部内容消失/出现时，这个 Modifier 会平滑地改变容器高度
+            .animateContentSize()
+    ) {
+        if (visible) {
+            // 这里建议包一层 Column 以确保测量稳定
+            Column(modifier = Modifier.fillMaxWidth()) {
+                content()
+            }
+        }
+    }
 }
 
 @Composable
@@ -254,7 +274,11 @@ fun InputRow(
 
 @Composable
 fun CustomButton(
-    text: String, onClick: () -> Unit, enable: Boolean = true, explain: String? = null, marginTop: Dp = 8.dp
+    text: String,
+    onClick: () -> Unit,
+    enable: Boolean = true,
+    explain: String? = null,
+    marginTop: Dp = 8.dp
 ) {
 
     var showExplanation by remember { mutableStateOf(false) }
@@ -288,8 +312,18 @@ fun CustomButton(
                 if (showExplanation) {
                     CustomAlertDialog(
                         onDismissRequest = { showExplanation = false },
-                        title = { Text(text = "注意事项", style = MaterialTheme.typography.titleMedium) },
-                        text = { Text(text = explain, style = MaterialTheme.typography.bodyMedium) },
+                        title = {
+                            Text(
+                                text = "注意事项",
+                                style = MaterialTheme.typography.titleMedium
+                            )
+                        },
+                        text = {
+                            Text(
+                                text = explain,
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                        },
                         confirmButton = {
                             TextButton(
                                 onClick = { showExplanation = false }) {
@@ -353,8 +387,18 @@ fun CustomCheckBox(
                 if (showExplanation) {
                     CustomAlertDialog(
                         onDismissRequest = { showExplanation = false },
-                        title = { Text(text = "注意事项", style = MaterialTheme.typography.titleMedium) },
-                        text = { Text(text = explain, style = MaterialTheme.typography.bodyMedium) },
+                        title = {
+                            Text(
+                                text = "注意事项",
+                                style = MaterialTheme.typography.titleMedium
+                            )
+                        },
+                        text = {
+                            Text(
+                                text = explain,
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                        },
                         confirmButton = {
                             TextButton(
                                 onClick = { showExplanation = false }) {
@@ -374,7 +418,8 @@ fun DropdownButton(
     onValueChange: (Int) -> Unit,
     label: String
 ) {
-    val selectedOption = if(selectedIndex in options.indices) options[selectedIndex] else options.getOrElse(0) { "" }
+    val selectedOption =
+        if (selectedIndex in options.indices) options[selectedIndex] else options.getOrElse(0) { "" }
     var expanded by remember { mutableStateOf(false) }
 
     Row(

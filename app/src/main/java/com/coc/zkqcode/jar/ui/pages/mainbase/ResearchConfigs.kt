@@ -52,7 +52,7 @@ fun ResearchConfigs(index: Int) {
     }
 
     if (isExpanded.value) {
-        FlowRow {
+        FlowRow() {
             items.forEach { item ->
                 CustomCheckBox(
                     checkedState = GlobalVars.configStates["${item.key}_c${index}"]?.value ?: "1",
