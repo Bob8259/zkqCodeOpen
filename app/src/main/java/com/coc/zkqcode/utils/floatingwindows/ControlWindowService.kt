@@ -33,6 +33,8 @@ import androidx.savedstate.SavedStateRegistryController
 import androidx.savedstate.SavedStateRegistryOwner
 import androidx.savedstate.setViewTreeSavedStateRegistryOwner
 import com.coc.zkqcode.utils.components.GlobalVars
+import com.coc.zkqcode.utils.state.AppMode
+import com.coc.zkqcode.utils.state.AppStateManager
 import kotlin.math.roundToInt
 
 class ControlWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner {
@@ -181,7 +183,7 @@ class ControlWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner 
                     stopSelf()
                 },
                 onSwitchAccount = {
-                    GlobalVars.currentMode = "SwitchAccount"
+                    AppStateManager.setMode(AppMode.SwitchAccount)
                     startService(
                         Intent(
                             this@ControlWindowService,

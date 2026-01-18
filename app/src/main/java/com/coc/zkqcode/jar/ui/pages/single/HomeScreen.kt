@@ -37,7 +37,10 @@ import com.coc.zkqcode.utils.components.GlobalVars
 import com.coc.zkqcode.utils.components.InputRow
 import com.coc.zkqcode.utils.database.Schema
 import com.coc.zkqcode.utils.database.SchemaExporter
+import com.coc.zkqcode.utils.database.SchemaExporter
 import com.coc.zkqcode.utils.theme.AppColors
+import com.coc.zkqcode.utils.state.AppMode
+import com.coc.zkqcode.utils.state.AppStateManager
 
 @Composable
 fun HomeScreen(onSaveSuccess: () -> Unit = {}) {
@@ -134,7 +137,7 @@ fun HomeScreen(onSaveSuccess: () -> Unit = {}) {
             kotlinx.coroutines.delay(1000L)
             GlobalVars.autoRunTimer--
             if (GlobalVars.autoRunTimer <= 0) {
-                GlobalVars.currentMode = "Run"
+                AppStateManager.setMode(AppMode.Run)
                 saveAndRun()
             }
         }
@@ -202,7 +205,7 @@ fun HomeScreen(onSaveSuccess: () -> Unit = {}) {
                         }
                         LoginScreen()
                         CustomButton(text = "启动手动切号模式", onClick = {
-                            GlobalVars.currentMode = "SwitchAccount"
+                            AppStateManager.setMode(AppMode.SwitchAccount)
                             onSaveSuccess()
                         })
                         InputRow(
@@ -318,7 +321,7 @@ fun HomeScreen(onSaveSuccess: () -> Unit = {}) {
             CustomButton(
                 text = "保存并运行",
                 onClick = {
-                    GlobalVars.currentMode = "Run"
+                    AppStateManager.setMode(AppMode.Run)
                     saveAndRun()
                 }
             )

@@ -19,6 +19,8 @@ import androidx.savedstate.SavedStateRegistryOwner
 import androidx.savedstate.setViewTreeSavedStateRegistryOwner
 import com.coc.zkqcode.loadjar.Loadjar
 import com.coc.zkqcode.utils.components.GlobalVars
+import com.coc.zkqcode.utils.state.AppMode
+import com.coc.zkqcode.utils.state.AppStateManager
 
 class UIWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner {
 
@@ -54,7 +56,7 @@ class UIWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner {
         val screenHeight = displayMetrics.heightPixels
 
         val windowHeight =
-            if (GlobalVars.currentMode == "Main") (screenHeight * 0.9).toInt() else (screenHeight * 0.6).toInt()
+            if (AppStateManager.currentMode == AppMode.Main) (screenHeight * 0.9).toInt() else (screenHeight * 0.6).toInt()
 
         val windowType = getWindowType()
 
@@ -75,14 +77,14 @@ class UIWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner {
 
             setContent {
                 Loadjar(context).LoadAndShowUI(onClose = {
-                    when (GlobalVars.currentMode) {
-                        "SwitchAccount" -> {
+                    when (AppStateManager.currentMode) {
+                        AppMode.SwitchAccount -> {
                             updateWindowLayout(
                                 displayMetrics.widthPixels,
                                 (displayMetrics.heightPixels * 0.6).toInt()
                             )
                         }
-                        "Main" -> {
+                        AppMode.Main -> {
                             updateWindowLayout(
                                 displayMetrics.widthPixels,
                                 (displayMetrics.heightPixels * 0.9).toInt()
