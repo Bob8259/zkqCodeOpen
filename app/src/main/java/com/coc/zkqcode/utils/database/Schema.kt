@@ -27,7 +27,7 @@ object Schema {
         ),
         SettingDef("debug_mode", "慢速调试模式", 0, "GLOBAL_SETTINGS"),
         SettingDef("record_progress", "记录账号进度", 1, "GLOBAL_SETTINGS"),
-        SettingDef("auto_update", "自动更新", 0, "GLOBAL_SETTINGS"),
+        SettingDef("auto_update", "自动更新", "1", "GLOBAL_SETTINGS"),
         SettingDef("batch_create_account", "批量创号设置", 0, "GLOBAL_SETTINGS"),
         SettingDef("create_start_id", "创号开始序号", 0, "GLOBAL_SETTINGS"),
         SettingDef("create_end_id", "创号结束序号", "10", "GLOBAL_SETTINGS"),

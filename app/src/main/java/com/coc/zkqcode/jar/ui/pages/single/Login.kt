@@ -49,6 +49,31 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
 import java.io.IOException
 import java.util.Locale
+import java.security.MessageDigest
+import org.json.JSONObject
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+
+
+private suspend fun solvePoW(nonce: String): String = withContext(Dispatchers.Default) {
+    var salt = 0
+    val md = MessageDigest.getInstance("SHA-256")
+    while (true) {
+        val saltStr = salt.toString()
+        val data = (nonce + saltStr).toByteArray()
+        val hashBytes = md.digest(data)
+        
+        // Check for 0000 (first 2 bytes are 0) and 5th char < 3 (high nibble of 3rd byte < 3)
+        if (hashBytes[0] == 0.toByte() && hashBytes[1] == 0.toByte()) {
+            val highNibble = (hashBytes[2].toInt() and 0xFF) ushr 4
+            if (highNibble < 3) {
+                return@withContext saltStr
+            }
+        }
+        salt++
+    }
+    return@withContext "" // Should not reach here
+}
 
 @Suppress("AssignedValueIsNeverRead")
 @Composable
@@ -64,7 +89,7 @@ fun LoginScreen() {
     var failTimesCount by remember { mutableIntStateOf(0) }
     var formattedGem by remember { mutableStateOf("") }
     val serverPublicKey = "171abec025499684b76daa59065c0c4e86b6707e7ed3502d95919a0c1dfa305d" //Hex
-    
+
     val globalGemCount = GlobalVars.configStates["gem_count"]?.value
     LaunchedEffect(globalGemCount) {
         if (!globalGemCount.isNullOrEmpty() && gemInfo.isEmpty()) {
@@ -76,11 +101,8 @@ fun LoginScreen() {
     }
     fun login(email: String, password: String) {
         isLoginButtonEnabled = false
-        val url: String = if (failTimesCount % 2 == 0) {
-            "http://45.64.74.97:90/api/mobile-login-new"
-        } else {
-            "https://zkqcoc.store/api/mobile-login-new"
-        }
+        val baseURL = "https://e2f6b66416c4.ngrok-free.app/"
+
         scope.launch {
             if (!email.contains("@")) {
                 // 更新UI显示错误信息
@@ -89,6 +111,32 @@ fun LoginScreen() {
                 showMessage = true
                 return@launch // 退出函数
             }
+
+            // 0. Fetch PoW Challenge
+            gemInfo = "登录中，请稍后..."
+
+            val httpClient = OkHttpClient()
+            var powNonce: String
+
+            try {
+                val challengeRequest = Request.Builder().url("${baseURL}api/pow/challenge").get().build()
+                val responseStr = withContext(Dispatchers.IO) {
+                    httpClient.newCall(challengeRequest).execute().use { response -> 
+                        if (!response.isSuccessful) throw IOException("Unexpected code $response")
+                        response.body?.string() ?: ""
+                    }
+                }
+                val json = JSONObject(responseStr)
+                powNonce = json.getString("nonce")
+            } catch (e: Exception) {
+                gemInfo = "验证获取失败: ${e.message}"
+                isLoginButtonEnabled = true
+                showMessage = true
+                return@launch
+            }
+
+            // 0.5 Solve PoW
+            val powSalt: String = solvePoW(powNonce)
 
             // 1. Prepare Payload
             val timestamp = System.currentTimeMillis()
@@ -99,7 +147,7 @@ fun LoginScreen() {
             val encryptionResult = try {
                 NativeTools.encryptLoginPayload(payload, serverPublicKey)
             } catch (e: Exception) {
-                gemInfo = "加密失败: ${e.message}"
+                gemInfo = "准备信息失败: ${e.message}"
                 isLoginButtonEnabled = true
                 showMessage = true
                 return@launch
@@ -117,11 +165,11 @@ fun LoginScreen() {
 
             // 3. Send Request
             // Assuming server expects: public_key, nonce, data (ciphertext)
-            val postData = "public_key=$myPublicKey&nonce=$nonce&data=$ciphertext"
+            val postData = "public_key=$myPublicKey&nonce=$nonce&data=$ciphertext&pow_nonce=$powNonce&pow_salt=$powSalt"
             val client = OkHttpClient()
             val requestBody =
                 postData.toRequestBody("application/x-www-form-urlencoded".toMediaTypeOrNull())
-            val request = Request.Builder().url(url).post(requestBody).build()
+            val request = Request.Builder().url("${baseURL}api/mobile-login").post(requestBody).build()
 
             client.newCall(request).enqueue(object : Callback {
                 override fun onFailure(call: Call, e: IOException) {
@@ -183,7 +231,6 @@ fun LoginScreen() {
                     }
                 }
             })
-            gemInfo = "登录中，请稍后..."
         }
     }
 
