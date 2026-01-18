@@ -101,7 +101,7 @@ fun HomeScreen(onSaveSuccess: () -> Unit = {}) {
     }
 
     val configCount = configCountStr.toIntOrNull() ?: 1
-    val tabs = listOf("主页", "账号设置", "提取存档") + List(configCount) { "配置文件${it + 1}" }
+    val tabs = listOf("主页设置", "账号设置", "提取存档") + List(configCount) { "配置文件${it + 1}" }
 
     val saveAndRun = {
         // 获取外部存储路径 zkqFiles
