@@ -141,8 +141,6 @@ fun MainBaseConfig(index: Int) {
                 text = Schema.MAIN_BASE_SETTINGS.first { it.key == "restart_game" }.displayName,
                 explain = "勾选后，部署完所有部队后，辅助会重启游戏。仅对主世界对战有效。"
             )
-        }
-        FlowRow {
             CustomCheckBox(
                 checkedState = GlobalVars.configStates["manual_training_c$index"]?.value ?: "",
                 onCheckStateChange = {
@@ -360,6 +358,107 @@ fun MainBaseConfig(index: Int) {
         )
         if (GlobalVars.configStates["upgrade_pets_c$index"]?.value == "1") {
             PetConfigs(index)
+        }
+
+        FlowRow {
+            CustomCheckBox(
+                checkedState = GlobalVars.configStates["helper_settings_c$index"]?.value ?: "",
+                onCheckStateChange = {
+                    GlobalVars.configStates["helper_settings_c$index"]!!.value =
+                        if (it) "1" else "0"
+                },
+                text = Schema.MAIN_BASE_SETTINGS.first { it.key == "helper_settings" }.displayName,
+                explain = "勾选后，会自动用实验助手以及建筑工人学徒。"
+            )
+            CustomCheckBox(
+                checkedState = GlobalVars.configStates["upgrade_research_helper_c$index"]?.value ?: "",
+                onCheckStateChange = {
+                    GlobalVars.configStates["upgrade_research_helper_c$index"]!!.value =
+                        if (it) "1" else "0"
+                },
+                text = Schema.MAIN_BASE_SETTINGS.first { it.key == "upgrade_research_helper" }.displayName,
+                explain = "升级实验助手的优先级高于购买建筑工人和升级工人学徒，请谨慎勾选！"
+            )
+            CustomCheckBox(
+                checkedState = GlobalVars.configStates["upgrade_builder_apprentice_c$index"]?.value ?: "",
+                onCheckStateChange = {
+                    GlobalVars.configStates["upgrade_builder_apprentice_c$index"]!!.value =
+                        if (it) "1" else "0"
+                },
+                text = Schema.MAIN_BASE_SETTINGS.first { it.key == "upgrade_builder_apprentice" }.displayName,
+                explain = "升级工人学徒的优先级高于购买建筑工人，请谨慎勾选！"
+            )
+        }
+        FlowRow {
+            CustomCheckBox(
+                checkedState = GlobalVars.configStates["do_clan_games_c$index"]?.value ?: "",
+                onCheckStateChange = {
+                    GlobalVars.configStates["do_clan_games_c$index"]!!.value =
+                        if (it) "1" else "0"
+                },
+                text = Schema.MAIN_BASE_SETTINGS.first { it.key == "do_clan_games" }.displayName,
+                explain = "勾选后，紫孔雀会接取小部分夜世界任务，例如夜世界摧毁率等。注意重点是\"小部分\"，也就是说并不是所有任务都可以接取，并且只会接取夜世界任务！若没有任务可接取，则会放弃第一个任务。接取任务后，会自动打夜世界。"
+            )
+            CustomCheckBox(
+                checkedState = GlobalVars.configStates["claim_clan_game_rewards_c$index"]?.value ?: "",
+                onCheckStateChange = {
+                    GlobalVars.configStates["claim_clan_game_rewards_c$index"]!!.value =
+                        if (it) "1" else "0"
+                },
+                text = Schema.MAIN_BASE_SETTINGS.first { it.key == "claim_clan_game_rewards" }.displayName
+            )
+            CustomCheckBox(
+                checkedState = GlobalVars.configStates["play_clan_war_c$index"]?.value ?: "",
+                onCheckStateChange = {
+                    GlobalVars.configStates["play_clan_war_c$index"]!!.value =
+                        if (it) "1" else "0"
+                },
+                text = Schema.MAIN_BASE_SETTINGS.first { it.key == "play_clan_war" }.displayName,
+                explain = "勾选后，部落战会进攻推荐对手。胜率较低，容易黑三，建议谨慎勾选。"
+            )
+            CustomCheckBox(
+                checkedState = GlobalVars.configStates["play_league_c$index"]?.value ?: "",
+                onCheckStateChange = {
+                    GlobalVars.configStates["play_league_c$index"]!!.value =
+                        if (it) "1" else "0"
+                },
+                text = Schema.MAIN_BASE_SETTINGS.first { it.key == "play_league" }.displayName,
+                explain = "勾选后，会进攻最后一位没有被部落成员进攻过的对手。胜率较低，容易黑三，建议谨慎勾选。"
+            )
+            CustomCheckBox(
+                checkedState = GlobalVars.configStates["play_raid_c$index"]?.value ?: "",
+                onCheckStateChange = {
+                    GlobalVars.configStates["play_raid_c$index"]!!.value =
+                        if (it) "1" else "0"
+                },
+                text = Schema.MAIN_BASE_SETTINGS.first { it.key == "play_raid" }.displayName
+            )
+        }
+        FlowRow {
+            CustomCheckBox(
+                checkedState = GlobalVars.configStates["start_clan_war_settings_c$index"]?.value ?: "",
+                onCheckStateChange = {
+                    GlobalVars.configStates["start_clan_war_settings_c$index"]!!.value =
+                        if (it) "1" else "0"
+                },
+                text = Schema.MAIN_BASE_SETTINGS.first { it.key == "start_clan_war_settings" }.displayName
+            )
+            CustomCheckBox(
+                checkedState = GlobalVars.configStates["start_league_settings_c$index"]?.value ?: "",
+                onCheckStateChange = {
+                    GlobalVars.configStates["start_league_settings_c$index"]!!.value =
+                        if (it) "1" else "0"
+                },
+                text = Schema.MAIN_BASE_SETTINGS.first { it.key == "start_league_settings" }.displayName
+            )
+            CustomCheckBox(
+                checkedState = GlobalVars.configStates["start_raid_c$index"]?.value ?: "",
+                onCheckStateChange = {
+                    GlobalVars.configStates["start_raid_c$index"]!!.value =
+                        if (it) "1" else "0"
+                },
+                text = Schema.MAIN_BASE_SETTINGS.first { it.key == "start_raid" }.displayName
+            )
         }
     }
 }
