@@ -86,7 +86,7 @@ object Schema {
         SettingDef("build_setting", "自动建造", 1, "MAIN_BASE_SETTINGS"),
         SettingDef("wall_upgrade_settings", "升级城墙", 1, "MAIN_BASE_SETTINGS"),
         SettingDef("batch_wall_upgrade_settings", "批量升级城墙", 1, "MAIN_BASE_SETTINGS"),
-        SettingDef("worker_settings", "留1工人刷墙", 0, "MAIN_BASE_SETTINGS"),
+        SettingDef("save_worker", "留1工人升级城墙", 0, "MAIN_BASE_SETTINGS"),
         SettingDef("building_conversion_settings", "改装建筑", 0, "MAIN_BASE_SETTINGS"),
         SettingDef("upgrade_after_fail_wall_upgrade", "刷墙失败后建造", 0, "MAIN_BASE_SETTINGS"),
         SettingDef(
@@ -149,14 +149,6 @@ object Schema {
         SettingDef("clan_name", "部落名称:", "", "MAIN_BASE_SETTINGS"),
         SettingDef("consecutive_count", "连号数量:", 3, "MAIN_BASE_SETTINGS"),
 
-        SettingDef("no_builder_base", "不打夜世界", 0, "BUILDER_BASE_SETTINGS"),
-        SettingDef("builder_base_farming", "夜世界打资源", 0, "BUILDER_BASE_SETTINGS"),
-        SettingDef("switch_account_after_battles", "每次对战以下局数后切号", 0, "BUILDER_BASE_SETTINGS"),
-        SettingDef("stop_when_resource_full", "资源满后停止对战", 0, "BUILDER_BASE_SETTINGS"),
-        SettingDef("trophy_pushing_mode", "上分模式", 0, "BUILDER_BASE_SETTINGS"),
-        SettingDef("elixir_cart_farming", "刷圣水车", 0, "BUILDER_BASE_SETTINGS"),
-        SettingDef("random_deployment", "随机下兵", 0, "BUILDER_BASE_SETTINGS"),
-        SettingDef("builder_base_research", "夜世界研究", 0, "BUILDER_BASE_SETTINGS"),
     )
 
     val MAIN_BASE_TROOPS_AND_SPELLS = listOf(
@@ -273,5 +265,31 @@ object Schema {
         SettingDef("wizard_tower", "法师塔", 1, "MAIN_BASE_BUILDINGS"),
     )
 
-//    val NIGHT_BASE_CONFIG=listOf()
+    val NIGHT_BASE_SETTINGS = listOf(
+        SettingDef("no_builder_base", "不打夜世界", 0, "NIGHT_BASE_SETTINGS"),
+        SettingDef("builder_base_farming", "夜世界打资源", 1, "NIGHT_BASE_SETTINGS"),
+        SettingDef("switch_account_after_battles", "每次对战以下局数后切号", 2, "NIGHT_BASE_SETTINGS"),
+        SettingDef("stop_when_resource_full", "资源满后停止对战", 1, "NIGHT_BASE_SETTINGS"),
+        SettingDef("trophy_pushing_mode", "上分模式", 0, "NIGHT_BASE_SETTINGS"),
+        SettingDef("elixir_cart_farming", "刷圣水车", 0, "NIGHT_BASE_SETTINGS"),
+        SettingDef("builder_base_research", "夜世界研究", 1, "NIGHT_BASE_SETTINGS"),
+        SettingDef("night_build_setting", "自动建造", 1, "NIGHT_BASE_SETTINGS"),
+        SettingDef("night_wall_upgrade_settings", "升级城墙", 1, "NIGH_BASE_SETTINGS"),
+        SettingDef("night_remove_obstacles", "随缘移除障碍物", 1, "NIGH_BASE_SETTINGS"),
+        SettingDef("night_save_worker", "留1工人升级城墙", 1, "NIGH_BASE_SETTINGS"),
+    )
+    val NIGHT_BASE_TROOPS=listOf(
+        SettingDef("raged_barbarian", "狂暴野蛮人", 1, "MAIN_BASE_SETTINGS"),
+        SettingDef("sneaky_archer", "隐秘弓箭手", 1, "MAIN_BASE_SETTINGS"),
+        SettingDef("beta_minion", "异变亡灵", 1, "MAIN_BASE_SETTINGS"),
+        SettingDef("bomber", "夜世界炸弹兵", 1, "MAIN_BASE_SETTINGS"),
+        SettingDef("baby_dragon", "夜世界龙宝", 1, "MAIN_BASE_SETTINGS"),
+        SettingDef("cannon_cart", "加农炮战车", 1, "MAIN_BASE_SETTINGS"),
+        SettingDef("power_pekka", "雷霆皮卡", 1, "MAIN_BASE_SETTINGS"),
+        SettingDef("boxer_giant", "巨人拳击手", 1, "MAIN_BASE_SETTINGS"),
+        SettingDef("night_witch", "暗夜女巫", 1, "MAIN_BASE_SETTINGS"),
+        SettingDef("drop_ship", "骷髅气球", 1, "MAIN_BASE_SETTINGS"),
+        SettingDef("hog_glider", "飞猪骑士", 1, "MAIN_BASE_SETTINGS"),
+        SettingDef("electrofire_wizard", "电火法师", 1, "MAIN_BASE_SETTINGS"),
+    )
 }

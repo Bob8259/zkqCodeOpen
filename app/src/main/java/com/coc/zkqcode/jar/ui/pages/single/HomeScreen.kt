@@ -19,7 +19,6 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -37,9 +36,9 @@ import com.coc.zkqcode.utils.components.GlobalVars
 import com.coc.zkqcode.utils.components.InputRow
 import com.coc.zkqcode.utils.database.Schema
 import com.coc.zkqcode.utils.database.SchemaExporter
-import com.coc.zkqcode.utils.theme.AppColors
 import com.coc.zkqcode.utils.state.AppMode
 import com.coc.zkqcode.utils.state.AppStateManager
+import com.coc.zkqcode.utils.theme.AppColors
 
 @Composable
 fun HomeScreen(onSaveSuccess: () -> Unit = {}) {
@@ -83,7 +82,9 @@ fun HomeScreen(onSaveSuccess: () -> Unit = {}) {
             Schema.MAIN_BASE_SETTINGS,
             Schema.MAIN_BASE_TROOPS_AND_SPELLS,
             Schema.MAIN_BASE_BUILDINGS,
-            Schema.MAIN_BASE_PETS
+            Schema.MAIN_BASE_PETS,
+            Schema.NIGHT_BASE_SETTINGS,
+            Schema.NIGHT_BASE_TROOPS
         )
 
         allSchemas.forEach { schemaList ->
