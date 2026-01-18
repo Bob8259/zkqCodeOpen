@@ -109,6 +109,7 @@ fun CheckRootScreen() {
         RootStatus.WAITING_FOR_SERVER -> {
             FullScreenMessage("等待Root服务器启动...")
         }
+
         RootStatus.SERVER_ERROR -> {
             FullScreenMessage("连接到Root服务器失败")
         }
@@ -147,7 +148,10 @@ fun CheckRootScreen() {
                                         GlobalVars.configStates[key]?.value = savedValue
                                     } else {
                                         val defaultValue =
-                                            if (def.key.startsWith("global_path") || def.key.startsWith("cn_path")) {
+                                            if (def.key.startsWith("global_path") || def.key.startsWith(
+                                                    "cn_path"
+                                                )
+                                            ) {
                                                 i.toString()
                                             } else {
                                                 def.defaultValue.toString()
@@ -193,9 +197,7 @@ fun CheckRootScreen() {
             } else {
                 // Start the floating window service when root check passes AND config is initialized
                 LaunchedEffect(Unit) {
-                    val serviceIntent = Intent(context, UIWindowService::class.java).apply {
-                        putExtra("show_main_ui", true)
-                    }
+                    val serviceIntent = Intent(context, UIWindowService::class.java)
                     context.startService(serviceIntent)
                 }
                 Column(
@@ -208,9 +210,8 @@ fun CheckRootScreen() {
                     CustomButton(
                         text = "显示主界面",
                         onClick = {
-                            val serviceIntent = Intent(context, UIWindowService::class.java).apply {
-                                putExtra("show_main_ui", true)
-                            }
+                            GlobalVars.currentMode = "Main"
+                            val serviceIntent = Intent(context, UIWindowService::class.java)
                             GlobalVars.isAutoRunEnabled = true
                             GlobalVars.autoRunTimer = 60
                             GlobalVars.updateWindowPosition = false

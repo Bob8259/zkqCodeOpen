@@ -23,6 +23,7 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import com.coc.zkqcode.utils.components.GlobalVars
 import kotlinx.coroutines.delay
 
 // Define a common icon size constant
@@ -132,7 +133,7 @@ fun ControlWindow(
                         .padding(4.dp)
                         .clickable {
                             internalInteractionCount++
-                            /* Handle setting */
+                            GlobalVars.currentMode = "Main"
                             onOpenMainUI()
                         }
                 )
@@ -144,7 +145,7 @@ fun ControlWindow(
                         .padding(4.dp)
                         .clickable {
                             internalInteractionCount++
-                            /* Handle switch */
+                            GlobalVars.currentMode = "SwitchAccount"
                             onSwitchAccount()
                         }
                 )
@@ -182,7 +183,7 @@ fun ControlWindow(
                         .padding(4.dp)
                         .clickable {
                             internalInteractionCount++
-                            /* Handle switch */
+                            GlobalVars.currentMode = "SwitchAccount"
                             onSwitchAccount()
                         }
                 )
@@ -194,7 +195,7 @@ fun ControlWindow(
                         .padding(4.dp)
                         .clickable {
                             internalInteractionCount++
-                            /* Handle setting */
+                            GlobalVars.currentMode = "Main"
                             onOpenMainUI()
                         }
                 )

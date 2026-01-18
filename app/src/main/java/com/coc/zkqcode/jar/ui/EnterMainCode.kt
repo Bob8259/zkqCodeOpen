@@ -10,9 +10,11 @@ import com.coc.zkqcode.utils.components.GlobalVars
 class EnterMainCode : MainCode {
     @Composable
     override fun ShowMainUI(context: Context, onClose: () -> Unit) {
-        if (GlobalVars.showManualMode) {
-            SwitchAccount(onClose = onClose)
-        } else {
+        if (GlobalVars.currentMode == "SwitchAccount") {
+            SwitchAccount(onClose =
+                onClose
+            )
+        } else if (GlobalVars.currentMode == "Main") {
             HomeScreen(onSaveSuccess = onClose)
         }
     }
