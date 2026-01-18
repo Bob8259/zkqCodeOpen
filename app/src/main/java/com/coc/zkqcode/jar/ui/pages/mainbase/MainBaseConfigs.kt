@@ -298,15 +298,6 @@ fun MainBaseConfig(index: Int) {
                 text = Schema.MAIN_BASE_SETTINGS.first { it.key == "wall_upgrade_settings" }.displayName
             )
             CustomCheckBox(
-                checkedState = GlobalVars.configStates["batch_wall_upgrade_settings_c$index"]?.value
-                    ?: "0",
-                onCheckStateChange = { checked ->
-                    GlobalVars.configStates["batch_wall_upgrade_settings_c$index"]?.value =
-                        if (checked) "1" else "0"
-                },
-                text = Schema.MAIN_BASE_SETTINGS.first { it.key == "batch_wall_upgrade_settings" }.displayName
-            )
-            CustomCheckBox(
                 checkedState = GlobalVars.configStates["worker_settings_c$index"]?.value ?: "0",
                 onCheckStateChange = { checked ->
                     GlobalVars.configStates["worker_settings_c$index"]?.value =
@@ -333,6 +324,27 @@ fun MainBaseConfig(index: Int) {
                 text = Schema.MAIN_BASE_SETTINGS.first { it.key == "upgrade_after_fail_wall_upgrade" }.displayName,
                 explain = "勾选后，若主世界无城墙可升级，则会将所有工人用于建造。"
             )
+        }
+        if (GlobalVars.configStates["wall_upgrade_settings_c$index"]?.value == "1") {
+            FlowRow {
+                CustomCheckBox(
+                    checkedState = GlobalVars.configStates["batch_wall_upgrade_settings_c$index"]?.value
+                        ?: "0",
+                    onCheckStateChange = { checked ->
+                        GlobalVars.configStates["batch_wall_upgrade_settings_c$index"]?.value =
+                            if (checked) "1" else "0"
+                    },
+                    text = Schema.MAIN_BASE_SETTINGS.first { it.key == "batch_wall_upgrade_settings" }.displayName
+                )
+                InputRow(
+                    label = Schema.MAIN_BASE_SETTINGS.first { it.key == "upgrade_wall_threshold" }.displayName,
+                    value = GlobalVars.configStates["upgrade_wall_threshold_c$index"]?.value
+                        ?: "-1",
+                    onValueChange = {
+                        GlobalVars.configStates["upgrade_wall_threshold_c$index"]?.value = it
+                    }
+                )
+            }
         }
         if (GlobalVars.configStates["build_setting_c$index"]?.value == "1") {
             UpgradeConfigs(index)

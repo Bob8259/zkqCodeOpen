@@ -81,6 +81,7 @@ object Schema {
         SettingDef("lighting_on_wizard_tower", "闪法师塔次数", "4", "MAIN_BASE_SETTINGS"),
         SettingDef("ai_deploy_troops", "AI下兵", 0, "MAIN_BASE_SETTINGS"),
         SettingDef("change_heroes", "随机换英雄", 0, "MAIN_BASE_SETTINGS"),
+        SettingDef("upgrade_wall_threshold", "金水高于以下百分比后刷墙", "85", "MAIN_BASE_SETTINGS"),
         ///////
         SettingDef("build_setting", "自动建造", 1, "MAIN_BASE_SETTINGS"),
         SettingDef("wall_upgrade_settings", "升级城墙", 1, "MAIN_BASE_SETTINGS"),

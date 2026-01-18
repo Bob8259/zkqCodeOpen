@@ -11,6 +11,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.coc.zkqcode.interfaces.MainCode
+import com.coc.zkqcode.utils.state.AppMode
+import com.coc.zkqcode.utils.state.AppStateManager
 import dalvik.system.DexClassLoader
 import java.io.File
 
@@ -42,7 +44,10 @@ class Loadjar(private val context: Context) {
         } else {
             Column {
                 Text(text = loadStatus)
-                Button(onClick = onClose) {
+                Button(onClick = {
+                    AppStateManager.setMode(AppMode.Run)
+                    onClose()
+                }) {
                     Text(text = "关闭悬浮窗")
                 }
             }
