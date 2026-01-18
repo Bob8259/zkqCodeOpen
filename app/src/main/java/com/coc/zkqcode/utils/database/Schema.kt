@@ -81,7 +81,7 @@ object Schema {
         SettingDef("lighting_on_wizard_tower", "闪法师塔次数", "4", "MAIN_BASE_SETTINGS"),
         SettingDef("ai_deploy_troops", "AI下兵", 0, "MAIN_BASE_SETTINGS"),
         SettingDef("change_heroes", "随机换英雄", 0, "MAIN_BASE_SETTINGS"),
-        SettingDef("upgrade_wall_threshold", "金水高于以下百分比后刷墙", "85", "MAIN_BASE_SETTINGS"),
+
         ///////
         SettingDef("build_setting", "自动建造", 1, "MAIN_BASE_SETTINGS"),
         SettingDef("wall_upgrade_settings", "升级城墙", 1, "MAIN_BASE_SETTINGS"),
@@ -89,90 +89,102 @@ object Schema {
         SettingDef("worker_settings", "留1工人刷墙", 0, "MAIN_BASE_SETTINGS"),
         SettingDef("building_conversion_settings", "改装建筑", 0, "MAIN_BASE_SETTINGS"),
         SettingDef("upgrade_after_fail_wall_upgrade", "刷墙失败后建造", 0, "MAIN_BASE_SETTINGS"),
-
-        //SettingDef("upgrade_research_setting", "上分研究设置", 0, "MAIN_BASE_SETTINGS"),
-        SettingDef("upgrade_research_helper", "升级实验助手", 0, "MAIN_BASE_SETTINGS"),
-        SettingDef("upgrade_builder_apprentice", "升级工人学徒", 0, "MAIN_BASE_SETTINGS"),
+        SettingDef(
+            "upgrade_wall_threshold",
+            "金水高于以下百分比后刷墙",
+            "85",
+            "MAIN_BASE_SETTINGS"
+        ),
+        SettingDef("upgrade_pets", "升级战宠", 1, "MAIN_BASE_SETTINGS"),
         SettingDef("stop_battle_when_no_star", "无胜利之星后停止对战", 0, "MAIN_BASE_SETTINGS"),
-        SettingDef("clan_tag", "部落标签", "", "MAIN_BASE_SETTINGS"),
-        SettingDef("clan_password", "部落暗号", "", "MAIN_BASE_SETTINGS"),
-
-        SettingDef("random_deploy", "随机下兵", 1, "MAIN_BASE_SETTINGS"),
-        SettingDef("create_consecutive_clan_tag", "创建连号部落", 0, "MAIN_BASE_SETTINGS"),
-        SettingDef("create_clan_name", "部落名称", "紫孔雀部落", "MAIN_BASE_SETTINGS"),
-
-        SettingDef("consecutive_number", "连号数量", "5", "MAIN_BASE_SETTINGS"),
-        SettingDef("invite_players", "邀请玩家", 0, "MAIN_BASE_SETTINGS"),
-        SettingDef("use_temp_item", "使用临时物品", 0, "MAIN_BASE_SETTINGS"),
         SettingDef("restart_game", "重启游戏", 1, "MAIN_BASE_SETTINGS"),
         SettingDef("play_ladder", "排位对战", 0, "MAIN_BASE_SETTINGS"),
         SettingDef("change_base", "切换阵型", 1, "MAIN_BASE_SETTINGS"),
-
-        SettingDef("use_temp_item", "使用临时物品", 0, "MAIN_BASE_SETTINGS"),
-        SettingDef("helper_settings", "帮手设置", 1, "MAIN_BASE_SETTINGS"),
-
-
-        SettingDef("clan_games_settings", "打竞赛设置", 1, "MAIN_BASE_SETTINGS"),
-        SettingDef("claim_rewards_settings", "领竞赛设置", 1, "MAIN_BASE_SETTINGS"),
-
-        SettingDef("clan_war_settings", "部落战设置", 0, "MAIN_BASE_SETTINGS"),
-        SettingDef("raid_settings", "突袭设置", 1, "MAIN_BASE_SETTINGS"),
-        SettingDef("league_settings", "打联赛设置", 0, "MAIN_BASE_SETTINGS"),
-        SettingDef("start_raid_settings", "发突袭设置", 0, "MAIN_BASE_SETTINGS"),
-        SettingDef("start_league_settings", "发起联赛设置", 0, "MAIN_BASE_SETTINGS"),
-        SettingDef("start_clan_war_settings", "发起部落战设置", 0, "MAIN_BASE_SETTINGS"),
-        SettingDef("buy_ore_settings", "购买矿石设置", 0, "MAIN_BASE_SETTINGS"),
-        SettingDef("buy_research_potion_settings", "购买研究药水设置", 0, "MAIN_BASE_SETTINGS"),
-        SettingDef(
-            "buy_clock_tower_potion_settings",
-            "购买钟楼药水设置",
-            0,
-            "MAIN_BASE_SETTINGS"
-        ),
-        SettingDef("buy_training_potion_settings", "购买训练药水设置", 0, "MAIN_BASE_SETTINGS"),
-        SettingDef("buy_wall_ring_settings", "购买壁垒之戒设置", 0, "MAIN_BASE_SETTINGS"),
-        SettingDef(
-            "league_coins_buy_research_potions",
-            "联赛币买研究药水",
-            0,
-            "MAIN_BASE_SETTINGS"
-        ),
-        SettingDef(
-            "league_coins_buy_builder_potions",
-            "联赛币买工人药水",
-            0,
-            "MAIN_BASE_SETTINGS"
-        ),
-        SettingDef("use_research_potion_settings", "用研究药水设置", 0, "MAIN_BASE_SETTINGS"),
-        SettingDef(
-            "use_clock_tower_potion_settings",
-            "用钟楼药水设置",
-            0,
-            "MAIN_BASE_SETTINGS"
-        ),
-        SettingDef("use_worker_potion_settings", "用工人药水设置", 0, "MAIN_BASE_SETTINGS"),
-        SettingDef("sell_training_potion_settings", "卖训练药水设置", 0, "MAIN_BASE_SETTINGS"),
-        SettingDef(
-            "sell_clock_tower_potion_settings",
-            "卖钟楼药水设置",
-            0,
-            "MAIN_BASE_SETTINGS"
-        ),
-        SettingDef("sell_wall_ring_settings", "卖壁垒之戒设置", 0, "MAIN_BASE_SETTINGS"),
-        SettingDef("upgrade_gear_settings", "升装备设置", 1, "MAIN_BASE_SETTINGS"),
-        SettingDef("upgrade_all_gear_settings", "升所有装备设置", 0, "MAIN_BASE_SETTINGS"),
-        SettingDef("upgrade_pets_settings", "MAIN_BASE_PETS", 1, "MAIN_BASE_SETTINGS"),
-        SettingDef("remove_obstacles_settings", "除草设置", 1, "MAIN_BASE_SETTINGS"),
-        SettingDef("post_failure_build", "刷墙失败后建造", 0, "MAIN_BASE_SETTINGS"),
-        SettingDef("auto_join_clan", "自动加部落", 0, "MAIN_BASE_SETTINGS"),
         SettingDef("wait_for_battle", "等待对战", 0, "MAIN_BASE_SETTINGS"),
-        SettingDef("no_night_base", "不打夜世界", 0, "MAIN_BASE_SETTINGS"),
-        // 活动设置
-        SettingDef("event_reward_setting", "活动奖励设置", 0, "MAIN_BASE_SETTINGS"),
-        SettingDef("event_coin_buy_yellow_ore", "活动币买星辉矿石", 0, "MAIN_BASE_SETTINGS"),
-        SettingDef("event_coin_buy_equipment", "活动币买装备", 0, "MAIN_BASE_SETTINGS"),
-        SettingDef("event_coin_buy_worker_potion", "活动币买工人药水", 0, "MAIN_BASE_SETTINGS"),
-        SettingDef("event_coin_buy_research_potion", "活动币买研究药水", 0, "MAIN_BASE_SETTINGS"),
+        SettingDef("helper_settings", "用帮手", 1, "MAIN_BASE_SETTINGS"),
+        SettingDef("upgrade_research_helper", "升级实验助手", 0, "MAIN_BASE_SETTINGS"),
+        SettingDef("upgrade_builder_apprentice", "升级工人学徒", 0, "MAIN_BASE_SETTINGS"),
+        SettingDef("do_clan_games", "做竞赛任务", 1, "MAIN_BASE_SETTINGS"),
+        SettingDef("claim_clan_game_rewards", "领竞赛奖励", 0, "MAIN_BASE_SETTINGS"),
+////////////
+
+
+//
+//        SettingDef("clan_tag", "部落标签", "", "MAIN_BASE_SETTINGS"),
+//        SettingDef("clan_password", "部落暗号", "", "MAIN_BASE_SETTINGS"),
+//
+//        SettingDef("random_deploy", "随机下兵", 1, "MAIN_BASE_SETTINGS"),
+//        SettingDef("create_consecutive_clan_tag", "创建连号部落", 0, "MAIN_BASE_SETTINGS"),
+//        SettingDef("create_clan_name", "部落名称", "紫孔雀部落", "MAIN_BASE_SETTINGS"),
+//
+//        SettingDef("consecutive_number", "连号数量", "5", "MAIN_BASE_SETTINGS"),
+//        SettingDef("invite_players", "邀请玩家", 0, "MAIN_BASE_SETTINGS"),
+//        SettingDef("use_temp_item", "使用临时物品", 0, "MAIN_BASE_SETTINGS"),
+
+//
+//        SettingDef("use_temp_item", "使用临时物品", 0, "MAIN_BASE_SETTINGS"),
+
+//
+//
+
+//
+//        SettingDef("clan_war_settings", "部落战设置", 0, "MAIN_BASE_SETTINGS"),
+//        SettingDef("raid_settings", "突袭设置", 1, "MAIN_BASE_SETTINGS"),
+//        SettingDef("league_settings", "打联赛设置", 0, "MAIN_BASE_SETTINGS"),
+//        SettingDef("start_raid_settings", "发突袭设置", 0, "MAIN_BASE_SETTINGS"),
+//        SettingDef("start_league_settings", "发起联赛设置", 0, "MAIN_BASE_SETTINGS"),
+//        SettingDef("start_clan_war_settings", "发起部落战设置", 0, "MAIN_BASE_SETTINGS"),
+//        SettingDef("buy_ore_settings", "购买矿石设置", 0, "MAIN_BASE_SETTINGS"),
+//        SettingDef("buy_research_potion_settings", "购买研究药水设置", 0, "MAIN_BASE_SETTINGS"),
+//        SettingDef(
+//            "buy_clock_tower_potion_settings",
+//            "购买钟楼药水设置",
+//            0,
+//            "MAIN_BASE_SETTINGS"
+//        ),
+//        SettingDef("buy_training_potion_settings", "购买训练药水设置", 0, "MAIN_BASE_SETTINGS"),
+//        SettingDef("buy_wall_ring_settings", "购买壁垒之戒设置", 0, "MAIN_BASE_SETTINGS"),
+//        SettingDef(
+//            "league_coins_buy_research_potions",
+//            "联赛币买研究药水",
+//            0,
+//            "MAIN_BASE_SETTINGS"
+//        ),
+//        SettingDef(
+//            "league_coins_buy_builder_potions",
+//            "联赛币买工人药水",
+//            0,
+//            "MAIN_BASE_SETTINGS"
+//        ),
+//        SettingDef("use_research_potion_settings", "用研究药水设置", 0, "MAIN_BASE_SETTINGS"),
+//        SettingDef(
+//            "use_clock_tower_potion_settings",
+//            "用钟楼药水设置",
+//            0,
+//            "MAIN_BASE_SETTINGS"
+//        ),
+//        SettingDef("use_worker_potion_settings", "用工人药水设置", 0, "MAIN_BASE_SETTINGS"),
+//        SettingDef("sell_training_potion_settings", "卖训练药水设置", 0, "MAIN_BASE_SETTINGS"),
+//        SettingDef(
+//            "sell_clock_tower_potion_settings",
+//            "卖钟楼药水设置",
+//            0,
+//            "MAIN_BASE_SETTINGS"
+//        ),
+//        SettingDef("sell_wall_ring_settings", "卖壁垒之戒设置", 0, "MAIN_BASE_SETTINGS"),
+//        SettingDef("upgrade_gear_settings", "升装备设置", 1, "MAIN_BASE_SETTINGS"),
+//        SettingDef("upgrade_all_gear_settings", "升所有装备设置", 0, "MAIN_BASE_SETTINGS"),
+//        SettingDef("remove_obstacles_settings", "除草设置", 1, "MAIN_BASE_SETTINGS"),
+//        SettingDef("post_failure_build", "刷墙失败后建造", 0, "MAIN_BASE_SETTINGS"),
+//        SettingDef("auto_join_clan", "自动加部落", 0, "MAIN_BASE_SETTINGS"),
+
+//        SettingDef("no_night_base", "不打夜世界", 0, "MAIN_BASE_SETTINGS"),
+//        // 活动设置
+//        SettingDef("event_reward_setting", "活动奖励设置", 0, "MAIN_BASE_SETTINGS"),
+//        SettingDef("event_coin_buy_yellow_ore", "活动币买星辉矿石", 0, "MAIN_BASE_SETTINGS"),
+//        SettingDef("event_coin_buy_equipment", "活动币买装备", 0, "MAIN_BASE_SETTINGS"),
+//        SettingDef("event_coin_buy_worker_potion", "活动币买工人药水", 0, "MAIN_BASE_SETTINGS"),
+//        SettingDef("event_coin_buy_research_potion", "活动币买研究药水", 0, "MAIN_BASE_SETTINGS"),
     )
 
     val MAIN_BASE_TROOPS_AND_SPELLS = listOf(

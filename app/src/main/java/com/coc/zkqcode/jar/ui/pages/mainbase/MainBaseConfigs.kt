@@ -349,5 +349,17 @@ fun MainBaseConfig(index: Int) {
         if (GlobalVars.configStates["build_setting_c$index"]?.value == "1") {
             UpgradeConfigs(index)
         }
+        CustomCheckBox(
+            checkedState = GlobalVars.configStates["upgrade_pets_c$index"]?.value
+                ?: "0",
+            onCheckStateChange = { checked ->
+                GlobalVars.configStates["upgrade_pets_c$index"]?.value =
+                    if (checked) "1" else "0"
+            },
+            text = Schema.MAIN_BASE_SETTINGS.first { it.key == "upgrade_pets" }.displayName
+        )
+        if (GlobalVars.configStates["upgrade_pets_c$index"]?.value == "1") {
+            PetConfigs(index)
+        }
     }
 }
