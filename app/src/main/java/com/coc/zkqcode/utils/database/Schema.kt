@@ -131,7 +131,23 @@ object Schema {
         SettingDef("use_builder_potion", "用工人药水", 0, "MAIN_BASE_SETTINGS"),
         SettingDef("sell_ring_of_wall", "卖壁垒之戒", 0, "MAIN_BASE_SETTINGS"),
         //////////////
-
+        SettingDef("upgrade_wearable_gear", "升穿戴装备", 0, "MAIN_BASE_SETTINGS"),
+        SettingDef("upgrade_all_gear", "升所有装备", 0, "MAIN_BASE_SETTINGS"),
+        SettingDef("remove_obstacles", "移除障碍物", 0, "MAIN_BASE_SETTINGS"),
+        SettingDef("claim_timed_rewards", "领限时活动奖励", 0, "MAIN_BASE_SETTINGS"),
+        SettingDef("claim_token_rewards", "领令牌奖励", 0, "MAIN_BASE_SETTINGS"),
+        SettingDef("claim_capital_gold", "领都城币", 0, "MAIN_BASE_SETTINGS"),
+        SettingDef("donate_capital_gold", "捐都城币", 0, "MAIN_BASE_SETTINGS"),
+        SettingDef("claim_free_shop_rewards", "领商店免费奖励", 0, "MAIN_BASE_SETTINGS"),
+        SettingDef("auto_join_clan", "自动加部落", 0, "MAIN_BASE_SETTINGS"),
+        SettingDef("claim_achievement_gems", "领成就宝石", 0, "MAIN_BASE_SETTINGS"),
+        SettingDef("clan_tag", "加指定部落标签(不填就随机加):","", "MAIN_BASE_SETTINGS"),
+        SettingDef("use_temp_items", "使用临时物品", 0, "MAIN_BASE_SETTINGS"),
+        SettingDef("clan_join_message", "加部落暗号:", "", "MAIN_BASE_SETTINGS"),
+        SettingDef("create_consecutive_clans", "创建连号部落", 0, "MAIN_BASE_SETTINGS"),
+        SettingDef("invite_players", "邀请玩家", 0, "MAIN_BASE_SETTINGS"),
+        SettingDef("clan_name", "部落名称:", "", "MAIN_BASE_SETTINGS"),
+        SettingDef("consecutive_count", "连号数量:", 3, "MAIN_BASE_SETTINGS"),
 
 //
 //        SettingDef("clan_tag", "部落标签", "", "MAIN_BASE_SETTINGS"),
