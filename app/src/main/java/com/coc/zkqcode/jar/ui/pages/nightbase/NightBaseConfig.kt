@@ -14,6 +14,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.coc.zkqcode.utils.components.CustomButton
+import androidx.compose.foundation.layout.Row
+import com.coc.zkqcode.utils.components.CustomCheckBox
+import com.coc.zkqcode.utils.components.GlobalVars
+import com.coc.zkqcode.utils.components.InputRow
 
 @Composable
 fun NightBaseConfig(index: Int) {
@@ -33,6 +37,81 @@ fun NightBaseConfig(index: Int) {
         )
     }
     if (isNightBaseExpanded) {
+        CustomCheckBox(
+            checkedState = GlobalVars.configStates["no_builder_base_c${index}"]?.value ?: "",
+            onCheckStateChange = {
+                GlobalVars.configStates["no_builder_base_c${index}"]!!.value = if (it) "1" else "0"
+            },
+            text = "不打夜世界",
+            explain = "勾选后，紫孔雀将完全不会进入夜世界。换言之，夜世界的所有设置都将失效！\n但因为紫孔雀只会接取夜世界竞赛任务，所以如果接取了部落竞赛的任务，那么就算勾选了不打夜世界，紫孔雀也会打夜世界。"
+        )
+        if (GlobalVars.configStates["no_builder_base_c${index}"]?.value == "0") {
+            Row {
+                CustomCheckBox(
+                    checkedState = GlobalVars.configStates["builder_base_farming_c${index}"]?.value
+                        ?: "",
+                    onCheckStateChange = {
+                        GlobalVars.configStates["builder_base_farming_c${index}"]!!.value =
+                            if (it) "1" else "0"
+                    },
+                    text = "夜世界打资源",
+                    explain = "紫孔雀会自动配兵，暂不支持手动配兵。若未勾选“上分模式”和“刷圣水车”，紫孔雀就会根据账号的资源数量，智能选择对战模式。"
+                )
+                CustomCheckBox(
+                    checkedState = GlobalVars.configStates["stop_when_resource_full_c${index}"]?.value
+                        ?: "",
+                    onCheckStateChange = {
+                        GlobalVars.configStates["stop_when_resource_full_c${index}"]!!.value =
+                            if (it) "1" else "0"
+                    },
+                    text = "资源满后停止对战",
+                )
+            }
+            InputRow(
+                label = "每次对战以下局数后切号",
+                value = GlobalVars.configStates["switch_account_after_battles_c${index}"]?.value
+                    ?: "3",
+                onValueChange = {
+                    GlobalVars.configStates["switch_account_after_battles_c${index}"]!!.value = it
+                }
+            )
+            Row {
+                CustomCheckBox(
+                    checkedState = GlobalVars.configStates["trophy_pushing_mode_c${index}"]?.value
+                        ?: "",
+                    onCheckStateChange = {
+                        GlobalVars.configStates["trophy_pushing_mode_c$index"]?.value =
+                            if (it) "1" else "0"
+                        GlobalVars.configStates["elixir_cart_farming_c${index}"]?.value = "0"
+                    },
+                    text = "上分模式",
+                    explain = "勾选后，紫孔雀会使用暗夜女巫进行上分，刷圣水效率会显著降低，请谨慎勾选。不可与“刷圣水车”同时勾选。"
+                )
+                CustomCheckBox(
+                    checkedState = GlobalVars.configStates["elixir_cart_farming_c${index}"]?.value
+                        ?: "",
+                    onCheckStateChange = {
+                        GlobalVars.configStates["elixir_cart_farming_c$index"]?.value =
+                            if (it) "1" else "0"
+                        GlobalVars.configStates["trophy_pushing_mode_c$index"]?.value = "0"
+                    },
+                    text = "刷圣水车",
+                    explain = "勾选后，夜世界对战时下兵后会立刻投降，因此几乎无法刷金币，请谨慎勾选。不可与“上分模式”同时勾选。"
+                )
 
+            }
+            CustomCheckBox(
+                checkedState = GlobalVars.configStates["builder_base_research_c${index}"]?.value
+                    ?: "",
+                onCheckStateChange = {
+                    GlobalVars.configStates["builder_base_research_c${index}"]!!.value =
+                        if (it) "1" else "0"
+                },
+                text = "夜世界研究",
+            )
+            if (GlobalVars.configStates["builder_base_research_c${index}"]?.value == "1") {
+                NightBaseResearchConfigs(index = index)
+            }
+        }
     }
 }
