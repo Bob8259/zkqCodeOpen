@@ -46,6 +46,8 @@ import com.coc.zkqcode.utils.components.GlobalVars
 import com.coc.zkqcode.utils.fileactions.FileActions
 import com.coc.zkqcode.utils.websocket.ServerConnection
 import com.coc.zkqcode.utils.database.Schema
+import com.coc.zkqcode.utils.state.AppMode
+import com.coc.zkqcode.utils.state.AppStateManager
 
 enum class RootStatus {
     CHECKING,
@@ -210,7 +212,7 @@ fun CheckRootScreen() {
                     CustomButton(
                         text = "显示主界面",
                         onClick = {
-                            GlobalVars.currentMode = "Main"
+                            AppStateManager.setMode(AppMode.Main)
                             val serviceIntent = Intent(context, UIWindowService::class.java)
                             GlobalVars.isAutoRunEnabled = true
                             GlobalVars.autoRunTimer = 60
