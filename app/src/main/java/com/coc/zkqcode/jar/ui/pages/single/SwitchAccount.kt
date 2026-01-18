@@ -33,6 +33,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.coc.zkqcode.utils.components.CustomButton
 import com.coc.zkqcode.utils.components.GlobalVars
+import com.coc.zkqcode.utils.state.AppMode
+import com.coc.zkqcode.utils.state.AppStateManager
 import com.topjohnwu.superuser.Shell
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -235,7 +237,7 @@ fun SwitchAccount(onClose: () -> Unit) {
                 CustomButton(
                     text = "关闭窗口",
                     onClick = {
-                        GlobalVars.currentMode = "Run" //just to close the ui
+                        AppStateManager.setMode(AppMode.Run) //just to close the ui
                         scope.launch {
                             onClose()
                         }

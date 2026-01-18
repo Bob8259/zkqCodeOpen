@@ -60,7 +60,7 @@ object GlobalVars {
     // Auto-run features
     var isAutoRunEnabled by mutableStateOf(true)
     var autoRunTimer by mutableIntStateOf(60)
-    var currentMode by mutableStateOf("Main")
+
     
     // Window positioning
     var absorbEdge by mutableIntStateOf(1) // 1: Left, 0: Right

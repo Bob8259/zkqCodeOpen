@@ -24,6 +24,8 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.coc.zkqcode.utils.components.GlobalVars
+import com.coc.zkqcode.utils.state.AppMode
+import com.coc.zkqcode.utils.state.AppStateManager
 import kotlinx.coroutines.delay
 
 // Define a common icon size constant
@@ -133,7 +135,7 @@ fun ControlWindow(
                         .padding(4.dp)
                         .clickable {
                             internalInteractionCount++
-                            GlobalVars.currentMode = "Main"
+                            AppStateManager.setMode(AppMode.Main)
                             onOpenMainUI()
                         }
                 )
@@ -145,7 +147,7 @@ fun ControlWindow(
                         .padding(4.dp)
                         .clickable {
                             internalInteractionCount++
-                            GlobalVars.currentMode = "SwitchAccount"
+                            AppStateManager.setMode(AppMode.SwitchAccount)
                             onSwitchAccount()
                         }
                 )
@@ -183,7 +185,7 @@ fun ControlWindow(
                         .padding(4.dp)
                         .clickable {
                             internalInteractionCount++
-                            GlobalVars.currentMode = "SwitchAccount"
+                            AppStateManager.setMode(AppMode.SwitchAccount)
                             onSwitchAccount()
                         }
                 )
@@ -195,7 +197,7 @@ fun ControlWindow(
                         .padding(4.dp)
                         .clickable {
                             internalInteractionCount++
-                            GlobalVars.currentMode = "Main"
+                            AppStateManager.setMode(AppMode.Main)
                             onOpenMainUI()
                         }
                 )
