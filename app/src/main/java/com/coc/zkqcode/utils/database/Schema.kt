@@ -149,29 +149,14 @@ object Schema {
         SettingDef("clan_name", "部落名称:", "", "MAIN_BASE_SETTINGS"),
         SettingDef("consecutive_count", "连号数量:", 3, "MAIN_BASE_SETTINGS"),
 
-//
-//        SettingDef("clan_tag", "部落标签", "", "MAIN_BASE_SETTINGS"),
-//        SettingDef("clan_password", "部落暗号", "", "MAIN_BASE_SETTINGS"),
-//
-//        SettingDef("random_deploy", "随机下兵", 1, "MAIN_BASE_SETTINGS"),
-//        SettingDef("create_consecutive_clan_tag", "创建连号部落", 0, "MAIN_BASE_SETTINGS"),
-//        SettingDef("create_clan_name", "部落名称", "紫孔雀部落", "MAIN_BASE_SETTINGS"),
-//
-//        SettingDef("consecutive_number", "连号数量", "5", "MAIN_BASE_SETTINGS"),
-//        SettingDef("invite_players", "邀请玩家", 0, "MAIN_BASE_SETTINGS"),
-//        SettingDef("use_temp_item", "使用临时物品", 0, "MAIN_BASE_SETTINGS"),
-
-//
-//        SettingDef("use_temp_item", "使用临时物品", 0, "MAIN_BASE_SETTINGS"),
-
-//        SettingDef("sell_wall_ring_settings", "卖壁垒之戒设置", 0, "MAIN_BASE_SETTINGS"),
-//        SettingDef("upgrade_gear_settings", "升装备设置", 1, "MAIN_BASE_SETTINGS"),
-//        SettingDef("upgrade_all_gear_settings", "升所有装备设置", 0, "MAIN_BASE_SETTINGS"),
-//        SettingDef("remove_obstacles_settings", "除草设置", 1, "MAIN_BASE_SETTINGS"),
-//        SettingDef("post_failure_build", "刷墙失败后建造", 0, "MAIN_BASE_SETTINGS"),
-//        SettingDef("auto_join_clan", "自动加部落", 0, "MAIN_BASE_SETTINGS"),
-
-//        SettingDef("no_night_base", "不打夜世界", 0, "MAIN_BASE_SETTINGS"),
+        SettingDef("no_builder_base", "不打夜世界", 0, "BUILDER_BASE_SETTINGS"),
+        SettingDef("builder_base_farming", "夜世界打资源", 0, "BUILDER_BASE_SETTINGS"),
+        SettingDef("switch_account_after_battles", "每次对战以下局数后切号", 0, "BUILDER_BASE_SETTINGS"),
+        SettingDef("stop_when_resource_full", "资源满后停止对战", 0, "BUILDER_BASE_SETTINGS"),
+        SettingDef("trophy_pushing_mode", "上分模式", 0, "BUILDER_BASE_SETTINGS"),
+        SettingDef("elixir_cart_farming", "刷圣水车", 0, "BUILDER_BASE_SETTINGS"),
+        SettingDef("random_deployment", "随机下兵", 0, "BUILDER_BASE_SETTINGS"),
+        SettingDef("builder_base_research", "夜世界研究", 0, "BUILDER_BASE_SETTINGS"),
     )
 
     val MAIN_BASE_TROOPS_AND_SPELLS = listOf(

@@ -1,4 +1,4 @@
-package com.coc.zkqcode.jar.ui.pages.mainbase
+package com.coc.zkqcode.jar.ui.pages.nightbase
 
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.padding
@@ -33,6 +33,6 @@ fun NightBaseConfig(index: Int) {
         )
     }
     if (isNightBaseExpanded) {
-        
+
     }
 }
