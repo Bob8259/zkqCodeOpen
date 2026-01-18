@@ -371,7 +371,8 @@ fun MainBaseConfig(index: Int) {
                 explain = "勾选后，会自动用实验助手以及建筑工人学徒。"
             )
             CustomCheckBox(
-                checkedState = GlobalVars.configStates["upgrade_research_helper_c$index"]?.value ?: "",
+                checkedState = GlobalVars.configStates["upgrade_research_helper_c$index"]?.value
+                    ?: "",
                 onCheckStateChange = {
                     GlobalVars.configStates["upgrade_research_helper_c$index"]!!.value =
                         if (it) "1" else "0"
@@ -380,7 +381,8 @@ fun MainBaseConfig(index: Int) {
                 explain = "升级实验助手的优先级高于购买建筑工人和升级工人学徒，请谨慎勾选！"
             )
             CustomCheckBox(
-                checkedState = GlobalVars.configStates["upgrade_builder_apprentice_c$index"]?.value ?: "",
+                checkedState = GlobalVars.configStates["upgrade_builder_apprentice_c$index"]?.value
+                    ?: "",
                 onCheckStateChange = {
                     GlobalVars.configStates["upgrade_builder_apprentice_c$index"]!!.value =
                         if (it) "1" else "0"
@@ -400,7 +402,8 @@ fun MainBaseConfig(index: Int) {
                 explain = "勾选后，紫孔雀会接取小部分夜世界任务，例如夜世界摧毁率等。注意重点是\"小部分\"，也就是说并不是所有任务都可以接取，并且只会接取夜世界任务！若没有任务可接取，则会放弃第一个任务。接取任务后，会自动打夜世界。"
             )
             CustomCheckBox(
-                checkedState = GlobalVars.configStates["claim_clan_game_rewards_c$index"]?.value ?: "",
+                checkedState = GlobalVars.configStates["claim_clan_game_rewards_c$index"]?.value
+                    ?: "",
                 onCheckStateChange = {
                     GlobalVars.configStates["claim_clan_game_rewards_c$index"]!!.value =
                         if (it) "1" else "0"
@@ -436,7 +439,8 @@ fun MainBaseConfig(index: Int) {
         }
         FlowRow {
             CustomCheckBox(
-                checkedState = GlobalVars.configStates["start_clan_war_settings_c$index"]?.value ?: "",
+                checkedState = GlobalVars.configStates["start_clan_war_settings_c$index"]?.value
+                    ?: "",
                 onCheckStateChange = {
                     GlobalVars.configStates["start_clan_war_settings_c$index"]!!.value =
                         if (it) "1" else "0"
@@ -444,7 +448,8 @@ fun MainBaseConfig(index: Int) {
                 text = Schema.MAIN_BASE_SETTINGS.first { it.key == "start_clan_war_settings" }.displayName
             )
             CustomCheckBox(
-                checkedState = GlobalVars.configStates["start_league_settings_c$index"]?.value ?: "",
+                checkedState = GlobalVars.configStates["start_league_settings_c$index"]?.value
+                    ?: "",
                 onCheckStateChange = {
                     GlobalVars.configStates["start_league_settings_c$index"]!!.value =
                         if (it) "1" else "0"
@@ -458,6 +463,170 @@ fun MainBaseConfig(index: Int) {
                         if (it) "1" else "0"
                 },
                 text = Schema.MAIN_BASE_SETTINGS.first { it.key == "start_raid" }.displayName
+            )
+        }
+        FlowRow {
+            listOf(
+                "buy_star_ore_with_raid_medal",
+                "buy_clock_tower_potion_with_raid_medal",
+                "buy_ring_of_wall_with_raid_medal",
+                "buy_research_potion_with_raid_medal",
+                "buy_training_potion_with_raid_medal",
+                "buy_research_potion_with_league_medal",
+                "buy_builder_potion_with_league_medal",
+                "buy_star_ore_with_event_medal",
+                "buy_builder_potion_with_event_medal",
+                "buy_new_equipment_with_event_medal",
+                "buy_research_potion_with_event_medal",
+                "use_research_potion",
+                "sell_training_potion",
+                "use_clock_tower_potion",
+                "sell_clock_tower_potion",
+                "use_builder_potion",
+                "sell_ring_of_wall"
+            ).forEach { key ->
+                CustomCheckBox(
+                    checkedState = GlobalVars.configStates["${key}_c$index"]?.value ?: "0",
+                    onCheckStateChange = { checked ->
+                        GlobalVars.configStates["${key}_c$index"]?.value =
+                            if (checked) "1" else "0"
+                    },
+                    text = Schema.MAIN_BASE_SETTINGS.first { setting -> setting.key == key }.displayName
+                )
+            }
+        }
+        HorizontalDivider(
+            modifier = Modifier.padding(top = 6.dp),
+            thickness = 1.dp,
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 1f)
+        )
+
+        FlowRow {
+            CustomCheckBox(
+                checkedState = GlobalVars.configStates["upgrade_wearable_gear_c$index"]?.value ?: "0",
+                onCheckStateChange = { checked ->
+                    GlobalVars.configStates["upgrade_wearable_gear_c$index"]?.value = if (checked) "1" else "0"
+                },
+                text = Schema.MAIN_BASE_SETTINGS.first { it.key == "upgrade_wearable_gear" }.displayName
+            )
+            CustomCheckBox(
+                checkedState = GlobalVars.configStates["upgrade_all_gear_c$index"]?.value ?: "0",
+                onCheckStateChange = { checked ->
+                    GlobalVars.configStates["upgrade_all_gear_c$index"]?.value = if (checked) "1" else "0"
+                },
+                text = Schema.MAIN_BASE_SETTINGS.first { it.key == "upgrade_all_gear" }.displayName
+            )
+            CustomCheckBox(
+                checkedState = GlobalVars.configStates["remove_obstacles_c$index"]?.value ?: "0",
+                onCheckStateChange = { checked ->
+                    GlobalVars.configStates["remove_obstacles_c$index"]?.value = if (checked) "1" else "0"
+                },
+                text = Schema.MAIN_BASE_SETTINGS.first { it.key == "remove_obstacles" }.displayName,
+                explain = "勾选后，当主世界奖杯大于500时生效。有极小概率（约1%）移除稀有物品"
+            )
+
+            CustomCheckBox(
+                checkedState = GlobalVars.configStates["claim_timed_rewards_c$index"]?.value ?: "0",
+                onCheckStateChange = { checked ->
+                    GlobalVars.configStates["claim_timed_rewards_c$index"]?.value = if (checked) "1" else "0"
+                },
+                text = Schema.MAIN_BASE_SETTINGS.first { it.key == "claim_timed_rewards" }.displayName
+            )
+            CustomCheckBox(
+                checkedState = GlobalVars.configStates["claim_token_rewards_c$index"]?.value ?: "0",
+                onCheckStateChange = { checked ->
+                    GlobalVars.configStates["claim_token_rewards_c$index"]?.value = if (checked) "1" else "0"
+                },
+                text = Schema.MAIN_BASE_SETTINGS.first { it.key == "claim_token_rewards" }.displayName,
+                explain = "仅在资源全满后才会领取"
+            )
+
+            CustomCheckBox(
+                checkedState = GlobalVars.configStates["claim_capital_gold_c$index"]?.value ?: "0",
+                onCheckStateChange = { checked ->
+                    GlobalVars.configStates["claim_capital_gold_c$index"]?.value = if (checked) "1" else "0"
+                },
+                text = Schema.MAIN_BASE_SETTINGS.first { it.key == "claim_capital_gold" }.displayName
+            )
+            CustomCheckBox(
+                checkedState = GlobalVars.configStates["donate_capital_gold_c$index"]?.value ?: "0",
+                onCheckStateChange = { checked ->
+                    GlobalVars.configStates["donate_capital_gold_c$index"]?.value = if (checked) "1" else "0"
+                },
+                text = Schema.MAIN_BASE_SETTINGS.first { it.key == "donate_capital_gold" }.displayName
+            )
+            CustomCheckBox(
+                checkedState = GlobalVars.configStates["claim_free_shop_rewards_c$index"]?.value ?: "0",
+                onCheckStateChange = { checked ->
+                    GlobalVars.configStates["claim_free_shop_rewards_c$index"]?.value = if (checked) "1" else "0"
+                },
+                text = Schema.MAIN_BASE_SETTINGS.first { it.key == "claim_free_shop_rewards" }.displayName
+            )
+
+            CustomCheckBox(
+                checkedState = GlobalVars.configStates["claim_achievement_gems_c$index"]?.value ?: "0",
+                onCheckStateChange = { checked ->
+                    GlobalVars.configStates["claim_achievement_gems_c$index"]?.value = if (checked) "1" else "0"
+                },
+                text = Schema.MAIN_BASE_SETTINGS.first { it.key == "claim_achievement_gems" }.displayName
+            )
+            CustomCheckBox(
+                checkedState = GlobalVars.configStates["auto_join_clan_c$index"]?.value ?: "0",
+                onCheckStateChange = { checked ->
+                    GlobalVars.configStates["auto_join_clan_c$index"]?.value = if (checked) "1" else "0"
+                },
+                text = Schema.MAIN_BASE_SETTINGS.first { it.key == "auto_join_clan" }.displayName,
+                explain = "勾选此选项后，紫孔雀不仅会自动加部落，也会自动建造部落城堡。但若不勾选此选项，就既不会加部落，也不会建造部落城堡。注意：加部落功能仅对未加入部落的账号生效。"
+            )
+            CustomCheckBox(
+                checkedState = GlobalVars.configStates["use_temp_items_c$index"]?.value ?: "0",
+                onCheckStateChange = { checked ->
+                    GlobalVars.configStates["use_temp_items_c$index"]?.value = if (checked) "1" else "0"
+                },
+                text = Schema.MAIN_BASE_SETTINGS.first { it.key == "use_temp_items" }.displayName,
+                explain = "勾选此选项后，紫孔雀会使用研究浓汤和建筑工人大餐。并且为了防止重复使用导致道具失效，每次只会使用一个道具。"
+            )
+        }
+        if (GlobalVars.configStates["auto_join_clan_c$index"]?.value == "1") {
+            InputRow(
+                label = Schema.MAIN_BASE_SETTINGS.first { it.key == "clan_tag" }.displayName,
+                value = GlobalVars.configStates["clan_tag_c$index"]?.value ?: "",
+                onValueChange = { GlobalVars.configStates["clan_tag_c$index"]?.value = it }
+            )
+            InputRow(
+                label = Schema.MAIN_BASE_SETTINGS.first { it.key == "clan_join_message" }.displayName,
+                value = GlobalVars.configStates["clan_join_message_c$index"]?.value ?: "",
+                onValueChange = { GlobalVars.configStates["clan_join_message_c$index"]?.value = it }
+            )
+        }
+        FlowRow {
+            CustomCheckBox(
+                checkedState = GlobalVars.configStates["create_consecutive_clans_c$index"]?.value ?: "0",
+                onCheckStateChange = { checked ->
+                    GlobalVars.configStates["create_consecutive_clans_c$index"]?.value = if (checked) "1" else "0"
+                },
+                text = Schema.MAIN_BASE_SETTINGS.first { it.key == "create_consecutive_clans" }.displayName,
+                explain = "勾选此选项后，当金币大于总容量80-85%后，紫孔雀将反复创建部落，直到部落标签出现大于或等于用户设定的连续数字或字母为止，或直到金币消耗完为止。\n\n注意：\n必须先建造部落城堡，才能勾选此项，否则会出现异常。\n部分设备使用此功能后，需要手动切换输入法。具体切换方法请参考官网教程。\n部分云手机不支持读取剪贴板，建议在电脑模拟器里使用本功能。"
+            )
+            CustomCheckBox(
+                checkedState = GlobalVars.configStates["invite_players_c$index"]?.value ?: "0",
+                onCheckStateChange = { checked ->
+                    GlobalVars.configStates["invite_players_c$index"]?.value = if (checked) "1" else "0"
+                },
+                text = Schema.MAIN_BASE_SETTINGS.first { it.key == "invite_players" }.displayName,
+                explain = "勾选此选项后，紫孔雀将会从公告栏邀请玩家加入部落。\n\n注意：单次邀请耗时约1小时。\n请先加入部落后再开启本功能。\n请确保账号拥有邀请玩家的权限。"
+            )
+        }
+        if (GlobalVars.configStates["create_consecutive_clans_c$index"]?.value == "1") {
+            InputRow(
+                label = Schema.MAIN_BASE_SETTINGS.first { it.key == "clan_name" }.displayName,
+                value = GlobalVars.configStates["clan_name_c$index"]?.value ?: "",
+                onValueChange = { GlobalVars.configStates["clan_name_c$index"]?.value = it }
+            )
+            InputRow(
+                label = Schema.MAIN_BASE_SETTINGS.first { it.key == "consecutive_count" }.displayName,
+                value = GlobalVars.configStates["consecutive_count_c$index"]?.value ?: "3",
+                onValueChange = { GlobalVars.configStates["consecutive_count_c$index"]?.value = it }
             )
         }
     }
