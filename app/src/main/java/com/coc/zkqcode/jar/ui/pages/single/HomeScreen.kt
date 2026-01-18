@@ -19,6 +19,7 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -227,16 +228,22 @@ fun HomeScreen(onSaveSuccess: () -> Unit = {}) {
                                 },
                                 text = Schema.GLOBAL_SETTINGS.first { it.key == "record_progress" }.displayName,
                             )
-                            CustomCheckBox(
-                                checkedState = GlobalVars.configStates["auto_update"]?.value
-                                    ?: "0",
-                                onCheckStateChange = {
-                                    GlobalVars.configStates["auto_update"]?.value =
-                                        if (it) "1" else "0"
-                                },
-                                text = Schema.GLOBAL_SETTINGS.first { it.key == "auto_update" }.displayName,
-                            )
+                            SideEffect {
+                                println("bbbbbb")
+                                println("aaaaaaa" + GlobalVars.configStates["auto_update"]?.value?.toIntOrNull())
+                            }
+
                         }
+                       
+                        DropdownButton(
+                            options = listOf("关闭", "仅更新稳定版", "更新测试版"),
+                            selectedIndex = GlobalVars.configStates["auto_update"]?.value?.toIntOrNull()
+                                ?: 0,
+                            label = Schema.GLOBAL_SETTINGS.first { it.key == "auto_update" }.displayName,
+                            onValueChange = {
+                                GlobalVars.configStates["auto_update"]?.value = it.toString()
+                            }
+                        )
                         CustomCheckBox(
                             checkedState = GlobalVars.configStates["auto_start"]?.value ?: "0",
                             onCheckStateChange = {
