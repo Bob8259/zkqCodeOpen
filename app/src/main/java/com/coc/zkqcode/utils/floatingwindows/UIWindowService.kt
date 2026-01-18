@@ -18,6 +18,7 @@ import androidx.savedstate.SavedStateRegistryController
 import androidx.savedstate.SavedStateRegistryOwner
 import androidx.savedstate.setViewTreeSavedStateRegistryOwner
 import com.coc.zkqcode.loadjar.Loadjar
+import com.coc.zkqcode.utils.components.GlobalVars
 
 class UIWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner {
 
@@ -27,7 +28,7 @@ class UIWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner {
     // --- Lifecycle related essential code ---
     private val lifecycleRegistry = LifecycleRegistry(this)
     override val lifecycle: Lifecycle = lifecycleRegistry
-
+    private lateinit var windowParams: WindowManager.LayoutParams
     private val savedStateRegistryController = SavedStateRegistryController.create(this).apply {
         performRestore(null)
     }
@@ -52,16 +53,12 @@ class UIWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner {
         val screenWidth = displayMetrics.widthPixels
         val screenHeight = displayMetrics.heightPixels
 
-        val windowHeight = (screenHeight * 0.9).toInt()
+        val windowHeight =
+            if (GlobalVars.currentMode == "Main") (screenHeight * 0.9).toInt() else (screenHeight * 0.6).toInt()
 
-        val windowType = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
-        } else {
-            @Suppress("DEPRECATION")
-            WindowManager.LayoutParams.TYPE_PHONE
-        }
+        val windowType = getWindowType()
 
-        val params = WindowManager.LayoutParams(
+        windowParams = WindowManager.LayoutParams(
             screenWidth,
             windowHeight,
             windowType,
@@ -78,33 +75,62 @@ class UIWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner {
 
             setContent {
                 Loadjar(context).LoadAndShowUI(onClose = {
-                    if (com.coc.zkqcode.utils.components.GlobalVars.showManualMode) {
-                        closeMainUI(silent = true)
-                        startService(
-                            Intent(
-                                this@UIWindowService,
-                                SwitchAccountWindowService::class.java
+                    when (GlobalVars.currentMode) {
+                        "SwitchAccount" -> {
+                            updateWindowLayout(
+                                displayMetrics.widthPixels,
+                                (displayMetrics.heightPixels * 0.6).toInt()
                             )
-                        )
-                    } else {
-                        closeMainUI()
+                        }
+                        "Main" -> {
+                            updateWindowLayout(
+                                displayMetrics.widthPixels,
+                                (displayMetrics.heightPixels * 0.9).toInt()
+                            )
+                        }
+                        else -> {
+                            closeMainUI()
+                            startService(
+                                Intent(
+                                    this@UIWindowService,
+                                    ControlWindowService::class.java
+                                )
+                            )
+                        }
                     }
+
                 })
             }
         }
 
-        windowManager.addView(composeView, params)
+        windowManager.addView(composeView, windowParams)
     }
 
+    private fun updateWindowLayout(newWidth: Int, newHeight: Int) {
+        if (composeView != null && ::windowParams.isInitialized) {
+            windowParams.width = newWidth
+            windowParams.height = newHeight
+            // 只有调用此方法，WindowManager 才会重新渲染窗口大小
+            windowManager.updateViewLayout(composeView, windowParams)
+        }
+    }
 
-    private fun closeMainUI(silent: Boolean = false) {
+    private fun getWindowType(): Int {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
+        } else {
+            // 兼容 Android 7.1 及以下
+            @Suppress("DEPRECATION")
+            WindowManager.LayoutParams.TYPE_PHONE
+        }
+    }
+
+    private fun closeMainUI() {
         if (composeView != null) {
             windowManager.removeView(composeView)
             composeView = null
         }
-        if (!silent) {
-            startService(Intent(this, ControlWindowService::class.java))
-        }
+
         stopSelf()
     }
 
@@ -121,12 +147,7 @@ class UIWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         lifecycleRegistry.currentState = Lifecycle.State.STARTED
-        if (intent?.getBooleanExtra("show_main_ui", false) == true) {
-            showFloatingWindow()
-        }
-        if (intent?.getBooleanExtra("close_ui_silent", false) == true) {
-            closeMainUI(silent = true)
-        }
+        showFloatingWindow()
         return START_STICKY
     }
 }

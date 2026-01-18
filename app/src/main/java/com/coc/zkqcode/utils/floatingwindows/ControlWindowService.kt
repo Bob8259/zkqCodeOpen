@@ -172,7 +172,6 @@ class ControlWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner 
                 onOpenMainUI = {
                     val intent =
                         Intent(this@ControlWindowService, UIWindowService::class.java).apply {
-                            putExtra("show_main_ui", true)
                             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                         }
                     GlobalVars.isAutoRunEnabled = true
@@ -182,11 +181,11 @@ class ControlWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner 
                     stopSelf()
                 },
                 onSwitchAccount = {
-                    GlobalVars.showManualMode = true
+                    GlobalVars.currentMode = "SwitchAccount"
                     startService(
                         Intent(
                             this@ControlWindowService,
-                            SwitchAccountWindowService::class.java
+                            UIWindowService::class.java
                         )
                     )
                     stopSelf()

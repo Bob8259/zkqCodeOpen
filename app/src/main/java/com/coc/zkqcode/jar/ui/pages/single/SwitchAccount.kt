@@ -235,6 +235,7 @@ fun SwitchAccount(onClose: () -> Unit) {
                 CustomButton(
                     text = "关闭窗口",
                     onClick = {
+                        GlobalVars.currentMode = "Run" //just to close the ui
                         scope.launch {
                             onClose()
                         }

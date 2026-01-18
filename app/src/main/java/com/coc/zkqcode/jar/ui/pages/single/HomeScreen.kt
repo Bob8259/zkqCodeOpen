@@ -116,6 +116,7 @@ fun HomeScreen(onSaveSuccess: () -> Unit = {}) {
         GlobalVars.updateWindowPosition = true
         // 执行保存后的回调，用于关闭悬浮窗
         onSaveSuccess()
+        //run code
         ScreenShot().testcode()
     }
 
@@ -133,6 +134,7 @@ fun HomeScreen(onSaveSuccess: () -> Unit = {}) {
             kotlinx.coroutines.delay(1000L)
             GlobalVars.autoRunTimer--
             if (GlobalVars.autoRunTimer <= 0) {
+                GlobalVars.currentMode = "Run"
                 saveAndRun()
             }
         }
@@ -200,7 +202,7 @@ fun HomeScreen(onSaveSuccess: () -> Unit = {}) {
                         }
                         LoginScreen()
                         CustomButton(text = "启动手动切号模式", onClick = {
-                            GlobalVars.showManualMode = true
+                            GlobalVars.currentMode = "SwitchAccount"
                             onSaveSuccess()
                         })
                         InputRow(
@@ -228,13 +230,8 @@ fun HomeScreen(onSaveSuccess: () -> Unit = {}) {
                                 },
                                 text = Schema.GLOBAL_SETTINGS.first { it.key == "record_progress" }.displayName,
                             )
-                            SideEffect {
-                                println("bbbbbb")
-                                println("aaaaaaa" + GlobalVars.configStates["auto_update"]?.value?.toIntOrNull())
-                            }
-
                         }
-                       
+
                         DropdownButton(
                             options = listOf("关闭", "仅更新稳定版", "更新测试版"),
                             selectedIndex = GlobalVars.configStates["auto_update"]?.value?.toIntOrNull()
@@ -320,7 +317,10 @@ fun HomeScreen(onSaveSuccess: () -> Unit = {}) {
         ) {
             CustomButton(
                 text = "保存并运行",
-                onClick = { saveAndRun() }
+                onClick = {
+                    GlobalVars.currentMode = "Run"
+                    saveAndRun()
+                }
             )
         }
     }
