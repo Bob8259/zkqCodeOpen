@@ -606,7 +606,70 @@ object Schema {
             WIZARD_TOWER
         )
     }
+    object MAIN_BASE_BUILDING_PRIORITIES {
+        //以下是建造设置
+        val TOWN_HALL_PRIORITY = SettingDef("town_hall_priority", "大本营", 1, "MAIN_BASE_BUILDING_PRIORITIES")
+        val GIGA_TESLA_PRIORITY = SettingDef("giga_tesla_priority", "巨型特斯拉", 2, "MAIN_BASE_BUILDING_PRIORITIES")
+        val GIGA_INFERNO_PRIORITY = SettingDef("giga_inferno_priority", "巨型地狱塔", 3, "MAIN_BASE_BUILDING_PRIORITIES")
+        val HERO_ALTAR_PRIORITY = SettingDef("hero_altar_priority", "英雄殿堂", 4, "MAIN_BASE_BUILDING_PRIORITIES")
+        val LABORATORY_PRIORITY = SettingDef("laboratory_priority", "实验室", 5, "MAIN_BASE_BUILDING_PRIORITIES")
+        val GOLD_STORAGE_PRIORITY = SettingDef("gold_storage_priority", "储金罐", 6, "MAIN_BASE_BUILDING_PRIORITIES")
+        val ELIXIR_STORAGE_PRIORITY = SettingDef("elixir_storage_priority", "圣水瓶", 7, "MAIN_BASE_BUILDING_PRIORITIES")
+        val BARRACKS_PRIORITY = SettingDef("barracks_priority", "训练营", 8, "MAIN_BASE_BUILDING_PRIORITIES")
+        val SPELL_FACTORY_PRIORITY = SettingDef("spell_factory_priority", "法术工厂", 9, "MAIN_BASE_BUILDING_PRIORITIES")
+        val BLACKSMITH_PRIORITY = SettingDef("blacksmith_priority", "铁匠铺", 10, "MAIN_BASE_BUILDING_PRIORITIES")
+        val PET_HOUSE_PRIORITY = SettingDef("pet_house_priority", "战宠小屋", 11, "MAIN_BASE_BUILDING_PRIORITIES")
+        val ARMY_CAMP_PRIORITY = SettingDef("army_camp_priority", "兵营", 12, "MAIN_BASE_BUILDING_PRIORITIES")
+        val BARBARIAN_KING_PRIORITY = SettingDef("barbarian_king_priority", "蛮王", 13, "MAIN_BASE_BUILDING_PRIORITIES")
+        val ARCHER_QUEEN_PRIORITY = SettingDef("archer_queen_priority", "女王", 14, "MAIN_BASE_BUILDING_PRIORITIES")
+        val MINION_PRINCE_PRIORITY = SettingDef("minion_prince_priority", "王子", 15, "MAIN_BASE_BUILDING_PRIORITIES")
+        val GUARDIAN_PRIORITY = SettingDef("guardian_priority", "守护者", 16, "MAIN_BASE_BUILDING_PRIORITIES")
+        val ROYAL_CHAMPION_PRIORITY = SettingDef("royal_champion_priority", "飞盾", 17, "MAIN_BASE_BUILDING_PRIORITIES")
+        val CLAN_CASTLE_PRIORITY = SettingDef("clan_castle_priority", "部落城堡", 18, "MAIN_BASE_BUILDING_PRIORITIES")
+        val SIEGE_WORKSHOP_PRIORITY = SettingDef("siege_workshop_priority", "攻城机器工坊", 19, "MAIN_BASE_BUILDING_PRIORITIES")
+        val ARCHER_TOWER_PRIORITY = SettingDef("archer_tower_priority", "箭塔", 20, "MAIN_BASE_BUILDING_PRIORITIES")
+        val CANNON_PRIORITY = SettingDef("cannon_priority", "加农炮", 21, "MAIN_BASE_BUILDING_PRIORITIES")
+        val MORTAR_PRIORITY = SettingDef("mortar_priority", "迫击炮", 22, "MAIN_BASE_BUILDING_PRIORITIES")
+        val EAGLE_ARTILLERY_PRIORITY = SettingDef("eagle_artillery_priority", "天鹰火炮", 23, "MAIN_BASE_BUILDING_PRIORITIES")
+        val DARK_ELIXIR_STORAGE_PRIORITY = SettingDef("dark_elixir_storage_priority", "黑油罐", 24, "MAIN_BASE_BUILDING_PRIORITIES")
+        val XBOW_PRIORITY = SettingDef("xbow_priority", "十字连弩", 25, "MAIN_BASE_BUILDING_PRIORITIES")
+        val SCATTERSHOT_PRIORITY = SettingDef("scattershot_priority", "投石炮", 26, "MAIN_BASE_BUILDING_PRIORITIES")
+        val SPELL_TOWER_PRIORITY = SettingDef("spell_tower_priority", "法术塔", 27, "MAIN_BASE_BUILDING_PRIORITIES")
+        val MONOLITH_PRIORITY = SettingDef("monolith_priority", "擎天巨柱", 28, "MAIN_BASE_BUILDING_PRIORITIES")
+        val WIZARD_TOWER_PRIORITY = SettingDef("wizard_tower_priority", "法师塔", 29, "MAIN_BASE_BUILDING_PRIORITIES")
 
+        val all = listOf(
+            TOWN_HALL_PRIORITY,
+            GIGA_TESLA_PRIORITY,
+            GIGA_INFERNO_PRIORITY,
+            HERO_ALTAR_PRIORITY,
+            LABORATORY_PRIORITY,
+            GOLD_STORAGE_PRIORITY,
+            ELIXIR_STORAGE_PRIORITY,
+            BARRACKS_PRIORITY,
+            SPELL_FACTORY_PRIORITY,
+            BLACKSMITH_PRIORITY,
+            PET_HOUSE_PRIORITY,
+            ARMY_CAMP_PRIORITY,
+            BARBARIAN_KING_PRIORITY,
+            ARCHER_QUEEN_PRIORITY,
+            MINION_PRINCE_PRIORITY,
+            GUARDIAN_PRIORITY,
+            ROYAL_CHAMPION_PRIORITY,
+            CLAN_CASTLE_PRIORITY,
+            SIEGE_WORKSHOP_PRIORITY,
+            ARCHER_TOWER_PRIORITY,
+            CANNON_PRIORITY,
+            MORTAR_PRIORITY,
+            EAGLE_ARTILLERY_PRIORITY,
+            DARK_ELIXIR_STORAGE_PRIORITY,
+            XBOW_PRIORITY,
+            SCATTERSHOT_PRIORITY,
+            SPELL_TOWER_PRIORITY,
+            MONOLITH_PRIORITY,
+            WIZARD_TOWER_PRIORITY
+        )
+    }
     object NIGHT_BASE_SETTINGS {
         val NO_BUILDER_BASE = SettingDef("no_builder_base", "不打夜世界", 0, "NIGHT_BASE_SETTINGS")
         val BUILDER_BASE_FARMING =
