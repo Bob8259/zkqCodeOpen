@@ -5,14 +5,19 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListScope
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.coc.zkqcode.utils.components.CustomButton
 import com.coc.zkqcode.utils.components.CustomNotificationWindow
-import com.coc.zkqcode.utils.components.InputRow
 import com.coc.zkqcode.utils.components.GlobalVars
-import com.coc.zkqcode.utils.database.Schema
+import com.coc.zkqcode.utils.components.InputRow
+import com.coc.zkqcode.utils.database.Schema.GLOBAL_SETTINGS
 import com.topjohnwu.superuser.Shell
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -28,13 +33,13 @@ private enum class GameVariant(
     val targetSubDirs: List<String>
 ) {
     CN(
-        settingKey = "extract_cn",
+        settingKey = GLOBAL_SETTINGS.EXTRACT_CN.key,
         folderName = "zkqCNGameSave",
         packageName = "com.tencent.tmgp.supercell.clashofclans",
         targetSubDirs = listOf("shared_prefs", "databases")
     ),
     GLOBAL(
-        settingKey = "extract_global",
+        settingKey = GLOBAL_SETTINGS.EXTRACT_GLOBAL.key,
         folderName = "zkqGlobalGameSave",
         packageName = "com.supercell.clashofclans",
         targetSubDirs = listOf("shared_prefs")
@@ -168,7 +173,7 @@ private fun GameConfigSection(
     onExtract: () -> Unit,
     onDelete: () -> Unit
 ) {
-    val settingSchema = Schema.GLOBAL_SETTINGS.all.firstOrNull { it.key == variant.settingKey }
+    val settingSchema = GLOBAL_SETTINGS.all.firstOrNull { it.key == variant.settingKey }
     val displayName = settingSchema?.displayName ?: variant.settingKey
 
     InputRow(

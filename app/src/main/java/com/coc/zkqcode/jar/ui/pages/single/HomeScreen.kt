@@ -33,7 +33,8 @@ import com.coc.zkqcode.utils.components.DropdownButton
 import com.coc.zkqcode.utils.components.GlobalVars
 import com.coc.zkqcode.utils.components.InputRow
 import com.coc.zkqcode.utils.database.ConfigManager
-import com.coc.zkqcode.utils.database.Schema
+import com.coc.zkqcode.utils.database.Schema.GLOBAL_SETTINGS
+
 import com.coc.zkqcode.utils.state.AppMode
 import com.coc.zkqcode.utils.state.AppStateManager
 import com.coc.zkqcode.utils.theme.AppColors
@@ -48,7 +49,7 @@ fun HomeScreen(onSaveSuccess: () -> Unit = {}) {
         ConfigManager.initializeAllConfigs(actions)
     }
 
-    val configCountStr = GlobalVars.configStates["config_count"]!!.value
+    val configCountStr = GlobalVars.configStates[GLOBAL_SETTINGS.CONFIG_COUNT.key]!!.value
 
     var selectedTabIndex by remember { mutableIntStateOf(0) }
 
@@ -148,62 +149,69 @@ fun HomeScreen(onSaveSuccess: () -> Unit = {}) {
                             onSaveSuccess()
                         })
                         InputRow(
-                            label = Schema.GLOBAL_SETTINGS.DELAY_MULTIPLIER.displayName,
-                            value = GlobalVars.configStates["delay_multiplier"]!!.value,
+                            label = GLOBAL_SETTINGS.DELAY_MULTIPLIER.displayName,
+                            value = GlobalVars.configStates[GLOBAL_SETTINGS.DELAY_MULTIPLIER.key]!!.value,
                             onValueChange = {
-                                GlobalVars.configStates["delay_multiplier"]!!.value = it
+                                GlobalVars.configStates[GLOBAL_SETTINGS.DELAY_MULTIPLIER.key]!!.value = it
+                            },
+                        )
+                        InputRow(
+                            label = GLOBAL_SETTINGS.ENTER_GAME_TIMER.displayName,
+                            value = GlobalVars.configStates[GLOBAL_SETTINGS.ENTER_GAME_TIMER.key]!!.value,
+                            onValueChange = {
+                                GlobalVars.configStates[GLOBAL_SETTINGS.ENTER_GAME_TIMER.key]!!.value = it
                             },
                         )
                         FlowRow {
                              CustomCheckBox(
-                                checkedState = GlobalVars.configStates["debug_mode"]!!.value,
+                                checkedState = GlobalVars.configStates[GLOBAL_SETTINGS.DEBUG_MODE.key]!!.value,
                                 onCheckStateChange = {
-                                    GlobalVars.configStates["debug_mode"]!!.value =
+                                    GlobalVars.configStates[GLOBAL_SETTINGS.DEBUG_MODE.key]!!.value =
                                         if (it) "1" else "0"
                                 },
-                                text = Schema.GLOBAL_SETTINGS.DEBUG_MODE.displayName,
+                                text = GLOBAL_SETTINGS.DEBUG_MODE.displayName,
                             )
                             CustomCheckBox(
-                                checkedState = GlobalVars.configStates["record_progress"]!!.value,
+                                checkedState = GlobalVars.configStates[GLOBAL_SETTINGS.RECORD_PROGRESS.key]!!.value,
                                 onCheckStateChange = {
-                                    GlobalVars.configStates["record_progress"]!!.value =
+                                    GlobalVars.configStates[GLOBAL_SETTINGS.RECORD_PROGRESS.key]!!.value =
                                         if (it) "1" else "0"
                                 },
-                                text = Schema.GLOBAL_SETTINGS.RECORD_PROGRESS.displayName,
+                                text = GLOBAL_SETTINGS.RECORD_PROGRESS.displayName,
                             )
                         }
 
                         DropdownButton(
                             options = listOf("关闭", "仅更新稳定版", "更新测试版"),
-                            selectedIndex = GlobalVars.configStates["auto_update"]!!.value.toIntOrNull()
+                            selectedIndex = GlobalVars.configStates[GLOBAL_SETTINGS.AUTO_UPDATE.key]!!.value.toIntOrNull()
                                 ?: 0,
-                            label = Schema.GLOBAL_SETTINGS.AUTO_UPDATE.displayName,
+                            label = GLOBAL_SETTINGS.AUTO_UPDATE.displayName,
                             onValueChange = {
-                                GlobalVars.configStates["auto_update"]!!.value = it.toString()
+                                GlobalVars.configStates[GLOBAL_SETTINGS.AUTO_UPDATE.key]!!.value = it.toString()
                             }
                         )
                         CustomCheckBox(
-                            checkedState = GlobalVars.configStates["auto_start"]!!.value,
+                            checkedState = GlobalVars.configStates[GLOBAL_SETTINGS.AUTO_START.key]!!.value,
                             onCheckStateChange = {
-                                GlobalVars.configStates["auto_start"]!!.value =
+                                GlobalVars.configStates[GLOBAL_SETTINGS.AUTO_START.key]!!.value =
                                     if (it) "1" else "0"
                             },
-                            text = Schema.GLOBAL_SETTINGS.AUTO_START.displayName,
+                            text = GLOBAL_SETTINGS.AUTO_START.displayName,
                         )
                         DropdownButton(
                             options = listOf("立刻重连", "切换账号", "原地等待"),
-                            selectedIndex = GlobalVars.configStates["after_kick_option"]!!.value.toIntOrNull()
+                            selectedIndex = GlobalVars.configStates[GLOBAL_SETTINGS.AFTER_KICK_OPTION.key]!!.value.toIntOrNull()
                                 ?: 0,
-                            label = Schema.GLOBAL_SETTINGS.AFTER_KICK_OPTION.displayName,
+                            label = GLOBAL_SETTINGS.AFTER_KICK_OPTION.displayName,
                             onValueChange = {
-                                GlobalVars.configStates["after_kick_option"]!!.value = it.toString()
+                                GlobalVars.configStates[GLOBAL_SETTINGS.AFTER_KICK_OPTION.key]!!.value = it.toString()
                             }
                         )
                         InputRow(
-                            label = Schema.GLOBAL_SETTINGS.DEVICE_REMARK.displayName,
-                            value = GlobalVars.configStates["device_remark"]!!.value,
+                            label = GLOBAL_SETTINGS.DEVICE_REMARK.displayName,
+                            value = GlobalVars.configStates[GLOBAL_SETTINGS.DEVICE_REMARK.key]!!.value,
                             onValueChange = {
-                                GlobalVars.configStates["device_remark"]!!.value = it
+                                GlobalVars.configStates[GLOBAL_SETTINGS.DEVICE_REMARK.key]!!.value = it
                             },
                         )
                         Row {
