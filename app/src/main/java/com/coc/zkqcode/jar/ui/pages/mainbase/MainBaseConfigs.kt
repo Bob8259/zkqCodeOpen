@@ -22,10 +22,11 @@ import com.coc.zkqcode.utils.components.ExpandableContent
 import com.coc.zkqcode.utils.components.GlobalVars
 import com.coc.zkqcode.utils.components.InputRow
 import com.coc.zkqcode.utils.database.Schema.MAIN_BASE_SETTINGS
+import androidx.compose.runtime.saveable.rememberSaveable
 
 @Composable
-fun MainBaseConfig(index: Int) {
-    var isMainBaseExpanded by remember { mutableStateOf(true) }
+fun MainBaseConfig(index: Int, onNavigatePriority: (Int) -> Unit = {}) {
+    var isMainBaseExpanded by rememberSaveable { mutableStateOf(true) }
     FlowRow {
         Text(
             text = "以下是主世界设置",
@@ -346,7 +347,7 @@ fun MainBaseConfig(index: Int) {
         }
         ExpandableContent(GlobalVars.configStates["${MAIN_BASE_SETTINGS.BUILD_SETTING.key}_c$index"]!!.value == "1") {
 
-            UpgradeConfigs(index)
+            UpgradeConfigs(index, onNavigatePriority)
         }
         CustomCheckBox(
             checkedState = GlobalVars.configStates["${MAIN_BASE_SETTINGS.UPGRADE_PETS.key}_c$index"]!!.value,

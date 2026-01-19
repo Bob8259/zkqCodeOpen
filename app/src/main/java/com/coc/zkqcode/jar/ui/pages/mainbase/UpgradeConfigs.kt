@@ -14,11 +14,13 @@ import com.coc.zkqcode.utils.components.CustomButton
 import com.coc.zkqcode.utils.components.CustomCheckBox
 import com.coc.zkqcode.utils.components.GlobalVars
 import com.coc.zkqcode.utils.database.Schema.MAIN_BASE_BUILDINGS
+import androidx.compose.runtime.saveable.rememberSaveable
 
 @Composable
-fun UpgradeConfigs(index: Int) {
+fun UpgradeConfigs(index: Int, onNavigatePriority: (Int) -> Unit = {}) {
     val items = MAIN_BASE_BUILDINGS.all
-    val isExpanded = remember { mutableStateOf(true) }
+
+    val isExpanded = rememberSaveable { mutableStateOf(true) }
 
     // 一键全选
     val selectAll = {
@@ -53,7 +55,7 @@ fun UpgradeConfigs(index: Int) {
 
     if (isExpanded.value) {
         CustomButton(
-            onClick = { },
+            onClick = { onNavigatePriority(index) },
             text = "点击调整主世界升级优先度"
         )
         FlowRow {

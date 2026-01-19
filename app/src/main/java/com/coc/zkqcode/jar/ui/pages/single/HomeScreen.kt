@@ -34,13 +34,13 @@ import com.coc.zkqcode.utils.components.GlobalVars
 import com.coc.zkqcode.utils.components.InputRow
 import com.coc.zkqcode.utils.database.ConfigManager
 import com.coc.zkqcode.utils.database.Schema.GLOBAL_SETTINGS
-
+import androidx.compose.runtime.saveable.rememberSaveable
 import com.coc.zkqcode.utils.state.AppMode
 import com.coc.zkqcode.utils.state.AppStateManager
 import com.coc.zkqcode.utils.theme.AppColors
 
 @Composable
-fun HomeScreen(onSaveSuccess: () -> Unit = {}) {
+fun HomeScreen(onSaveSuccess: () -> Unit = {}, onNavigatePriority: (Int) -> Unit = {}) {
 
 
     // Ensure all keys are initialized if not already (safeguard)
@@ -51,7 +51,8 @@ fun HomeScreen(onSaveSuccess: () -> Unit = {}) {
 
     val configCountStr = GlobalVars.configStates[GLOBAL_SETTINGS.CONFIG_COUNT.key]!!.value
 
-    var selectedTabIndex by remember { mutableIntStateOf(0) }
+
+    var selectedTabIndex by rememberSaveable { mutableIntStateOf(0) }
 
     val configCount = configCountStr.toIntOrNull() ?: 1
     val tabs = listOf("主页设置", "账号设置", "提取存档") + List(configCount) { "配置文件${it + 1}" }
@@ -252,7 +253,7 @@ fun HomeScreen(onSaveSuccess: () -> Unit = {}) {
                 else -> {
                     // Pass the 1-based index (selectedTabIndex) to MainBaseConfig
                     item {
-                        GameConfig(index = selectedTabIndex - 2)
+                        GameConfig(index = selectedTabIndex - 2, onNavigatePriority = onNavigatePriority)
                     }
                 }
             }

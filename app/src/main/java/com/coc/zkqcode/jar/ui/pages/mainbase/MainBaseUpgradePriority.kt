@@ -1,5 +1,6 @@
 package com.coc.zkqcode.jar.ui.pages.mainbase
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -27,6 +28,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.coc.zkqcode.utils.components.CustomButton
@@ -40,7 +42,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun MainBaseUpgradePriority(index: Int, onSaveSuccess: () -> Unit) {
     val allPriorities = Schema.MAIN_BASE_BUILDING_PRIORITIES.all
-    
+
     // Sort items based on current value in GlobalVars.
     // If a value is missing or invalid, treat it as very low priority (high index).
     // We assume the values are 1-based indices stringified.
@@ -52,7 +54,7 @@ fun MainBaseUpgradePriority(index: Int, onSaveSuccess: () -> Unit) {
     }
 
     var list by remember { mutableStateOf(sortedInitial) }
-    
+
     val lazyGridState = rememberLazyGridState()
     val reorderableState = rememberReorderableLazyGridState(lazyGridState) { from, to ->
         list = list.toMutableList().apply {
@@ -66,11 +68,14 @@ fun MainBaseUpgradePriority(index: Int, onSaveSuccess: () -> Unit) {
             }
         }
     }
-    
+
     val scope = rememberCoroutineScope()
     var isSaving by remember { mutableStateOf(false) }
 
-    Column(modifier = Modifier.fillMaxSize().padding(10.dp)) {
+    Column(modifier = Modifier
+        .fillMaxSize()
+        .padding(10.dp)
+        .background(Color.White)) {
         Text(
             text = "拖动铅笔符号调整优先度，越靠上，越靠左表示优先度越高。",
             style = MaterialTheme.typography.labelMedium,
@@ -101,7 +106,7 @@ fun MainBaseUpgradePriority(index: Int, onSaveSuccess: () -> Unit) {
                             ) {
                                 Icon(Icons.Filled.Edit, contentDescription = "Reorder")
                             }
-                            
+
                             Text(
                                 text = item.displayName,
                                 modifier = Modifier.align(Alignment.Center),
@@ -123,13 +128,13 @@ fun MainBaseUpgradePriority(index: Int, onSaveSuccess: () -> Unit) {
                         val key = "${def.key}_c$index"
                         // Priority is 1-based index
                         val priority = (i + 1).toString()
-                        
+
                         // Ensure the GlobalVar entry exists, though it should if loaded from Schema
                         if (GlobalVars.configStates.containsKey(key)) {
-                             GlobalVars.configStates[key]?.value = priority
+                            GlobalVars.configStates[key]?.value = priority
                         } else {
                             // Should not happen if initialized correctly, but as a fallback/safety:
-                             GlobalVars.configStates[key] = mutableStateOf(priority)
+                            GlobalVars.configStates[key] = mutableStateOf(priority)
                         }
                     }
                     isSaving = false

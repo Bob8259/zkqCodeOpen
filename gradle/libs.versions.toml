@@ -34,6 +34,8 @@ libsu-core = { group = "com.github.topjohnwu.libsu", name = "core", version.ref 
 okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "ok-http" }
 gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
 kotlin-reflect = { group = "org.jetbrains.kotlin", name = "kotlin-reflect", version.ref = "kotlin" }
+androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version = "2.8.0" }
+
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

@@ -22,7 +22,14 @@ import com.coc.zkqcode.utils.components.GlobalVars
 import com.coc.zkqcode.utils.state.AppMode
 import com.coc.zkqcode.utils.state.AppStateManager
 
-class UIWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner {
+import androidx.lifecycle.ViewModelStore
+import androidx.lifecycle.ViewModelStoreOwner
+import androidx.lifecycle.setViewTreeViewModelStoreOwner
+import androidx.activity.OnBackPressedDispatcher
+import androidx.activity.OnBackPressedDispatcherOwner
+import androidx.activity.setViewTreeOnBackPressedDispatcherOwner
+
+class UIWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner, ViewModelStoreOwner, OnBackPressedDispatcherOwner {
 
     private lateinit var windowManager: WindowManager
     private var composeView: ComposeView? = null
@@ -36,6 +43,20 @@ class UIWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner {
     }
     override val savedStateRegistry: SavedStateRegistry =
         savedStateRegistryController.savedStateRegistry
+
+    private val customViewModelStore = ViewModelStore()
+    override val viewModelStore: ViewModelStore
+        get() = customViewModelStore
+
+    private val _onBackPressedDispatcher = OnBackPressedDispatcher {
+        // Fallback action when back is pressed and no other callback handles it
+        // For a floating window, we might want to close navigation or the window
+        // But for now, we just leave it empty or log.
+        // If we want to support closing the window on back press when nav stack is empty:
+        // closeMainUI() 
+    }
+    override val onBackPressedDispatcher: OnBackPressedDispatcher
+        get() = _onBackPressedDispatcher
 
     override fun onCreate() {
         super.onCreate()
@@ -74,6 +95,10 @@ class UIWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner {
         composeView = ComposeView(this).apply {
             setViewTreeLifecycleOwner(this@UIWindowService)
             setViewTreeSavedStateRegistryOwner(this@UIWindowService)
+            setViewTreeLifecycleOwner(this@UIWindowService)
+            setViewTreeSavedStateRegistryOwner(this@UIWindowService)
+            setViewTreeViewModelStoreOwner(this@UIWindowService)
+            setViewTreeOnBackPressedDispatcherOwner(this@UIWindowService)
 
             setContent {
                 Loadjar(context).LoadAndShowUI(onClose = {
@@ -139,6 +164,7 @@ class UIWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner {
     override fun onDestroy() {
         super.onDestroy()
         lifecycleRegistry.currentState = Lifecycle.State.DESTROYED
+        customViewModelStore.clear()
         if (composeView != null) {
             windowManager.removeViewImmediate(composeView)
             composeView = null
