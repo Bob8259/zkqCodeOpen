@@ -4,7 +4,6 @@ import android.os.Environment
 import androidx.compose.runtime.mutableStateOf
 import com.coc.zkqcode.utils.components.GlobalVars
 import com.coc.zkqcode.utils.fileactions.FileActions
-import com.coc.zkqcode.jar.code.ScreenShot
 import com.coc.zkqcode.utils.state.AppMode
 import com.coc.zkqcode.utils.state.AppStateManager
 
@@ -91,6 +90,5 @@ object ConfigManager {
     fun saveAndRun(onSaveSuccess: () -> Unit = {}) {
         AppStateManager.setMode(AppMode.Run)
         saveConfigs(onSaveSuccess)
-        ScreenShot().testcode()
     }
 }

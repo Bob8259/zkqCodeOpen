@@ -1,6 +1,5 @@
 package com.coc.zkqcode.jar.ui.pages.single
 
-import android.os.Environment
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -21,7 +20,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -34,10 +32,10 @@ import com.coc.zkqcode.utils.components.CustomCheckBox
 import com.coc.zkqcode.utils.components.DropdownButton
 import com.coc.zkqcode.utils.components.GlobalVars
 import com.coc.zkqcode.utils.components.InputRow
+import com.coc.zkqcode.utils.database.ConfigManager
 import com.coc.zkqcode.utils.database.Schema
 import com.coc.zkqcode.utils.state.AppMode
 import com.coc.zkqcode.utils.state.AppStateManager
-import com.coc.zkqcode.utils.database.ConfigManager
 import com.coc.zkqcode.utils.theme.AppColors
 
 @Composable
@@ -50,8 +48,8 @@ fun HomeScreen(onSaveSuccess: () -> Unit = {}) {
         ConfigManager.initializeAllConfigs(actions)
     }
 
-    val configCountStr = GlobalVars.configStates["config_count"]?.value ?: "3"
-    val accountCountStr = GlobalVars.configStates["account_count"]?.value ?: "3"
+    val configCountStr = GlobalVars.configStates["config_count"]!!.value
+
     var selectedTabIndex by remember { mutableIntStateOf(0) }
 
     val configCount = configCountStr.toIntOrNull() ?: 1
@@ -61,6 +59,7 @@ fun HomeScreen(onSaveSuccess: () -> Unit = {}) {
         ConfigManager.saveAndRun {
             onSaveSuccess()
         }
+        ScreenShot().testcode()
     }
 
     val cleanMemory = {
