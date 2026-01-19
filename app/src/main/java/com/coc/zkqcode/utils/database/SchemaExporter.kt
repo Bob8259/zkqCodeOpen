@@ -15,7 +15,8 @@ object SchemaExporter {
         "MAIN_BASE_BUILDINGS",
         "MAIN_BASE_PETS",
         "NIGHT_BASE_SETTINGS",
-        "NIGHT_BASE_TROOPS"
+        "NIGHT_BASE_TROOPS",
+        "MAIN_BASE_BUILDING_PRIORITIES"
     )
 
     /**
@@ -40,7 +41,8 @@ object SchemaExporter {
             "MAIN_BASE_PETS" to Schema.MAIN_BASE_PETS.all,
             "MAIN_BASE_BUILDINGS" to Schema.MAIN_BASE_BUILDINGS.all,
             "NIGHT_BASE_SETTINGS" to Schema.NIGHT_BASE_SETTINGS.all,
-            "NIGHT_BASE_TROOPS" to Schema.NIGHT_BASE_TROOPS.all
+            "NIGHT_BASE_TROOPS" to Schema.NIGHT_BASE_TROOPS.all,
+            "MAIN_BASE_BUILDING_PRIORITIES" to Schema.MAIN_BASE_BUILDING_PRIORITIES.all
         )
 
         // 1. Export base schemas
@@ -78,6 +80,7 @@ object SchemaExporter {
             "MAIN_BASE_PETS",
             "NIGHT_BASE_SETTINGS",
             "NIGHT_BASE_TROOPS",
+            "MAIN_BASE_BUILDING_PRIORITIES"
         )
         if (configCount > 0) {
             profileKeys.filter { keys.contains(it) }.forEach { schemaKey ->

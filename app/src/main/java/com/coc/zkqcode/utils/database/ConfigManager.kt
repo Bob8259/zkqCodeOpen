@@ -46,7 +46,8 @@ object ConfigManager {
             Schema.MAIN_BASE_BUILDINGS.all,
             Schema.MAIN_BASE_PETS.all,
             Schema.NIGHT_BASE_SETTINGS.all,
-            Schema.NIGHT_BASE_TROOPS.all
+            Schema.NIGHT_BASE_TROOPS.all,
+            Schema.MAIN_BASE_BUILDING_PRIORITIES.all
         )
 
         for (i in 1..configCount) {
