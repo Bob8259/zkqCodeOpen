@@ -449,31 +449,31 @@ fun MainBaseConfig(index: Int) {
         }
         FlowRow {
             listOf(
-                "buy_star_ore_with_raid_medal",
-                "buy_clock_tower_potion_with_raid_medal",
-                "buy_ring_of_wall_with_raid_medal",
-                "buy_research_potion_with_raid_medal",
-                "buy_training_potion_with_raid_medal",
-                "buy_research_potion_with_league_medal",
-                "buy_builder_potion_with_league_medal",
-                "buy_star_ore_with_event_medal",
-                "buy_builder_potion_with_event_medal",
-                "buy_new_equipment_with_event_medal",
-                "buy_research_potion_with_event_medal",
-                "use_research_potion",
-                "sell_training_potion",
-                "use_clock_tower_potion",
-                "sell_clock_tower_potion",
-                "use_builder_potion",
-                "sell_ring_of_wall"
-            ).forEach { key ->
+                MAIN_BASE_SETTINGS.BUY_STAR_ORE_WITH_RAID_MEDAL,
+                MAIN_BASE_SETTINGS.BUY_CLOCK_TOWER_POTION_WITH_RAID_MEDAL,
+                MAIN_BASE_SETTINGS.BUY_RING_OF_WALL_WITH_RAID_MEDAL,
+                MAIN_BASE_SETTINGS.BUY_RESEARCH_POTION_WITH_RAID_MEDAL,
+                MAIN_BASE_SETTINGS.BUY_TRAINING_POTION_WITH_RAID_MEDAL,
+                MAIN_BASE_SETTINGS.BUY_RESEARCH_POTION_WITH_LEAGUE_MEDAL,
+                MAIN_BASE_SETTINGS.BUY_BUILDER_POTION_WITH_LEAGUE_MEDAL,
+                MAIN_BASE_SETTINGS.BUY_STAR_ORE_WITH_EVENT_MEDAL,
+                MAIN_BASE_SETTINGS.BUY_BUILDER_POTION_WITH_EVENT_MEDAL,
+                MAIN_BASE_SETTINGS.BUY_NEW_EQUIPMENT_WITH_EVENT_MEDAL,
+                MAIN_BASE_SETTINGS.BUY_RESEARCH_POTION_WITH_EVENT_MEDAL,
+                MAIN_BASE_SETTINGS.USE_RESEARCH_POTION,
+                MAIN_BASE_SETTINGS.SELL_TRAINING_POTION,
+                MAIN_BASE_SETTINGS.USE_CLOCK_TOWER_POTION,
+                MAIN_BASE_SETTINGS.SELL_CLOCK_TOWER_POTION,
+                MAIN_BASE_SETTINGS.USE_BUILDER_POTION,
+                MAIN_BASE_SETTINGS.SELL_RING_OF_WALL
+            ).forEach { setting ->
                 CustomCheckBox(
-                    checkedState = GlobalVars.configStates["${key}_c$index"]!!.value,
+                    checkedState = GlobalVars.configStates["${setting.key}_c$index"]!!.value,
                     onCheckStateChange = { checked ->
-                        GlobalVars.configStates["${key}_c$index"]!!.value =
+                        GlobalVars.configStates["${setting.key}_c$index"]!!.value =
                             if (checked) "1" else "0"
                     },
-                    text = MAIN_BASE_SETTINGS.all.first { setting -> setting.key == key }.displayName
+                    text = setting.displayName
                 )
             }
         }
