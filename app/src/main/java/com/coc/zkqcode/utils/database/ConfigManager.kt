@@ -13,51 +13,46 @@ object ConfigManager {
      * Initializes all config states from the provided FileActions.
      */
     fun initializeAllConfigs(actions: FileActions) {
-        // 1. GLOBAL_SETTINGS
-        Schema.GLOBAL_SETTINGS.all.forEach { def ->
-            val savedValue = actions.getValue(def.key)
-            GlobalVars.configStates.getOrPut(def.key) {
-                mutableStateOf(savedValue ?: def.defaultValue.toString())
-            }.value = savedValue ?: def.defaultValue.toString()
-        }
-
-        // 2. ACCOUNT_SETTINGS
         val accountCount = actions.getValue("account_count")?.toIntOrNull() ?: 3
-        for (i in 1..accountCount) {
-            Schema.ACCOUNT_SETTINGS.all.forEach { def ->
-                val key = "${def.key}${i}"
-                val savedValue = actions.getValue(key)
-                val defaultValue = if (def.key == "global_path" || def.key == "cn_path" || def.key == "data_content") {
-                    i.toString()
-                } else {
-                    def.defaultValue.toString()
-                }
-                GlobalVars.configStates.getOrPut(key) {
-                    mutableStateOf(savedValue ?: defaultValue)
-                }.value = savedValue ?: defaultValue
-            }
-        }
-
-        // 3. Profile Settings (MAIN_BASE, NIGHT_BASE, etc.)
         val configCount = actions.getValue("config_count")?.toIntOrNull() ?: 3
-        val profileSchemas = listOf(
-            Schema.MAIN_BASE_SETTINGS.all,
-            Schema.MAIN_BASE_TROOPS_AND_SPELLS.all,
-            Schema.MAIN_BASE_BUILDINGS.all,
-            Schema.MAIN_BASE_PETS.all,
-            Schema.NIGHT_BASE_SETTINGS.all,
-            Schema.NIGHT_BASE_TROOPS.all,
-            Schema.MAIN_BASE_BUILDING_PRIORITIES.all
-        )
 
-        for (i in 1..configCount) {
-            profileSchemas.forEach { schemaList ->
-                schemaList.forEach { def ->
-                    val key = "${def.key}_c$i"
-                    val savedValue = actions.getValue(key)
-                    GlobalVars.configStates.getOrPut(key) {
-                        mutableStateOf(savedValue ?: def.defaultValue.toString())
-                    }.value = savedValue ?: def.defaultValue.toString()
+        SchemaRegistry.ALL_MODULES.forEach { module ->
+            when (module.scope) {
+                Scope.GLOBAL -> {
+                    module.settings.forEach { def ->
+                        val savedValue = actions.getValue(def.key)
+                        GlobalVars.configStates.getOrPut(def.key) {
+                            mutableStateOf(savedValue ?: def.defaultValue.toString())
+                        }.value = savedValue ?: def.defaultValue.toString()
+                    }
+                }
+                Scope.ACCOUNT -> {
+                    for (i in 1..accountCount) {
+                        module.settings.forEach { def ->
+                            val key = "${def.key}${i}"
+                            val savedValue = actions.getValue(key)
+                            val defaultValue =
+                                if (def.key == "global_path" || def.key == "cn_path" || def.key == "data_content") {
+                                    i.toString()
+                                } else {
+                                    def.defaultValue.toString()
+                                }
+                            GlobalVars.configStates.getOrPut(key) {
+                                mutableStateOf(savedValue ?: defaultValue)
+                            }.value = savedValue ?: defaultValue
+                        }
+                    }
+                }
+                Scope.PROFILE -> {
+                    for (i in 1..configCount) {
+                        module.settings.forEach { def ->
+                            val key = "${def.key}_c$i"
+                            val savedValue = actions.getValue(key)
+                            GlobalVars.configStates.getOrPut(key) {
+                                mutableStateOf(savedValue ?: def.defaultValue.toString())
+                            }.value = savedValue ?: def.defaultValue.toString()
+                        }
+                    }
                 }
             }
         }
