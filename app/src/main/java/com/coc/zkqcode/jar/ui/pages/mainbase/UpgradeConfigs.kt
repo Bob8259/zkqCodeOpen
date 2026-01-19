@@ -13,11 +13,11 @@ import androidx.compose.ui.unit.dp
 import com.coc.zkqcode.utils.components.CustomButton
 import com.coc.zkqcode.utils.components.CustomCheckBox
 import com.coc.zkqcode.utils.components.GlobalVars
-import com.coc.zkqcode.utils.database.Schema
+import com.coc.zkqcode.utils.database.Schema.MAIN_BASE_BUILDINGS
 
 @Composable
 fun UpgradeConfigs(index: Int) {
-    val items = Schema.MAIN_BASE_BUILDINGS.all
+    val items = MAIN_BASE_BUILDINGS.all
     val isExpanded = remember { mutableStateOf(true) }
 
     // 一键全选
