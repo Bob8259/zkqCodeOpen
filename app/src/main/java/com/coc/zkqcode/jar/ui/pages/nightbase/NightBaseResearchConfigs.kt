@@ -13,12 +13,12 @@ import androidx.compose.ui.unit.dp
 import com.coc.zkqcode.utils.components.CustomButton
 import com.coc.zkqcode.utils.components.CustomCheckBox
 import com.coc.zkqcode.utils.components.GlobalVars
-import com.coc.zkqcode.utils.database.Schema
+import com.coc.zkqcode.utils.database.Schema.NIGHT_BASE_TROOPS
 import kotlin.collections.set
 
 @Composable
 fun NightBaseResearchConfigs(index: Int) {
-    val items = Schema.NIGHT_BASE_TROOPS.all
+    val items = NIGHT_BASE_TROOPS.all
     val isExpanded = remember { mutableStateOf(true) }
 
     // 一键全选
