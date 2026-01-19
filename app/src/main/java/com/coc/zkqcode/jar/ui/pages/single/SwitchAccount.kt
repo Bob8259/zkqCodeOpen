@@ -169,14 +169,14 @@ fun SwitchAccount(onClose: () -> Unit) {
                             ShowMessage("正在切换账号$accNum")
                             // 1. Get Game Version
                             val versionKey = "game_version$accNum"
-                            val versionStr = GlobalVars.configStates[versionKey]?.value ?: "0"
+                            val versionStr = GlobalVars.configStates[versionKey]!!.value
                             val version = versionStr.toIntOrNull() ?: 0
                             val sdPath = Environment.getExternalStorageDirectory().path
 
                             if (version == 0) {
                                 // CN Version
                                 val pathKey = "cn_path$accNum"
-                                val savePathName = GlobalVars.configStates[pathKey]?.value ?: ""
+                                val savePathName = GlobalVars.configStates[pathKey]!!.value
                                 if (savePathName.isEmpty()) {
                                     return@launch
                                 }
@@ -204,7 +204,7 @@ fun SwitchAccount(onClose: () -> Unit) {
                             } else {
                                 // Global Version
                                 val pathKey = "global_path$accNum"
-                                val savePathName = GlobalVars.configStates[pathKey]?.value ?: ""
+                                val savePathName = GlobalVars.configStates[pathKey]!!.value
                                 if (savePathName.isEmpty()) {
                                     return@launch
                                 }

@@ -27,14 +27,14 @@ import com.coc.zkqcode.utils.database.Schema
 fun LazyListScope.AccountSettings() {
     item {
         InputRow(
-            label = Schema.GLOBAL_SETTINGS.first { it.key == "config_count" }.displayName,
-            value = GlobalVars.configStates["config_count"]?.value ?: "",
-            onValueChange = { GlobalVars.configStates["config_count"]?.value = it },
+            label = Schema.GLOBAL_SETTINGS.CONFIG_COUNT.displayName,
+            value = GlobalVars.configStates["config_count"]!!.value,
+            onValueChange = { GlobalVars.configStates["config_count"]!!.value = it },
         )
         InputRow(
-            label = Schema.GLOBAL_SETTINGS.first { it.key == "account_count" }.displayName,
-            value = GlobalVars.configStates["account_count"]?.value ?: "",
-            onValueChange = { GlobalVars.configStates["account_count"]?.value = it },
+            label = Schema.GLOBAL_SETTINGS.ACCOUNT_COUNT.displayName,
+            value = GlobalVars.configStates["account_count"]!!.value,
+            onValueChange = { GlobalVars.configStates["account_count"]!!.value = it },
         )
         HorizontalDivider(
             thickness = 1.dp,
@@ -46,11 +46,11 @@ fun LazyListScope.AccountSettings() {
                 marginTop = 6.dp,
                 onClick = {
                     val count =
-                        GlobalVars.configStates["account_count"]?.value?.toIntOrNull() ?: 3
+                        GlobalVars.configStates["account_count"]!!.value.toIntOrNull() ?: 3
                     for (i in 1..count) {
                         val key = "isopen$i"
                         if (GlobalVars.configStates.containsKey(key)) {
-                            GlobalVars.configStates[key]?.value = "1"
+                            GlobalVars.configStates[key]!!.value = "1"
                         } else {
                             GlobalVars.configStates[key] = mutableStateOf("1")
                         }
@@ -62,14 +62,14 @@ fun LazyListScope.AccountSettings() {
                 marginTop = 6.dp,
                 onClick = {
                     val count =
-                        GlobalVars.configStates["account_count"]?.value?.toIntOrNull() ?: 3
+                        GlobalVars.configStates["account_count"]!!.value.toIntOrNull() ?: 3
                     for (i in 1..count) {
                         val key = "isopen$i"
-                        val currentValue = GlobalVars.configStates[key]?.value
+                        val currentValue = GlobalVars.configStates[key]!!.value
                         val newValue = if (currentValue == "1") "0" else "1"
 
                         if (GlobalVars.configStates.containsKey(key)) {
-                            GlobalVars.configStates[key]?.value = newValue
+                            GlobalVars.configStates[key]!!.value = newValue
                         } else {
                             GlobalVars.configStates[key] = mutableStateOf(newValue)
                         }
@@ -142,7 +142,7 @@ fun LazyListScope.AccountSettings() {
                         for (i in start..end) {
                             val key = "account_config$i"
                             if (GlobalVars.configStates.containsKey(key)) {
-                                GlobalVars.configStates[key]?.value = config
+                                GlobalVars.configStates[key]!!.value = config
                             } else {
                                 GlobalVars.configStates[key] = mutableStateOf(config)
                             }
@@ -159,7 +159,7 @@ fun LazyListScope.AccountSettings() {
     }
 
     // Display account configurations based on account_count
-    val accountCountStr = GlobalVars.configStates["account_count"]?.value ?: "3"
+    val accountCountStr = GlobalVars.configStates["account_count"]!!.value
     val currentAccountCount = accountCountStr.toIntOrNull() ?: 3
     items(count = currentAccountCount, key = { it + 1 }) { i ->
         AccountConfig(index = i + 1)

@@ -13,7 +13,7 @@ import kotlin.collections.set
 
 @Composable
 fun NightBaseResearchConfigs(index: Int) {
-    val items = Schema.NIGHT_BASE_TROOPS
+    val items = Schema.NIGHT_BASE_TROOPS.all
     val isExpanded = remember { mutableStateOf(true) }
 
     // 一键全选
@@ -23,7 +23,7 @@ fun NightBaseResearchConfigs(index: Int) {
             if (!GlobalVars.configStates.containsKey(key)) {
                 GlobalVars.configStates[key] = mutableStateOf("1")
             } else {
-                GlobalVars.configStates[key]?.value = "1"
+                GlobalVars.configStates[key]!!.value = "1"
             }
         }
     }
@@ -32,12 +32,12 @@ fun NightBaseResearchConfigs(index: Int) {
     val invertSelection = {
         items.forEach { item ->
             val key = "${item.key}_c${index}"
-            val currentState = GlobalVars.configStates[key]?.value
+            val currentState = GlobalVars.configStates[key]!!.value
             val newValue = if (currentState == "1") "0" else "1"
             if (!GlobalVars.configStates.containsKey(key)) {
                 GlobalVars.configStates[key] = mutableStateOf(newValue)
             } else {
-                GlobalVars.configStates[key]?.value = newValue
+                GlobalVars.configStates[key]!!.value = newValue
             }
         }
     }
@@ -51,14 +51,14 @@ fun NightBaseResearchConfigs(index: Int) {
         FlowRow {
             items.forEach { item ->
                 CustomCheckBox(
-                    checkedState = GlobalVars.configStates["${item.key}_c${index}"]?.value ?: "1",
+                    checkedState = GlobalVars.configStates["${item.key}_c${index}"]!!.value,
                     onCheckStateChange = { isChecked ->
                         val key = "${item.key}_c${index}"
                         val newValue = if (isChecked) "1" else "0"
                         if (!GlobalVars.configStates.containsKey(key)) {
                             GlobalVars.configStates[key] = mutableStateOf(newValue)
                         } else {
-                            GlobalVars.configStates[key]?.value = newValue
+                            GlobalVars.configStates[key]!!.value = newValue
                         }
                     },
                     text = item.displayName,

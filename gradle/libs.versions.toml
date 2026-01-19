@@ -33,6 +33,7 @@ androidx-material-icons-extended = { group = "androidx.compose.material", name =
 libsu-core = { group = "com.github.topjohnwu.libsu", name = "core", version.ref = "libsu" }
 okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "ok-http" }
 gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
+kotlin-reflect = { group = "org.jetbrains.kotlin", name = "kotlin-reflect", version.ref = "kotlin" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

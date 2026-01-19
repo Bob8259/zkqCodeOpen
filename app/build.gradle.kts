@@ -162,6 +162,7 @@ dependencies {
     implementation(libs.androidx.webkit)
     implementation(libs.okhttp)
     implementation(libs.gson)
+    implementation(libs.kotlin.reflect)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)

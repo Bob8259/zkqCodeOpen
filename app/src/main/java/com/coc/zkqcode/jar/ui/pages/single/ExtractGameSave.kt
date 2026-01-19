@@ -63,7 +63,7 @@ private fun ExtractGameSaveContent() {
     // 提取逻辑
     fun performExtract(variant: GameVariant) {
         coroutineScope.launch(Dispatchers.IO) {
-            val suffix = GlobalVars.configStates[variant.settingKey]?.value ?: ""
+            val suffix = GlobalVars.configStates[variant.settingKey]!!.value
             val sdPath = Environment.getExternalStorageDirectory().path
 
             // 【修改点】基础目录增加了一层 zkqFiles
@@ -108,7 +108,7 @@ private fun ExtractGameSaveContent() {
     // 删除逻辑
     fun performDelete(variant: GameVariant) {
         coroutineScope.launch(Dispatchers.IO) {
-            val suffix = GlobalVars.configStates[variant.settingKey]?.value ?: ""
+            val suffix = GlobalVars.configStates[variant.settingKey]!!.value
 
             if (suffix.isEmpty()) {
                 showMsg("错误：未获取到路径序号")
@@ -141,7 +141,7 @@ private fun ExtractGameSaveContent() {
 
     Column(modifier = Modifier.padding(6.dp)) {
         // 遍历枚举生成 UI
-        GameVariant.values().forEach { variant ->
+        GameVariant.entries.forEach { variant ->
             GameConfigSection(
                 variant = variant,
                 onExtract = { performExtract(variant) },
@@ -154,7 +154,7 @@ private fun ExtractGameSaveContent() {
     if (showDialog) {
         CustomNotificationWindow(
             message = dialogMessage,
-            onDismissRequest = { showDialog = false }
+            onDismissRequest = { }
         )
     }
 }
@@ -168,13 +168,13 @@ private fun GameConfigSection(
     onExtract: () -> Unit,
     onDelete: () -> Unit
 ) {
-    val settingSchema = Schema.GLOBAL_SETTINGS.firstOrNull { it.key == variant.settingKey }
+    val settingSchema = Schema.GLOBAL_SETTINGS.all.firstOrNull { it.key == variant.settingKey }
     val displayName = settingSchema?.displayName ?: variant.settingKey
 
     InputRow(
         label = displayName,
-        value = GlobalVars.configStates[variant.settingKey]?.value ?: "",
-        onValueChange = { GlobalVars.configStates[variant.settingKey]?.value = it }
+        value = GlobalVars.configStates[variant.settingKey]!!.value,
+        onValueChange = { GlobalVars.configStates[variant.settingKey]!!.value = it }
     )
 
     Row {

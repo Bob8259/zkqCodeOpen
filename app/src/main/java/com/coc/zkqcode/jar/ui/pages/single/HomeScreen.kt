@@ -45,7 +45,7 @@ fun HomeScreen(onSaveSuccess: () -> Unit = {}) {
 
 
     // Ensure all keys are initialized even if file hasn't loaded yet
-    Schema.GLOBAL_SETTINGS.forEach { def ->
+    Schema.GLOBAL_SETTINGS.all.forEach { def ->
         if (!GlobalVars.configStates.containsKey(def.key)) {
             val savedValue = GlobalVars.fileActions?.getValue(def.key)
             GlobalVars.configStates[def.key] =
@@ -53,14 +53,14 @@ fun HomeScreen(onSaveSuccess: () -> Unit = {}) {
         }
     }
 
-    val configCountStr = GlobalVars.configStates["config_count"]?.value ?: "3"
-    val accountCountStr = GlobalVars.configStates["account_count"]?.value ?: "3"
+    val configCountStr = GlobalVars.configStates["config_count"]!!.value
+    val accountCountStr = GlobalVars.configStates["account_count"]!!.value
     var selectedTabIndex by remember { mutableIntStateOf(0) }
 
     // Initialize account settings states dynamically
     val accountCount = accountCountStr.toIntOrNull() ?: 3
     for (i in 1..accountCount) {
-        Schema.ACCOUNT_SETTINGS.forEach { def ->
+        Schema.ACCOUNT_SETTINGS.all.forEach { def ->
             val key = "${def.key}${i}"
             if (!GlobalVars.configStates.containsKey(key)) {
                 val savedValue = GlobalVars.fileActions?.getValue(key)
@@ -79,12 +79,12 @@ fun HomeScreen(onSaveSuccess: () -> Unit = {}) {
     for (i in 1..currentConfigCount) {
         // 将所有 Schema 列表合并为一个集合进行迭代
         val allSchemas = listOf(
-            Schema.MAIN_BASE_SETTINGS,
-            Schema.MAIN_BASE_TROOPS_AND_SPELLS,
-            Schema.MAIN_BASE_BUILDINGS,
-            Schema.MAIN_BASE_PETS,
-            Schema.NIGHT_BASE_SETTINGS,
-            Schema.NIGHT_BASE_TROOPS
+            Schema.MAIN_BASE_SETTINGS.all,
+            Schema.MAIN_BASE_TROOPS_AND_SPELLS.all,
+            Schema.MAIN_BASE_BUILDINGS.all,
+            Schema.MAIN_BASE_PETS.all,
+            Schema.NIGHT_BASE_SETTINGS.all,
+            Schema.NIGHT_BASE_TROOPS.all
         )
 
         allSchemas.forEach { schemaList ->
@@ -114,7 +114,7 @@ fun HomeScreen(onSaveSuccess: () -> Unit = {}) {
             baseDir,
             "zkq_config.json",
             accountCount = currentAccountCount,
-            configCount = GlobalVars.configStates["config_count"]?.value?.toIntOrNull() ?: 3
+            configCount = GlobalVars.configStates["config_count"]!!.value.toIntOrNull() ?: 3
         )
         GlobalVars.updateWindowPosition = true
         // 执行保存后的回调，用于关闭悬浮窗
@@ -209,63 +209,62 @@ fun HomeScreen(onSaveSuccess: () -> Unit = {}) {
                             onSaveSuccess()
                         })
                         InputRow(
-                            label = Schema.GLOBAL_SETTINGS.first { it.key == "delay_multiplier" }.displayName,
-                            value = GlobalVars.configStates["delay_multiplier"]?.value ?: "1",
+                            label = Schema.GLOBAL_SETTINGS.DELAY_MULTIPLIER.displayName,
+                            value = GlobalVars.configStates["delay_multiplier"]!!.value,
                             onValueChange = {
-                                GlobalVars.configStates["delay_multiplier"]?.value = it
+                                GlobalVars.configStates["delay_multiplier"]!!.value = it
                             },
                         )
                         FlowRow {
-                            CustomCheckBox(
-                                checkedState = GlobalVars.configStates["debug_mode"]?.value ?: "0",
+                             CustomCheckBox(
+                                checkedState = GlobalVars.configStates["debug_mode"]!!.value,
                                 onCheckStateChange = {
-                                    GlobalVars.configStates["debug_mode"]?.value =
+                                    GlobalVars.configStates["debug_mode"]!!.value =
                                         if (it) "1" else "0"
                                 },
-                                text = Schema.GLOBAL_SETTINGS.first { it.key == "debug_mode" }.displayName,
+                                text = Schema.GLOBAL_SETTINGS.DEBUG_MODE.displayName,
                             )
                             CustomCheckBox(
-                                checkedState = GlobalVars.configStates["record_progress"]?.value
-                                    ?: "0",
+                                checkedState = GlobalVars.configStates["record_progress"]!!.value,
                                 onCheckStateChange = {
-                                    GlobalVars.configStates["record_progress"]?.value =
+                                    GlobalVars.configStates["record_progress"]!!.value =
                                         if (it) "1" else "0"
                                 },
-                                text = Schema.GLOBAL_SETTINGS.first { it.key == "record_progress" }.displayName,
+                                text = Schema.GLOBAL_SETTINGS.RECORD_PROGRESS.displayName,
                             )
                         }
 
                         DropdownButton(
                             options = listOf("关闭", "仅更新稳定版", "更新测试版"),
-                            selectedIndex = GlobalVars.configStates["auto_update"]?.value?.toIntOrNull()
+                            selectedIndex = GlobalVars.configStates["auto_update"]!!.value.toIntOrNull()
                                 ?: 0,
-                            label = Schema.GLOBAL_SETTINGS.first { it.key == "auto_update" }.displayName,
+                            label = Schema.GLOBAL_SETTINGS.AUTO_UPDATE.displayName,
                             onValueChange = {
-                                GlobalVars.configStates["auto_update"]?.value = it.toString()
+                                GlobalVars.configStates["auto_update"]!!.value = it.toString()
                             }
                         )
                         CustomCheckBox(
-                            checkedState = GlobalVars.configStates["auto_start"]?.value ?: "0",
+                            checkedState = GlobalVars.configStates["auto_start"]!!.value,
                             onCheckStateChange = {
-                                GlobalVars.configStates["auto_start"]?.value =
+                                GlobalVars.configStates["auto_start"]!!.value =
                                     if (it) "1" else "0"
                             },
-                            text = Schema.GLOBAL_SETTINGS.first { it.key == "auto_start" }.displayName,
+                            text = Schema.GLOBAL_SETTINGS.AUTO_START.displayName,
                         )
                         DropdownButton(
                             options = listOf("立刻重连", "切换账号", "原地等待"),
-                            selectedIndex = GlobalVars.configStates["after_kick_option"]?.value?.toIntOrNull()
+                            selectedIndex = GlobalVars.configStates["after_kick_option"]!!.value.toIntOrNull()
                                 ?: 0,
-                            label = Schema.GLOBAL_SETTINGS.first { it.key == "after_kick_option" }.displayName,
+                            label = Schema.GLOBAL_SETTINGS.AFTER_KICK_OPTION.displayName,
                             onValueChange = {
-                                GlobalVars.configStates["after_kick_option"]?.value = it.toString()
+                                GlobalVars.configStates["after_kick_option"]!!.value = it.toString()
                             }
                         )
                         InputRow(
-                            label = Schema.GLOBAL_SETTINGS.first { it.key == "device_remark" }.displayName,
-                            value = GlobalVars.configStates["device_remark"]?.value ?: "",
+                            label = Schema.GLOBAL_SETTINGS.DEVICE_REMARK.displayName,
+                            value = GlobalVars.configStates["device_remark"]!!.value,
                             onValueChange = {
-                                GlobalVars.configStates["device_remark"]?.value = it
+                                GlobalVars.configStates["device_remark"]!!.value = it
                             },
                         )
                         Row {

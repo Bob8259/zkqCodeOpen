@@ -130,63 +130,63 @@ fun CheckRootScreen() {
                     // Wait for configs to load
                     snapshotFlow { actions.isLoading }.collect { isLoading ->
                         if (!isLoading) {
-                            Schema.GLOBAL_SETTINGS.forEach { def ->
-                                val savedValue = actions.getValue(def.key)
-                                if (savedValue != null) {
-                                    GlobalVars.configStates[def.key]?.value = savedValue
-                                } else if (!GlobalVars.configStates.containsKey(def.key)) {
-                                    GlobalVars.configStates[def.key] =
-                                        mutableStateOf(def.defaultValue.toString())
-                                }
-                            }
+                             Schema.GLOBAL_SETTINGS.all.forEach { def ->
+                                 val savedValue = actions.getValue(def.key)
+                                 if (savedValue != null) {
+                                     GlobalVars.configStates[def.key]?.value = savedValue
+                                 } else if (!GlobalVars.configStates.containsKey(def.key)) {
+                                     GlobalVars.configStates[def.key] =
+                                         mutableStateOf(def.defaultValue.toString())
+                                 }
+                             }
 
                             // Also initialize account settings if account_count is present
                             val accountCount = actions.getValue("account_count")?.toIntOrNull() ?: 3
-                            for (i in 1..accountCount) {
-                                Schema.ACCOUNT_SETTINGS.forEach { def ->
-                                    val key = "${def.key}${i}"
-                                    val savedValue = actions.getValue(key)
-                                    if (savedValue != null) {
-                                        GlobalVars.configStates[key]?.value = savedValue
-                                    } else {
-                                        val defaultValue =
-                                            if (def.key.startsWith("global_path") || def.key.startsWith(
-                                                    "cn_path"
-                                                )
-                                            ) {
-                                                i.toString()
-                                            } else {
-                                                def.defaultValue.toString()
-                                            }
-                                        GlobalVars.configStates[key] = mutableStateOf(defaultValue)
-                                    }
-                                }
-                            }
+                             for (i in 1..accountCount) {
+                                 Schema.ACCOUNT_SETTINGS.all.forEach { def ->
+                                     val key = "${def.key}${i}"
+                                     val savedValue = actions.getValue(key)
+                                     if (savedValue != null) {
+                                         GlobalVars.configStates[key]?.value = savedValue
+                                     } else {
+                                         val defaultValue =
+                                             if (def.key.startsWith("global_path") || def.key.startsWith(
+                                                     "cn_path"
+                                                 )
+                                             ) {
+                                                 i.toString()
+                                             } else {
+                                                 def.defaultValue.toString()
+                                             }
+                                         GlobalVars.configStates[key] = mutableStateOf(defaultValue)
+                                     }
+                                 }
+                             }
 
                             // Initialize MAIN_BASE_SETTINGS for each config
                             val configCount = actions.getValue("config_count")?.toIntOrNull() ?: 3
-                            for (i in 1..configCount) {
-                                Schema.MAIN_BASE_SETTINGS.forEach { def ->
-                                    val key = "${def.key}_c$i"
-                                    val savedValue = actions.getValue(key)
-                                    if (savedValue != null) {
-                                        GlobalVars.configStates[key]?.value = savedValue
-                                    } else if (!GlobalVars.configStates.containsKey(key)) {
-                                        GlobalVars.configStates[key] =
-                                            mutableStateOf(def.defaultValue.toString())
-                                    }
-                                }
-                                Schema.MAIN_BASE_TROOPS_AND_SPELLS.forEach { def ->
-                                    val key = "${def.key}_c$i"
-                                    val savedValue = actions.getValue(key)
-                                    if (savedValue != null) {
-                                        GlobalVars.configStates[key]?.value = savedValue
-                                    } else if (!GlobalVars.configStates.containsKey(key)) {
-                                        GlobalVars.configStates[key] =
-                                            mutableStateOf(def.defaultValue.toString())
-                                    }
-                                }
-                            }
+                             for (i in 1..configCount) {
+                                 Schema.MAIN_BASE_SETTINGS.all.forEach { def ->
+                                     val key = "${def.key}_c$i"
+                                     val savedValue = actions.getValue(key)
+                                     if (savedValue != null) {
+                                         GlobalVars.configStates[key]?.value = savedValue
+                                     } else if (!GlobalVars.configStates.containsKey(key)) {
+                                         GlobalVars.configStates[key] =
+                                             mutableStateOf(def.defaultValue.toString())
+                                     }
+                                 }
+                                 Schema.MAIN_BASE_TROOPS_AND_SPELLS.all.forEach { def ->
+                                     val key = "${def.key}_c$i"
+                                     val savedValue = actions.getValue(key)
+                                     if (savedValue != null) {
+                                         GlobalVars.configStates[key]?.value = savedValue
+                                     } else if (!GlobalVars.configStates.containsKey(key)) {
+                                         GlobalVars.configStates[key] =
+                                             mutableStateOf(def.defaultValue.toString())
+                                     }
+                                 }
+                             }
 
                             isConfigInitialized = true
                         }

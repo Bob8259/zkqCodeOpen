@@ -33,14 +33,14 @@ object SchemaExporter {
 
         // Define all mapping relationships
         val sourceMap = mapOf(
-            "GLOBAL_SETTINGS" to Schema.GLOBAL_SETTINGS,
-            "ACCOUNT_SETTINGS" to Schema.ACCOUNT_SETTINGS,
-            "MAIN_BASE_SETTINGS" to Schema.MAIN_BASE_SETTINGS,
-            "MAIN_BASE_TROOPS_AND_SPELLS" to Schema.MAIN_BASE_TROOPS_AND_SPELLS,
-            "MAIN_BASE_PETS" to Schema.MAIN_BASE_PETS,
-            "MAIN_BASE_BUILDINGS" to Schema.MAIN_BASE_BUILDINGS,
-            "NIGHT_BASE_SETTINGS" to Schema.NIGHT_BASE_SETTINGS,
-            "NIGHT_BASE_TROOPS" to Schema.NIGHT_BASE_TROOPS
+            "GLOBAL_SETTINGS" to Schema.GLOBAL_SETTINGS.all,
+            "ACCOUNT_SETTINGS" to Schema.ACCOUNT_SETTINGS.all,
+            "MAIN_BASE_SETTINGS" to Schema.MAIN_BASE_SETTINGS.all,
+            "MAIN_BASE_TROOPS_AND_SPELLS" to Schema.MAIN_BASE_TROOPS_AND_SPELLS.all,
+            "MAIN_BASE_PETS" to Schema.MAIN_BASE_PETS.all,
+            "MAIN_BASE_BUILDINGS" to Schema.MAIN_BASE_BUILDINGS.all,
+            "NIGHT_BASE_SETTINGS" to Schema.NIGHT_BASE_SETTINGS.all,
+            "NIGHT_BASE_TROOPS" to Schema.NIGHT_BASE_TROOPS.all
         )
 
         // 1. Export base schemas
@@ -60,7 +60,7 @@ object SchemaExporter {
         // 2. Export account-specific configurations
         if (keys.contains("ACCOUNT_SETTINGS") && accountCount > 0) {
             for (i in 1..accountCount) {
-                Schema.ACCOUNT_SETTINGS.forEach { settingDef ->
+                Schema.ACCOUNT_SETTINGS.all.forEach { settingDef ->
                     val suffixedKey = "${settingDef.key}$i"
                     jsonObject.addProperty(
                         suffixedKey,
