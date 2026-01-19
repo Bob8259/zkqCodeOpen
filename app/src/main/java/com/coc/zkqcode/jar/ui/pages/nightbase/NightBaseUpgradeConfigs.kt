@@ -13,12 +13,13 @@ import androidx.compose.ui.unit.dp
 import com.coc.zkqcode.utils.components.CustomButton
 import com.coc.zkqcode.utils.components.CustomCheckBox
 import com.coc.zkqcode.utils.components.GlobalVars
+import com.coc.zkqcode.utils.database.Schema
 import com.coc.zkqcode.utils.database.Schema.MAIN_BASE_BUILDINGS
 import kotlin.collections.set
 
 @Composable
-fun NightBaseUpgradeConfigs(index: Int){
-    val items = MAIN_BASE_BUILDINGS.all
+fun NightBaseUpgradeConfigs(index: Int, onNavigatePriority: (Int) -> Unit = {}){
+    val items = Schema.NIGHT_BASE_BUILDINGS.all
     val isExpanded = remember { mutableStateOf(true) }
 
     // 一键全选
@@ -53,6 +54,10 @@ fun NightBaseUpgradeConfigs(index: Int){
     }
 
     if (isExpanded.value) {
+        CustomButton(
+            onClick = { onNavigatePriority(index) },
+            text = "点击调整夜世界升级优先度"
+        )
         FlowRow {
             items.forEach { item ->
                 CustomCheckBox(

@@ -13,6 +13,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.coc.zkqcode.jar.ui.pages.mainbase.MainBaseUpgradePriority
+import com.coc.zkqcode.jar.ui.pages.nightbase.NightBaseUpgradePriority
 
 class EnterMainCode : MainCode {
     @Composable
@@ -30,12 +31,24 @@ class EnterMainCode : MainCode {
                         onSaveSuccess = onClose,
                         onNavigatePriority = { index ->
                             navController.navigate("priority/$index")
+                        },
+                        onNavigateNightPriority = { index ->
+                            navController.navigate("night_priority/$index")
                         }
                     )
                 }
                 composable("priority/{index}") { backStackEntry ->
                     val index = backStackEntry.arguments?.getString("index")?.toIntOrNull() ?: 1
                     MainBaseUpgradePriority(
+                        index = index,
+                        onSaveSuccess = {
+                            navController.popBackStack()
+                        }
+                    )
+                }
+                composable("night_priority/{index}") { backStackEntry ->
+                    val index = backStackEntry.arguments?.getString("index")?.toIntOrNull() ?: 1
+                    NightBaseUpgradePriority(
                         index = index,
                         onSaveSuccess = {
                             navController.popBackStack()

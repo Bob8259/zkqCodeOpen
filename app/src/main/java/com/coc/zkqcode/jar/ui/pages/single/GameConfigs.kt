@@ -6,7 +6,11 @@ import com.coc.zkqcode.jar.ui.pages.mainbase.MainBaseConfig
 import com.coc.zkqcode.jar.ui.pages.nightbase.NightBaseConfig
 
 @Composable
-fun GameConfig(index: Int, onNavigatePriority: (Int) -> Unit = {}) {
+fun GameConfig(
+    index: Int,
+    onNavigatePriority: (Int) -> Unit = {},
+    onNavigateNightPriority: (Int) -> Unit = {}
+) {
     MainBaseConfig(index = index, onNavigatePriority = onNavigatePriority)
-    NightBaseConfig(index = index)
+    NightBaseConfig(index = index, onNavigateNightPriority = onNavigateNightPriority)
 }

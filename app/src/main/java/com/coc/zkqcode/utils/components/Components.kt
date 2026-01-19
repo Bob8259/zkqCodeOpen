@@ -78,7 +78,6 @@ fun ExpandableContent(visible: Boolean, content: @Composable () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            // 关键：当内部内容消失/出现时，这个 Modifier 会平滑地改变容器高度
             .animateContentSize()
     ) {
         if (visible) {

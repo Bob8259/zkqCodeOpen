@@ -40,7 +40,11 @@ import com.coc.zkqcode.utils.state.AppStateManager
 import com.coc.zkqcode.utils.theme.AppColors
 
 @Composable
-fun HomeScreen(onSaveSuccess: () -> Unit = {}, onNavigatePriority: (Int) -> Unit = {}) {
+fun HomeScreen(
+    onSaveSuccess: () -> Unit = {},
+    onNavigatePriority: (Int) -> Unit = {},
+    onNavigateNightPriority: (Int) -> Unit = {}
+) {
 
 
     // Ensure all keys are initialized if not already (safeguard)
@@ -253,7 +257,11 @@ fun HomeScreen(onSaveSuccess: () -> Unit = {}, onNavigatePriority: (Int) -> Unit
                 else -> {
                     // Pass the 1-based index (selectedTabIndex) to MainBaseConfig
                     item {
-                        GameConfig(index = selectedTabIndex - 2, onNavigatePriority = onNavigatePriority)
+                        GameConfig(
+                            index = selectedTabIndex - 2,
+                            onNavigatePriority = onNavigatePriority,
+                            onNavigateNightPriority = onNavigateNightPriority
+                        )
                     }
                 }
             }
