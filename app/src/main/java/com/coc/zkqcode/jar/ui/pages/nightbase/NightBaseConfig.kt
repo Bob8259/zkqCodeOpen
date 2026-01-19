@@ -22,7 +22,7 @@ import com.coc.zkqcode.utils.components.InputRow
 import com.coc.zkqcode.utils.database.Schema.NIGHT_BASE_SETTINGS
 
 @Composable
-fun NightBaseConfig(index: Int) {
+fun NightBaseConfig(index: Int, onNavigateNightPriority: (Int) -> Unit = {}) {
     var isNightBaseExpanded by remember { mutableStateOf(true) }
     FlowRow {
         Text(
@@ -138,6 +138,10 @@ fun NightBaseConfig(index: Int) {
                     text = NIGHT_BASE_SETTINGS.NIGHT_SAVE_WORKER.displayName,
                 )
             }
+            if (GlobalVars.configStates["${NIGHT_BASE_SETTINGS.NIGHT_BUILD_SETTING.key}_c${index}"]!!.value == "1") {
+                NightBaseUpgradeConfigs(index = index, onNavigatePriority = onNavigateNightPriority)
+            }
+
         }
     }
 }

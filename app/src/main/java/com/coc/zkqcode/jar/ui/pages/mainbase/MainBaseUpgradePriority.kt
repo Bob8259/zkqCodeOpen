@@ -20,7 +20,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -34,7 +33,6 @@ import androidx.compose.ui.unit.dp
 import com.coc.zkqcode.utils.components.CustomButton
 import com.coc.zkqcode.utils.components.GlobalVars
 import com.coc.zkqcode.utils.database.Schema
-import com.coc.zkqcode.utils.database.SettingDef
 import com.coc.zkqcode.utils.reorderable.ReorderableItem
 import com.coc.zkqcode.utils.reorderable.rememberReorderableLazyGridState
 import kotlinx.coroutines.launch
@@ -91,7 +89,7 @@ fun MainBaseUpgradePriority(index: Int, onSaveSuccess: () -> Unit) {
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             items(list, key = { it.key }) { item ->
-                ReorderableItem(reorderableState, key = item.key) { isDragging ->
+                ReorderableItem(reorderableState, key = item.key) { _ ->
                     Card(
                         modifier = Modifier.height(100.dp),
                         onClick = {}
