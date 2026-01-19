@@ -16,7 +16,7 @@ class ScreenShot {
     private var dis: InputStream? = null
 
     fun testcode() {
-
+        println("start test code")
         startColorDetectionLoop()
     }
 
