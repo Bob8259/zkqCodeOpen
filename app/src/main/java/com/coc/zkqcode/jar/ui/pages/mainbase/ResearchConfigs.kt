@@ -2,14 +2,9 @@ package com.coc.zkqcode.jar.ui.pages.mainbase
 
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import com.coc.zkqcode.utils.components.CustomButton
 import com.coc.zkqcode.utils.components.CustomCheckBox
 import com.coc.zkqcode.utils.components.GlobalVars
@@ -17,7 +12,7 @@ import com.coc.zkqcode.utils.database.Schema
 
 @Composable
 fun ResearchConfigs(index: Int) {
-    val items = Schema.MAIN_BASE_TROOPS_AND_SPELLS
+    val items = Schema.MAIN_BASE_TROOPS_AND_SPELLS.all
     val isExpanded = remember { mutableStateOf(true) }
 
     // 一键全选
@@ -27,7 +22,7 @@ fun ResearchConfigs(index: Int) {
             if (!GlobalVars.configStates.containsKey(key)) {
                 GlobalVars.configStates[key] = mutableStateOf("1")
             } else {
-                GlobalVars.configStates[key]?.value = "1"
+                GlobalVars.configStates[key]!!.value = "1"
             }
         }
     }
@@ -36,12 +31,12 @@ fun ResearchConfigs(index: Int) {
     val invertSelection = {
         items.forEach { item ->
             val key = "${item.key}_c${index}"
-            val currentState = GlobalVars.configStates[key]?.value
+            val currentState = GlobalVars.configStates[key]!!.value
             val newValue = if (currentState == "1") "0" else "1"
             if (!GlobalVars.configStates.containsKey(key)) {
                 GlobalVars.configStates[key] = mutableStateOf(newValue)
             } else {
-                GlobalVars.configStates[key]?.value = newValue
+                GlobalVars.configStates[key]!!.value = newValue
             }
         }
     }
@@ -52,17 +47,17 @@ fun ResearchConfigs(index: Int) {
     }
 
     if (isExpanded.value) {
-        FlowRow() {
+        FlowRow {
             items.forEach { item ->
                 CustomCheckBox(
-                    checkedState = GlobalVars.configStates["${item.key}_c${index}"]?.value ?: "1",
+                    checkedState = GlobalVars.configStates["${item.key}_c${index}"]!!.value,
                     onCheckStateChange = { isChecked ->
                         val key = "${item.key}_c${index}"
                         val newValue = if (isChecked) "1" else "0"
                         if (!GlobalVars.configStates.containsKey(key)) {
                             GlobalVars.configStates[key] = mutableStateOf(newValue)
                         } else {
-                            GlobalVars.configStates[key]?.value = newValue
+                            GlobalVars.configStates[key]!!.value = newValue
                         }
                     },
                     text = item.displayName,

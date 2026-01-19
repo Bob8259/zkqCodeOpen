@@ -55,6 +55,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 
+@Suppress("KotlinUnreachableCode")
 private suspend fun solvePoW(nonce: String): String = withContext(Dispatchers.Default) {
     var salt = 0
     val md = MessageDigest.getInstance("SHA-256")
@@ -80,7 +81,7 @@ private suspend fun solvePoW(nonce: String): String = withContext(Dispatchers.De
 fun LoginScreen() {
     val scope = rememberCoroutineScope()
     var isLoginButtonEnabled by remember { mutableStateOf(true) }
-    var gemInfo by remember { mutableStateOf(GlobalVars.configStates["gem_count"]?.value ?: "") }
+    var gemInfo by remember { mutableStateOf(GlobalVars.configStates["gem_count"]!!.value) }
     var showMessage by remember {
         mutableStateOf(
             gemInfo.toDoubleOrNull()?.let { it < 0.0001 } ?: true
@@ -90,9 +91,9 @@ fun LoginScreen() {
     var formattedGem by remember { mutableStateOf("") }
     val serverPublicKey = "171abec025499684b76daa59065c0c4e86b6707e7ed3502d95919a0c1dfa305d" //Hex
 
-    val globalGemCount = GlobalVars.configStates["gem_count"]?.value
+    val globalGemCount = GlobalVars.configStates["gem_count"]!!.value
     LaunchedEffect(globalGemCount) {
-        if (!globalGemCount.isNullOrEmpty() && gemInfo.isEmpty()) {
+        if (globalGemCount.isNotEmpty() && gemInfo.isEmpty()) {
             gemInfo = globalGemCount
             globalGemCount.toDoubleOrNull()?.let {
                 showMessage = (it < 0.0001)
@@ -175,7 +176,7 @@ fun LoginScreen() {
                 override fun onFailure(call: Call, e: IOException) {
                     gemInfo = "登录失败: ${e.message}"
                     showMessage = true
-                    GlobalVars.configStates["gem_count"]?.value = ""
+                    GlobalVars.configStates["gem_count"]!!.value = ""
                     failTimesCount++
                     isLoginButtonEnabled = true
                 }
@@ -197,7 +198,7 @@ fun LoginScreen() {
                             if (decrypted.startsWith("Error")) {
                                 gemInfo = "登录失败: $decrypted"
                                 showMessage = true
-                                GlobalVars.configStates["gem_count"]?.value = ""
+                                GlobalVars.configStates["gem_count"]!!.value = ""
                             } else {
                                 val gemRegex = """gem=([\d.]+)""".toRegex()
                                 val gemMatch = gemRegex.find(decrypted)
@@ -208,18 +209,18 @@ fun LoginScreen() {
                                     gem.toDoubleOrNull()?.let {
                                         showMessage = (it < 0.000001)
                                     }
-                                    GlobalVars.configStates["gem_count"]?.value = gem
+                                    GlobalVars.configStates["gem_count"]!!.value = gem
                                     gemInfo = "登录成功！卡班宝石数量 $formattedGem"
                                 } else {
                                     gemInfo = "登录成功，但无法解析数据: $decrypted"
                                     showMessage = true
-                                    GlobalVars.configStates["gem_count"]?.value = ""
+                                    GlobalVars.configStates["gem_count"]!!.value = ""
                                 }
                             }
                         } else {
                             gemInfo = "登录失败：响应体为空"
                             showMessage = true
-                            GlobalVars.configStates["gem_count"]?.value = ""
+                            GlobalVars.configStates["gem_count"]!!.value = ""
                         }
                     } else {
                         val responseBody = response.body?.string()
@@ -227,7 +228,7 @@ fun LoginScreen() {
                         showMessage = true
                         failTimesCount++
                         isLoginButtonEnabled = true
-                        GlobalVars.configStates["gem_count"]?.value = ""
+                        GlobalVars.configStates["gem_count"]!!.value = ""
                     }
                 }
             })
@@ -279,21 +280,21 @@ fun LoginScreen() {
         }
 
         InputRow(
-            label = Schema.GLOBAL_SETTINGS.first { it.key == "email" }.displayName,
-            value = GlobalVars.configStates["email"]?.value ?: "",
-            onValueChange = { GlobalVars.configStates["email"]?.value = it },
+            label = Schema.GLOBAL_SETTINGS.EMAIL.displayName,
+            value = GlobalVars.configStates["email"]!!.value,
+            onValueChange = { GlobalVars.configStates["email"]!!.value = it },
         )
         var isPasswordVisible by remember { mutableStateOf(false) }
         Row {
             Text(
-                text = Schema.GLOBAL_SETTINGS.first { it.key == "password" }.displayName,
+                text = Schema.GLOBAL_SETTINGS.PASSWORD.displayName,
                 modifier = Modifier
                     .padding(end = 16.dp)
                     .align(Alignment.CenterVertically),
                 style = MaterialTheme.typography.labelMedium
             )
             BasicTextField(
-                value = GlobalVars.configStates["password"]?.value ?: "",
+                value = GlobalVars.configStates["password"]!!.value,
                 modifier = Modifier
                     .background(
                         color = Color.LightGray,
@@ -304,7 +305,7 @@ fun LoginScreen() {
                     .heightIn(max = 120.dp),
                 onValueChange = {
                     GlobalVars.isAutoRunEnabled = false
-                    GlobalVars.configStates["password"]?.value = it
+                    GlobalVars.configStates["password"]!!.value = it
                 },
                 singleLine = true,
                 visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation()
@@ -324,8 +325,8 @@ fun LoginScreen() {
             CustomButton(
                 text = "登录", marginTop = 0.dp, onClick = {
                     login(
-                        GlobalVars.configStates["email"]?.value ?: "",
-                        GlobalVars.configStates["password"]?.value ?: ""
+                        GlobalVars.configStates["email"]!!.value,
+                        GlobalVars.configStates["password"]!!.value
                     )
                 }, enable = isLoginButtonEnabled
             )
@@ -343,9 +344,9 @@ fun LoginScreen() {
                     showMessage = true
                     scope.launch {
                         GlobalVars.fileActions?.writeToConfigFile("gem_count", "")
-                        GlobalVars.configStates["email"]?.value = ""
-                        GlobalVars.configStates["password"]?.value = ""
-                        GlobalVars.configStates["gem_count"]?.value = ""
+                        GlobalVars.configStates["email"]!!.value = ""
+                        GlobalVars.configStates["password"]!!.value = ""
+                        GlobalVars.configStates["gem_count"]!!.value = ""
                     }
                     gemInfo = "退出成功"
                 }, enable = isLoginButtonEnabled

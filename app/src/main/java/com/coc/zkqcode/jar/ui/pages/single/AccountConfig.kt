@@ -29,36 +29,36 @@ fun AccountConfig(
     Column(modifier = Modifier.padding(horizontal = 2.dp)) {
         Row {
             CustomCheckBox(
-                checkedState = GlobalVars.configStates["isopen${index}"]?.value ?: "",
+                checkedState = GlobalVars.configStates["isopen${index}"]!!.value,
                 onCheckStateChange = {
-                    GlobalVars.configStates["isopen${index}"]?.value = if (it) "1" else "0"
+                    GlobalVars.configStates["isopen${index}"]!!.value = if (it) "1" else "0"
                 },
-                text = Schema.ACCOUNT_SETTINGS.first { it.key == "isopen" }.displayName + index,
+                text = Schema.ACCOUNT_SETTINGS.ISOPEN.displayName + index,
             )
             InputRow(
-                label = Schema.ACCOUNT_SETTINGS.first { it.key == "remark" }.displayName,
-                value = GlobalVars.configStates["remark${index}"]?.value ?: "",
-                onValueChange = { GlobalVars.configStates["remark${index}"]?.value = it },
+                label = Schema.ACCOUNT_SETTINGS.REMARK.displayName,
+                value = GlobalVars.configStates["remark${index}"]!!.value,
+                onValueChange = { GlobalVars.configStates["remark${index}"]!!.value = it },
             )
         }
         DropdownButton(
             options = listOf("国服", "国际服"),
-            selectedIndex = GlobalVars.configStates["game_version${index}"]?.value?.toIntOrNull() ?: 0,
-            onValueChange = { GlobalVars.configStates["game_version${index}"]?.value = it.toString() },
-            label = Schema.ACCOUNT_SETTINGS.first { it.key == "game_version" }.displayName
+            selectedIndex = GlobalVars.configStates["game_version${index}"]!!.value.toIntOrNull() ?: 0,
+            onValueChange = { GlobalVars.configStates["game_version${index}"]!!.value = it.toString() },
+            label = Schema.ACCOUNT_SETTINGS.GAME_VERSION.displayName
         )
         InputRow(
-            label = Schema.ACCOUNT_SETTINGS.first { it.key == "account_config" }.displayName,
-            value = GlobalVars.configStates["account_config${index}"]?.value ?: "",
-            onValueChange = { GlobalVars.configStates["account_config${index}"]?.value = it },
+            label = Schema.ACCOUNT_SETTINGS.ACCOUNT_CONFIG.displayName,
+            value = GlobalVars.configStates["account_config${index}"]!!.value,
+            onValueChange = { GlobalVars.configStates["account_config${index}"]!!.value = it },
         )
         DropdownButton(
             options = listOf("游戏存档", "直接启动", "上号器"),
-            selectedIndex = GlobalVars.configStates["start_method${index}"]?.value?.toIntOrNull() ?: 0,
-            onValueChange = { GlobalVars.configStates["start_method${index}"]?.value = it.toString() },
-            label = Schema.ACCOUNT_SETTINGS.first { it.key == "start_method" }.displayName
+            selectedIndex = GlobalVars.configStates["start_method${index}"]!!.value.toIntOrNull() ?: 0,
+            onValueChange = { GlobalVars.configStates["start_method${index}"]!!.value = it.toString() },
+            label = Schema.ACCOUNT_SETTINGS.START_METHOD.displayName
         )
-        when (GlobalVars.configStates["start_method${index}"]?.value ?: "") {
+        when (GlobalVars.configStates["start_method${index}"]!!.value) {
             "1" -> GameFiles(index)//存档上号
             "2" -> UsePackage(index)//上号器
         }
@@ -72,7 +72,7 @@ fun AccountConfig(
 fun UsePackage(
     index: Int
 ) {
-    if (GlobalVars.configStates["game_version${index}"]?.value == "0") {
+    if (GlobalVars.configStates["game_version${index}"]!!.value == "0") {
         Column {
             Text(
                 text = "换机或设备到期前，务必清空数据号信息！\n否则有被盗号风险！",
@@ -81,9 +81,9 @@ fun UsePackage(
                 color = Color.Red
             )
             InputRow(
-                label = Schema.ACCOUNT_SETTINGS.first { it.key == "data_content" }.displayName,
-                value = GlobalVars.configStates["data_content${index}"]?.value ?: "",
-                onValueChange = { GlobalVars.configStates["data_content${index}"]?.value = it },
+                label = Schema.ACCOUNT_SETTINGS.DATA_CONTENT.displayName,
+                value = GlobalVars.configStates["data_content${index}"]!!.value,
+                onValueChange = { GlobalVars.configStates["data_content${index}"]!!.value = it },
             )
         }
     } else {
@@ -107,29 +107,29 @@ fun GameFiles(
             style = MaterialTheme.typography.labelMedium
         )
         // 从 configStates 中获取当前游戏版本
-        val currentVersion = GlobalVars.configStates["game_version${index}"]?.value ?: "0"
+        val currentVersion = GlobalVars.configStates["game_version${index}"]!!.value
         // 使用 remember 来保存当前选中的选项
         var selectedOption by remember {
             mutableStateOf(
-                GlobalVars.configStates["game_version${index}"]?.value ?: "0"
+                GlobalVars.configStates["game_version${index}"]!!.value
             )
         }
 
         // 监听 currentVersion 的变化，并更新 selectedOption
         LaunchedEffect(currentVersion) {
-            selectedOption = GlobalVars.configStates["game_version${index}"]?.value ?: "0"
+            selectedOption = GlobalVars.configStates["game_version${index}"]!!.value
         }
         if (selectedOption == "0") {//0表示国服
             InputRow(
-                label = Schema.ACCOUNT_SETTINGS.first { it.key == "cn_path" }.displayName,
-                value = GlobalVars.configStates["cn_path${index}"]?.value ?: "",
-                onValueChange = { GlobalVars.configStates["cn_path${index}"]?.value = it },
+                label = Schema.ACCOUNT_SETTINGS.CN_PATH.displayName,
+                value = GlobalVars.configStates["cn_path${index}"]!!.value,
+                onValueChange = { GlobalVars.configStates["cn_path${index}"]!!.value = it },
             )
         } else {
             InputRow(
-                label = Schema.ACCOUNT_SETTINGS.first { it.key == "global_path" }.displayName,
-                value = GlobalVars.configStates["global_path${index}"]?.value ?: "",
-                onValueChange = { GlobalVars.configStates["global_path${index}"]?.value = it },
+                label = Schema.ACCOUNT_SETTINGS.GLOBAL_PATH.displayName,
+                value = GlobalVars.configStates["global_path${index}"]!!.value,
+                onValueChange = { GlobalVars.configStates["global_path${index}"]!!.value = it },
             )
         }
     }

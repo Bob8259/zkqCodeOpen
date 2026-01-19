@@ -19,7 +19,6 @@ class FileActions(
         private set
 
     fun getValue(key: String): String? {
-
         return if (configJson.has(key)) configJson.get(key).asString else null
     }
 
