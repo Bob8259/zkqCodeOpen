@@ -35,92 +35,32 @@ import com.coc.zkqcode.utils.components.DropdownButton
 import com.coc.zkqcode.utils.components.GlobalVars
 import com.coc.zkqcode.utils.components.InputRow
 import com.coc.zkqcode.utils.database.Schema
-import com.coc.zkqcode.utils.database.SchemaExporter
 import com.coc.zkqcode.utils.state.AppMode
 import com.coc.zkqcode.utils.state.AppStateManager
+import com.coc.zkqcode.utils.database.ConfigManager
 import com.coc.zkqcode.utils.theme.AppColors
 
 @Composable
 fun HomeScreen(onSaveSuccess: () -> Unit = {}) {
 
 
-    // Ensure all keys are initialized even if file hasn't loaded yet
-    Schema.GLOBAL_SETTINGS.all.forEach { def ->
-        if (!GlobalVars.configStates.containsKey(def.key)) {
-            val savedValue = GlobalVars.fileActions?.getValue(def.key)
-            GlobalVars.configStates[def.key] =
-                mutableStateOf(savedValue ?: def.defaultValue.toString())
-        }
+    // Ensure all keys are initialized if not already (safeguard)
+    val actions = GlobalVars.fileActions
+    if (actions != null && GlobalVars.configStates.isEmpty()) {
+        ConfigManager.initializeAllConfigs(actions)
     }
 
-    val configCountStr = GlobalVars.configStates["config_count"]!!.value
-    val accountCountStr = GlobalVars.configStates["account_count"]!!.value
+    val configCountStr = GlobalVars.configStates["config_count"]?.value ?: "3"
+    val accountCountStr = GlobalVars.configStates["account_count"]?.value ?: "3"
     var selectedTabIndex by remember { mutableIntStateOf(0) }
-
-    // Initialize account settings states dynamically
-    val accountCount = accountCountStr.toIntOrNull() ?: 3
-    for (i in 1..accountCount) {
-        Schema.ACCOUNT_SETTINGS.all.forEach { def ->
-            val key = "${def.key}${i}"
-            if (!GlobalVars.configStates.containsKey(key)) {
-                val savedValue = GlobalVars.fileActions?.getValue(key)
-                val defaultValue = if (def.key == "global_path" || def.key == "data_content") {
-                    i.toString()
-                } else {
-                    def.defaultValue.toString()
-                }
-                GlobalVars.configStates[key] = mutableStateOf(savedValue ?: defaultValue)
-            }
-        }
-    }
-
-    // Initialize MAIN_BASE_SETTINGS dynamically if not loaded from file
-    val currentConfigCount = configCountStr.toIntOrNull() ?: 3
-    for (i in 1..currentConfigCount) {
-        // 将所有 Schema 列表合并为一个集合进行迭代
-        val allSchemas = listOf(
-            Schema.MAIN_BASE_SETTINGS.all,
-            Schema.MAIN_BASE_TROOPS_AND_SPELLS.all,
-            Schema.MAIN_BASE_BUILDINGS.all,
-            Schema.MAIN_BASE_PETS.all,
-            Schema.NIGHT_BASE_SETTINGS.all,
-            Schema.NIGHT_BASE_TROOPS.all
-        )
-
-        allSchemas.forEach { schemaList ->
-            schemaList.forEach { def ->
-                val key = "${def.key}_c$i"
-
-                // 使用 getOrPut 可以进一步简化“若不存在则存入”的逻辑
-                GlobalVars.configStates.getOrPut(key) {
-                    val savedValue = GlobalVars.fileActions?.getValue(key)
-                    mutableStateOf(savedValue ?: def.defaultValue.toString())
-                }
-            }
-        }
-    }
 
     val configCount = configCountStr.toIntOrNull() ?: 1
     val tabs = listOf("主页设置", "账号设置", "提取存档") + List(configCount) { "配置文件${it + 1}" }
-
+ 
     val saveAndRun = {
-        // 获取外部存储路径 zkqFiles
-        val baseDir = "${Environment.getExternalStorageDirectory().path}/zkqFiles/"
-
-        // 获取当前账户数量
-        val currentAccountCount = accountCountStr.toIntOrNull() ?: 3
-        // 调用通过服务器保存的方法
-        SchemaExporter.saveSchemaViaServer(
-            baseDir,
-            "zkq_config.json",
-            accountCount = currentAccountCount,
-            configCount = GlobalVars.configStates["config_count"]!!.value.toIntOrNull() ?: 3
-        )
-        GlobalVars.updateWindowPosition = true
-        // 执行保存后的回调，用于关闭悬浮窗
-        onSaveSuccess()
-        //run code
-        ScreenShot().testcode()
+        ConfigManager.saveAndRun {
+            onSaveSuccess()
+        }
     }
 
     val cleanMemory = {
