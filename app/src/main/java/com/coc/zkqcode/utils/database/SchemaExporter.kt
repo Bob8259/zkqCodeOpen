@@ -1,97 +1,52 @@
 package com.coc.zkqcode.utils.database
 
 import com.coc.zkqcode.utils.components.GlobalVars
-import com.coc.zkqcode.utils.database.SchemaExporter.DEFAULT_KEYS
+
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonObject
 
 object SchemaExporter {
 
-    private val DEFAULT_KEYS = listOf(
-        "GLOBAL_SETTINGS",
-        "ACCOUNT_SETTINGS",
-        "MAIN_BASE_SETTINGS",
-        "MAIN_BASE_TROOPS_AND_SPELLS",
-        "MAIN_BASE_BUILDINGS",
-        "MAIN_BASE_PETS",
-        "NIGHT_BASE_SETTINGS",
-        "NIGHT_BASE_TROOPS",
-        "MAIN_BASE_BUILDING_PRIORITIES"
-    )
-
-    /**
-     * Exports the specified Schema definitions to a JSON string (key-value format)
-     * @param keys List of module Keys to export. If empty, uses [DEFAULT_KEYS].
-     * @param accountCount Number of accounts, used for exporting account configurations
-     * @param configCount Number of configuration profiles
-     */
     fun exportSchemasToJson(
-        keys: List<String> = DEFAULT_KEYS,
+        keys: List<String> = SchemaRegistry.ALL_MODULES.map { it.name },
         accountCount: Int = 0,
         configCount: Int = 0
     ): String {
         val jsonObject = JsonObject()
 
-        // Define all mapping relationships
-        val sourceMap = mapOf(
-            "GLOBAL_SETTINGS" to Schema.GLOBAL_SETTINGS.all,
-            "ACCOUNT_SETTINGS" to Schema.ACCOUNT_SETTINGS.all,
-            "MAIN_BASE_SETTINGS" to Schema.MAIN_BASE_SETTINGS.all,
-            "MAIN_BASE_TROOPS_AND_SPELLS" to Schema.MAIN_BASE_TROOPS_AND_SPELLS.all,
-            "MAIN_BASE_PETS" to Schema.MAIN_BASE_PETS.all,
-            "MAIN_BASE_BUILDINGS" to Schema.MAIN_BASE_BUILDINGS.all,
-            "NIGHT_BASE_SETTINGS" to Schema.NIGHT_BASE_SETTINGS.all,
-            "NIGHT_BASE_TROOPS" to Schema.NIGHT_BASE_TROOPS.all,
-            "MAIN_BASE_BUILDING_PRIORITIES" to Schema.MAIN_BASE_BUILDING_PRIORITIES.all
-        )
-
-        // 1. Export base schemas
-        val schemasToExport = if (keys.isEmpty()) {
-            sourceMap.values.flatten()
-        } else {
-            keys.flatMap { key -> sourceMap[key] ?: emptyList() }
-        }
-
-        schemasToExport.forEach { settingDef ->
-            jsonObject.addProperty(
-                settingDef.key,
-                getCurrentValue(settingDef.key, settingDef.defaultValue)
-            )
-        }
-
-        // 2. Export account-specific configurations
-        if (keys.contains("ACCOUNT_SETTINGS") && accountCount > 0) {
-            for (i in 1..accountCount) {
-                Schema.ACCOUNT_SETTINGS.all.forEach { settingDef ->
-                    val suffixedKey = "${settingDef.key}$i"
-                    jsonObject.addProperty(
-                        suffixedKey,
-                        getCurrentValue(suffixedKey, settingDef.defaultValue)
-                    )
+        SchemaRegistry.ALL_MODULES.filter { keys.contains(it.name) }.forEach { module ->
+            when (module.scope) {
+                Scope.GLOBAL -> {
+                    module.settings.forEach { settingDef ->
+                        jsonObject.addProperty(
+                            settingDef.key,
+                            getCurrentValue(settingDef.key, settingDef.defaultValue)
+                        )
+                    }
                 }
-            }
-        }
-
-        // 3. Export profile-specific configurations (Main Base)
-        val profileKeys = listOf(
-            "MAIN_BASE_SETTINGS",
-            "MAIN_BASE_TROOPS_AND_SPELLS",
-            "MAIN_BASE_BUILDINGS",
-            "MAIN_BASE_PETS",
-            "NIGHT_BASE_SETTINGS",
-            "NIGHT_BASE_TROOPS",
-            "MAIN_BASE_BUILDING_PRIORITIES"
-        )
-        if (configCount > 0) {
-            profileKeys.filter { keys.contains(it) }.forEach { schemaKey ->
-                sourceMap[schemaKey]?.let { schema ->
-                    for (i in 1..configCount) {
-                        schema.forEach { settingDef ->
-                            val suffixedKey = "${settingDef.key}_c$i"
-                            jsonObject.addProperty(
-                                suffixedKey,
-                                getCurrentValue(suffixedKey, settingDef.defaultValue)
-                            )
+                Scope.ACCOUNT -> {
+                    if (accountCount > 0) {
+                        for (i in 1..accountCount) {
+                            module.settings.forEach { settingDef ->
+                                val suffixedKey = "${settingDef.key}$i"
+                                jsonObject.addProperty(
+                                    suffixedKey,
+                                    getCurrentValue(suffixedKey, settingDef.defaultValue)
+                                )
+                            }
+                        }
+                    }
+                }
+                Scope.PROFILE -> {
+                    if (configCount > 0) {
+                        for (i in 1..configCount) {
+                            module.settings.forEach { settingDef ->
+                                val suffixedKey = "${settingDef.key}_c$i"
+                                jsonObject.addProperty(
+                                    suffixedKey,
+                                    getCurrentValue(suffixedKey, settingDef.defaultValue)
+                                )
+                            }
                         }
                     }
                 }
@@ -124,11 +79,11 @@ object SchemaExporter {
     fun saveSchemaViaServer(
         directory: String,
         fileName: String,
-        keys: List<String> = DEFAULT_KEYS,
+        keys: List<String> = SchemaRegistry.ALL_MODULES.map { it.name },
         accountCount: Int = 0,
         configCount: Int = 0
     ) {
-        val jsonContent = exportSchemasToJson(keys, accountCount, configCount)
+        val jsonContent = exportSchemasToJson(keys = keys, accountCount = accountCount, configCount = configCount)
         val fullPath =
             if (directory.endsWith("/")) "$directory$fileName" else "$directory/$fileName"
 
