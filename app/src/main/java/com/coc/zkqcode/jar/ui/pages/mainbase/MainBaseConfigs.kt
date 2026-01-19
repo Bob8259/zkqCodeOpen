@@ -56,20 +56,25 @@ fun MainBaseConfig(index: Int) {
         InputRow(
             label = MAIN_BASE_SETTINGS.GOLD_REQUIREMENT.displayName + "(-1表示默认值):",
             value = GlobalVars.configStates["${MAIN_BASE_SETTINGS.GOLD_REQUIREMENT.key}_c$index"]!!.value,
-            onValueChange = { GlobalVars.configStates["${MAIN_BASE_SETTINGS.GOLD_REQUIREMENT.key}_c$index"]!!.value = it }
+            onValueChange = {
+                GlobalVars.configStates["${MAIN_BASE_SETTINGS.GOLD_REQUIREMENT.key}_c$index"]!!.value =
+                    it
+            }
         )
         InputRow(
             label = MAIN_BASE_SETTINGS.ELIXIR_REQUIREMENT.displayName + "(-1表示默认值):",
             value = GlobalVars.configStates["${MAIN_BASE_SETTINGS.ELIXIR_REQUIREMENT.key}_c$index"]!!.value,
             onValueChange = {
-                GlobalVars.configStates["${MAIN_BASE_SETTINGS.ELIXIR_REQUIREMENT.key}_c$index"]!!.value = it
+                GlobalVars.configStates["${MAIN_BASE_SETTINGS.ELIXIR_REQUIREMENT.key}_c$index"]!!.value =
+                    it
             }
         )
         InputRow(
             label = MAIN_BASE_SETTINGS.DARK_ELIXIR_REQUIREMENT.displayName + "(-1表示默认值):",
             value = GlobalVars.configStates["${MAIN_BASE_SETTINGS.DARK_ELIXIR_REQUIREMENT.key}_c$index"]!!.value,
             onValueChange = {
-                GlobalVars.configStates["${MAIN_BASE_SETTINGS.DARK_ELIXIR_REQUIREMENT.key}_c$index"]!!.value = it
+                GlobalVars.configStates["${MAIN_BASE_SETTINGS.DARK_ELIXIR_REQUIREMENT.key}_c$index"]!!.value =
+                    it
             }
         )
         FlowRow {
@@ -163,7 +168,8 @@ fun MainBaseConfig(index: Int) {
                 selectedIndex = GlobalVars.configStates["${MAIN_BASE_SETTINGS.TACTICS_MODE.key}_c$index"]!!.value.toIntOrNull()
                     ?: 0,
                 onValueChange = {
-                    GlobalVars.configStates["${MAIN_BASE_SETTINGS.TACTICS_MODE.key}_c$index"]!!.value = it.toString()
+                    GlobalVars.configStates["${MAIN_BASE_SETTINGS.TACTICS_MODE.key}_c$index"]!!.value =
+                        it.toString()
                 },
                 label = MAIN_BASE_SETTINGS.TACTICS_MODE.displayName
             )
@@ -182,28 +188,32 @@ fun MainBaseConfig(index: Int) {
                 label = MAIN_BASE_SETTINGS.LIGHTING_ON_AIR_SWEEPER.displayName + ":",
                 value = GlobalVars.configStates["${MAIN_BASE_SETTINGS.LIGHTING_ON_AIR_SWEEPER.key}_c$index"]!!.value,
                 onValueChange = {
-                    GlobalVars.configStates["${MAIN_BASE_SETTINGS.LIGHTING_ON_AIR_SWEEPER.key}_c$index"]!!.value = it
+                    GlobalVars.configStates["${MAIN_BASE_SETTINGS.LIGHTING_ON_AIR_SWEEPER.key}_c$index"]!!.value =
+                        it
                 }
             )
             InputRow(
                 label = MAIN_BASE_SETTINGS.LIGHTING_ON_AIR_DEFENCE.displayName + ":",
                 value = GlobalVars.configStates["${MAIN_BASE_SETTINGS.LIGHTING_ON_AIR_DEFENCE.key}_c$index"]!!.value,
                 onValueChange = {
-                    GlobalVars.configStates["${MAIN_BASE_SETTINGS.LIGHTING_ON_AIR_DEFENCE.key}_c$index"]!!.value = it
+                    GlobalVars.configStates["${MAIN_BASE_SETTINGS.LIGHTING_ON_AIR_DEFENCE.key}_c$index"]!!.value =
+                        it
                 }
             )
             InputRow(
                 label = MAIN_BASE_SETTINGS.LIGHTING_ON_WIZARD_TOWER.displayName + ":",
                 value = GlobalVars.configStates["${MAIN_BASE_SETTINGS.LIGHTING_ON_WIZARD_TOWER.key}_c$index"]!!.value,
                 onValueChange = {
-                    GlobalVars.configStates["${MAIN_BASE_SETTINGS.LIGHTING_ON_WIZARD_TOWER.key}_c$index"]!!.value = it
+                    GlobalVars.configStates["${MAIN_BASE_SETTINGS.LIGHTING_ON_WIZARD_TOWER.key}_c$index"]!!.value =
+                        it
                 }
             )
             InputRow(
                 label = MAIN_BASE_SETTINGS.LIGHTING_ON_MORTAR.displayName + ":",
                 value = GlobalVars.configStates["${MAIN_BASE_SETTINGS.LIGHTING_ON_MORTAR.key}_c$index"]!!.value,
                 onValueChange = {
-                    GlobalVars.configStates["${MAIN_BASE_SETTINGS.LIGHTING_ON_MORTAR.key}_c$index"]!!.value = it
+                    GlobalVars.configStates["${MAIN_BASE_SETTINGS.LIGHTING_ON_MORTAR.key}_c$index"]!!.value =
+                        it
                 }
             )
         }
@@ -255,11 +265,11 @@ fun MainBaseConfig(index: Int) {
                 label = MAIN_BASE_SETTINGS.DONATION_TIMES.displayName + ":",
                 value = GlobalVars.configStates["${MAIN_BASE_SETTINGS.DONATION_TIMES.key}_c$index"]!!.value,
                 onValueChange = {
-                    GlobalVars.configStates["${MAIN_BASE_SETTINGS.DONATION_TIMES.key}_c$index"]!!.value = it
+                    GlobalVars.configStates["${MAIN_BASE_SETTINGS.DONATION_TIMES.key}_c$index"]!!.value =
+                        it
                 }
             )
         }
-
         ExpandableContent(GlobalVars.configStates["${MAIN_BASE_SETTINGS.RESEARCH_SETTING.key}_c$index"]!!.value == "1") {
             ResearchConfigs(index)
         }
@@ -314,6 +324,7 @@ fun MainBaseConfig(index: Int) {
             )
         }
         ExpandableContent(GlobalVars.configStates["${MAIN_BASE_SETTINGS.WALL_UPGRADE_SETTINGS.key}_c$index"]!!.value == "1") {
+
             FlowRow {
                 CustomCheckBox(
                     checkedState = GlobalVars.configStates["${MAIN_BASE_SETTINGS.BATCH_WALL_UPGRADE_SETTINGS.key}_c$index"]!!.value,
@@ -327,12 +338,14 @@ fun MainBaseConfig(index: Int) {
                     label = MAIN_BASE_SETTINGS.UPGRADE_WALL_THRESHOLD.displayName,
                     value = GlobalVars.configStates["${MAIN_BASE_SETTINGS.UPGRADE_WALL_THRESHOLD.key}_c$index"]!!.value,
                     onValueChange = {
-                        GlobalVars.configStates["${MAIN_BASE_SETTINGS.UPGRADE_WALL_THRESHOLD.key}_c$index"]!!.value = it
+                        GlobalVars.configStates["${MAIN_BASE_SETTINGS.UPGRADE_WALL_THRESHOLD.key}_c$index"]!!.value =
+                            it
                     }
                 )
             }
         }
         ExpandableContent(GlobalVars.configStates["${MAIN_BASE_SETTINGS.BUILD_SETTING.key}_c$index"]!!.value == "1") {
+
             UpgradeConfigs(index)
         }
         CustomCheckBox(
@@ -584,12 +597,18 @@ fun MainBaseConfig(index: Int) {
             InputRow(
                 label = MAIN_BASE_SETTINGS.CLAN_TAG.displayName,
                 value = GlobalVars.configStates["${MAIN_BASE_SETTINGS.CLAN_TAG.key}_c$index"]!!.value,
-                onValueChange = { GlobalVars.configStates["${MAIN_BASE_SETTINGS.CLAN_TAG.key}_c$index"]!!.value = it }
+                onValueChange = {
+                    GlobalVars.configStates["${MAIN_BASE_SETTINGS.CLAN_TAG.key}_c$index"]!!.value =
+                        it
+                }
             )
             InputRow(
                 label = MAIN_BASE_SETTINGS.CLAN_JOIN_MESSAGE.displayName,
                 value = GlobalVars.configStates["${MAIN_BASE_SETTINGS.CLAN_JOIN_MESSAGE.key}_c$index"]!!.value,
-                onValueChange = { GlobalVars.configStates["${MAIN_BASE_SETTINGS.CLAN_JOIN_MESSAGE.key}_c$index"]!!.value = it }
+                onValueChange = {
+                    GlobalVars.configStates["${MAIN_BASE_SETTINGS.CLAN_JOIN_MESSAGE.key}_c$index"]!!.value =
+                        it
+                }
             )
         }
         FlowRow {
@@ -616,12 +635,18 @@ fun MainBaseConfig(index: Int) {
             InputRow(
                 label = MAIN_BASE_SETTINGS.CLAN_NAME.displayName,
                 value = GlobalVars.configStates["${MAIN_BASE_SETTINGS.CLAN_NAME.key}_c$index"]!!.value,
-                onValueChange = { GlobalVars.configStates["${MAIN_BASE_SETTINGS.CLAN_NAME.key}_c$index"]!!.value = it }
+                onValueChange = {
+                    GlobalVars.configStates["${MAIN_BASE_SETTINGS.CLAN_NAME.key}_c$index"]!!.value =
+                        it
+                }
             )
             InputRow(
                 label = MAIN_BASE_SETTINGS.CONSECUTIVE_COUNT.displayName,
                 value = GlobalVars.configStates["${MAIN_BASE_SETTINGS.CONSECUTIVE_COUNT.key}_c$index"]!!.value,
-                onValueChange = { GlobalVars.configStates["${MAIN_BASE_SETTINGS.CONSECUTIVE_COUNT.key}_c$index"]!!.value = it }
+                onValueChange = {
+                    GlobalVars.configStates["${MAIN_BASE_SETTINGS.CONSECUTIVE_COUNT.key}_c$index"]!!.value =
+                        it
+                }
             )
         }
     }

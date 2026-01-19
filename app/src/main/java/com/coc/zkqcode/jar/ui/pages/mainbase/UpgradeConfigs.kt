@@ -52,6 +52,10 @@ fun UpgradeConfigs(index: Int) {
     }
 
     if (isExpanded.value) {
+        CustomButton(
+            onClick = { },
+            text = "点击调整主世界升级优先度"
+        )
         FlowRow {
             items.forEach { item ->
                 CustomCheckBox(
