@@ -108,6 +108,36 @@ fun NightBaseConfig(index: Int) {
             if (GlobalVars.configStates["builder_base_research_c${index}"]!!.value == "1") {
                 NightBaseResearchConfigs(index = index)
             }
+            FlowRow {
+                CustomCheckBox(
+                    checkedState = GlobalVars.configStates["night_build_setting_c${index}"]!!.value,
+                    onCheckStateChange = {
+                        GlobalVars.configStates["night_build_setting_c${index}"]!!.value = if (it) "1" else "0"
+                    },
+                    text = Schema.NIGHT_BASE_SETTINGS.NIGHT_BUILD_SETTING.displayName,
+                )
+                CustomCheckBox(
+                    checkedState = GlobalVars.configStates["night_wall_upgrade_settings_c${index}"]!!.value,
+                    onCheckStateChange = {
+                        GlobalVars.configStates["night_wall_upgrade_settings_c${index}"]!!.value = if (it) "1" else "0"
+                    },
+                    text = Schema.NIGHT_BASE_SETTINGS.NIGHT_WALL_UPGRADE_SETTINGS.displayName,
+                )
+                CustomCheckBox(
+                    checkedState = GlobalVars.configStates["night_remove_obstacles_c${index}"]!!.value,
+                    onCheckStateChange = {
+                        GlobalVars.configStates["night_remove_obstacles_c${index}"]!!.value = if (it) "1" else "0"
+                    },
+                    text = Schema.NIGHT_BASE_SETTINGS.NIGHT_REMOVE_OBSTACLES.displayName,
+                )
+                CustomCheckBox(
+                    checkedState = GlobalVars.configStates["night_save_worker_c${index}"]!!.value,
+                    onCheckStateChange = {
+                        GlobalVars.configStates["night_save_worker_c${index}"]!!.value = if (it) "1" else "0"
+                    },
+                    text = Schema.NIGHT_BASE_SETTINGS.NIGHT_SAVE_WORKER.displayName,
+                )
+            }
         }
     }
 }

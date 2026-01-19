@@ -35,6 +35,7 @@ import com.coc.zkqcode.utils.components.CustomButton
 import com.coc.zkqcode.utils.components.GlobalVars
 import com.coc.zkqcode.utils.state.AppMode
 import com.coc.zkqcode.utils.state.AppStateManager
+import com.coc.zkqcode.utils.database.Schema.ACCOUNT_SETTINGS
 import com.topjohnwu.superuser.Shell
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -168,14 +169,14 @@ fun SwitchAccount(onClose: () -> Unit) {
                             val accNum = accountNumber.ifEmpty { "1" }
                             ShowMessage("正在切换账号$accNum")
                             // 1. Get Game Version
-                            val versionKey = "game_version$accNum"
+                            val versionKey = "${ACCOUNT_SETTINGS.GAME_VERSION.key}$accNum"
                             val versionStr = GlobalVars.configStates[versionKey]!!.value
                             val version = versionStr.toIntOrNull() ?: 0
                             val sdPath = Environment.getExternalStorageDirectory().path
 
                             if (version == 0) {
                                 // CN Version
-                                val pathKey = "cn_path$accNum"
+                                val pathKey = "${ACCOUNT_SETTINGS.CN_PATH.key}$accNum"
                                 val savePathName = GlobalVars.configStates[pathKey]!!.value
                                 if (savePathName.isEmpty()) {
                                     return@launch
@@ -203,7 +204,7 @@ fun SwitchAccount(onClose: () -> Unit) {
                                 }
                             } else {
                                 // Global Version
-                                val pathKey = "global_path$accNum"
+                                val pathKey = "${ACCOUNT_SETTINGS.GLOBAL_PATH.key}$accNum"
                                 val savePathName = GlobalVars.configStates[pathKey]!!.value
                                 if (savePathName.isEmpty()) {
                                     return@launch
