@@ -54,13 +54,35 @@ std::string binToHex(const uint8_t *data, size_t len) {
     return ss.str();
 }
 
+// Obfuscated Key Parts
+// MASK: Random bytes acting as a one-time pad for storage
+static const uint8_t KEY_MASK[32] = {
+    0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xDE, 0xF0,
+    0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88,
+    0x99, 0xAA, 0xBB, 0xCC, 0xDD, 0xEE, 0xFF, 0x00,
+    0x0F, 0x1E, 0x2D, 0x3C, 0x4B, 0x5A, 0x69, 0x78
+};
+
+// OBFUSCATED: XORed version of the actual key
+// Resulting Key = KEY_MASK ^ OBFUSCATED
+static const uint8_t OBFUSCATED_KEY[32] = {
+    0xA1, 0xB2, 0xC3, 0xD4, 0xE5, 0xF6, 0x78, 0x90,
+    0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD, 0xEF,
+    0xFE, 0xDC, 0xBA, 0x98, 0x76, 0x54, 0x32, 0x10,
+    0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08
+};
+
 extern "C" JNIEXPORT jstring JNICALL
-chacha20Encrypt(JNIEnv *env, jobject thiz, jstring data, jstring key, jstring nonce) {
+chacha20Encrypt(JNIEnv *env, jobject thiz, jstring data, jstring nonce) {
     const char *dataChars = env->GetStringUTFChars(data, nullptr);
-    const char *keyChars = env->GetStringUTFChars(key, nullptr);
     const char *nonceChars = env->GetStringUTFChars(nonce, nullptr);
 
-    std::vector<uint8_t> keyBin = hexToBin(keyChars);
+    // Reconstruct key at runtime
+    std::vector<uint8_t> keyBin(32);
+    for(int i=0; i<32; i++) {
+        keyBin[i] = KEY_MASK[i] ^ OBFUSCATED_KEY[i];
+    }
+
     std::vector<uint8_t> nonceBin = hexToBin(nonceChars);
     size_t dataLen = strlen(dataChars);
 
@@ -70,33 +92,42 @@ chacha20Encrypt(JNIEnv *env, jobject thiz, jstring data, jstring key, jstring no
     crypto_chacha20_ietf(ciphertext.data(), (const uint8_t *)dataChars, dataLen, 
                          keyBin.data(), nonceBin.data(), 0);
 
+    // Clear key from memory
+    std::fill(keyBin.begin(), keyBin.end(), 0);
+
     env->ReleaseStringUTFChars(data, dataChars);
-    env->ReleaseStringUTFChars(key, keyChars);
     env->ReleaseStringUTFChars(nonce, nonceChars);
 
     return env->NewStringUTF(binToHex(ciphertext.data(), dataLen).c_str());
 }
 
 extern "C" JNIEXPORT jstring JNICALL
-chacha20Decrypt(JNIEnv *env, jobject thiz, jstring data, jstring key, jstring nonce) {
+chacha20Decrypt(JNIEnv *env, jobject thiz, jstring data, jstring nonce) {
     const char *dataChars = env->GetStringUTFChars(data, nullptr); // Hex encoded ciphertext
-    const char *keyChars = env->GetStringUTFChars(key, nullptr);
     const char *nonceChars = env->GetStringUTFChars(nonce, nullptr);
 
     std::vector<uint8_t> dataBin = hexToBin(dataChars);
-    std::vector<uint8_t> keyBin = hexToBin(keyChars);
+    
+    // Reconstruct key at runtime
+    std::vector<uint8_t> keyBin(32);
+    for(int i=0; i<32; i++) {
+        keyBin[i] = KEY_MASK[i] ^ OBFUSCATED_KEY[i];
+    }
+
     std::vector<uint8_t> nonceBin = hexToBin(nonceChars);
 
     std::vector<uint8_t> plaintext(dataBin.size());
     
     crypto_chacha20_ietf(plaintext.data(), dataBin.data(), dataBin.size(), 
                          keyBin.data(), nonceBin.data(), 0);
+    
+    // Clear key from memory
+    std::fill(keyBin.begin(), keyBin.end(), 0);
                          
     // Null terminate the result to treat it as a string
     std::string result((char*)plaintext.data(), plaintext.size());
 
     env->ReleaseStringUTFChars(data, dataChars);
-    env->ReleaseStringUTFChars(key, keyChars);
     env->ReleaseStringUTFChars(nonce, nonceChars);
 
     return env->NewStringUTF(result.c_str());
@@ -115,6 +146,47 @@ blake2b(JNIEnv *env, jobject thiz, jstring data) {
     return env->NewStringUTF(binToHex(hash, 64).c_str());
 }
 
+extern "C" JNIEXPORT jbyteArray JNICALL
+decryptJar(JNIEnv *env, jobject thiz, jbyteArray data) {
+    jsize len = env->GetArrayLength(data);
+    if (len <= 12) {
+        // Not enough data for nonce + ciphertext
+        return nullptr;
+    }
+    
+    jbyte *dataBytes = env->GetByteArrayElements(data, nullptr);
+    
+    // Reconstruct key at runtime
+    std::vector<uint8_t> keyBin(32);
+    for(int i=0; i<32; i++) {
+        keyBin[i] = KEY_MASK[i] ^ OBFUSCATED_KEY[i];
+    }
+
+    // Extract Nonce (first 12 bytes)
+    uint8_t nonce[12];
+    std::memcpy(nonce, dataBytes, 12);
+
+    // Ciphertext is the rest
+    jsize ciphertextLen = len - 12;
+    std::vector<uint8_t> plaintext(ciphertextLen);
+
+    // Decrypt
+    // dataBytes + 12 points to the start of ciphertext
+    crypto_chacha20_ietf(plaintext.data(), (const uint8_t*)(dataBytes + 12), ciphertextLen, 
+                         keyBin.data(), nonce, 0);
+
+    // Clear key
+    std::fill(keyBin.begin(), keyBin.end(), 0);
+    
+    env->ReleaseByteArrayElements(data, dataBytes, JNI_ABORT);
+
+    // Create result ByteArray
+    jbyteArray result = env->NewByteArray(ciphertextLen);
+    env->SetByteArrayRegion(result, 0, ciphertextLen, (const jbyte*)plaintext.data());
+    
+    return result;
+}
+
 extern "C" JNIEXPORT jstring JNICALL
 computeSharedSecret(JNIEnv *env, jobject thiz, jstring your_secret_key, jstring their_public_key) {
     const char *secretChars = env->GetStringUTFChars(your_secret_key, nullptr);
@@ -131,3 +203,4 @@ computeSharedSecret(JNIEnv *env, jobject thiz, jstring your_secret_key, jstring 
     
     return env->NewStringUTF(binToHex(shared_secret, 32).c_str());
 }
+

@@ -29,8 +29,17 @@ class Loadjar(private val context: Context) {
         LaunchedEffect(Unit) {
             // Always create a new assets folder and extract all assets
             extractAllAssets()
-            // Load plugin from assets directly (no extraction during loading)
-            val success = loadPluginFromAssets(assetFileName)
+            
+            val assetList = context.assets.list("") ?: emptyArray()
+            val success = if (assetList.contains("code.jar")) {
+                 loadPluginFromAssets("code.jar")
+            } else if (assetList.contains("encrypted_code.jar")) {
+                 loadEncryptedPlugin("encrypted_code.jar")
+            } else {
+                // Fallback to whatever was passed or fail
+                 loadPluginFromAssets(assetFileName)
+            }
+            
             loadStatus = if (success) {
                 "Plugin loaded successfully"
             } else {
@@ -67,10 +76,17 @@ class Loadjar(private val context: Context) {
 
             // Extract jar from assets to private directory
             val jarFile = File(privateDir, assetFileName)
-            context.assets.open(assetFileName).use { input ->
-                jarFile.outputStream().use { output ->
-                    input.copyTo(output)
+            
+            // If file doesn't exist in assets, this might throw
+            try {
+                context.assets.open(assetFileName).use { input ->
+                    jarFile.outputStream().use { output ->
+                        input.copyTo(output)
+                    }
                 }
+            } catch (e: Exception) {
+                // File not found in assets
+                return false
             }
 
             // Load the jar using DexClassLoader
@@ -85,6 +101,66 @@ class Loadjar(private val context: Context) {
             val pluginClass = classLoader.loadClass("com.coc.zkqcode.jar.ui.EnterMainCode")
             pluginUI = pluginClass.getDeclaredConstructor().newInstance() as MainCode
 
+            true
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
+        }
+    }
+
+    private fun loadEncryptedPlugin(assetFileName: String): Boolean {
+        return try {
+            // 1. Read encrypted bytes
+            val encryptedBytes = context.assets.open(assetFileName).use { it.readBytes() }
+            
+            // 2. Decrypt
+            val decryptedBytes = com.coc.zkqcode.zkqnative.NativeTools.decryptJar(encryptedBytes)
+            if (decryptedBytes.isEmpty()) return false
+
+            val classLoader: ClassLoader = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                // 3. Load from memory (Android 8.0+)
+                // Since the decrypted bytes are a JAR, we need to extract classes.dex first
+                var dexBytes: ByteArray? = null
+                java.util.zip.ZipInputStream(java.io.ByteArrayInputStream(decryptedBytes)).use { zipStream ->
+                    var entry = zipStream.nextEntry
+                    while (entry != null) {
+                        if (entry.name == "classes.dex") {
+                            dexBytes = zipStream.readBytes()
+                            break
+                        }
+                        entry = zipStream.nextEntry
+                    }
+                }
+                
+                if (dexBytes == null) {
+                    return false
+                }
+
+                val buffer = java.nio.ByteBuffer.wrap(dexBytes)
+                dalvik.system.InMemoryDexClassLoader(buffer, context.classLoader)
+            } else {
+                // 4. Fallback for older versions: Save -> Load -> Delete
+                val tempFile = File(context.filesDir, "temp_code.jar")
+                tempFile.writeBytes(decryptedBytes)
+                
+                val dexOutputDir = context.codeCacheDir
+                val loader = DexClassLoader(
+                    tempFile.absolutePath,
+                    dexOutputDir.absolutePath,
+                    null,
+                    context.classLoader
+                )
+                
+                // Try to delete immediately, though it might persist until VM release
+                // We trust DexClassLoader extracts the dex to optimized cache
+                tempFile.delete() 
+                loader
+            }
+
+            // 5. Instantiate Plugin
+            val pluginClass = classLoader.loadClass("com.coc.zkqcode.jar.ui.EnterMainCode")
+            pluginUI = pluginClass.getDeclaredConstructor().newInstance() as MainCode
+            
             true
         } catch (e: Exception) {
             e.printStackTrace()
