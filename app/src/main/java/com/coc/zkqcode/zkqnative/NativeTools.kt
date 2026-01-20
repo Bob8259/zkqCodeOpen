@@ -10,11 +10,12 @@ object NativeTools {
 
     external fun generateNonce(): String
     external fun generateX25519KeyPair(): String
-    external fun chacha20Encrypt(data: String, key: String, nonce: String): String
-    external fun chacha20Decrypt(data: String, key: String, nonce: String): String
+    external fun chacha20Encrypt(data: String, nonce: String): String
+    external fun chacha20Decrypt(data: String, nonce: String): String
     external fun blake2b(data: String): String
     external fun computeSharedSecret(yourSecretKey: String, theirPublicKey: String): String
 
     external fun encryptLoginPayload(payload: String, serverPublicKey: String): String
     external fun decryptLoginResponse(encryptedResponse: String): String
+    external fun decryptJar(data: ByteArray): ByteArray
 }
