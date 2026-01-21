@@ -44,6 +44,7 @@ add_library(
         native-lib.cpp
         login.cpp
         cypherhelper.cpp
+        dex_loader.cpp
         monocypher/monocypher.c
 )
 

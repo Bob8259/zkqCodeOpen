@@ -114,7 +114,7 @@ tasks.register<Exec>("deployPatch") {
         val content = mutableListOf<String>()
         content.add("--release")
         content.add("--min-api")
-        content.add("26")
+        content.add("24")
         content.add("--lib")
         content.add(sdkPlatform)
         content.add("--output")

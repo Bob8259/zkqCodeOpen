@@ -18,4 +18,12 @@ object NativeTools {
     external fun encryptLoginPayload(payload: String, serverPublicKey: String): String
     external fun decryptLoginResponse(encryptedResponse: String): String
     external fun decryptJar(data: ByteArray): ByteArray
+
+    /**
+     * Creates an in-memory file descriptor and writes the provided data to it.
+     * Uses memfd_create on newer kernels, falls back to ashmem on older ones.
+     * @param data The byte array to write to memory
+     * @return File descriptor (>= 0) on success, -1 on failure
+     */
+    external fun createInMemoryDex(data: ByteArray): Int
 }

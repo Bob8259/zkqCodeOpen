@@ -84,7 +84,7 @@ class Loadjar(private val context: Context) {
                         input.copyTo(output)
                     }
                 }
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 // File not found in assets
                 return false
             }
@@ -139,22 +139,29 @@ class Loadjar(private val context: Context) {
                 val buffer = java.nio.ByteBuffer.wrap(dexBytes)
                 dalvik.system.InMemoryDexClassLoader(buffer, context.classLoader)
             } else {
-                // 4. Fallback for older versions: Save -> Load -> Delete
-                val tempFile = File(context.filesDir, "temp_code.jar")
-                tempFile.writeBytes(decryptedBytes)
+                // 4. Fallback for older versions: Use in-memory file descriptor (memfd/ashmem)
+                android.util.Log.d("zkq_debug", "loadEncryptedPlugin: Using memfd fallback for API ${android.os.Build.VERSION.SDK_INT}")
                 
+                val fd = com.coc.zkqcode.zkqnative.NativeTools.createInMemoryDex(decryptedBytes)
+
+                if (fd < 0) {
+                    android.util.Log.e("zkq_debug", "loadEncryptedPlugin: Failed to create in-memory dex, fd=$fd")
+                    return false
+                }
+                android.util.Log.d("zkq_debug", "loadEncryptedPlugin: Created in-memory dex, fd=$fd")
+
+                // Use procfs path to the file descriptor
+                val dexPath = "/proc/self/fd/$fd"
                 val dexOutputDir = context.codeCacheDir
-                val loader = DexClassLoader(
-                    tempFile.absolutePath,
+                
+                android.util.Log.d("zkq_debug", "loadEncryptedPlugin: Loading from $dexPath")
+                
+                DexClassLoader(
+                    dexPath,
                     dexOutputDir.absolutePath,
                     null,
                     context.classLoader
                 )
-                
-                // Try to delete immediately, though it might persist until VM release
-                // We trust DexClassLoader extracts the dex to optimized cache
-                tempFile.delete() 
-                loader
             }
 
             // 5. Instantiate Plugin

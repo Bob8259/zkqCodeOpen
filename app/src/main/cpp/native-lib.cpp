@@ -1,12 +1,16 @@
 #include <jni.h>
+#include <android/log.h>
+#include "dex_loader.h"
 
+// Logging macros
+#define LOG_TAG "zkq_debug"
+#define LOGD(...) __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, __VA_ARGS__)
+#define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
 
 // Implementation of the function (not exported directly)
 jint getNativeTwo(JNIEnv *env, jobject thiz) {
     return 4;
 }
-
-
 
 extern "C" JNIEXPORT jstring JNICALL
 generateNonce(JNIEnv *env, jobject thiz);
@@ -37,17 +41,17 @@ decryptJar(JNIEnv *env, jobject thiz, jbyteArray data);
 
 // Array of native methods to register
 static const JNINativeMethod gMethods[] = {
-        {"getNativeTwo",           "()I",                                     (void *) getNativeTwo},
-
-        {"generateNonce",          "()Ljava/lang/String;",                    (void *) generateNonce},
-        {"generateX25519KeyPair",  "()Ljava/lang/String;",                    (void *) generateX25519KeyPair},
-        {"chacha20Encrypt",        "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;", (void *) chacha20Encrypt},
-        {"chacha20Decrypt",        "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;", (void *) chacha20Decrypt},
-        {"blake2b",                "(Ljava/lang/String;)Ljava/lang/String;",  (void *) blake2b},
-        {"computeSharedSecret",    "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;", (void *) computeSharedSecret},
-        {"encryptLoginPayload",    "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;", (void *) encryptLoginPayload},
-        {"decryptLoginResponse",   "(Ljava/lang/String;)Ljava/lang/String;",                  (void *) decryptLoginResponse},
-        {"decryptJar",             "([B)[B",                                                  (void *) decryptJar},
+        {"getNativeTwo",          "()I",                                                      (void *) getNativeTwo},
+        {"generateNonce",         "()Ljava/lang/String;",                                     (void *) generateNonce},
+        {"generateX25519KeyPair", "()Ljava/lang/String;",                                     (void *) generateX25519KeyPair},
+        {"chacha20Encrypt",       "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;", (void *) chacha20Encrypt},
+        {"chacha20Decrypt",       "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;", (void *) chacha20Decrypt},
+        {"blake2b",               "(Ljava/lang/String;)Ljava/lang/String;",                   (void *) blake2b},
+        {"computeSharedSecret",   "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;", (void *) computeSharedSecret},
+        {"encryptLoginPayload",   "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;", (void *) encryptLoginPayload},
+        {"decryptLoginResponse",  "(Ljava/lang/String;)Ljava/lang/String;",                   (void *) decryptLoginResponse},
+        {"decryptJar",            "([B)[B",                                                   (void *) decryptJar},
+        {"createInMemoryDex",     "([B)I",                                                    (void *) createInMemoryDex},
 };
 
 // JNI_OnLoad is called when the library is loaded
