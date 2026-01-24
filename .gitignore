@@ -21,3 +21,4 @@ local.properties
 /release/
 *code.jar
 *app/release
+keys.cpp

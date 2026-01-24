@@ -102,7 +102,7 @@ fun LoginScreen() {
     }
     fun login(email: String, password: String) {
         isLoginButtonEnabled = false
-        val baseURL = "https://e2f6b66416c4.ngrok-free.app/"
+        val baseURL = "https://replit.aitutor.ink/"
 
         scope.launch {
             if (!email.contains("@")) {
