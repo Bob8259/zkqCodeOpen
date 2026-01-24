@@ -1,5 +1,6 @@
 package com.coc.zkqcode.jar.code
 
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Color
 import kotlinx.coroutines.CoroutineScope
@@ -16,76 +17,32 @@ class ScreenShot {
     private var dos: DataOutputStream? = null
     private var dis: InputStream? = null
 
-    suspend fun testcode() {
-        while (true) {
-            println("start test code")
-            delay(5000)
-        }
-        startColorDetectionLoop()
-    }
-
-    fun startColorDetectionLoop() {
-        CoroutineScope(Dispatchers.IO).launch {
-
-            while (true) {
-                // Record total start time
-                val startTime = System.currentTimeMillis()
-
-                val color = getPixelColorFromPng(1, 1)
-
-                val endTime = System.currentTimeMillis()
-                val duration = endTime - startTime
-
-                if (color != null) {
-
-                } else {
-
-                }
-
-                // Keep 1s delay for log observation; can be changed to delay(10) for speed
-                delay(1000)
-            }
-        }
-    }
-
-    private fun getPixelColorFromPng(x: Int, y: Int): IntArray? {
+    fun takeScreenshot(): Bitmap? {
         try {
             if (suProcess == null) {
                 suProcess = Runtime.getRuntime().exec("su")
                 dos = DataOutputStream(suProcess!!.outputStream)
                 dis = suProcess!!.inputStream
-
             }
 
             // Send screenshot command
-            dos?.writeBytes("screencap -p")
+            dos?.writeBytes("screencap -p\n")
             dos?.flush()
 
             // Critical: decodeStream will block until the entire image stream is read
+            // However, screencap -p sends the PNG data. 
+            // BitmapFactory.decodeStream handles this.
             val bitmap = BitmapFactory.decodeStream(dis)
 
-            if (bitmap != null) {
-                if (x < bitmap.width && y < bitmap.height) {
-                    val pixel = bitmap[x, y]
-
-                    val result = intArrayOf(
-                        Color.red(pixel),
-                        Color.green(pixel),
-                        Color.blue(pixel),
-                        Color.alpha(pixel)
-                    )
-
-                    bitmap.recycle() // Must recycle
-                    return result
-                }
-                bitmap.recycle()
-            } else {
+            if (bitmap == null) {
                 // If decoding returns null, it means the stream data is incomplete or interfered with
+                Log.e("ScreenShot", "Bitmap decoding failed")
                 suProcess?.destroy()
                 suProcess = null
             }
+            return bitmap
         } catch (e: Exception) {
-
+            Log.e("ScreenShot", "Error taking screenshot: ${e.message}")
             suProcess?.destroy()
             suProcess = null
         }

@@ -8,7 +8,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.coc.zkqcode.interfaces.MainCode
-import com.coc.zkqcode.jar.code.ScreenShot
+import com.coc.zkqcode.jar.code.MainScript
 import com.coc.zkqcode.jar.ui.pages.mainbase.MainBaseUpgradePriority
 import com.coc.zkqcode.jar.ui.pages.nightbase.NightBaseUpgradePriority
 import com.coc.zkqcode.jar.ui.pages.single.HomeScreen
@@ -61,6 +61,6 @@ class EnterMainCode : MainCode {
     }
 
     override suspend fun runBot() {
-        ScreenShot().testcode()
+        MainScript().runScript()
     }
 }

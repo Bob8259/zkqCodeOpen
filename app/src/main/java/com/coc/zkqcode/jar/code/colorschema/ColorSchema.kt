@@ -1,4 +1,4 @@
-package com.coc.zkqcode.jar.code.findcolors
+package com.coc.zkqcode.jar.code.colorschema
 
 import android.graphics.Color
 
