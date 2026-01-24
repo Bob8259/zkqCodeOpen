@@ -46,6 +46,7 @@ add_library(
         cypherhelper.cpp
         keys.cpp
         dex_loader.cpp
+        multi_colors.cpp
         monocypher/monocypher.c
 )
 
@@ -61,6 +62,7 @@ target_include_directories(native-lib PRIVATE
 target_link_libraries(
         native-lib
         ${log-lib}
+        jnigraphics
 )
 
 # ==============================================================================
