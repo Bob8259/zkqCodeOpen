@@ -1,0 +1,37 @@
+#ifndef KEYS_H
+#define KEYS_H
+
+#include <stdint.h>
+
+// Obfuscated Key Parts
+// MASK: Random bytes acting as a one-time pad for storage
+extern const uint8_t KEY_MASK[32];
+
+// OBFUSCATED: XORed version of the actual key
+// Resulting Key = KEY_MASK ^ OBFUSCATED
+extern const uint8_t OBFUSCATED_KEY[32];
+
+#endif // KEYS_H
+
+// You need to create a keys.cpp file, where you only need to add a mask and an obfuscated key like this
+// These are just an example, not the real key. But these examples can be used.
+
+// #include "keys.h"
+
+// // Obfuscated Key Parts
+// // MASK: Random bytes acting as a one-time pad for storage
+// const uint8_t KEY_MASK[32] = {
+//     0x7D, 0xAC, 0x4F, 0x22, 0x8E, 0x91, 0x3C, 0xF5,
+//     0x6B, 0x14, 0xA0, 0xD3, 0x5F, 0xE7, 0x29, 0x88,
+//     0x12, 0x34, 0xBC, 0xDE, 0x01, 0x67, 0x89, 0x54,
+//     0xAB, 0x43, 0x21, 0xEF, 0xCD, 0x76, 0x98, 0xBA
+// };
+
+// // OBFUSCATED: XORed version of the actual key
+// // Resulting Key = KEY_MASK ^ OBFUSCATED_KEY
+// const uint8_t OBFUSCATED_KEY[32] = {
+//     0x1B, 0x64, 0x92, 0xEF, 0x50, 0x2A, 0xD7, 0x83,
+//     0xC9, 0x3E, 0x51, 0x0B, 0xA4, 0x72, 0xFD, 0x16,
+//     0x8F, 0xEA, 0x3D, 0x2B, 0x9C, 0x45, 0x70, 0x61,
+//     0x55, 0x12, 0x87, 0xAA, 0x33, 0xDF, 0xBC, 0x09
+// };
