@@ -51,6 +51,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupPositionProvider
 import androidx.compose.ui.window.PopupProperties
+import com.coc.zkqcode.interfaces.MainCode
 import com.coc.zkqcode.utils.fileactions.FileActions
 import com.coc.zkqcode.utils.theme.AppColors
 import kotlinx.coroutines.delay
@@ -58,6 +59,7 @@ import kotlinx.coroutines.delay
 
 object GlobalVars {
     var fileActions by mutableStateOf<FileActions?>(null)
+    var pluginUI: MainCode? = null
 
     // Auto-run features
     var isAutoRunEnabled by mutableStateOf(true)

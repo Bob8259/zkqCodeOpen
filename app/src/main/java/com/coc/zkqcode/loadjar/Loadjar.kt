@@ -13,6 +13,7 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import com.coc.zkqcode.interfaces.MainCode
+import com.coc.zkqcode.utils.components.GlobalVars
 import com.coc.zkqcode.utils.state.AppMode
 import com.coc.zkqcode.utils.state.AppStateManager
 import dalvik.system.DexClassLoader
@@ -106,7 +107,9 @@ class Loadjar(private val context: Context) {
 
             // Load the plugin implementation class
             val pluginClass = classLoader.loadClass("com.coc.zkqcode.jar.ui.EnterMainCode")
-            pluginUI = pluginClass.getDeclaredConstructor().newInstance() as MainCode
+            val instance = pluginClass.getDeclaredConstructor().newInstance() as MainCode
+            pluginUI = instance
+            GlobalVars.pluginUI = instance
 
             true
         } catch (e: Exception) {
@@ -173,7 +176,9 @@ class Loadjar(private val context: Context) {
 
             // 5. Instantiate Plugin
             val pluginClass = classLoader.loadClass("com.coc.zkqcode.jar.ui.EnterMainCode")
-            pluginUI = pluginClass.getDeclaredConstructor().newInstance() as MainCode
+            val instance = pluginClass.getDeclaredConstructor().newInstance() as MainCode
+            pluginUI = instance
+            GlobalVars.pluginUI = instance
             
             true
         } catch (e: Exception) {

@@ -1,7 +1,6 @@
 package com.coc.zkqcode.utils.checkpermissions
 
 import android.content.Context
-import android.util.Log
 import com.topjohnwu.superuser.Shell
 import kotlinx.coroutines.delay
 import java.io.File
@@ -21,8 +20,9 @@ object DaemonManager {
             "    sleep 10",
             "done"
         )
+
         try {
-            // 1. 创建脚本目录
+            // 1. Create the script directory if it doesn't exist
             val scriptFile = File(scriptPath)
             val scriptDir = scriptFile.parentFile
             if (scriptDir != null && !scriptDir.exists()) {
@@ -30,38 +30,36 @@ object DaemonManager {
                 Shell.cmd("chmod 777 ${scriptDir.absolutePath}").exec()
             }
 
-            // 2. 清空并写入脚本内容
+            // 2. Clear existing content and write the script lines
             Shell.cmd("echo \"\" > $scriptPath").exec()
             for (line in scriptContent) {
-                // 使用单引号包裹内容，防止 shell 解析特殊字符
+                // Wrap content in single quotes to prevent shell parsing of special characters
                 Shell.cmd("echo '${line}' >> $scriptPath").exec()
             }
 
-            // 3. 赋予执行权限
+            // 3. Grant execution permissions
             Shell.cmd("chmod 755 $scriptPath").exec()
 
-            // 4. 检查进程是否已在运行 (通过两次采样确认)
-            val firstPids = Shell.cmd("ps -ef | grep '$scriptPath' | grep -v grep")
+            // 4. Identify and kill existing daemon processes
+            // We search for the script path in the process list, excluding the 'grep' command itself
+            val existingPids = Shell.cmd("ps -ef | grep '$scriptPath' | grep -v grep")
                 .exec().out.mapNotNull { line ->
-                    line.split("\\s+".toRegex()).getOrNull(1)
-                }.toMutableList()
+                    // Extract the PID (usually the second column in ps -ef)
+                    line.trim().split("\\s+".toRegex()).getOrNull(1)
+                }
 
-            delay(500) // 采样间隔
-
-            val secondPids = Shell.cmd("ps -ef | grep '$scriptPath' | grep -v grep")
-                .exec().out.mapNotNull { line ->
-                    line.split("\\s+".toRegex()).getOrNull(1)
-                }.toMutableList()
-
-            // 如果两次有重复的PID说明进程持续存在
-            if (firstPids.intersect(secondPids.toSet()).isNotEmpty()) {
-                Log.d("DaemonManager", "守护进程已在运行")
-                return
+            if (existingPids.isNotEmpty()) {
+                for (pid in existingPids) {
+                    Shell.cmd("kill -9 $pid").exec()
+                }
+                // Small delay to ensure the system releases the process resources
+                delay(300)
             }
 
-            // 5. 启动守护进程
+            // 5. Start the daemon process in the background
             val cmdStart = "nohup sh $scriptPath > /dev/null 2>&1 &"
             Shell.cmd(cmdStart).exec()
+
         } catch (e: Exception) {
             e.printStackTrace()
         }

@@ -8,6 +8,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.io.DataOutputStream
 import java.io.InputStream
+import android.util.Log
 import androidx.core.graphics.get
 
 class ScreenShot {
@@ -15,8 +16,11 @@ class ScreenShot {
     private var dos: DataOutputStream? = null
     private var dis: InputStream? = null
 
-    fun testcode() {
-        println("start test code")
+    suspend fun testcode() {
+        while (true) {
+            println("start test code")
+            delay(5000)
+        }
         startColorDetectionLoop()
     }
 

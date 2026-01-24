@@ -5,6 +5,7 @@ import android.content.Intent
 import android.graphics.PixelFormat
 import android.os.Build
 import android.os.IBinder
+import android.util.Log
 import android.view.Gravity
 import android.view.WindowManager
 import androidx.compose.foundation.layout.Box
@@ -32,15 +33,23 @@ import androidx.savedstate.SavedStateRegistry
 import androidx.savedstate.SavedStateRegistryController
 import androidx.savedstate.SavedStateRegistryOwner
 import androidx.savedstate.setViewTreeSavedStateRegistryOwner
+import com.coc.zkqcode.jar.ui.pages.single.LoginScreen
 import com.coc.zkqcode.utils.components.GlobalVars
 import com.coc.zkqcode.utils.state.AppMode
 import com.coc.zkqcode.utils.state.AppStateManager
+import com.topjohnwu.superuser.Shell
 import kotlin.math.roundToInt
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.time.delay
+import java.io.File
 
 class ControlWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner {
 
     private lateinit var windowManager: WindowManager
     private var controlComposeView: ComposeView? = null
+    private val serviceScope = CoroutineScope(Dispatchers.Main + Job())
+    private var botJob: Job? = null
 
     private val lifecycleRegistry = LifecycleRegistry(this)
     override val lifecycle: Lifecycle = lifecycleRegistry
@@ -55,14 +64,44 @@ class ControlWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner 
         super.onCreate()
         val notification = NotificationHelper.createNotification(this)
         startForeground(1000, notification)
-
         lifecycleRegistry.currentState = Lifecycle.State.CREATED
+        println("create")
         windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
         showControlWindow()
+        startBotLogic()
+        serviceScope.launch(Dispatchers.IO) {
+            while (true) {
+                val configCount = GlobalVars.configStates["config_count"]?.value
+                if (configCount == null) {
+                    Shell.cmd("am start -n com.coc.zkqcode/.MainActivity >>/dev/null 2>&1").exec()
+                    GlobalVars.autoRunTimer = 5
+                }
+                delay(1000)
+            }
+        }
+    }
+
+    private fun startBotLogic() {
+        serviceScope.launch {
+            androidx.compose.runtime.snapshotFlow { AppStateManager.currentMode }
+                .collect { mode ->
+                    if (mode == AppMode.Run) {
+                        if (botJob == null || !botJob!!.isActive) {
+                            botJob = serviceScope.launch(Dispatchers.IO) {
+                                GlobalVars.pluginUI?.runBot()
+                            }
+                        }
+                    } else {
+                        botJob?.cancel()
+                        botJob = null
+                    }
+                }
+        }
     }
 
     @Suppress("AssignedValueIsNeverRead")
     private fun showControlWindow() {
+
         val windowType = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
         } else {
@@ -219,6 +258,7 @@ class ControlWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner 
 
     override fun onDestroy() {
         super.onDestroy()
+        serviceScope.cancel()
         lifecycleRegistry.currentState = Lifecycle.State.DESTROYED
         if (controlComposeView != null) {
             windowManager.removeView(controlComposeView)

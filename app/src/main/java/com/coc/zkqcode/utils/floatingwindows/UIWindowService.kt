@@ -32,6 +32,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Density
+import com.coc.zkqcode.utils.components.GlobalVars
+import com.topjohnwu.superuser.Shell
 
 class UIWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner, ViewModelStoreOwner,
     OnBackPressedDispatcherOwner {
@@ -72,15 +74,25 @@ class UIWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner, View
 
     override fun onCreate() {
         super.onCreate()
-        
+
         val notification = NotificationHelper.createNotification(this)
         startForeground(NOTIFICATION_ID, notification)
 
         lifecycleRegistry.currentState = Lifecycle.State.CREATED
         windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
-
         startJarLoading()
         showFloatingWindow()
+        serviceScope.launch(Dispatchers.IO) {
+            while (true) {
+                val configCount = GlobalVars.configStates["config_count"]?.value
+                if (configCount == null) {
+                    Shell.cmd("am start -n com.coc.zkqcode/.MainActivity >>/dev/null 2>&1").exec()
+                    GlobalVars.autoRunTimer = 5
+                }
+                delay(1000)
+            }
+        }
+
     }
 
     private fun startJarLoading() {
@@ -140,6 +152,7 @@ class UIWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner, View
             AppMode.SwitchAccount, AppMode.Main -> {
                 updateWindowSizeForCurrentMode()
             }
+
             else -> {
                 closeMainUI()
                 startService(Intent(this, ControlWindowService::class.java))
@@ -161,13 +174,13 @@ class UIWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner, View
         val displayMetrics = resources.displayMetrics
         val screenWidth = displayMetrics.widthPixels
         val screenHeight = displayMetrics.heightPixels
-        
+
         val height = when (AppStateManager.currentMode) {
             AppMode.SwitchAccount -> WindowManager.LayoutParams.WRAP_CONTENT
             AppMode.Main -> (screenHeight * HEIGHT_RATIO_MAIN).toInt()
             else -> (screenHeight * HEIGHT_RATIO_DEFAULT).toInt()
         }
-        
+
         return Pair(screenWidth, height)
     }
 
