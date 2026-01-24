@@ -20,7 +20,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -34,10 +35,10 @@ import com.coc.zkqcode.utils.components.GlobalVars
 import com.coc.zkqcode.utils.components.InputRow
 import com.coc.zkqcode.utils.database.ConfigManager
 import com.coc.zkqcode.utils.database.Schema.GLOBAL_SETTINGS
-import androidx.compose.runtime.saveable.rememberSaveable
 import com.coc.zkqcode.utils.state.AppMode
 import com.coc.zkqcode.utils.state.AppStateManager
 import com.coc.zkqcode.utils.theme.AppColors
+import kotlinx.coroutines.launch
 
 @Composable
 fun HomeScreen(
@@ -53,7 +54,23 @@ fun HomeScreen(
         ConfigManager.initializeAllConfigs(actions)
     }
 
-    val configCountStr = GlobalVars.configStates[GLOBAL_SETTINGS.CONFIG_COUNT.key]!!.value
+    // Safety check for configuration state
+    val configCountState = GlobalVars.configStates[GLOBAL_SETTINGS.CONFIG_COUNT.key]
+    if (configCountState == null) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.White)
+                .padding(16.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(text = "正在初始化配置...", color = Color.Gray)
+        }
+        return
+    }
+    val configCountStr = configCountState.value
+
 
 
     var selectedTabIndex by rememberSaveable { mutableIntStateOf(0) }
@@ -66,7 +83,6 @@ fun HomeScreen(
         ConfigManager.saveAndRun {
             onSaveSuccess()
         }
-        ScreenShot().testcode()
     }
 
     val cleanMemory = {

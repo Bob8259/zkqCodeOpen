@@ -1,19 +1,20 @@
+@file:Suppress("unused")
+
 package com.coc.zkqcode.jar.ui
 
 import android.content.Context
 import androidx.compose.runtime.Composable
-import com.coc.zkqcode.interfaces.MainCode
-import com.coc.zkqcode.jar.ui.pages.single.HomeScreen
-import com.coc.zkqcode.jar.ui.pages.single.SwitchAccount
-import com.coc.zkqcode.utils.components.GlobalVars
-import com.coc.zkqcode.utils.state.AppMode
-import com.coc.zkqcode.utils.state.AppStateManager
-
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.coc.zkqcode.interfaces.MainCode
+import com.coc.zkqcode.jar.code.ScreenShot
 import com.coc.zkqcode.jar.ui.pages.mainbase.MainBaseUpgradePriority
 import com.coc.zkqcode.jar.ui.pages.nightbase.NightBaseUpgradePriority
+import com.coc.zkqcode.jar.ui.pages.single.HomeScreen
+import com.coc.zkqcode.jar.ui.pages.single.SwitchAccount
+import com.coc.zkqcode.utils.state.AppMode
+import com.coc.zkqcode.utils.state.AppStateManager
 
 class EnterMainCode : MainCode {
     @Composable
@@ -57,5 +58,9 @@ class EnterMainCode : MainCode {
                 }
             }
         }
+    }
+
+    override suspend fun runBot() {
+        ScreenShot().testcode()
     }
 }
