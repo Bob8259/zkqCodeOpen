@@ -2,15 +2,9 @@ package com.coc.zkqcode.jar.code
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.Color
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import android.util.Log
 import java.io.DataOutputStream
 import java.io.InputStream
-import android.util.Log
-import androidx.core.graphics.get
 
 class ScreenShot {
     private var suProcess: Process? = null
@@ -49,8 +43,4 @@ class ScreenShot {
         return null
     }
 
-    fun destroy() {
-        suProcess?.destroy()
-        suProcess = null
-    }
 }

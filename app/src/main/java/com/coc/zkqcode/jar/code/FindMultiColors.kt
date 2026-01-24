@@ -7,6 +7,7 @@ import android.util.Log
 import com.coc.zkqcode.jar.code.colorschema.ColorSchema
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import kotlinx.coroutines.*
+import kotlin.math.abs
 
 class FindMultiColors {
     private val screenShot = ScreenShot()
@@ -75,9 +76,9 @@ class FindMultiColors {
         val g2 = Color.green(c2)
         val b2 = Color.blue(c2)
         
-        return Math.abs(r1 - r2) <= threshold &&
-               Math.abs(g1 - g2) <= threshold &&
-               Math.abs(b1 - b2) <= threshold
+        return abs(r1 - r2) <= threshold &&
+               abs(g1 - g2) <= threshold &&
+               abs(b1 - b2) <= threshold
     }
 
     /**
@@ -103,7 +104,7 @@ class FindMultiColors {
                 }
                 
                 val executionTime = System.currentTimeMillis() - startTime
-                val remainingDelay = Math.max(0L, 5000L - executionTime)
+                val remainingDelay = 0L.coerceAtLeast(5000L - executionTime)
                 delay(remainingDelay)
             }
         }
