@@ -149,101 +149,105 @@ fun SwitchAccount(onClose: () -> Unit) {
 
 
             }
-            FlowRow {
-                CustomButton(text = "▼", onClick = {
-                    val current = accountNumber.toIntOrNull() ?: 1
-                    if (current > 1) {
-                        accountNumber = (current - 1).toString()
-                    }
-                })
-                CustomButton(text = "▲", onClick = {
-                    val current = accountNumber.toIntOrNull() ?: 0
-                    accountNumber = (current + 1).toString()
-                })
+            FlowRow (horizontalArrangement = Arrangement.Center) {
+                Row {
+                    CustomButton(text = "▼", onClick = {
+                        val current = accountNumber.toIntOrNull() ?: 1
+                        if (current > 1) {
+                            accountNumber = (current - 1).toString()
+                        }
+                    })
+                    CustomButton(text = "▲", onClick = {
+                        val current = accountNumber.toIntOrNull() ?: 0
+                        accountNumber = (current + 1).toString()
+                    })
+                }
+                Row {
+                    // Confirm Button aligned to start
+                    CustomButton(
+                        text = "确认切号",
+                        onClick = {
+                            scope.launch(Dispatchers.IO) {
+                                val accNum = accountNumber.ifEmpty { "1" }
+                                ShowMessage("正在切换账号$accNum")
+                                // 1. Get Game Version
+                                val versionKey = "${ACCOUNT_SETTINGS.GAME_VERSION.key}$accNum"
+                                val versionStr = GlobalVars.configStates[versionKey]!!.value
+                                val version = versionStr.toIntOrNull() ?: 0
+                                val sdPath = Environment.getExternalStorageDirectory().path
 
-                // Confirm Button aligned to start
-                CustomButton(
-                    text = "确认切号",
-                    onClick = {
-                        scope.launch(Dispatchers.IO) {
-                            val accNum = accountNumber.ifEmpty { "1" }
-                            ShowMessage("正在切换账号$accNum")
-                            // 1. Get Game Version
-                            val versionKey = "${ACCOUNT_SETTINGS.GAME_VERSION.key}$accNum"
-                            val versionStr = GlobalVars.configStates[versionKey]!!.value
-                            val version = versionStr.toIntOrNull() ?: 0
-                            val sdPath = Environment.getExternalStorageDirectory().path
+                                if (version == 0) {
+                                    // CN Version
+                                    val pathKey = "${ACCOUNT_SETTINGS.CN_PATH.key}$accNum"
+                                    val savePathName = GlobalVars.configStates[pathKey]!!.value
+                                    if (savePathName.isEmpty()) {
+                                        return@launch
+                                    }
+                                    val sourceDir = "$sdPath/zkqFiles/zkqCNGameSave/$savePathName"
+                                    // Check existence
+                                    if (!Shell.cmd("[ -d \"$sourceDir\" ]").exec().isSuccess) {
+                                        ShowMessage("存档文件不存在！\n请仔细检查存档路径以及游戏版本！")
+                                        // Handle error (optional: could add a toast here if context was available, but simple return for now as per minimal change)
+                                        return@launch
+                                    }
 
-                            if (version == 0) {
-                                // CN Version
-                                val pathKey = "${ACCOUNT_SETTINGS.CN_PATH.key}$accNum"
-                                val savePathName = GlobalVars.configStates[pathKey]!!.value
-                                if (savePathName.isEmpty()) {
-                                    return@launch
+                                    val commands = listOf(
+                                        "am force-stop com.tencent.tmgp.supercell.clashofclans",
+                                        "rm -rf /data/data/com.tencent.tmgp.supercell.clashofclans/shared_prefs/*",
+                                        "rm -rf /data/data/com.tencent.tmgp.supercell.clashofclans/databases/*",
+                                        "cp -r \"$sourceDir/shared_prefs/\"* /data/data/com.tencent.tmgp.supercell.clashofclans/shared_prefs/",
+                                        "cp -r \"$sourceDir/databases/\"* /data/data/com.tencent.tmgp.supercell.clashofclans/databases/",
+                                        "chmod 777 /data/data/com.tencent.tmgp.supercell.clashofclans/shared_prefs/*",
+                                        "chmod 777 /data/data/com.tencent.tmgp.supercell.clashofclans/databases/*",
+                                        "monkey -p com.tencent.tmgp.supercell.clashofclans -c android.intent.category.LAUNCHER 1"
+                                    )
+                                    commands.forEach { cmd ->
+                                        Shell.cmd(cmd).exec()
+                                    }
+                                } else {
+                                    // Global Version
+                                    val pathKey = "${ACCOUNT_SETTINGS.GLOBAL_PATH.key}$accNum"
+                                    val savePathName = GlobalVars.configStates[pathKey]!!.value
+                                    if (savePathName.isEmpty()) {
+                                        return@launch
+                                    }
+
+                                    val sourceDir =
+                                        "$sdPath/zkqFiles/zkqGlobalGameSave/$savePathName"
+
+                                    // Check existence
+                                    if (!Shell.cmd("[ -d \"$sourceDir\" ]").exec().isSuccess) {
+                                        ShowMessage("存档文件不存在！\n请仔细检查存档路径以及游戏版本！")
+                                        return@launch
+                                    }
+
+                                    val commands = listOf(
+                                        "am force-stop com.supercell.clashofclans",
+                                        "rm -rf /data/data/com.supercell.clashofclans/shared_prefs/*",
+                                        "cp -r \"$sourceDir/shared_prefs/\"* /data/data/com.supercell.clashofclans/shared_prefs/",
+                                        "chmod 777 /data/data/com.supercell.clashofclans/shared_prefs/*",
+                                        "monkey -p com.supercell.clashofclans -c android.intent.category.LAUNCHER 1"
+                                    )
+
+                                    commands.forEach { cmd ->
+                                        Shell.cmd(cmd).exec()
+                                    }
                                 }
-                                val sourceDir = "$sdPath/zkqFiles/zkqCNGameSave/$savePathName"
-                                // Check existence
-                                if (!Shell.cmd("[ -d \"$sourceDir\" ]").exec().isSuccess) {
-                                    ShowMessage("存档文件不存在！\n请仔细检查存档路径以及游戏版本！")
-                                    // Handle error (optional: could add a toast here if context was available, but simple return for now as per minimal change)
-                                    return@launch
-                                }
-
-                                val commands = listOf(
-                                    "am force-stop com.tencent.tmgp.supercell.clashofclans",
-                                    "rm -rf /data/data/com.tencent.tmgp.supercell.clashofclans/shared_prefs/*",
-                                    "rm -rf /data/data/com.tencent.tmgp.supercell.clashofclans/databases/*",
-                                    "cp -r \"$sourceDir/shared_prefs/\"* /data/data/com.tencent.tmgp.supercell.clashofclans/shared_prefs/",
-                                    "cp -r \"$sourceDir/databases/\"* /data/data/com.tencent.tmgp.supercell.clashofclans/databases/",
-                                    "chmod 777 /data/data/com.tencent.tmgp.supercell.clashofclans/shared_prefs/*",
-                                    "chmod 777 /data/data/com.tencent.tmgp.supercell.clashofclans/databases/*",
-                                    "monkey -p com.tencent.tmgp.supercell.clashofclans -c android.intent.category.LAUNCHER 1"
-                                )
-                                commands.forEach { cmd ->
-                                    Shell.cmd(cmd).exec()
-                                }
-                            } else {
-                                // Global Version
-                                val pathKey = "${ACCOUNT_SETTINGS.GLOBAL_PATH.key}$accNum"
-                                val savePathName = GlobalVars.configStates[pathKey]!!.value
-                                if (savePathName.isEmpty()) {
-                                    return@launch
-                                }
-
-                                val sourceDir = "$sdPath/zkqFiles/zkqGlobalGameSave/$savePathName"
-
-                                // Check existence
-                                if (!Shell.cmd("[ -d \"$sourceDir\" ]").exec().isSuccess) {
-                                    ShowMessage("存档文件不存在！\n请仔细检查存档路径以及游戏版本！")
-                                    return@launch
-                                }
-
-                                val commands = listOf(
-                                    "am force-stop com.supercell.clashofclans",
-                                    "rm -rf /data/data/com.supercell.clashofclans/shared_prefs/*",
-                                    "cp -r \"$sourceDir/shared_prefs/\"* /data/data/com.supercell.clashofclans/shared_prefs/",
-                                    "chmod 777 /data/data/com.supercell.clashofclans/shared_prefs/*",
-                                    "monkey -p com.supercell.clashofclans -c android.intent.category.LAUNCHER 1"
-                                )
-
-                                commands.forEach { cmd ->
-                                    Shell.cmd(cmd).exec()
-                                }
+                                ShowMessage("切号完成")
+                                onClose()
                             }
-                            ShowMessage("切号完成")
-                            onClose()
                         }
-                    }
-                )
-                CustomButton(
-                    text = "关闭窗口",
-                    onClick = {
-                        AppStateManager.setMode(AppMode.Run) //just to close the ui
-                        scope.launch {
-                            onClose()
+                    )
+                    CustomButton(
+                        text = "关闭窗口",
+                        onClick = {
+                            AppStateManager.setMode(AppMode.Run) //just to close the ui
+                            scope.launch {
+                                onClose()
+                            }
                         }
-                    }
-                )
+                    )
+                }
             }
         }
     }
