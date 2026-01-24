@@ -2,14 +2,6 @@ package com.coc.zkqcode.utils
 
 import android.content.Context
 import android.content.Intent
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.WebSocket
-import okhttp3.WebSocketListener
-import okhttp3.Response
-import androidx.compose.runtime.snapshotFlow
-import kotlinx.coroutines.CompletableDeferred
-import kotlinx.coroutines.withTimeoutOrNull
 import android.net.Uri
 import android.provider.Settings
 import androidx.compose.foundation.background
@@ -27,6 +19,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -36,19 +29,25 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.app.NotificationManagerCompat
-import com.topjohnwu.superuser.Shell
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import kotlinx.coroutines.delay
-import com.coc.zkqcode.utils.floatingwindows.UIWindowService
 import com.coc.zkqcode.utils.components.CustomButton
 import com.coc.zkqcode.utils.components.GlobalVars
-import com.coc.zkqcode.utils.fileactions.FileActions
-import com.coc.zkqcode.utils.websocket.ServerConnection
 import com.coc.zkqcode.utils.database.ConfigManager
-import com.coc.zkqcode.utils.database.Schema
+import com.coc.zkqcode.utils.fileactions.FileActions
+import com.coc.zkqcode.utils.floatingwindows.UIWindowService
 import com.coc.zkqcode.utils.state.AppMode
 import com.coc.zkqcode.utils.state.AppStateManager
+import com.coc.zkqcode.utils.websocket.ServerConnection
+import com.topjohnwu.superuser.Shell
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeoutOrNull
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.Response
+import okhttp3.WebSocket
+import okhttp3.WebSocketListener
 
 enum class RootStatus {
     CHECKING,

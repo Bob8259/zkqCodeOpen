@@ -13,8 +13,8 @@ extern const uint8_t OBFUSCATED_KEY[32];
 
 #endif // KEYS_H
 
-// You need to create a keys.cpp file, where you only need to add a mask and an obfuscated key like this
-// These are just an example, not the real key. But these examples can be used.
+// You need to create a keys.cpp under app\src\main\cpp folder. You only need to add a mask and an obfuscated key like this
+// These are just examples, not the real keys. But these examples can be used.
 
 // #include "keys.h"
 
