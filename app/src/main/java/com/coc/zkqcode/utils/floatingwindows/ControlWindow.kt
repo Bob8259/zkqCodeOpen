@@ -10,6 +10,9 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -23,7 +26,8 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import com.coc.zkqcode.utils.components.GlobalVars
+import com.coc.zkqcode.utils.exit.AppExitHelper
+import com.coc.zkqcode.utils.components.CustomAlertDialog
 import com.coc.zkqcode.utils.state.AppMode
 import com.coc.zkqcode.utils.state.AppStateManager
 import kotlinx.coroutines.delay
@@ -37,6 +41,7 @@ enum class ControlState {
     HIDDEN     // State 3
 }
 
+@Suppress("AssignedValueIsNeverRead")
 @Composable
 fun ControlWindow(
     externalInteractionCount: Int = 0,
@@ -51,6 +56,7 @@ fun ControlWindow(
     var controlState by remember { mutableStateOf(ControlState.COLLAPSED) }
     var internalInteractionCount by remember { mutableIntStateOf(0) }
     var isPlaying by remember { mutableStateOf(false) }
+    var showExitConfirmation by remember { mutableStateOf(false) }
 
     LaunchedEffect(internalInteractionCount, externalInteractionCount) {
         delay(2500)
@@ -141,6 +147,7 @@ fun ControlWindow(
                         .clickable {
                             internalInteractionCount++
                             // exit the application
+                            showExitConfirmation = true
                         }
                 )
                 Image(
@@ -226,6 +233,7 @@ fun ControlWindow(
                         .clickable {
                             internalInteractionCount++
                             // exit the application
+                            showExitConfirmation = true
                         }
                 )
             }
@@ -248,5 +256,36 @@ fun ControlWindow(
                     }
             )
         }
+    }
+
+    if (showExitConfirmation) {
+        CustomAlertDialog(
+            onDismissRequest = { showExitConfirmation = false },
+            title = {
+                Text(
+                    text = "退出提示",
+                    style = MaterialTheme.typography.titleMedium
+                )
+            },
+            text = {
+                Text(
+                    text = "确认要退出吗？",
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            },
+            confirmButton = {
+                Row {
+                    TextButton(onClick = { showExitConfirmation = false }) {
+                        Text("取消")
+                    }
+                    TextButton(onClick = {
+                        showExitConfirmation = false
+                        AppExitHelper.exitApplication(context)
+                    }) {
+                        Text("确认")
+                    }
+                }
+            }
+        )
     }
 }

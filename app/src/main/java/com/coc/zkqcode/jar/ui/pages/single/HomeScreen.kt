@@ -16,18 +16,21 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.PrimaryScrollableTabRow
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import com.coc.zkqcode.jar.code.ScreenShot
+import com.coc.zkqcode.utils.exit.AppExitHelper
+import com.coc.zkqcode.utils.components.CustomAlertDialog
 import com.coc.zkqcode.utils.components.CustomButton
 import com.coc.zkqcode.utils.components.CustomCheckBox
 import com.coc.zkqcode.utils.components.DropdownButton
@@ -38,7 +41,6 @@ import com.coc.zkqcode.utils.database.Schema.GLOBAL_SETTINGS
 import com.coc.zkqcode.utils.state.AppMode
 import com.coc.zkqcode.utils.state.AppStateManager
 import com.coc.zkqcode.utils.theme.AppColors
-import kotlinx.coroutines.launch
 
 @Composable
 fun HomeScreen(
@@ -92,6 +94,9 @@ fun HomeScreen(
     val cleanAllData = {
         // TODO: Implement logic to clean all data
     }
+
+    // Exit Confirmation Dialog State
+    var showExitConfirmation by rememberSaveable { mutableStateOf(false) }
 
     // Auto-Run Timer Logic
     LaunchedEffect(GlobalVars.isAutoRunEnabled, GlobalVars.autoRunTimer) {
@@ -290,6 +295,7 @@ fun HomeScreen(
         }
 
         // 3. 底部的固定按钮区
+        val context = LocalContext.current
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -306,12 +312,45 @@ fun HomeScreen(
                 CustomButton(
                     text = "保存并退出",
                     onClick = {
-                        AppStateManager.setMode(AppMode.Run)
-                        saveAndRun()
+                        showExitConfirmation = true
                     }
                 )
             }
 
+        }
+
+        if (showExitConfirmation) {
+            CustomAlertDialog(
+                onDismissRequest = { showExitConfirmation = false },
+                title = {
+                    Text(
+                        text = "退出提示",
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                },
+                text = {
+                    Text(
+                        text = "确认要退出吗？",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                },
+                confirmButton = {
+                    Row {
+                        TextButton(onClick = { showExitConfirmation = false }) {
+                            Text("取消")
+                        }
+                        TextButton(onClick = {
+                            showExitConfirmation = false
+                            AppStateManager.setMode(AppMode.Run)
+                            ConfigManager.saveAndRun {
+                                AppExitHelper.exitApplication(context)
+                            }
+                        }) {
+                            Text("确认")
+                        }
+                    }
+                }
+            )
         }
     }
 
