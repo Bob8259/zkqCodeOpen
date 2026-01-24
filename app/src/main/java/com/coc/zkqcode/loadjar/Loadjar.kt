@@ -1,15 +1,17 @@
+@file:Suppress("SameParameterValue")
+
 package com.coc.zkqcode.loadjar
 
 import android.content.Context
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.SideEffect
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import com.coc.zkqcode.interfaces.MainCode
 import com.coc.zkqcode.utils.state.AppMode
 import com.coc.zkqcode.utils.state.AppStateManager
@@ -24,37 +26,16 @@ class Loadjar(private val context: Context) {
      * Main composable function that handles all loading logic and displays the UI
      */
     @Composable
-    fun LoadAndShowUI(assetFileName: String = "code.jar", onClose: () -> Unit) {
-        var loadStatus by remember { mutableStateOf("加载中...") }
-        LaunchedEffect(Unit) {
-            // Always create a new assets folder and extract all assets
-            extractAllAssets()
-            
-            val assetList = context.assets.list("") ?: emptyArray()
-            val success = if (assetList.contains("code.jar")) {
-                 loadPluginFromAssets("code.jar")
-            } else if (assetList.contains("encrypted_code.jar")) {
-                 loadEncryptedPlugin("encrypted_code.jar")
-            } else {
-                // Fallback to whatever was passed or fail
-                 loadPluginFromAssets(assetFileName)
-            }
-            
-            loadStatus = if (success) {
-                "Plugin loaded successfully"
-            } else {
-                "Failed to load plugin"
-            }
-        }
-
+    fun LoadAndShowUI(loadStatus: String, onClose: () -> Unit) {
         if (loadStatus == "Plugin loaded successfully") {
             // Load the UI from jar
             pluginUI?.ShowMainUI(context, onClose)
         } else {
-            Column {
+            Column (modifier = Modifier.background(Color.White))  {
                 Text(text = loadStatus)
                 Button(onClick = {
                     AppStateManager.setMode(AppMode.Run)
+                    println("点击关闭悬浮窗")
                     onClose()
                 }) {
                     Text(text = "关闭悬浮窗")
@@ -62,6 +43,32 @@ class Loadjar(private val context: Context) {
             }
         }
 
+    }
+
+    /**
+     * Start the plugin loading process
+     */
+    suspend fun startLoading(assetFileName: String = "code.jar", onStatusChange: (String) -> Unit) {
+        onStatusChange("加载中...")
+        // Always create a new assets folder and extract all assets
+        extractAllAssets()
+        
+        val assetList = context.assets.list("") ?: emptyArray()
+        val success = if (assetList.contains("code.jar")) {
+             loadPluginFromAssets("code.jar")
+        } else if (assetList.contains("encrypted_code.jar")) {
+             loadEncryptedPlugin("encrypted_code.jar")
+        } else {
+            // Fallback to whatever was passed or fail
+             loadPluginFromAssets(assetFileName)
+        }
+        
+        val finalStatus = if (success) {
+            "Plugin loaded successfully"
+        } else {
+            "Failed to load plugin"
+        }
+        onStatusChange(finalStatus)
     }
 
     /**

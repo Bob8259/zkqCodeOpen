@@ -2,11 +2,6 @@
 #include <android/log.h>
 #include "dex_loader.h"
 
-// Logging macros
-#define LOG_TAG "zkq_debug"
-#define LOGD(...) __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, __VA_ARGS__)
-#define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
-
 // Implementation of the function (not exported directly)
 jint getNativeTwo(JNIEnv *env, jobject thiz) {
     return 4;
