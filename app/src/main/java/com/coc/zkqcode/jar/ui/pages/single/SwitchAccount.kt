@@ -8,6 +8,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -148,20 +149,19 @@ fun SwitchAccount(onClose: () -> Unit) {
 
 
             }
-            Row {
+            FlowRow {
                 CustomButton(text = "▼", onClick = {
                     val current = accountNumber.toIntOrNull() ?: 1
                     if (current > 1) {
                         accountNumber = (current - 1).toString()
                     }
-                }, marginTop = 0.dp)
+                })
                 CustomButton(text = "▲", onClick = {
                     val current = accountNumber.toIntOrNull() ?: 0
                     accountNumber = (current + 1).toString()
-                }, marginTop = 0.dp)
-            }
-            // Confirm Button aligned to start
-            Row {
+                })
+
+                // Confirm Button aligned to start
                 CustomButton(
                     text = "确认切号",
                     onClick = {

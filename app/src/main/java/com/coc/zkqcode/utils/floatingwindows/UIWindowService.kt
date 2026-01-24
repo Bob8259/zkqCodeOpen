@@ -18,9 +18,11 @@ import androidx.savedstate.SavedStateRegistryController
 import androidx.savedstate.SavedStateRegistryOwner
 import androidx.savedstate.setViewTreeSavedStateRegistryOwner
 import com.coc.zkqcode.loadjar.Loadjar
-import com.coc.zkqcode.utils.components.GlobalVars
 import com.coc.zkqcode.utils.state.AppMode
 import com.coc.zkqcode.utils.state.AppStateManager
+import androidx.compose.runtime.mutableStateOf
+import kotlinx.coroutines.*
+import android.content.res.Configuration
 
 import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
@@ -28,8 +30,14 @@ import androidx.lifecycle.setViewTreeViewModelStoreOwner
 import androidx.activity.OnBackPressedDispatcher
 import androidx.activity.OnBackPressedDispatcherOwner
 import androidx.activity.setViewTreeOnBackPressedDispatcherOwner
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Density
 
-class UIWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner, ViewModelStoreOwner, OnBackPressedDispatcherOwner {
+
+class UIWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner, ViewModelStoreOwner,
+    OnBackPressedDispatcherOwner {
 
     private lateinit var windowManager: WindowManager
     private var composeView: ComposeView? = null
@@ -58,14 +66,30 @@ class UIWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner, View
     override val onBackPressedDispatcher: OnBackPressedDispatcher
         get() = _onBackPressedDispatcher
 
+    private val serviceScope = CoroutineScope(Dispatchers.Main + Job())
+    private val loadjar = Loadjar(this)
+    private val loadStatus = mutableStateOf("加载中...")
+    private var isLoadStarted = false
+
     override fun onCreate() {
         super.onCreate()
+
         val notification = NotificationHelper.createNotification(this)
         startForeground(1000, notification)
 
         lifecycleRegistry.currentState = Lifecycle.State.CREATED
 
         windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
+
+        if (!isLoadStarted) {
+            isLoadStarted = true
+            serviceScope.launch {
+                loadjar.startLoading {
+                    loadStatus.value = it
+                }
+            }
+        }
+
         showFloatingWindow()
     }
 
@@ -77,7 +101,7 @@ class UIWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner, View
         val screenHeight = displayMetrics.heightPixels
 
         val windowHeight =
-            if (AppStateManager.currentMode == AppMode.Main) (screenHeight * 0.9).toInt() else (screenHeight * 0.6).toInt()
+            if (AppStateManager.currentMode == AppMode.Main) (screenHeight * 0.9).toInt() else (screenHeight * 0.7).toInt()
 
         val windowType = getWindowType()
 
@@ -101,36 +125,60 @@ class UIWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner, View
             setViewTreeOnBackPressedDispatcherOwner(this@UIWindowService)
 
             setContent {
-                Loadjar(context).LoadAndShowUI(onClose = {
-                    when (AppStateManager.currentMode) {
-                        AppMode.SwitchAccount -> {
-                            updateWindowLayout(
-                                displayMetrics.widthPixels,
-                                (displayMetrics.heightPixels * 0.6).toInt()
-                            )
-                        }
-                        AppMode.Main -> {
-                            updateWindowLayout(
-                                displayMetrics.widthPixels,
-                                (displayMetrics.heightPixels * 0.9).toInt()
-                            )
-                        }
-                        else -> {
-                            closeMainUI()
-                            startService(
-                                Intent(
-                                    this@UIWindowService,
-                                    ControlWindowService::class.java
-                                )
-                            )
-                        }
-                    }
+                if (AppStateManager.currentMode != AppMode.Run) {
+                    FixedDpiTheme {
+                        loadjar.LoadAndShowUI(loadStatus = loadStatus.value, onClose = {
 
-                })
+                            when (AppStateManager.currentMode) {
+                                AppMode.SwitchAccount -> {
+                                    updateWindowLayout(
+                                        displayMetrics.widthPixels,
+                                        (displayMetrics.heightPixels * 0.7).toInt()
+                                    )
+                                }
+
+                                AppMode.Main -> {
+                                    updateWindowLayout(
+                                        displayMetrics.widthPixels,
+                                        (displayMetrics.heightPixels * 0.9).toInt()
+                                    )
+                                }
+
+                                else -> {
+                                    closeMainUI()
+                                    startService(
+                                        Intent(
+                                            this@UIWindowService,
+                                            ControlWindowService::class.java
+                                        )
+                                    )
+                                }
+                            }
+                        })
+                    }
+                } else {
+                    closeMainUI()
+                }
             }
         }
 
         windowManager.addView(composeView, windowParams)
+    }
+
+    @Composable
+    fun FixedDpiTheme(targetDpi: Float = 300f, content: @Composable () -> Unit) {
+        val targetDensityValue = targetDpi / 160f // 计算出 300 DPI 对应的 density
+
+        // 创建自定义的 Density 实例
+        // fontScale = 1f 表示不跟随系统设置的字体大小（大号字体模式）缩放
+        val customDensity = Density(
+            density = targetDensityValue,
+            fontScale = 1f
+        )
+
+        CompositionLocalProvider(LocalDensity provides customDensity) {
+            content()
+        }
     }
 
     private fun updateWindowLayout(newWidth: Int, newHeight: Int) {
@@ -161,8 +209,20 @@ class UIWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner, View
         stopSelf()
     }
 
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        val displayMetrics = resources.displayMetrics
+        val screenWidth = displayMetrics.widthPixels
+        val screenHeight = displayMetrics.heightPixels
+        val windowHeight =
+            if (AppStateManager.currentMode == AppMode.Main) (screenHeight * 0.9).toInt() else (screenHeight * 0.7).toInt()
+
+        updateWindowLayout(screenWidth, windowHeight)
+    }
+
     override fun onDestroy() {
         super.onDestroy()
+        serviceScope.cancel()
         lifecycleRegistry.currentState = Lifecycle.State.DESTROYED
         customViewModelStore.clear()
         if (composeView != null) {
