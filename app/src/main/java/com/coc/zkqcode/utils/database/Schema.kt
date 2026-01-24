@@ -1,3 +1,5 @@
+@file:Suppress("ClassName")
+
 package com.coc.zkqcode.utils.database
 
 /**

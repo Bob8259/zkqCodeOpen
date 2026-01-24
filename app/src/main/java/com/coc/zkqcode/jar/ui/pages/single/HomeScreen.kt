@@ -59,8 +59,9 @@ fun HomeScreen(
     var selectedTabIndex by rememberSaveable { mutableIntStateOf(0) }
 
     val configCount = configCountStr.toIntOrNull() ?: 1
-    val tabs = listOf("主页设置", "账号设置", "提取存档") + List(configCount) { "配置文件${it + 1}" }
- 
+    val tabs =
+        listOf("主页设置", "账号设置", "提取存档") + List(configCount) { "配置文件${it + 1}" }
+
     val saveAndRun = {
         ConfigManager.saveAndRun {
             onSaveSuccess()
@@ -157,18 +158,20 @@ fun HomeScreen(
                             label = GLOBAL_SETTINGS.DELAY_MULTIPLIER.displayName,
                             value = GlobalVars.configStates[GLOBAL_SETTINGS.DELAY_MULTIPLIER.key]!!.value,
                             onValueChange = {
-                                GlobalVars.configStates[GLOBAL_SETTINGS.DELAY_MULTIPLIER.key]!!.value = it
+                                GlobalVars.configStates[GLOBAL_SETTINGS.DELAY_MULTIPLIER.key]!!.value =
+                                    it
                             },
                         )
                         InputRow(
                             label = GLOBAL_SETTINGS.ENTER_GAME_TIMER.displayName,
                             value = GlobalVars.configStates[GLOBAL_SETTINGS.ENTER_GAME_TIMER.key]!!.value,
                             onValueChange = {
-                                GlobalVars.configStates[GLOBAL_SETTINGS.ENTER_GAME_TIMER.key]!!.value = it
+                                GlobalVars.configStates[GLOBAL_SETTINGS.ENTER_GAME_TIMER.key]!!.value =
+                                    it
                             },
                         )
                         FlowRow {
-                             CustomCheckBox(
+                            CustomCheckBox(
                                 checkedState = GlobalVars.configStates[GLOBAL_SETTINGS.DEBUG_MODE.key]!!.value,
                                 onCheckStateChange = {
                                     GlobalVars.configStates[GLOBAL_SETTINGS.DEBUG_MODE.key]!!.value =
@@ -192,7 +195,8 @@ fun HomeScreen(
                                 ?: 0,
                             label = GLOBAL_SETTINGS.AUTO_UPDATE.displayName,
                             onValueChange = {
-                                GlobalVars.configStates[GLOBAL_SETTINGS.AUTO_UPDATE.key]!!.value = it.toString()
+                                GlobalVars.configStates[GLOBAL_SETTINGS.AUTO_UPDATE.key]!!.value =
+                                    it.toString()
                             }
                         )
                         CustomCheckBox(
@@ -209,14 +213,16 @@ fun HomeScreen(
                                 ?: 0,
                             label = GLOBAL_SETTINGS.AFTER_KICK_OPTION.displayName,
                             onValueChange = {
-                                GlobalVars.configStates[GLOBAL_SETTINGS.AFTER_KICK_OPTION.key]!!.value = it.toString()
+                                GlobalVars.configStates[GLOBAL_SETTINGS.AFTER_KICK_OPTION.key]!!.value =
+                                    it.toString()
                             }
                         )
                         InputRow(
                             label = GLOBAL_SETTINGS.DEVICE_REMARK.displayName,
                             value = GlobalVars.configStates[GLOBAL_SETTINGS.DEVICE_REMARK.key]!!.value,
                             onValueChange = {
-                                GlobalVars.configStates[GLOBAL_SETTINGS.DEVICE_REMARK.key]!!.value = it
+                                GlobalVars.configStates[GLOBAL_SETTINGS.DEVICE_REMARK.key]!!.value =
+                                    it
                             },
                         )
                         Row {
@@ -273,13 +279,23 @@ fun HomeScreen(
                 .fillMaxWidth()
                 .padding(bottom = 4.dp)
         ) {
-            CustomButton(
-                text = "保存并运行",
-                onClick = {
-                    AppStateManager.setMode(AppMode.Run)
-                    saveAndRun()
-                }
-            )
+            Row {
+                CustomButton(
+                    text = "保存并运行",
+                    onClick = {
+                        AppStateManager.setMode(AppMode.Run)
+                        saveAndRun()
+                    }
+                )
+                CustomButton(
+                    text = "保存并退出",
+                    onClick = {
+                        AppStateManager.setMode(AppMode.Run)
+                        saveAndRun()
+                    }
+                )
+            }
+
         }
     }
 

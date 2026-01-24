@@ -88,6 +88,11 @@ fun ControlWindow(
             BitmapFactory.decodeStream(it).asImageBitmap()
         }
     }
+    val exitIcon = remember {
+        context.assets.open("exit.png").use {
+            BitmapFactory.decodeStream(it).asImageBitmap()
+        }
+    }
     val dragModifier = Modifier.pointerInput(Unit) {
         detectDragGestures(
             onDragStart = { onDragStart() },
@@ -127,6 +132,17 @@ fun ControlWindow(
             )
 
             if (controlState == ControlState.EXPANDED) {
+                Image(
+                    bitmap = exitIcon,
+                    contentDescription = "Exit",
+                    modifier = Modifier
+                        .size(ICON_SIZE)
+                        .padding(4.dp)
+                        .clickable {
+                            internalInteractionCount++
+                            // exit the application
+                        }
+                )
                 Image(
                     bitmap = settingIcon,
                     contentDescription = "Setting",
@@ -199,6 +215,17 @@ fun ControlWindow(
                             internalInteractionCount++
                             AppStateManager.setMode(AppMode.Main)
                             onOpenMainUI()
+                        }
+                )
+                Image(
+                    bitmap = exitIcon,
+                    contentDescription = "Exit",
+                    modifier = Modifier
+                        .size(ICON_SIZE)
+                        .padding(4.dp)
+                        .clickable {
+                            internalInteractionCount++
+                            // exit the application
                         }
                 )
             }
