@@ -3,62 +3,75 @@ package com.coc.zkqcode.jar.code
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.Point
-import android.util.Log
 import com.coc.zkqcode.jar.code.colorschema.ColorSchema
-import com.coc.zkqcode.jar.code.colorschema.MyColors
-import kotlinx.coroutines.*
 import kotlin.math.abs
+import androidx.core.graphics.get
 
 class FindMultiColors {
     private val screenShot = ScreenShot()
 
     /**
      * Finds the first occurrence of a multi-color schema in the bitmap.
-     * @param bitmap The screenshot to search in.
+     * @param bitmap The screenshot to search in. If null, a new screenshot will be taken.
      * @param schema The color schema to look for.
      * @return The Point where the main color was found, or null if not found.
      */
-    fun findMultiColors(bitmap: Bitmap, schema: ColorSchema): Point? {
-        val x1 = schema.x1
-        val y1 = schema.y1
-        val x2 = schema.x2
-        val y2 = schema.y2
-        val mainColor = schema.mainColor
-        val threshold = schema.threshold
-        val offsets = schema.offsets ?: emptyList()
+    fun findMultiColors(bitmap: Bitmap? = null, schema: ColorSchema): Point? {
+        var usedBitmap = bitmap
+        var shouldRecycle = false
+        if (usedBitmap == null) {
+            usedBitmap = screenShot.takeScreenshot()
+            shouldRecycle = true
+        }
 
-        // Iterate through the search area
-        for (y in y1..y2) {
-            if (y >= bitmap.height) continue
-            for (x in x1..x2) {
-                if (x >= bitmap.width) continue
-                
-                val pixel = bitmap.getPixel(x, y)
-                if (isColorMatch(pixel, mainColor, threshold)) {
-                    // Main color matched, now check offsets
-                    var allOffsetsMatch = true
-                    for (offset in offsets) {
-                        if (offset == null) continue
-                        val targetX = x + offset.dx
-                        val targetY = y + offset.dy
-                        
-                        // Check bounds
-                        if (targetX < 0 || targetX >= bitmap.width || targetY < 0 || targetY >= bitmap.height) {
-                            allOffsetsMatch = false
-                            break
+        if (usedBitmap == null) return null
+
+        try {
+            val x1 = schema.x1
+            val y1 = schema.y1
+            val x2 = schema.x2
+            val y2 = schema.y2
+            val mainColor = schema.mainColor
+            val threshold = schema.threshold
+            val offsets = schema.offsets ?: emptyList()
+
+            // Iterate through the search area
+            for (y in y1..y2) {
+                if (y >= usedBitmap.height) continue
+                for (x in x1..x2) {
+                    if (x >= usedBitmap.width) continue
+
+                    val pixel = usedBitmap[x, y]
+                    if (isColorMatch(pixel, mainColor, threshold)) {
+                        // Main color matched, now check offsets
+                        var allOffsetsMatch = true
+                        for (offset in offsets) {
+                            if (offset == null) continue
+                            val targetX = x + offset.dx
+                            val targetY = y + offset.dy
+
+                            // Check bounds
+                            if (targetX < 0 || targetX >= usedBitmap.width || targetY < 0 || targetY >= usedBitmap.height) {
+                                allOffsetsMatch = false
+                                break
+                            }
+
+                            val offsetPixel = usedBitmap[targetX, targetY]
+                            if (!isColorMatch(offsetPixel, offset.color, threshold)) {
+                                allOffsetsMatch = false
+                                break
+                            }
                         }
-                        
-                        val offsetPixel = bitmap.getPixel(targetX, targetY)
-                        if (!isColorMatch(offsetPixel, offset.color, threshold)) {
-                            allOffsetsMatch = false
-                            break
+
+                        if (allOffsetsMatch) {
+                            return Point(x, y)
                         }
-                    }
-                    
-                    if (allOffsetsMatch) {
-                        return Point(x, y)
                     }
                 }
+            }
+        } finally {
+            if (shouldRecycle) {
+                usedBitmap.recycle()
             }
         }
         return null
@@ -79,34 +92,5 @@ class FindMultiColors {
         return abs(r1 - r2) <= threshold &&
                abs(g1 - g2) <= threshold &&
                abs(b1 - b2) <= threshold
-    }
-
-    /**
-     * Starts a loop that runs every 5 seconds to find the Test color schema.
-     */
-    fun startDetectionLoop() {
-        CoroutineScope(Dispatchers.IO).launch {
-            Log.d("FindMultiColors", "Starting detection loop every 5 seconds...")
-            while (isActive) {
-                val startTime = System.currentTimeMillis()
-                val bitmap = screenShot.takeScreenshot()
-                
-                if (bitmap != null) {
-                    val foundPoint = findMultiColors(bitmap, MyColors.Test)
-                    if (foundPoint != null) {
-                        Log.d("FindMultiColors", "Match FOUND at: (${foundPoint.x}, ${foundPoint.y})")
-                    } else {
-                        Log.d("FindMultiColors", "No match found.")
-                    }
-                    bitmap.recycle()
-                } else {
-                    Log.e("FindMultiColors", "Failed to capture screenshot.")
-                }
-                
-                val executionTime = System.currentTimeMillis() - startTime
-                val remainingDelay = 0L.coerceAtLeast(5000L - executionTime)
-                delay(remainingDelay)
-            }
-        }
     }
 }
