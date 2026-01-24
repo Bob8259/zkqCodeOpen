@@ -26,4 +26,12 @@ object NativeTools {
      * @return File descriptor (>= 0) on success, -1 on failure
      */
     external fun createInMemoryDex(data: ByteArray): Int
+
+    external fun nativeFindMultiColors(
+        bitmap: android.graphics.Bitmap,
+        x1: Int, y1: Int, x2: Int, y2: Int,
+        mainColor: Int,
+        threshold: Int,
+        flatOffsets: IntArray
+    ): IntArray?
 }

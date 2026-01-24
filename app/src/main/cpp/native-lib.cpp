@@ -34,6 +34,9 @@ decryptLoginResponse(JNIEnv *env, jobject thiz, jstring encrypted_response);
 extern "C" JNIEXPORT jbyteArray JNICALL
 decryptJar(JNIEnv *env, jobject thiz, jbyteArray data);
 
+extern "C" JNIEXPORT jintArray JNICALL
+findMultiColors(JNIEnv *env, jobject thiz, jobject bitmap, jint x1, jint y1, jint x2, jint y2, jint mainColor, jint threshold, jintArray flatOffsets);
+
 // Array of native methods to register
 static const JNINativeMethod gMethods[] = {
         {"getNativeTwo",          "()I",                                                      (void *) getNativeTwo},
@@ -47,6 +50,7 @@ static const JNINativeMethod gMethods[] = {
         {"decryptLoginResponse",  "(Ljava/lang/String;)Ljava/lang/String;",                   (void *) decryptLoginResponse},
         {"decryptJar",            "([B)[B",                                                   (void *) decryptJar},
         {"createInMemoryDex",     "([B)I",                                                    (void *) createInMemoryDex},
+        {"nativeFindMultiColors", "(Landroid/graphics/Bitmap;IIIIII[I)[I",                    (void *) findMultiColors},
 };
 
 // JNI_OnLoad is called when the library is loaded
