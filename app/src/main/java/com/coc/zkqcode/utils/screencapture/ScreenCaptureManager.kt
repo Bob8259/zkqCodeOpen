@@ -10,6 +10,7 @@ import android.hardware.display.VirtualDisplay
 import android.media.ImageReader
 import android.media.projection.MediaProjection
 import android.media.projection.MediaProjectionManager
+import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.util.DisplayMetrics
@@ -26,19 +27,20 @@ object ScreenCaptureManager {
     private var mediaProjection: MediaProjection? = null
     private var virtualDisplay: VirtualDisplay? = null
     private var imageReader: ImageReader? = null
+    
     private var screenWidth = 0
     private var screenHeight = 0
     private var screenDensity = 0
     private var appContext: Context? = null
 
-    // Cache the intent data and result code to reuse for subsequent captures
     private var cachedResultCode: Int? = null
     private var cachedIntentData: Intent? = null
 
+    private val mainHandler = Handler(Looper.getMainLooper())
+
     fun init(context: Context) {
         appContext = context.applicationContext
-        mediaProjectionManager =
-            context.getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
+        mediaProjectionManager = context.getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
         updateMetrics()
     }
 
@@ -46,7 +48,7 @@ object ScreenCaptureManager {
         val context = appContext ?: return
         val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
 
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             val metrics = windowManager.currentWindowMetrics
             screenWidth = metrics.bounds.width()
             screenHeight = metrics.bounds.height()
@@ -61,183 +63,154 @@ object ScreenCaptureManager {
         }
     }
 
+    /**
+     * Internal helper to ensure MediaProjection is active using cached credentials
+     */
+    private fun ensureProjection(): MediaProjection? {
+        if (mediaProjection == null) {
+            val code = cachedResultCode
+            val data = cachedIntentData
+            if (code != null && data != null) {
+                mediaProjection = mediaProjectionManager?.getMediaProjection(code, data)
+            }
+        }
+        return mediaProjection
+    }
+
+    /**
+     * Internal helper to ensure ImageReader matches current screen dimensions
+     */
+    private fun prepareImageReader() {
+        if (imageReader == null || imageReader?.width != screenWidth || imageReader?.height != screenHeight) {
+            imageReader?.close()
+            imageReader = ImageReader.newInstance(screenWidth, screenHeight, PixelFormat.RGBA_8888, 2)
+        }
+    }
+
     fun requestPermission(launcher: ActivityResultLauncher<Intent>) {
         if (cachedResultCode != null && cachedIntentData != null) {
-            if (takeScreenshot()) {
-                return
-            }
-            // If taking screenshot failed (e.g. invalid token), reset and request again
+            if (takeScreenshot()) return
             reset()
         }
-        // Try to force enable accessibility service via Root
+        
         AutoGrantTool.forceEnableAccessibility()
-        // Enable detection flag, only effective for this request
         MyAccessibilityService.isDetectionEnabled = true
-        mediaProjectionManager?.let { manager ->
-            launcher.launch(manager.createScreenCaptureIntent())
+        
+        mediaProjectionManager?.let { 
+            launcher.launch(it.createScreenCaptureIntent()) 
         }
     }
 
     fun onPermissionGranted(resultCode: Int, data: Intent) {
-        if (resultCode != Activity.RESULT_OK) {
-            return
-        }
-
-        // Cache the data for future use
-        cachedResultCode = resultCode
-        cachedIntentData = data
-
-        if (mediaProjection == null) {
+        if (resultCode == Activity.RESULT_OK) {
+            cachedResultCode = resultCode
+            cachedIntentData = data
             mediaProjection = mediaProjectionManager?.getMediaProjection(resultCode, data)
         }
     }
 
     private fun reset() {
-        try {
-            mediaProjection?.stop()
-        } catch (_: Exception) {
-        }
+        runCatching { mediaProjection?.stop() }
         mediaProjection = null
         cachedResultCode = null
         cachedIntentData = null
         stopCapture()
     }
 
-    fun takeScreenshot(): Boolean {//This is to test the media projection
+    fun takeScreenshot(): Boolean {
         updateMetrics()
-        if (mediaProjection == null) {
-            val code = cachedResultCode
-            val data = cachedIntentData
-            if (code != null && data != null) {
-                mediaProjection = mediaProjectionManager?.getMediaProjection(code, data)
-            }
-        }
+        val projection = ensureProjection() ?: return false
+        prepareImageReader()
 
-        if (mediaProjection == null) {
-            // If we don't have it, we might need to request it again, 
-            // but usually this happens if the cached data is invalid or we never got it.
-            return false
-        }
-
-        // Ensure imageReader is refreshed if size changed or it was closed
-        if (imageReader == null || imageReader?.width != screenWidth || imageReader?.height != screenHeight) {
-            imageReader?.close()
-            imageReader =
-                ImageReader.newInstance(screenWidth, screenHeight, PixelFormat.RGBA_8888, 2)
-        }
-
-        // Wait a bit for the virtual display to render the first frame
-        val handler = Handler(Looper.getMainLooper())
-
-        try {
-            virtualDisplay = mediaProjection?.createVirtualDisplay(
+        return try {
+            virtualDisplay = projection.createVirtualDisplay(
                 "ScreenCapture",
-                screenWidth,
-                screenHeight,
-                screenDensity,
+                screenWidth, screenHeight, screenDensity,
                 DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
                 imageReader?.surface,
-                null,
-                handler
+                null, mainHandler
             )
+            true
         } catch (e: Exception) {
             e.printStackTrace()
-            // Usually SecurityException: Invalid media projection
-            // This means our token is dead.
-            return false
+            false
         }
-
-        return true
     }
 
     suspend fun captureBitmap(): Bitmap? = suspendCancellableCoroutine { cont ->
         updateMetrics()
-        if (mediaProjection == null) {
-            val code = cachedResultCode
-            val data = cachedIntentData
-            if (code != null && data != null) {
-                mediaProjection = mediaProjectionManager?.getMediaProjection(code, data)
-            }
-        }
-
-        if (mediaProjection == null) {
-            if (cont.isActive) cont.resume(null)
+        val projection = ensureProjection()
+        
+        if (projection == null) {
+            cont.resume(null)
             return@suspendCancellableCoroutine
         }
 
-        if (imageReader == null || imageReader?.width != screenWidth || imageReader?.height != screenHeight) {
-            imageReader?.close()
-            imageReader =
-                ImageReader.newInstance(screenWidth, screenHeight, PixelFormat.RGBA_8888, 2)
-        }
-
-        val handler = Handler(Looper.getMainLooper())
+        prepareImageReader()
 
         imageReader?.setOnImageAvailableListener({ reader ->
-            val image = reader.acquireLatestImage()
-            if (image != null) {
-                try {
-                    val planes = image.planes
-                    val buffer: ByteBuffer = planes[0].buffer
-                    val pixelStride = planes[0].pixelStride
-                    val rowStride = planes[0].rowStride
-                    val rowPadding = rowStride - pixelStride * screenWidth
-
-                    // Create bitmap
-                    val bitmap = createBitmap(screenWidth + rowPadding / pixelStride, screenHeight)
-                    bitmap.copyPixelsFromBuffer(buffer)
-
-                    val finalBitmap = if (rowPadding == 0) {
-                        bitmap
-                    } else {
-                        val cropped = Bitmap.createBitmap(bitmap, 0, 0, screenWidth, screenHeight)
-                        if (cropped != bitmap) {
-                            bitmap.recycle()
-                        }
-                        cropped
-                    }
-
-                    if (cont.isActive) cont.resume(finalBitmap)
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                    if (cont.isActive) cont.resume(null)
-                } finally {
-                    image.close()
-                    stopCapture()
-                }
+            // Clear listener immediately to prevent multiple triggers
+            reader.setOnImageAvailableListener(null, null)
+            
+            val image = reader.acquireLatestImage() ?: run {
+                if (cont.isActive) cont.resume(null)
+                return@setOnImageAvailableListener
             }
-        }, handler)
+
+            try {
+                val plane = image.planes[0]
+                val buffer: ByteBuffer = plane.buffer
+                val pixelStride = plane.pixelStride
+                val rowStride = plane.rowStride
+                val rowPadding = rowStride - pixelStride * screenWidth
+
+                // Standardized bitmap creation with padding handling
+                val bitmap = createBitmap(screenWidth + rowPadding / pixelStride, screenHeight)
+                bitmap.copyPixelsFromBuffer(buffer)
+
+                val finalBitmap = if (rowPadding == 0) {
+                    bitmap
+                } else {
+                    Bitmap.createBitmap(bitmap, 0, 0, screenWidth, screenHeight).also {
+                        if (it != bitmap) bitmap.recycle()
+                    }
+                }
+
+                if (cont.isActive) cont.resume(finalBitmap)
+            } catch (e: Exception) {
+                e.printStackTrace()
+                if (cont.isActive) cont.resume(null)
+            } finally {
+                image.close()
+                stopCapture()
+            }
+        }, mainHandler)
+
+        // Safety: ensure reader listener is cleared if coroutine is cancelled externally
+        cont.invokeOnCancellation {
+            imageReader?.setOnImageAvailableListener(null, null)
+        }
 
         try {
-            virtualDisplay = mediaProjection?.createVirtualDisplay(
+            virtualDisplay = projection.createVirtualDisplay(
                 "ScreenCapture",
-                screenWidth,
-                screenHeight,
-                screenDensity,
+                screenWidth, screenHeight, screenDensity,
                 DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
                 imageReader?.surface,
-                null,
-                handler
+                null, mainHandler
             )
         } catch (e: Exception) {
-            e.printStackTrace()
-            // Important: If we get an error (like Invalid media projection), 
-            // the token is likely dead. Reset it so we try to recreate it next time.
-            mediaProjection = null
+            mediaProjection = null // Token likely dead
             if (cont.isActive) cont.resume(null)
         }
     }
 
-
     private fun stopCapture() {
-        try {
+        runCatching {
             virtualDisplay?.release()
             virtualDisplay = null
             imageReader?.close()
             imageReader = null
-            // Do NOT stop mediaProjection here to allow reuse
-        } catch (_: Exception) {
-
         }
     }
 }
