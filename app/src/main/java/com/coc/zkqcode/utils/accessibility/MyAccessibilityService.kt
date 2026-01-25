@@ -41,8 +41,7 @@ class MyAccessibilityService : AccessibilityService() {
                 }
             }
 
-            // After processing, disable detection and schedule it to be re-enabled after 10 seconds
-            isDetectionEnabled = false
+            // schedule it to be re-enabled after 10 seconds
             handler.postDelayed({
                 isDetectionEnabled = true
             }, 10000)

@@ -13,7 +13,6 @@ class MainScript {
     private val findTool = FindMultiColors()
 
     fun runScript() {
-
         CoroutineScope(Dispatchers.IO).launch {
             while (isActive) {
                 val startTime = System.currentTimeMillis()
