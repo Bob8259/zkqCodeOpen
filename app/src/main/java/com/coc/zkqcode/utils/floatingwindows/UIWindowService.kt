@@ -1,5 +1,7 @@
 package com.coc.zkqcode.utils.floatingwindows
 
+import android.content.pm.ServiceInfo
+
 import android.app.Service
 import android.content.Intent
 import android.graphics.PixelFormat
@@ -74,10 +76,7 @@ class UIWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner, View
 
     override fun onCreate() {
         super.onCreate()
-
-        val notification = NotificationHelper.createNotification(this)
-        startForeground(NOTIFICATION_ID, notification)
-
+        updateForegroundRecord()
         lifecycleRegistry.currentState = Lifecycle.State.CREATED
         windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
         startJarLoading()
@@ -229,8 +228,24 @@ class UIWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner, View
     override fun onBind(intent: Intent?): IBinder? = null
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        updateForegroundRecord()
         lifecycleRegistry.currentState = Lifecycle.State.STARTED
         showFloatingWindow()
         return START_STICKY
+    }
+
+    private fun updateForegroundRecord() {
+        val notification = NotificationHelper.createNotification(this)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            val type = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE or
+                        ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION
+            } else {
+                ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION
+            }
+            startForeground(NOTIFICATION_ID, notification, type)
+        } else {
+            startForeground(NOTIFICATION_ID, notification)
+        }
     }
 }

@@ -142,6 +142,12 @@ fun CheckRootScreen() {
                         }
                     )
                     Spacer(modifier = Modifier.height(16.dp))
+                    CustomButton(
+                        text = "测试截图",
+                        onClick = {
+                            (context as? com.coc.zkqcode.MainActivity)?.requestMediaProjection()
+                        }
+                    )
                 }
             }
         }

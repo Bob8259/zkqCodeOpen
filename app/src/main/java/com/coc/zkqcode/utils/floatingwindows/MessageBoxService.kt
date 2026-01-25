@@ -64,9 +64,7 @@ class MessageBoxService : Service(), LifecycleOwner, SavedStateRegistryOwner {
 
     override fun onCreate() {
         super.onCreate()
-        val notification = NotificationHelper.createNotification(this)
-        startForeground(1000, notification) // Use different ID from other services
-
+        updateForegroundRecord()
         lifecycleRegistry.currentState = Lifecycle.State.CREATED
         windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
         showWindow()
@@ -159,6 +157,7 @@ class MessageBoxService : Service(), LifecycleOwner, SavedStateRegistryOwner {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        updateForegroundRecord()
         lifecycleRegistry.currentState = Lifecycle.State.STARTED
 
         intent?.let {
@@ -184,6 +183,21 @@ class MessageBoxService : Service(), LifecycleOwner, SavedStateRegistryOwner {
         }
 
         return START_NOT_STICKY
+    }
+
+    private fun updateForegroundRecord() {
+        val notification = NotificationHelper.createNotification(this)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            val type = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE or
+                        android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION
+            } else {
+                android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION
+            }
+            startForeground(1000, notification, type)
+        } else {
+            startForeground(1000, notification)
+        }
     }
 
     override fun onDestroy() {
