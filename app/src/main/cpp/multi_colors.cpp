@@ -7,7 +7,7 @@
 inline bool isColorMatch(uint32_t pixel, uint32_t targetColor, int threshold) {
     // uint32_t pixel (RGBA in memory, little endian as 0xAABBGGRR)
     // targetColor (Java ARGB: 0xAARRGGBB)
-    
+
     // Extract channels from pixel (0xAABBGGRR)
     int pr = pixel & 0xFF;
     int pg = (pixel >> 8) & 0xFF;
@@ -61,19 +61,19 @@ jintArray findMultiColors(
     // Boundary check for search area
     x1 = std::max(0, x1);
     y1 = std::max(0, y1);
-    x2 = std::min((int)width - 1, x2);
-    y2 = std::min((int)height - 1, y2);
+    x2 = std::min((int) width - 1, x2);
+    y2 = std::min((int) height - 1, y2);
 
     for (int y = y1; y <= y2; ++y) {
         uint32_t *row = data + y * width;
         for (int x = x1; x <= x2; ++x) {
             uint32_t pixel = row[x];
-            if (isColorMatch(pixel, (uint32_t)mainColor, threshold)) {
+            if (isColorMatch(pixel, (uint32_t) mainColor, threshold)) {
                 bool allOffsetsMatch = true;
                 for (int i = 0; i < offsetsLen; i += 3) {
                     int dx = offsetsArr[i];
                     int dy = offsetsArr[i + 1];
-                    uint32_t color = (uint32_t)offsetsArr[i + 2];
+                    uint32_t color = (uint32_t) offsetsArr[i + 2];
 
                     int tx = x + dx;
                     int ty = y + dy;
@@ -99,7 +99,7 @@ jintArray findMultiColors(
         }
     }
 
-end:
+    end:
     env->ReleaseIntArrayElements(flatOffsets, offsetsArr, JNI_ABORT);
     AndroidBitmap_unlockPixels(env, bitmap);
 

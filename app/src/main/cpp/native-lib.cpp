@@ -35,22 +35,29 @@ extern "C" JNIEXPORT jbyteArray JNICALL
 decryptJar(JNIEnv *env, jobject thiz, jbyteArray data);
 
 extern "C" JNIEXPORT jintArray JNICALL
-findMultiColors(JNIEnv *env, jobject thiz, jobject bitmap, jint x1, jint y1, jint x2, jint y2, jint mainColor, jint threshold, jintArray flatOffsets);
+findMultiColors(JNIEnv *env, jobject thiz, jobject bitmap, jint x1, jint y1, jint x2, jint y2,
+                jint mainColor, jint threshold, jintArray flatOffsets);
+
+extern "C" JNIEXPORT jintArray JNICALL
+findMultiColorsRaw(JNIEnv *env, jobject thiz, jobject buffer, jint width, jint height, jint stride,
+                   jint x1, jint y1, jint x2, jint y2, jint mainColor, jint threshold,
+                   jintArray flatOffsets);
 
 // Array of native methods to register
 static const JNINativeMethod gMethods[] = {
-        {"getNativeTwo",          "()I",                                                      (void *) getNativeTwo},
-        {"generateNonce",         "()Ljava/lang/String;",                                     (void *) generateNonce},
-        {"generateX25519KeyPair", "()Ljava/lang/String;",                                     (void *) generateX25519KeyPair},
-        {"chacha20Encrypt",       "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;", (void *) chacha20Encrypt},
-        {"chacha20Decrypt",       "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;", (void *) chacha20Decrypt},
-        {"blake2b",               "(Ljava/lang/String;)Ljava/lang/String;",                   (void *) blake2b},
-        {"computeSharedSecret",   "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;", (void *) computeSharedSecret},
-        {"encryptLoginPayload",   "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;", (void *) encryptLoginPayload},
-        {"decryptLoginResponse",  "(Ljava/lang/String;)Ljava/lang/String;",                   (void *) decryptLoginResponse},
-        {"decryptJar",            "([B)[B",                                                   (void *) decryptJar},
-        {"createInMemoryDex",     "([B)I",                                                    (void *) createInMemoryDex},
-        {"nativeFindMultiColors", "(Landroid/graphics/Bitmap;IIIIII[I)[I",                    (void *) findMultiColors},
+        {"getNativeTwo",             "()I",                                                      (void *) getNativeTwo},
+        {"generateNonce",            "()Ljava/lang/String;",                                     (void *) generateNonce},
+        {"generateX25519KeyPair",    "()Ljava/lang/String;",                                     (void *) generateX25519KeyPair},
+        {"chacha20Encrypt",          "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;", (void *) chacha20Encrypt},
+        {"chacha20Decrypt",          "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;", (void *) chacha20Decrypt},
+        {"blake2b",                  "(Ljava/lang/String;)Ljava/lang/String;",                   (void *) blake2b},
+        {"computeSharedSecret",      "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;", (void *) computeSharedSecret},
+        {"encryptLoginPayload",      "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;", (void *) encryptLoginPayload},
+        {"decryptLoginResponse",     "(Ljava/lang/String;)Ljava/lang/String;",                   (void *) decryptLoginResponse},
+        {"decryptJar",               "([B)[B",                                                   (void *) decryptJar},
+        {"createInMemoryDex",        "([B)I",                                                    (void *) createInMemoryDex},
+        {"nativeFindMultiColors",    "(Landroid/graphics/Bitmap;IIIIII[I)[I",                    (void *) findMultiColors},
+        {"nativeFindMultiColorsRaw", "(Ljava/nio/ByteBuffer;IIIIIIIII[I)[I",                     (void *) findMultiColorsRaw},
 };
 
 // JNI_OnLoad is called when the library is loaded
