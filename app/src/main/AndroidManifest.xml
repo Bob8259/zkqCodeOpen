@@ -58,15 +58,6 @@
                 android:name="android.app.PROPERTY_SPECIAL_USE_FGS_TYPE_DESCRIPTION"
                 android:value="This service provides background control mechanisms and overlay management." />
         </service>
-<!--        <service-->
-<!--            android:name="com.coc.zkqcode.utils.floatingwindows.SwitchAccountWindowService"-->
-<!--            android:enabled="true"-->
-<!--            android:exported="false"-->
-<!--            android:foregroundServiceType="specialUse">-->
-<!--            <property-->
-<!--                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_TYPE_DESCRIPTION"-->
-<!--                android:value="This service maintains a floating window for manual account switching." />-->
-<!--        </service>-->
         <service
             android:name="com.coc.zkqcode.utils.floatingwindows.MessageBoxService"
             android:enabled="true"
@@ -99,11 +90,11 @@
         <service
             android:name=".utils.accessibility.MyAccessibilityService"
             android:enabled="true"
-            android:exported="false"
+            android:exported="true"
             android:label="@string/app_name"
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
             <intent-filter>
-                <action android:name="android.view.accessibility.AccessibilityService" />
+                <action android:name="android.accessibilityservice.AccessibilityService" />
             </intent-filter>
 
             <meta-data
