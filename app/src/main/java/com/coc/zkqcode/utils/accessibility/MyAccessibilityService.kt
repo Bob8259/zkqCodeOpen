@@ -4,6 +4,8 @@ import android.accessibilityservice.AccessibilityService
 import android.annotation.SuppressLint
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
+import android.os.Handler
+import android.os.Looper
 
 @SuppressLint("AccessibilityPolicy")
 class MyAccessibilityService : AccessibilityService() {
@@ -12,6 +14,7 @@ class MyAccessibilityService : AccessibilityService() {
         @Volatile
         var isDetectionEnabled = false
         private var instance: MyAccessibilityService? = null
+        private val handler = Handler(Looper.getMainLooper())
     }
 
     override fun onServiceConnected() {
@@ -37,6 +40,12 @@ class MyAccessibilityService : AccessibilityService() {
                     break // Exit after successful click
                 }
             }
+
+            // After processing, disable detection and schedule it to be re-enabled after 10 seconds
+            isDetectionEnabled = false
+            handler.postDelayed({
+                isDetectionEnabled = true
+            }, 10000)
         }
     }
 
