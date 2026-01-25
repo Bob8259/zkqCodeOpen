@@ -10,10 +10,12 @@ import okhttp3.WebSocketListener
 import java.util.concurrent.TimeUnit
 
 class ServerConnection(private val url: String) {
+    private companion object {
+        val client = OkHttpClient.Builder()
+            .readTimeout(0, TimeUnit.MILLISECONDS)
+            .build()
+    }
     private val TAG = "ServerConnection"
-    private val client = OkHttpClient.Builder()
-        .readTimeout(0, TimeUnit.MILLISECONDS)
-        .build()
     private val gson = Gson()
     private var webSocket: WebSocket? = null
     private var onMessageReceived: ((String) -> Unit)? = null
@@ -58,5 +60,7 @@ class ServerConnection(private val url: String) {
     fun close() {
         Log.d(TAG, "Closing WebSocket")
         webSocket?.close(1000, "Normal closure")
+        webSocket = null
+        onMessageReceived = null
     }
 }
