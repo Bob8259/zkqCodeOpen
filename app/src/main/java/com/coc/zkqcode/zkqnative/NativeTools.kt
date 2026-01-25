@@ -34,4 +34,13 @@ object NativeTools {
         threshold: Int,
         flatOffsets: IntArray
     ): IntArray?
+
+    external fun nativeFindMultiColorsRaw(
+        buffer: java.nio.ByteBuffer,
+        width: Int, height: Int, stride: Int,
+        x1: Int, y1: Int, x2: Int, y2: Int,
+        mainColor: Int,
+        threshold: Int,
+        flatOffsets: IntArray
+    ): IntArray?
 }

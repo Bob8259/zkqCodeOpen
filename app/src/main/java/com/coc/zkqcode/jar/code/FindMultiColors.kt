@@ -10,21 +10,15 @@ class FindMultiColors {
 
     /**
      * Finds the first occurrence of a multi-color schema in the bitmap using native code for performance.
-     * @param bitmap The screenshot to search in. If null, a new screenshot will be taken.
+     * @param bitmap The screenshot to search in. If null, a new screenshot will be taken using ByteBuffer for speed.
      * @param schema The color schema to look for.
      * @return The Point where the main color was found, or null if not found.
      */
     suspend fun findMultiColors(bitmap: Bitmap? = null, schema: ColorSchema): Point? {
-        var usedBitmap = bitmap
-        var shouldRecycle = false
-        if (usedBitmap == null) {
-            usedBitmap = ScreenCaptureManager.captureBitmap()
-            shouldRecycle = true
-        }
-
-        if (usedBitmap == null) {
-            println("bit map is null")
-            return null
+        val resultAny = if (bitmap == null) {
+            ScreenCaptureManager.capture(asBitmap = false)
+        } else {
+            null
         }
 
         try {
@@ -37,23 +31,51 @@ class FindMultiColors {
                     flatOffsets.add(it.color)
                 }
             }
+            val offsetsArray = flatOffsets.toIntArray()
 
-            val result = NativeTools.nativeFindMultiColors(
-                usedBitmap,
-                schema.x1, schema.y1, schema.x2, schema.y2,
-                schema.mainColor,
-                schema.threshold,
-                flatOffsets.toIntArray()
-            )
+            if (resultAny is ScreenCaptureManager.CaptureResult) {
+                val buf = resultAny.buffer
+                val w = resultAny.width
+                val h = resultAny.height
+                val stride = resultAny.rowStride
 
-            if (result != null && result.size == 2) {
-                return Point(result[0], result[1])
+                val result = NativeTools.nativeFindMultiColorsRaw(
+                    buf,
+                    w, h, stride,
+                    schema.x1, schema.y1, schema.x2, schema.y2,
+                    schema.mainColor,
+                    schema.threshold,
+                    offsetsArray
+                )
+
+                if (result != null && result.size == 2) {
+                    return Point(result[0], result[1])
+                }
+
+            } else {
+                // Fallback or explicit Bitmap provided
+                // Use the original native function for Bitmap
+                val useBmp = bitmap ?: (resultAny as? Bitmap)
+                if (useBmp != null) {
+                   val result = NativeTools.nativeFindMultiColors(
+                        useBmp,
+                        schema.x1, schema.y1, schema.x2, schema.y2,
+                        schema.mainColor,
+                        schema.threshold,
+                        offsetsArray
+                    )
+                     if (result != null && result.size == 2) {
+                        return Point(result[0], result[1])
+                    }
+                }
             }
-        } finally {
-            if (shouldRecycle) {
-                usedBitmap.recycle()
-            }
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
+        
+        // No explicit recycle needed for ByteBuffer as it is GC'd (direct buffer).
+        // If we created a Bitmap from capture(true) (which we don't anymore by default), we would need recycle.
+        
         return null
     }
 }

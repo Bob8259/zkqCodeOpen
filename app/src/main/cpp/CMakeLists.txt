@@ -47,6 +47,7 @@ add_library(
         keys.cpp
         dex_loader.cpp
         multi_colors.cpp
+        multi_colors_raw.cpp
         monocypher/monocypher.c
 )
 

@@ -17,6 +17,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             CheckRootScreen()
         }
+
     }
 
     fun requestMediaProjection() {

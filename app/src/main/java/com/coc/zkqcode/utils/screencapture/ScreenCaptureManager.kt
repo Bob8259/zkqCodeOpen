@@ -29,7 +29,7 @@ object ScreenCaptureManager {
     private var mediaProjection: MediaProjection? = null
     private var virtualDisplay: VirtualDisplay? = null
     private var imageReader: ImageReader? = null
-    
+
     private var screenWidth = 0
     private var screenHeight = 0
     private var screenDensity = 0
@@ -54,7 +54,8 @@ object ScreenCaptureManager {
 
     fun init(context: Context) {
         appContext = context.applicationContext
-        mediaProjectionManager = context.getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
+        mediaProjectionManager =
+            context.getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
         updateMetrics()
     }
 
@@ -108,12 +109,12 @@ object ScreenCaptureManager {
             if (takeScreenshot()) return
             reset()
         }
-        
+
         AutoGrantTool.forceEnableAccessibility()
         MyAccessibilityService.isDetectionEnabled = true
-        
-        mediaProjectionManager?.let { 
-            launcher.launch(it.createScreenCaptureIntent()) 
+
+        mediaProjectionManager?.let {
+            launcher.launch(it.createScreenCaptureIntent())
         }
     }
 
@@ -170,7 +171,7 @@ object ScreenCaptureManager {
             // Release existing VirtualDisplay to force a fresh frame
             virtualDisplay?.release()
             virtualDisplay = null
-            
+
             println("Creating VirtualDisplay for screenshot")
             virtualDisplay = projection.createVirtualDisplay(
                 "ScreenCapture",
@@ -188,77 +189,102 @@ object ScreenCaptureManager {
         }
     }
 
-    suspend fun captureBitmap(): Bitmap? = captureMutex.withLock {
+    data class CaptureResult(
+        val buffer: ByteBuffer,
+        val width: Int,
+        val height: Int,
+        val pixelStride: Int,
+        val rowStride: Int
+    )
+
+    suspend fun capture(asBitmap: Boolean = true): Any? = captureMutex.withLock {
         suspendCancellableCoroutine { cont ->
-        updateMetrics()
-        val projection = ensureProjection()
-        
-        if (projection == null) {
-            cont.resume(null)
-            return@suspendCancellableCoroutine
-        }
+            updateMetrics()
+            val projection = ensureProjection()
 
-        prepareImageReader()
+            if (projection == null) {
+                cont.resume(null)
+                return@suspendCancellableCoroutine
+            }
 
-        imageReader?.setOnImageAvailableListener({ reader ->
-            // Clear listener immediately to prevent multiple triggers
-            reader.setOnImageAvailableListener(null, null)
-            
-            val image = reader.acquireLatestImage() ?: run {
-                if (cont.isActive) cont.resume(null)
-                return@setOnImageAvailableListener
+            prepareImageReader()
+
+            imageReader?.setOnImageAvailableListener({ reader ->
+                // Clear listener immediately to prevent multiple triggers
+                reader.setOnImageAvailableListener(null, null)
+
+                val image = reader.acquireLatestImage() ?: run {
+                    if (cont.isActive) cont.resume(null)
+                    return@setOnImageAvailableListener
+                }
+
+                try {
+                    val plane = image.planes[0]
+                    val buffer: ByteBuffer = plane.buffer
+                    val pixelStride = plane.pixelStride
+                    val rowStride = plane.rowStride
+                    val rowPadding = rowStride - pixelStride * screenWidth
+
+                    if (asBitmap) {
+                        // Standardized bitmap creation with padding handling
+                        val bitmap = createBitmap(screenWidth + rowPadding / pixelStride, screenHeight)
+                        bitmap.copyPixelsFromBuffer(buffer)
+
+                        val finalBitmap = if (rowPadding == 0) {
+                            bitmap
+                        } else {
+                            Bitmap.createBitmap(bitmap, 0, 0, screenWidth, screenHeight).also {
+                                if (it != bitmap) bitmap.recycle()
+                            }
+                        }
+                        if (cont.isActive) cont.resume(finalBitmap)
+                    } else {
+                        // Copy buffer to a new direct buffer because image.close() will invalidate the plane buffer
+                        val capacity = buffer.capacity()
+                        val directCopy = ByteBuffer.allocateDirect(capacity)
+                        buffer.rewind()
+                        directCopy.put(buffer)
+                        directCopy.flip()
+
+                        val result = CaptureResult(
+                            buffer = directCopy,
+                            width = screenWidth,
+                            height = screenHeight,
+                            pixelStride = pixelStride,
+                            rowStride = rowStride
+                        )
+                        if (cont.isActive) cont.resume(result)
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    if (cont.isActive) cont.resume(null)
+                } finally {
+                    image.close()
+                    // NOTE: No longer calling stopCapture() here - keep VirtualDisplay alive
+                }
+            }, mainHandler)
+
+            // Safety: ensure reader listener is cleared if coroutine is cancelled externally
+            cont.invokeOnCancellation {
+                imageReader?.setOnImageAvailableListener(null, null)
             }
 
             try {
-                val plane = image.planes[0]
-                val buffer: ByteBuffer = plane.buffer
-                val pixelStride = plane.pixelStride
-                val rowStride = plane.rowStride
-                val rowPadding = rowStride - pixelStride * screenWidth
+                // Release existing VirtualDisplay to force a fresh frame
+                virtualDisplay?.release()
+                virtualDisplay = null
 
-                // Standardized bitmap creation with padding handling
-                val bitmap = createBitmap(screenWidth + rowPadding / pixelStride, screenHeight)
-                bitmap.copyPixelsFromBuffer(buffer)
-
-                val finalBitmap = if (rowPadding == 0) {
-                    bitmap
-                } else {
-                    Bitmap.createBitmap(bitmap, 0, 0, screenWidth, screenHeight).also {
-                        if (it != bitmap) bitmap.recycle()
-                    }
-                }
-
-                if (cont.isActive) cont.resume(finalBitmap)
-            } catch (e: Exception) {
-                e.printStackTrace()
+                virtualDisplay = projection.createVirtualDisplay(
+                    "ScreenCapture",
+                    screenWidth, screenHeight, screenDensity,
+                    DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
+                    imageReader?.surface,
+                    null, mainHandler
+                )
+            } catch (_: Exception) {
+                cleanupProjectionResources() // Token likely dead
                 if (cont.isActive) cont.resume(null)
-            } finally {
-                image.close()
-                // NOTE: No longer calling stopCapture() here - keep VirtualDisplay alive
             }
-        }, mainHandler)
-
-        // Safety: ensure reader listener is cleared if coroutine is cancelled externally
-        cont.invokeOnCancellation {
-            imageReader?.setOnImageAvailableListener(null, null)
         }
-
-        try {
-            // Release existing VirtualDisplay to force a fresh frame
-            virtualDisplay?.release()
-            virtualDisplay = null
-
-            virtualDisplay = projection.createVirtualDisplay(
-                "ScreenCapture",
-                screenWidth, screenHeight, screenDensity,
-                DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
-                imageReader?.surface,
-                null, mainHandler
-            )
-        } catch (_: Exception) {
-            cleanupProjectionResources() // Token likely dead
-            if (cont.isActive) cont.resume(null)
-        }
-    }
     }
 }
