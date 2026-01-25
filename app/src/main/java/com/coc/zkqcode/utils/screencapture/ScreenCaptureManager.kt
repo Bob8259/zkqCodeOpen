@@ -7,7 +7,6 @@ import android.graphics.Bitmap
 import android.graphics.PixelFormat
 import android.hardware.display.DisplayManager
 import android.hardware.display.VirtualDisplay
-import android.media.Image
 import android.media.ImageReader
 import android.media.projection.MediaProjection
 import android.media.projection.MediaProjectionManager
@@ -18,10 +17,8 @@ import android.view.WindowManager
 import androidx.activity.result.ActivityResultLauncher
 import androidx.core.graphics.createBitmap
 import com.coc.zkqcode.utils.accessibility.MyAccessibilityService
-import java.io.File
-import java.io.FileOutputStream
-import java.nio.ByteBuffer
 import kotlinx.coroutines.suspendCancellableCoroutine
+import java.nio.ByteBuffer
 import kotlin.coroutines.resume
 
 object ScreenCaptureManager {
@@ -64,9 +61,9 @@ object ScreenCaptureManager {
         }
     }
 
-    fun requestPermission(context: Context, launcher: ActivityResultLauncher<Intent>) {
+    fun requestPermission(launcher: ActivityResultLauncher<Intent>) {
         if (cachedResultCode != null && cachedIntentData != null) {
-            if (takeScreenshot(context)) {
+            if (takeScreenshot()) {
                 return
             }
             // If taking screenshot failed (e.g. invalid token), reset and request again
@@ -81,7 +78,7 @@ object ScreenCaptureManager {
         }
     }
 
-    fun onPermissionGranted(resultCode: Int, data: Intent, context: Context) {
+    fun onPermissionGranted(resultCode: Int, data: Intent) {
         if (resultCode != Activity.RESULT_OK) {
             return
         }
@@ -93,7 +90,6 @@ object ScreenCaptureManager {
         if (mediaProjection == null) {
             mediaProjection = mediaProjectionManager?.getMediaProjection(resultCode, data)
         }
-        takeScreenshot(context)
     }
 
     private fun reset() {
@@ -107,7 +103,7 @@ object ScreenCaptureManager {
         stopCapture()
     }
 
-    fun takeScreenshot(context: Context): Boolean {
+    fun takeScreenshot(): Boolean {//This is to test the media projection
         updateMetrics()
         if (mediaProjection == null) {
             val code = cachedResultCode
@@ -150,15 +146,6 @@ object ScreenCaptureManager {
             // This means our token is dead.
             return false
         }
-
-        imageReader?.setOnImageAvailableListener({ reader ->
-            val image = reader.acquireLatestImage()
-            if (image != null) {
-                saveImage(image, context)
-                image.close()
-                stopCapture() // Stop after one capture
-            }
-        }, handler)
 
         return true
     }
@@ -241,41 +228,6 @@ object ScreenCaptureManager {
         }
     }
 
-    private fun saveImage(image: Image, context: Context) {
-        val planes = image.planes
-        val buffer: ByteBuffer = planes[0].buffer
-        val pixelStride = planes[0].pixelStride
-        val rowStride = planes[0].rowStride
-        val rowPadding = rowStride - pixelStride * screenWidth
-
-        // Create bitmap
-        val bitmap = createBitmap(screenWidth + rowPadding / pixelStride, screenHeight)
-        bitmap.copyPixelsFromBuffer(buffer)
-
-        // Crop bitmap to actual screen size if there is padding
-        val finalBitmap = if (rowPadding == 0) {
-            bitmap
-        } else {
-            Bitmap.createBitmap(bitmap, 0, 0, screenWidth, screenHeight)
-        }
-
-        try {
-            val file = File(context.filesDir, "screenshot.png")
-            val fos = FileOutputStream(file)
-            finalBitmap.compress(Bitmap.CompressFormat.PNG, 100, fos)
-            fos.flush()
-            fos.close()
-            // Optional: Show toast or feedback
-            println("截图已保存: ${file.name}")
-
-        } catch (_: Exception) {
-        } finally {
-            if (finalBitmap != bitmap) {
-                bitmap.recycle()
-            }
-            finalBitmap.recycle()
-        }
-    }
 
     private fun stopCapture() {
         try {
