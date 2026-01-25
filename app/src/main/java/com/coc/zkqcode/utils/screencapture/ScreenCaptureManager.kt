@@ -40,12 +40,21 @@ object ScreenCaptureManager {
     fun init(context: Context) {
         mediaProjectionManager =
             context.getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
-        val metrics = DisplayMetrics()
         val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
-        windowManager.defaultDisplay.getRealMetrics(metrics)
-        screenWidth = metrics.widthPixels
-        screenHeight = metrics.heightPixels
-        screenDensity = metrics.densityDpi
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
+            val metrics = windowManager.currentWindowMetrics
+            screenWidth = metrics.bounds.width()
+            screenHeight = metrics.bounds.height()
+            screenDensity = context.resources.configuration.densityDpi
+        } else {
+            val metrics = DisplayMetrics()
+            @Suppress("DEPRECATION")
+            windowManager.defaultDisplay.getRealMetrics(metrics)
+            screenWidth = metrics.widthPixels
+            screenHeight = metrics.heightPixels
+            screenDensity = metrics.densityDpi
+        }
     }
 
     fun requestPermission(context: Context, launcher: ActivityResultLauncher<Intent>) {
@@ -68,11 +77,11 @@ object ScreenCaptureManager {
             Log.e(TAG, "Permission denied")
             return
         }
-        
+
         // Cache the data for future use
         cachedResultCode = resultCode
         cachedIntentData = data
-        
+
         if (mediaProjection == null) {
             mediaProjection = mediaProjectionManager?.getMediaProjection(resultCode, data)
         }

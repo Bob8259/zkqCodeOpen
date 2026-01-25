@@ -1,6 +1,5 @@
 package com.coc.zkqcode.utils.screencapture
 
-import android.util.Log
 import com.topjohnwu.superuser.Shell
 
 object AutoGrantTool {
@@ -26,7 +25,7 @@ object AutoGrantTool {
             Thread.sleep(100)
             Shell.cmd("settings put secure accessibility_enabled 1").exec()
             return true
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             return false
         }
     }

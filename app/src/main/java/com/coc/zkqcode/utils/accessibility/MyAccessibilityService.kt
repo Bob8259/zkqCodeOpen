@@ -12,8 +12,6 @@ class MyAccessibilityService : AccessibilityService() {
         @Volatile
         var isDetectionEnabled = false
         private var instance: MyAccessibilityService? = null
-
-//        fun getInstance(): MyAccessibilityService? = instance
     }
 
     override fun onServiceConnected() {
