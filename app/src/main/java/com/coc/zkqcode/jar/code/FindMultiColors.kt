@@ -3,10 +3,10 @@ package com.coc.zkqcode.jar.code
 import android.graphics.Bitmap
 import android.graphics.Point
 import com.coc.zkqcode.jar.code.colorschema.ColorSchema
+import com.coc.zkqcode.utils.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.zkqnative.NativeTools
 
 class FindMultiColors {
-    private val screenShot = ScreenShot()
 
     /**
      * Finds the first occurrence of a multi-color schema in the bitmap using native code for performance.
@@ -14,15 +14,19 @@ class FindMultiColors {
      * @param schema The color schema to look for.
      * @return The Point where the main color was found, or null if not found.
      */
-    fun findMultiColors(bitmap: Bitmap? = null, schema: ColorSchema): Point? {
+    suspend fun findMultiColors(bitmap: Bitmap? = null, schema: ColorSchema): Point? {
         var usedBitmap = bitmap
         var shouldRecycle = false
         if (usedBitmap == null) {
-            usedBitmap = screenShot.takeScreenshot()
+            usedBitmap = ScreenCaptureManager.captureBitmap()
+//            usedBitmap= ScreenShot().takeScreenshot()
             shouldRecycle = true
         }
 
-        if (usedBitmap == null) return null
+        if (usedBitmap == null) {
+            println("bit map is null")
+            return null
+        }
 
         try {
             // Flatten the offsets list into an IntArray: [dx, dy, color, dx, dy, color...]

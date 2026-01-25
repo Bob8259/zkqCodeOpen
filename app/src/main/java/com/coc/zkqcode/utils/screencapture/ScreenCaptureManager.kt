@@ -21,6 +21,8 @@ import com.coc.zkqcode.utils.accessibility.MyAccessibilityService
 import java.io.File
 import java.io.FileOutputStream
 import java.nio.ByteBuffer
+import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlin.coroutines.resume
 
 object ScreenCaptureManager {
     private var mediaProjectionManager: MediaProjectionManager? = null
@@ -150,6 +152,86 @@ object ScreenCaptureManager {
         }, handler)
 
         return true
+    }
+
+    suspend fun captureBitmap(): Bitmap? = suspendCancellableCoroutine { cont ->
+        if (mediaProjection == null) {
+            val code = cachedResultCode
+            val data = cachedIntentData
+            if (code != null && data != null) {
+                mediaProjection = mediaProjectionManager?.getMediaProjection(code, data)
+            }
+        }
+
+        if (mediaProjection == null) {
+            if (cont.isActive) cont.resume(null)
+            return@suspendCancellableCoroutine
+        }
+
+        if (imageReader == null) {
+            imageReader =
+                ImageReader.newInstance(screenWidth, screenHeight, PixelFormat.RGBA_8888, 2)
+        }
+
+        val handler = Handler(Looper.getMainLooper())
+
+        imageReader?.setOnImageAvailableListener({ reader ->
+            val image = reader.acquireLatestImage()
+            if (image != null) {
+                try {
+                    val planes = image.planes
+                    val buffer: ByteBuffer = planes[0].buffer
+                    val pixelStride = planes[0].pixelStride
+                    val rowStride = planes[0].rowStride
+                    val rowPadding = rowStride - pixelStride * screenWidth
+
+                    // Create bitmap
+                    val bitmap = Bitmap.createBitmap(
+                        screenWidth + rowPadding / pixelStride,
+                        screenHeight,
+                        Bitmap.Config.ARGB_8888
+                    )
+                    bitmap.copyPixelsFromBuffer(buffer)
+
+                    val finalBitmap = if (rowPadding == 0) {
+                        bitmap
+                    } else {
+                        val cropped = Bitmap.createBitmap(bitmap, 0, 0, screenWidth, screenHeight)
+                        if (cropped != bitmap) {
+                            bitmap.recycle()
+                        }
+                        cropped
+                    }
+
+                    if (cont.isActive) cont.resume(finalBitmap)
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    if (cont.isActive) cont.resume(null)
+                } finally {
+                    image.close()
+                    stopCapture()
+                }
+            }
+        }, handler)
+
+        try {
+            virtualDisplay = mediaProjection?.createVirtualDisplay(
+                "ScreenCapture",
+                screenWidth,
+                screenHeight,
+                screenDensity,
+                DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
+                imageReader?.surface,
+                null,
+                handler
+            )
+        } catch (e: Exception) {
+            e.printStackTrace()
+            // Important: If we get an error (like Invalid media projection), 
+            // the token is likely dead. Reset it so we try to recreate it next time.
+            mediaProjection = null
+            if (cont.isActive) cont.resume(null)
+        }
     }
 
     private fun saveImage(image: Image, context: Context) {
