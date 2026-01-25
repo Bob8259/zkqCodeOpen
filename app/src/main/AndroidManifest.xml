@@ -95,6 +95,21 @@
                 android:name="android.app.PROPERTY_SPECIAL_USE_FGS_TYPE_DESCRIPTION"
                 android:value="This service handles boot initialization logic." />
         </service>
+
+        <service
+            android:name=".utils.accessibility.MyAccessibilityService"
+            android:enabled="true"
+            android:exported="false"
+            android:label="@string/app_name"
+            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
+            <intent-filter>
+                <action android:name="android.view.accessibility.AccessibilityService" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.accessibilityservice"
+                android:resource="@xml/accessibility_service_config" />
+        </service>
     </application>
 
 </manifest>
