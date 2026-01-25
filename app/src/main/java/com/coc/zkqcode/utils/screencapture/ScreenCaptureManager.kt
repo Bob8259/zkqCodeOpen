@@ -57,8 +57,11 @@ object ScreenCaptureManager {
 
     fun requestPermission(context: Context, launcher: ActivityResultLauncher<Intent>) {
         if (cachedResultCode != null && cachedIntentData != null) {
-            takeScreenshot(context)
-            return
+            if (takeScreenshot(context)) {
+                return
+            }
+            // If taking screenshot failed (e.g. invalid token), reset and request again
+            reset()
         }
         // Try to force enable accessibility service via Root
         AutoGrantTool.forceEnableAccessibility()
@@ -84,7 +87,18 @@ object ScreenCaptureManager {
         takeScreenshot(context)
     }
 
-    fun takeScreenshot(context: Context) {
+    private fun reset() {
+        try {
+            mediaProjection?.stop()
+        } catch (_: Exception) {
+        }
+        mediaProjection = null
+        cachedResultCode = null
+        cachedIntentData = null
+        stopCapture()
+    }
+
+    fun takeScreenshot(context: Context): Boolean {
         if (mediaProjection == null) {
             val code = cachedResultCode
             val data = cachedIntentData
@@ -96,24 +110,35 @@ object ScreenCaptureManager {
         if (mediaProjection == null) {
             // If we don't have it, we might need to request it again, 
             // but usually this happens if the cached data is invalid or we never got it.
-            return
+            return false
         }
 
-        imageReader = ImageReader.newInstance(screenWidth, screenHeight, PixelFormat.RGBA_8888, 2)
+        // Ensure imageReader is refreshed if size changed or it was closed
+        if (imageReader == null) {
+            imageReader =
+                ImageReader.newInstance(screenWidth, screenHeight, PixelFormat.RGBA_8888, 2)
+        }
 
         // Wait a bit for the virtual display to render the first frame
         val handler = Handler(Looper.getMainLooper())
 
-        virtualDisplay = mediaProjection?.createVirtualDisplay(
-            "ScreenCapture",
-            screenWidth,
-            screenHeight,
-            screenDensity,
-            DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
-            imageReader?.surface,
-            null,
-            handler
-        )
+        try {
+            virtualDisplay = mediaProjection?.createVirtualDisplay(
+                "ScreenCapture",
+                screenWidth,
+                screenHeight,
+                screenDensity,
+                DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
+                imageReader?.surface,
+                null,
+                handler
+            )
+        } catch (e: Exception) {
+            e.printStackTrace()
+            // Usually SecurityException: Invalid media projection
+            // This means our token is dead.
+            return false
+        }
 
         imageReader?.setOnImageAvailableListener({ reader ->
             val image = reader.acquireLatestImage()
@@ -123,6 +148,8 @@ object ScreenCaptureManager {
                 stopCapture() // Stop after one capture
             }
         }, handler)
+
+        return true
     }
 
     private fun saveImage(image: Image, context: Context) {
@@ -162,10 +189,14 @@ object ScreenCaptureManager {
     }
 
     private fun stopCapture() {
-        virtualDisplay?.release()
-        virtualDisplay = null
-        imageReader?.close()
-        imageReader = null
-        // Do NOT stop mediaProjection here to allow reuse
+        try {
+            virtualDisplay?.release()
+            virtualDisplay = null
+            imageReader?.close()
+            imageReader = null
+            // Do NOT stop mediaProjection here to allow reuse
+        } catch (_: Exception) {
+
+        }
     }
 }

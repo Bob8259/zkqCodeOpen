@@ -122,6 +122,7 @@ fun CheckRootScreen() {
                 LaunchedEffect(Unit) {
                     val serviceIntent = Intent(context, UIWindowService::class.java)
                     context.startService(serviceIntent)
+                    (context as? com.coc.zkqcode.MainActivity)?.requestMediaProjection()
                 }
                 Column(
                     modifier = Modifier.fillMaxSize(),
