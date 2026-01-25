@@ -82,6 +82,7 @@ fun HomeScreen(
         listOf("主页设置", "账号设置", "提取存档") + List(configCount) { "配置文件${it + 1}" }
 
     val saveAndRun = {
+
         ConfigManager.saveAndRun {
             onSaveSuccess()
         }
