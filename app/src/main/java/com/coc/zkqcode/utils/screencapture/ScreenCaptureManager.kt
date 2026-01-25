@@ -38,6 +38,17 @@ object ScreenCaptureManager {
 
     private val mainHandler = Handler(Looper.getMainLooper())
 
+    /**
+     * Callback to handle MediaProjection session termination.
+     * When session is stopped by the system or user, clean up resources.
+     */
+    private val projectionCallback = object : MediaProjection.Callback() {
+        override fun onStop() {
+            println("MediaProjection session stopped by system/user")
+            cleanupProjectionResources()
+        }
+    }
+
     fun init(context: Context) {
         appContext = context.applicationContext
         mediaProjectionManager = context.getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
@@ -64,27 +75,29 @@ object ScreenCaptureManager {
     }
 
     /**
-     * Internal helper to ensure MediaProjection is active using cached credentials
+     * Internal helper to ensure MediaProjection is active using cached credentials.
+     * Registers callback on new projection creation.
      */
     private fun ensureProjection(): MediaProjection? {
         if (mediaProjection == null) {
             val code = cachedResultCode
             val data = cachedIntentData
             if (code != null && data != null) {
-                mediaProjection = mediaProjectionManager?.getMediaProjection(code, data)
+                mediaProjection = mediaProjectionManager?.getMediaProjection(code, data)?.also {
+                    it.registerCallback(projectionCallback, mainHandler)
+                }
             }
         }
         return mediaProjection
     }
 
     /**
-     * Internal helper to ensure ImageReader matches current screen dimensions
+     * Always create a fresh ImageReader for each capture.
+     * Reusing ImageReader can cause listener state issues and buffered image problems.
      */
     private fun prepareImageReader() {
-        if (imageReader == null || imageReader?.width != screenWidth || imageReader?.height != screenHeight) {
-            imageReader?.close()
-            imageReader = ImageReader.newInstance(screenWidth, screenHeight, PixelFormat.RGBA_8888, 2)
-        }
+        imageReader?.close()
+        imageReader = ImageReader.newInstance(screenWidth, screenHeight, PixelFormat.RGBA_8888, 2)
     }
 
     fun requestPermission(launcher: ActivityResultLauncher<Intent>) {
@@ -105,16 +118,44 @@ object ScreenCaptureManager {
         if (resultCode == Activity.RESULT_OK) {
             cachedResultCode = resultCode
             cachedIntentData = data
-            mediaProjection = mediaProjectionManager?.getMediaProjection(resultCode, data)
+            mediaProjection = mediaProjectionManager?.getMediaProjection(resultCode, data)?.also {
+                it.registerCallback(projectionCallback, mainHandler)
+            }
         }
     }
 
+    /**
+     * Clean up projection-related resources (called when session stops).
+     * Does NOT clear cached credentials - allows session recreation.
+     */
+    private fun cleanupProjectionResources() {
+        virtualDisplay?.release()
+        virtualDisplay = null
+        imageReader?.close()
+        imageReader = null
+        mediaProjection = null
+    }
+
+    /**
+     * Full reset - clears everything including cached credentials.
+     * Use when you want to force a new permission prompt.
+     */
     private fun reset() {
         runCatching { mediaProjection?.stop() }
-        mediaProjection = null
+        cleanupProjectionResources()
         cachedResultCode = null
         cachedIntentData = null
-        stopCapture()
+    }
+
+    /**
+     * Public method to fully release all resources.
+     * Call this when the app is shutting down or no longer needs media projection.
+     */
+    fun releaseAll() {
+        runCatching { mediaProjection?.stop() }
+        cleanupProjectionResources()
+        cachedResultCode = null
+        cachedIntentData = null
     }
 
     fun takeScreenshot(): Boolean {
@@ -123,6 +164,11 @@ object ScreenCaptureManager {
         prepareImageReader()
 
         return try {
+            // Release existing VirtualDisplay to force a fresh frame
+            virtualDisplay?.release()
+            virtualDisplay = null
+            
+            println("Creating VirtualDisplay for screenshot")
             virtualDisplay = projection.createVirtualDisplay(
                 "ScreenCapture",
                 screenWidth, screenHeight, screenDensity,
@@ -133,6 +179,8 @@ object ScreenCaptureManager {
             true
         } catch (e: Exception) {
             e.printStackTrace()
+            // Projection likely invalid, clean up
+            cleanupProjectionResources()
             false
         }
     }
@@ -182,7 +230,7 @@ object ScreenCaptureManager {
                 if (cont.isActive) cont.resume(null)
             } finally {
                 image.close()
-                stopCapture()
+                // NOTE: No longer calling stopCapture() here - keep VirtualDisplay alive
             }
         }, mainHandler)
 
@@ -192,6 +240,11 @@ object ScreenCaptureManager {
         }
 
         try {
+            // Release existing VirtualDisplay to force a fresh frame
+            virtualDisplay?.release()
+            virtualDisplay = null
+            
+            println("Creating VirtualDisplay for capture")
             virtualDisplay = projection.createVirtualDisplay(
                 "ScreenCapture",
                 screenWidth, screenHeight, screenDensity,
@@ -199,18 +252,9 @@ object ScreenCaptureManager {
                 imageReader?.surface,
                 null, mainHandler
             )
-        } catch (e: Exception) {
-            mediaProjection = null // Token likely dead
+        } catch (_: Exception) {
+            cleanupProjectionResources() // Token likely dead
             if (cont.isActive) cont.resume(null)
-        }
-    }
-
-    private fun stopCapture() {
-        runCatching {
-            virtualDisplay?.release()
-            virtualDisplay = null
-            imageReader?.close()
-            imageReader = null
         }
     }
 }
