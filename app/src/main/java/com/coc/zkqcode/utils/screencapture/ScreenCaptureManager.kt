@@ -21,6 +21,8 @@ import com.coc.zkqcode.utils.accessibility.MyAccessibilityService
 import kotlinx.coroutines.suspendCancellableCoroutine
 import java.nio.ByteBuffer
 import kotlin.coroutines.resume
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 
 object ScreenCaptureManager {
     private var mediaProjectionManager: MediaProjectionManager? = null
@@ -37,6 +39,7 @@ object ScreenCaptureManager {
     private var cachedIntentData: Intent? = null
 
     private val mainHandler = Handler(Looper.getMainLooper())
+    private val captureMutex = Mutex()
 
     /**
      * Callback to handle MediaProjection session termination.
@@ -185,7 +188,8 @@ object ScreenCaptureManager {
         }
     }
 
-    suspend fun captureBitmap(): Bitmap? = suspendCancellableCoroutine { cont ->
+    suspend fun captureBitmap(): Bitmap? = captureMutex.withLock {
+        suspendCancellableCoroutine { cont ->
         updateMetrics()
         val projection = ensureProjection()
         
@@ -243,8 +247,7 @@ object ScreenCaptureManager {
             // Release existing VirtualDisplay to force a fresh frame
             virtualDisplay?.release()
             virtualDisplay = null
-            
-            println("Creating VirtualDisplay for capture")
+
             virtualDisplay = projection.createVirtualDisplay(
                 "ScreenCapture",
                 screenWidth, screenHeight, screenDensity,
@@ -256,5 +259,6 @@ object ScreenCaptureManager {
             cleanupProjectionResources() // Token likely dead
             if (cont.isActive) cont.resume(null)
         }
+    }
     }
 }
