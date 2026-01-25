@@ -35,6 +35,7 @@ import com.coc.zkqcode.utils.floatingwindows.UIWindowService
 import com.coc.zkqcode.utils.state.AppMode
 import com.coc.zkqcode.utils.state.AppStateManager
 import com.coc.zkqcode.utils.websocket.ServerConnection
+import com.topjohnwu.superuser.Shell
 
 @Composable
 fun CheckRootScreen() {
@@ -97,6 +98,20 @@ fun CheckRootScreen() {
         RootStatus.GRANTED -> {
             // Initialize FileActions and Configs once Root is GRANTED
             LaunchedEffect(Unit) {
+                // Get and store default IME
+                if (GlobalVars.defaultInputMethod == null) {
+                    val result = Shell.cmd("settings get secure default_input_method").exec()
+                    if (result.isSuccess && result.out.isNotEmpty()) {
+                        GlobalVars.defaultInputMethod = result.out[0]
+                    }
+                }
+
+                // Set app IME
+                Shell.cmd(
+                    "ime enable com.coc.zkqcode/.utils.inputmethod.InputMethodService",
+                    "ime set com.coc.zkqcode/.utils.inputmethod.InputMethodService"
+                ).exec()
+
                 if (GlobalVars.fileActions == null) {
                     val serverConnection = ServerConnection("ws://localhost:6839/zkq")
                     GlobalVars.fileActions = FileActions(serverConnection)

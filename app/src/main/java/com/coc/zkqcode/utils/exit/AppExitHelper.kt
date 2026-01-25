@@ -14,10 +14,22 @@ import kotlin.system.exitProcess
 object AppExitHelper {
 
     fun exitApplication(context: Context) {
+        restoreDefaultInputMethod()
         stopDaemonProcess()
         stopAllServices(context)
         // Kill the current process
         exitProcess(0)
+    }
+
+    private fun restoreDefaultInputMethod() {
+        val defaultIme = com.coc.zkqcode.utils.components.GlobalVars.defaultInputMethod
+        if (!defaultIme.isNullOrBlank()) {
+            try {
+                Shell.cmd("ime set $defaultIme").exec()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
     }
 
     private fun stopDaemonProcess() {
