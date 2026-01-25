@@ -14,17 +14,15 @@ import android.media.projection.MediaProjectionManager
 import android.os.Handler
 import android.os.Looper
 import android.util.DisplayMetrics
-import android.util.Log
 import android.view.WindowManager
 import androidx.activity.result.ActivityResultLauncher
+import androidx.core.graphics.createBitmap
 import com.coc.zkqcode.utils.accessibility.MyAccessibilityService
 import java.io.File
 import java.io.FileOutputStream
 import java.nio.ByteBuffer
-import androidx.core.graphics.createBitmap
 
 object ScreenCaptureManager {
-    private const val TAG = "ScreenCaptureManager"
     private var mediaProjectionManager: MediaProjectionManager? = null
     private var mediaProjection: MediaProjection? = null
     private var virtualDisplay: VirtualDisplay? = null
@@ -59,7 +57,6 @@ object ScreenCaptureManager {
 
     fun requestPermission(context: Context, launcher: ActivityResultLauncher<Intent>) {
         if (cachedResultCode != null && cachedIntentData != null) {
-            Log.d(TAG, "Using cached permission data")
             takeScreenshot(context)
             return
         }
@@ -74,7 +71,6 @@ object ScreenCaptureManager {
 
     fun onPermissionGranted(resultCode: Int, data: Intent, context: Context) {
         if (resultCode != Activity.RESULT_OK) {
-            Log.e(TAG, "Permission denied")
             return
         }
 
@@ -98,7 +94,6 @@ object ScreenCaptureManager {
         }
 
         if (mediaProjection == null) {
-            Log.e(TAG, "MediaProjection is null, cannot take screenshot")
             // If we don't have it, we might need to request it again, 
             // but usually this happens if the cached data is invalid or we never got it.
             return
@@ -154,13 +149,10 @@ object ScreenCaptureManager {
             finalBitmap.compress(Bitmap.CompressFormat.PNG, 100, fos)
             fos.flush()
             fos.close()
-            Log.d(TAG, "Screenshot saved to: ${file.absolutePath}")
-
             // Optional: Show toast or feedback
             println("截图已保存: ${file.name}")
 
-        } catch (e: Exception) {
-            Log.e(TAG, "Failed to save screenshot", e)
+        } catch (_: Exception) {
         } finally {
             if (finalBitmap != bitmap) {
                 bitmap.recycle()
