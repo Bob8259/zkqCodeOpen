@@ -17,9 +17,7 @@ class MainScript {
         CoroutineScope(Dispatchers.IO).launch {
             while (isActive) {
                 val startTime = System.currentTimeMillis()
-                println("start")
                 val foundPoint = findTool.findMultiColors(null, MyColors.Test)
-                println("end")
                 val executionTime = System.currentTimeMillis() - startTime
                 if (foundPoint != null) {
                     ShowMessage("Match FOUND at: (${foundPoint.x}, ${foundPoint.y})\nTime consumed: $executionTime")
