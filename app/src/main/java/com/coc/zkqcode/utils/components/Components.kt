@@ -73,6 +73,9 @@ object GlobalVars {
 
     // Configuration States
     val configStates = mutableMapOf<String, MutableState<String>>()
+
+    // IME management
+    var defaultInputMethod: String? = null
 }
 
 @Composable
@@ -130,28 +133,6 @@ fun InputRowWithCheckBox(
     }
 }
 
-@Composable
-fun FloatingDialog(message: String) {
-    Popup(
-        alignment = Alignment.Center,
-        offset = IntOffset(0, 400)
-    ) {
-        Surface(
-            modifier = Modifier
-                .wrapContentSize()
-                .padding(16.dp),
-            shape = RoundedCornerShape(16.dp),
-            color = Color.White,
-            shadowElevation = 8.dp
-        ) {
-            Box(
-                modifier = Modifier.padding(24.dp), contentAlignment = Alignment.Center
-            ) {
-                Text(text = message, color = Color.Black)
-            }
-        }
-    }
-}
 
 @Composable
 fun CustomAlertDialog(
@@ -240,6 +221,7 @@ class WindowCenterPositionProvider : PopupPositionProvider {
         )
     }
 }
+
 
 
 @Composable
