@@ -19,7 +19,6 @@ class FindMultiColors {
         var shouldRecycle = false
         if (usedBitmap == null) {
             usedBitmap = ScreenCaptureManager.captureBitmap()
-//            usedBitmap= ScreenShot().takeScreenshot()
             shouldRecycle = true
         }
 
