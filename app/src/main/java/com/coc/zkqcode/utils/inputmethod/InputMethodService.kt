@@ -2,20 +2,14 @@ package com.coc.zkqcode.utils.inputmethod
 
 import android.content.ClipboardManager
 import android.content.Context
-import android.util.Log
 
 /**
  * Custom Input Method Service that provides a function to read the clipboard.
  */
 class InputMethodService : android.inputmethodservice.InputMethodService() {
     
-    companion object {
-        private const val TAG = "ZkqInputMethodService"
-    }
-
     override fun onCreate() {
         super.onCreate()
-        Log.d(TAG, "InputMethodService created")
     }
 
     /**
@@ -36,7 +30,6 @@ class InputMethodService : android.inputmethodservice.InputMethodService() {
                 }
             }
         } catch (e: Exception) {
-            Log.e(TAG, "Error reading clipboard", e)
             null
         }
     }

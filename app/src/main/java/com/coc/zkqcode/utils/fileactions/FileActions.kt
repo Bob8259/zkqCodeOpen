@@ -109,4 +109,8 @@ class FileActions(
     fun updateConfig(newJson: JsonObject) {
         configJson = newJson
     }
+
+    fun close() {
+        serverConnection.close()
+    }
 }

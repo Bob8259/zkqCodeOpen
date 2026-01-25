@@ -40,9 +40,9 @@ class MyAccessibilityService : AccessibilityService() {
             // Scan all interactive windows
             for (window in windows) {
                 val rootNode = window.root ?: continue
-                if (findAndClickTarget(rootNode)) {
-                    break // Exit after successful click
-                }
+                val found = findAndClickTarget(rootNode)
+                rootNode.recycle()
+                if (found) break
             }
 
             // schedule it to be re-enabled after 10 seconds
@@ -62,20 +62,33 @@ class MyAccessibilityService : AccessibilityService() {
 
         val targetNode = idNodes.firstOrNull() ?: textNodes.firstOrNull() ?: enNodes.firstOrNull()
 
+        var result = false
         if (targetNode != null && targetNode.isEnabled) {
             performClick(targetNode)
             // Disable detection immediately after click to avoid interfering with other operations
             isDetectionEnabled = false
-            return true
+            result = true
         }
-        return false
+
+        // Clean up: recycle all nodes found
+        idNodes.forEach { it.recycle() }
+        textNodes.forEach { it.recycle() }
+        enNodes.forEach { it.recycle() }
+
+        return result
     }
 
     private fun performClick(node: AccessibilityNodeInfo) {
-        if (node.isClickable) {
-            node.performAction(AccessibilityNodeInfo.ACTION_CLICK)
-        } else {
-            node.parent?.let { performClick(it) }
+        var current: AccessibilityNodeInfo? = node
+        while (current != null) {
+            if (current.isClickable) {
+                current.performAction(AccessibilityNodeInfo.ACTION_CLICK)
+                if (current != node) current.recycle()
+                return
+            }
+            val parent = current.parent
+            if (current != node) current.recycle()
+            current = parent
         }
     }
 
