@@ -31,14 +31,14 @@ class MainActivity : ComponentActivity() {
 
             com.coc.zkqcode.utils.screencapture.ScreenCaptureManager.onPermissionGranted(
                 result.resultCode,
-                result.data!!,
-                this
+                result.data!!
             )
         }
     }
 
     fun requestMediaProjection() {
-        com.coc.zkqcode.utils.screencapture.ScreenCaptureManager.requestPermission(this, projectionLauncher)
+        com.coc.zkqcode.utils.screencapture.ScreenCaptureManager.requestPermission(
+            projectionLauncher)
     }
 
     override fun onDestroy() {
