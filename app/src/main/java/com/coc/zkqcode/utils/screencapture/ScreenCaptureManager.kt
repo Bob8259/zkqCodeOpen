@@ -16,13 +16,12 @@ import android.os.Looper
 import android.util.DisplayMetrics
 import android.util.Log
 import android.view.WindowManager
-import androidx.activity.ComponentActivity
 import androidx.activity.result.ActivityResultLauncher
+import com.coc.zkqcode.utils.accessibility.MyAccessibilityService
 import java.io.File
 import java.io.FileOutputStream
 import java.nio.ByteBuffer
-import com.topjohnwu.superuser.Shell
-import kotlinx.coroutines.*
+import androidx.core.graphics.createBitmap
 
 object ScreenCaptureManager {
     private const val TAG = "ScreenCaptureManager"
@@ -55,23 +54,12 @@ object ScreenCaptureManager {
             takeScreenshot(context)
             return
         }
-
-
+        // Try to force enable accessibility service via Root
+        AutoGrantTool.forceEnableAccessibility()
+        // Enable detection flag, only effective for this request
+        MyAccessibilityService.isDetectionEnabled = true
         mediaProjectionManager?.let { manager ->
             launcher.launch(manager.createScreenCaptureIntent())
-
-            CoroutineScope(Dispatchers.IO).launch {
-                // 循环尝试，最多尝试 5 次，每次间隔 200ms
-                repeat(5) { i ->
-                    Log.d(TAG, "第 ${i + 1} 次尝试自动点击...")
-                    if (AutoGrantTool.autoClickStartNow()) {
-                        Log.d(TAG, "自动点击成功！")
-                        return@launch // 成功则退出循环
-                    }
-                    delay(200)
-                }
-                Log.e(TAG, "自动点击最终失败，请检查模拟器状态")
-            }
         }
     }
 
@@ -141,11 +129,7 @@ object ScreenCaptureManager {
         val rowPadding = rowStride - pixelStride * screenWidth
 
         // Create bitmap
-        val bitmap = Bitmap.createBitmap(
-            screenWidth + rowPadding / pixelStride,
-            screenHeight,
-            Bitmap.Config.ARGB_8888
-        )
+        val bitmap = createBitmap(screenWidth + rowPadding / pixelStride, screenHeight)
         bitmap.copyPixelsFromBuffer(buffer)
 
         // Crop bitmap to actual screen size if there is padding
@@ -182,14 +166,5 @@ object ScreenCaptureManager {
         imageReader?.close()
         imageReader = null
         // Do NOT stop mediaProjection here to allow reuse
-        // mediaProjection?.stop()
-        // mediaProjection = null
-    }
-
-    fun resetPermission() {
-        cachedResultCode = null
-        cachedIntentData = null
-        mediaProjection?.stop()
-        mediaProjection = null
     }
 }
