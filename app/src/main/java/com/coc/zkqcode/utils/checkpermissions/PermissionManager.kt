@@ -39,6 +39,12 @@ object PermissionManager {
             // 2.5 增加电池优化白名单检测
             BatteryOptimizationHelper.requestIgnoreBatteryOptimizations(context)
 
+            // 2.6 开启无障碍服务
+            AccessibilityPermissionHelper.enableAccessibilityWithRoot(
+                context.packageName,
+                "com.coc.zkqcode.utils.accessibility.MyAccessibilityService"
+            )
+
             // 3. 再次检测权限是否真的拿到了（因为部分系统 pm grant 对悬浮窗无效）
             val hasOverlay = Settings.canDrawOverlays(context)
             val hasNotification = NotificationManagerCompat.from(context).areNotificationsEnabled()
