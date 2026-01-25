@@ -32,14 +32,21 @@ object ScreenCaptureManager {
     private var screenWidth = 0
     private var screenHeight = 0
     private var screenDensity = 0
+    private var appContext: Context? = null
 
     // Cache the intent data and result code to reuse for subsequent captures
     private var cachedResultCode: Int? = null
     private var cachedIntentData: Intent? = null
 
     fun init(context: Context) {
+        appContext = context.applicationContext
         mediaProjectionManager =
             context.getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
+        updateMetrics()
+    }
+
+    private fun updateMetrics() {
+        val context = appContext ?: return
         val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
@@ -101,6 +108,7 @@ object ScreenCaptureManager {
     }
 
     fun takeScreenshot(context: Context): Boolean {
+        updateMetrics()
         if (mediaProjection == null) {
             val code = cachedResultCode
             val data = cachedIntentData
@@ -116,7 +124,8 @@ object ScreenCaptureManager {
         }
 
         // Ensure imageReader is refreshed if size changed or it was closed
-        if (imageReader == null) {
+        if (imageReader == null || imageReader?.width != screenWidth || imageReader?.height != screenHeight) {
+            imageReader?.close()
             imageReader =
                 ImageReader.newInstance(screenWidth, screenHeight, PixelFormat.RGBA_8888, 2)
         }
@@ -155,6 +164,7 @@ object ScreenCaptureManager {
     }
 
     suspend fun captureBitmap(): Bitmap? = suspendCancellableCoroutine { cont ->
+        updateMetrics()
         if (mediaProjection == null) {
             val code = cachedResultCode
             val data = cachedIntentData
@@ -168,7 +178,8 @@ object ScreenCaptureManager {
             return@suspendCancellableCoroutine
         }
 
-        if (imageReader == null) {
+        if (imageReader == null || imageReader?.width != screenWidth || imageReader?.height != screenHeight) {
+            imageReader?.close()
             imageReader =
                 ImageReader.newInstance(screenWidth, screenHeight, PixelFormat.RGBA_8888, 2)
         }
@@ -186,11 +197,7 @@ object ScreenCaptureManager {
                     val rowPadding = rowStride - pixelStride * screenWidth
 
                     // Create bitmap
-                    val bitmap = Bitmap.createBitmap(
-                        screenWidth + rowPadding / pixelStride,
-                        screenHeight,
-                        Bitmap.Config.ARGB_8888
-                    )
+                    val bitmap = createBitmap(screenWidth + rowPadding / pixelStride, screenHeight)
                     bitmap.copyPixelsFromBuffer(buffer)
 
                     val finalBitmap = if (rowPadding == 0) {

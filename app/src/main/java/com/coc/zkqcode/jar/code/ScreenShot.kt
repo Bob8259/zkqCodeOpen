@@ -1,4 +1,5 @@
 package com.coc.zkqcode.jar.code
+//This code is outdated, but do not remove it. It is the correct code, so if the new code is not working, we can compare the new code with this old code.
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
