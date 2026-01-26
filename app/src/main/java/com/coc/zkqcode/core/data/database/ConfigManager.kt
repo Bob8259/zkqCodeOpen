@@ -3,9 +3,9 @@ package com.coc.zkqcode.core.data.database
 import android.os.Environment
 import androidx.compose.runtime.mutableStateOf
 import com.coc.zkqcode.core.ui.components.GlobalVars
-import com.coc.zkqcode.utils.fileactions.FileActions
-import com.coc.zkqcode.utils.state.AppMode
-import com.coc.zkqcode.utils.state.AppStateManager
+import com.coc.zkqcode.core.util.fileactions.FileActions
+import com.coc.zkqcode.statehelper.AppMode
+import com.coc.zkqcode.statehelper.AppStateManager
 
 object ConfigManager {
 

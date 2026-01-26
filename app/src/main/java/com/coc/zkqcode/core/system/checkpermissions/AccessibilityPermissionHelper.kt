@@ -1,4 +1,4 @@
-package com.coc.zkqcode.utils.checkpermissions
+package com.coc.zkqcode.core.system.checkpermissions
 
 import com.topjohnwu.superuser.Shell
 

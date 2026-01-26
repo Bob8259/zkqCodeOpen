@@ -1,4 +1,4 @@
-package com.coc.zkqcode.utils.checkpermissions
+package com.coc.zkqcode.core.system.checkpermissions
 
 import android.content.Intent
 import android.net.Uri
@@ -27,13 +27,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.coc.zkqcode.MainActivity
 import com.coc.zkqcode.core.ui.components.CustomButton
 import com.coc.zkqcode.core.ui.components.GlobalVars
 import com.coc.zkqcode.core.data.database.ConfigManager
-import com.coc.zkqcode.utils.fileactions.FileActions
+import com.coc.zkqcode.core.util.fileactions.FileActions
 import com.coc.zkqcode.core.ui.floatingwindows.UIWindowService
-import com.coc.zkqcode.utils.state.AppMode
-import com.coc.zkqcode.utils.state.AppStateManager
+import com.coc.zkqcode.statehelper.AppMode
+import com.coc.zkqcode.statehelper.AppStateManager
 import com.coc.zkqcode.core.data.websocket.ServerConnection
 import com.topjohnwu.superuser.Shell
 
@@ -139,7 +140,7 @@ fun CheckRootScreen() {
 
                     val serviceIntent = Intent(context, UIWindowService::class.java)
                     context.startService(serviceIntent)
-                    (context as? com.coc.zkqcode.MainActivity)?.requestMediaProjection()
+                    (context as? MainActivity)?.requestMediaProjection()
                 }
                 Column(
                     modifier = Modifier.fillMaxSize(),

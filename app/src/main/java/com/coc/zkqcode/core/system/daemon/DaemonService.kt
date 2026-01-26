@@ -1,16 +1,19 @@
-package com.coc.zkqcode.utils.daemon
+package com.coc.zkqcode.core.system.daemon
 
 import android.app.Notification
 import android.app.Service
 import android.content.Intent
 import android.os.IBinder
 import com.coc.zkqcode.MainActivity
-import com.coc.zkqcode.utils.fileactions.FileActions
+import com.coc.zkqcode.core.util.fileactions.FileActions
 import com.coc.zkqcode.core.ui.floatingwindows.NotificationHelper
 import com.coc.zkqcode.core.data.websocket.ServerConnection
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.net.InetSocketAddress
+import java.net.Socket
 
 class DaemonService : Service() {
 
@@ -72,13 +75,13 @@ class DaemonService : Service() {
         val startTime = System.currentTimeMillis()
         while (System.currentTimeMillis() - startTime < timeoutMs) {
             try {
-                val socket = java.net.Socket()
-                socket.connect(java.net.InetSocketAddress("localhost", port), 200)
+                val socket = Socket()
+                socket.connect(InetSocketAddress("localhost", port), 200)
                 socket.close()
                 return true
             } catch (_: Exception) {
                 // Ignore and retry
-                kotlinx.coroutines.delay(500)
+                delay(500)
             }
         }
         return false

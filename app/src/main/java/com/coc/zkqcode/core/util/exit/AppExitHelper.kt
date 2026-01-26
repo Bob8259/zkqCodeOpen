@@ -1,4 +1,4 @@
-package com.coc.zkqcode.utils.exit
+package com.coc.zkqcode.core.util.exit
 
 import android.content.Context
 import android.content.Intent

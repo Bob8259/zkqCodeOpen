@@ -19,8 +19,8 @@ import androidx.savedstate.SavedStateRegistryController
 import androidx.savedstate.SavedStateRegistryOwner
 import androidx.savedstate.setViewTreeSavedStateRegistryOwner
 import com.coc.zkqcode.loadjar.Loadjar
-import com.coc.zkqcode.utils.state.AppMode
-import com.coc.zkqcode.utils.state.AppStateManager
+import com.coc.zkqcode.statehelper.AppMode
+import com.coc.zkqcode.statehelper.AppStateManager
 import androidx.compose.runtime.mutableStateOf
 import kotlinx.coroutines.*
 import android.content.res.Configuration

@@ -1,12 +1,10 @@
 package com.coc.zkqcode.core.ui.components
 
-import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
@@ -52,7 +50,7 @@ import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupPositionProvider
 import androidx.compose.ui.window.PopupProperties
 import com.coc.zkqcode.interfaces.MainCode
-import com.coc.zkqcode.utils.fileactions.FileActions
+import com.coc.zkqcode.core.util.fileactions.FileActions
 import com.coc.zkqcode.core.ui.theme.AppColors
 import com.coc.zkqcode.core.data.database.Schema
 import kotlinx.coroutines.delay

@@ -12,8 +12,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import com.coc.zkqcode.interfaces.MainCode
 import com.coc.zkqcode.core.ui.components.GlobalVars
-import com.coc.zkqcode.utils.state.AppMode
-import com.coc.zkqcode.utils.state.AppStateManager
+import com.coc.zkqcode.statehelper.AppMode
+import com.coc.zkqcode.statehelper.AppStateManager
 import dalvik.system.DexClassLoader
 import java.io.File
 
@@ -117,7 +117,7 @@ class Loadjar(private val context: Context) {
             val encryptedBytes = file.readBytes()
 
             // 2. Decrypt
-            val decryptedBytes = com.coc.zkqcode.zkqnative.NativeTools.decryptJar(encryptedBytes)
+            val decryptedBytes = com.coc.zkqcode.nativehelper.NativeTools.decryptJar(encryptedBytes)
             if (decryptedBytes.isEmpty()) return false
 
             val classLoader: ClassLoader =
@@ -150,7 +150,7 @@ class Loadjar(private val context: Context) {
                         "loadEncryptedPlugin: Using memfd fallback for API ${android.os.Build.VERSION.SDK_INT}"
                     )
 
-                    val fd = com.coc.zkqcode.zkqnative.NativeTools.createInMemoryDex(decryptedBytes)
+                    val fd = com.coc.zkqcode.nativehelper.NativeTools.createInMemoryDex(decryptedBytes)
 
                     if (fd < 0) {
                         android.util.Log.e(

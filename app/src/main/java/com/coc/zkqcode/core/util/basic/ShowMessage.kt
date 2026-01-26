@@ -1,12 +1,13 @@
-package com.coc.zkqcode.utils.basic
+package com.coc.zkqcode.core.util.basic
 
+import android.content.Context
 import com.coc.zkqcode.core.ui.floatingwindows.MessageBoxHelper.showFloatingMessage
 import java.lang.ref.WeakReference
 
 object ShowMessage {
-    private var contextRef: WeakReference<android.content.Context>? = null
+    private var contextRef: WeakReference<Context>? = null
 
-    fun init(context: android.content.Context) {
+    fun init(context: Context) {
         this.contextRef = WeakReference(context.applicationContext)
     }
 
