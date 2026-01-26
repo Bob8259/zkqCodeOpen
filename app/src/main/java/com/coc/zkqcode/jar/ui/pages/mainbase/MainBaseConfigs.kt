@@ -55,7 +55,7 @@ fun MainBaseConfig(index: Int, onNavigatePriority: (Int) -> Unit = {}) {
             },
         )
         InputRow(
-            label = MAIN_BASE_SETTINGS.GOLD_REQUIREMENT.displayName + "(-1表示默认值):",
+            label = MAIN_BASE_SETTINGS.GOLD_REQUIREMENT.displayName,
             value = GlobalVars.configStates["${MAIN_BASE_SETTINGS.GOLD_REQUIREMENT.key}_c$index"]!!.value,
             onValueChange = {
                 GlobalVars.configStates["${MAIN_BASE_SETTINGS.GOLD_REQUIREMENT.key}_c$index"]!!.value =
@@ -63,7 +63,7 @@ fun MainBaseConfig(index: Int, onNavigatePriority: (Int) -> Unit = {}) {
             }
         )
         InputRow(
-            label = MAIN_BASE_SETTINGS.ELIXIR_REQUIREMENT.displayName + "(-1表示默认值):",
+            label = MAIN_BASE_SETTINGS.ELIXIR_REQUIREMENT.displayName,
             value = GlobalVars.configStates["${MAIN_BASE_SETTINGS.ELIXIR_REQUIREMENT.key}_c$index"]!!.value,
             onValueChange = {
                 GlobalVars.configStates["${MAIN_BASE_SETTINGS.ELIXIR_REQUIREMENT.key}_c$index"]!!.value =
@@ -71,7 +71,7 @@ fun MainBaseConfig(index: Int, onNavigatePriority: (Int) -> Unit = {}) {
             }
         )
         InputRow(
-            label = MAIN_BASE_SETTINGS.DARK_ELIXIR_REQUIREMENT.displayName + "(-1表示默认值):",
+            label = MAIN_BASE_SETTINGS.DARK_ELIXIR_REQUIREMENT.displayName,
             value = GlobalVars.configStates["${MAIN_BASE_SETTINGS.DARK_ELIXIR_REQUIREMENT.key}_c$index"]!!.value,
             onValueChange = {
                 GlobalVars.configStates["${MAIN_BASE_SETTINGS.DARK_ELIXIR_REQUIREMENT.key}_c$index"]!!.value =

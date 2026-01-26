@@ -58,6 +58,7 @@ import kotlinx.coroutines.delay
 
 
 object GlobalVars {
+    // Basic componeents
     var fileActions by mutableStateOf<FileActions?>(null)
     var pluginUI: MainCode? = null
 
@@ -76,6 +77,9 @@ object GlobalVars {
 
     // IME management
     var defaultInputMethod: String? = null
+
+    //Running state management
+    var isPaused = false
 }
 
 @Composable
@@ -221,7 +225,6 @@ class WindowCenterPositionProvider : PopupPositionProvider {
         )
     }
 }
-
 
 
 @Composable
