@@ -1,15 +1,12 @@
 package com.coc.zkqcode.utils.daemon
 
 import android.app.Notification
-import android.app.NotificationChannel
-import android.app.NotificationManager
 import android.app.Service
 import android.content.Intent
-import android.os.Build
 import android.os.IBinder
 import com.coc.zkqcode.MainActivity
-import com.coc.zkqcode.utils.floatingwindows.NotificationHelper
 import com.coc.zkqcode.utils.fileactions.FileActions
+import com.coc.zkqcode.utils.floatingwindows.NotificationHelper
 import com.coc.zkqcode.utils.websocket.ServerConnection
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
