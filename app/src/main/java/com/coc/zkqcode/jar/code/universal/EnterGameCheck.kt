@@ -1,4 +1,4 @@
-package com.coc.zkqcode.jar.code.utils
+package com.coc.zkqcode.jar.code.universal
 
-class EnterGame {
+class EnterGameCheck {
 }
