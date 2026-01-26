@@ -85,22 +85,6 @@ object GlobalVars {
 }
 
 @Composable
-fun ExpandableContent(visible: Boolean, content: @Composable () -> Unit) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .animateContentSize()
-    ) {
-        if (visible) {
-            // 这里建议包一层 Column 以确保测量稳定
-            Column(modifier = Modifier.fillMaxWidth()) {
-                content()
-            }
-        }
-    }
-}
-
-@Composable
 fun InputRowWithCheckBox(
     label: String,
     value: String,
@@ -233,17 +217,19 @@ class WindowCenterPositionProvider : PopupPositionProvider {
 fun SettingInputRow(key: String, afterChange: ((String) -> Unit)? = null) {
     // 1. 统一获取状态和显示名称
     val state = GlobalVars.configStates[key]
-        ?: error("找不到配置项: $key，请检查初始化逻辑")
+        ?: error("Config: $key Not Found")
     val label = Schema.getDisplayName(key)
 
     // 2. 渲染 UI 逻辑
     Row(
-        modifier = Modifier.padding(vertical = 4.dp)
+        modifier = Modifier
+            .padding(top = 2.dp)
+            .padding(bottom = 4.dp)
     ) {
         Text(
             text = label,
             modifier = Modifier
-                .padding(end = 16.dp)
+                .padding(end = 8.dp)
                 .align(Alignment.CenterVertically),
             style = MaterialTheme.typography.labelMedium
         )
@@ -362,12 +348,11 @@ private fun CustomCheckBox(
 
     var showExplanation by remember { mutableStateOf(false) }
 
-    Row(modifier = Modifier.padding(top = 6.dp)) {
+    Row(modifier = Modifier.padding(top = 4.dp)) {
         Checkbox(
             checked = checkedState == "1", onCheckedChange = { isChecked ->
                 GlobalVars.isAutoRunEnabled = false
                 onCheckStateChange(isChecked)
-
             }, modifier = Modifier
                 .height(20.dp)
                 .width(25.dp),
@@ -386,7 +371,7 @@ private fun CustomCheckBox(
             }) {
             Text(
                 text = text,
-                modifier = Modifier.padding(top = if (explain != null) 2.dp else 4.dp),
+                modifier = Modifier.padding(top = 2.dp),
                 style = MaterialTheme.typography.labelMedium
             )
 
