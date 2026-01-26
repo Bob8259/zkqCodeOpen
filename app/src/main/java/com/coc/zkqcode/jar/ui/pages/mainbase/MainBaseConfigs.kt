@@ -1,3 +1,5 @@
+@file:Suppress("FunctionName")
+
 package com.coc.zkqcode.jar.ui.pages.mainbase
 
 import androidx.compose.foundation.layout.FlowRow
