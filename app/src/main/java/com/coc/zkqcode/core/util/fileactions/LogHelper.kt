@@ -20,6 +20,11 @@ object LogHelper {
         }
     }
 
+    fun logAndDie(message: String): Nothing {
+        Timber.e("CRITICAL_ERROR: $message")
+        error(message) // 抛出 IllegalStateException
+    }
+
     class FileLoggingTree(private val context: Context) : Timber.Tree() {
         @SuppressLint("LogNotTimber")
         override fun log(priority: Int, tag: String?, message: String, t: Throwable?) {
@@ -29,7 +34,8 @@ object LogHelper {
             val fileName = if (priority >= Log.ERROR) "error.log" else "info.log"
             val logFile = File(logDir, fileName)
 
-            val timestamp = SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.getDefault()).format(Date())
+            val timestamp =
+                SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.getDefault()).format(Date())
             val logEntry = "$timestamp [$tag] $message\n"
 
             try {

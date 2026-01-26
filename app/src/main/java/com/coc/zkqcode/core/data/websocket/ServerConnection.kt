@@ -1,12 +1,12 @@
 package com.coc.zkqcode.core.data.websocket
 
-import android.util.Log
 import com.google.gson.Gson
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
 import okhttp3.WebSocket
 import okhttp3.WebSocketListener
+import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
 class ServerConnection(private val url: String) {
@@ -15,18 +15,17 @@ class ServerConnection(private val url: String) {
             .readTimeout(0, TimeUnit.MILLISECONDS)
             .build()
     }
-    private val TAG = "ServerConnection"
     private val gson = Gson()
     private var webSocket: WebSocket? = null
     private var onMessageReceived: ((String) -> Unit)? = null
 
     fun connect(onOpen: () -> Unit, onMessage: (String) -> Unit, onFailure: (Throwable) -> Unit) {
-        Log.d(TAG, "Connecting to $url")
+        Timber.d("Connecting to $url")
         this.onMessageReceived = onMessage
         val request = Request.Builder().url(url).build()
         webSocket = client.newWebSocket(request, object : WebSocketListener() {
             override fun onOpen(webSocket: WebSocket, response: Response) {
-                Log.d(TAG, "WebSocket Opened")
+                Timber.d("WebSocket Opened")
                 onOpen()
             }
 
@@ -35,16 +34,16 @@ class ServerConnection(private val url: String) {
             }
 
             override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
-                Log.e(TAG, "WebSocket Failure: ${t.message}", t)
+                Timber.e(t, "WebSocket Failure: ${t.message}")
                 onFailure(t)
             }
 
             override fun onClosing(webSocket: WebSocket, code: Int, reason: String) {
-                Log.d(TAG, "WebSocket Closing: $code / $reason")
+                Timber.d("WebSocket Closing: $code / $reason")
             }
 
             override fun onClosed(webSocket: WebSocket, code: Int, reason: String) {
-                Log.d(TAG, "WebSocket Closed: $code / $reason")
+                Timber.d("WebSocket Closed: $code / $reason")
             }
         })
     }
@@ -53,12 +52,12 @@ class ServerConnection(private val url: String) {
         val json = gson.toJson(action)
         val sent = webSocket?.send(json) ?: false
         if (!sent) {
-            Log.e(TAG, "Failed to send message (WebSocket might be null or closed)")
+            Timber.e("Failed to send message (WebSocket might be null or closed)")
         }
     }
 
     fun close() {
-        Log.d(TAG, "Closing WebSocket")
+        Timber.d("Closing WebSocket")
         webSocket?.close(1000, "Normal closure")
         webSocket = null
         onMessageReceived = null

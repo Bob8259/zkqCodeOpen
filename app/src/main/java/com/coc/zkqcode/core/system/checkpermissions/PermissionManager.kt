@@ -3,16 +3,14 @@ package com.coc.zkqcode.core.system.checkpermissions
 import android.content.Context
 import android.provider.Settings
 import androidx.core.app.NotificationManagerCompat
-import android.util.Log
 import com.coc.zkqcode.core.system.daemon.ServerManager
 import com.topjohnwu.superuser.Shell
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
+import timber.log.Timber
 
 object PermissionManager {
-    private const val TAG = "PermissionManager"
-
     /**
      * 核心检测逻辑
      */
@@ -64,7 +62,7 @@ object PermissionManager {
                 while (response == null && attempts < 10) {
                     response = ServerHelper.waitForServerResponse()
                     if (response == null) {
-                        Log.d(TAG, "Server not responding, retrying... (Attempt ${attempts + 1})")
+                        Timber.d("Server not responding, retrying... (Attempt ${attempts + 1})")
                         ServerManager.startServer(context)
                         delay(1000)
                         attempts++
