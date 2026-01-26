@@ -11,7 +11,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.coc.zkqcode.utils.components.CustomButton
-import com.coc.zkqcode.utils.components.CustomCheckBox
+import com.coc.zkqcode.utils.components.SettingCheckBox
 import com.coc.zkqcode.utils.components.GlobalVars
 import com.coc.zkqcode.utils.database.Schema.NIGHT_BASE_TROOPS
 import kotlin.collections.set
@@ -57,19 +57,7 @@ fun NightBaseResearchConfigs(index: Int) {
     if (isExpanded.value) {
         FlowRow {
             items.forEach { item ->
-                CustomCheckBox(
-                    checkedState = GlobalVars.configStates["${item.key}_c${index}"]!!.value,
-                    onCheckStateChange = { isChecked ->
-                        val key = "${item.key}_c${index}"
-                        val newValue = if (isChecked) "1" else "0"
-                        if (!GlobalVars.configStates.containsKey(key)) {
-                            GlobalVars.configStates[key] = mutableStateOf(newValue)
-                        } else {
-                            GlobalVars.configStates[key]!!.value = newValue
-                        }
-                    },
-                    text = item.displayName,
-                )
+                SettingCheckBox(key = "${item.key}_c${index}")
             }
         }
     }

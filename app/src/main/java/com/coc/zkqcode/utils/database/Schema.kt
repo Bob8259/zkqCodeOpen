@@ -10,6 +10,20 @@ data class SettingDef(
 )
 
 object Schema {
+    private val keyToDisplayName by lazy {
+        SchemaRegistry.ALL_MODULES.flatMap { it.settings }.associateBy({ it.key }, { it.displayName })
+    }
+
+    fun getDisplayName(fullKey: String): String {
+        // Strip profile suffix (_c1, _c2, ...)
+        var baseKey = fullKey.replace(Regex("_c\\d+$"), "")
+        // Strip account suffix (trailing digits if no _c)
+        if (baseKey == fullKey) {
+            baseKey = fullKey.replace(Regex("\\d+$"), "")
+        }
+        return keyToDisplayName[baseKey] ?: fullKey
+    }
+
     // --- 1. Global Settings Definitions (Formerly basicConfigs) ---
     object GLOBAL_SETTINGS {
         val CONFIG_COUNT = SettingDef("config_count", "配置文件数量", "3", "GLOBAL_SETTINGS")

@@ -36,7 +36,7 @@ import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
 import com.coc.zkqcode.utils.components.CustomButton
 import com.coc.zkqcode.utils.components.GlobalVars
-import com.coc.zkqcode.utils.components.InputRow
+import com.coc.zkqcode.utils.components.SettingInputRow
 import com.coc.zkqcode.utils.database.Schema.GLOBAL_SETTINGS
 import com.coc.zkqcode.zkqnative.NativeTools
 import kotlinx.coroutines.launch
@@ -282,11 +282,7 @@ fun LoginScreen() {
             }
         }
 
-        InputRow(
-            label = GLOBAL_SETTINGS.EMAIL.displayName,
-            value = GlobalVars.configStates[GLOBAL_SETTINGS.EMAIL.key]!!.value,
-            onValueChange = { GlobalVars.configStates[GLOBAL_SETTINGS.EMAIL.key]!!.value = it },
-        )
+        SettingInputRow(key = GLOBAL_SETTINGS.EMAIL.key)
         var isPasswordVisible by remember { mutableStateOf(false) }
         Row {
             Text(

@@ -15,10 +15,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.coc.zkqcode.utils.components.CustomButton
 import androidx.compose.foundation.layout.Row
-import com.coc.zkqcode.utils.components.CustomCheckBox
+import com.coc.zkqcode.utils.components.SettingCheckBox
 import com.coc.zkqcode.utils.components.ExpandableContent
 import com.coc.zkqcode.utils.components.GlobalVars
-import com.coc.zkqcode.utils.components.InputRow
+import com.coc.zkqcode.utils.components.SettingInputRow
 import com.coc.zkqcode.utils.database.Schema.NIGHT_BASE_SETTINGS
 
 @Composable
@@ -39,104 +39,39 @@ fun NightBaseConfig(index: Int, onNavigateNightPriority: (Int) -> Unit = {}) {
         )
     }
     ExpandableContent(isNightBaseExpanded) {
-        CustomCheckBox(
-            checkedState = GlobalVars.configStates["${NIGHT_BASE_SETTINGS.NO_BUILDER_BASE.key}_c${index}"]!!.value,
-            onCheckStateChange = {
-                GlobalVars.configStates["${NIGHT_BASE_SETTINGS.NO_BUILDER_BASE.key}_c${index}"]!!.value = if (it) "1" else "0"
-            },
-            text = NIGHT_BASE_SETTINGS.NO_BUILDER_BASE.displayName,
+        SettingCheckBox(
+            key = "${NIGHT_BASE_SETTINGS.NO_BUILDER_BASE.key}_c${index}",
             explain = "勾选后，紫孔雀将完全不会进入夜世界。换言之，夜世界的所有设置都将失效！\n但因为紫孔雀只会接取夜世界竞赛任务，所以如果接取了部落竞赛的任务，那么就算勾选了不打夜世界，紫孔雀也会打夜世界。"
         )
         ExpandableContent(GlobalVars.configStates["${NIGHT_BASE_SETTINGS.NO_BUILDER_BASE.key}_c${index}"]!!.value == "0") {
             Row {
-                CustomCheckBox(
-                    checkedState = GlobalVars.configStates["${NIGHT_BASE_SETTINGS.BUILDER_BASE_FARMING.key}_c${index}"]!!.value,
-                    onCheckStateChange = {
-                        GlobalVars.configStates["${NIGHT_BASE_SETTINGS.BUILDER_BASE_FARMING.key}_c${index}"]!!.value =
-                            if (it) "1" else "0"
-                    },
-                    text = NIGHT_BASE_SETTINGS.BUILDER_BASE_FARMING.displayName,
+                SettingCheckBox(
+                    key = "${NIGHT_BASE_SETTINGS.BUILDER_BASE_FARMING.key}_c${index}",
                     explain = "紫孔雀会自动配兵，暂不支持手动配兵。若未勾选“上分模式”和“刷圣水车”，紫孔雀就会根据账号的资源数量，智能选择对战模式。"
                 )
-                CustomCheckBox(
-                    checkedState = GlobalVars.configStates["${NIGHT_BASE_SETTINGS.STOP_WHEN_RESOURCE_FULL.key}_c${index}"]!!.value,
-                    onCheckStateChange = {
-                        GlobalVars.configStates["${NIGHT_BASE_SETTINGS.STOP_WHEN_RESOURCE_FULL.key}_c${index}"]!!.value =
-                            if (it) "1" else "0"
-                    },
-                    text = NIGHT_BASE_SETTINGS.STOP_WHEN_RESOURCE_FULL.displayName,
-                )
+                SettingCheckBox(key = "${NIGHT_BASE_SETTINGS.STOP_WHEN_RESOURCE_FULL.key}_c${index}")
             }
-            InputRow(
-                label = NIGHT_BASE_SETTINGS.SWITCH_ACCOUNT_AFTER_BATTLES.displayName,
-                value = GlobalVars.configStates["${NIGHT_BASE_SETTINGS.SWITCH_ACCOUNT_AFTER_BATTLES.key}_c${index}"]!!.value,
-                onValueChange = {
-                    GlobalVars.configStates["${NIGHT_BASE_SETTINGS.SWITCH_ACCOUNT_AFTER_BATTLES.key}_c${index}"]!!.value = it
-                }
-            )
+            SettingInputRow(key = "${NIGHT_BASE_SETTINGS.SWITCH_ACCOUNT_AFTER_BATTLES.key}_c${index}")
             Row {
-                CustomCheckBox(
-                    checkedState = GlobalVars.configStates["${NIGHT_BASE_SETTINGS.TROPHY_PUSHING_MODE.key}_c${index}"]!!.value,
-                    onCheckStateChange = {
-                        GlobalVars.configStates["${NIGHT_BASE_SETTINGS.TROPHY_PUSHING_MODE.key}_c$index"]!!.value =
-                            if (it) "1" else "0"
-                        GlobalVars.configStates["${NIGHT_BASE_SETTINGS.ELIXIR_CART_FARMING.key}_c${index}"]!!.value = "0"
-                    },
-                    text = NIGHT_BASE_SETTINGS.TROPHY_PUSHING_MODE.displayName,
+                SettingCheckBox(
+                    key = "${NIGHT_BASE_SETTINGS.TROPHY_PUSHING_MODE.key}_c${index}",
                     explain = "勾选后，紫孔雀会使用暗夜女巫进行上分，刷圣水效率会显著降低，请谨慎勾选。不可与“刷圣水车”同时勾选。"
                 )
-                CustomCheckBox(
-                    checkedState = GlobalVars.configStates["${NIGHT_BASE_SETTINGS.ELIXIR_CART_FARMING.key}_c${index}"]!!.value,
-                    onCheckStateChange = {
-                        GlobalVars.configStates["${NIGHT_BASE_SETTINGS.ELIXIR_CART_FARMING.key}_c$index"]!!.value =
-                            if (it) "1" else "0"
-                        GlobalVars.configStates["${NIGHT_BASE_SETTINGS.TROPHY_PUSHING_MODE.key}_c$index"]!!.value = "0"
-                    },
-                    text = NIGHT_BASE_SETTINGS.ELIXIR_CART_FARMING.displayName,
+                SettingCheckBox(
+                    key = "${NIGHT_BASE_SETTINGS.ELIXIR_CART_FARMING.key}_c${index}",
                     explain = "勾选后，夜世界对战时下兵后会立刻投降，因此几乎无法刷金币，请谨慎勾选。不可与“上分模式”同时勾选。"
                 )
 
             }
-            CustomCheckBox(
-                checkedState = GlobalVars.configStates["${NIGHT_BASE_SETTINGS.BUILDER_BASE_RESEARCH.key}_c${index}"]!!.value,
-                onCheckStateChange = {
-                    GlobalVars.configStates["${NIGHT_BASE_SETTINGS.BUILDER_BASE_RESEARCH.key}_c${index}"]!!.value =
-                        if (it) "1" else "0"
-                },
-                text = NIGHT_BASE_SETTINGS.BUILDER_BASE_RESEARCH.displayName,
-            )
+            SettingCheckBox(key = "${NIGHT_BASE_SETTINGS.BUILDER_BASE_RESEARCH.key}_c${index}")
             if (GlobalVars.configStates["${NIGHT_BASE_SETTINGS.BUILDER_BASE_RESEARCH.key}_c${index}"]!!.value == "1") {
                 NightBaseResearchConfigs(index = index)
             }
             FlowRow {
-                CustomCheckBox(
-                    checkedState = GlobalVars.configStates["${NIGHT_BASE_SETTINGS.NIGHT_BUILD_SETTING.key}_c${index}"]!!.value,
-                    onCheckStateChange = {
-                        GlobalVars.configStates["${NIGHT_BASE_SETTINGS.NIGHT_BUILD_SETTING.key}_c${index}"]!!.value = if (it) "1" else "0"
-                    },
-                    text = NIGHT_BASE_SETTINGS.NIGHT_BUILD_SETTING.displayName,
-                )
-                CustomCheckBox(
-                    checkedState = GlobalVars.configStates["${NIGHT_BASE_SETTINGS.NIGHT_WALL_UPGRADE_SETTINGS.key}_c${index}"]!!.value,
-                    onCheckStateChange = {
-                        GlobalVars.configStates["${NIGHT_BASE_SETTINGS.NIGHT_WALL_UPGRADE_SETTINGS.key}_c${index}"]!!.value = if (it) "1" else "0"
-                    },
-                    text = NIGHT_BASE_SETTINGS.NIGHT_WALL_UPGRADE_SETTINGS.displayName,
-                )
-                CustomCheckBox(
-                    checkedState = GlobalVars.configStates["${NIGHT_BASE_SETTINGS.NIGHT_REMOVE_OBSTACLES.key}_c${index}"]!!.value,
-                    onCheckStateChange = {
-                        GlobalVars.configStates["${NIGHT_BASE_SETTINGS.NIGHT_REMOVE_OBSTACLES.key}_c${index}"]!!.value = if (it) "1" else "0"
-                    },
-                    text = NIGHT_BASE_SETTINGS.NIGHT_REMOVE_OBSTACLES.displayName,
-                )
-                CustomCheckBox(
-                    checkedState = GlobalVars.configStates["${NIGHT_BASE_SETTINGS.NIGHT_SAVE_WORKER.key}_c${index}"]!!.value,
-                    onCheckStateChange = {
-                        GlobalVars.configStates["${NIGHT_BASE_SETTINGS.NIGHT_SAVE_WORKER.key}_c${index}"]!!.value = if (it) "1" else "0"
-                    },
-                    text = NIGHT_BASE_SETTINGS.NIGHT_SAVE_WORKER.displayName,
-                )
+                SettingCheckBox(key = "${NIGHT_BASE_SETTINGS.NIGHT_BUILD_SETTING.key}_c${index}")
+                SettingCheckBox(key = "${NIGHT_BASE_SETTINGS.NIGHT_WALL_UPGRADE_SETTINGS.key}_c${index}")
+                SettingCheckBox(key = "${NIGHT_BASE_SETTINGS.NIGHT_REMOVE_OBSTACLES.key}_c${index}")
+                SettingCheckBox(key = "${NIGHT_BASE_SETTINGS.NIGHT_SAVE_WORKER.key}_c${index}")
             }
             if (GlobalVars.configStates["${NIGHT_BASE_SETTINGS.NIGHT_BUILD_SETTING.key}_c${index}"]!!.value == "1") {
                 NightBaseUpgradeConfigs(index = index, onNavigatePriority = onNavigateNightPriority)

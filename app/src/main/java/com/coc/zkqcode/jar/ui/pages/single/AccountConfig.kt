@@ -16,10 +16,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.coc.zkqcode.utils.components.CustomCheckBox
-import com.coc.zkqcode.utils.components.DropdownButton
+import com.coc.zkqcode.utils.components.SettingCheckBox
+import com.coc.zkqcode.utils.components.SettingDropdown
 import com.coc.zkqcode.utils.components.GlobalVars
-import com.coc.zkqcode.utils.components.InputRow
+import com.coc.zkqcode.utils.components.SettingInputRow
 import com.coc.zkqcode.utils.database.Schema.ACCOUNT_SETTINGS
 
 @Composable
@@ -28,35 +28,17 @@ fun AccountConfig(
 ) {
     Column(modifier = Modifier.padding(horizontal = 2.dp)) {
         Row {
-            CustomCheckBox(
-                checkedState = GlobalVars.configStates["${ACCOUNT_SETTINGS.ISOPEN.key}${index}"]!!.value,
-                onCheckStateChange = {
-                    GlobalVars.configStates["${ACCOUNT_SETTINGS.ISOPEN.key}${index}"]!!.value = if (it) "1" else "0"
-                },
-                text = ACCOUNT_SETTINGS.ISOPEN.displayName + index,
-            )
-            InputRow(
-                label = ACCOUNT_SETTINGS.REMARK.displayName,
-                value = GlobalVars.configStates["${ACCOUNT_SETTINGS.REMARK.key}${index}"]!!.value,
-                onValueChange = { GlobalVars.configStates["${ACCOUNT_SETTINGS.REMARK.key}${index}"]!!.value = it },
-            )
+            SettingCheckBox(key = "${ACCOUNT_SETTINGS.ISOPEN.key}${index}")
+            SettingInputRow(key = "${ACCOUNT_SETTINGS.REMARK.key}${index}")
         }
-        DropdownButton(
-            options = listOf("国服", "国际服"),
-            selectedIndex = GlobalVars.configStates["${ACCOUNT_SETTINGS.GAME_VERSION.key}${index}"]!!.value.toIntOrNull() ?: 0,
-            onValueChange = { GlobalVars.configStates["${ACCOUNT_SETTINGS.GAME_VERSION.key}${index}"]!!.value = it.toString() },
-            label = ACCOUNT_SETTINGS.GAME_VERSION.displayName
+        SettingDropdown(
+            key = "${ACCOUNT_SETTINGS.GAME_VERSION.key}${index}",
+            options = listOf("国服", "国际服")
         )
-        InputRow(
-            label = ACCOUNT_SETTINGS.ACCOUNT_CONFIG.displayName,
-            value = GlobalVars.configStates["${ACCOUNT_SETTINGS.ACCOUNT_CONFIG.key}${index}"]!!.value,
-            onValueChange = { GlobalVars.configStates["${ACCOUNT_SETTINGS.ACCOUNT_CONFIG.key}${index}"]!!.value = it },
-        )
-        DropdownButton(
-            options = listOf("游戏存档", "直接启动", "上号器"),
-            selectedIndex = GlobalVars.configStates["${ACCOUNT_SETTINGS.START_METHOD.key}${index}"]!!.value.toIntOrNull() ?: 0,
-            onValueChange = { GlobalVars.configStates["${ACCOUNT_SETTINGS.START_METHOD.key}${index}"]!!.value = it.toString() },
-            label = ACCOUNT_SETTINGS.START_METHOD.displayName
+        SettingInputRow(key = "${ACCOUNT_SETTINGS.ACCOUNT_CONFIG.key}${index}")
+        SettingDropdown(
+            key = "${ACCOUNT_SETTINGS.START_METHOD.key}${index}",
+            options = listOf("游戏存档", "直接启动", "上号器")
         )
         when (GlobalVars.configStates["${ACCOUNT_SETTINGS.START_METHOD.key}${index}"]!!.value) {
             "1" -> GameFiles(index)//存档上号
@@ -80,11 +62,7 @@ fun UsePackage(
                 style = MaterialTheme.typography.labelMedium,
                 color = Color.Red
             )
-            InputRow(
-                label = ACCOUNT_SETTINGS.DATA_CONTENT.displayName,
-                value = GlobalVars.configStates["${ACCOUNT_SETTINGS.DATA_CONTENT.key}${index}"]!!.value,
-                onValueChange = { GlobalVars.configStates["${ACCOUNT_SETTINGS.DATA_CONTENT.key}${index}"]!!.value = it },
-            )
+            SettingInputRow(key = "${ACCOUNT_SETTINGS.DATA_CONTENT.key}${index}")
         }
     } else {
         Text(
@@ -120,17 +98,9 @@ fun GameFiles(
             selectedOption = GlobalVars.configStates["${ACCOUNT_SETTINGS.GAME_VERSION.key}${index}"]!!.value
         }
         if (selectedOption == "0") {//0表示国服
-            InputRow(
-                label = ACCOUNT_SETTINGS.CN_PATH.displayName,
-                value = GlobalVars.configStates["${ACCOUNT_SETTINGS.CN_PATH.key}${index}"]!!.value,
-                onValueChange = { GlobalVars.configStates["${ACCOUNT_SETTINGS.CN_PATH.key}${index}"]!!.value = it },
-            )
+            SettingInputRow(key = "${ACCOUNT_SETTINGS.CN_PATH.key}${index}")
         } else {
-            InputRow(
-                label = ACCOUNT_SETTINGS.GLOBAL_PATH.displayName,
-                value = GlobalVars.configStates["${ACCOUNT_SETTINGS.GLOBAL_PATH.key}${index}"]!!.value,
-                onValueChange = { GlobalVars.configStates["${ACCOUNT_SETTINGS.GLOBAL_PATH.key}${index}"]!!.value = it },
-            )
+            SettingInputRow(key = "${ACCOUNT_SETTINGS.GLOBAL_PATH.key}${index}")
         }
     }
 }

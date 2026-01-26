@@ -21,22 +21,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.coc.zkqcode.utils.components.CustomButton
 import com.coc.zkqcode.utils.components.GlobalVars
-import com.coc.zkqcode.utils.components.InputRow
+import com.coc.zkqcode.utils.components.SettingInputRow
 import com.coc.zkqcode.utils.database.Schema.ACCOUNT_SETTINGS
 import com.coc.zkqcode.utils.database.Schema.GLOBAL_SETTINGS
 
 fun LazyListScope.AccountSettings() {
     item {
-        InputRow(
-            label = GLOBAL_SETTINGS.CONFIG_COUNT.displayName,
-            value = GlobalVars.configStates[GLOBAL_SETTINGS.CONFIG_COUNT.key]!!.value,
-            onValueChange = { GlobalVars.configStates[GLOBAL_SETTINGS.CONFIG_COUNT.key]!!.value = it },
-        )
-        InputRow(
-            label = GLOBAL_SETTINGS.ACCOUNT_COUNT.displayName,
-            value = GlobalVars.configStates[GLOBAL_SETTINGS.ACCOUNT_COUNT.key]!!.value,
-            onValueChange = { GlobalVars.configStates[GLOBAL_SETTINGS.ACCOUNT_COUNT.key]!!.value = it },
-        )
+        SettingInputRow(key = GLOBAL_SETTINGS.CONFIG_COUNT.key)
+        SettingInputRow(key = GLOBAL_SETTINGS.ACCOUNT_COUNT.key)
         HorizontalDivider(
             thickness = 1.dp,
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 1f)
