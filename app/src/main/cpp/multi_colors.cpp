@@ -3,25 +3,7 @@
 #include <android/log.h>
 #include <vector>
 #include <cmath>
-
-inline bool isColorMatch(uint32_t pixel, uint32_t targetColor, int threshold) {
-    // uint32_t pixel (RGBA in memory, little endian as 0xAABBGGRR)
-    // targetColor (Java ARGB: 0xAARRGGBB)
-
-    // Extract channels from pixel (0xAABBGGRR)
-    int pr = pixel & 0xFF;
-    int pg = (pixel >> 8) & 0xFF;
-    int pb = (pixel >> 16) & 0xFF;
-
-    // Extract channels from targetColor (0xAARRGGBB)
-    int tr = (targetColor >> 16) & 0xFF;
-    int tg = (targetColor >> 8) & 0xFF;
-    int tb = targetColor & 0xFF;
-
-    return std::abs(pr - tr) <= threshold &&
-           std::abs(pg - tg) <= threshold &&
-           std::abs(pb - tb) <= threshold;
-}
+#include "multi_colors_utils.h"
 
 extern "C"
 jintArray findMultiColors(
@@ -54,56 +36,30 @@ jintArray findMultiColors(
     int foundX = -1;
     int foundY = -1;
 
-    uint32_t *data = (uint32_t *) pixels;
-    int width = info.width;
-    int height = info.height;
+    auto *data = static_cast<uint8_t *>(pixels);
+    auto width = static_cast<int>(info.width);
+    auto height = static_cast<int>(info.height);
+    auto stride = static_cast<int>(info.stride);
 
-    // Boundary check for search area
-    x1 = std::max(0, x1);
-    y1 = std::max(0, y1);
-    x2 = std::min((int) width - 1, x2);
-    y2 = std::min((int) height - 1, y2);
+    auto getPixel = [&](int x, int y) {
+        return *reinterpret_cast<uint32_t *>(data + y * stride + x * 4);
+    };
 
-    for (int y = y1; y <= y2; ++y) {
-        uint32_t *row = data + y * width;
-        for (int x = x1; x <= x2; ++x) {
-            uint32_t pixel = row[x];
-            if (isColorMatch(pixel, (uint32_t) mainColor, threshold)) {
-                bool allOffsetsMatch = true;
-                for (int i = 0; i < offsetsLen; i += 3) {
-                    int dx = offsetsArr[i];
-                    int dy = offsetsArr[i + 1];
-                    uint32_t color = (uint32_t) offsetsArr[i + 2];
+    bool found = findMultiColorsInternal(
+            width, height,
+            x1, y1, x2, y2,
+            static_cast<uint32_t>(mainColor),
+            threshold,
+            offsetsArr,
+            offsetsLen,
+            getPixel,
+            foundX, foundY
+    );
 
-                    int tx = x + dx;
-                    int ty = y + dy;
-
-                    if (tx < 0 || tx >= width || ty < 0 || ty >= height) {
-                        allOffsetsMatch = false;
-                        break;
-                    }
-
-                    uint32_t offsetPixel = data[ty * width + tx];
-                    if (!isColorMatch(offsetPixel, color, threshold)) {
-                        allOffsetsMatch = false;
-                        break;
-                    }
-                }
-
-                if (allOffsetsMatch) {
-                    foundX = x;
-                    foundY = y;
-                    goto end;
-                }
-            }
-        }
-    }
-
-    end:
     env->ReleaseIntArrayElements(flatOffsets, offsetsArr, JNI_ABORT);
     AndroidBitmap_unlockPixels(env, bitmap);
 
-    if (foundX != -1) {
+    if (found) {
         jintArray result = env->NewIntArray(2);
         jint res[2] = {foundX, foundY};
         env->SetIntArrayRegion(result, 0, 2, res);
