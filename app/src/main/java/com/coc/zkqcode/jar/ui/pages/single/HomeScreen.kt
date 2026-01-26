@@ -76,6 +76,11 @@ fun HomeScreen(
 
 
     var selectedTabIndex by rememberSaveable { mutableIntStateOf(0) }
+    
+    // Hoisted expansion states keyed by tab index
+    // Hoisted expansion states keyed by tab index
+    val mainBaseExpandedStates = androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateMapOf<Int, Boolean>() }
+    val nightBaseExpandedStates = androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateMapOf<Int, Boolean>() }
 
     val configCount = configCountStr.toIntOrNull() ?: 1
     val tabs =
@@ -230,13 +235,20 @@ fun HomeScreen(
 
                 else -> {
                     // Pass the 1-based index (selectedTabIndex) to MainBaseConfig
-                    item {
-                        GameConfig(
-                            index = selectedTabIndex - 2,
-                            onNavigatePriority = onNavigatePriority,
-                            onNavigateNightPriority = onNavigateNightPriority
-                        )
-                    }
+                    
+                    // State hoisting for expansion
+                    val currentMainExpanded = mainBaseExpandedStates[selectedTabIndex] ?: true
+                    val currentNightExpanded = nightBaseExpandedStates[selectedTabIndex] ?: true
+
+                    GameConfig(
+                        index = selectedTabIndex - 2,
+                        isMainExpanded = currentMainExpanded,
+                        onToggleMainExpanded = { mainBaseExpandedStates[selectedTabIndex] = !currentMainExpanded },
+                        isNightExpanded = currentNightExpanded,
+                        onToggleNightExpanded = { nightBaseExpandedStates[selectedTabIndex] = !currentNightExpanded },
+                        onNavigatePriority = onNavigatePriority,
+                        onNavigateNightPriority = onNavigateNightPriority
+                    )
                 }
             }
         }
