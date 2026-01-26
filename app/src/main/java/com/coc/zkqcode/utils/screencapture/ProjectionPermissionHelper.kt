@@ -6,7 +6,7 @@ import android.os.Build
 import androidx.activity.ComponentActivity
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-import com.coc.zkqcode.utils.floatingwindows.UIWindowService
+import com.coc.zkqcode.core.ui.floatingwindows.UIWindowService
 
 class ProjectionPermissionHelper(private val activity: ComponentActivity) {
 

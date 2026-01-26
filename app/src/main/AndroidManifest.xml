@@ -40,7 +40,7 @@
         </activity>
 
         <service
-            android:name="com.coc.zkqcode.utils.floatingwindows.UIWindowService"
+            android:name="com.coc.zkqcode.core.ui.floatingwindows.UIWindowService"
             android:enabled="true"
             android:exported="false"
             android:foregroundServiceType="specialUse|mediaProjection"
@@ -50,7 +50,7 @@
                 android:value="This service maintains a floating window for user interaction and overlay controls while the app is in the background." />
         </service>
         <service
-            android:name="com.coc.zkqcode.utils.floatingwindows.ControlWindowService"
+            android:name="com.coc.zkqcode.core.ui.floatingwindows.ControlWindowService"
             android:enabled="true"
             android:exported="false"
             android:foregroundServiceType="specialUse|mediaProjection">
@@ -59,7 +59,7 @@
                 android:value="This service provides background control mechanisms and overlay management." />
         </service>
         <service
-            android:name="com.coc.zkqcode.utils.floatingwindows.MessageBoxService"
+            android:name="com.coc.zkqcode.core.ui.floatingwindows.MessageBoxService"
             android:enabled="true"
             android:exported="false"
             android:foregroundServiceType="specialUse|mediaProjection">

@@ -30,11 +30,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.coc.zkqcode.utils.components.CustomButton
-import com.coc.zkqcode.utils.components.GlobalVars
+import com.coc.zkqcode.core.ui.components.CustomButton
+import com.coc.zkqcode.core.ui.components.GlobalVars
 import com.coc.zkqcode.utils.database.Schema
-import com.coc.zkqcode.utils.reorderable.ReorderableItem
-import com.coc.zkqcode.utils.reorderable.rememberReorderableLazyGridState
+import com.coc.zkqcode.core.ui.reorderable.ReorderableItem
+import com.coc.zkqcode.core.ui.reorderable.rememberReorderableLazyGridState
 import kotlinx.coroutines.launch
 
 @Composable

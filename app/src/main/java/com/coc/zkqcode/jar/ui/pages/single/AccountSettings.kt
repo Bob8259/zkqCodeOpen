@@ -19,9 +19,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.coc.zkqcode.utils.components.CustomButton
-import com.coc.zkqcode.utils.components.GlobalVars
-import com.coc.zkqcode.utils.components.SettingInputRow
+import com.coc.zkqcode.core.ui.components.CustomButton
+import com.coc.zkqcode.core.ui.components.GlobalVars
+import com.coc.zkqcode.core.ui.components.SettingInputRow
 import com.coc.zkqcode.utils.database.Schema.ACCOUNT_SETTINGS
 import com.coc.zkqcode.utils.database.Schema.GLOBAL_SETTINGS
 import com.coc.zkqcode.utils.database.ConfigManager
