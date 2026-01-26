@@ -45,6 +45,7 @@ fun CheckRootScreen() {
 
     // 使用 LaunchedEffect 监听并检测
     LaunchedEffect(Unit) {
+        Shell.cmd("adb shell input keyevent 4").exec()
         status = PermissionManager.checkAndGrantPermissions(context) { newStatus ->
             status = newStatus
             // Reset config initialization if status changes back from granted (though unlikely in this flow)
@@ -135,6 +136,7 @@ fun CheckRootScreen() {
             } else {
                 // Start the floating window service when root check passes AND config is initialized
                 LaunchedEffect(Unit) {
+
                     val serviceIntent = Intent(context, UIWindowService::class.java)
                     context.startService(serviceIntent)
                     (context as? com.coc.zkqcode.MainActivity)?.requestMediaProjection()

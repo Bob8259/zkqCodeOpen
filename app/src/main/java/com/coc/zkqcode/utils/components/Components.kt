@@ -230,7 +230,7 @@ class WindowCenterPositionProvider : PopupPositionProvider {
 
 
 @Composable
-fun SettingInputRow(key: String) {
+fun SettingInputRow(key: String, afterChange: ((String) -> Unit)? = null) {
     // 1. 统一获取状态和显示名称
     val state = GlobalVars.configStates[key]
         ?: error("找不到配置项: $key，请检查初始化逻辑")
@@ -254,6 +254,7 @@ fun SettingInputRow(key: String) {
                 // 自动处理副作用和状态更新
                 GlobalVars.isAutoRunEnabled = false
                 state.value = newValue
+                afterChange?.invoke(newValue)
             },
             modifier = Modifier
                 .padding(end = 16.dp)
