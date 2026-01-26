@@ -32,10 +32,10 @@ import androidx.compose.ui.unit.dp
 import com.coc.zkqcode.utils.exit.AppExitHelper
 import com.coc.zkqcode.utils.components.CustomAlertDialog
 import com.coc.zkqcode.utils.components.CustomButton
-import com.coc.zkqcode.utils.components.CustomCheckBox
-import com.coc.zkqcode.utils.components.DropdownButton
+import com.coc.zkqcode.utils.components.SettingCheckBox
+import com.coc.zkqcode.utils.components.SettingDropdown
 import com.coc.zkqcode.utils.components.GlobalVars
-import com.coc.zkqcode.utils.components.InputRow
+import com.coc.zkqcode.utils.components.SettingInputRow
 import com.coc.zkqcode.utils.database.ConfigManager
 import com.coc.zkqcode.utils.database.Schema.GLOBAL_SETTINGS
 import com.coc.zkqcode.utils.state.AppMode
@@ -176,77 +176,23 @@ fun HomeScreen(
                             AppStateManager.setMode(AppMode.SwitchAccount)
                             onSaveSuccess()
                         })
-                        InputRow(
-                            label = GLOBAL_SETTINGS.DELAY_MULTIPLIER.displayName,
-                            value = GlobalVars.configStates[GLOBAL_SETTINGS.DELAY_MULTIPLIER.key]!!.value,
-                            onValueChange = {
-                                GlobalVars.configStates[GLOBAL_SETTINGS.DELAY_MULTIPLIER.key]!!.value =
-                                    it
-                            },
-                        )
-                        InputRow(
-                            label = GLOBAL_SETTINGS.ENTER_GAME_TIMER.displayName,
-                            value = GlobalVars.configStates[GLOBAL_SETTINGS.ENTER_GAME_TIMER.key]!!.value,
-                            onValueChange = {
-                                GlobalVars.configStates[GLOBAL_SETTINGS.ENTER_GAME_TIMER.key]!!.value =
-                                    it
-                            },
-                        )
+                        SettingInputRow(key = GLOBAL_SETTINGS.DELAY_MULTIPLIER.key)
+                        SettingInputRow(key = GLOBAL_SETTINGS.ENTER_GAME_TIMER.key)
                         FlowRow {
-                            CustomCheckBox(
-                                checkedState = GlobalVars.configStates[GLOBAL_SETTINGS.DEBUG_MODE.key]!!.value,
-                                onCheckStateChange = {
-                                    GlobalVars.configStates[GLOBAL_SETTINGS.DEBUG_MODE.key]!!.value =
-                                        if (it) "1" else "0"
-                                },
-                                text = GLOBAL_SETTINGS.DEBUG_MODE.displayName,
-                            )
-                            CustomCheckBox(
-                                checkedState = GlobalVars.configStates[GLOBAL_SETTINGS.RECORD_PROGRESS.key]!!.value,
-                                onCheckStateChange = {
-                                    GlobalVars.configStates[GLOBAL_SETTINGS.RECORD_PROGRESS.key]!!.value =
-                                        if (it) "1" else "0"
-                                },
-                                text = GLOBAL_SETTINGS.RECORD_PROGRESS.displayName,
-                            )
+                            SettingCheckBox(key = GLOBAL_SETTINGS.DEBUG_MODE.key)
+                            SettingCheckBox(key = GLOBAL_SETTINGS.RECORD_PROGRESS.key)
                         }
 
-                        DropdownButton(
-                            options = listOf("关闭", "仅更新稳定版", "更新测试版"),
-                            selectedIndex = GlobalVars.configStates[GLOBAL_SETTINGS.AUTO_UPDATE.key]!!.value.toIntOrNull()
-                                ?: 0,
-                            label = GLOBAL_SETTINGS.AUTO_UPDATE.displayName,
-                            onValueChange = {
-                                GlobalVars.configStates[GLOBAL_SETTINGS.AUTO_UPDATE.key]!!.value =
-                                    it.toString()
-                            }
+                        SettingDropdown(
+                            key = GLOBAL_SETTINGS.AUTO_UPDATE.key,
+                            options = listOf("关闭", "仅更新稳定版", "更新测试版")
                         )
-                        CustomCheckBox(
-                            checkedState = GlobalVars.configStates[GLOBAL_SETTINGS.AUTO_START.key]!!.value,
-                            onCheckStateChange = {
-                                GlobalVars.configStates[GLOBAL_SETTINGS.AUTO_START.key]!!.value =
-                                    if (it) "1" else "0"
-                            },
-                            text = GLOBAL_SETTINGS.AUTO_START.displayName,
+                        SettingCheckBox(key = GLOBAL_SETTINGS.AUTO_START.key)
+                        SettingDropdown(
+                            key = GLOBAL_SETTINGS.AFTER_KICK_OPTION.key,
+                            options = listOf("立刻重连", "切换账号", "原地等待")
                         )
-                        DropdownButton(
-                            options = listOf("立刻重连", "切换账号", "原地等待"),
-                            selectedIndex = GlobalVars.configStates[GLOBAL_SETTINGS.AFTER_KICK_OPTION.key]!!.value.toIntOrNull()
-                                ?: 0,
-                            label = GLOBAL_SETTINGS.AFTER_KICK_OPTION.displayName,
-                            onValueChange = {
-                                GlobalVars.configStates[GLOBAL_SETTINGS.AFTER_KICK_OPTION.key]!!.value =
-                                    it.toString()
-                            }
-                        )
-                        InputRow(
-                            label = GLOBAL_SETTINGS.DEVICE_REMARK.displayName,
-                            value = GlobalVars.configStates[GLOBAL_SETTINGS.DEVICE_REMARK.key]!!.value,
-                            onValueChange = {
-                                GlobalVars.configStates[GLOBAL_SETTINGS.DEVICE_REMARK.key]!!.value =
-                                    it
-                            },
-                        )
+                        SettingInputRow(key = GLOBAL_SETTINGS.DEVICE_REMARK.key)
                         Row {
                             CustomButton(
                                 text = "清除账号记忆",

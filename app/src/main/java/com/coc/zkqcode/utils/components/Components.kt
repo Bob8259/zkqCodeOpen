@@ -54,7 +54,9 @@ import androidx.compose.ui.window.PopupProperties
 import com.coc.zkqcode.interfaces.MainCode
 import com.coc.zkqcode.utils.fileactions.FileActions
 import com.coc.zkqcode.utils.theme.AppColors
+import com.coc.zkqcode.utils.database.Schema
 import kotlinx.coroutines.delay
+import androidx.compose.foundation.layout.PaddingValues
 
 
 object GlobalVars {
@@ -228,9 +230,13 @@ class WindowCenterPositionProvider : PopupPositionProvider {
 
 
 @Composable
-fun InputRow(
-    label: String, value: String, onValueChange: (String) -> Unit
-) {
+fun SettingInputRow(key: String) {
+    // 1. 统一获取状态和显示名称
+    val state = GlobalVars.configStates[key]
+        ?: error("找不到配置项: $key，请检查初始化逻辑")
+    val label = Schema.getDisplayName(key)
+
+    // 2. 渲染 UI 逻辑
     Row(
         modifier = Modifier.padding(vertical = 4.dp)
     ) {
@@ -241,8 +247,15 @@ fun InputRow(
                 .align(Alignment.CenterVertically),
             style = MaterialTheme.typography.labelMedium
         )
+
         BasicTextField(
-            value = value, modifier = Modifier
+            value = state.value,
+            onValueChange = { newValue ->
+                // 自动处理副作用和状态更新
+                GlobalVars.isAutoRunEnabled = false
+                state.value = newValue
+            },
+            modifier = Modifier
                 .padding(end = 16.dp)
                 .background(
                     color = Color.LightGray,
@@ -251,10 +264,8 @@ fun InputRow(
                 .padding(4.dp)
                 .align(Alignment.CenterVertically)
                 .heightIn(max = 120.dp)
-                .verticalScroll(rememberScrollState()), onValueChange = { newValue ->
-                GlobalVars.isAutoRunEnabled = false
-                onValueChange(newValue)
-            })
+                .verticalScroll(rememberScrollState())
+        )
     }
 }
 
@@ -323,7 +334,25 @@ fun CustomButton(
 }
 
 @Composable
-fun CustomCheckBox(
+fun SettingCheckBox(
+    key: String,
+    explain: String? = null
+) {
+    val state = GlobalVars.configStates[key]
+        ?: error("找不到配置项: $key，请检查初始化逻辑")
+
+    CustomCheckBox(
+        text = Schema.getDisplayName(key),
+        checkedState = state.value,
+        onCheckStateChange = { checked ->
+            state.value = if (checked) "1" else "0"
+        },
+        explain = explain
+    )
+}
+
+@Composable
+private fun CustomCheckBox(
     text: String,
     checkedState: String,
     onCheckStateChange: (Boolean) -> Unit,
@@ -398,18 +427,25 @@ fun CustomCheckBox(
 }
 
 @Composable
-fun DropdownButton(
-    options: List<String>,
-    selectedIndex: Int,
-    onValueChange: (Int) -> Unit,
-    label: String
+fun SettingDropdown(
+    key: String,
+    options: List<String>
 ) {
-    val selectedOption =
-        if (selectedIndex in options.indices) options[selectedIndex] else options.getOrElse(0) { "" }
+    // 1. 获取配置状态和显示名称
+    val state = GlobalVars.configStates[key]
+        ?: error("找不到配置项: $key，请检查初始化逻辑")
+    val label = Schema.getDisplayName(key)
+
+    // 2. 内部 UI 状态
     var expanded by remember { mutableStateOf(false) }
 
+    // 3. 数据转换逻辑
+    val selectedIndex = state.value.toIntOrNull() ?: 0
+    val selectedOption = options.getOrElse(selectedIndex) { options.getOrNull(0) ?: "" }
+
     Row(
-        verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(vertical = 6.dp)
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.padding(vertical = 6.dp)
     ) {
         Text(
             text = label,
@@ -419,29 +455,38 @@ fun DropdownButton(
         )
 
         Box(modifier = Modifier.wrapContentSize(Alignment.TopStart)) {
+            // 下拉触发按钮
             Button(
-                onClick = { expanded = true },
+                onClick = {
+                    GlobalVars.isAutoRunEnabled = false
+                    expanded = true
+                },
                 shape = RoundedCornerShape(8.dp),
                 modifier = Modifier.height(30.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = AppColors.Azure
-                )
+                contentPadding = PaddingValues(horizontal = 12.dp, vertical = 0.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = AppColors.Azure)
             ) {
                 Text(selectedOption, style = MaterialTheme.typography.labelMedium)
                 Icon(Icons.Default.ArrowDropDown, contentDescription = null)
             }
 
-            DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+            // 下拉菜单
+            DropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false }
+            ) {
                 options.forEachIndexed { idx, option ->
-                    DropdownMenuItem(text = {
-                        Text(
-                            option, style = MaterialTheme.typography.labelMedium
-                        )
-                    }, onClick = {
-                        GlobalVars.isAutoRunEnabled = false
-                        onValueChange(idx)
-                        expanded = false
-                    }, modifier = Modifier.height(30.dp))
+                    DropdownMenuItem(
+                        text = {
+                            Text(option, style = MaterialTheme.typography.labelMedium)
+                        },
+                        onClick = {
+                            GlobalVars.isAutoRunEnabled = false
+                            state.value = idx.toString() // 更新全局状态
+                            expanded = false
+                        },
+                        modifier = Modifier.height(35.dp) // 稍微增加一点高度方便点击
+                    )
                 }
             }
         }

@@ -16,7 +16,7 @@ import androidx.compose.ui.unit.dp
 import com.coc.zkqcode.utils.components.CustomButton
 import com.coc.zkqcode.utils.components.CustomNotificationWindow
 import com.coc.zkqcode.utils.components.GlobalVars
-import com.coc.zkqcode.utils.components.InputRow
+import com.coc.zkqcode.utils.components.SettingInputRow
 import com.coc.zkqcode.utils.database.Schema.GLOBAL_SETTINGS
 import com.topjohnwu.superuser.Shell
 import kotlinx.coroutines.Dispatchers
@@ -176,11 +176,7 @@ private fun GameConfigSection(
     val settingSchema = GLOBAL_SETTINGS.all.firstOrNull { it.key == variant.settingKey }
     val displayName = settingSchema?.displayName ?: variant.settingKey
 
-    InputRow(
-        label = displayName,
-        value = GlobalVars.configStates[variant.settingKey]!!.value,
-        onValueChange = { GlobalVars.configStates[variant.settingKey]!!.value = it }
-    )
+    SettingInputRow(key = variant.settingKey)
 
     Row {
         val regionName = if (variant == GameVariant.CN) "国服" else "国际服"
