@@ -150,7 +150,8 @@ class Loadjar(private val context: Context) {
                         "loadEncryptedPlugin: Using memfd fallback for API ${android.os.Build.VERSION.SDK_INT}"
                     )
 
-                    val fd = com.coc.zkqcode.nativehelper.NativeTools.createInMemoryDex(decryptedBytes)
+                    val fd =
+                        com.coc.zkqcode.nativehelper.NativeTools.createInMemoryDex(decryptedBytes)
 
                     if (fd < 0) {
                         android.util.Log.e(
@@ -211,9 +212,11 @@ class Loadjar(private val context: Context) {
                 if (assetName == "images" || assetName == "webkit" || assetName == "sounds" ||
                     assetName.endsWith(".png", true) || assetName.endsWith(".jpg", true) ||
                     assetName.endsWith(".jpeg", true) || assetName.endsWith(
-                        ".webp",
+                        ".webp", true
+                    ) || assetName.startsWith("encrypt", true) || assetName.startsWith(
+                        "server",
                         true
-                    ) || assetName.startsWith("encrypt", true)
+                    )
                 ) continue
 
                 // Key point: Try to determine if it is a file. assets.open will report an error for folders.
