@@ -3,7 +3,7 @@ package com.coc.zkqcode.jar.code
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.util.Log
+import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndDie
 import java.io.DataOutputStream
 import java.io.InputStream
 
@@ -12,7 +12,7 @@ class ScreenShot {
     private var dos: DataOutputStream? = null
     private var dis: InputStream? = null
 
-    fun takeScreenshot(): Bitmap? {
+    fun takeScreenshot(): Bitmap {
         try {
             if (suProcess == null) {
                 suProcess = Runtime.getRuntime().exec("su")
@@ -31,17 +31,16 @@ class ScreenShot {
 
             if (bitmap == null) {
                 // If decoding returns null, it means the stream data is incomplete or interfered with
-                Log.e("ScreenShot", "Bitmap decoding failed")
                 suProcess?.destroy()
                 suProcess = null
+                logAndDie("Bitmap decoding failed")
             }
             return bitmap
         } catch (e: Exception) {
-            Log.e("ScreenShot", "Error taking screenshot: ${e.message}")
             suProcess?.destroy()
             suProcess = null
+            logAndDie("Error taking screenshot: ${e.message}")
         }
-        return null
     }
 
 }

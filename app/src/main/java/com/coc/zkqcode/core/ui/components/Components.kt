@@ -55,6 +55,7 @@ import com.coc.zkqcode.core.ui.theme.AppColors
 import com.coc.zkqcode.core.data.database.Schema
 import kotlinx.coroutines.delay
 import androidx.compose.foundation.layout.PaddingValues
+import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndDie
 
 
 object GlobalVars {
@@ -215,7 +216,7 @@ class WindowCenterPositionProvider : PopupPositionProvider {
 fun SettingInputRow(key: String, afterChange: ((String) -> Unit)? = null) {
     // 1. 统一获取状态和显示名称
     val state = GlobalVars.configStates[key]
-        ?: error("Config: $key Not Found")
+        ?: logAndDie("Config: $key Not Found")
     val label = Schema.getDisplayName(key)
 
     // 2. 渲染 UI 逻辑
@@ -324,7 +325,7 @@ fun SettingCheckBox(
     explain: String? = null
 ) {
     val state = GlobalVars.configStates[key]
-        ?: error("找不到配置项: $key，请检查初始化逻辑")
+        ?: logAndDie("Config: $key Not Found")
 
     CustomCheckBox(
         text = Schema.getDisplayName(key),
@@ -417,7 +418,7 @@ fun SettingDropdown(
 ) {
     // 1. 获取配置状态和显示名称
     val state = GlobalVars.configStates[key]
-        ?: error("找不到配置项: $key，请检查初始化逻辑")
+        ?: logAndDie("Config: $key Not Found")
     val label = Schema.getDisplayName(key)
 
     // 2. 内部 UI 状态

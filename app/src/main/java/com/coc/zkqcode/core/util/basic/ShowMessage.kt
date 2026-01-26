@@ -2,6 +2,8 @@ package com.coc.zkqcode.core.util.basic
 
 import android.content.Context
 import com.coc.zkqcode.core.ui.floatingwindows.MessageBoxHelper.showFloatingMessage
+import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndDie
+import timber.log.Timber
 import java.lang.ref.WeakReference
 
 object ShowMessage {
@@ -14,9 +16,8 @@ object ShowMessage {
     operator fun invoke(text: String) {
         contextRef?.get()?.let { context ->
             showFloatingMessage(context = context, text = text)
-        } ?: run {
-            System.err.println("ShowMessage: Context not initialized or released!")
-        }
+            Timber.v("Verbose: $text")
+        } ?: logAndDie("ShowMessage: Context not initialized or released!")
     }
 
 }

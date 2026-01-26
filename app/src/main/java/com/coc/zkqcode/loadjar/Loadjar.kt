@@ -15,6 +15,7 @@ import com.coc.zkqcode.core.ui.components.GlobalVars
 import com.coc.zkqcode.statehelper.AppMode
 import com.coc.zkqcode.statehelper.AppStateManager
 import dalvik.system.DexClassLoader
+import timber.log.Timber
 import java.io.File
 
 class Loadjar(private val context: Context) {
@@ -145,8 +146,7 @@ class Loadjar(private val context: Context) {
                     dalvik.system.InMemoryDexClassLoader(buffer, context.classLoader)
                 } else {
                     // 4. Fallback for older versions: Use in-memory file descriptor (memfd/ashmem)
-                    android.util.Log.d(
-                        "zkq_debug",
+                    Timber.d(
                         "loadEncryptedPlugin: Using memfd fallback for API ${android.os.Build.VERSION.SDK_INT}"
                     )
 
@@ -154,14 +154,12 @@ class Loadjar(private val context: Context) {
                         com.coc.zkqcode.nativehelper.NativeTools.createInMemoryDex(decryptedBytes)
 
                     if (fd < 0) {
-                        android.util.Log.e(
-                            "zkq_debug",
+                        Timber.e(
                             "loadEncryptedPlugin: Failed to create in-memory dex, fd=$fd"
                         )
                         return false
                     }
-                    android.util.Log.d(
-                        "zkq_debug",
+                    Timber.d(
                         "loadEncryptedPlugin: Created in-memory dex, fd=$fd"
                     )
 
@@ -169,7 +167,7 @@ class Loadjar(private val context: Context) {
                     val dexPath = "/proc/self/fd/$fd"
                     val dexOutputDir = context.codeCacheDir
 
-                    android.util.Log.d("zkq_debug", "loadEncryptedPlugin: Loading from $dexPath")
+                    Timber.d("loadEncryptedPlugin: Loading from $dexPath")
 
                     DexClassLoader(
                         dexPath,
