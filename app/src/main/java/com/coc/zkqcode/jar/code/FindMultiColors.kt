@@ -57,14 +57,14 @@ class FindMultiColors {
                 // Use the original native function for Bitmap
                 val useBmp = bitmap ?: (resultAny as? Bitmap)
                 if (useBmp != null) {
-                   val result = NativeTools.nativeFindMultiColors(
+                    val result = NativeTools.nativeFindMultiColors(
                         useBmp,
                         schema.x1, schema.y1, schema.x2, schema.y2,
                         schema.mainColor,
                         schema.threshold,
                         offsetsArray
                     )
-                     if (result != null && result.size == 2) {
+                    if (result != null && result.size == 2) {
                         return Point(result[0], result[1])
                     }
                 }
@@ -72,10 +72,10 @@ class FindMultiColors {
         } catch (e: Exception) {
             e.printStackTrace()
         }
-        
+
         // No explicit recycle needed for ByteBuffer as it is GC'd (direct buffer).
         // If we created a Bitmap from capture(true) (which we don't anymore by default), we would need recycle.
-        
+
         return null
     }
 }
