@@ -34,7 +34,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Density
-import com.coc.zkqcode.utils.components.GlobalVars
+import com.coc.zkqcode.core.ui.components.GlobalVars
 import com.topjohnwu.superuser.Shell
 
 class UIWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner, ViewModelStoreOwner,

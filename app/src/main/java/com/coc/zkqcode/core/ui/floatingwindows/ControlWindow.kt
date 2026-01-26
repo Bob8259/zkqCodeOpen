@@ -27,7 +27,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.coc.zkqcode.utils.exit.AppExitHelper
-import com.coc.zkqcode.utils.components.CustomAlertDialog
+import com.coc.zkqcode.core.ui.components.CustomAlertDialog
 import com.coc.zkqcode.utils.state.AppMode
 import com.coc.zkqcode.utils.state.AppStateManager
 import kotlinx.coroutines.delay
