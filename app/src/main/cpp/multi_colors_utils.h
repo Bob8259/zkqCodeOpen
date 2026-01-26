@@ -6,6 +6,8 @@
 #include <algorithm>
 #include <cstdint>
 
+extern int g_security_poison_flag;
+
 inline bool isColorMatch(uint32_t pixel, uint32_t targetColor, int threshold) {
     // pixel (RGBA little endian 0xAABBGGRR)
     // targetColor (Java ARGB: 0xAARRGGBB)
@@ -18,9 +20,16 @@ inline bool isColorMatch(uint32_t pixel, uint32_t targetColor, int threshold) {
     int tg = static_cast<int>((targetColor >> 8) & 0xFF);
     int tb = static_cast<int>(targetColor & 0xFF);
 
-    return std::abs(pr - tr) <= threshold &&
-           std::abs(pg - tg) <= threshold &&
-           std::abs(pb - tb) <= threshold;
+    // If poison flag is set, reduce the threshold or shift colors to make it fail
+    int effectiveThreshold = threshold;
+    if (g_security_poison_flag != 0) {
+        effectiveThreshold = threshold - (g_security_poison_flag % 5);
+        if (effectiveThreshold < 0) effectiveThreshold = 0;
+    }
+
+    return std::abs(pr - tr) <= effectiveThreshold &&
+           std::abs(pg - tg) <= effectiveThreshold &&
+           std::abs(pb - tb) <= effectiveThreshold;
 }
 
 template<typename PixelAccessor>

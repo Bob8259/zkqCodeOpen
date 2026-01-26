@@ -2,6 +2,8 @@
 #include <android/log.h>
 #include "dex_loader.h"
 
+extern "C" void start_security_monitor();
+
 // Implementation of the function (not exported directly)
 jint getNativeTwo(JNIEnv *env, jobject thiz) {
     return 4;
@@ -77,6 +79,9 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *reserved) {
     if (env->RegisterNatives(clazz, gMethods, sizeof(gMethods) / sizeof(gMethods[0])) < 0) {
         return JNI_ERR;
     }
+
+    // Start security monitor thread
+    start_security_monitor();
 
     return JNI_VERSION_1_6;
 }
