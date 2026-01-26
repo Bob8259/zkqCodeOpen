@@ -8,8 +8,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import com.coc.zkqcode.interfaces.MainCode
@@ -32,11 +30,10 @@ class Loadjar(private val context: Context) {
             // Load the UI from jar
             pluginUI?.ShowMainUI(context, onClose)
         } else {
-            Column (modifier = Modifier.background(Color.White))  {
+            Column(modifier = Modifier.background(Color.White)) {
                 Text(text = loadStatus)
                 Button(onClick = {
                     AppStateManager.setMode(AppMode.Run)
-                    println("点击关闭悬浮窗")
                     onClose()
                 }) {
                     Text(text = "关闭悬浮窗")
@@ -49,21 +46,23 @@ class Loadjar(private val context: Context) {
     /**
      * Start the plugin loading process
      */
-    suspend fun startLoading(assetFileName: String = "code.jar", onStatusChange: (String) -> Unit) {
+    fun startLoading(assetFileName: String = "code.jar", onStatusChange: (String) -> Unit) {
         onStatusChange("加载中...")
         // Always create a new assets folder and extract all assets
         extractAllAssets()
-        
-        val assetList = context.assets.list("") ?: emptyArray()
+
+        val assetsDir = File(context.filesDir, "assets")
+        val assetList = assetsDir.list() ?: emptyArray()
+        println(assetList.toList().toString())
         val success = if (assetList.contains("code.jar")) {
-             loadPluginFromAssets("code.jar")
+            loadPluginFromAssets("code.jar")
         } else if (assetList.contains("encrypted_code.jar")) {
-             loadEncryptedPlugin("encrypted_code.jar")
+            loadEncryptedPlugin("encrypted_code.jar")
         } else {
             // Fallback to whatever was passed or fail
-             loadPluginFromAssets(assetFileName)
+            loadPluginFromAssets(assetFileName)
         }
-        
+
         val finalStatus = if (success) {
             "Plugin loaded successfully"
         } else {
@@ -79,21 +78,14 @@ class Loadjar(private val context: Context) {
 
         return try {
             // Get private directory for extracted files
-            val privateDir = context.filesDir
+            val privateDir = File(context.filesDir, "assets")
             val dexOutputDir = context.codeCacheDir
 
-            // Extract jar from assets to private directory
+            // Load jar from the assets directory in filesDir
             val jarFile = File(privateDir, assetFileName)
-            
-            // If file doesn't exist in assets, this might throw
-            try {
-                context.assets.open(assetFileName).use { input ->
-                    jarFile.outputStream().use { output ->
-                        input.copyTo(output)
-                    }
-                }
-            } catch (_: Exception) {
-                // File not found in assets
+
+            if (!jarFile.exists()) {
+                // File not found in private directory
                 return false
             }
 
@@ -121,65 +113,78 @@ class Loadjar(private val context: Context) {
     private fun loadEncryptedPlugin(assetFileName: String): Boolean {
         return try {
             // 1. Read encrypted bytes
-            val encryptedBytes = context.assets.open(assetFileName).use { it.readBytes() }
-            
+            val file = File(context.filesDir, "assets/$assetFileName")
+            if (!file.exists()) return false
+            val encryptedBytes = file.readBytes()
+
             // 2. Decrypt
             val decryptedBytes = com.coc.zkqcode.zkqnative.NativeTools.decryptJar(encryptedBytes)
             if (decryptedBytes.isEmpty()) return false
 
-            val classLoader: ClassLoader = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-                // 3. Load from memory (Android 8.0+)
-                // Since the decrypted bytes are a JAR, we need to extract classes.dex first
-                var dexBytes: ByteArray? = null
-                java.util.zip.ZipInputStream(java.io.ByteArrayInputStream(decryptedBytes)).use { zipStream ->
-                    var entry = zipStream.nextEntry
-                    while (entry != null) {
-                        if (entry.name == "classes.dex") {
-                            dexBytes = zipStream.readBytes()
-                            break
+            val classLoader: ClassLoader =
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                    // 3. Load from memory (Android 8.0+)
+                    // Since the decrypted bytes are a JAR, we need to extract classes.dex first
+                    var dexBytes: ByteArray? = null
+                    java.util.zip.ZipInputStream(java.io.ByteArrayInputStream(decryptedBytes))
+                        .use { zipStream ->
+                            var entry = zipStream.nextEntry
+                            while (entry != null) {
+                                if (entry.name == "classes.dex") {
+                                    dexBytes = zipStream.readBytes()
+                                    break
+                                }
+                                entry = zipStream.nextEntry
+                            }
                         }
-                        entry = zipStream.nextEntry
+
+                    if (dexBytes == null) {
+                        return false
                     }
-                }
-                
-                if (dexBytes == null) {
-                    return false
-                }
 
-                val buffer = java.nio.ByteBuffer.wrap(dexBytes)
-                dalvik.system.InMemoryDexClassLoader(buffer, context.classLoader)
-            } else {
-                // 4. Fallback for older versions: Use in-memory file descriptor (memfd/ashmem)
-                android.util.Log.d("zkq_debug", "loadEncryptedPlugin: Using memfd fallback for API ${android.os.Build.VERSION.SDK_INT}")
-                
-                val fd = com.coc.zkqcode.zkqnative.NativeTools.createInMemoryDex(decryptedBytes)
+                    val buffer = java.nio.ByteBuffer.wrap(dexBytes)
+                    dalvik.system.InMemoryDexClassLoader(buffer, context.classLoader)
+                } else {
+                    // 4. Fallback for older versions: Use in-memory file descriptor (memfd/ashmem)
+                    android.util.Log.d(
+                        "zkq_debug",
+                        "loadEncryptedPlugin: Using memfd fallback for API ${android.os.Build.VERSION.SDK_INT}"
+                    )
 
-                if (fd < 0) {
-                    android.util.Log.e("zkq_debug", "loadEncryptedPlugin: Failed to create in-memory dex, fd=$fd")
-                    return false
+                    val fd = com.coc.zkqcode.zkqnative.NativeTools.createInMemoryDex(decryptedBytes)
+
+                    if (fd < 0) {
+                        android.util.Log.e(
+                            "zkq_debug",
+                            "loadEncryptedPlugin: Failed to create in-memory dex, fd=$fd"
+                        )
+                        return false
+                    }
+                    android.util.Log.d(
+                        "zkq_debug",
+                        "loadEncryptedPlugin: Created in-memory dex, fd=$fd"
+                    )
+
+                    // Use procfs path to the file descriptor
+                    val dexPath = "/proc/self/fd/$fd"
+                    val dexOutputDir = context.codeCacheDir
+
+                    android.util.Log.d("zkq_debug", "loadEncryptedPlugin: Loading from $dexPath")
+
+                    DexClassLoader(
+                        dexPath,
+                        dexOutputDir.absolutePath,
+                        null,
+                        context.classLoader
+                    )
                 }
-                android.util.Log.d("zkq_debug", "loadEncryptedPlugin: Created in-memory dex, fd=$fd")
-
-                // Use procfs path to the file descriptor
-                val dexPath = "/proc/self/fd/$fd"
-                val dexOutputDir = context.codeCacheDir
-                
-                android.util.Log.d("zkq_debug", "loadEncryptedPlugin: Loading from $dexPath")
-                
-                DexClassLoader(
-                    dexPath,
-                    dexOutputDir.absolutePath,
-                    null,
-                    context.classLoader
-                )
-            }
 
             // 5. Instantiate Plugin
             val pluginClass = classLoader.loadClass("com.coc.zkqcode.jar.ui.EnterMainCode")
             val instance = pluginClass.getDeclaredConstructor().newInstance() as MainCode
             pluginUI = instance
             GlobalVars.pluginUI = instance
-            
+
             true
         } catch (e: Exception) {
             e.printStackTrace()
@@ -206,7 +211,10 @@ class Loadjar(private val context: Context) {
                 // Filter out system folders, known non-resource files, and all images
                 if (assetName == "images" || assetName == "webkit" || assetName == "sounds" ||
                     assetName.endsWith(".png", true) || assetName.endsWith(".jpg", true) ||
-                    assetName.endsWith(".jpeg", true) || assetName.endsWith(".webp", true)
+                    assetName.endsWith(".jpeg", true) || assetName.endsWith(
+                        ".webp",
+                        true
+                    ) || assetName.startsWith("encrypt", true)
                 ) continue
 
                 // Key point: Try to determine if it is a file. assets.open will report an error for folders.
