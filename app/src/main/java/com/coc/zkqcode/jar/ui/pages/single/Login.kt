@@ -288,7 +288,7 @@ fun LoginScreen() {
             Text(
                 text = GLOBAL_SETTINGS.PASSWORD.displayName,
                 modifier = Modifier
-                    .padding(end = 16.dp)
+                    .padding(end = 8.dp)
                     .align(Alignment.CenterVertically),
                 style = MaterialTheme.typography.labelMedium
             )
