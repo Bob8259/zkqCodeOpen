@@ -45,9 +45,9 @@ class MyAccessibilityService : AccessibilityService() {
                 if (found) break
             }
 
-            // schedule it to be re-enabled after 10 seconds
+            // schedule it to be close after 10 seconds
             handler.postDelayed({
-                isDetectionEnabled = true
+                isDetectionEnabled = false
             }, 10000)
         }
     }

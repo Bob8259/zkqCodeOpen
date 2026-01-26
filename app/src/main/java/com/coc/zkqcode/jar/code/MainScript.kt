@@ -18,7 +18,7 @@ class MainScript {
             if (foundPoint != null) {
                 ShowMessage("Match FOUND 123: (${foundPoint.x}, ${foundPoint.y})\nTime consumed: $executionTime")
             } else {
-                ShowMessage("No match found.\nTime consumed: $executionTime")
+                ShowMessage("没找到.\nTime consumed: $executionTime")
             }
             val remainingDelay = 0L.coerceAtLeast(2000L - executionTime)
             delay(remainingDelay)
