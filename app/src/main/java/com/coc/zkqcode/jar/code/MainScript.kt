@@ -16,7 +16,7 @@ class MainScript {
             val foundPoint = findTool.findMultiColors(null, MyColors.Test)
             val executionTime = System.currentTimeMillis() - startTime
             if (foundPoint != null) {
-                ShowMessage("Match FOUND at: (${foundPoint.x}, ${foundPoint.y})\nTime consumed: $executionTime")
+                ShowMessage("Match FOUND 123: (${foundPoint.x}, ${foundPoint.y})\nTime consumed: $executionTime")
             } else {
                 ShowMessage("No match found.\nTime consumed: $executionTime")
             }
