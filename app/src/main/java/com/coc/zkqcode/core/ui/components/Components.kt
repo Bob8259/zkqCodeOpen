@@ -54,7 +54,7 @@ import androidx.compose.ui.window.PopupProperties
 import com.coc.zkqcode.interfaces.MainCode
 import com.coc.zkqcode.utils.fileactions.FileActions
 import com.coc.zkqcode.core.ui.theme.AppColors
-import com.coc.zkqcode.utils.database.Schema
+import com.coc.zkqcode.core.data.database.Schema
 import kotlinx.coroutines.delay
 import androidx.compose.foundation.layout.PaddingValues
 

@@ -13,7 +13,7 @@ import androidx.compose.ui.unit.dp
 import com.coc.zkqcode.core.ui.components.CustomButton
 import com.coc.zkqcode.core.ui.components.SettingCheckBox
 import com.coc.zkqcode.core.ui.components.GlobalVars
-import com.coc.zkqcode.utils.database.Schema
+import com.coc.zkqcode.core.data.database.Schema
 import kotlin.collections.set
 
 @Composable

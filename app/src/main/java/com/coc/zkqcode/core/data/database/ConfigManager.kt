@@ -1,4 +1,4 @@
-package com.coc.zkqcode.utils.database
+package com.coc.zkqcode.core.data.database
 
 import android.os.Environment
 import androidx.compose.runtime.mutableStateOf

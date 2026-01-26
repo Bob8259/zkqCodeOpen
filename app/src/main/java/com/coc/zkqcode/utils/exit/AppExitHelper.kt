@@ -7,8 +7,8 @@ import com.coc.zkqcode.utils.daemon.DaemonService
 import com.coc.zkqcode.core.ui.floatingwindows.ControlWindowService
 import com.coc.zkqcode.core.ui.floatingwindows.MessageBoxService
 import com.coc.zkqcode.core.ui.floatingwindows.UIWindowService
-import com.coc.zkqcode.utils.accessibility.MyAccessibilityService
-import com.coc.zkqcode.utils.screencapture.ScreenCaptureManager
+import com.coc.zkqcode.core.system.accessibility.MyAccessibilityService
+import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.topjohnwu.superuser.Shell
 import kotlin.system.exitProcess
 
@@ -22,14 +22,10 @@ object AppExitHelper {
         exitProcess(0)
     }
 
-    private fun restoreDefaultInputMethod() {
+    fun restoreDefaultInputMethod() {
         val defaultIme = GlobalVars.defaultInputMethod
         if (!defaultIme.isNullOrBlank()) {
-            try {
-                Shell.cmd("ime set $defaultIme").exec()
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
+            Shell.cmd("ime set $defaultIme").exec()
         }
     }
 
@@ -60,10 +56,10 @@ object AppExitHelper {
             context.stopService(Intent(context, ControlWindowService::class.java))
             context.stopService(Intent(context, MessageBoxService::class.java))
             context.stopService(Intent(context, DaemonService::class.java))
-            
+
             // Stop accessibility service
             MyAccessibilityService.disableService()
-            
+
             // Release screen capture resources
             ScreenCaptureManager.releaseAll()
         } catch (e: Exception) {

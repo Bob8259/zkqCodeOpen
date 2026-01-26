@@ -1,4 +1,4 @@
-package com.coc.zkqcode.utils.screencapture
+package com.coc.zkqcode.core.system.screencapture
 
 import android.app.Activity
 import android.content.Context

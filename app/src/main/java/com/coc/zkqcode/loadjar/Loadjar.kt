@@ -53,7 +53,6 @@ class Loadjar(private val context: Context) {
 
         val assetsDir = File(context.filesDir, "assets")
         val assetList = assetsDir.list() ?: emptyArray()
-        println(assetList.toList().toString())
         val success = if (assetList.contains("code.jar")) {
             loadPluginFromAssets("code.jar")
         } else if (assetList.contains("encrypted_code.jar")) {

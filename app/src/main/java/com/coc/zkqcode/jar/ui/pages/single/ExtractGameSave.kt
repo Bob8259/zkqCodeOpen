@@ -17,7 +17,7 @@ import com.coc.zkqcode.core.ui.components.CustomButton
 import com.coc.zkqcode.core.ui.components.CustomNotificationWindow
 import com.coc.zkqcode.core.ui.components.GlobalVars
 import com.coc.zkqcode.core.ui.components.SettingInputRow
-import com.coc.zkqcode.utils.database.Schema.GLOBAL_SETTINGS
+import com.coc.zkqcode.core.data.database.Schema.GLOBAL_SETTINGS
 import com.topjohnwu.superuser.Shell
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

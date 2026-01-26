@@ -20,7 +20,7 @@ import com.coc.zkqcode.core.ui.components.SettingCheckBox
 import com.coc.zkqcode.core.ui.components.SettingDropdown
 import com.coc.zkqcode.core.ui.components.GlobalVars
 import com.coc.zkqcode.core.ui.components.SettingInputRow
-import com.coc.zkqcode.utils.database.Schema.ACCOUNT_SETTINGS
+import com.coc.zkqcode.core.data.database.Schema.ACCOUNT_SETTINGS
 
 @Composable
 fun AccountConfig(
