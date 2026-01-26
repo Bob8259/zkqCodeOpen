@@ -1,6 +1,7 @@
 package com.coc.zkqcode.utils.database
 
-import com.coc.zkqcode.utils.components.GlobalVars
+import com.coc.zkqcode.core.ui.components.GlobalVars
+import com.google.gson.Gson
 
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonObject
@@ -98,7 +99,7 @@ object SchemaExporter {
             actions.getConnection().sendAction(writeAction)
             // Update local configJson to keep it in sync
             try {
-                val gson = com.google.gson.Gson()
+                val gson = Gson()
                 val newJson = gson.fromJson(jsonContent, JsonObject::class.java)
                 actions.updateConfig(newJson)
             } catch (e: Exception) {

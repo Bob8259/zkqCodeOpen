@@ -2,10 +2,11 @@ package com.coc.zkqcode.utils.exit
 
 import android.content.Context
 import android.content.Intent
+import com.coc.zkqcode.core.ui.components.GlobalVars
 import com.coc.zkqcode.utils.daemon.DaemonService
-import com.coc.zkqcode.utils.floatingwindows.ControlWindowService
-import com.coc.zkqcode.utils.floatingwindows.MessageBoxService
-import com.coc.zkqcode.utils.floatingwindows.UIWindowService
+import com.coc.zkqcode.core.ui.floatingwindows.ControlWindowService
+import com.coc.zkqcode.core.ui.floatingwindows.MessageBoxService
+import com.coc.zkqcode.core.ui.floatingwindows.UIWindowService
 import com.coc.zkqcode.utils.accessibility.MyAccessibilityService
 import com.coc.zkqcode.utils.screencapture.ScreenCaptureManager
 import com.topjohnwu.superuser.Shell
@@ -22,7 +23,7 @@ object AppExitHelper {
     }
 
     private fun restoreDefaultInputMethod() {
-        val defaultIme = com.coc.zkqcode.utils.components.GlobalVars.defaultInputMethod
+        val defaultIme = GlobalVars.defaultInputMethod
         if (!defaultIme.isNullOrBlank()) {
             try {
                 Shell.cmd("ime set $defaultIme").exec()

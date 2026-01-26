@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.coc.zkqcode.utils.reorderable
+package com.coc.zkqcode.core.ui.reorderable
 
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.AnimationSpec

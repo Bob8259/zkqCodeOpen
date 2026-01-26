@@ -27,11 +27,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.coc.zkqcode.utils.components.CustomButton
-import com.coc.zkqcode.utils.components.GlobalVars
+import com.coc.zkqcode.core.ui.components.CustomButton
+import com.coc.zkqcode.core.ui.components.GlobalVars
 import com.coc.zkqcode.utils.database.ConfigManager
 import com.coc.zkqcode.utils.fileactions.FileActions
-import com.coc.zkqcode.utils.floatingwindows.UIWindowService
+import com.coc.zkqcode.core.ui.floatingwindows.UIWindowService
 import com.coc.zkqcode.utils.state.AppMode
 import com.coc.zkqcode.utils.state.AppStateManager
 import com.coc.zkqcode.utils.websocket.ServerConnection

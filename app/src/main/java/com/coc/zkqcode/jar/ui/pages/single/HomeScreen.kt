@@ -30,17 +30,17 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.coc.zkqcode.utils.exit.AppExitHelper
-import com.coc.zkqcode.utils.components.CustomAlertDialog
-import com.coc.zkqcode.utils.components.CustomButton
-import com.coc.zkqcode.utils.components.SettingCheckBox
-import com.coc.zkqcode.utils.components.SettingDropdown
-import com.coc.zkqcode.utils.components.GlobalVars
-import com.coc.zkqcode.utils.components.SettingInputRow
+import com.coc.zkqcode.core.ui.components.CustomAlertDialog
+import com.coc.zkqcode.core.ui.components.CustomButton
+import com.coc.zkqcode.core.ui.components.SettingCheckBox
+import com.coc.zkqcode.core.ui.components.SettingDropdown
+import com.coc.zkqcode.core.ui.components.GlobalVars
+import com.coc.zkqcode.core.ui.components.SettingInputRow
 import com.coc.zkqcode.utils.database.ConfigManager
 import com.coc.zkqcode.utils.database.Schema.GLOBAL_SETTINGS
 import com.coc.zkqcode.utils.state.AppMode
 import com.coc.zkqcode.utils.state.AppStateManager
-import com.coc.zkqcode.utils.theme.AppColors
+import com.coc.zkqcode.core.ui.theme.AppColors
 
 @Composable
 fun HomeScreen(

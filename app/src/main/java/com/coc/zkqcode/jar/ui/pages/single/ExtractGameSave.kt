@@ -13,10 +13,10 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.coc.zkqcode.utils.components.CustomButton
-import com.coc.zkqcode.utils.components.CustomNotificationWindow
-import com.coc.zkqcode.utils.components.GlobalVars
-import com.coc.zkqcode.utils.components.SettingInputRow
+import com.coc.zkqcode.core.ui.components.CustomButton
+import com.coc.zkqcode.core.ui.components.CustomNotificationWindow
+import com.coc.zkqcode.core.ui.components.GlobalVars
+import com.coc.zkqcode.core.ui.components.SettingInputRow
 import com.coc.zkqcode.utils.database.Schema.GLOBAL_SETTINGS
 import com.topjohnwu.superuser.Shell
 import kotlinx.coroutines.Dispatchers

@@ -1,4 +1,4 @@
-package com.coc.zkqcode.utils.theme
+package com.coc.zkqcode.core.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

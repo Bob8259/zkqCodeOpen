@@ -1,7 +1,8 @@
-package com.coc.zkqcode.utils.floatingwindows
+package com.coc.zkqcode.core.ui.floatingwindows
 
 import android.app.Service
 import android.content.Intent
+import android.content.pm.ServiceInfo
 import android.graphics.PixelFormat
 import android.os.Build
 import android.os.IBinder
@@ -16,6 +17,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.layout.onGloballyPositioned
@@ -76,7 +78,7 @@ class ControlWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner 
 
     private fun startBotLogic() {
         serviceScope.launch {
-            androidx.compose.runtime.snapshotFlow { AppStateManager.currentMode }
+            snapshotFlow { AppStateManager.currentMode }
                 .collect { mode ->
                     if (mode == AppMode.Run) {
                         if (botJob == null || !botJob!!.isActive) {
@@ -181,7 +183,7 @@ class ControlWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner 
 
         LaunchedEffect(Unit) {
             while (true) {
-                kotlinx.coroutines.delay(1000)
+                delay(1000)
                 if (GlobalVars.updateWindowPosition && !isDragging) {
                     val absorbEdge = GlobalVars.absorbEdge
                     val absorbYPercentage = GlobalVars.absorbYPercentage
@@ -271,10 +273,10 @@ class ControlWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner 
         val notification = NotificationHelper.createNotification(this)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             val type = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE or
-                        android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION
+                ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE or
+                        ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION
             } else {
-                android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION
+                ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION
             }
             startForeground(1000, notification, type)
         } else {

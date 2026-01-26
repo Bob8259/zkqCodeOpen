@@ -5,9 +5,9 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import com.coc.zkqcode.utils.components.CustomButton
-import com.coc.zkqcode.utils.components.SettingCheckBox
-import com.coc.zkqcode.utils.components.GlobalVars
+import com.coc.zkqcode.core.ui.components.CustomButton
+import com.coc.zkqcode.core.ui.components.SettingCheckBox
+import com.coc.zkqcode.core.ui.components.GlobalVars
 import com.coc.zkqcode.utils.database.Schema.MAIN_BASE_TROOPS_AND_SPELLS
 
 @Composable

@@ -1,4 +1,4 @@
-package com.coc.zkqcode.utils.floatingwindows
+package com.coc.zkqcode.core.ui.floatingwindows
 
 import android.app.Notification
 import android.app.NotificationChannel

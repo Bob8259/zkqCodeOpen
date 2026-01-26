@@ -10,11 +10,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.coc.zkqcode.utils.components.CustomButton
-import com.coc.zkqcode.utils.components.SettingCheckBox
-import com.coc.zkqcode.utils.components.GlobalVars
+import com.coc.zkqcode.core.ui.components.CustomButton
+import com.coc.zkqcode.core.ui.components.SettingCheckBox
+import com.coc.zkqcode.core.ui.components.GlobalVars
 import com.coc.zkqcode.utils.database.Schema
-import com.coc.zkqcode.utils.database.Schema.MAIN_BASE_BUILDINGS
 import kotlin.collections.set
 
 @Composable

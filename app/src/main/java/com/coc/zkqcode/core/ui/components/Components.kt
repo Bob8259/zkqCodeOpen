@@ -1,4 +1,4 @@
-package com.coc.zkqcode.utils.components
+package com.coc.zkqcode.core.ui.components
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
@@ -53,7 +53,7 @@ import androidx.compose.ui.window.PopupPositionProvider
 import androidx.compose.ui.window.PopupProperties
 import com.coc.zkqcode.interfaces.MainCode
 import com.coc.zkqcode.utils.fileactions.FileActions
-import com.coc.zkqcode.utils.theme.AppColors
+import com.coc.zkqcode.core.ui.theme.AppColors
 import com.coc.zkqcode.utils.database.Schema
 import kotlinx.coroutines.delay
 import androidx.compose.foundation.layout.PaddingValues

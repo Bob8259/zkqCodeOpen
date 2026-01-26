@@ -1,4 +1,4 @@
-package com.coc.zkqcode.utils.reorderable
+package com.coc.zkqcode.core.ui.reorderable
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size

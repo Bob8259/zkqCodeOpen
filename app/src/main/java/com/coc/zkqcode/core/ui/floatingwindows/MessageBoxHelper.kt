@@ -1,4 +1,4 @@
-package com.coc.zkqcode.utils.floatingwindows
+package com.coc.zkqcode.core.ui.floatingwindows
 
 import android.content.Context
 import android.content.Intent
