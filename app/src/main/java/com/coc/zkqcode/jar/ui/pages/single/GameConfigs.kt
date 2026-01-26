@@ -1,3 +1,5 @@
+@file:Suppress("FunctionName")
+
 package com.coc.zkqcode.jar.ui.pages.single
 
 import androidx.compose.foundation.lazy.LazyListScope
