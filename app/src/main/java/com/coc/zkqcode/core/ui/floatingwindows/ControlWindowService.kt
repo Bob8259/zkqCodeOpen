@@ -5,7 +5,6 @@ import android.content.Intent
 import android.graphics.PixelFormat
 import android.os.Build
 import android.os.IBinder
-import android.util.Log
 import android.view.Gravity
 import android.view.WindowManager
 import androidx.compose.foundation.layout.Box
@@ -33,15 +32,12 @@ import androidx.savedstate.SavedStateRegistry
 import androidx.savedstate.SavedStateRegistryController
 import androidx.savedstate.SavedStateRegistryOwner
 import androidx.savedstate.setViewTreeSavedStateRegistryOwner
-import com.coc.zkqcode.utils.components.GlobalVars
+import com.coc.zkqcode.core.ui.components.GlobalVars
 import com.coc.zkqcode.utils.state.AppMode
 import com.coc.zkqcode.utils.state.AppStateManager
 import com.topjohnwu.superuser.Shell
 import kotlin.math.roundToInt
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.time.delay
-import java.io.File
 
 class ControlWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner {
 
