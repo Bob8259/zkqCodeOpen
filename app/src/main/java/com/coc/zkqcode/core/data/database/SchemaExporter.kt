@@ -1,6 +1,7 @@
 package com.coc.zkqcode.core.data.database
 
 import com.coc.zkqcode.core.ui.components.GlobalVars
+import com.coc.zkqcode.core.util.fileactions.ReadWriteHelper
 import com.google.gson.Gson
 
 import com.google.gson.GsonBuilder
@@ -88,16 +89,10 @@ object SchemaExporter {
         val fullPath =
             if (directory.endsWith("/")) "$directory$fileName" else "$directory/$fileName"
 
-        val writeAction = mapOf(
-            "actionType" to "file_action",
-            "subAction" to "write",
-            "path" to fullPath,
-            "content" to jsonContent
-        )
-
+        ReadWriteHelper.writeJson(fullPath, jsonContent)
+        
+        // Update local configJson to keep it in sync
         GlobalVars.fileActions?.let { actions ->
-            actions.getConnection().sendAction(writeAction)
-            // Update local configJson to keep it in sync
             try {
                 val gson = Gson()
                 val newJson = gson.fromJson(jsonContent, JsonObject::class.java)
@@ -105,6 +100,6 @@ object SchemaExporter {
             } catch (e: Exception) {
                 e.printStackTrace()
             }
-        } ?: println("ERROR: GlobalVars.fileActions is null")
+        }
     }
 }

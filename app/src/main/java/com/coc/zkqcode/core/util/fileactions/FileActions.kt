@@ -7,6 +7,9 @@ import androidx.compose.runtime.setValue
 import com.coc.zkqcode.core.data.websocket.ServerConnection
 import com.google.gson.Gson
 import com.google.gson.JsonObject
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class FileActions(
     private val serverConnection: ServerConnection,
@@ -28,26 +31,18 @@ class FileActions(
     init {
         serverConnection.connect(
             onOpen = {
-                // Initial check for directory
-                serverConnection.sendAction(
-                    mapOf(
-                        "actionType" to "file_action",
-                        "subAction" to "check_exists",
-                        "path" to baseDir
-                    )
-                )
-                // Try to read existing config
-                serverConnection.sendAction(
-                    mapOf(
-                        "actionType" to "file_action",
-                        "subAction" to "read",
-                        "path" to configPath
-                    )
-                )
+                CoroutineScope(Dispatchers.IO).launch {
+                    // Initial check for directory
+                    ReadWriteHelper.checkExists(baseDir)
+                    // Try to read existing config
+                    ReadWriteHelper.readJson(configPath)
+                }
             },
             onMessage = { message ->
                 try {
                     val response = gson.fromJson(message, JsonObject::class.java)
+                    // Forward response to ReadWriteHelper for pending requests
+                    ReadWriteHelper.handleResponse(response)
                     // Handle response based on status and data
                     if (response.has("status") && response.get("status").asString == "success") {
                         if (response.has("data")) {
@@ -92,13 +87,7 @@ class FileActions(
 
     fun writeToConfigFile(key: String, content: String) {
         configJson.addProperty(key, content)
-        val writeAction = mapOf(
-            "actionType" to "file_action",
-            "subAction" to "write",
-            "path" to configPath,
-            "content" to gson.toJson(configJson)
-        )
-        serverConnection.sendAction(writeAction)
+        ReadWriteHelper.writeJson(configPath, gson.toJson(configJson))
     }
 
     // 在 FileActions.kt 中增加这个方法
