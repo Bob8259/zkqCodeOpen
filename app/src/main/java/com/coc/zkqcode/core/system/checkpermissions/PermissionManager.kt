@@ -4,7 +4,7 @@ import android.content.Context
 import android.provider.Settings
 import androidx.core.app.NotificationManagerCompat
 import android.util.Log
-import com.coc.zkqcode.utils.daemon.ServerManager
+import com.coc.zkqcode.core.system.daemon.ServerManager
 import com.topjohnwu.superuser.Shell
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
