@@ -16,7 +16,7 @@ object ShowMessage {
     operator fun invoke(text: String) {
         contextRef?.get()?.let { context ->
             showFloatingMessage(context = context, text = text)
-            Timber.v("Verbose: $text")
+            Timber.tag("zkq").v("Verbose: $text")
         } ?: logAndDie("ShowMessage: Context not initialized or released!")
     }
 
