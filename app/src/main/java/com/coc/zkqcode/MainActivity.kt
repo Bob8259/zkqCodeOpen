@@ -7,6 +7,7 @@ import com.coc.zkqcode.core.system.checkpermissions.CheckRootScreen
 import com.coc.zkqcode.core.system.screencapture.ProjectionPermissionHelper
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.core.util.basic.ShowMessage
+import com.coc.zkqcode.core.util.fileactions.LogHelper
 
 class MainActivity : ComponentActivity() {
     private lateinit var projectionPermissionHelper: ProjectionPermissionHelper
@@ -16,6 +17,7 @@ class MainActivity : ComponentActivity() {
         projectionPermissionHelper = ProjectionPermissionHelper(this)
         ShowMessage.init(this)
         ScreenCaptureManager.init(this)
+        LogHelper.initTimber(this)
         
         setContent {
             CheckRootScreen()
