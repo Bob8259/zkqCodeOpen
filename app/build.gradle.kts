@@ -48,6 +48,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 
     externalNativeBuild {
@@ -183,4 +184,5 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
 //    debugImplementation(libs.leakcanary.android)
     implementation(libs.androidx.navigation.compose)
+    implementation(libs.timber)
 }
