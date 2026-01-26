@@ -4,7 +4,7 @@ import android.os.Environment
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import com.coc.zkqcode.utils.websocket.ServerConnection
+import com.coc.zkqcode.core.data.websocket.ServerConnection
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 

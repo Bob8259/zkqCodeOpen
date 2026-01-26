@@ -88,7 +88,7 @@
         </service>
 
         <service
-            android:name=".utils.accessibility.MyAccessibilityService"
+            android:name=".core.system.accessibility.MyAccessibilityService"
             android:enabled="true"
             android:exported="true"
             android:label="@string/app_name"

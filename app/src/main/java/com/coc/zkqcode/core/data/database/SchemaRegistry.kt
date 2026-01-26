@@ -1,4 +1,4 @@
-package com.coc.zkqcode.utils.database
+package com.coc.zkqcode.core.data.database
 
 enum class Scope {
     GLOBAL,

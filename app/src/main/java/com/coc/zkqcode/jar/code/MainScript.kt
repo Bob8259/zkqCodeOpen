@@ -20,6 +20,7 @@ class MainScript {
             } else {
                 ShowMessage("没找到.\nTime consumed: $executionTime")
             }
+            println("code running")
             val remainingDelay = 0L.coerceAtLeast(2000L - executionTime)
             delay(remainingDelay)
         }

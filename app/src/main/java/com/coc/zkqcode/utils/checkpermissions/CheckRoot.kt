@@ -29,12 +29,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.coc.zkqcode.core.ui.components.CustomButton
 import com.coc.zkqcode.core.ui.components.GlobalVars
-import com.coc.zkqcode.utils.database.ConfigManager
+import com.coc.zkqcode.core.data.database.ConfigManager
 import com.coc.zkqcode.utils.fileactions.FileActions
 import com.coc.zkqcode.core.ui.floatingwindows.UIWindowService
 import com.coc.zkqcode.utils.state.AppMode
 import com.coc.zkqcode.utils.state.AppStateManager
-import com.coc.zkqcode.utils.websocket.ServerConnection
+import com.coc.zkqcode.core.data.websocket.ServerConnection
 import com.topjohnwu.superuser.Shell
 
 @Composable

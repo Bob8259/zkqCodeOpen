@@ -1,4 +1,4 @@
-package com.coc.zkqcode.utils.screencapture
+package com.coc.zkqcode.core.system.screencapture
 
 import com.topjohnwu.superuser.Shell
 

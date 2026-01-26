@@ -36,8 +36,8 @@ import com.coc.zkqcode.core.ui.components.SettingCheckBox
 import com.coc.zkqcode.core.ui.components.SettingDropdown
 import com.coc.zkqcode.core.ui.components.GlobalVars
 import com.coc.zkqcode.core.ui.components.SettingInputRow
-import com.coc.zkqcode.utils.database.ConfigManager
-import com.coc.zkqcode.utils.database.Schema.GLOBAL_SETTINGS
+import com.coc.zkqcode.core.data.database.ConfigManager
+import com.coc.zkqcode.core.data.database.Schema.GLOBAL_SETTINGS
 import com.coc.zkqcode.utils.state.AppMode
 import com.coc.zkqcode.utils.state.AppStateManager
 import com.coc.zkqcode.core.ui.theme.AppColors

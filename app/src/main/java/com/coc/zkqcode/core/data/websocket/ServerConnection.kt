@@ -1,4 +1,4 @@
-package com.coc.zkqcode.utils.websocket
+package com.coc.zkqcode.core.data.websocket
 
 import android.util.Log
 import com.google.gson.Gson

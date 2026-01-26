@@ -3,7 +3,7 @@ package com.coc.zkqcode.jar.code
 import android.graphics.Bitmap
 import android.graphics.Point
 import com.coc.zkqcode.jar.code.colorschema.ColorSchema
-import com.coc.zkqcode.utils.screencapture.ScreenCaptureManager
+import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.zkqnative.NativeTools
 
 class FindMultiColors {

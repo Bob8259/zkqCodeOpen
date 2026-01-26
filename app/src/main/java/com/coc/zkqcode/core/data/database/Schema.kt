@@ -1,6 +1,6 @@
 @file:Suppress("ClassName")
 
-package com.coc.zkqcode.utils.database
+package com.coc.zkqcode.core.data.database
 
 /**
  * The single source of truth for any setting in the app.

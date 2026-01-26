@@ -36,7 +36,7 @@ import com.coc.zkqcode.core.ui.components.CustomButton
 import com.coc.zkqcode.core.ui.components.GlobalVars
 import com.coc.zkqcode.utils.state.AppMode
 import com.coc.zkqcode.utils.state.AppStateManager
-import com.coc.zkqcode.utils.database.Schema.ACCOUNT_SETTINGS
+import com.coc.zkqcode.core.data.database.Schema.ACCOUNT_SETTINGS
 import com.topjohnwu.superuser.Shell
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

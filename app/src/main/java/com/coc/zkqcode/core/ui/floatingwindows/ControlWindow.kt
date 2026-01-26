@@ -26,8 +26,9 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import com.coc.zkqcode.utils.exit.AppExitHelper
 import com.coc.zkqcode.core.ui.components.CustomAlertDialog
+import com.coc.zkqcode.utils.exit.AppExitHelper
+import com.coc.zkqcode.utils.exit.AppExitHelper.restoreDefaultInputMethod
 import com.coc.zkqcode.utils.state.AppMode
 import com.coc.zkqcode.utils.state.AppStateManager
 import kotlinx.coroutines.delay
@@ -159,6 +160,7 @@ fun ControlWindow(
                         .clickable {
                             internalInteractionCount++
                             AppStateManager.setMode(AppMode.Main)
+                            restoreDefaultInputMethod()
                             onOpenMainUI()
                         }
                 )
@@ -171,6 +173,7 @@ fun ControlWindow(
                         .clickable {
                             internalInteractionCount++
                             AppStateManager.setMode(AppMode.SwitchAccount)
+                            restoreDefaultInputMethod()
                             onSwitchAccount()
                         }
                 )
@@ -183,6 +186,7 @@ fun ControlWindow(
                         .clickable {
                             internalInteractionCount++
                             isPlaying = !isPlaying
+                            if (!isPlaying) restoreDefaultInputMethod()
                         }
                 )
             }
@@ -198,6 +202,7 @@ fun ControlWindow(
                         .clickable {
                             internalInteractionCount++
                             isPlaying = !isPlaying
+                            if (!isPlaying) restoreDefaultInputMethod()
                         }
                 )
                 Image(
@@ -209,6 +214,7 @@ fun ControlWindow(
                         .clickable {
                             internalInteractionCount++
                             AppStateManager.setMode(AppMode.SwitchAccount)
+                            restoreDefaultInputMethod()
                             onSwitchAccount()
                         }
                 )
@@ -221,6 +227,7 @@ fun ControlWindow(
                         .clickable {
                             internalInteractionCount++
                             AppStateManager.setMode(AppMode.Main)
+                            restoreDefaultInputMethod()
                             onOpenMainUI()
                         }
                 )
