@@ -15,7 +15,7 @@ import android.util.DisplayMetrics
 import android.view.WindowManager
 import androidx.activity.result.ActivityResultLauncher
 import androidx.core.graphics.createBitmap
-import com.coc.zkqcode.utils.accessibility.MyAccessibilityService
+import com.coc.zkqcode.core.system.accessibility.MyAccessibilityService
 import kotlinx.coroutines.suspendCancellableCoroutine
 import java.nio.ByteBuffer
 import kotlin.coroutines.resume
@@ -76,8 +76,7 @@ object ScreenCaptureManager {
             screenDensity = context.resources.configuration.densityDpi
         } else {
             val metrics = DisplayMetrics()
-            @Suppress("DEPRECATION")
-            windowManager.defaultDisplay.getRealMetrics(metrics)
+            @Suppress("DEPRECATION") windowManager.defaultDisplay.getRealMetrics(metrics)
             screenWidth = metrics.widthPixels
             screenHeight = metrics.heightPixels
             screenDensity = metrics.densityDpi
@@ -110,7 +109,7 @@ object ScreenCaptureManager {
         }
 
         // 这里的辅助功能逻辑保留
-        // AutoGrantTool.forceEnableAccessibility() // 确保这个工具类在你的项目中
+        AutoGrantTool.forceEnableAccessibility() // 确保这个工具类在你的项目中
         MyAccessibilityService.isDetectionEnabled = true
 
         mediaProjectionManager?.let {
@@ -155,10 +154,13 @@ object ScreenCaptureManager {
             println("Creating VirtualDisplay for screenshot (Sync)")
             virtualDisplay = projection.createVirtualDisplay(
                 "ScreenCapture",
-                screenWidth, screenHeight, screenDensity,
+                screenWidth,
+                screenHeight,
+                screenDensity,
                 DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
                 imageReader?.surface,
-                null, backgroundHandler // <--- 使用后台 Handler
+                null,
+                backgroundHandler // <--- 使用后台 Handler
             )
             true
         } catch (e: Exception) {
@@ -289,10 +291,13 @@ object ScreenCaptureManager {
                 virtualDisplay?.release()
                 virtualDisplay = projection.createVirtualDisplay(
                     "ScreenCapture",
-                    screenWidth, screenHeight, screenDensity,
+                    screenWidth,
+                    screenHeight,
+                    screenDensity,
                     DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
                     imageReader?.surface,
-                    null, backgroundHandler // <--- 使用后台线程接收画面流
+                    null,
+                    backgroundHandler // <--- 使用后台线程接收画面流
                 )
             } catch (_: Exception) {
                 cleanupProjectionResources()

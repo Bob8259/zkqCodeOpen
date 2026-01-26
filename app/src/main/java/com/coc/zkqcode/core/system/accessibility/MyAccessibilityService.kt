@@ -1,4 +1,4 @@
-package com.coc.zkqcode.utils.accessibility
+package com.coc.zkqcode.core.system.accessibility
 
 import android.accessibilityservice.AccessibilityService
 import android.annotation.SuppressLint
@@ -66,7 +66,9 @@ class MyAccessibilityService : AccessibilityService() {
         if (targetNode != null && targetNode.isEnabled) {
             performClick(targetNode)
             // Disable detection immediately after click to avoid interfering with other operations
-            isDetectionEnabled = false
+            handler.postDelayed({//keep detecting for 1 second
+                isDetectionEnabled = false
+            }, 1000)
             result = true
         }
 
