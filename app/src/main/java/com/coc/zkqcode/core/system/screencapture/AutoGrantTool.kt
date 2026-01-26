@@ -3,7 +3,7 @@ package com.coc.zkqcode.utils.screencapture
 import com.topjohnwu.superuser.Shell
 
 object AutoGrantTool {
-    private const val SERVICE_PATH = "com.coc.zkqcode/com.coc.zkqcode.utils.accessibility.MyAccessibilityService"
+    private const val SERVICE_PATH = "com.coc.zkqcode/com.coc.zkqcode.core.system.accessibility.MyAccessibilityService"
     /**
      * Use Root permissions to enable accessibility service
      * Recommended to call before requesting screen capture permission
