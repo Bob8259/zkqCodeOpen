@@ -10,9 +10,7 @@ import android.hardware.display.VirtualDisplay
 import android.media.ImageReader
 import android.media.projection.MediaProjection
 import android.media.projection.MediaProjectionManager
-import android.os.Build
-import android.os.Handler
-import android.os.Looper
+import android.os.*
 import android.util.DisplayMetrics
 import android.view.WindowManager
 import androidx.activity.result.ActivityResultLauncher
@@ -30,6 +28,10 @@ object ScreenCaptureManager {
     private var virtualDisplay: VirtualDisplay? = null
     private var imageReader: ImageReader? = null
 
+    // --- 新增：专门处理截图的后台线程 ---
+    private var handlerThread: HandlerThread? = null
+    private var backgroundHandler: Handler? = null
+
     private var screenWidth = 0
     private var screenHeight = 0
     private var screenDensity = 0
@@ -38,17 +40,21 @@ object ScreenCaptureManager {
     private var cachedResultCode: Int? = null
     private var cachedIntentData: Intent? = null
 
-    private val mainHandler = Handler(Looper.getMainLooper())
     private val captureMutex = Mutex()
 
-    /**
-     * Callback to handle MediaProjection session termination.
-     * When session is stopped by the system or user, clean up resources.
-     */
     private val projectionCallback = object : MediaProjection.Callback() {
         override fun onStop() {
-            println("MediaProjection session stopped by system/user")
             cleanupProjectionResources()
+        }
+    }
+
+    /**
+     * 初始化后台线程。只有 HandlerThread 准备好了，ImageReader 才能工作。
+     */
+    private fun ensureHandlerThread() {
+        if (handlerThread == null || !handlerThread!!.isAlive) {
+            handlerThread = HandlerThread("ScreenCapBackground").apply { start() }
+            backgroundHandler = Handler(handlerThread!!.looper)
         }
     }
 
@@ -57,12 +63,12 @@ object ScreenCaptureManager {
         mediaProjectionManager =
             context.getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
         updateMetrics()
+        ensureHandlerThread() // 初始化时启动线程
     }
 
     private fun updateMetrics() {
         val context = appContext ?: return
         val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             val metrics = windowManager.currentWindowMetrics
             screenWidth = metrics.bounds.width()
@@ -78,17 +84,15 @@ object ScreenCaptureManager {
         }
     }
 
-    /**
-     * Internal helper to ensure MediaProjection is active using cached credentials.
-     * Registers callback on new projection creation.
-     */
     private fun ensureProjection(): MediaProjection? {
         if (mediaProjection == null) {
             val code = cachedResultCode
             val data = cachedIntentData
             if (code != null && data != null) {
+                ensureHandlerThread()
                 mediaProjection = mediaProjectionManager?.getMediaProjection(code, data)?.also {
-                    it.registerCallback(projectionCallback, mainHandler)
+                    // 关键：注册回调也使用 backgroundHandler
+                    it.registerCallback(projectionCallback, backgroundHandler)
                 }
             }
         }
@@ -96,21 +100,17 @@ object ScreenCaptureManager {
     }
 
     /**
-     * Always create a fresh ImageReader for each capture.
-     * Reusing ImageReader can cause listener state issues and buffered image problems.
+     * 请求权限或尝试直接截图。
      */
-    private fun prepareImageReader() {
-        imageReader?.close()
-        imageReader = ImageReader.newInstance(screenWidth, screenHeight, PixelFormat.RGBA_8888, 2)
-    }
-
     fun requestPermission(launcher: ActivityResultLauncher<Intent>) {
         if (cachedResultCode != null && cachedIntentData != null) {
+            // 如果已有缓存权限，直接尝试截一次图
             if (takeScreenshot()) return
             reset()
         }
 
-        AutoGrantTool.forceEnableAccessibility()
+        // 这里的辅助功能逻辑保留
+        // AutoGrantTool.forceEnableAccessibility() // 确保这个工具类在你的项目中
         MyAccessibilityService.isDetectionEnabled = true
 
         mediaProjectionManager?.let {
@@ -118,20 +118,72 @@ object ScreenCaptureManager {
         }
     }
 
+    /**
+     * 完全重置 - 清除包括缓存凭证在内的所有内容。
+     * 当你想强制弹出新的权限申请窗口时使用。
+     */
+    private fun reset() {
+        try {
+            // 停止当前的投屏会话
+            mediaProjection?.stop()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+        // 清理 VirtualDisplay 和 ImageReader 等资源
+        cleanupProjectionResources()
+
+        // 清空缓存的权限凭证
+        cachedResultCode = null
+        cachedIntentData = null
+    }
+
+    /**
+     * 同步风格的截图方法（非协程版本）。
+     * 更新：使用 backgroundHandler 替代 mainHandler。
+     */
+    fun takeScreenshot(): Boolean {
+        updateMetrics()
+        val projection = ensureProjection() ?: return false
+        prepareImageReader()
+        ensureHandlerThread() // 确保后台线程已启动
+
+        return try {
+            virtualDisplay?.release()
+            virtualDisplay = null
+
+            println("Creating VirtualDisplay for screenshot (Sync)")
+            virtualDisplay = projection.createVirtualDisplay(
+                "ScreenCapture",
+                screenWidth, screenHeight, screenDensity,
+                DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
+                imageReader?.surface,
+                null, backgroundHandler // <--- 使用后台 Handler
+            )
+            true
+        } catch (e: Exception) {
+            e.printStackTrace()
+            cleanupProjectionResources()
+            false
+        }
+    }
+
+    private fun prepareImageReader() {
+        imageReader?.close()
+        imageReader = ImageReader.newInstance(screenWidth, screenHeight, PixelFormat.RGBA_8888, 2)
+    }
+
     fun onPermissionGranted(resultCode: Int, data: Intent) {
         if (resultCode == Activity.RESULT_OK) {
             cachedResultCode = resultCode
             cachedIntentData = data
+            ensureHandlerThread()
             mediaProjection = mediaProjectionManager?.getMediaProjection(resultCode, data)?.also {
-                it.registerCallback(projectionCallback, mainHandler)
+                it.registerCallback(projectionCallback, backgroundHandler)
             }
         }
     }
 
-    /**
-     * Clean up projection-related resources (called when session stops).
-     * Does NOT clear cached credentials - allows session recreation.
-     */
     private fun cleanupProjectionResources() {
         virtualDisplay?.release()
         virtualDisplay = null
@@ -140,53 +192,15 @@ object ScreenCaptureManager {
         mediaProjection = null
     }
 
-    /**
-     * Full reset - clears everything including cached credentials.
-     * Use when you want to force a new permission prompt.
-     */
-    private fun reset() {
-        runCatching { mediaProjection?.stop() }
-        cleanupProjectionResources()
-        cachedResultCode = null
-        cachedIntentData = null
-    }
-
-    /**
-     * Public method to fully release all resources.
-     * Call this when the app is shutting down or no longer needs media projection.
-     */
     fun releaseAll() {
         runCatching { mediaProjection?.stop() }
         cleanupProjectionResources()
         cachedResultCode = null
         cachedIntentData = null
-    }
-
-    fun takeScreenshot(): Boolean {
-        updateMetrics()
-        val projection = ensureProjection() ?: return false
-        prepareImageReader()
-
-        return try {
-            // Release existing VirtualDisplay to force a fresh frame
-            virtualDisplay?.release()
-            virtualDisplay = null
-
-            println("Creating VirtualDisplay for screenshot")
-            virtualDisplay = projection.createVirtualDisplay(
-                "ScreenCapture",
-                screenWidth, screenHeight, screenDensity,
-                DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
-                imageReader?.surface,
-                null, mainHandler
-            )
-            true
-        } catch (e: Exception) {
-            e.printStackTrace()
-            // Projection likely invalid, clean up
-            cleanupProjectionResources()
-            false
-        }
+        // 停止后台线程
+        handlerThread?.quitSafely()
+        handlerThread = null
+        backgroundHandler = null
     }
 
     data class CaptureResult(
@@ -197,20 +211,24 @@ object ScreenCaptureManager {
         val rowStride: Int
     )
 
+    /**
+     * 改进后的协程截图方法
+     */
     suspend fun capture(asBitmap: Boolean = true): Any? = captureMutex.withLock {
-        suspendCancellableCoroutine { cont ->
+        ensureHandlerThread() // 确保后台线程就绪
+
+        return@withLock suspendCancellableCoroutine { cont ->
             updateMetrics()
             val projection = ensureProjection()
 
             if (projection == null) {
-                cont.resume(null)
+                if (cont.isActive) cont.resume(null)
                 return@suspendCancellableCoroutine
             }
 
             prepareImageReader()
 
             imageReader?.setOnImageAvailableListener({ reader ->
-                // Clear listener immediately to prevent multiple triggers
                 reader.setOnImageAvailableListener(null, null)
 
                 val image = reader.acquireLatestImage() ?: run {
@@ -226,8 +244,9 @@ object ScreenCaptureManager {
                     val rowPadding = rowStride - pixelStride * screenWidth
 
                     if (asBitmap) {
-                        // Standardized bitmap creation with padding handling
-                        val bitmap = createBitmap(screenWidth + rowPadding / pixelStride, screenHeight)
+                        // 在后台线程创建 Bitmap，避免阻塞 UI
+                        val bitmap =
+                            createBitmap(screenWidth + rowPadding / pixelStride, screenHeight)
                         bitmap.copyPixelsFromBuffer(buffer)
 
                         val finalBitmap = if (rowPadding == 0) {
@@ -239,7 +258,6 @@ object ScreenCaptureManager {
                         }
                         if (cont.isActive) cont.resume(finalBitmap)
                     } else {
-                        // Copy buffer to a new direct buffer because image.close() will invalidate the plane buffer
                         val capacity = buffer.capacity()
                         val directCopy = ByteBuffer.allocateDirect(capacity)
                         buffer.rewind()
@@ -260,29 +278,24 @@ object ScreenCaptureManager {
                     if (cont.isActive) cont.resume(null)
                 } finally {
                     image.close()
-                    // NOTE: No longer calling stopCapture() here - keep VirtualDisplay alive
                 }
-            }, mainHandler)
+            }, backgroundHandler) // <--- 使用后台线程处理图片数据
 
-            // Safety: ensure reader listener is cleared if coroutine is cancelled externally
             cont.invokeOnCancellation {
                 imageReader?.setOnImageAvailableListener(null, null)
             }
 
             try {
-                // Release existing VirtualDisplay to force a fresh frame
                 virtualDisplay?.release()
-                virtualDisplay = null
-
                 virtualDisplay = projection.createVirtualDisplay(
                     "ScreenCapture",
                     screenWidth, screenHeight, screenDensity,
                     DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
                     imageReader?.surface,
-                    null, mainHandler
+                    null, backgroundHandler // <--- 使用后台线程接收画面流
                 )
             } catch (_: Exception) {
-                cleanupProjectionResources() // Token likely dead
+                cleanupProjectionResources()
                 if (cont.isActive) cont.resume(null)
             }
         }
