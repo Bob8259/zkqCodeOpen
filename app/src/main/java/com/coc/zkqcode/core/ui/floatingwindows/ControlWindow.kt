@@ -27,10 +27,10 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.coc.zkqcode.core.ui.components.CustomAlertDialog
-import com.coc.zkqcode.utils.exit.AppExitHelper
-import com.coc.zkqcode.utils.exit.AppExitHelper.restoreDefaultInputMethod
-import com.coc.zkqcode.utils.state.AppMode
-import com.coc.zkqcode.utils.state.AppStateManager
+import com.coc.zkqcode.core.util.exit.AppExitHelper
+import com.coc.zkqcode.core.util.exit.AppExitHelper.restoreDefaultInputMethod
+import com.coc.zkqcode.statehelper.AppMode
+import com.coc.zkqcode.statehelper.AppStateManager
 import kotlinx.coroutines.delay
 
 // Define a common icon size constant

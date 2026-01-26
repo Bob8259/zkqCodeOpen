@@ -1,4 +1,4 @@
-package com.coc.zkqcode.utils.fileactions
+package com.coc.zkqcode.core.util.fileactions
 
 import android.os.Environment
 import androidx.compose.runtime.getValue

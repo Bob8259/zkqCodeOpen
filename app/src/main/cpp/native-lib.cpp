@@ -68,7 +68,7 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *reserved) {
     }
 
     // Find the class where the methods are declared
-    jclass clazz = env->FindClass("com/coc/zkqcode/zkqnative/NativeTools");
+    jclass clazz = env->FindClass("com/coc/zkqcode/nativehelper/NativeTools");
     if (clazz == nullptr) {
         return JNI_ERR;
     }

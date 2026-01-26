@@ -1,12 +1,13 @@
-package com.coc.zkqcode.utils.inputmethod
+package com.coc.zkqcode.core.system.inputmethod
 
 import android.content.ClipboardManager
 import android.content.Context
+import android.inputmethodservice.InputMethodService
 
 /**
  * Custom Input Method Service that provides a function to read the clipboard.
  */
-class InputMethodService : android.inputmethodservice.InputMethodService() {
+class InputMethodService : InputMethodService() {
     
     override fun onCreate() {
         super.onCreate()
@@ -18,7 +19,7 @@ class InputMethodService : android.inputmethodservice.InputMethodService() {
      */
     fun readClipboard(): String? {
         return try {
-            val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as? ClipboardManager
+            val clipboard = getSystemService(CLIPBOARD_SERVICE) as? ClipboardManager
             if (clipboard == null || !clipboard.hasPrimaryClip()) {
                 null
             } else {

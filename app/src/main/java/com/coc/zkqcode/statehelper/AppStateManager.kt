@@ -1,4 +1,4 @@
-package com.coc.zkqcode.utils.state
+package com.coc.zkqcode.statehelper
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf

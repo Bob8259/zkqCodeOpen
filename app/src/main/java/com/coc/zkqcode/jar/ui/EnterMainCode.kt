@@ -13,8 +13,8 @@ import com.coc.zkqcode.jar.ui.pages.mainbase.MainBaseUpgradePriority
 import com.coc.zkqcode.jar.ui.pages.nightbase.NightBaseUpgradePriority
 import com.coc.zkqcode.jar.ui.pages.single.HomeScreen
 import com.coc.zkqcode.jar.ui.pages.single.SwitchAccount
-import com.coc.zkqcode.utils.state.AppMode
-import com.coc.zkqcode.utils.state.AppStateManager
+import com.coc.zkqcode.statehelper.AppMode
+import com.coc.zkqcode.statehelper.AppStateManager
 
 class EnterMainCode : MainCode {
     @Composable

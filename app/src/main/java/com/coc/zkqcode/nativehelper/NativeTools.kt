@@ -1,4 +1,4 @@
-package com.coc.zkqcode.zkqnative
+package com.coc.zkqcode.nativehelper
 
 @Suppress("KotlinJniMissingFunction") //明明运行正常，还一直报错，把你屏蔽了
 object NativeTools {

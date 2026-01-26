@@ -1,4 +1,4 @@
-package com.coc.zkqcode.utils.daemon
+package com.coc.zkqcode.core.system.daemon
 
 import android.content.Context
 import com.topjohnwu.superuser.Shell

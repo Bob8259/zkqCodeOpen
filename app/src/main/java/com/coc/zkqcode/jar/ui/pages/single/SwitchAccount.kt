@@ -34,14 +34,14 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.coc.zkqcode.core.ui.components.CustomButton
 import com.coc.zkqcode.core.ui.components.GlobalVars
-import com.coc.zkqcode.utils.state.AppMode
-import com.coc.zkqcode.utils.state.AppStateManager
+import com.coc.zkqcode.statehelper.AppMode
+import com.coc.zkqcode.statehelper.AppStateManager
 import com.coc.zkqcode.core.data.database.Schema.ACCOUNT_SETTINGS
 import com.topjohnwu.superuser.Shell
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import androidx.core.content.edit
-import com.coc.zkqcode.utils.basic.ShowMessage
+import com.coc.zkqcode.core.util.basic.ShowMessage
 
 @Composable
 fun SwitchAccount(onClose: () -> Unit) {
