@@ -24,11 +24,28 @@ import com.coc.zkqcode.utils.components.GlobalVars
 import com.coc.zkqcode.utils.components.SettingInputRow
 import com.coc.zkqcode.utils.database.Schema.ACCOUNT_SETTINGS
 import com.coc.zkqcode.utils.database.Schema.GLOBAL_SETTINGS
+import com.coc.zkqcode.utils.database.ConfigManager
 
 fun LazyListScope.AccountSettings() {
     item {
-        SettingInputRow(key = GLOBAL_SETTINGS.CONFIG_COUNT.key)
-        SettingInputRow(key = GLOBAL_SETTINGS.ACCOUNT_COUNT.key)
+        SettingInputRow(
+            key = GLOBAL_SETTINGS.CONFIG_COUNT.key,
+            afterChange = { newValue ->
+                val newCount = newValue.toIntOrNull()
+                if (newCount != null) {
+                    ConfigManager.expandProfileConfigs(newCount)
+                }
+            }
+        )
+        SettingInputRow(
+            key = GLOBAL_SETTINGS.ACCOUNT_COUNT.key,
+            afterChange = { newValue ->
+                val newCount = newValue.toIntOrNull()
+                if (newCount != null) {
+                    ConfigManager.expandAccountConfigs(newCount)
+                }
+            }
+        )
         HorizontalDivider(
             thickness = 1.dp,
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 1f)

@@ -58,6 +58,38 @@ object ConfigManager {
         }
     }
 
+    fun expandAccountConfigs(newCount: Int) {
+        SchemaRegistry.ALL_MODULES.filter { it.scope == Scope.ACCOUNT }.forEach { module ->
+            for (i in 1..newCount) {
+                module.settings.forEach { def ->
+                    val key = "${def.key}${i}"
+                    if (!GlobalVars.configStates.containsKey(key)) {
+                        val defaultValue =
+                            if (def.key == "global_path" || def.key == "cn_path" || def.key == "data_content") {
+                                i.toString()
+                            } else {
+                                def.defaultValue.toString()
+                            }
+                        GlobalVars.configStates[key] = mutableStateOf(defaultValue)
+                    }
+                }
+            }
+        }
+    }
+
+    fun expandProfileConfigs(newCount: Int) {
+        SchemaRegistry.ALL_MODULES.filter { it.scope == Scope.PROFILE }.forEach { module ->
+            for (i in 1..newCount) {
+                module.settings.forEach { def ->
+                    val key = "${def.key}_c$i"
+                    if (!GlobalVars.configStates.containsKey(key)) {
+                        GlobalVars.configStates[key] = mutableStateOf(def.defaultValue.toString())
+                    }
+                }
+            }
+        }
+    }
+
     /**
      * Saves all configs to the JSON file via the server.
      */
