@@ -21,7 +21,7 @@ object LogHelper {
     }
 
     fun logAndDie(message: String): Nothing {
-        Timber.e("CRITICAL_ERROR: $message")
+        Timber.tag("zkq").e("CRITICAL_ERROR: $message")
         error(message) // 抛出 IllegalStateException
     }
 

@@ -12,19 +12,16 @@ class MainScript {
 
     suspend fun runScript() {
         while (currentCoroutineContext().isActive) {
-
-
-//            val startTime = System.currentTimeMillis()
-//            val foundPoint = findTool.findMultiColors(null, MyColors.Test)
-//            val executionTime = System.currentTimeMillis() - startTime
-//            if (foundPoint != null) {
-//                ShowMessage("Match FOUND 123: (${foundPoint.x}, ${foundPoint.y})\nTime consumed: $executionTime")
-//            } else {
-//                ShowMessage("没找到.\nTime consumed: $executionTime")
-//            }
-//            println("code running")
-//            val remainingDelay = 0L.coerceAtLeast(2000L - executionTime)
-//            delay(remainingDelay)
+            val startTime = System.currentTimeMillis()
+            val foundPoint = findTool.findMultiColors(null, MyColors.Test)
+            val executionTime = System.currentTimeMillis() - startTime
+            if (foundPoint != null) {
+                ShowMessage("Match FOUND 123: (${foundPoint.x}, ${foundPoint.y})\nTime consumed: $executionTime")
+            } else {
+                ShowMessage("没找到.\nTime consumed: $executionTime")
+            }
+            val remainingDelay = 0L.coerceAtLeast(2000L - executionTime)
+            delay(remainingDelay)
         }
     }
 }

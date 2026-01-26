@@ -7,9 +7,6 @@ import androidx.compose.runtime.setValue
 import com.coc.zkqcode.core.data.websocket.ServerConnection
 import com.google.gson.Gson
 import com.google.gson.JsonObject
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 class FileActions(
     private val serverConnection: ServerConnection,
@@ -30,19 +27,30 @@ class FileActions(
 
     init {
         serverConnection.connect(
+            // Do not modify these logics. This is designed for an ultra-fast config loading.
+            // This will send two messages to the server, if the config file exists, then we will discard the check_exists response, and only load the config from read response.
+            // If the config does not exist, then check_exists will return an error, so that we know the config does not exist.
             onOpen = {
-                CoroutineScope(Dispatchers.IO).launch {
-                    // Initial check for directory
-                    ReadWriteHelper.checkExists(baseDir)
-                    // Try to read existing config
-                    ReadWriteHelper.readJson(configPath)
-                }
+                // Initial check for directory
+                serverConnection.sendAction(
+                    mapOf(
+                        "actionType" to "file_action",
+                        "subAction" to "check_exists",
+                        "path" to baseDir
+                    )
+                )
+                // Try to read existing config
+                serverConnection.sendAction(
+                    mapOf(
+                        "actionType" to "file_action",
+                        "subAction" to "read",
+                        "path" to configPath
+                    )
+                )
             },
             onMessage = { message ->
                 try {
                     val response = gson.fromJson(message, JsonObject::class.java)
-                    // Forward response to ReadWriteHelper for pending requests
-                    ReadWriteHelper.handleResponse(response)
                     // Handle response based on status and data
                     if (response.has("status") && response.get("status").asString == "success") {
                         if (response.has("data")) {
