@@ -111,7 +111,7 @@ object ConfigManager {
 
         GlobalVars.updateWindowPosition = true
         AppStateManager.setMode(AppMode.Run)
-        onSaveSuccess()
+        onSaveSuccess()//in here, the UI config window is closed, and control window will be shown.
     }
 
     /**

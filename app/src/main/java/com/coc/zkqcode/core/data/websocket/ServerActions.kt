@@ -25,7 +25,8 @@ class ServerActions(
         private set
 
     private val connectionMutex = Mutex()
-    private var testDeferred: CompletableDeferred<Boolean>? = null
+    private val actionMutex = Mutex()
+    private var actionDeferred: CompletableDeferred<JsonObject>? = null
 
 
     fun getValue(key: String): String? {
@@ -51,16 +52,17 @@ class ServerActions(
                 try {
                     val response = gson.fromJson(message, JsonObject::class.java)
 
-                    // Handle connection test response
+                    // Handle connection test response (legacy or if we still want it specific)
+                    // But now we use actionDeferred for everything
+                    actionDeferred?.complete(response)
+                    
                     if (response.has("status") && response.get("status").asString == "success" &&
                         response.has("data") && response.get("data").asString == "connected"
                     ) {
-                        testDeferred?.complete(true)
                         return@onMessage
                     }
 
-                    // Route all responses to ReadWriteHelper
-                    FileHelper.handleResponse(response)
+                    // Route all responses to specific handlers if needed
 
                     val initResult = InitConfigs.handleStartupResponse(response, gson)
                     if (initResult.configJson != null) {
@@ -80,7 +82,7 @@ class ServerActions(
             onFailure = { t ->
                 showDebugInfo("Connection failed: ${t.message}")
                 isLoading = false
-                testDeferred?.complete(false)
+                actionDeferred?.completeExceptionally(t)
             }
         )
     }
@@ -91,18 +93,31 @@ class ServerActions(
     }
 
 
-    suspend fun getConnection(): ServerConnection {
-        return connectionMutex.withLock {
-            testDeferred = CompletableDeferred()
-            serverConnection.sendAction(mapOf("actionType" to "connection_test"))
-
-            val success = try {
-                withTimeout(5000L) {
-                    testDeferred?.await() ?: false
+    suspend fun sendActionSync(action: Any, timeout: Long = 5000L): JsonObject? {
+        return actionMutex.withLock {
+            val deferred = CompletableDeferred<JsonObject>()
+            actionDeferred = deferred
+            serverConnection.sendAction(action)
+            try {
+                withTimeout(timeout) {
+                    deferred.await()
                 }
             } catch (e: Exception) {
-                false
+                showDebugInfo("Action timeout or error: ${e.message}")
+                null
+            } finally {
+                actionDeferred = null
             }
+        }
+    }
+
+    suspend fun getConnection(): ServerConnection {
+        return connectionMutex.withLock {
+            val response = sendActionSync(mapOf("actionType" to "connection_test"))
+            val success = response?.has("status") == true && 
+                         response.get("status").asString == "success" &&
+                         response.has("data") && 
+                         response.get("data").asString == "connected"
 
             if (!success) {
                 showDebugInfo("Server did not reply in 5 seconds or failed, trying to reconnect...")

@@ -5,11 +5,18 @@ import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndStop
 import kotlinx.coroutines.delay
 
 object TouchActions {
-    suspend fun swipe(startX: Int, startY: Int, endX: Int, endY: Int, delayTime: Long = 200L) {
-        val connection = GlobalVars.serverActions?.getConnection() ?: logAndStop("Server connection not found")
+    suspend fun swipe(
+        startX: Int,
+        startY: Int,
+        endX: Int,
+        endY: Int,
+        delayTime: Long = 200L,
+        isJitter: Boolean = true
+    ) {
+        val serverActions = GlobalVars.serverActions ?: logAndStop("Server actions not found")
 
         // Send touchdown at x,y
-        connection.sendAction(
+        serverActions.sendActionSync(
             mapOf(
                 "actionType" to "touch_action",
                 "subAction" to "touchdown",
@@ -23,14 +30,15 @@ object TouchActions {
         delay((delayTime * 0.7).toLong())
 
         // Move to second x,y
-        connection.sendAction(
+        serverActions.sendActionSync(
             mapOf(
                 "actionType" to "touch_action",
                 "subAction" to "touchmove",
                 "x" to endX.toFloat(),
                 "y" to endY.toFloat(),
                 "id" to 1,
-                "duration" to delayTime // documentation says touchmove has duration
+                "duration" to (delayTime * 0.5).toInt(), // documentation says touchmove has duration
+                "jitter" to isJitter
             )
         )
 
@@ -38,7 +46,7 @@ object TouchActions {
         delay(delayTime)
 
         // Touch up
-        connection.sendAction(
+        serverActions.sendActionSync(
             mapOf(
                 "actionType" to "touch_action",
                 "subAction" to "touchup",
@@ -47,10 +55,19 @@ object TouchActions {
         )
     }
 
-    suspend fun pinchIn(x1: Int, y1: Int, x2: Int, y2: Int, finalX: Int, finalY: Int, duration: Long = 200L) {
-        val connection = GlobalVars.serverActions?.getConnection() ?: return
+    suspend fun pinchIn(
+        x1: Int,
+        y1: Int,
+        x2: Int,
+        y2: Int,
+        finalX: Int,
+        finalY: Int,
+        duration: Long = 200L,
+        isJitter: Boolean = true
+    ) {
+        val serverActions = GlobalVars.serverActions ?: return
 
-        connection.sendAction(
+        serverActions.sendActionSync(
             mapOf(
                 "actionType" to "touch_action",
                 "subAction" to "pinchin",
@@ -60,14 +77,24 @@ object TouchActions {
                 "y2" to y2,
                 "finalX" to finalX,
                 "finalY" to finalY,
-                "duration" to duration
+                "duration" to duration,
+                "jitter" to isJitter
             )
         )
     }
 
-    suspend fun pinchOut(x1: Int, y1: Int, x2: Int, y2: Int, finalX: Int, finalY: Int, duration: Long = 200L) {
-        val connection = GlobalVars.serverActions?.getConnection() ?: return
-        connection.sendAction(
+    suspend fun pinchOut(
+        x1: Int,
+        y1: Int,
+        x2: Int,
+        y2: Int,
+        finalX: Int,
+        finalY: Int,
+        duration: Long = 200L,
+        isJitter: Boolean = true
+    ) {
+        val serverActions = GlobalVars.serverActions ?: return
+        serverActions.sendActionSync(
             mapOf(
                 "actionType" to "touch_action",
                 "subAction" to "pinchout",
@@ -77,7 +104,8 @@ object TouchActions {
                 "y2" to y2,
                 "finalX" to finalX,
                 "finalY" to finalY,
-                "duration" to duration
+                "duration" to duration,
+                "jitter" to isJitter
             )
         )
     }

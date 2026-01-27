@@ -30,7 +30,7 @@ class MainScript {
                     delay(500)
                     break
                 }else{
-                    delay(1000)
+                    delay(10000)
                 }
 
             }
