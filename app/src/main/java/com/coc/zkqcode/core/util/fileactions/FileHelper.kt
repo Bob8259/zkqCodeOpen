@@ -54,7 +54,7 @@ object FileHelper {
                 val response = withTimeout(5000L) {
                     pendingResponse.await()
                 }
-                showDebugInfo("response$response")
+                showDebugInfo("response $response")
                 if (response.has("status") && response.get("status").asString == "success") {
                     response.get("data")?.asString
                 } else {

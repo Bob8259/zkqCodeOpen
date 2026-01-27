@@ -25,8 +25,8 @@ object LogHelper {
         error(message) // 抛出 IllegalStateException
     }
 
-    fun showDebugInfo(message: String): Unit {
-        Timber.tag("zkq_debug").d(message)
+    fun showDebugInfo(message: String) {
+        Timber.tag("zkq_debug").d("Debug info: $message")
     }
 
     class FileLoggingTree(private val context: Context) : Timber.Tree() {

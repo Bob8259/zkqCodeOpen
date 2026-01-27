@@ -1,4 +1,34 @@
 package com.coc.zkqcode.core.ui.components
 
-class GlobalVariables {
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import com.coc.zkqcode.core.util.fileactions.FileActions
+import com.coc.zkqcode.interfaces.MainCode
+
+object GlobalVars {
+    // Basic componeents
+    var fileActions by mutableStateOf<FileActions?>(null)
+    var pluginUI: MainCode? = null
+
+    // Auto-run features
+    var isAutoRunEnabled by mutableStateOf(true)
+    var autoRunTimer by mutableIntStateOf(60)
+
+
+    // Window positioning
+    var absorbEdge by mutableIntStateOf(1) // 1: Left, 0: Right
+    var absorbYPercentage by mutableIntStateOf(50) // Percentage of Y axis
+    var updateWindowPosition by mutableStateOf(false)
+
+    // Configuration States
+    val configStates = mutableMapOf<String, MutableState<String>>()
+
+    // IME management
+    var defaultInputMethod: String? = null
+
+    //Running state management
+    var isPaused = false
 }
