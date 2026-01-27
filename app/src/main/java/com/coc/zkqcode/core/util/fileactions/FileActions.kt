@@ -5,8 +5,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.coc.zkqcode.core.data.websocket.ServerConnection
+import com.coc.zkqcode.core.util.fileactions.LogHelper.showDebugInfo
 import com.google.gson.Gson
 import com.google.gson.JsonObject
+import timber.log.Timber
 
 class FileActions(
     private val serverConnection: ServerConnection,
@@ -51,7 +53,6 @@ class FileActions(
             onMessage = { message ->
                 try {
                     val response = gson.fromJson(message, JsonObject::class.java)
-
                     // Route all responses to ReadWriteHelper
                     FileHelper.handleResponse(response)
                     
