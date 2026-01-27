@@ -1,11 +1,12 @@
 package com.coc.zkqcode.jar.code.universal
 
 import com.coc.zkqcode.core.data.database.GlobalVars
+import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndStop
+import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.smalltools.isGameAtFront
 import com.coc.zkqcode.jar.code.universal.smalltools.runApp
-import com.topjohnwu.superuser.Shell
 import kotlinx.coroutines.delay
 
 
@@ -24,11 +25,7 @@ suspend fun enterMainScreen(currentAccountNumber: Int, gamePackage: String): Boo
 
     while (System.currentTimeMillis() - startTime < timeoutMillis) {
         // 3. Insert your logic to check if the main screen is actually visible
-        val isAtMainScreen = checkUIVisibility(gamePackage)
-        var screenBuffer=
-        if (isAtMainScreen) {
-            return true
-        }
+        if (checkUIVisibility(gamePackage)) return true
         ShowMessage("账号$currentAccountNumber，倒计时${((timeoutMillis - System.currentTimeMillis() + startTime) / 1000).toInt()}秒\n请手动给主世界和夜世界切换默认场景")
         // 4. Wait for 1 second before checking again to save CPU cycles
         delay(50)
@@ -46,6 +43,31 @@ private suspend fun checkUIVisibility(gamePackage: String): Boolean {
             runApp("com.supercell.clashofclans")
         }
         delay(1000)
+    } else {
+        if (isInHomePage()) {
+            ShowMessage("已进入主界面")
+            delay(500)
+            if (isInHomePage()) return true
+        }
     }
     return false
+}
+
+suspend fun isInHomePage(): Boolean {
+    // 1. Capture the screen and cast safely
+    val screenBuffer =
+        ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult
+            ?: logAndStop("in isInHomePage, screen capture failed.")
+
+    // 2. Define the schemas to check against
+    val homeSchemas = listOf(
+        MyColors.MainBaseWorker,
+        MyColors.NightBaseWorker,
+        MyColors.GoblinWorker
+    )
+
+    // 3. Use 'any' for a clean, declarative exit
+    return homeSchemas.any { schema ->
+        findMultiColors(byteBuffer = screenBuffer, schema = schema) != null
+    }
 }

@@ -1,12 +1,14 @@
 package com.coc.zkqcode.jar.code
 
 import com.coc.zkqcode.core.data.database.GlobalVars
+import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.fileactions.FileHelper.readJson
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndStop
 import com.coc.zkqcode.core.util.fileactions.LogHelper.showDebugInfo
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
+import com.coc.zkqcode.jar.code.universal.findMultiColors
 import com.google.gson.JsonObject
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
@@ -25,7 +27,9 @@ class MainScript {
                 ?: logAndStop("Can not get game_version$currentAccountNumber")
             enterMainScreen(currentAccountNumber, currentGamePackage)
 //            val startTime = System.currentTimeMillis()
-//            val foundPoint = findTool.findMultiColors(null, MyColors.Test)
+//            val screenBuffer =
+//                ScreenCaptureManager.capture(asBitmap = false) as ScreenCaptureManager.CaptureResult?
+//            val foundPoint = findMultiColors(byteBuffer = screenBuffer, schema = MyColors.Test)
 //            val executionTime = System.currentTimeMillis() - startTime
 //            if (foundPoint != null) {
 //                ShowMessage("Match FOUND 123: (${foundPoint.x}, ${foundPoint.y})\nTime consumed: $executionTime")
