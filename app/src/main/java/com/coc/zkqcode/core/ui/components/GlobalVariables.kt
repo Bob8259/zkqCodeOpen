@@ -30,5 +30,5 @@ object GlobalVars {
     var defaultInputMethod: String? = null
 
     //Running state management
-    var isPaused = false
+    var isPlaying = mutableStateOf(true)
 }

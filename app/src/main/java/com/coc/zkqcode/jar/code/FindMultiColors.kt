@@ -4,7 +4,10 @@ import android.graphics.Bitmap
 import android.graphics.Point
 import com.coc.zkqcode.jar.code.colorschema.ColorSchema
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
+import com.coc.zkqcode.core.ui.components.GlobalVars
+import com.coc.zkqcode.core.util.fileactions.LogHelper.showDebugInfo
 import com.coc.zkqcode.nativehelper.NativeTools
+import kotlinx.coroutines.delay
 
 class FindMultiColors {
 
@@ -15,6 +18,9 @@ class FindMultiColors {
      * @return The Point where the main color was found, or null if not found.
      */
     suspend fun findMultiColors(bitmap: Bitmap? = null, schema: ColorSchema): Point? {
+        while (!GlobalVars.isPlaying.value) {
+            delay(100)//the user paused the script, then we should also stop
+        }
         val resultAny = if (bitmap == null) {
             ScreenCaptureManager.capture(asBitmap = false)
         } else {
