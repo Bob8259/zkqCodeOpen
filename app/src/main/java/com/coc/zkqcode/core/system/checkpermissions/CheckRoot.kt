@@ -31,7 +31,7 @@ import com.coc.zkqcode.MainActivity
 import com.coc.zkqcode.core.ui.components.CustomButton
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.data.database.ConfigManager
-import com.coc.zkqcode.core.util.fileactions.FileActions
+import com.coc.zkqcode.core.data.websocket.FileActions
 import com.coc.zkqcode.core.ui.floatingwindows.UIWindowService
 import com.coc.zkqcode.statehelper.AppMode
 import com.coc.zkqcode.statehelper.AppStateManager
