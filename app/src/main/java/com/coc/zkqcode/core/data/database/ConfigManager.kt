@@ -116,7 +116,7 @@ object ConfigManager {
      * Save configs and run the bot.
      */
     suspend fun saveAndRun(onSaveSuccess: () -> Unit = {}) {
-        AppStateManager.setMode(AppMode.Run)
         saveConfigs(onSaveSuccess)
+        AppStateManager.setMode(AppMode.Run)
     }
 }
