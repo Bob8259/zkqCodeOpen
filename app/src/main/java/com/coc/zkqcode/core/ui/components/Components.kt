@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
@@ -30,9 +31,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -49,14 +48,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupPositionProvider
 import androidx.compose.ui.window.PopupProperties
-import com.coc.zkqcode.interfaces.MainCode
-import com.coc.zkqcode.core.util.fileactions.FileActions
-import com.coc.zkqcode.core.ui.theme.AppColors
 import com.coc.zkqcode.core.data.database.Schema
+import com.coc.zkqcode.core.ui.theme.AppColors
+import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndStop
 import kotlinx.coroutines.delay
-import androidx.compose.foundation.layout.PaddingValues
-import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndDie
-
 
 
 @Composable
@@ -192,7 +187,7 @@ class WindowCenterPositionProvider : PopupPositionProvider {
 fun SettingInputRow(key: String, afterChange: ((String) -> Unit)? = null) {
     // 1. 统一获取状态和显示名称
     val state = GlobalVars.configStates[key]
-        ?: logAndDie("Config: $key Not Found")
+        ?: logAndStop("Config: $key Not Found")
     val label = Schema.getDisplayName(key)
 
     // 2. 渲染 UI 逻辑
@@ -301,7 +296,7 @@ fun SettingCheckBox(
     explain: String? = null
 ) {
     val state = GlobalVars.configStates[key]
-        ?: logAndDie("Config: $key Not Found")
+        ?: logAndStop("Config: $key Not Found")
 
     CustomCheckBox(
         text = Schema.getDisplayName(key),
@@ -394,7 +389,7 @@ fun SettingDropdown(
 ) {
     // 1. 获取配置状态和显示名称
     val state = GlobalVars.configStates[key]
-        ?: logAndDie("Config: $key Not Found")
+        ?: logAndStop("Config: $key Not Found")
     val label = Schema.getDisplayName(key)
 
     // 2. 内部 UI 状态

@@ -1,8 +1,9 @@
 package com.coc.zkqcode.core.util.fileactions
 
 import com.coc.zkqcode.core.ui.components.GlobalVars
-import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndDie
+import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndStop
 import com.coc.zkqcode.core.util.fileactions.LogHelper.showDebugInfo
+import com.google.gson.Gson
 import com.google.gson.JsonObject
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.withTimeout
@@ -11,6 +12,7 @@ import kotlinx.coroutines.sync.withLock
 
 object FileHelper {
     private val mutex = Mutex()
+    private val gson = Gson()
     private var pendingResponse = CompletableDeferred<JsonObject>()
 
     suspend fun writeJson(path: String, content: String): Boolean {
@@ -24,7 +26,7 @@ object FileHelper {
                 "content" to content
             )
             GlobalVars.fileActions?.getConnection()?.sendAction(writeAction)
-                ?: logAndDie("Write to Json failed")
+                ?: logAndStop("Write to Json failed")
 
             try {
                 val response = withTimeout(5000L) {
@@ -38,7 +40,7 @@ object FileHelper {
         }
     }
 
-    suspend fun readJson(path: String): String? {
+    suspend fun readJson(path: String): JsonObject? {
         return mutex.withLock {
             pendingResponse = CompletableDeferred()
 
@@ -48,7 +50,7 @@ object FileHelper {
                 "path" to path
             )
             GlobalVars.fileActions?.getConnection()?.sendAction(readAction)
-                ?: logAndDie("Read Json failed")
+                ?: logAndStop("Read Json failed")
 
             try {
                 val response = withTimeout(5000L) {
@@ -56,7 +58,12 @@ object FileHelper {
                 }
                 showDebugInfo("response $response")
                 if (response.has("status") && response.get("status").asString == "success") {
-                    response.get("data")?.asString
+                    val data = response.get("data")?.asString
+                    if (data != null && data.trim().startsWith("{") && data.trim().endsWith("}")) {
+                        gson.fromJson(data, JsonObject::class.java)
+                    } else {
+                        null
+                    }
                 } else {
                     null
                 }
@@ -77,7 +84,7 @@ object FileHelper {
                 "path" to path
             )
             GlobalVars.fileActions?.getConnection()?.sendAction(checkExistsAction)
-                ?: logAndDie("Check exists failed")
+                ?: logAndStop("Check exists failed")
 
             try {
                 val response = withTimeout(5000L) {
