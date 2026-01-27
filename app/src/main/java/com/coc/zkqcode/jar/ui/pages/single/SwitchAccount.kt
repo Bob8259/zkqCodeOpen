@@ -149,7 +149,7 @@ fun SwitchAccount(onClose: () -> Unit) {
 
 
             }
-            FlowRow (horizontalArrangement = Arrangement.Center) {
+            FlowRow(horizontalArrangement = Arrangement.Center) {
                 Row {
                     CustomButton(text = "▼", onClick = {
                         val current = accountNumber.toIntOrNull() ?: 1
@@ -242,6 +242,7 @@ fun SwitchAccount(onClose: () -> Unit) {
                         text = "关闭窗口",
                         onClick = {
                             AppStateManager.setMode(AppMode.Run) //just to close the ui
+                            GlobalVars.isPlaying.value = false
                             scope.launch {
                                 onClose()
                             }
