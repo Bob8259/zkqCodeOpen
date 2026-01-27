@@ -7,6 +7,7 @@ import androidx.compose.runtime.setValue
 import com.coc.zkqcode.core.util.fileactions.FileHelper
 import com.google.gson.Gson
 import com.google.gson.JsonObject
+import com.coc.zkqcode.core.util.fileactions.InitConfigs
 
 class ServerActions(
     private val serverConnection: ServerConnection,
@@ -31,22 +32,7 @@ class ServerActions(
             // This will send two messages to the server, if the config file exists, then we will discard the check_exists response, and only load the config from read response.
             // If the config does not exist, then check_exists will return an error, so that we know the config does not exist.
             onOpen = {
-                // Initial check for directory
-                serverConnection.sendAction(
-                    mapOf(
-                        "actionType" to "file_action",
-                        "subAction" to "check_exists",
-                        "path" to baseDir
-                    )
-                )
-                // Try to read existing config
-                serverConnection.sendAction(
-                    mapOf(
-                        "actionType" to "file_action",
-                        "subAction" to "read",
-                        "path" to configPath
-                    )
-                )
+                InitConfigs.sendStartupRequests(serverConnection, baseDir, configPath)
             },
             onMessage = { message ->
                 try {
@@ -54,35 +40,15 @@ class ServerActions(
                     // Route all responses to ReadWriteHelper
                     FileHelper.handleResponse(response)
 
-                    // Handle response based on status and data
-                    if (response.has("status") && response.get("status")?.asString == "success") {
-                        if (response.has("data")) {
-                            val data = response.get("data")?.asString
-                            // If data starts with { and ends with }, it's likely our config JSON
-                            if (data?.trim()?.startsWith("{") == true && data.trim().endsWith("}")) {
-                                try {
-                                    val loadedJson = gson.fromJson(data, JsonObject::class.java)
-                                    // Update the existing configJson instead of replacing the object
-                                    configJson = loadedJson
-                                    isLoading = false
-                                } catch (e: Exception) {
-                                    println("Error parsing data as config: ${e.message}")
-                                }
-                            }
-
-                        }
-                        // Always trigger callback after receiving a success response
-                        onConfigLoaded?.invoke()
+                    val initResult = InitConfigs.handleStartupResponse(response, gson)
+                    if (initResult.configJson != null) {
+                        configJson = initResult.configJson
                     }
-
-                    if (response.has("status") && response.get("status")?.asString == "error") {
-                        val errorMsg = response.get("message")?.asString ?: ""
-                        if (errorMsg.contains("zkq_config.json")) {
-                            // If the server returns an error for the config file (e.g., "File not found"),
-                            // we still trigger the callback to use default values.
-                            onConfigLoaded?.invoke()
-                            isLoading = false
-                        }
+                    if (initResult.isLoaded) {
+                        isLoading = false
+                    }
+                    if (initResult.shouldCallback) {
+                        onConfigLoaded?.invoke()
                     }
                 } catch (e: Exception) {
                     println("Error parsing message: ${e.message}")
