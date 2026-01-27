@@ -111,22 +111,22 @@ class ServerActions(
         }
     }
 
-    suspend fun getConnection(): ServerConnection {
-        return connectionMutex.withLock {
-            val response = sendActionSync(mapOf("actionType" to "connection_test"))
-            val success = response?.has("status") == true && 
-                         response.get("status").asString == "success" &&
-                         response.has("data") && 
-                         response.get("data").asString == "connected"
-
-            if (!success) {
-                showDebugInfo("Server did not reply in 5 seconds or failed, trying to reconnect...")
-                reconnect()
-            }
-            showDebugInfo("server is OK")
-            this.serverConnection
-        }
-    }
+//    suspend fun getConnection(): ServerConnection {
+//        return connectionMutex.withLock {
+//            val response = sendActionSync(mapOf("actionType" to "connection_test"))
+//            val success = response?.has("status") == true &&
+//                         response.get("status").asString == "success" &&
+//                         response.has("data") &&
+//                         response.get("data").asString == "connected"
+//
+//            if (!success) {
+//                showDebugInfo("Server did not reply in 5 seconds or failed, trying to reconnect...")
+//                reconnect()
+//            }
+//            showDebugInfo("server is OK")
+//            this.serverConnection
+//        }
+//    }
 
     private fun reconnect() {
         serverConnection.close()

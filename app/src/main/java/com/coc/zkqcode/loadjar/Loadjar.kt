@@ -29,6 +29,7 @@ class Loadjar(private val context: Context) {
     fun LoadAndShowUI(loadStatus: String, onClose: () -> Unit) {
         if (loadStatus == "Plugin loaded successfully") {
             // Load the UI from jar
+            Timber.d("ready to show main UI")
             pluginUI?.ShowMainUI(context, onClose)
         } else {
             Column(modifier = Modifier.background(Color.White)) {
@@ -41,7 +42,6 @@ class Loadjar(private val context: Context) {
                 }
             }
         }
-
     }
 
     /**

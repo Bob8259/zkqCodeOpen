@@ -1,9 +1,13 @@
 package com.coc.zkqcode.core.system.screencapture
 
+import com.coc.zkqcode.core.system.accessibility.MyAccessibilityService
 import com.topjohnwu.superuser.Shell
+import timber.log.Timber
 
 object AutoGrantTool {
-    private const val SERVICE_PATH = "com.coc.zkqcode/com.coc.zkqcode.core.system.accessibility.MyAccessibilityService"
+    private val SERVICE_PATH: String
+        get() = "com.coc.zkqcode/${MyAccessibilityService::class.java.name}"
+
     /**
      * Use Root permissions to enable accessibility service
      * Recommended to call before requesting screen capture permission
