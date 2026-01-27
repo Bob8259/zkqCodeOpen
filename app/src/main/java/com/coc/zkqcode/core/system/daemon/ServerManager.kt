@@ -2,6 +2,7 @@ package com.coc.zkqcode.core.system.daemon
 
 import android.content.Context
 import com.coc.zkqcode.core.data.database.GlobalVars
+import com.coc.zkqcode.core.util.fileactions.LogHelper.showDebugInfo
 import com.topjohnwu.superuser.Shell
 import java.io.File
 
@@ -21,8 +22,10 @@ object ServerManager {
 
             // Execute the shell command to start the server
             // 使用 setsid 创建新会话，彻底脱离控制终端
-            Shell.cmd("setsid CLASSPATH=${GlobalVars.serverPath} app_process /system/bin com.coc.zkqserver.ShellServer > /dev/null 2>&1 &")
+            Shell.cmd("setsid sh -c 'export CLASSPATH=${GlobalVars.serverPath}; exec app_process /system/bin com.coc.zkqserver.ShellServer' > /dev/null 2>&1 &")
                 .exec()
+
+
             true
         } catch (e: Exception) {
             e.printStackTrace()

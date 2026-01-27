@@ -27,7 +27,7 @@ class ServerActions(
     var isLoading by mutableStateOf(true)
         private set
 
-//    private val connectionMutex = Mutex()
+    //    private val connectionMutex = Mutex()
     private val actionMutex = Mutex()
     private var actionDeferred: CompletableDeferred<JsonObject>? = null
 
@@ -44,8 +44,7 @@ class ServerActions(
     }
 
     private fun performConnect() {
-
-        Shell.cmd("setsid CLASSPATH=${GlobalVars.serverPath} app_process /system/bin com.coc.zkqserver.ShellServer > /dev/null 2>&1 &")
+        Shell.cmd("setsid sh -c 'export CLASSPATH=${GlobalVars.serverPath}; exec app_process /system/bin com.coc.zkqserver.ShellServer' > /dev/null 2>&1 &")
             .exec()
         serverConnection.connect(
             // Do not modify these logics. This is designed for an ultra-fast config loading.
