@@ -1,4 +1,4 @@
-package com.coc.zkqcode.jar.code
+package com.coc.zkqcode.jar.code.universal
 
 import android.graphics.Bitmap
 import android.graphics.Point
@@ -7,7 +7,6 @@ import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.jar.code.colorschema.ColorSchema
 import com.coc.zkqcode.nativehelper.NativeTools
 import kotlinx.coroutines.delay
-import java.nio.ByteBuffer
 
 
 /**
@@ -16,14 +15,19 @@ import java.nio.ByteBuffer
  * @param schema The color schema to look for.
  * @return The Point where the main color was found, or null if not found.
  */
-suspend fun findMultiColors(bitmap: Bitmap? = null,  schema: ColorSchema): Point? {
+suspend fun findMultiColors(
+    bitmap: Bitmap? = null,
+    byteBuffer: ScreenCaptureManager.CaptureResult? = null,
+    schema: ColorSchema
+): Point? {
     while (!GlobalVars.isPlaying.value) {
         delay(100)//the user paused the script, then we should also stop
     }
-    val resultAny = if (bitmap == null) {
-        ScreenCaptureManager.capture(asBitmap = false)
-    } else {
-        null
+
+    val resultAny = when {
+        bitmap != null -> null
+        byteBuffer != null -> byteBuffer
+        else -> ScreenCaptureManager.capture(asBitmap = false)
     }
 
     try {
