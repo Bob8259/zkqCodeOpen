@@ -58,30 +58,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndDie
 
 
-object GlobalVars {
-    // Basic componeents
-    var fileActions by mutableStateOf<FileActions?>(null)
-    var pluginUI: MainCode? = null
-
-    // Auto-run features
-    var isAutoRunEnabled by mutableStateOf(true)
-    var autoRunTimer by mutableIntStateOf(60)
-
-
-    // Window positioning
-    var absorbEdge by mutableIntStateOf(1) // 1: Left, 0: Right
-    var absorbYPercentage by mutableIntStateOf(50) // Percentage of Y axis
-    var updateWindowPosition by mutableStateOf(false)
-
-    // Configuration States
-    val configStates = mutableMapOf<String, MutableState<String>>()
-
-    // IME management
-    var defaultInputMethod: String? = null
-
-    //Running state management
-    var isPaused = false
-}
 
 @Composable
 fun InputRowWithCheckBox(
