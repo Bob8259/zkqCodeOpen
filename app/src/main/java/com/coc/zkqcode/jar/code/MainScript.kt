@@ -1,14 +1,11 @@
 package com.coc.zkqcode.jar.code
 
+import android.os.Environment
 import com.coc.zkqcode.core.data.database.GlobalVars
-import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.fileactions.FileHelper.readJson
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndStop
-import com.coc.zkqcode.core.util.fileactions.LogHelper.showDebugInfo
-import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
-import com.coc.zkqcode.jar.code.universal.findMultiColors
 import com.google.gson.JsonObject
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
@@ -20,24 +17,23 @@ class MainScript {
     internal var currentAccountNumber: Int = 1
     internal lateinit var currentGamePackage: String
     suspend fun runMainScript() {
-        localMemory = readJson("/sdcard/zkqFiles/memory.json")
-        while (currentCoroutineContext().isActive) {//The Main Loop
-            currentAccountNumber = localMemory?.get("accountNumber")?.asInt ?: 1
-            currentGamePackage = GlobalVars.configStates["game_version$currentAccountNumber"]?.value
-                ?: logAndStop("Can not get game_version$currentAccountNumber")
-            enterMainScreen(currentAccountNumber, currentGamePackage)
-//            val startTime = System.currentTimeMillis()
-//            val screenBuffer =
-//                ScreenCaptureManager.capture(asBitmap = false) as ScreenCaptureManager.CaptureResult?
-//            val foundPoint = findMultiColors(byteBuffer = screenBuffer, schema = MyColors.Test)
-//            val executionTime = System.currentTimeMillis() - startTime
-//            if (foundPoint != null) {
-//                ShowMessage("Match FOUND 123: (${foundPoint.x}, ${foundPoint.y})\nTime consumed: $executionTime")
-//            } else {
-//                ShowMessage("没找到.\nTime consumed: $executionTime")
-//            }
-//            val remainingDelay = 0L.coerceAtLeast(2000L - executionTime)
-//            delay(remainingDelay)
+        while (currentCoroutineContext().isActive) {
+            localMemory =
+                readJson(Environment.getExternalStorageDirectory().path + "/zkqFiles/memory.json")
+            while (currentCoroutineContext().isActive) {//The Main Loop
+                currentAccountNumber = localMemory?.get("accountNumber")?.asInt ?: 1
+                currentGamePackage =
+                    GlobalVars.configStates["game_version$currentAccountNumber"]?.value
+                        ?: logAndStop("Can not get game_version$currentAccountNumber")
+                if (!enterMainScreen(currentAccountNumber, currentGamePackage)) {
+                    ShowMessage("进入游戏失败")
+                    delay(500)
+                    break
+                }else{
+                    delay(100000)
+                }
+
+            }
         }
     }
 }
