@@ -27,6 +27,8 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.coc.zkqcode.core.ui.components.CustomAlertDialog
+import com.coc.zkqcode.core.ui.components.GlobalVars
+import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.exit.AppExitHelper
 import com.coc.zkqcode.core.util.exit.AppExitHelper.restoreDefaultInputMethod
 import com.coc.zkqcode.statehelper.AppMode
@@ -56,7 +58,7 @@ fun ControlWindow(
     val context = LocalContext.current
     var controlState by remember { mutableStateOf(ControlState.COLLAPSED) }
     var internalInteractionCount by remember { mutableIntStateOf(0) }
-    var isPlaying by remember { mutableStateOf(false) }
+    var isPlaying by remember { GlobalVars.isPlaying }
     var showExitConfirmation by remember { mutableStateOf(false) }
 
     LaunchedEffect(internalInteractionCount, externalInteractionCount) {
@@ -186,7 +188,10 @@ fun ControlWindow(
                         .clickable {
                             internalInteractionCount++
                             isPlaying = !isPlaying
-                            if (!isPlaying) restoreDefaultInputMethod()
+                            if (!isPlaying) {
+                                ShowMessage("暂停中，请稍后...")
+                                restoreDefaultInputMethod()
+                            }
                         }
                 )
             }
@@ -202,7 +207,10 @@ fun ControlWindow(
                         .clickable {
                             internalInteractionCount++
                             isPlaying = !isPlaying
-                            if (!isPlaying) restoreDefaultInputMethod()
+                            if (!isPlaying) {
+                                ShowMessage("暂停中，请稍后...")
+                                restoreDefaultInputMethod()
+                            }
                         }
                 )
                 Image(
