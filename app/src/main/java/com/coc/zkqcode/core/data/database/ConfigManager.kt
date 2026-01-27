@@ -93,7 +93,7 @@ object ConfigManager {
     /**
      * Saves all configs to the JSON file via the server.
      */
-    fun saveConfigs(onSaveSuccess: () -> Unit = {}) {
+    suspend fun saveConfigs(onSaveSuccess: () -> Unit = {}) {
         val baseDir = "${Environment.getExternalStorageDirectory().path}/zkqFiles/"
         val accountCountStr = GlobalVars.configStates["account_count"]?.value ?: "3"
         val configCountStr = GlobalVars.configStates["config_count"]?.value ?: "3"
@@ -115,7 +115,7 @@ object ConfigManager {
     /**
      * Save configs and run the bot.
      */
-    fun saveAndRun(onSaveSuccess: () -> Unit = {}) {
+    suspend fun saveAndRun(onSaveSuccess: () -> Unit = {}) {
         AppStateManager.setMode(AppMode.Run)
         saveConfigs(onSaveSuccess)
     }

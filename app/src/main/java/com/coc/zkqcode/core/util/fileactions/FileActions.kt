@@ -51,6 +51,10 @@ class FileActions(
             onMessage = { message ->
                 try {
                     val response = gson.fromJson(message, JsonObject::class.java)
+
+                    // Route all responses to ReadWriteHelper
+                    FileHelper.handleResponse(response)
+                    
                     // Handle response based on status and data
                     if (response.has("status") && response.get("status").asString == "success") {
                         if (response.has("data")) {
@@ -93,9 +97,9 @@ class FileActions(
         )
     }
 
-    fun writeToConfigFile(key: String, content: String) {
+    suspend fun writeToConfigFile(key: String, content: String) {
         configJson.addProperty(key, content)
-        ReadWriteHelper.writeJson(configPath, gson.toJson(configJson))
+        FileHelper.writeJson(configPath, gson.toJson(configJson))
     }
 
     // 在 FileActions.kt 中增加这个方法

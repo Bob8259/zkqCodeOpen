@@ -1,7 +1,7 @@
 package com.coc.zkqcode.core.data.database
 
 import com.coc.zkqcode.core.ui.components.GlobalVars
-import com.coc.zkqcode.core.util.fileactions.ReadWriteHelper
+import com.coc.zkqcode.core.util.fileactions.FileHelper
 import com.google.gson.Gson
 
 import com.google.gson.GsonBuilder
@@ -78,7 +78,7 @@ object SchemaExporter {
      * @param accountCount Number of accounts
      * @param configCount Number of configuration profiles
      */
-    fun saveSchemaViaServer(
+    suspend fun saveSchemaViaServer(
         directory: String,
         fileName: String,
         keys: List<String> = SchemaRegistry.ALL_MODULES.map { it.name },
@@ -89,7 +89,7 @@ object SchemaExporter {
         val fullPath =
             if (directory.endsWith("/")) "$directory$fileName" else "$directory/$fileName"
 
-        ReadWriteHelper.writeJson(fullPath, jsonContent)
+        FileHelper.writeJson(fullPath, jsonContent)
         
         // Update local configJson to keep it in sync
         GlobalVars.fileActions?.let { actions ->

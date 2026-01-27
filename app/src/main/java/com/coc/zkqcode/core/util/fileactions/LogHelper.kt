@@ -21,8 +21,12 @@ object LogHelper {
     }
 
     fun logAndDie(message: String): Nothing {
-        Timber.tag("zkq").e("CRITICAL_ERROR: $message")
+        Timber.tag("zkq_debug").e("CRITICAL_ERROR: $message")
         error(message) // 抛出 IllegalStateException
+    }
+
+    fun showDebugInfo(message: String): Unit {
+        Timber.tag("zkq_debug").d(message)
     }
 
     class FileLoggingTree(private val context: Context) : Timber.Tree() {
