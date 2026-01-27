@@ -1,17 +1,20 @@
 package com.coc.zkqcode.core.data.websocket
 
 import android.os.Environment
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.util.fileactions.FileHelper
-import com.google.gson.Gson
-import com.google.gson.JsonObject
 import com.coc.zkqcode.core.util.fileactions.InitConfigs
 import com.coc.zkqcode.core.util.fileactions.LogHelper.showDebugInfo
-import kotlinx.coroutines.*
+import com.google.gson.Gson
+import com.google.gson.JsonObject
+import com.topjohnwu.superuser.Shell
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.withTimeout
 
 
 class ServerActions(
@@ -24,7 +27,7 @@ class ServerActions(
     var isLoading by mutableStateOf(true)
         private set
 
-    private val connectionMutex = Mutex()
+//    private val connectionMutex = Mutex()
     private val actionMutex = Mutex()
     private var actionDeferred: CompletableDeferred<JsonObject>? = null
 
@@ -41,6 +44,9 @@ class ServerActions(
     }
 
     private fun performConnect() {
+
+        Shell.cmd("setsid CLASSPATH=${GlobalVars.serverPath} app_process /system/bin com.coc.zkqserver.ShellServer > /dev/null 2>&1 &")
+            .exec()
         serverConnection.connect(
             // Do not modify these logics. This is designed for an ultra-fast config loading.
             // This will send two messages to the server, if the config file exists, then we will discard the check_exists response, and only load the config from read response.
@@ -55,7 +61,7 @@ class ServerActions(
                     // Handle connection test response (legacy or if we still want it specific)
                     // But now we use actionDeferred for everything
                     actionDeferred?.complete(response)
-                    
+
                     if (response.has("status") && response.get("status").asString == "success" &&
                         response.has("data") && response.get("data").asString == "connected"
                     ) {
@@ -104,6 +110,7 @@ class ServerActions(
                 }
             } catch (e: Exception) {
                 showDebugInfo("Action timeout or error: ${e.message}")
+                reconnect()
                 null
             } finally {
                 actionDeferred = null

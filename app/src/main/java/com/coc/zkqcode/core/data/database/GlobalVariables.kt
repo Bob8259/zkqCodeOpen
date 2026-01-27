@@ -12,6 +12,7 @@ object GlobalVars {
     // Basic componeents
     var serverActions by mutableStateOf<ServerActions?>(null)
     var pluginUI: MainCode? = null
+    var serverPath: String = ""
 
     // Auto-run features
     var isAutoRunEnabled by mutableStateOf(true)
