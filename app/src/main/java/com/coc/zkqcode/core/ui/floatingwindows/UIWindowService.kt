@@ -36,6 +36,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Density
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.topjohnwu.superuser.Shell
+import com.coc.zkqcode.core.util.fileactions.LogHelper.showDebugInfo
 
 class UIWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner, ViewModelStoreOwner,
     OnBackPressedDispatcherOwner {
@@ -153,6 +154,7 @@ class UIWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner, View
             }
 
             else -> {
+
                 closeMainUI()
                 startService(Intent(this, ControlWindowService::class.java))
             }

@@ -41,7 +41,6 @@ class MyAccessibilityService : AccessibilityService() {
             for (window in windows) {
                 val rootNode = window.root ?: continue
                 val found = findAndClickTarget(rootNode)
-                rootNode.recycle()
                 if (found) break
             }
 
@@ -72,11 +71,6 @@ class MyAccessibilityService : AccessibilityService() {
             result = true
         }
 
-        // Clean up: recycle all nodes found
-        idNodes.forEach { it.recycle() }
-        textNodes.forEach { it.recycle() }
-        enNodes.forEach { it.recycle() }
-
         return result
     }
 
@@ -85,12 +79,9 @@ class MyAccessibilityService : AccessibilityService() {
         while (current != null) {
             if (current.isClickable) {
                 current.performAction(AccessibilityNodeInfo.ACTION_CLICK)
-                if (current != node) current.recycle()
                 return
             }
-            val parent = current.parent
-            if (current != node) current.recycle()
-            current = parent
+            current = current.parent
         }
     }
 

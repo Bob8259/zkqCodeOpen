@@ -24,16 +24,14 @@ object PermissionManager {
             if (!shell.isRoot) {
                 return@withContext RootStatus.ROOT_DENIED
             }
-
             // 2. 如果有 Root，尝试静默授权
             val pkg = context.packageName
             Shell.cmd(
                 "pm grant $pkg android.permission.SYSTEM_ALERT_WINDOW",
-                "appops set $pkg SYSTEM_ALERT_WINDOW allow",
+                "cmd appops set $pkg SYSTEM_ALERT_WINDOW allow",
                 "pm grant $pkg android.permission.POST_NOTIFICATIONS",
                 "pm grant $pkg android.permission.FOREGROUND_SERVICE",
             ).exec()
-
             // 2.5 增加电池优化白名单检测
             BatteryOptimizationHelper.requestIgnoreBatteryOptimizations(context)
 
@@ -75,7 +73,7 @@ object PermissionManager {
             }
 
             // 启动守护进程
-            DaemonManager.setupAndRunDaemon(context)
+            //DaemonManager.setupAndRunDaemon(context)//暂时考虑关闭
 
             return@withContext RootStatus.GRANTED
         }
