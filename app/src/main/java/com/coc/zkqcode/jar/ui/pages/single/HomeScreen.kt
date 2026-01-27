@@ -22,6 +22,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -41,6 +42,7 @@ import com.coc.zkqcode.core.data.database.Schema.GLOBAL_SETTINGS
 import com.coc.zkqcode.statehelper.AppMode
 import com.coc.zkqcode.statehelper.AppStateManager
 import com.coc.zkqcode.core.ui.theme.AppColors
+import kotlinx.coroutines.launch
 
 @Composable
 fun HomeScreen(
@@ -86,10 +88,13 @@ fun HomeScreen(
     val tabs =
         listOf("主页设置", "账号设置", "提取存档") + List(configCount) { "配置文件${it + 1}" }
 
+    val scope = rememberCoroutineScope()
     val saveAndRun = {
 
-        ConfigManager.saveAndRun {
-            onSaveSuccess()
+        scope.launch {
+            ConfigManager.saveAndRun {
+                onSaveSuccess()
+            }
         }
     }
 
@@ -301,8 +306,10 @@ fun HomeScreen(
                         TextButton(onClick = {
                             showExitConfirmation = false
                             AppStateManager.setMode(AppMode.Run)
-                            ConfigManager.saveAndRun {
-                                AppExitHelper.exitApplication(context)
+                            scope.launch {
+                                ConfigManager.saveAndRun {
+                                    AppExitHelper.exitApplication(context)
+                                }
                             }
                         }) {
                             Text("确认")

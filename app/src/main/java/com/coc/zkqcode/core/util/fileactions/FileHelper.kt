@@ -3,15 +3,13 @@ package com.coc.zkqcode.core.util.fileactions
 import com.coc.zkqcode.core.ui.components.GlobalVars
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndDie
 import com.coc.zkqcode.core.util.fileactions.LogHelper.showDebugInfo
-import com.google.gson.Gson
 import com.google.gson.JsonObject
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.withTimeout
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
-object ReadWriteHelper {
-    private val gson = Gson()
+object FileHelper {
     private val mutex = Mutex()
     private var pendingResponse = CompletableDeferred<JsonObject>()
 
@@ -56,7 +54,7 @@ object ReadWriteHelper {
                 val response = withTimeout(5000L) {
                     pendingResponse.await()
                 }
-                showDebugInfo("response${response.toString()}")
+                showDebugInfo("response$response")
                 if (response.has("status") && response.get("status").asString == "success") {
                     response.get("data")?.asString
                 } else {
