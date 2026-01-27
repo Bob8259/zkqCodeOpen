@@ -1,6 +1,7 @@
 package com.coc.zkqcode.core.data.database
 
 import com.coc.zkqcode.core.util.fileactions.FileHelper
+
 import com.google.gson.Gson
 
 import com.google.gson.GsonBuilder
@@ -87,7 +88,6 @@ object SchemaExporter {
         val jsonContent = exportSchemasToJson(keys = keys, accountCount = accountCount, configCount = configCount)
         val fullPath =
             if (directory.endsWith("/")) "$directory$fileName" else "$directory/$fileName"
-
         FileHelper.writeJson(fullPath, jsonContent)
         
         // Update local configJson to keep it in sync

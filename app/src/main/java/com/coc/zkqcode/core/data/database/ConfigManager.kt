@@ -25,6 +25,7 @@ object ConfigManager {
                         }.value = savedValue ?: def.defaultValue.toString()
                     }
                 }
+
                 Scope.ACCOUNT -> {
                     for (i in 1..accountCount) {
                         module.settings.forEach { def ->
@@ -42,6 +43,7 @@ object ConfigManager {
                         }
                     }
                 }
+
                 Scope.PROFILE -> {
                     for (i in 1..configCount) {
                         module.settings.forEach { def ->
@@ -96,7 +98,7 @@ object ConfigManager {
         val baseDir = "${Environment.getExternalStorageDirectory().path}/zkqFiles/"
         val accountCountStr = GlobalVars.configStates["account_count"]?.value ?: "3"
         val configCountStr = GlobalVars.configStates["config_count"]?.value ?: "3"
-        
+
         val accountCount = accountCountStr.toIntOrNull() ?: 3
         val configCount = configCountStr.toIntOrNull() ?: 3
 
@@ -108,6 +110,7 @@ object ConfigManager {
         )
 
         GlobalVars.updateWindowPosition = true
+        AppStateManager.setMode(AppMode.Run)
         onSaveSuccess()
     }
 
@@ -116,6 +119,5 @@ object ConfigManager {
      */
     suspend fun saveAndRun(onSaveSuccess: () -> Unit = {}) {
         saveConfigs(onSaveSuccess)
-        AppStateManager.setMode(AppMode.Run)
     }
 }

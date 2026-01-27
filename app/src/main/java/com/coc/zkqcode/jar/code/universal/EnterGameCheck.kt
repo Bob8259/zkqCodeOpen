@@ -50,9 +50,9 @@ private suspend fun checkUIVisibility(gamePackage: String): Boolean {
             ShowMessage("已进入主界面")
             delay(500)
             if (isInHomePage()) {
-                pinchIn(221, 426, 1052, 352, 638, 365)
-                delay(200)
-                swipe(1069, 576, 260, 113)
+//                pinchIn(221, 426, 1052, 352, 638, 365)
+//                delay(200)
+//                swipe(1069, 576, 260, 113)
                 return true
             }
         }

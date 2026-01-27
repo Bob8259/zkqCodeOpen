@@ -8,6 +8,11 @@ import com.coc.zkqcode.core.util.fileactions.FileHelper
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.coc.zkqcode.core.util.fileactions.InitConfigs
+import com.coc.zkqcode.core.util.fileactions.LogHelper.showDebugInfo
+import kotlinx.coroutines.*
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
+
 
 class ServerActions(
     private val serverConnection: ServerConnection,
@@ -19,6 +24,10 @@ class ServerActions(
     var isLoading by mutableStateOf(true)
         private set
 
+    private val connectionMutex = Mutex()
+    private var testDeferred: CompletableDeferred<Boolean>? = null
+
+
     fun getValue(key: String): String? {
         return if (configJson.has(key)) configJson.get(key)?.asString else null
     }
@@ -27,6 +36,10 @@ class ServerActions(
     private val configPath = "${baseDir}zkq_config.json"
 
     init {
+        performConnect()
+    }
+
+    private fun performConnect() {
         serverConnection.connect(
             // Do not modify these logics. This is designed for an ultra-fast config loading.
             // This will send two messages to the server, if the config file exists, then we will discard the check_exists response, and only load the config from read response.
@@ -34,9 +47,18 @@ class ServerActions(
             onOpen = {
                 InitConfigs.sendStartupRequests(serverConnection, baseDir, configPath)
             },
-            onMessage = { message ->
+            onMessage = onMessage@{ message ->
                 try {
                     val response = gson.fromJson(message, JsonObject::class.java)
+
+                    // Handle connection test response
+                    if (response.has("status") && response.get("status").asString == "success" &&
+                        response.has("data") && response.get("data").asString == "connected"
+                    ) {
+                        testDeferred?.complete(true)
+                        return@onMessage
+                    }
+
                     // Route all responses to ReadWriteHelper
                     FileHelper.handleResponse(response)
 
@@ -51,13 +73,14 @@ class ServerActions(
                         onConfigLoaded?.invoke()
                     }
                 } catch (e: Exception) {
-                    println("Error parsing message: ${e.message}")
+                    showDebugInfo("Error parsing message: ${e.message}")
                     isLoading = false
                 }
             },
             onFailure = { t ->
-                println("Connection failed: ${t.message}")
+                showDebugInfo("Connection failed: ${t.message}")
                 isLoading = false
+                testDeferred?.complete(false)
             }
         )
     }
@@ -67,9 +90,32 @@ class ServerActions(
         FileHelper.writeJson(configPath, gson.toJson(configJson))
     }
 
-    // 在 ServerActions.kt 中增加这个方法
-    fun getConnection(): ServerConnection {
-        return this.serverConnection
+
+    suspend fun getConnection(): ServerConnection {
+        return connectionMutex.withLock {
+            testDeferred = CompletableDeferred()
+            serverConnection.sendAction(mapOf("actionType" to "connection_test"))
+
+            val success = try {
+                withTimeout(5000L) {
+                    testDeferred?.await() ?: false
+                }
+            } catch (e: Exception) {
+                false
+            }
+
+            if (!success) {
+                showDebugInfo("Server did not reply in 5 seconds or failed, trying to reconnect...")
+                reconnect()
+            }
+            showDebugInfo("server is OK")
+            this.serverConnection
+        }
+    }
+
+    private fun reconnect() {
+        serverConnection.close()
+        performConnect()
     }
 
     fun updateConfig(newJson: JsonObject) {
