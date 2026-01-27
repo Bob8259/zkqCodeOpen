@@ -31,7 +31,7 @@ import com.coc.zkqcode.MainActivity
 import com.coc.zkqcode.core.ui.components.CustomButton
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.data.database.ConfigManager
-import com.coc.zkqcode.core.data.websocket.FileActions
+import com.coc.zkqcode.core.data.websocket.ServerActions
 import com.coc.zkqcode.core.ui.floatingwindows.UIWindowService
 import com.coc.zkqcode.statehelper.AppMode
 import com.coc.zkqcode.statehelper.AppStateManager
@@ -99,7 +99,7 @@ fun CheckRootScreen() {
         }
 
         RootStatus.GRANTED -> {
-            // Initialize FileActions and Configs once Root is GRANTED
+            // Initialize ServerActions and Configs once Root is GRANTED
             LaunchedEffect(Unit) {
                 // Get and store default IME
                 if (GlobalVars.defaultInputMethod == null) {
@@ -115,13 +115,13 @@ fun CheckRootScreen() {
                     "ime set com.coc.zkqcode/.utils.inputmethod.InputMethodService"
                 ).exec()
 
-                if (GlobalVars.fileActions == null) {
+                if (GlobalVars.serverActions == null) {
                     val serverConnection = ServerConnection("ws://localhost:6839/zkq")
-                    GlobalVars.fileActions = FileActions(serverConnection)
+                    GlobalVars.serverActions = ServerActions(serverConnection)
                 }
 
                 // Initialize states from Schema
-                val actions = GlobalVars.fileActions
+                val actions = GlobalVars.serverActions
                 if (actions != null) {
                     // Wait for configs to load
                     snapshotFlow { actions.isLoading }.collect { isLoading ->

@@ -5,7 +5,7 @@ import kotlinx.coroutines.delay
 
 object TouchActions {
     suspend fun swipe(startX: Int, startY: Int, endX: Int, endY: Int, delayTime: Long = 200L) {
-        val connection = GlobalVars.fileActions?.getConnection() ?: return
+        val connection = GlobalVars.serverActions?.getConnection() ?: return
 
         // Send touchdown at x,y
         connection.sendAction(
@@ -47,7 +47,7 @@ object TouchActions {
     }
 
     fun pinchIn(x1: Int, y1: Int, x2: Int, y2: Int, finalX: Int, finalY: Int, duration: Long = 200L) {
-        val connection = GlobalVars.fileActions?.getConnection() ?: return
+        val connection = GlobalVars.serverActions?.getConnection() ?: return
         connection.sendAction(
             mapOf(
                 "actionType" to "touch_action",
@@ -64,7 +64,7 @@ object TouchActions {
     }
 
     fun pinchOut(x1: Int, y1: Int, x2: Int, y2: Int, finalX: Int, finalY: Int, duration: Long = 200L) {
-        val connection = GlobalVars.fileActions?.getConnection() ?: return
+        val connection = GlobalVars.serverActions?.getConnection() ?: return
         connection.sendAction(
             mapOf(
                 "actionType" to "touch_action",

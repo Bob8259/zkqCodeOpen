@@ -60,12 +60,12 @@ object SchemaExporter {
     /**
      * Helper to retrieve current value from priority sources:
      * 1. UI configStates (live data)
-     * 2. fileActions (previously saved)
+     * 2. serverActions (previously saved)
      * 3. Default value (fallback)
      */
     private fun getCurrentValue(key: String, defaultValue: Any): String {
         return GlobalVars.configStates[key]?.value
-            ?: GlobalVars.fileActions?.getValue(key)
+            ?: GlobalVars.serverActions?.getValue(key)
             ?: defaultValue.toString()
     }
 
@@ -91,7 +91,7 @@ object SchemaExporter {
         FileHelper.writeJson(fullPath, jsonContent)
         
         // Update local configJson to keep it in sync
-        GlobalVars.fileActions?.let { actions ->
+        GlobalVars.serverActions?.let { actions ->
             try {
                 val gson = Gson()
                 val newJson = gson.fromJson(jsonContent, JsonObject::class.java)

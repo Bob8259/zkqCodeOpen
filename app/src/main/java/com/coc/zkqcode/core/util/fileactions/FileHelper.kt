@@ -25,7 +25,7 @@ object FileHelper {
                 "path" to path,
                 "content" to content
             )
-            GlobalVars.fileActions?.getConnection()?.sendAction(writeAction)
+            GlobalVars.serverActions?.getConnection()?.sendAction(writeAction)
                 ?: logAndStop("Write to Json failed")
 
             try {
@@ -49,7 +49,7 @@ object FileHelper {
                 "subAction" to "read",
                 "path" to path
             )
-            GlobalVars.fileActions?.getConnection()?.sendAction(readAction)
+            GlobalVars.serverActions?.getConnection()?.sendAction(readAction)
                 ?: logAndStop("Read Json failed")
 
             try {
@@ -83,7 +83,7 @@ object FileHelper {
                 "subAction" to "check_exists",
                 "path" to path
             )
-            GlobalVars.fileActions?.getConnection()?.sendAction(checkExistsAction)
+            GlobalVars.serverActions?.getConnection()?.sendAction(checkExistsAction)
                 ?: logAndStop("Check exists failed")
 
             try {
