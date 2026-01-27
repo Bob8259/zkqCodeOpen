@@ -50,9 +50,9 @@ private suspend fun checkUIVisibility(gamePackage: String): Boolean {
             ShowMessage("已进入主界面")
             delay(500)
             if (isInHomePage()) {
-//                pinchIn(221, 426, 1052, 352, 638, 365)
-//                delay(200)
-//                swipe(1069, 576, 260, 113)
+                pinchIn(141, 423, 1052, 352, 638, 365)
+                delay(600)
+                swipe(1047, 519, 260, 113)
                 return true
             }
         }
@@ -68,9 +68,7 @@ suspend fun isInHomePage(): Boolean {
 
     // 2. Define the schemas to check against
     val homeSchemas = listOf(
-        MyColors.MainBaseWorker,
-        MyColors.NightBaseWorker,
-        MyColors.GoblinWorker
+        MyColors.MainBaseWorker, MyColors.NightBaseWorker, MyColors.GoblinWorker
     )
 
     // 3. Use 'any' for a clean, declarative exit
