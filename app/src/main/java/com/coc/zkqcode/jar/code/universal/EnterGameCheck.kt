@@ -4,6 +4,8 @@ import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndStop
+import com.coc.zkqcode.core.util.touchactions.TouchActions.pinchIn
+import com.coc.zkqcode.core.util.touchactions.TouchActions.swipe
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.smalltools.isGameAtFront
 import com.coc.zkqcode.jar.code.universal.smalltools.runApp
@@ -47,7 +49,12 @@ private suspend fun checkUIVisibility(gamePackage: String): Boolean {
         if (isInHomePage()) {
             ShowMessage("已进入主界面")
             delay(500)
-            if (isInHomePage()) return true
+            if (isInHomePage()) {
+                pinchIn(119, 543, 1249, 221, 638, 365)
+                delay(200)
+                swipe(1069, 576, 260, 113)
+                return true
+            }
         }
     }
     return false
