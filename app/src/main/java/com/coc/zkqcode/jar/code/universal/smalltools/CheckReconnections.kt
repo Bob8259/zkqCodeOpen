@@ -1,4 +1,4 @@
 package com.coc.zkqcode.jar.code.universal.smalltools
 
-class CheckReconnections {
+fun CheckReconnections() {
 }
