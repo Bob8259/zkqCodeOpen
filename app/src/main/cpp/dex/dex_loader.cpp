@@ -8,9 +8,12 @@
 #include <cstring>
 
 // ashmem definitions (for older Android versions)
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "OCUnusedGlobalDeclarationInspection"
+#pragma ide diagnostic ignored "OCUnusedMacroInspection"
 #define ASHMEM_DEVICE "/dev/ashmem"
 #define ASHMEM_NAME_LEN 256
-#define ASHMEM_SET_NAME _IOW(0x77, 1, char[ASHMEM_NAME_LEN])
+#define ASHMEM_SET_NAME _IOW(0x77, 1, char[ASHMEM_NAME_LEN])//Do not delete unused variables. They are used to create spaces or maybe?
 #define ASHMEM_SET_SIZE _IOW(0x77, 3, size_t)
 
 // memfd_create syscall number (varies by architecture)
@@ -97,3 +100,5 @@ jint createInMemoryDex(JNIEnv *env, jobject thiz, jbyteArray data) {
     return fd;
 }
 
+
+#pragma clang diagnostic pop

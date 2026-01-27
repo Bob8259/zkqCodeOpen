@@ -42,13 +42,13 @@ add_library(
         native-lib
         SHARED
         native-lib.cpp
-        login.cpp
-        cypherhelper.cpp
-        keys.cpp
-        dex_loader.cpp
-        multi_colors.cpp
-        multi_colors_raw.cpp
-        anti_debug.cpp
+        security/login.cpp
+        security/cypherhelper.cpp
+        security/keys.cpp
+        security/anti_debug.cpp
+        dex/dex_loader.cpp
+        colors/multi_colors.cpp
+        colors/multi_colors_raw.cpp
         monocypher/monocypher.c
 )
 
@@ -59,6 +59,10 @@ find_library(
 
 target_include_directories(native-lib PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}
+        ${CMAKE_CURRENT_SOURCE_DIR}/security
+        ${CMAKE_CURRENT_SOURCE_DIR}/dex
+        ${CMAKE_CURRENT_SOURCE_DIR}/colors
+        ${CMAKE_CURRENT_SOURCE_DIR}/common
 )
 
 target_link_libraries(
