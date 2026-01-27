@@ -18,6 +18,7 @@ object AppExitHelper {
         restoreDefaultInputMethod()
         stopDaemonProcess()
         stopAllServices(context)
+        stopShellServer()
         // Kill the current process
         exitProcess(0)
     }
@@ -26,6 +27,16 @@ object AppExitHelper {
         val defaultIme = GlobalVars.defaultInputMethod
         if (!defaultIme.isNullOrBlank()) {
             Shell.cmd("ime set $defaultIme").exec()
+        }
+    }
+
+    private fun stopShellServer() {
+        try {
+            // 使用 pkill -f 匹配包含指定类名的全路径进程
+            // com.coc.zkqserver.ShellServer 是你在 app_process 中启动的类名
+            Shell.cmd("pkill -f com.coc.zkqserver.ShellServer").exec()
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 

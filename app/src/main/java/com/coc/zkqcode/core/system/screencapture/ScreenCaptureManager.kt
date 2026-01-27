@@ -21,6 +21,8 @@ import java.nio.ByteBuffer
 import kotlin.coroutines.resume
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import timber.log.Timber
+
 
 object ScreenCaptureManager {
     private var mediaProjectionManager: MediaProjectionManager? = null
@@ -126,7 +128,7 @@ object ScreenCaptureManager {
             // 停止当前的投屏会话
             mediaProjection?.stop()
         } catch (e: Exception) {
-            e.printStackTrace()
+            Timber.e(e, "reset: Error stopping mediaProjection")
         }
 
         // 清理 VirtualDisplay 和 ImageReader 等资源
@@ -143,7 +145,10 @@ object ScreenCaptureManager {
      */
     fun takeScreenshot(): Boolean {
         updateMetrics()
-        val projection = ensureProjection() ?: return false
+        val projection = ensureProjection() ?: run {
+            Timber.e("takeScreenshot: Failed to ensure projection")
+            return false
+        }
         prepareImageReader()
         ensureHandlerThread() // 确保后台线程已启动
 
@@ -151,7 +156,6 @@ object ScreenCaptureManager {
             virtualDisplay?.release()
             virtualDisplay = null
 
-            println("Creating VirtualDisplay for screenshot (Sync)")
             virtualDisplay = projection.createVirtualDisplay(
                 "ScreenCapture",
                 screenWidth,
@@ -164,7 +168,7 @@ object ScreenCaptureManager {
             )
             true
         } catch (e: Exception) {
-            e.printStackTrace()
+            Timber.e(e, "takeScreenshot: Error creating VirtualDisplay")
             cleanupProjectionResources()
             false
         }
@@ -183,6 +187,8 @@ object ScreenCaptureManager {
             mediaProjection = mediaProjectionManager?.getMediaProjection(resultCode, data)?.also {
                 it.registerCallback(projectionCallback, backgroundHandler)
             }
+        } else {
+            Timber.e("onPermissionGranted: Permission denied (resultCode=$resultCode)")
         }
     }
 
@@ -224,6 +230,7 @@ object ScreenCaptureManager {
             val projection = ensureProjection()
 
             if (projection == null) {
+                Timber.e("capture: Projection is null, cannot proceed")
                 if (cont.isActive) cont.resume(null)
                 return@suspendCancellableCoroutine
             }
@@ -234,6 +241,7 @@ object ScreenCaptureManager {
                 reader.setOnImageAvailableListener(null, null)
 
                 val image = reader.acquireLatestImage() ?: run {
+                    Timber.e("capture: Failed to acquire latest image")
                     if (cont.isActive) cont.resume(null)
                     return@setOnImageAvailableListener
                 }
@@ -276,7 +284,7 @@ object ScreenCaptureManager {
                         if (cont.isActive) cont.resume(result)
                     }
                 } catch (e: Exception) {
-                    e.printStackTrace()
+                    Timber.e(e, "capture: Error processing image")
                     if (cont.isActive) cont.resume(null)
                 } finally {
                     image.close()
@@ -289,6 +297,7 @@ object ScreenCaptureManager {
 
             try {
                 virtualDisplay?.release()
+                virtualDisplay = null
                 virtualDisplay = projection.createVirtualDisplay(
                     "ScreenCapture",
                     screenWidth,
@@ -299,7 +308,8 @@ object ScreenCaptureManager {
                     null,
                     backgroundHandler // <--- 使用后台线程接收画面流
                 )
-            } catch (_: Exception) {
+            } catch (e: Exception) {
+                Timber.e(e, "capture: Error creating VirtualDisplay")
                 cleanupProjectionResources()
                 if (cont.isActive) cont.resume(null)
             }
