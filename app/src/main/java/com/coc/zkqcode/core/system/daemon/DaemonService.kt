@@ -5,7 +5,7 @@ import android.app.Service
 import android.content.Intent
 import android.os.IBinder
 import com.coc.zkqcode.MainActivity
-import com.coc.zkqcode.core.util.fileactions.FileActions
+import com.coc.zkqcode.core.data.websocket.FileActions
 import com.coc.zkqcode.core.ui.floatingwindows.NotificationHelper
 import com.coc.zkqcode.core.data.websocket.ServerConnection
 import kotlinx.coroutines.CoroutineScope

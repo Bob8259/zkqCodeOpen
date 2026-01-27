@@ -5,7 +5,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import com.coc.zkqcode.core.util.fileactions.FileActions
+import com.coc.zkqcode.core.data.websocket.FileActions
 import com.coc.zkqcode.interfaces.MainCode
 
 object GlobalVars {
@@ -15,7 +15,7 @@ object GlobalVars {
 
     // Auto-run features
     var isAutoRunEnabled by mutableStateOf(true)
-    var autoRunTimer by mutableIntStateOf(1)//测试专用，记得改回60
+    var autoRunTimer by mutableIntStateOf(10)//测试专用，记得改回60
 
 
     // Window positioning
