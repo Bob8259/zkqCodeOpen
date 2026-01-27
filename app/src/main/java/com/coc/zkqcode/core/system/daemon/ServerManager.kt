@@ -19,7 +19,8 @@ object ServerManager {
             val serverPath = serverFile.absolutePath
 
             // Execute the shell command to start the server
-            Shell.cmd("CLASSPATH=$serverPath app_process /system/bin com.coc.zkqserver.ShellServer > /dev/null 2>&1 &")
+            // 使用 setsid 创建新会话，彻底脱离控制终端
+            Shell.cmd("setsid CLASSPATH=$serverPath app_process /system/bin com.coc.zkqserver.ShellServer > /dev/null 2>&1 &")
                 .exec()
             true
         } catch (e: Exception) {
