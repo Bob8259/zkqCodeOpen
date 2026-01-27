@@ -368,3 +368,27 @@ Closes the currently open database connection.
   "subAction": "close"
 }
 ```
+
+---
+
+## 5. Server Test
+
+Used to test the connection to the server.
+
+### Connection Test
+
+* **Request:**
+```json
+{
+  "actionType": "connection_test"
+}
+```
+
+* **Response:**
+```json
+{
+  "status": "success",
+  "data": "connected" 
+}
+```
+

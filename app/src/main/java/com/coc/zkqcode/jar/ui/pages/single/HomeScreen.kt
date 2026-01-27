@@ -30,18 +30,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import com.coc.zkqcode.core.util.exit.AppExitHelper
+import com.coc.zkqcode.core.data.database.ConfigManager
+import com.coc.zkqcode.core.data.database.GlobalVars
+import com.coc.zkqcode.core.data.database.Schema.GLOBAL_SETTINGS
 import com.coc.zkqcode.core.ui.components.CustomAlertDialog
 import com.coc.zkqcode.core.ui.components.CustomButton
 import com.coc.zkqcode.core.ui.components.SettingCheckBox
 import com.coc.zkqcode.core.ui.components.SettingDropdown
-import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.ui.components.SettingInputRow
-import com.coc.zkqcode.core.data.database.ConfigManager
-import com.coc.zkqcode.core.data.database.Schema.GLOBAL_SETTINGS
+import com.coc.zkqcode.core.ui.theme.AppColors
+import com.coc.zkqcode.core.util.exit.AppExitHelper
+import com.coc.zkqcode.core.util.fileactions.LogHelper.showDebugInfo
 import com.coc.zkqcode.statehelper.AppMode
 import com.coc.zkqcode.statehelper.AppStateManager
-import com.coc.zkqcode.core.ui.theme.AppColors
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
@@ -90,7 +92,6 @@ fun HomeScreen(
 
     val scope = rememberCoroutineScope()
     val saveAndRun = {
-
         scope.launch {
             ConfigManager.saveAndRun {
                 onSaveSuccess()
@@ -115,7 +116,6 @@ fun HomeScreen(
             kotlinx.coroutines.delay(1000L)
             GlobalVars.autoRunTimer--
             if (GlobalVars.autoRunTimer <= 0) {
-                AppStateManager.setMode(AppMode.Run)
                 saveAndRun()
             }
         }
@@ -269,7 +269,6 @@ fun HomeScreen(
                 CustomButton(
                     text = "保存并运行",
                     onClick = {
-                        AppStateManager.setMode(AppMode.Run)
                         saveAndRun()
                     }
                 )
