@@ -342,7 +342,7 @@ fun LoginScreen() {
                 text = "退出", marginTop = 0.dp, onClick = {
                     showMessage = true
                     scope.launch {
-                        GlobalVars.fileActions?.writeToConfigFile(GLOBAL_SETTINGS.GEM_COUNT.key, "")
+                        GlobalVars.serverActions?.writeToConfigFile(GLOBAL_SETTINGS.GEM_COUNT.key, "")
                         GlobalVars.configStates[GLOBAL_SETTINGS.EMAIL.key]!!.value = ""
                         GlobalVars.configStates[GLOBAL_SETTINGS.PASSWORD.key]!!.value = ""
                         GlobalVars.configStates[GLOBAL_SETTINGS.GEM_COUNT.key]!!.value = ""

@@ -53,7 +53,7 @@ fun HomeScreen(
 
 
     // Ensure all keys are initialized if not already (safeguard)
-    val actions = GlobalVars.fileActions
+    val actions = GlobalVars.serverActions
     if (actions != null && GlobalVars.configStates.isEmpty()) {
         ConfigManager.initializeAllConfigs(actions)
     }

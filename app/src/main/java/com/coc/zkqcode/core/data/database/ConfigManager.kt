@@ -2,16 +2,16 @@ package com.coc.zkqcode.core.data.database
 
 import android.os.Environment
 import androidx.compose.runtime.mutableStateOf
-import com.coc.zkqcode.core.data.websocket.FileActions
+import com.coc.zkqcode.core.data.websocket.ServerActions
 import com.coc.zkqcode.statehelper.AppMode
 import com.coc.zkqcode.statehelper.AppStateManager
 
 object ConfigManager {
 
     /**
-     * Initializes all config states from the provided FileActions.
+     * Initializes all config states from the provided ServerActions.
      */
-    fun initializeAllConfigs(actions: FileActions) {
+    fun initializeAllConfigs(actions: ServerActions) {
         val accountCount = actions.getValue("account_count")?.toIntOrNull() ?: 3
         val configCount = actions.getValue("config_count")?.toIntOrNull() ?: 3
 

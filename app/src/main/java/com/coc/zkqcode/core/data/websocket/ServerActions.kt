@@ -8,7 +8,7 @@ import com.coc.zkqcode.core.util.fileactions.FileHelper
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 
-class FileActions(
+class ServerActions(
     private val serverConnection: ServerConnection,
     private val onConfigLoaded: (() -> Unit)? = null
 ) {
@@ -101,7 +101,7 @@ class FileActions(
         FileHelper.writeJson(configPath, gson.toJson(configJson))
     }
 
-    // 在 FileActions.kt 中增加这个方法
+    // 在 ServerActions.kt 中增加这个方法
     fun getConnection(): ServerConnection {
         return this.serverConnection
     }

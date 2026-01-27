@@ -5,12 +5,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import com.coc.zkqcode.core.data.websocket.FileActions
+import com.coc.zkqcode.core.data.websocket.ServerActions
 import com.coc.zkqcode.interfaces.MainCode
 
 object GlobalVars {
     // Basic componeents
-    var fileActions by mutableStateOf<FileActions?>(null)
+    var serverActions by mutableStateOf<ServerActions?>(null)
     var pluginUI: MainCode? = null
 
     // Auto-run features
