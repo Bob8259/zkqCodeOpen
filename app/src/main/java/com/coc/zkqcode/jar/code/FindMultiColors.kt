@@ -2,10 +2,9 @@ package com.coc.zkqcode.jar.code
 
 import android.graphics.Bitmap
 import android.graphics.Point
-import com.coc.zkqcode.jar.code.colorschema.ColorSchema
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
-import com.coc.zkqcode.core.ui.components.GlobalVars
-import com.coc.zkqcode.core.util.fileactions.LogHelper.showDebugInfo
+import com.coc.zkqcode.core.data.database.GlobalVars
+import com.coc.zkqcode.jar.code.colorschema.ColorSchema
 import com.coc.zkqcode.nativehelper.NativeTools
 import kotlinx.coroutines.delay
 

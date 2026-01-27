@@ -1,6 +1,5 @@
 package com.coc.zkqcode.core.data.database
 
-import com.coc.zkqcode.core.ui.components.GlobalVars
 import com.coc.zkqcode.core.util.fileactions.FileHelper
 import com.google.gson.Gson
 

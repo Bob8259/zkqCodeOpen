@@ -48,6 +48,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupPositionProvider
 import androidx.compose.ui.window.PopupProperties
+import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.data.database.Schema
 import com.coc.zkqcode.core.ui.theme.AppColors
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndStop
