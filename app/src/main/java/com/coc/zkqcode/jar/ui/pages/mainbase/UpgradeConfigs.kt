@@ -11,7 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.coc.zkqcode.core.ui.components.CustomButton
 import com.coc.zkqcode.core.ui.components.SettingCheckBox
-import com.coc.zkqcode.core.ui.components.GlobalVars
+import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.data.database.Schema.MAIN_BASE_BUILDINGS
 import androidx.compose.runtime.saveable.rememberSaveable
 

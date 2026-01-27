@@ -35,7 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
 import com.coc.zkqcode.core.ui.components.CustomButton
-import com.coc.zkqcode.core.ui.components.GlobalVars
+import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.ui.components.SettingInputRow
 import com.coc.zkqcode.core.data.database.Schema.GLOBAL_SETTINGS
 import com.coc.zkqcode.nativehelper.NativeTools

@@ -1,6 +1,6 @@
 package com.coc.zkqcode.core.util.fileactions
 
-import com.coc.zkqcode.core.ui.components.GlobalVars
+import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndStop
 import com.coc.zkqcode.core.util.fileactions.LogHelper.showDebugInfo
 import com.google.gson.Gson

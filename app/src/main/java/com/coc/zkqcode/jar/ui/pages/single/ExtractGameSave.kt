@@ -15,7 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.coc.zkqcode.core.ui.components.CustomButton
 import com.coc.zkqcode.core.ui.components.CustomNotificationWindow
-import com.coc.zkqcode.core.ui.components.GlobalVars
+import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.ui.components.SettingInputRow
 import com.coc.zkqcode.core.data.database.Schema.GLOBAL_SETTINGS
 import com.topjohnwu.superuser.Shell

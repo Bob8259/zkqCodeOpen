@@ -2,7 +2,7 @@ package com.coc.zkqcode.core.util.exit
 
 import android.content.Context
 import android.content.Intent
-import com.coc.zkqcode.core.ui.components.GlobalVars
+import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.system.daemon.DaemonService
 import com.coc.zkqcode.core.ui.floatingwindows.ControlWindowService
 import com.coc.zkqcode.core.ui.floatingwindows.MessageBoxService

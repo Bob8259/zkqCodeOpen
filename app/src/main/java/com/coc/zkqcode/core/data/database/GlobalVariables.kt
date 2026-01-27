@@ -1,4 +1,4 @@
-package com.coc.zkqcode.core.ui.components
+package com.coc.zkqcode.core.data.database
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
@@ -15,7 +15,7 @@ object GlobalVars {
 
     // Auto-run features
     var isAutoRunEnabled by mutableStateOf(true)
-    var autoRunTimer by mutableIntStateOf(60)
+    var autoRunTimer by mutableIntStateOf(1)//测试专用，记得改回60
 
 
     // Window positioning

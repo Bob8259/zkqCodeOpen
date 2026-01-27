@@ -35,7 +35,7 @@ import com.coc.zkqcode.core.ui.components.CustomAlertDialog
 import com.coc.zkqcode.core.ui.components.CustomButton
 import com.coc.zkqcode.core.ui.components.SettingCheckBox
 import com.coc.zkqcode.core.ui.components.SettingDropdown
-import com.coc.zkqcode.core.ui.components.GlobalVars
+import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.ui.components.SettingInputRow
 import com.coc.zkqcode.core.data.database.ConfigManager
 import com.coc.zkqcode.core.data.database.Schema.GLOBAL_SETTINGS

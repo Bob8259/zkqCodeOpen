@@ -16,7 +16,7 @@ import androidx.compose.ui.unit.sp
 import com.coc.zkqcode.core.ui.components.CustomButton
 import com.coc.zkqcode.core.ui.components.SettingCheckBox
 import com.coc.zkqcode.core.ui.components.SettingDropdown
-import com.coc.zkqcode.core.ui.components.GlobalVars
+import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.ui.components.SettingInputRow
 import com.coc.zkqcode.core.data.database.Schema.MAIN_BASE_SETTINGS
 
