@@ -13,7 +13,8 @@ object TouchActions {
         delayTime: Long = 200L,
         isJitter: Boolean = true
     ) {
-        val serverActions = GlobalVars.serverActions ?: logAndStop("Server actions not found")
+        val serverActions =
+            GlobalVars.serverActions ?: logAndStop("Server actions not found at swipe")
 
         // Send touchdown at x,y
         serverActions.sendActionSync(
@@ -27,7 +28,9 @@ object TouchActions {
         )
 
         // Delay for time * 0.7
-        delay((delayTime * 0.7).toLong())
+        val delayMultiplier = GlobalVars.configStates["delay_multiplier"]?.value?.toFloat()
+            ?: logAndStop("Failed to get delayMultiplier at swipe")
+        delay((delayTime * 0.7 * delayMultiplier).toLong())
 
         // Move to second x,y
         serverActions.sendActionSync(
@@ -37,13 +40,13 @@ object TouchActions {
                 "x" to endX.toFloat(),
                 "y" to endY.toFloat(),
                 "id" to 1,
-                "duration" to (delayTime * 0.5).toInt(), // documentation says touchmove has duration
+                "duration" to (delayTime * 0.5 * delayMultiplier).toInt(), // documentation says touchmove has duration
                 "jitter" to isJitter
             )
         )
 
         // Delay for 'time'
-        delay(delayTime)
+        delay((delayTime * delayMultiplier).toLong())
 
         // Touch up
         serverActions.sendActionSync(
@@ -65,8 +68,10 @@ object TouchActions {
         duration: Long = 200L,
         isJitter: Boolean = true
     ) {
-        val serverActions = GlobalVars.serverActions ?: return
-
+        val serverActions =
+            GlobalVars.serverActions ?: logAndStop("Failed to get serverAction at pinchIn")
+        val delayMultiplier = GlobalVars.configStates["delay_multiplier"]?.value?.toFloat()
+            ?: logAndStop("Failed to get delayMultiplier at pinchIn")
         serverActions.sendActionSync(
             mapOf(
                 "actionType" to "touch_action",
@@ -77,7 +82,7 @@ object TouchActions {
                 "y2" to y2,
                 "finalX" to finalX,
                 "finalY" to finalY,
-                "duration" to duration,
+                "duration" to (duration * delayMultiplier).toInt(),
                 "jitter" to isJitter
             )
         )
@@ -93,7 +98,10 @@ object TouchActions {
         duration: Long = 200L,
         isJitter: Boolean = true
     ) {
-        val serverActions = GlobalVars.serverActions ?: return
+        val serverActions =
+            GlobalVars.serverActions ?: logAndStop("Failed to get serverAction at pinchOut")
+        val delayMultiplier = GlobalVars.configStates["delay_multiplier"]?.value?.toFloat()
+            ?: logAndStop("Failed to get delayMultiplier at pinchOut")
         serverActions.sendActionSync(
             mapOf(
                 "actionType" to "touch_action",
@@ -104,7 +112,7 @@ object TouchActions {
                 "y2" to y2,
                 "finalX" to finalX,
                 "finalY" to finalY,
-                "duration" to duration,
+                "duration" to (duration * delayMultiplier).toInt(),
                 "jitter" to isJitter
             )
         )
