@@ -21,7 +21,7 @@ suspend fun findMultiColors(
     schema: ColorSchema
 ): Point? {
     while (!GlobalVars.isPlaying.value) {
-        delay(100)//the user paused the script, then we should also stop
+        delay(1000)//the user paused the script, then we should also stop
     }
 
     val resultAny = when {
