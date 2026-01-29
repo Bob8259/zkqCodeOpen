@@ -5,9 +5,8 @@ import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.basic.findMultiColors
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndStop
-import com.coc.zkqcode.core.util.touchactions.TouchActions.pinchIn
-import com.coc.zkqcode.core.util.touchactions.TouchActions.swipe
 import com.coc.zkqcode.jar.code.colorschema.MyColors
+import com.coc.zkqcode.jar.code.universal.smalltools.checkReconnections
 import com.coc.zkqcode.jar.code.universal.smalltools.isGameAtFront
 import com.coc.zkqcode.jar.code.universal.smalltools.runApp
 import kotlinx.coroutines.delay
@@ -29,6 +28,7 @@ suspend fun enterMainScreen(currentAccountNumber: Int, gamePackage: String): Boo
     while (System.currentTimeMillis() - startTime < timeoutMillis) {
         // 3. Insert your logic to check if the main screen is actually visible
         if (checkUIVisibility(gamePackage)) return true
+        if (!checkReconnections()) return false
         ShowMessage("账号$currentAccountNumber，倒计时${((timeoutMillis - System.currentTimeMillis() + startTime) / 1000).toInt()}秒\n请手动给主世界和夜世界切换默认场景")
         // 4. Wait for 1 second before checking again to save CPU cycles
         delay(50)
@@ -47,16 +47,16 @@ private suspend fun checkUIVisibility(gamePackage: String): Boolean {
         }
         delay(1000)
     } else {
-        if (isInHomePage()) {
-            ShowMessage("已进入主界面")
-            delay(500)
-            if (isInHomePage()) {
-                pinchIn(141, 423, 1052, 352, 638, 365)
-                delay(600)
-                swipe(1047, 519, 260, 113)
-                return true
-            }
-        }
+//        if (isInHomePage()) {
+//            ShowMessage("已进入主界面")
+//            delay(500)
+//            if (isInHomePage()) {
+//                pinchIn(141, 423, 1052, 352, 638, 365)
+//                delay(600)
+//                swipe(1047, 519, 260, 113)
+//                return true
+//            }
+//        }
         closeAdvertisements()
         delay(500)
     }

@@ -25,5 +25,5 @@ local.properties
 rust_logic/target
 rust_logic/log.txt
 .idea
-app/src/main/jniLibs
+# app/src/main/jniLibs
 rust_logic/src/security/keys.rs

@@ -3,6 +3,7 @@ package com.coc.zkqcode.core.util.touchactions
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndStop
 import kotlinx.coroutines.delay
+import kotlin.random.Random
 
 object TouchActions {
     suspend fun swipe(
@@ -114,6 +115,56 @@ object TouchActions {
                 "finalY" to finalY,
                 "duration" to (duration * delayMultiplier).toInt(),
                 "jitter" to isJitter
+            )
+        )
+    }
+
+    suspend fun tap(
+        x: Int,
+        y: Int,
+        isJitter: Boolean = true
+    ) {
+        val serverActions =
+            GlobalVars.serverActions ?: logAndStop("Server actions not found at tap")
+        val delayMultiplier = GlobalVars.configStates["delay_multiplier"]?.value?.toFloat()
+            ?: logAndStop("Failed to get delayMultiplier at tap")
+
+        // Send touchdown at x,y
+        serverActions.sendActionSync(
+            mapOf(
+                "actionType" to "touch_action",
+                "subAction" to "touchdown",
+                "x" to x.toFloat(),
+                "y" to y.toFloat(),
+                "id" to 1
+            )
+        )
+
+        // Random delay of 20-60 milliseconds
+        val randomDelay = Random.nextLong(20, 61)
+        delay((randomDelay * delayMultiplier).toLong())
+
+        if (isJitter) {
+            val offsetX = Random.nextInt(-5, 6)
+            val offsetY = Random.nextInt(-5, 6)
+            serverActions.sendActionSync(
+                mapOf(
+                    "actionType" to "touch_action",
+                    "subAction" to "touchmove",
+                    "x" to (x + offsetX).toFloat(),
+                    "y" to (y + offsetY).toFloat(),
+                    "id" to 1,
+                    "jitter" to true
+                )
+            )
+        }
+
+        // Touch up
+        serverActions.sendActionSync(
+            mapOf(
+                "actionType" to "touch_action",
+                "subAction" to "touchup",
+                "id" to 1
             )
         )
     }
