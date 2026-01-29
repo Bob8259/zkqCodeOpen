@@ -5,6 +5,9 @@ import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.basic.findMultiColors
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndStop
+import com.coc.zkqcode.core.util.touchactions.TouchActions
+import com.coc.zkqcode.core.util.touchactions.TouchActions.pinchIn
+import com.coc.zkqcode.core.util.touchactions.TouchActions.swipe
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.smalltools.checkReconnections
 import com.coc.zkqcode.jar.code.universal.smalltools.isGameAtFront
@@ -30,12 +33,18 @@ suspend fun enterMainScreen(currentAccountNumber: Int, gamePackage: String): Boo
         if (checkUIVisibility(gamePackage)) return true
         if (!checkReconnections()) return false
         ShowMessage("账号$currentAccountNumber，倒计时${((timeoutMillis - System.currentTimeMillis() + startTime) / 1000).toInt()}秒\n请手动给主世界和夜世界切换默认场景")
+        closeAdvertisements()
+        clickRightBottom()
         // 4. Wait for 1 second before checking again to save CPU cycles
-        delay(50)
+        delay(300)
     }
 
     // Return false if the loop finishes without finding the main screen
     return false
+}
+
+suspend fun clickRightBottom() {
+    TouchActions.tap(1277, 557)
 }
 
 private suspend fun checkUIVisibility(gamePackage: String): Boolean {
@@ -47,37 +56,54 @@ private suspend fun checkUIVisibility(gamePackage: String): Boolean {
         }
         delay(1000)
     } else {
-//        if (isInHomePage()) {
-//            ShowMessage("已进入主界面")
-//            delay(500)
-//            if (isInHomePage()) {
-//                pinchIn(141, 423, 1052, 352, 638, 365)
-//                delay(600)
-//                swipe(1047, 519, 260, 113)
-//                return true
-//            }
-//        }
-        closeAdvertisements()
-        delay(500)
+        if (isInHomePage()) {
+            ShowMessage("已进入主界面")
+            delay(500)
+            if (isInHomePage()) {
+                pinchIn(141, 423, 1052, 352, 638, 365)
+                delay(600)
+                swipe(1047, 519, 260, 113)
+                return true
+            }
+        }
     }
     return false
 }
 
 suspend fun closeAdvertisements() {
-    // 1. Capture the screen and cast safely
-    val screenBuffer =
+    // 1. Capture the screen and cast safely (Use 'var' so we can update it)
+    var screenBuffer =
         ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult
-            ?: return // Exits the function if capture fails
+            ?: logAndStop("failed to take screenshot at close advertisement")
 
     // 2. Define the schemas to check against
     val homeSchemas = listOf(
-        MyColors.MainBaseWorker,
+        MyColors.GreenConfirm,
+        MyColors.CNAd,
+        MyColors.ClanChat,
+        MyColors.OldShopButton,
+        MyColors.NewShopButton,
+        MyColors.CNProsperity,
+        MyColors.MagicalItem
+    )
 
-        )
+    // 3. Iterate through schemas
+    homeSchemas.forEach { schema ->
+        // Check if the current schema exists on the current screenBuffer
+        val point = findMultiColors(byteBuffer = screenBuffer, schema = schema)
 
-    // 3. Run the check (Result is ignored, function returns Unit)
-    homeSchemas.any { schema ->
-        findMultiColors(byteBuffer = screenBuffer, schema = schema) != null
+        if (point != null) {
+            // If found, perform the tap
+            TouchActions.tap(point.x, point.y)
+
+            // Wait for the animation/transition to finish
+            delay(500)
+
+            // 4. Retake the screenBuffer so the next schema check uses the updated screen
+            screenBuffer =
+                ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult
+                    ?: return@forEach // Use return@forEach to skip to next if capture fails
+        }
     }
 }
 

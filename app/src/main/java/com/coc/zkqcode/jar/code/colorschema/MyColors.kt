@@ -1,6 +1,6 @@
 package com.coc.zkqcode.jar.code.colorschema
 
-import android.provider.CalendarContract
+import androidx.compose.ui.graphics.Color
 
 object MyColors {
     val MainBaseWorker: ColorSchema = ColorSchema.parse(
@@ -53,5 +53,82 @@ object MyColors {
         0,
         0.9,
         "重连1"
+    )
+    val GreenConfirm: ColorSchema = ColorSchema.parse(
+        577,
+        564,
+        731,
+        642,
+        "7AF1D2-101010",
+        "25|-3|7FF3D7-101010,45|-4|81F4D9-101010,60|-4|81F4D9-101010,66|5|70ECC8-101010,67|17|53DFAB-101010,67|23|2CCD84-101010,45|35|30BA71-101010,22|33|2FBF76-101010,-1|26|2CCC83-101010",
+        0,
+        0.9,
+        "绿色确认"
+    )
+    val CNAd: ColorSchema = ColorSchema.parse(
+        1074,
+        44,
+        1140,
+        110,
+        "FFFFFF-101010",
+        "5|9|FFFFFF-101010,-17|18|F1F1F1-101010,-15|-6|F8F9FA-101010,-6|-18|F9FAF9-101010,8|-18|FAFAF9-101010,15|-17|F9FAF9-101010,19|-8|F9FAFA-101010,18|0|F5F5F5-101010,15|7|E5EAEF-101010",
+        0,
+        0.9,
+        "国服广告"
+    )
+    val ClanChat: ColorSchema = ColorSchema.parse(
+        485,
+        301,
+        562,
+        421,
+        "28AAF3-101010",
+        "5|17|28AAF3-101010,6|35|3B8AEA-101010,3|54|3B8AEA-101010,-15|56|3B8AEA-101010,-23|46|3B8AEA-101010,-23|40|3B8AEA-101010,-24|31|3B8AEA-101010,-22|14|28AAF3-101010,-19|7|28AAF3-101010",
+        0,
+        0.9,
+        "部落聊天框"
+    )
+    val OldShopButton: ColorSchema = ColorSchema.parse(
+        1195,
+        19,
+        1261,
+        88,
+        "FFFFFF-101010",
+        "-4|2|FAF6F6-101010,-23|8|1A16ED-101010,-20|-6|867FFF-101010,-18|-15|958FFF-101010,4|-20|958DFF-101010,21|-7|8A82FF-101010,14|4|1511EC-101010,12|21|1913D3-101010,-14|26|352DCE-101010",
+        0,
+        0.9,
+        "旧版商店叉叉"
+    )
+    val NewShopButton: ColorSchema = ColorSchema.parse(
+        1159,
+        8,
+        1209,
+        57,
+        "FAF6F6-101010",
+        "-3|-5|FFFFFF-101010,-10|-5|857DFF-101010,-5|-15|958DFF-101010,14|-10|938BFF-101010,13|-3|7D76FF-101010,14|8|1612E6-101010,3|12|1A15D1-101010,-4|13|211BCE-101010,-10|13|221CCF-101010",
+        0,
+        0.9,
+        "新版商店叉叉"
+    )
+    val CNProsperity: ColorSchema = ColorSchema.parse(
+        596,
+        379,
+        661,
+        491,
+        "28AAF3-101010",
+        "1|16|28AAF3-101010,0|33|3B8AEA-101010,-15|49|3B8AEA-101010,-24|40|3B8AEA-101010,-27|26|3B8AEA-101010,-31|13|28AAF3-101010,-34|1|28AAF3-101010,-27|-12|28AAF3-101010,-13|-8|28AAF3-101010",
+        0,
+        0.9,
+        "繁荣度聊天框"
+    )
+    val MagicalItem: ColorSchema = ColorSchema.parse(
+        960,
+        57,
+        1016,
+        110,
+        "FBFBFB-101010",
+        "-14|-4|716FFE-101010,-6|-14|8785FF-101010,13|10|221EF2-101010,12|-13|8785FF-101010,13|-10|8583FF-101010,13|-3|7A78FF-101010,13|5|221EF7-101010,10|17|1B18AA-101010,3|14|221EF7-101010",
+        0,
+        0.9,
+        "魔法物品"
     )
 }
