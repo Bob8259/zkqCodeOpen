@@ -1,6 +1,6 @@
 package com.coc.zkqcode.nativehelper
 
-object RustBridge {
+object RustTools {
     init {
         // 名字必须和 Cargo.toml 中的 name 一致
         System.loadLibrary("rust_logic")

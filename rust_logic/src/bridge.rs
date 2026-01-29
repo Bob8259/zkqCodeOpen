@@ -10,7 +10,7 @@ pub fn rust_say_hello(
 ) -> jstring {
     // 将输入转换为 Rust 字符串
     let input: String = env.get_string(&input).expect("Couldn't get java string!").into();
-    
+      println!("DEBUG: rust_say_hello called with input: {}", input); // Added debug message
     // 逻辑处理
     let output = format!("动态注册111说：你好，{}！", input);
 
