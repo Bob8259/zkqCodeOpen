@@ -1,4 +1,5 @@
 package com.coc.zkqcode.nativehelper
+//The C++ code are unused. But I just want to keep them as a souvenir.
 
 @Suppress("KotlinJniMissingFunction") //明明运行正常，还一直报错，把你屏蔽了
 object NativeTools {

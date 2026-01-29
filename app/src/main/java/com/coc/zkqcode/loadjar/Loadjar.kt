@@ -118,7 +118,7 @@ class Loadjar(private val context: Context) {
             val encryptedBytes = file.readBytes()
 
             // 2. Decrypt
-            val decryptedBytes = com.coc.zkqcode.nativehelper.NativeTools.decryptJar(encryptedBytes)
+            val decryptedBytes = com.coc.zkqcode.nativehelper.RustTools.decryptJar(encryptedBytes)
             if (decryptedBytes.isEmpty()) return false
 
             val classLoader: ClassLoader =
@@ -147,7 +147,7 @@ class Loadjar(private val context: Context) {
                 } else {
                     // 4. Fallback for older versions: Use in-memory file descriptor (memfd/ashmem)
                     Timber.d(
-                        "loadEncryptedPlugin: Using memfd fallback for API ${android.os.Build.VERSION.SDK_INT}"
+                        "loadEncryptedPlugin: Using fallback for API ${android.os.Build.VERSION.SDK_INT}"
                     )
 
                     val fd =
