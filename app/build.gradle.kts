@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -8,6 +10,15 @@ android {
     namespace = "com.coc.zkqcode"
     compileSdk = 36
 
+    val localProperties = Properties()
+    val localPropertiesFile = rootProject.file("local.properties")
+    if (localPropertiesFile.exists()) {
+        localPropertiesFile.inputStream().use { 
+            localProperties.load(it)
+        }
+    }
+    val serverPublicKey: String = localProperties.getProperty("SERVER_PUBLIC_KEY") ?: ""
+
     defaultConfig {
         applicationId = "com.coc.zkqcode"
         minSdk = 24
@@ -16,6 +27,7 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        buildConfigField("String", "SERVER_PUBLIC_KEY", "\"$serverPublicKey\"")
     }
 
     buildTypes {
