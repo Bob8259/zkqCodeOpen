@@ -10,11 +10,6 @@ object RustTools {
     external fun sayHello(input: String): String
 
 
-    external fun chacha20Encrypt(data: String, nonce: String): String
-
-    external fun chacha20Decrypt(data: String, nonce: String): String
-
-    external fun blake2b(data: String): String
 
     external fun decryptJar(data: ByteArray): ByteArray
 

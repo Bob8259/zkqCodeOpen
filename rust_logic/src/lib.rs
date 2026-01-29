@@ -37,21 +37,6 @@ pub extern "system" fn JNI_OnLoad(vm: JavaVM, _reserved: *mut c_void) -> jint {
             fn_ptr: bridge::rust_say_hello as *mut c_void,
         },
         NativeMethod {
-            name: "chacha20Encrypt".into(),
-            sig: "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;".into(),
-            fn_ptr: security::cypherhelper::chacha20Encrypt as *mut c_void,
-        },
-        NativeMethod {
-            name: "chacha20Decrypt".into(),
-            sig: "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;".into(),
-            fn_ptr: security::cypherhelper::chacha20Decrypt as *mut c_void,
-        },
-        NativeMethod {
-            name: "blake2b".into(),
-            sig: "(Ljava/lang/String;)Ljava/lang/String;".into(),
-            fn_ptr: security::cypherhelper::blake2b as *mut c_void,
-        },
-        NativeMethod {
             name: "decryptJar".into(),
             sig: "([B)[B".into(),
             fn_ptr: security::cypherhelper::decryptJar as *mut c_void,
