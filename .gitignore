@@ -26,3 +26,4 @@ keys.cpp
 rust_logic/target
 rust_logic/log.txt
 .idea
+app/src/main/jniLibs
