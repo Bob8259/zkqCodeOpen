@@ -6,7 +6,8 @@ import android.graphics.Color
 class ColorSchema(
     val x1: Int, val y1: Int, val x2: Int, val y2: Int, // 已转换为 RGB
     val mainColor: Int, // 由相似度转换而来
-    val threshold: Int, val offsets: MutableList<OffsetPoint?>?, val direction: Int
+    val threshold: Int, val offsets: MutableList<OffsetPoint?>?, val direction: Int,
+    val name: String? = null
 ) {
     class OffsetPoint(val dx: Int, val dy: Int, val color: Int)
     companion object {
@@ -16,7 +17,8 @@ class ColorSchema(
         fun parse(
             x1: Int, y1: Int, x2: Int, y2: Int,
             mainColorStr: String, offsetStr: String?,
-            dir: Int, similarity: Double
+            dir: Int, similarity: Double,
+            name: String? = null
         ): ColorSchema {
             // 1. 处理主颜色 (BGR -> RGB, 忽略横杠)
 
@@ -42,7 +44,7 @@ class ColorSchema(
                 }
             }
 
-            return ColorSchema(x1, y1, x2, y2, mainColor, threshold, offsets, dir)
+            return ColorSchema(x1, y1, x2, y2, mainColor, threshold, offsets, dir, name)
         }
 
         /**
