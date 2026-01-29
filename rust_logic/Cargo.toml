@@ -9,3 +9,10 @@ crate-type = ["cdylib"]
 
 [dependencies]
 jni = "0.21.1" # 用于和 Java/Kotlin 交互
+
+[profile.release]
+opt-level = "z"      # 针对体积进行极限优化 (类似于 -Oz)
+lto = true           # 开启链接时优化 (Link Time Optimization)
+codegen-units = 1    # 减少并行的代码生成单元，提高优化效果并提升安全性
+panic = "abort"      # 发生 panic 时直接中止，减少二进制体积并移除异常处理逻辑
+strip = true         # 自动剥离符号表 (类似于 strip 命令)

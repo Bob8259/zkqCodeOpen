@@ -1,0 +1,5 @@
+[build]
+rustflags = [
+    "-C", "link-arg=-fstack-protector-all", # 开启所有函数的栈保护 (Canary)
+    "-C", "link-arg=-Wl,-z,relro,-z,now",  # 设置完全只读重定位并强制立即绑定
+]
