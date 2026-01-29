@@ -1,20 +1,29 @@
-use jni::objects::{JClass, JString};
-use jni::sys::jstring;
-use jni::JNIEnv;
+use jni::sys::{jint, JNI_VERSION_1_6};
+use jni::{JavaVM, NativeMethod};
+use std::ffi::c_void;
 
-#[no_mangle] // 必须：禁止 Rust 编译器混淆函数名
-pub extern "system" fn Java_com_coc_zkqcode_RustBridge_sayHello(
-    mut env: JNIEnv,
-    _class: JClass,
-    input: JString,
-) -> jstring {
-    // 将输入转换为 Rust 字符串
-    let input: String = env.get_string(&input).expect("Couldn't get java string!").into();
-    
-    // 逻辑处理
-    let output = format!("Rust 说：你好，{}！", input);
+mod bridge;
 
-    // 转换回 JNI 字符串返回
-    let output = env.new_string(output).expect("Couldn't create java string!");
-    output.into_raw()
+#[no_mangle]
+#[allow(non_snake_case)]
+pub extern "system" fn JNI_OnLoad(vm: JavaVM, _reserved: *mut c_void) -> jint {
+    let mut env = vm.get_env().expect("Cannot get JNIEnv");
+
+    // 找到你的 Kotlin 类
+    let class_name = "com/coc/zkqcode/RustBridge";
+    let class = env.find_class(class_name).expect("找不到类");
+
+    // 定义方法映射
+    let methods = [
+        NativeMethod {
+            name: "sayHello".into(),                                 // Kotlin 中的方法名
+            sig: "(Ljava/lang/String;)Ljava/lang/String;".into(),    // JNI 签名
+            fn_ptr: bridge::rust_say_hello as *mut c_void,             // Rust 中的函数指针
+        },
+    ];
+
+    // 执行注册
+    env.register_native_methods(class, &methods).expect("注册失败");
+
+    JNI_VERSION_1_6
 }
