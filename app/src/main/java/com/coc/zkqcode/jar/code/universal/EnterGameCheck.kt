@@ -68,7 +68,10 @@ suspend fun isInHomePage(): Boolean {
 
     // 2. Define the schemas to check against
     val homeSchemas = listOf(
-        MyColors.MainBaseWorker, MyColors.NightBaseWorker, MyColors.GoblinWorker
+        MyColors.MainBaseWorker,
+        MyColors.NightBaseWorker,
+        MyColors.GoblinWorker,
+        MyColors.GoblinWorker2
     )
 
     // 3. Use 'any' for a clean, declarative exit

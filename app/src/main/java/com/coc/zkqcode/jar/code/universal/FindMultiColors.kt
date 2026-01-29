@@ -6,6 +6,7 @@ import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.jar.code.colorschema.ColorSchema
 import com.coc.zkqcode.nativehelper.NativeTools
+import com.coc.zkqcode.nativehelper.RustTools
 import kotlinx.coroutines.delay
 
 
@@ -48,7 +49,7 @@ suspend fun findMultiColors(
             val h = resultAny.height
             val stride = resultAny.rowStride
 
-            val result = NativeTools.nativeFindMultiColorsRaw(
+            val result = RustTools.findMultiColorsRaw(
                 buf,
                 w, h, stride,
                 schema.x1, schema.y1, schema.x2, schema.y2,
@@ -66,7 +67,7 @@ suspend fun findMultiColors(
             // Use the original native function for Bitmap
             val useBmp = bitmap ?: (resultAny as? Bitmap)
             if (useBmp != null) {
-                val result = NativeTools.nativeFindMultiColors(
+                val result = RustTools.findMultiColors(
                     useBmp,
                     schema.x1, schema.y1, schema.x2, schema.y2,
                     schema.mainColor,

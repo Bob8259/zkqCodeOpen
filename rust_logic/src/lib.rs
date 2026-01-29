@@ -5,6 +5,7 @@ use log::LevelFilter;
 use std::ffi::c_void;
 
 mod bridge;
+pub mod color;
 mod dexloader;
 pub mod security;
 
@@ -60,6 +61,16 @@ pub extern "system" fn JNI_OnLoad(vm: JavaVM, _reserved: *mut c_void) -> jint {
             name: "createInMemoryDex".into(),
             sig: "([B)I".into(),
             fn_ptr: dexloader::dex_loader::create_in_memory_dex as *mut c_void,
+        },
+        NativeMethod {
+            name: "findMultiColors".into(),
+            sig: "(Landroid/graphics/Bitmap;IIIIII[I)[I".into(),
+            fn_ptr: color::multi_colors::find_multi_colors as *mut c_void,
+        },
+        NativeMethod {
+            name: "findMultiColorsRaw".into(),
+            sig: "(Ljava/nio/ByteBuffer;IIIIIIIII[I)[I".into(),
+            fn_ptr: color::multi_colors_raw::find_multi_colors_raw as *mut c_void,
         },
     ];
 

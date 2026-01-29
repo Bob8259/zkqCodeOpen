@@ -32,7 +32,16 @@ object MyColors {
         "-10|8|57D5CD,-20|0|3B9C8F,-20|-7|2C9098,-8|-12|155D68,-1|-17|48EED9,5|-18|4DFADA,7|-6|2C5A4E,13|-2|49DFC6,3|4|3CAA97",
         0,
         0.9
-
+    )
+    val GoblinWorker2: ColorSchema = ColorSchema.parse(
+        395,
+        10,
+        654,
+        81,
+        "16686C-101010",
+        "2|2|6E9EA4-101010,-6|2|1A2432-101010,-13|-5|207783-101010,-7|-6|34AEAA-101010,2|-11|49E7D2-101010,3|-11|48E8D3-101010,11|-11|42C4A9-101010,14|-10|3EAE9D-101010,11|-2|48DFD5-101010",
+        0,
+        0.9
     )
     val NightBaseWorker: ColorSchema = ColorSchema.parse(
         518,
