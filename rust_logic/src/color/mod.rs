@@ -42,6 +42,7 @@ pub fn find_multi_colors_internal<F>(
     main_color: u32,
     threshold: i32,
     offsets_arr: &[i32],
+    direction: i32,
     get_pixel: F,
 ) -> Option<(i32, i32)>
 where
@@ -53,39 +54,66 @@ where
     x2 = x2.min(width - 1);
     y2 = y2.min(height - 1);
 
-    for y in y1..=y2 {
-        for x in x1..=x2 {
-            let pixel = get_pixel(x, y);
-            if is_color_match(pixel, main_color, threshold) {
-                let mut all_offsets_match = true;
-                let mut i = 0;
-                while i < offsets_arr.len() {
-                    let dx = offsets_arr[i];
-                    let dy = offsets_arr[i + 1];
-                    let color = offsets_arr[i + 2] as u32;
-
-                    let tx = x + dx;
-                    let ty = y + dy;
-
-                    if tx < 0 || tx >= width || ty < 0 || ty >= height {
-                        all_offsets_match = false;
-                        break;
+    if direction == 1 {
+        // From bottom-right to top-left
+        for y in (y1..=y2).rev() {
+            for x in (x1..=x2).rev() {
+                let pixel = get_pixel(x, y);
+                if is_color_match(pixel, main_color, threshold) {
+                    if check_offsets(x, y, width, height, threshold, offsets_arr, &get_pixel) {
+                        return Some((x, y));
                     }
-
-                    let offset_pixel = get_pixel(tx, ty);
-                    if !is_color_match(offset_pixel, color, threshold) {
-                        all_offsets_match = false;
-                        break;
-                    }
-                    i += 3;
                 }
-
-                if all_offsets_match {
-                    return Some((x, y));
+            }
+        }
+    } else {
+        // Default: From top-left to bottom-right (direction 0 or any other)
+        for y in y1..=y2 {
+            for x in x1..=x2 {
+                let pixel = get_pixel(x, y);
+                if is_color_match(pixel, main_color, threshold) {
+                    if check_offsets(x, y, width, height, threshold, offsets_arr, &get_pixel) {
+                        return Some((x, y));
+                    }
                 }
             }
         }
     }
 
     None
+}
+
+#[inline]
+fn check_offsets<F>(
+    x: i32,
+    y: i32,
+    width: i32,
+    height: i32,
+    threshold: i32,
+    offsets_arr: &[i32],
+    get_pixel: &F,
+) -> bool
+where
+    F: Fn(i32, i32) -> u32,
+{
+    let mut i = 0;
+    while i < offsets_arr.len() {
+        let dx = offsets_arr[i];
+        let dy = offsets_arr[i + 1];
+        let color = offsets_arr[i + 2] as u32;
+
+        let tx = x + dx;
+        let ty = y + dy;
+
+        if tx < 0 || tx >= width || ty < 0 || ty >= height {
+            return false;
+        }
+
+        let offset_pixel = get_pixel(tx, ty);
+        if !is_color_match(offset_pixel, color, threshold) {
+            return false;
+        }
+        i += 3;
+    }
+    true
 }

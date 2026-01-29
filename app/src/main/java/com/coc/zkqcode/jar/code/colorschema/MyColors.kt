@@ -1,18 +1,6 @@
 package com.coc.zkqcode.jar.code.colorschema
 
 object MyColors {
-    // 你只需要把现有的参数复制到这里即可
-    val Test: ColorSchema = ColorSchema.parse(
-        1198,
-        137,
-        1267,
-        306,
-        "86F0D7",
-        "-6|-8|6FE9CE,-4|-14|43CE99,7|-19|54DEBB,14|-12|81F3E0,14|-8|89F4E1,13|-6|8BF4E0,4|-2|87F1DA,-7|1|81EED3,-5|6|60E5B2",
-        0,
-        0.9
-
-    )
     val MainBaseWorker: ColorSchema = ColorSchema.parse(
         452,
         10,
@@ -52,6 +40,6 @@ object MyColors {
         "6|-15|A7D0FE,11|-19|3C6BC9,16|-10|8CAAE2,16|-9|403427,18|0|467CD6,7|12|3C69CD,4|12|416FD0,2|12|3E6BCB",
         0,
         0.9
-
     )
+
 }

@@ -18,6 +18,7 @@ pub unsafe extern "system" fn find_multi_colors_raw(
     main_color: jint,
     threshold: jint,
     flat_offsets: JIntArray,
+    direction: jint,
 ) -> jintArray {
     let src_buf = env.get_direct_buffer_address(&byte_buffer);
     if src_buf.is_err() {
@@ -52,6 +53,7 @@ pub unsafe extern "system" fn find_multi_colors_raw(
         main_color as u32,
         threshold,
         &offsets_vec,
+        direction,
         get_pixel,
     );
 

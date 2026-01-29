@@ -54,7 +54,8 @@ suspend fun findMultiColors(
                 schema.x1, schema.y1, schema.x2, schema.y2,
                 schema.mainColor,
                 schema.threshold,
-                offsetsArray
+                offsetsArray,
+                schema.direction
             )
 
             if (result != null && result.size == 2) {
@@ -71,7 +72,8 @@ suspend fun findMultiColors(
                     schema.x1, schema.y1, schema.x2, schema.y2,
                     schema.mainColor,
                     schema.threshold,
-                    offsetsArray
+                    offsetsArray,
+                    schema.direction
                 )
                 if (result != null && result.size == 2) {
                     return Point(result[0], result[1])

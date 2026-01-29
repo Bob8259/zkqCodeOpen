@@ -57,10 +57,31 @@ private suspend fun checkUIVisibility(gamePackage: String): Boolean {
                 return true
             }
         }
+        closeAdvertisements()
+        delay(500)
     }
     return false
 }
 
+suspend fun closeAdvertisements() {
+    // 1. Capture the screen and cast safely
+    val screenBuffer =
+        ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult
+            ?: return // Exits the function if capture fails
+
+    // 2. Define the schemas to check against
+    val homeSchemas = listOf(
+        MyColors.MainBaseWorker,
+        MyColors.NightBaseWorker,
+        MyColors.GoblinWorker,
+        MyColors.GoblinWorker2
+    )
+
+    // 3. Run the check (Result is ignored, function returns Unit)
+    homeSchemas.any { schema ->
+        findMultiColors(byteBuffer = screenBuffer, schema = schema) != null
+    }
+}
 suspend fun isInHomePage(): Boolean {
     // 1. Capture the screen and cast safely
     val screenBuffer =
