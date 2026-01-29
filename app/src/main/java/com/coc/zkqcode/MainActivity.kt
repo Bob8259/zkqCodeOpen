@@ -3,7 +3,10 @@ package com.coc.zkqcode
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.material3.Text
 import androidx.compose.material3.TimeInput
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import com.coc.zkqcode.core.system.checkpermissions.CheckRootScreen
 import com.coc.zkqcode.core.system.screencapture.ProjectionPermissionHelper
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
@@ -22,7 +25,8 @@ class MainActivity : ComponentActivity() {
         LogHelper.initTimber(this)
         Timber.v("MainActivity Start!")
         setContent {
-            CheckRootScreen()
+            //CheckRootScreen()
+            GreetingScreen()
         }
 
     }
@@ -31,7 +35,14 @@ class MainActivity : ComponentActivity() {
         projectionPermissionHelper.requestMediaProjection()
     }
 
+
     override fun onDestroy() {
         super.onDestroy()
     }
+}
+
+@Composable
+fun GreetingScreen() {
+    val message = remember { RustBridge.sayHello("Android 开发者") }
+    Text(text = message)
 }
