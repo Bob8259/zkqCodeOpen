@@ -1,6 +1,8 @@
 @file:Suppress("ClassName")
 
-package com.coc.zkqcode.core.data.database
+package com.coc.zkqcode.jar.ui.schema
+
+import com.coc.zkqcode.core.data.database.SchemaRegistry
 
 /**
  * The single source of truth for any setting in the app.
@@ -57,7 +59,7 @@ object Schema {
             SettingDef("create_gem_build", "创号时宝石秒建筑", 0, "GLOBAL_SETTINGS")
         val GEM_COUNT = SettingDef("gem_count", "宝石数量", "", "GLOBAL_SETTINGS")
         val AFTER_KICK_OPTION =
-            SettingDef("after_kick_option", "顶号后选项", "1", "GLOBAL_SETTINGS")
+            SettingDef( "after_kick_option", "顶号后选项", "1", "GLOBAL_SETTINGS")
         val DEVICE_REMARK = SettingDef("device_remark", "设备备注", "", "GLOBAL_SETTINGS")
         val RUNTIME_SCREENSHOT =
             SettingDef("runtime_screenshot", "运行时截图", 0, "GLOBAL_SETTINGS")

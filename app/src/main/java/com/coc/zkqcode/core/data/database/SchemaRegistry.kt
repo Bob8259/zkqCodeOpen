@@ -1,5 +1,8 @@
 package com.coc.zkqcode.core.data.database
 
+import com.coc.zkqcode.jar.ui.schema.Schema
+import com.coc.zkqcode.jar.ui.schema.SettingDef
+
 enum class Scope {
     GLOBAL,
     ACCOUNT,

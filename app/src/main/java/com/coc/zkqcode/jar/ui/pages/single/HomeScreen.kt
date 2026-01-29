@@ -32,7 +32,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.coc.zkqcode.core.data.database.ConfigManager
 import com.coc.zkqcode.core.data.database.GlobalVars
-import com.coc.zkqcode.core.data.database.Schema.GLOBAL_SETTINGS
+import com.coc.zkqcode.jar.ui.schema.Schema.GLOBAL_SETTINGS
 import com.coc.zkqcode.core.ui.components.CustomAlertDialog
 import com.coc.zkqcode.core.ui.components.CustomButton
 import com.coc.zkqcode.core.ui.components.SettingCheckBox
@@ -40,10 +40,8 @@ import com.coc.zkqcode.core.ui.components.SettingDropdown
 import com.coc.zkqcode.core.ui.components.SettingInputRow
 import com.coc.zkqcode.core.ui.theme.AppColors
 import com.coc.zkqcode.core.util.exit.AppExitHelper
-import com.coc.zkqcode.core.util.fileactions.LogHelper.showDebugInfo
 import com.coc.zkqcode.statehelper.AppMode
 import com.coc.zkqcode.statehelper.AppStateManager
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable

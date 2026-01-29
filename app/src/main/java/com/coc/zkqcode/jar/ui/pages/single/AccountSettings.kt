@@ -22,8 +22,8 @@ import androidx.compose.ui.unit.dp
 import com.coc.zkqcode.core.ui.components.CustomButton
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.ui.components.SettingInputRow
-import com.coc.zkqcode.core.data.database.Schema.ACCOUNT_SETTINGS
-import com.coc.zkqcode.core.data.database.Schema.GLOBAL_SETTINGS
+import com.coc.zkqcode.jar.ui.schema.Schema.ACCOUNT_SETTINGS
+import com.coc.zkqcode.jar.ui.schema.Schema.GLOBAL_SETTINGS
 import com.coc.zkqcode.core.data.database.ConfigManager
 
 fun LazyListScope.AccountSettings() {

@@ -8,7 +8,7 @@ import androidx.compose.runtime.remember
 import com.coc.zkqcode.core.ui.components.CustomButton
 import com.coc.zkqcode.core.ui.components.SettingCheckBox
 import com.coc.zkqcode.core.data.database.GlobalVars
-import com.coc.zkqcode.core.data.database.Schema.MAIN_BASE_TROOPS_AND_SPELLS
+import com.coc.zkqcode.jar.ui.schema.Schema.MAIN_BASE_TROOPS_AND_SPELLS
 
 @Composable
 fun ResearchConfigs(index: Int) {
