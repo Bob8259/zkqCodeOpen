@@ -1,4 +1,4 @@
-package com.coc.zkqcode
+package com.coc.zkqcode.nativehelper
 
 object RustBridge {
     init {
