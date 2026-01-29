@@ -1,11 +1,10 @@
-package com.coc.zkqcode.jar.code.universal
+package com.coc.zkqcode.core.util.basic
 
 import android.graphics.Bitmap
 import android.graphics.Point
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.jar.code.colorschema.ColorSchema
-import com.coc.zkqcode.nativehelper.NativeTools
 import com.coc.zkqcode.nativehelper.RustTools
 import kotlinx.coroutines.delay
 
