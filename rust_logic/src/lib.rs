@@ -15,7 +15,7 @@ pub extern "system" fn JNI_OnLoad(vm: JavaVM, _reserved: *mut c_void) -> jint {
     // Initialize logger, set filter level and tag
     android_logger::init_once(
         Config::default()
-            .with_max_level(LevelFilter::Trace) // Allow all log levels
+            .with_max_level(LevelFilter::Info) // Filter out verbose internal logs
             .with_tag("zkq_rust"), // More unique tag
     );
 

@@ -191,6 +191,7 @@ fun ControlWindow(
                             if (!isPlaying) {
                                 ShowMessage("暂停中，请稍后...")
                                 restoreDefaultInputMethod()
+                                ShowMessage("已暂停")
                             }
                         }
                 )
@@ -210,6 +211,7 @@ fun ControlWindow(
                             if (!isPlaying) {
                                 ShowMessage("暂停中，请稍后...")
                                 restoreDefaultInputMethod()
+                                ShowMessage("已暂停")
                             }
                         }
                 )
