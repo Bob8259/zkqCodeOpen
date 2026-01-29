@@ -1,0 +1,219 @@
+use blake2::digest::{Update, VariableOutput};
+use blake2::Blake2bVar;
+use chacha20::cipher::{KeyIvInit, StreamCipher};
+use chacha20::ChaCha20;
+use hex;
+use jni::objects::JString;
+use jni::sys::jstring;
+use jni::JNIEnv;
+use lazy_static::lazy_static;
+use log;
+use rand::RngCore;
+use std::sync::Mutex;
+use x25519_dalek::{PublicKey, StaticSecret};
+
+lazy_static! {
+    static ref SESSION_KEY: Mutex<Option<[u8; 32]>> = Mutex::new(None);
+}
+
+#[allow(non_snake_case)]
+pub fn generateNonce(env: JNIEnv, _class: jni::objects::JClass) -> jstring {
+    let mut nonce = [0u8; 16];
+    rand::thread_rng().fill_bytes(&mut nonce);
+    let result = hex::encode(nonce);
+    log::debug!("generateNonce: {}", result);
+    env.new_string(result).unwrap().into_raw()
+}
+
+#[allow(non_snake_case)]
+pub fn encryptLoginPayload(
+    mut env: JNIEnv,
+    _class: jni::objects::JClass,
+    payload: JString,
+    server_public_key_hex: JString,
+) -> jstring {
+    let payload_str: String = env
+        .get_string(&payload)
+        .expect("Couldn't get payload")
+        .into();
+    let server_pub_hex: String = env
+        .get_string(&server_public_key_hex)
+        .expect("Couldn't get server public key")
+        .into();
+
+    log::debug!(
+        "encryptLoginPayload: payload len={}, server_pub={}",
+        payload_str.len(),
+        server_pub_hex
+    );
+
+    let server_pub_bin = match hex::decode(&server_pub_hex) {
+        Ok(bin) => bin,
+        Err(e) => {
+            log::error!("encryptLoginPayload: hex decode failed: {}", e);
+            return env
+                .new_string("Error: Invalid server key hex")
+                .unwrap()
+                .into_raw();
+        }
+    };
+    if server_pub_bin.len() != 32 {
+        log::error!(
+            "encryptLoginPayload: Invalid server key length: {}",
+            server_pub_bin.len()
+        );
+        return env.new_string("Error: Invalid key").unwrap().into_raw();
+    }
+
+    // 1. Generate ephemeral key pair
+    let mut my_secret_bytes = [0u8; 32];
+    rand::thread_rng().fill_bytes(&mut my_secret_bytes);
+    let my_secret = StaticSecret::from(my_secret_bytes);
+    let my_public = PublicKey::from(&my_secret);
+
+    // 2. Compute shared secret
+    let mut server_pub_bytes = [0u8; 32];
+    server_pub_bytes.copy_from_slice(&server_pub_bin);
+    let server_pub = PublicKey::from(server_pub_bytes);
+    let shared_secret = my_secret.diffie_hellman(&server_pub);
+    log::debug!(
+        "encryptLoginPayload: shared_secret={}",
+        hex::encode(shared_secret.as_bytes())
+    );
+
+    // 3. Derive session key via Blake2b (32 bytes output)
+    let mut hasher = Blake2bVar::new(32).expect("Invalid Blake2b output size");
+    hasher.update(shared_secret.as_bytes());
+    let mut session_key = [0u8; 32];
+    hasher
+        .finalize_variable(&mut session_key)
+        .expect("Blake2b finalize failed");
+    log::debug!(
+        "encryptLoginPayload: session_key={}",
+        hex::encode(session_key)
+    );
+
+    // Store session key
+    {
+        let mut key_lock = SESSION_KEY.lock().unwrap();
+        *key_lock = Some(session_key);
+    }
+
+    // 4. Encrypt payload
+    let mut nonce = [0u8; 12];
+    rand::thread_rng().fill_bytes(&mut nonce);
+    log::debug!("encryptLoginPayload: nonce={}", hex::encode(nonce));
+
+    let mut cipher = ChaCha20::new(&session_key.into(), &nonce.into());
+    let mut buffer = payload_str.into_bytes();
+    cipher.apply_keystream(&mut buffer);
+
+    // 5. Format result: public_hex,nonce_hex,cipher_hex
+    let result = format!(
+        "{},{},{}",
+        hex::encode(my_public.as_bytes()),
+        hex::encode(nonce),
+        hex::encode(buffer)
+    );
+    log::debug!("encryptLoginPayload result: success");
+
+    env.new_string(result).unwrap().into_raw()
+}
+
+#[allow(non_snake_case)]
+pub fn decryptLoginResponse(
+    mut env: JNIEnv,
+    _class: jni::objects::JClass,
+    encrypted_response: JString,
+) -> jstring {
+    let resp_str: String = env
+        .get_string(&encrypted_response)
+        .expect("Couldn't get response")
+        .into();
+
+    log::debug!(
+        "decryptLoginResponse: response received, len={}",
+        resp_str.len()
+    );
+
+    let session_key = {
+        let key_lock = SESSION_KEY.lock().unwrap();
+        match *key_lock {
+            Some(key) => key,
+            None => {
+                log::error!("decryptLoginResponse: Session key not active");
+                return env
+                    .new_string("Error: Session key not active")
+                    .unwrap()
+                    .into_raw();
+            }
+        }
+    };
+
+    // Parse format: nonce=...&data=...
+    let mut nonce_hex = "";
+    let mut data_hex = "";
+
+    for part in resp_str.split('&') {
+        if let Some(val) = part.strip_prefix("nonce=") {
+            nonce_hex = val;
+        } else if let Some(val) = part.strip_prefix("data=") {
+            data_hex = val;
+        }
+    }
+
+    if nonce_hex.is_empty() || data_hex.is_empty() {
+        log::error!("decryptLoginResponse: Invalid response format (missing nonce or data)");
+        return env
+            .new_string("Error: Invalid response format")
+            .unwrap()
+            .into_raw();
+    }
+
+    let nonce_bin = match hex::decode(nonce_hex) {
+        Ok(bin) => bin,
+        Err(e) => {
+            log::error!("decryptLoginResponse: nonce hex decode failed: {}", e);
+            return env
+                .new_string("Error: Invalid nonce hex")
+                .unwrap()
+                .into_raw();
+        }
+    };
+    let data_bin = match hex::decode(data_hex) {
+        Ok(bin) => bin,
+        Err(e) => {
+            log::error!("decryptLoginResponse: data hex decode failed: {}", e);
+            return env
+                .new_string("Error: Invalid data hex")
+                .unwrap()
+                .into_raw();
+        }
+    };
+
+    if nonce_bin.len() != 12 {
+        log::error!(
+            "decryptLoginResponse: Invalid nonce length: {}",
+            nonce_bin.len()
+        );
+        return env
+            .new_string("Error: Invalid nonce length")
+            .unwrap()
+            .into_raw();
+    }
+
+    let mut cipher = ChaCha20::new(&session_key.into(), nonce_bin.as_slice().into());
+    let mut buffer = data_bin;
+    cipher.apply_keystream(&mut buffer);
+
+    match String::from_utf8(buffer) {
+        Ok(result) => {
+            log::debug!("decryptLoginResponse: success");
+            env.new_string(result).unwrap().into_raw()
+        }
+        Err(e) => {
+            log::error!("decryptLoginResponse: UTF-8 conversion failed: {}", e);
+            env.new_string("Error: Invalid UTF-8").unwrap().into_raw()
+        }
+    }
+}

@@ -38,7 +38,7 @@ import com.coc.zkqcode.core.ui.components.CustomButton
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.ui.components.SettingInputRow
 import com.coc.zkqcode.core.data.database.Schema.GLOBAL_SETTINGS
-import com.coc.zkqcode.nativehelper.NativeTools
+import com.coc.zkqcode.nativehelper.RustTools
 import kotlinx.coroutines.launch
 import okhttp3.Call
 import okhttp3.Callback
@@ -147,7 +147,7 @@ fun LoginScreen() {
             // 2. Encrypt Payload via Native Layer
             // Returns: "my_public_key,nonce,ciphertext" (comma separated)
             val encryptionResult = try {
-                NativeTools.encryptLoginPayload(payload, serverPublicKey)
+                RustTools.encryptLoginPayload(payload, serverPublicKey)
             } catch (e: Exception) {
                 gemInfo = "准备信息失败: ${e.message}"
                 isLoginButtonEnabled = true
@@ -191,7 +191,7 @@ fun LoginScreen() {
                         if (responseBody != null) {
                             // 4. Decrypt Response via Native Layer
                             val decrypted = try {
-                                NativeTools.decryptLoginResponse(responseBody)
+                                RustTools.decryptLoginResponse(responseBody)
                             } catch (e: Exception) {
                                 "Error: Decryption exception: ${e.message}"
                             }
@@ -212,12 +212,14 @@ fun LoginScreen() {
                                     gem.toDoubleOrNull()?.let {
                                         showMessage = (it < 0.000001)
                                     }
-                                    GlobalVars.configStates[GLOBAL_SETTINGS.GEM_COUNT.key]!!.value = gem
+                                    GlobalVars.configStates[GLOBAL_SETTINGS.GEM_COUNT.key]!!.value =
+                                        gem
                                     gemInfo = "登录成功！卡班宝石数量 $formattedGem"
                                 } else {
                                     gemInfo = "登录成功，但无法解析数据: $decrypted"
                                     showMessage = true
-                                    GlobalVars.configStates[GLOBAL_SETTINGS.GEM_COUNT.key]!!.value = ""
+                                    GlobalVars.configStates[GLOBAL_SETTINGS.GEM_COUNT.key]!!.value =
+                                        ""
                                 }
                             }
                         } else {
@@ -342,7 +344,10 @@ fun LoginScreen() {
                 text = "退出", marginTop = 0.dp, onClick = {
                     showMessage = true
                     scope.launch {
-                        GlobalVars.serverActions?.writeToConfigFile(GLOBAL_SETTINGS.GEM_COUNT.key, "")
+                        GlobalVars.serverActions?.writeToConfigFile(
+                            GLOBAL_SETTINGS.GEM_COUNT.key,
+                            ""
+                        )
                         GlobalVars.configStates[GLOBAL_SETTINGS.EMAIL.key]!!.value = ""
                         GlobalVars.configStates[GLOBAL_SETTINGS.PASSWORD.key]!!.value = ""
                         GlobalVars.configStates[GLOBAL_SETTINGS.GEM_COUNT.key]!!.value = ""

@@ -240,6 +240,7 @@ fun CustomButton(
     Row {
         Button(
             onClick = {
+                GlobalVars.isAutoRunEnabled = false
                 onClick()
             },
             modifier = Modifier
