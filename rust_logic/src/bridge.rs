@@ -12,7 +12,7 @@ pub fn rust_say_hello(
     let input: String = env.get_string(&input).expect("Couldn't get java string!").into();
     
     // 逻辑处理
-    let output = format!("动态注册123说：你好，{}！", input);
+    let output = format!("动态注册111说：你好，{}！", input);
 
     // 转换回 JNI 字符串返回
     let output = env.new_string(output).expect("Couldn't create java string!");

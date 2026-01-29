@@ -158,6 +158,13 @@ tasks.register<Exec>("deployPatch") {
     }
 }
 
+tasks.register<Exec>("rustBuild") {
+    group = "build"
+    description = "Build Rust logic using cargo-ndk"
+    workingDir = file("../rust_logic")
+    commandLine("cargo", "ndk", "-t", "arm64-v8a", "-t", "armeabi-v7a", "-t", "x86", "-t", "x86_64", "-o", "../app/src/main/jniLibs", "build", "--release")
+}
+
 dependencies {
 
     implementation(libs.libsu.core)
