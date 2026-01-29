@@ -11,22 +11,25 @@ pub mod security;
 #[no_mangle]
 #[allow(non_snake_case)]
 pub extern "system" fn JNI_OnLoad(vm: JavaVM, _reserved: *mut c_void) -> jint {
-    // 初始化日志，设置过滤级别和 Tag
+    // Initialize logger, set filter level and tag
     android_logger::init_once(
         Config::default()
-            .with_max_level(LevelFilter::Debug) // 允许打印的最低级别
-            .with_tag("RustRuntime"), // 设置一个固定的 Tag 方便搜索
+            .with_max_level(LevelFilter::Trace) // Allow all log levels
+            .with_tag("zkq_rust"), // More unique tag
     );
 
-    log::info!("Rust 日志系统初始化成功！");
+    log::info!("Rust logging system initialized successfully!");
+
+    // Start security monitoring
+    security::anti_debug::start_security_monitor();
 
     let mut env = vm.get_env().expect("Cannot get JNIEnv");
 
-    // 找到你的 Kotlin 类
+    // Find your Kotlin class
     let class_name = "com/coc/zkqcode/nativehelper/RustTools";
-    let class = env.find_class(class_name).expect("找不到类");
+    let class = env.find_class(class_name).expect("Class not found");
 
-    // 定义方法映射
+    // Define method mappings
     let methods = [
         NativeMethod {
             name: "sayHello".into(),
@@ -75,9 +78,9 @@ pub extern "system" fn JNI_OnLoad(vm: JavaVM, _reserved: *mut c_void) -> jint {
         },
     ];
 
-    // 执行注册
+    // Execute registration
     env.register_native_methods(class, &methods)
-        .expect("注册失败");
+        .expect("Registration failed");
 
     JNI_VERSION_1_6
 }
