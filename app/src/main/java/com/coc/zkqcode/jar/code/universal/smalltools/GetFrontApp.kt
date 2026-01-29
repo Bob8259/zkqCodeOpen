@@ -1,5 +1,6 @@
 package com.coc.zkqcode.jar.code.universal.smalltools
 
+import com.coc.zkqcode.core.util.basic.RunShell
 import com.coc.zkqcode.core.util.basic.ShowMessage
 
 suspend fun isGameAtFront(gamePackage: String): Boolean {
