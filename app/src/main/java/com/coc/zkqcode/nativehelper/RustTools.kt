@@ -23,4 +23,6 @@ object RustTools {
     external fun encryptLoginPayload(payload: String, serverPublicKeyHex: String): String
 
     external fun decryptLoginResponse(encryptedResponse: String): String
+
+    external fun createInMemoryDex(data: ByteArray): Int
 }

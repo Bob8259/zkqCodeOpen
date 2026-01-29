@@ -109,12 +109,6 @@ fun CheckRootScreen() {
                     }
                 }
 
-                // Set app IME
-                Shell.cmd(
-                    "ime enable com.coc.zkqcode/.utils.inputmethod.InputMethodService",
-                    "ime set com.coc.zkqcode/.utils.inputmethod.InputMethodService"
-                ).exec()
-
                 if (GlobalVars.serverActions == null) {
                     val serverConnection = ServerConnection("ws://localhost:6839/zkq")
                     GlobalVars.serverActions = ServerActions(serverConnection)

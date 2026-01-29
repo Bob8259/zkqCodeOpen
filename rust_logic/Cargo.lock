@@ -368,6 +368,7 @@ dependencies = [
  "hex",
  "jni",
  "lazy_static",
+ "libc",
  "log",
  "rand",
  "x25519-dalek",
