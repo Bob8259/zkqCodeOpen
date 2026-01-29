@@ -25,3 +25,4 @@ keys.cpp
 .kotlin
 rust_logic/target
 rust_logic/log.txt
+.idea
