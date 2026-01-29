@@ -2,6 +2,9 @@
 #include <android/log.h>
 #include "dex_loader.h"
 
+
+//The C++ code are unused. But I just want to keep them as a souvenir.
+
 extern "C" void start_security_monitor();
 
 // Implementation of the function (not exported directly)
