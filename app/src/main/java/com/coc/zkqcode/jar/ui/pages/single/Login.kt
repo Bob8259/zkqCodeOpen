@@ -1,6 +1,7 @@
 package com.coc.zkqcode.jar.ui.pages.single
 
 import android.content.Intent
+import com.coc.zkqcode.BuildConfig
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -89,7 +90,7 @@ fun LoginScreen() {
     }
     var failTimesCount by remember { mutableIntStateOf(0) }
     var formattedGem by remember { mutableStateOf("") }
-    val serverPublicKey = "171abec025499684b76daa59065c0c4e86b6707e7ed3502d95919a0c1dfa305d" //Hex
+    val serverPublicKey = BuildConfig.SERVER_PUBLIC_KEY
 
     val globalGemCount = GlobalVars.configStates[GLOBAL_SETTINGS.GEM_COUNT.key]!!.value
     LaunchedEffect(globalGemCount) {
