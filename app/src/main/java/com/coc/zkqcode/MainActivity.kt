@@ -6,6 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import com.coc.zkqcode.core.system.checkpermissions.CheckRootScreen
 import com.coc.zkqcode.core.system.screencapture.ProjectionPermissionHelper
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.core.util.basic.ShowMessage
@@ -24,8 +25,8 @@ class MainActivity : ComponentActivity() {
         LogHelper.initTimber(this)
         Timber.v("MainActivity Start!")
         setContent {
-            //CheckRootScreen()
-            GreetingScreen()
+            CheckRootScreen()
+//            GreetingScreen()
         }
 
     }

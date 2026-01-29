@@ -5,6 +5,7 @@ use log::LevelFilter;
 use std::ffi::c_void;
 
 mod bridge;
+pub mod security;
 
 #[no_mangle]
 #[allow(non_snake_case)]
@@ -25,11 +26,48 @@ pub extern "system" fn JNI_OnLoad(vm: JavaVM, _reserved: *mut c_void) -> jint {
     let class = env.find_class(class_name).expect("找不到类");
 
     // 定义方法映射
-    let methods = [NativeMethod {
-        name: "sayHello".into(),                              // Kotlin 中的方法名
-        sig: "(Ljava/lang/String;)Ljava/lang/String;".into(), // JNI 签名
-        fn_ptr: bridge::rust_say_hello as *mut c_void,        // Rust 中的函数指针
-    }];
+    let methods = [
+        NativeMethod {
+            name: "sayHello".into(),
+            sig: "(Ljava/lang/String;)Ljava/lang/String;".into(),
+            fn_ptr: bridge::rust_say_hello as *mut c_void,
+        },
+        NativeMethod {
+            name: "chacha20Encrypt".into(),
+            sig: "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;".into(),
+            fn_ptr: security::cypherhelper::chacha20Encrypt as *mut c_void,
+        },
+        NativeMethod {
+            name: "chacha20Decrypt".into(),
+            sig: "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;".into(),
+            fn_ptr: security::cypherhelper::chacha20Decrypt as *mut c_void,
+        },
+        NativeMethod {
+            name: "blake2b".into(),
+            sig: "(Ljava/lang/String;)Ljava/lang/String;".into(),
+            fn_ptr: security::cypherhelper::blake2b as *mut c_void,
+        },
+        NativeMethod {
+            name: "decryptJar".into(),
+            sig: "([B)[B".into(),
+            fn_ptr: security::cypherhelper::decryptJar as *mut c_void,
+        },
+        NativeMethod {
+            name: "generateNonce".into(),
+            sig: "()Ljava/lang/String;".into(),
+            fn_ptr: security::login::generateNonce as *mut c_void,
+        },
+        NativeMethod {
+            name: "encryptLoginPayload".into(),
+            sig: "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;".into(),
+            fn_ptr: security::login::encryptLoginPayload as *mut c_void,
+        },
+        NativeMethod {
+            name: "decryptLoginResponse".into(),
+            sig: "(Ljava/lang/String;)Ljava/lang/String;".into(),
+            fn_ptr: security::login::decryptLoginResponse as *mut c_void,
+        },
+    ];
 
     // 执行注册
     env.register_native_methods(class, &methods)
