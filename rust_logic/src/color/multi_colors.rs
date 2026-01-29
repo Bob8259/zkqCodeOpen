@@ -43,6 +43,7 @@ pub unsafe extern "system" fn find_multi_colors(
     main_color: jint,
     threshold: jint,
     flat_offsets: JIntArray,
+    direction: jint,
 ) -> jintArray {
     let mut info = AndroidBitmapInfo::default();
     if AndroidBitmap_getInfo(env.get_native_interface(), bitmap.as_raw(), &mut info) < 0 {
@@ -87,6 +88,7 @@ pub unsafe extern "system" fn find_multi_colors(
         main_color as u32,
         threshold,
         &offsets_vec,
+        direction,
         get_pixel,
     );
 

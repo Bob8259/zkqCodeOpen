@@ -64,12 +64,12 @@ pub extern "system" fn JNI_OnLoad(vm: JavaVM, _reserved: *mut c_void) -> jint {
         },
         NativeMethod {
             name: "findMultiColors".into(),
-            sig: "(Landroid/graphics/Bitmap;IIIIII[I)[I".into(),
+            sig: "(Landroid/graphics/Bitmap;IIIIII[II)[I".into(),
             fn_ptr: color::multi_colors::find_multi_colors as *mut c_void,
         },
         NativeMethod {
             name: "findMultiColorsRaw".into(),
-            sig: "(Ljava/nio/ByteBuffer;IIIIIIIII[I)[I".into(),
+            sig: "(Ljava/nio/ByteBuffer;IIIIIIIII[II)[I".into(),
             fn_ptr: color::multi_colors_raw::find_multi_colors_raw as *mut c_void,
         },
     ];

@@ -26,7 +26,7 @@ class ColorSchema(
             val threshold = (255 * (1.0 - similarity)).toInt()
 
             // 3. 解析偏移点字符串
-            val offsets: MutableList<OffsetPoint?> = ArrayList<OffsetPoint?>()
+            val offsets: MutableList<OffsetPoint?> = ArrayList()
             if (offsetStr != null && !offsetStr.isEmpty()) {
                 val points =
                     offsetStr.split(",".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()

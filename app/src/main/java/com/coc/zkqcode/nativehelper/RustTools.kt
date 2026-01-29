@@ -24,7 +24,8 @@ object RustTools {
         x1: Int, y1: Int, x2: Int, y2: Int,
         mainColor: Int,
         threshold: Int,
-        flatOffsets: IntArray
+        flatOffsets: IntArray,
+        direction: Int
     ): IntArray?
 
     external fun findMultiColorsRaw(
@@ -34,6 +35,7 @@ object RustTools {
         x1: Int, y1: Int, x2: Int, y2: Int,
         mainColor: Int,
         threshold: Int,
-        flatOffsets: IntArray
+        flatOffsets: IntArray,
+        direction: Int
     ): IntArray?
 }
