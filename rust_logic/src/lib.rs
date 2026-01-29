@@ -10,7 +10,7 @@ pub extern "system" fn JNI_OnLoad(vm: JavaVM, _reserved: *mut c_void) -> jint {
     let mut env = vm.get_env().expect("Cannot get JNIEnv");
 
     // 找到你的 Kotlin 类
-    let class_name = "com/coc/zkqcode/RustBridge";
+    let class_name = "com/coc/zkqcode/nativehelper/RustTools";
     let class = env.find_class(class_name).expect("找不到类");
 
     // 定义方法映射
