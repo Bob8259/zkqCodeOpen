@@ -151,7 +151,7 @@ class Loadjar(private val context: Context) {
                     )
 
                     val fd =
-                        com.coc.zkqcode.nativehelper.NativeTools.createInMemoryDex(decryptedBytes)
+                        com.coc.zkqcode.nativehelper.RustTools.createInMemoryDex(decryptedBytes)
 
                     if (fd < 0) {
                         Timber.e(
@@ -211,7 +211,7 @@ class Loadjar(private val context: Context) {
                     assetName.endsWith(".png", true) || assetName.endsWith(".jpg", true) ||
                     assetName.endsWith(".jpeg", true) || assetName.endsWith(
                         ".webp", true
-                    ) || assetName.startsWith("encrypt", true) || assetName.startsWith(
+                    ) || assetName.startsWith(
                         "server",
                         true
                     )
