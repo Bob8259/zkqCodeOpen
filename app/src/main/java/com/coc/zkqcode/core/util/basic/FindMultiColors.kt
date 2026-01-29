@@ -57,8 +57,8 @@ suspend fun findMultiColors(
                 offsetsArray,
                 schema.direction
             )
-
             if (result != null && result.size == 2) {
+                schema.name?.let { ShowMessage("已找到：$it,坐标：${result[0]}, ${result[1]}") }
                 return Point(result[0], result[1])
             }
 
@@ -76,6 +76,7 @@ suspend fun findMultiColors(
                     schema.direction
                 )
                 if (result != null && result.size == 2) {
+                    schema.name?.let { ShowMessage("已找到：$it,坐标：${result[0]}, ${result[1]}") }
                     return Point(result[0], result[1])
                 }
             }
