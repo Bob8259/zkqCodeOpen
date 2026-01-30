@@ -13,9 +13,10 @@ object TouchActions {
         startY: Int,
         endX: Int,
         endY: Int,
-        delayTime: Long = 300L,
+        delayTime: Long? = null,
         isJitter: Boolean = true
     ) {
+        val actualDelayTime = delayTime ?: Random.nextLong(300, 501)
         val serverActions =
             GlobalVars.serverActions ?: logAndStop("Server actions not found at swipe")
         val delayMultiplier = GlobalVars.configStates["delay_multiplier"]?.value?.toFloat()
@@ -33,10 +34,10 @@ object TouchActions {
         )
 
         // Delay for time * 0.7
-        delay((delayTime * 0.7 * delayMultiplier).toLong())
+        delay((actualDelayTime * 0.7 * delayMultiplier).toLong())
 
         // Move loop
-        val moveDuration = (delayTime * 0.5 * delayMultiplier).toLong()
+        val moveDuration = (actualDelayTime * 0.5 * delayMultiplier).toLong()
         performMove(
             duration = moveDuration,
             isJitter = isJitter,
@@ -44,7 +45,7 @@ object TouchActions {
         )
 
         // Delay for 'time'
-        delay((delayTime * delayMultiplier).toLong())
+        delay((actualDelayTime * delayMultiplier).toLong())
 
         // Touch up
         serverActions.sendActionSync(
@@ -63,9 +64,10 @@ object TouchActions {
         y2: Int,
         finalX: Int,
         finalY: Int,
-        duration: Long = 300L,
+        duration: Long? = null,
         isJitter: Boolean = true
     ) {
+        val actualDuration = duration ?: Random.nextLong(300, 501)
         val serverActions =
             GlobalVars.serverActions ?: logAndStop("Failed to get serverAction at pinchIn")
         val delayMultiplier = GlobalVars.configStates["delay_multiplier"]?.value?.toFloat()
@@ -91,7 +93,7 @@ object TouchActions {
             )
         )
 
-        val moveDuration = (duration * delayMultiplier).toLong()
+        val moveDuration = (actualDuration * delayMultiplier).toLong()
         performMove(
             duration = moveDuration,
             isJitter = isJitter,
@@ -115,9 +117,10 @@ object TouchActions {
         y2: Int,
         finalX: Int,
         finalY: Int,
-        duration: Long = 200L,
+        duration: Long? = null,
         isJitter: Boolean = true
     ) {
+        val actualDuration = duration ?: Random.nextLong(300, 501)
         val serverActions =
             GlobalVars.serverActions ?: logAndStop("Failed to get serverAction at pinchOut")
         val delayMultiplier = GlobalVars.configStates["delay_multiplier"]?.value?.toFloat()
@@ -143,7 +146,7 @@ object TouchActions {
             )
         )
 
-        val moveDuration = (duration * delayMultiplier).toLong()
+        val moveDuration = (actualDuration * delayMultiplier).toLong()
         performMove(
             duration = moveDuration,
             isJitter = isJitter,
