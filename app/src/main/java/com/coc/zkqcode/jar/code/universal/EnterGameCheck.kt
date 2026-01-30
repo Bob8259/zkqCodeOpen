@@ -62,7 +62,7 @@ private suspend fun checkUIVisibility(gamePackage: String): Boolean {
             if (isInHomePage()) {
                 pinchIn(141, 423, 1052, 352, 638, 365)
                 delay(600)
-                swipe(1047, 519, 260, 113)
+                swipe(218, 523, 939, 162)
                 return true
             }
         }

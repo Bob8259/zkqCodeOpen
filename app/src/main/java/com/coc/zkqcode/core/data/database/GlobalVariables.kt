@@ -20,7 +20,7 @@ object GlobalVars {
 
 
     // Window positioning
-    var absorbEdge by mutableIntStateOf(1) // 1: Left, 0: Right
+    var absorbEdge by mutableIntStateOf(0) // 1: Left, 0: Right
     var absorbYPercentage by mutableIntStateOf(50) // Percentage of Y axis
     var updateWindowPosition by mutableStateOf(false)
 
