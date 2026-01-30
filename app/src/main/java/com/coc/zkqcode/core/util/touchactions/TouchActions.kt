@@ -16,6 +16,8 @@ object TouchActions {
     ) {
         val serverActions =
             GlobalVars.serverActions ?: logAndStop("Server actions not found at swipe")
+        val delayMultiplier = GlobalVars.configStates["delay_multiplier"]?.value?.toFloat()
+            ?: logAndStop("Failed to get delayMultiplier at swipe")
 
         // Send touchdown at x,y
         serverActions.sendActionSync(
@@ -29,21 +31,14 @@ object TouchActions {
         )
 
         // Delay for time * 0.7
-        val delayMultiplier = GlobalVars.configStates["delay_multiplier"]?.value?.toFloat()
-            ?: logAndStop("Failed to get delayMultiplier at swipe")
         delay((delayTime * 0.7 * delayMultiplier).toLong())
 
-        // Move to second x,y
-        serverActions.sendActionSync(
-            mapOf(
-                "actionType" to "touch_action",
-                "subAction" to "touchmove",
-                "x" to endX.toFloat(),
-                "y" to endY.toFloat(),
-                "id" to 1,
-                "duration" to (delayTime * 0.5 * delayMultiplier).toInt(), // documentation says touchmove has duration
-                "jitter" to isJitter
-            )
+        // Move loop
+        val moveDuration = (delayTime * 0.5 * delayMultiplier).toLong()
+        performMove(
+            duration = moveDuration,
+            isJitter = isJitter,
+            PointerMove(1, startX.toFloat(), startY.toFloat(), endX.toFloat(), endY.toFloat())
         )
 
         // Delay for 'time'
@@ -73,19 +68,41 @@ object TouchActions {
             GlobalVars.serverActions ?: logAndStop("Failed to get serverAction at pinchIn")
         val delayMultiplier = GlobalVars.configStates["delay_multiplier"]?.value?.toFloat()
             ?: logAndStop("Failed to get delayMultiplier at pinchIn")
+
+        // Start P1 and P2
         serverActions.sendActionSync(
             mapOf(
                 "actionType" to "touch_action",
-                "subAction" to "pinchin",
-                "x1" to x1,
-                "y1" to y1,
-                "x2" to x2,
-                "y2" to y2,
-                "finalX" to finalX,
-                "finalY" to finalY,
-                "duration" to (duration * delayMultiplier).toInt(),
-                "jitter" to isJitter
+                "subAction" to "touchdown",
+                "x" to x1.toFloat(),
+                "y" to y1.toFloat(),
+                "id" to 1
             )
+        )
+        serverActions.sendActionSync(
+            mapOf(
+                "actionType" to "touch_action",
+                "subAction" to "touchdown",
+                "x" to x2.toFloat(),
+                "y" to y2.toFloat(),
+                "id" to 2
+            )
+        )
+
+        val moveDuration = (duration * delayMultiplier).toLong()
+        performMove(
+            duration = moveDuration,
+            isJitter = isJitter,
+            PointerMove(1, x1.toFloat(), y1.toFloat(), finalX.toFloat(), finalY.toFloat()),
+            PointerMove(2, x2.toFloat(), y2.toFloat(), finalX.toFloat(), finalY.toFloat())
+        )
+
+        // End P1 and P2
+        serverActions.sendActionSync(
+            mapOf("actionType" to "touch_action", "subAction" to "touchup", "id" to 1)
+        )
+        serverActions.sendActionSync(
+            mapOf("actionType" to "touch_action", "subAction" to "touchup", "id" to 2)
         )
     }
 
@@ -103,20 +120,82 @@ object TouchActions {
             GlobalVars.serverActions ?: logAndStop("Failed to get serverAction at pinchOut")
         val delayMultiplier = GlobalVars.configStates["delay_multiplier"]?.value?.toFloat()
             ?: logAndStop("Failed to get delayMultiplier at pinchOut")
+
+        // Start P1 and P2 at center
         serverActions.sendActionSync(
             mapOf(
                 "actionType" to "touch_action",
-                "subAction" to "pinchout",
-                "x1" to x1,
-                "y1" to y1,
-                "x2" to x2,
-                "y2" to y2,
-                "finalX" to finalX,
-                "finalY" to finalY,
-                "duration" to (duration * delayMultiplier).toInt(),
-                "jitter" to isJitter
+                "subAction" to "touchdown",
+                "x" to finalX.toFloat(),
+                "y" to finalY.toFloat(),
+                "id" to 1
             )
         )
+        serverActions.sendActionSync(
+            mapOf(
+                "actionType" to "touch_action",
+                "subAction" to "touchdown",
+                "x" to finalX.toFloat(),
+                "y" to finalY.toFloat(),
+                "id" to 2
+            )
+        )
+
+        val moveDuration = (duration * delayMultiplier).toLong()
+        performMove(
+            duration = moveDuration,
+            isJitter = isJitter,
+            PointerMove(1, finalX.toFloat(), finalY.toFloat(), x1.toFloat(), y1.toFloat()),
+            PointerMove(2, finalX.toFloat(), finalY.toFloat(), x2.toFloat(), y2.toFloat())
+        )
+
+        // End P1 and P2
+        serverActions.sendActionSync(
+            mapOf("actionType" to "touch_action", "subAction" to "touchup", "id" to 1)
+        )
+        serverActions.sendActionSync(
+            mapOf("actionType" to "touch_action", "subAction" to "touchup", "id" to 2)
+        )
+    }
+
+    private class PointerMove(
+        val id: Int,
+        val fromX: Float,
+        val fromY: Float,
+        val toX: Float,
+        val toY: Float
+    )
+
+    private suspend fun performMove(
+        duration: Long,
+        isJitter: Boolean,
+        vararg pointers: PointerMove
+    ) {
+        val serverActions = GlobalVars.serverActions ?: return
+        val stepInterval = 10L
+        val steps = maxOf(1, (duration / stepInterval).toInt())
+
+        for (i in 1..steps) {
+            val t = i.toFloat() / steps
+            pointers.forEach { p ->
+                val currentX = p.fromX + (p.toX - p.fromX) * t
+                val currentY = p.fromY + (p.toY - p.fromY) * t
+
+                val jitterX = if (isJitter) Random.nextInt(-2, 3) else 0
+                val jitterY = if (isJitter) Random.nextInt(-2, 3) else 0
+
+                serverActions.sendActionSync(
+                    mapOf(
+                        "actionType" to "touch_action",
+                        "subAction" to "touchmove",
+                        "x" to (currentX + jitterX),
+                        "y" to (currentY + jitterY),
+                        "id" to p.id
+                    )
+                )
+            }
+            delay(stepInterval)
+        }
     }
 
     suspend fun tap(
