@@ -20,7 +20,7 @@ import kotlinx.coroutines.delay
  * Waits for the game to enter the main screen within a specified timeout.
  * Returns true if successful, false if it times out.
  */
-suspend fun enterMainScreen(currentAccountNumber: Int, gamePackage: String): Boolean {
+suspend fun enterMainScreen(): Boolean {
     // 1. Initialize the start time
     val startTime = System.currentTimeMillis()
     // 2. Get the timeout duration from GlobalVars (assumed to be in seconds)
@@ -31,9 +31,9 @@ suspend fun enterMainScreen(currentAccountNumber: Int, gamePackage: String): Boo
 
     while (System.currentTimeMillis() - startTime < timeoutMillis) {
         // 3. Insert your logic to check if the main screen is actually visible
-        if (checkUIVisibility(gamePackage)) return true
+        if (checkUIVisibility()) return true
         if (!checkReconnections()) return false
-        ShowMessage("账号$currentAccountNumber，倒计时${((timeoutMillis - System.currentTimeMillis() + startTime) / 1000).toInt()}秒\n请手动给主世界和夜世界切换默认场景")
+        ShowMessage("账号${InGamesVars.currentAccountNumber}，倒计时${((timeoutMillis - System.currentTimeMillis() + startTime) / 1000).toInt()}秒\n请手动给主世界和夜世界切换默认场景")
         closeAdvertisements()
         clickRightBottom()
         // 4. Wait for 1 second before checking again to save CPU cycles
@@ -48,16 +48,16 @@ suspend fun clickRightBottom() {
     TouchActions.tap(1277, 557)
 }
 
-private suspend fun checkUIVisibility(gamePackage: String): Boolean {
-    if (!isGameAtFront(gamePackage)) {
-        when (gamePackage) {
-            "0" -> {//国服
+private suspend fun checkUIVisibility(): Boolean {
+    if (!isGameAtFront(InGamesVars.currentGamePackage.toString())) {
+        when (InGamesVars.currentGamePackage) {
+            0 -> {//国服
                 runApp("com.tencent.tmgp.supercell.clashofclans")
             }
-            "1" -> {//国际服
+            1 -> {//国际服
                 runApp("com.supercell.clashofclans")
             }
-            "2" -> {//私服
+            2 -> {//私服
                 runApp("com.supercell.clashofclans1")
             }
         }

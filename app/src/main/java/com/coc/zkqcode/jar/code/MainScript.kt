@@ -5,7 +5,8 @@ import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.fileactions.FileHelper.readJson
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndStop
-import com.coc.zkqcode.jar.code.mainbase.Precheck
+import com.coc.zkqcode.jar.code.mainbase.PreCheck
+import com.coc.zkqcode.jar.code.universal.InGamesVars
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.ui.schema.Schema
 import com.google.gson.JsonObject
@@ -15,8 +16,6 @@ import kotlinx.coroutines.isActive
 
 class MainScript {
     private var localMemory: JsonObject? = null
-    private var currentAccountNumber: Int = 1
-    private lateinit var currentGamePackage: String
 
     // 辅助函数：快速获取配置值，若为空则触发 logAndStop
     private fun getConfigOrStop(key: String): String {
@@ -47,16 +46,15 @@ class MainScript {
             }
 
             // 4. 执行主逻辑循环
-            currentAccountNumber = activeAccount
+            InGamesVars.currentAccountNumber = activeAccount
             while (currentCoroutineContext().isActive) {
-                currentGamePackage = getConfigOrStop("game_version$currentAccountNumber")
-                if (!enterMainScreen(currentAccountNumber, currentGamePackage)) {
+                InGamesVars.currentGamePackage = getConfigOrStop("game_version${InGamesVars.currentAccountNumber}").toInt()
+                if (!enterMainScreen()) {
                     ShowMessage("进入游戏失败")
                     delay(500)
                     break // 跳出内层循环，重新检查账号状态
                 }
-                if (!Precheck().claimAchievement(currentAccountNumber, currentGamePackage)) {
-                    ShowMessage("领取成就奖励失败")
+                if (!PreCheck().doAllPreChecks()) {
                     delay(500)
                     break // 跳出内层循环，重新检查账号状态
                 }
