@@ -55,7 +55,11 @@ class MainScript {
                     delay(500)
                     break // 跳出内层循环，重新检查账号状态
                 }
-                Precheck().claimAchievement(currentAccountNumber)
+                if (!Precheck().claimAchievement(currentAccountNumber, currentGamePackage)) {
+                    ShowMessage("领取成就奖励失败")
+                    delay(500)
+                    break // 跳出内层循环，重新检查账号状态
+                }
                 delay(2000)
             }
         }
