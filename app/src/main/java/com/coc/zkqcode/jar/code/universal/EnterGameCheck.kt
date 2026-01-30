@@ -84,7 +84,8 @@ suspend fun closeAdvertisements() {
         MyColors.OldShopButton,
         MyColors.NewShopButton,
         MyColors.CNProsperity,
-        MyColors.MagicalItem
+        MyColors.MagicalItem,
+        MyColors.CNPuppetAd
     )
 
     // 3. Iterate through schemas
@@ -94,7 +95,7 @@ suspend fun closeAdvertisements() {
 
         if (point != null) {
             // If found, perform the tap
-            TouchActions.tap(point.x, point.y)
+            TouchActions.tap(point.x, point.y, false)
 
             // Wait for the animation/transition to finish
             delay(500)
@@ -115,10 +116,7 @@ suspend fun isInHomePage(): Boolean {
 
     // 2. Define the schemas to check against
     val homeSchemas = listOf(
-        MyColors.MainBaseWorker,
-        MyColors.NightBaseWorker,
-        MyColors.GoblinWorker,
-        MyColors.GoblinWorker2
+        MyColors.TrainTroops
     )
 
     // 3. Use 'any' for a clean, declarative exit

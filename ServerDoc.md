@@ -42,11 +42,9 @@ All touch simulation commands are **JSON strings**. Each command must include an
 | Parameter | Type | Description |
 | --- | --- | --- |
 | **actionType** | String | Always `"touch_action"`. |
-| **subAction** | String | Specifies the action (e.g., `"touchdown"`, `"touchmove"`, `"pinchin"`). |
-| **x, y, x1, y1...** | Float | Screen coordinates. |
+| **subAction** | String | Specifies the action (e.g., `"touchdown"`, `"touchmove"`, `"touchup"`). |
+| **x, y** | Float | Screen coordinates. |
 | **id** | Int | Pointer identifier for multi-touch. |
-| **duration** | Long | Execution time in milliseconds (Optional, default: `150L`). |
-| **jitter** | Boolean | Simulates human-like noise (Optional, default: `true`). |
 
 ---
 
@@ -73,19 +71,17 @@ Simulates a finger pressing the screen.
 
 #### **Touch Move**
 
-Moves an active pointer to a new location over a period of time.
+Moves an active pointer to a new location.
 
 * **Syntax:**
 ```json
-{ "actionType": "touch_action", "subAction": "touchmove", "x": Float, "y": Float, "id": Int, "duration": Long, "jitter": Boolean }
-
+{ "actionType": "touch_action", "subAction": "touchmove", "x": Float, "y": Float, "id": Int }
 ```
 
 
 * **Example:**
 ```json
-{ "actionType": "touch_action", "subAction": "touchmove", "x": 600.0, "y": 600.0, "id": 1, "duration": 200, "jitter": true }
-
+{ "actionType": "touch_action", "subAction": "touchmove", "x": 600.0, "y": 600.0, "id": 1 }
 ```
 
 
@@ -110,57 +106,6 @@ Lifts an active pointer from the screen.
 
 
 ---
-
-### Gesture Commands (Pinch)
-
-These commands automate multi-finger gestures.
-
-#### **Pinch In**
-
-Simulates two fingers moving from outer positions toward a central point.
-
-* **Logic:** * Finger 1: $(x1, y1) \to (finalX, finalY)$
-* Finger 2: $(x2, y2) \to (finalX, finalY)$ 
-
-
-* **Syntax:**
-```json
-{ "actionType": "touch_action", "subAction": "pinchin", "x1": Float, "y1": Float, "x2": Float, "y2": Float, "finalX": Float, "finalY": Float, "duration": Long, "jitter": Boolean }
-
-```
-
-
-* **Example:**
-```json
-{ "actionType": "touch_action", "subAction": "pinchin", "x1": 100.0, "y1": 100.0, "x2": 900.0, "y2": 900.0, "finalX": 500.0, "finalY": 500.0, "duration": 300 }
-
-```
-
-
-
-#### **Pinch Out**
-
-Simulates two fingers starting at a center point and moving outward.
-
-* **Logic:** * Finger 1: $(x1, y1) \to (finalX, finalY)$
-* Finger 2: $(x2, y2) \to (finalX, finalY)$
-* *Note: $x1, y1, x2, y2$  represent starting points, while  represent target points.*
-
-
-* **Syntax:**
-```json
-{ "actionType": "touch_action", "subAction": "pinchout", "x1": Float, "y1": Float, "x2": Float, "y2": Float, "finalX": Float, "finalY": Float, "duration": Long, "jitter": Boolean }
-
-```
-
-
-* **Example:**
-```json
-{ "actionType": "touch_action", "subAction": "pinchout", "x1": 500.0, "y1": 500.0, "x2": 500.0, "y2": 500.0, "finalX": 100.0, "finalY": 100.0, "duration": 300 }
-
-```
-
-
 
 ---
 
