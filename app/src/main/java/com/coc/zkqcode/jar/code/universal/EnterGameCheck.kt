@@ -95,7 +95,7 @@ suspend fun closeAdvertisements() {
 
         if (point != null) {
             // If found, perform the tap
-            TouchActions.tap(point.x, point.y, false)
+            TouchActions.tap(point.x, point.y)
 
             // Wait for the animation/transition to finish
             delay(500)
