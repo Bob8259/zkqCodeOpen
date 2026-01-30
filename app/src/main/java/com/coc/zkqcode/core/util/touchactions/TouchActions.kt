@@ -171,7 +171,10 @@ object TouchActions {
         isJitter: Boolean,
         vararg pointers: PointerMove
     ) {
-        val serverActions = GlobalVars.serverActions ?: return
+        val serverActions = GlobalVars.serverActions ?: logAndStop("Server actions not found at performMove")
+        val delayMultiplier = GlobalVars.configStates["delay_multiplier"]?.value?.toFloat()
+            ?: logAndStop("Failed to get delayMultiplier at performMove")
+            
         val stepInterval = 10L
         val steps = maxOf(1, (duration / stepInterval).toInt())
 
@@ -194,7 +197,7 @@ object TouchActions {
                     )
                 )
             }
-            delay(stepInterval)
+            delay((stepInterval * delayMultiplier).toLong())
         }
     }
 
