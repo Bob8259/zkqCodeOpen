@@ -49,7 +49,6 @@ class MainScript {
             currentAccountNumber = activeAccount
             while (currentCoroutineContext().isActive) {
                 currentGamePackage = getConfigOrStop("game_version$currentAccountNumber")
-
                 if (!enterMainScreen(currentAccountNumber, currentGamePackage)) {
                     ShowMessage("进入游戏失败")
                     delay(500)
