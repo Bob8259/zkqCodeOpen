@@ -5,6 +5,7 @@ import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.fileactions.FileHelper.readJson
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndStop
+import com.coc.zkqcode.jar.code.mainbase.Precheck
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.ui.schema.Schema
 import com.google.gson.JsonObject
@@ -54,7 +55,7 @@ class MainScript {
                     delay(500)
                     break // 跳出内层循环，重新检查账号状态
                 }
-
+                Precheck().claimAchievement(currentAccountNumber)
                 delay(2000)
             }
         }

@@ -306,8 +306,8 @@ object TouchActions {
         delay((randomDelay * delayMultiplier).toLong())
 
         if (isJitter) {
-            val offsetX = Random.nextInt(-3, 3)
-            val offsetY = Random.nextInt(-3, 3)
+            val offsetX = Random.nextInt(-5, 5)
+            val offsetY = Random.nextInt(-5, 5)
             serverActions.sendActionSync(
                 mapOf(
                     "actionType" to "touch_action",
@@ -315,7 +315,6 @@ object TouchActions {
                     "x" to (x + offsetX).toFloat(),
                     "y" to (y + offsetY).toFloat(),
                     "id" to 1,
-                    "jitter" to true
                 )
             )
         }
