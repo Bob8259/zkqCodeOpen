@@ -91,3 +91,18 @@ suspend fun findMultiColors(
     return null
 }
 
+suspend fun findMultiColorsUntil(
+    bitmap: Bitmap? = null,
+    byteBuffer: ScreenCaptureManager.CaptureResult? = null,
+    schema: ColorSchema,
+    duration: Int
+): Point? {
+    val startTime = System.currentTimeMillis()
+    while (true) {
+        val result = findMultiColors(bitmap, byteBuffer, schema)
+        if (result != null) return result
+        if (System.currentTimeMillis() - startTime >= duration) break
+        delay(100)
+    }
+    return null
+}

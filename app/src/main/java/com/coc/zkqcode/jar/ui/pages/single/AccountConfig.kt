@@ -33,7 +33,7 @@ fun AccountConfig(
         }
         SettingDropdown(
             key = "${ACCOUNT_SETTINGS.GAME_VERSION.key}${index}",
-            options = listOf("国服", "国际服")
+            options = listOf("国服", "国际服", "私服")
         )
         SettingInputRow(key = "${ACCOUNT_SETTINGS.ACCOUNT_CONFIG.key}${index}")
         SettingDropdown(
@@ -85,7 +85,8 @@ fun GameFiles(
             style = MaterialTheme.typography.labelMedium
         )
         // 从 configStates 中获取当前游戏版本
-        val currentVersion = GlobalVars.configStates["${ACCOUNT_SETTINGS.GAME_VERSION.key}${index}"]!!.value
+        val currentVersion =
+            GlobalVars.configStates["${ACCOUNT_SETTINGS.GAME_VERSION.key}${index}"]!!.value
         // 使用 remember 来保存当前选中的选项
         var selectedOption by remember {
             mutableStateOf(
@@ -95,7 +96,8 @@ fun GameFiles(
 
         // 监听 currentVersion 的变化，并更新 selectedOption
         LaunchedEffect(currentVersion) {
-            selectedOption = GlobalVars.configStates["${ACCOUNT_SETTINGS.GAME_VERSION.key}${index}"]!!.value
+            selectedOption =
+                GlobalVars.configStates["${ACCOUNT_SETTINGS.GAME_VERSION.key}${index}"]!!.value
         }
         if (selectedOption == "0") {//0表示国服
             SettingInputRow(key = "${ACCOUNT_SETTINGS.CN_PATH.key}${index}")

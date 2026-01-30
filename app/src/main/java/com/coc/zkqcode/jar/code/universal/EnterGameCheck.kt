@@ -50,12 +50,17 @@ suspend fun clickRightBottom() {
 
 private suspend fun checkUIVisibility(gamePackage: String): Boolean {
     if (!isGameAtFront(gamePackage)) {
-        if (gamePackage == "0") {//国服
-            runApp("com.tencent.tmgp.supercell.clashofclans")
-        } else if (gamePackage == "1") {//国际服
-            runApp("com.supercell.clashofclans")
+        when (gamePackage) {
+            "0" -> {//国服
+                runApp("com.tencent.tmgp.supercell.clashofclans")
+            }
+            "1" -> {//国际服
+                runApp("com.supercell.clashofclans")
+            }
+            "2" -> {//私服
+                runApp("com.supercell.clashofclans1")
+            }
         }
-        delay(1000)
     } else {
         if (isInHomePage()) {
             ShowMessage("已进入主界面")
