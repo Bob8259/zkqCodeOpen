@@ -16,8 +16,7 @@ class PreCheck {
     suspend fun doAllPreChecks(): Boolean {
         if (!claimAchievement()) return false
         val noNightBase = getConfigRuntime(
-            InGamesVars.currentAccountNumber,
-            Schema.NIGHT_BASE_SETTINGS.NO_BUILDER_BASE.key
+                        Schema.NIGHT_BASE_SETTINGS.NO_BUILDER_BASE.key
         ) == "1"
         if (!noNightBase) {
             EnterTargetBase().enterNightBase(true)//check if night base is unlocked or not.
@@ -27,8 +26,7 @@ class PreCheck {
 
     suspend fun claimAchievement(): Boolean {
         val isClaimAchievement = getConfigRuntime(
-            InGamesVars.currentAccountNumber,
-            Schema.MAIN_BASE_SETTINGS.CLAIM_ACHIEVEMENT_GEMS.key
+                        Schema.MAIN_BASE_SETTINGS.CLAIM_ACHIEVEMENT_GEMS.key
         ) == "1"
         if (isClaimAchievement) {
             val point = findMultiColors(schema = MyColors.Achievement)

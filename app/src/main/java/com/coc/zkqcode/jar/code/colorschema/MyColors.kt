@@ -79,15 +79,9 @@ object MyColors : IWorkerColors by WorkerColors, IUIColors by UIColors, IFeature
         0.9,
         "拒绝优化"
     )
-    val ShopArrow: ColorSchema = ColorSchema.parse(
-        1129,
-        472,
-        1268,
-        610,
-        "09A7FD",
-        "0|-13|1DB9FD,12|-5|0CA6FD,20|12|14AFFB,31|13|1BAEFC,14|25|32D0F6,4|31|3DD8F5,-3|34|42DBF6,-14|35|47DFF5,-17|-3|10A1FC",
-        0,
-        0.9,
+    val TutorialShop: ColorSchema = ColorSchema.parse(
+        1140,572,1260,699,"7AF9FF-101010","5|20|94FFFF-101010,6|35|2F4968-101010,36|44|20A3E5-101010,33|38|49D2FF-101010,24|25|3D6493-101010,36|9|375472-101010,34|-3|F0F4EB-101010,43|-3|ECF1E5-101010,53|2|EEF5E9-101010",0,0.9
+,
         "商店箭头"
     )
     val ShopInnerArrow: ColorSchema = ColorSchema.parse(
@@ -135,8 +129,14 @@ object MyColors : IWorkerColors by WorkerColors, IUIColors by UIColors, IFeature
         "村民建议进攻哥布林"
     )
     val TutorialBlueTroop: ColorSchema = ColorSchema.parse(
-        98,586,207,619,"C08545-101010","1|-2|C78948-101010,8|-9|DD9853-101010,13|-3|CB8E4D-101010,13|-2|C88C4C-101010,9|-3|CA8D4C-101010,5|-6|D4924F-101010,-1|-3|CA8B4A-101010,-3|0|C08545-101010,-4|-6|D3914E-101010",0,0.9
-,
+        98,
+        586,
+        207,
+        619,
+        "C08545-101010",
+        "1|-2|C78948-101010,8|-9|DD9853-101010,13|-3|CB8E4D-101010,13|-2|C88C4C-101010,9|-3|CA8D4C-101010,5|-6|D4924F-101010,-1|-3|CA8B4A-101010,-3|0|C08545-101010,-4|-6|D3914E-101010",
+        0,
+        0.9,
         "蓝色部队标志"
     )
     val TutorialTrain: ColorSchema = ColorSchema.parse(
@@ -172,7 +172,27 @@ object MyColors : IWorkerColors by WorkerColors, IUIColors by UIColors, IFeature
         0.9,
         "进攻地图"
     )
-    val AttackGoblin: ColorSchema= ColorSchema.parse(349,470,520,538,"53C7FF-101010","20|-4|54CAFF-101010,44|-8|56CBFF-101010,65|-7|55CBFF-101010,77|-1|53C7FF-101010,87|9|4ABDFF-101010,87|22|145EF1-101010,74|27|1256EE-101010,37|36|1250EC-101010,10|33|1251ED-101010",0,0.9
-    ,"哥布林森林")
+    val AttackGoblin: ColorSchema = ColorSchema.parse(
+        349,
+        470,
+        520,
+        538,
+        "53C7FF-101010",
+        "20|-4|54CAFF-101010,44|-8|56CBFF-101010,65|-7|55CBFF-101010,77|-1|53C7FF-101010,87|9|4ABDFF-101010,87|22|145EF1-101010,74|27|1256EE-101010,37|36|1250EC-101010,10|33|1251ED-101010",
+        0,
+        0.9,
+        "哥布林森林"
+    )
+    val MyVillageIsCalled: ColorSchema = ColorSchema.parse(
+        381,
+        197,
+        909,
+        434,
+        "E0E8E8-101010",
+        "21|11|E0E8E8-101010,351|5|E0E8E8-101010,392|13|E0E8E8-101010,392|154|E0E8E8-101010,393|169|E0E8E8-101010,146|141|79F5D8-101010,200|138|7FF7DB-101010,15|148|E0E8E8-101010,4|151|E0E8E8-101010",
+        0,
+        0.9,
+        "村庄取名"
+    )
     //以上颜色是主世界教程颜色
 }
