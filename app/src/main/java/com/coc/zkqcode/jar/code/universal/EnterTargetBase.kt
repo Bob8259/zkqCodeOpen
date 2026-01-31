@@ -1,8 +1,10 @@
 package com.coc.zkqcode.jar.code.universal
 
+import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.basic.findMultiColorsUntil
 import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.MyColors
+import com.coc.zkqcode.jar.code.nightbase.NightBaseTutorial
 
 class EnterTargetBase {
     suspend fun enterMainBase() {
@@ -25,12 +27,14 @@ class EnterTargetBase {
             TouchActions.tap(x, y)
             // Conditional validation after each tap
             if (isCheck) {
-               val point= findMultiColorsUntil(
+                val point = findMultiColorsUntil(
                     schema = MyColors.RebuildNightBase,
                     duration = 500
                 )
-                if (point!=null){
-
+                if (point != null) {
+                    TouchActions.tap(point.x, point.y)
+                    delayWithMultiplier(300)
+                    NightBaseTutorial().nightBaseTutorial()
                 }
             }
         }

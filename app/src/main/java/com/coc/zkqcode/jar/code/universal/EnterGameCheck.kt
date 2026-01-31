@@ -10,6 +10,7 @@ import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.core.util.touchactions.TouchActions.pinchIn
 import com.coc.zkqcode.core.util.touchactions.TouchActions.swipe
 import com.coc.zkqcode.jar.code.colorschema.MyColors
+import com.coc.zkqcode.jar.code.mainbase.MainBaseTutorial
 import com.coc.zkqcode.jar.code.universal.smalltools.checkReconnections
 import com.coc.zkqcode.jar.code.universal.smalltools.isGameAtFront
 import com.coc.zkqcode.jar.code.universal.smalltools.runApp
@@ -28,7 +29,7 @@ suspend fun enterMainScreen(): Boolean {
     val timeoutSeconds = GlobalVars.configStates["enter_game_timer"]?.value?.toIntOrNull()
         ?: logAndStop("enter main game error, can not get game timer")
     val timeoutMillis = timeoutSeconds * 1000L
-
+    var mainBaseTutorialElements: Int = 0
     while (System.currentTimeMillis() - startTime < timeoutMillis) {
         // 3. Insert your logic to check if the main screen is actually visible
         if (checkUIVisibility()) return true
@@ -36,6 +37,7 @@ suspend fun enterMainScreen(): Boolean {
         ShowMessage("账号${InGamesVars.currentAccountNumber}，倒计时${((timeoutMillis - System.currentTimeMillis() + startTime) / 1000).toInt()}秒\n请手动给主世界和夜世界切换默认场景")
         closeAdvertisements()
         clickRightBottom()
+        if (MainBaseTutorial().checkIsInTutorial(mainBaseTutorialElements)) mainBaseTutorialElements++
         // 4. Wait for 1 second before checking again to save CPU cycles
         delay(300)
     }
@@ -54,9 +56,11 @@ private suspend fun checkUIVisibility(): Boolean {
             0 -> {//国服
                 runApp("com.tencent.tmgp.supercell.clashofclans")
             }
+
             1 -> {//国际服
                 runApp("com.supercell.clashofclans")
             }
+
             2 -> {//私服
                 runApp("com.supercell.clashofclans1")
             }
@@ -82,9 +86,8 @@ suspend fun zoomSmallMainBase() {
 
 suspend fun closeAdvertisements() {
     // 1. Capture the screen and cast safely (Use 'var' so we can update it)
-    var screenBuffer =
-        ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult
-            ?: logAndStop("failed to take screenshot at close advertisement")
+    var screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult
+        ?: logAndStop("failed to take screenshot at close advertisement")
 
     // 2. Define the schemas to check against
     val homeSchemas = listOf(
@@ -111,18 +114,16 @@ suspend fun closeAdvertisements() {
             delay(500)
 
             // 4. Retake the screenBuffer so the next schema check uses the updated screen
-            screenBuffer =
-                ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult
-                    ?: return@forEach // Use return@forEach to skip to next if capture fails
+            screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult
+                ?: return@forEach // Use return@forEach to skip to next if capture fails
         }
     }
 }
 
 suspend fun isInHomePage(): Boolean {
     // 1. Capture the screen and cast safely
-    val screenBuffer =
-        ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult
-            ?: logAndStop("in isInHomePage, screen capture failed.")
+    val screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult
+        ?: logAndStop("in isInHomePage, screen capture failed.")
 
     // 2. Define the schemas to check against
     val homeSchemas = listOf(
