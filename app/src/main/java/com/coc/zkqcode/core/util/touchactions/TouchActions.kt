@@ -16,6 +16,9 @@ object TouchActions {
         delayTime: Long? = null,
         isJitter: Boolean = true
     ) {
+        while (!GlobalVars.isPlaying.value) {
+            delay(1000)//the user paused the script, then we should also stop
+        }
         val actualDelayTime = delayTime ?: Random.nextLong(300, 501)
         val serverActions =
             GlobalVars.serverActions ?: logAndStop("Server actions not found at swipe")
@@ -67,6 +70,9 @@ object TouchActions {
         duration: Long? = null,
         isJitter: Boolean = true
     ) {
+        while (!GlobalVars.isPlaying.value) {
+            delay(1000)//the user paused the script, then we should also stop
+        }
         val actualDuration = duration ?: Random.nextLong(300, 501)
         val serverActions =
             GlobalVars.serverActions ?: logAndStop("Failed to get serverAction at pinchIn")
@@ -120,6 +126,9 @@ object TouchActions {
         duration: Long? = null,
         isJitter: Boolean = true
     ) {
+        while (!GlobalVars.isPlaying.value) {
+            delay(1000)//the user paused the script, then we should also stop
+        }
         val actualDuration = duration ?: Random.nextLong(300, 501)
         val serverActions =
             GlobalVars.serverActions ?: logAndStop("Failed to get serverAction at pinchOut")
@@ -208,29 +217,29 @@ object TouchActions {
         val dx = refP.toX - refP.fromX
         val dy = refP.toY - refP.fromY
         val totalDistance = sqrt(dx * dx + dy * dy).toDouble()
-        
+
         // steps = distance / random(30..35)
         val stepDivisor = Random.nextInt(10, 20)
         val steps = maxOf(3, (totalDistance / stepDivisor).toInt())
         val avgDelay = duration.toFloat() / steps
-        
+
         class PointerState(
             val p1X: Float,
             val p1Y: Float,
             var lastNoiseX: Float = 0f,
             var lastNoiseY: Float = 0f
         )
-        
+
         val pointerStates = pointers.map { p ->
             val pDx = p.toX - p.fromX
             val pDy = p.toY - p.fromY
             val pDist = sqrt(pDx * pDx + pDy * pDy)
             val midX = (p.fromX + p.toX) / 2f
             val midY = (p.fromY + p.toY) / 2f
-            
+
             val perpX = -pDy
             val perpLen = sqrt(perpX * perpX + pDx * pDx)
-            
+
             if (perpLen > 0) {
                 val unitPerpX = perpX / perpLen
                 val unitPerpY = pDx / perpLen
@@ -249,21 +258,21 @@ object TouchActions {
             val drift = (Random.nextFloat() - 0.5f) * (idealIncrement * 0.4f)
             currentTLinear += (idealIncrement + drift)
             val t = if (i == steps) 1f else currentTLinear.coerceIn(0f, 1f)
-            
+
             // Ease-in-Ease-out progression: weighted blend of linear and 3t^2-2t^3
             val easedT = (t * 0.2f) + ((3 * t * t - 2 * t * t * t) * 0.8f)
-            
+
             pointers.forEachIndexed { index, p ->
                 val state = pointerStates[index]
                 // Quadratic Bezier: (1-t)^2*P0 + 2(1-t)t*P1 + t^2*P2
                 val invT = 1f - easedT
                 val bX = invT * invT * p.fromX + 2 * invT * easedT * state.p1X + easedT * easedT * p.toX
                 val bY = invT * invT * p.fromY + 2 * invT * easedT * state.p1Y + easedT * easedT * p.toY
-                
+
                 // Continuous micro-offsets
                 state.lastNoiseX += (Random.nextFloat() - 0.5f) * 0.4f
                 state.lastNoiseY += (Random.nextFloat() - 0.5f) * 0.4f
-                
+
                 serverActions.sendActionSync(
                     mapOf(
                         "actionType" to "touch_action",
@@ -274,7 +283,7 @@ object TouchActions {
                     )
                 )
             }
-            
+
             val varDelay = (avgDelay * Random.nextDouble(0.8, 1.2)).toLong()
             delay((varDelay * delayMultiplier).toLong())
         }
@@ -285,6 +294,9 @@ object TouchActions {
         y: Int,
         isJitter: Boolean = true
     ) {
+        while (!GlobalVars.isPlaying.value) {
+            delay(1000)//the user paused the script, then we should also stop
+        }
         val serverActions =
             GlobalVars.serverActions ?: logAndStop("Server actions not found at tap")
         val delayMultiplier = GlobalVars.configStates["delay_multiplier"]?.value?.toFloat()
