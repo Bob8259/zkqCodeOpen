@@ -19,7 +19,7 @@ object TouchActions {
         while (!GlobalVars.isPlaying.value) {
             delay(1000)//the user paused the script, then we should also stop
         }
-        val actualDelayTime = delayTime ?: Random.nextLong(300, 501)
+        val actualDelayTime = delayTime ?: Random.nextLong(300, 401)
         val serverActions =
             GlobalVars.serverActions ?: logAndStop("Server actions not found at swipe")
         val delayMultiplier = GlobalVars.configStates["delay_multiplier"]?.value?.toFloat()
@@ -73,7 +73,7 @@ object TouchActions {
         while (!GlobalVars.isPlaying.value) {
             delay(1000)//the user paused the script, then we should also stop
         }
-        val actualDuration = duration ?: Random.nextLong(300, 501)
+        val actualDuration = duration ?: Random.nextLong(300, 401)
         val serverActions =
             GlobalVars.serverActions ?: logAndStop("Failed to get serverAction at pinchIn")
         val delayMultiplier = GlobalVars.configStates["delay_multiplier"]?.value?.toFloat()

@@ -34,7 +34,7 @@ object MainBaseTutorial : IMainBaseTutorial {
         "1B1B1C",
         "84|3|1B1B1C,184|-3|1B1B1C,279|-4|1B1B1C,317|-8|1B1B1C,336|-91|1B1B1C,330|-157|1B1B1C,312|-247|1B1B1C,174|-254|1B1B1C,87|-253|1B1B1C",
         0,
-        0.9,
+        0.99,
         "重要提示"
     )
     override val SpeakingVillager: ColorSchema = ColorSchema.parse(

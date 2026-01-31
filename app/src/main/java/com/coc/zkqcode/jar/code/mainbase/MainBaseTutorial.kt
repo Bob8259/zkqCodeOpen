@@ -12,6 +12,7 @@ import com.coc.zkqcode.jar.code.universal.InGamesVars
 import com.coc.zkqcode.jar.code.universal.smalltools.checkReconnections
 import com.coc.zkqcode.jar.code.universal.smalltools.getStaticConfig
 import com.coc.zkqcode.jar.code.universal.smalltools.killApp
+import com.coc.zkqcode.jar.code.universal.smalltools.reExtractGameSavings
 import com.coc.zkqcode.jar.code.universal.smalltools.runApp
 import com.coc.zkqcode.jar.code.universal.smalltools.setZKQInputMethod
 import com.coc.zkqcode.jar.ui.schema.Schema
@@ -36,6 +37,7 @@ class MainBaseTutorial {
         )
         var speakingCount = 0
         while (currentCoroutineContext().isActive) {
+
             val currentTime = System.currentTimeMillis()
             val elapsed = currentTime - startTime
 
@@ -179,6 +181,7 @@ class MainBaseTutorial {
                     TouchActions.tap(574, 47)
                     delayWithMultiplier(300)
                 }
+                reExtractGameSavings()
             }
 
             // Maintenance checks

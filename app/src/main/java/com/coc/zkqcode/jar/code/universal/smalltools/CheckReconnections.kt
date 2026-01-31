@@ -72,7 +72,7 @@ private suspend fun checkPrivacy() {
     }
 }
 
-private suspend fun reExtractGameSavings() {
+suspend fun reExtractGameSavings() {
     // 1. 配置项
     val packageName = "com.supercell.clashofclans"
     val folderName = "zkqGlobalGameSave"
