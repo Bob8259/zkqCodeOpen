@@ -110,7 +110,7 @@ fun HomeScreen(
 
     // Auto-Run Timer Logic
     LaunchedEffect(GlobalVars.isAutoRunEnabled, GlobalVars.autoRunTimer) {
-        if (GlobalVars.isAutoRunEnabled && GlobalVars.autoRunTimer > 0) {
+        if (GlobalVars.isAutoRunEnabled) {
             kotlinx.coroutines.delay(1000L)
             GlobalVars.autoRunTimer--
             if (GlobalVars.autoRunTimer <= 0) {
