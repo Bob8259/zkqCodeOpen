@@ -34,7 +34,7 @@ object ScreenCaptureManager {
     // Cache for static screen strategy (Optional, for now just use timeout/retry)
     // private var cachedBitmap: Bitmap? = null
 
-    // --- 新增：专门处理截图的后台线程 ---
+    // --- New: Dedicated background thread for handling screenshots ---
     private var handlerThread: HandlerThread? = null
     private var backgroundHandler: Handler? = null
 
@@ -55,7 +55,7 @@ object ScreenCaptureManager {
     }
 
     /**
-     * 初始化后台线程。只有 HandlerThread 准备好了，ImageReader 才能工作。
+     * Initialize the background thread. ImageReader can only work when HandlerThread is ready.
      */
     private fun ensureHandlerThread() {
         if (handlerThread == null || !handlerThread!!.isAlive) {
@@ -69,7 +69,7 @@ object ScreenCaptureManager {
         mediaProjectionManager =
             context.getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
         updateMetrics()
-        ensureHandlerThread() // 初始化时启动线程
+        ensureHandlerThread() // Start thread during initialization
     }
 
     private fun updateMetrics() {
@@ -96,7 +96,7 @@ object ScreenCaptureManager {
             if (code != null && data != null) {
                 ensureHandlerThread()
                 mediaProjection = mediaProjectionManager?.getMediaProjection(code, data)?.also {
-                    // 关键：注册回调也使用 backgroundHandler
+                    // Key: Register callback also using backgroundHandler
                     it.registerCallback(projectionCallback, backgroundHandler)
                 }
             }
@@ -105,16 +105,16 @@ object ScreenCaptureManager {
     }
 
     /**
-     * 请求权限或尝试直接截图。
+     * Request permission or attempt to take screenshot directly.
      */
     fun requestPermission(launcher: ActivityResultLauncher<Intent>) {
         if (cachedResultCode != null && cachedIntentData != null) {
-            // 如果已有缓存权限，直接尝试截一次图
+            // If permission is already cached, try to take a screenshot directly
             if (takeScreenshot()) return
             reset()
         }
 
-        // 这里的辅助功能逻辑保留
+        // Keep the accessibility logic here
         AutoGrantTool.forceEnableAccessibility() // 确保这个工具类在你的项目中
         MyAccessibilityService.isDetectionEnabled = true
 
@@ -124,28 +124,28 @@ object ScreenCaptureManager {
     }
 
     /**
-     * 完全重置 - 清除包括缓存凭证在内的所有内容。
-     * 当你想强制弹出新的权限申请窗口时使用。
+     * Complete reset - Clear all content including cached credentials.
+     * Use this when you want to force a new permission request dialog.
      */
     private fun reset() {
         try {
-            // 停止当前的投屏会话
+            // Stop the current projection session
             mediaProjection?.stop()
         } catch (e: Exception) {
             Timber.e(e, "reset: Error stopping mediaProjection")
         }
 
-        // 清理 VirtualDisplay 和 ImageReader 等资源
+        // Clean up resources like VirtualDisplay and ImageReader
         cleanupProjectionResources()
 
-        // 清空缓存的权限凭证
+        // Clear cached permission credentials
         cachedResultCode = null
         cachedIntentData = null
     }
 
     private fun ensureVirtualDisplay(projection: MediaProjection) {
         if (virtualDisplay == null) {
-             // 如果需要 ImageReader，确保它已准备好
+             // If ImageReader is needed, ensure it's ready
              if (imageReader == null) prepareImageReader()
 
              try {
@@ -164,10 +164,10 @@ object ScreenCaptureManager {
                  cleanupProjectionResources()
              }
         } else {
-            // 如果 VirtualDisplay 已经存在，检查尺寸是否发生变化
-            // 注意：resize 不是所有版本都支持，这里简单处理：如果尺寸变了，就销毁重建
-            // 但通常 capture() 里已经调过 updateMetrics，这里可以假设 metrics 是新的
-             // 简单的检查 imageReader 是否匹配
+            // If VirtualDisplay already exists, check if size has changed
+            // Note: resize is not supported in all versions, simple handling here: if size changed, destroy and recreate
+            // But usually updateMetrics has been called in capture(), so we can assume metrics are new
+             // Simple check if imageReader matches
              if (imageReader?.width != screenWidth || imageReader?.height != screenHeight) {
                  Timber.d("ensureVirtualDisplay: Size changed, recreating resources")
                  cleanupProjectionResources()
@@ -191,8 +191,8 @@ object ScreenCaptureManager {
     }
 
     /**
-     * 同步风格的截图方法（非协程版本）。
-     * 更新：使用 backgroundHandler 替代 mainHandler。
+     * Synchronous style screenshot method (non-coroutine version).
+     * Update: Use backgroundHandler instead of mainHandler.
      */
     fun takeScreenshot(): Boolean {
         updateMetrics()
@@ -215,7 +215,7 @@ object ScreenCaptureManager {
     private fun prepareImageReader() {
         if (imageReader == null || imageReader?.width != screenWidth || imageReader?.height != screenHeight) {
             imageReader?.close()
-             // 使用 RGBA_8888 格式，maxImages 设为 2 足够
+             // Use RGBA_8888 format, maxImages set to 2 is sufficient
             imageReader = ImageReader.newInstance(screenWidth, screenHeight, PixelFormat.RGBA_8888, 2)
         }
     }
@@ -246,7 +246,7 @@ object ScreenCaptureManager {
         cleanupProjectionResources()
         cachedResultCode = null
         cachedIntentData = null
-        // 停止后台线程
+        // Stop background thread
         handlerThread?.quitSafely()
         handlerThread = null
         backgroundHandler = null
@@ -261,12 +261,12 @@ object ScreenCaptureManager {
     )
 
     /**
-     * 改进后的协程截图方法
+     * Improved coroutine screenshot method
      */
     suspend fun capture(asBitmap: Boolean = true): Any? = captureMutex.withLock {
         ensureHandlerThread()
 
-        // 内部函数：尝试一次完整的截图流程（复用或新建）
+        // Internal function: Attempt a complete screenshot process (reuse or create new)
         suspend fun attemptCapture(): Any? {
             return suspendCancellableCoroutine { cont ->
                 updateMetrics()
@@ -357,8 +357,8 @@ object ScreenCaptureManager {
             }
         }
 
-        // 第一次尝试：设置超时 50ms
-        // 如果屏幕静止，复用的 VirtualDisplay 可能不产生新帧，导致 suspend 挂起
+        // First attempt: Set timeout to 50ms
+        // If screen is static, reused VirtualDisplay may not produce new frames, causing suspend to hang
         val result = withTimeoutOrNull(50) {
             attemptCapture()
         }
@@ -366,14 +366,14 @@ object ScreenCaptureManager {
         if (result != null) {
             return@withLock result
         } else {
-            // 超时了：说明 VirtualDisplay 很可能因为屏幕静止而不发帧，或者 ImageReader 有问题
-            // 此时我们强制重置资源（会销毁 VirtualDisplay）
+            // Timeout: VirtualDisplay is likely not producing frames due to static screen, or ImageReader has issues
+            // Force reset resources (will destroy VirtualDisplay)
             Timber.d("capture: Timeout waiting for image, recreating VirtualDisplay to force update")
             cleanupProjectionResources()
             
-            // 第二次尝试：因为资源已被清理，attemptCapture 内部会重建 VirtualDisplay
-            // 重建 VirtualDisplay 通常没有任何延时就会立刻发送第一帧，所以这里不需要太长超时
-            // 但为了保险，还是给点时间
+            // Second attempt: Since resources have been cleaned up, attemptCapture will rebuild VirtualDisplay internally
+            // Rebuilding VirtualDisplay usually sends the first frame immediately without delay, so no long timeout needed here
+            // But for safety, still give it some time
              return@withLock withTimeoutOrNull(200) {
                 attemptCapture()
             }
