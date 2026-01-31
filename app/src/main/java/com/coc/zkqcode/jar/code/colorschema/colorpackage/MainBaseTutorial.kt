@@ -22,6 +22,7 @@ interface IMainBaseTutorial {
     val TutorialUpgradeTownHall: ColorSchema
     val TutorialMagicalItem: ColorSchema
     val TutorialMagicalItemInner: ColorSchema
+    val ShopAfterTutorial: ColorSchema
 }
 
 object MainBaseTutorial : IMainBaseTutorial {
@@ -103,7 +104,10 @@ object MainBaseTutorial : IMainBaseTutorial {
         "商店内部箭头"
     )
     override val TutorialBuildClick: ColorSchema = ColorSchema.parse(
-        121, 60, 1155, 611,
+        121,
+        60,
+        1155,
+        611,
         "FEFEFE",
         "3|5|FEFEFE,9|-2|FEFEFE,13|-8|FDFDFE,27|-2|2AF8A3,23|8|16BE4B,19|15|14B645,13|21|15BF53,-2|22|16C358,-14|15|14B645",
         0,
@@ -155,12 +159,12 @@ object MainBaseTutorial : IMainBaseTutorial {
         "训练部队"
     )
     override val TutorialTrainInner: ColorSchema = ColorSchema.parse(
-        18,
-        105,
-        368,
-        176,
-        "405786",
-        "29|-3|415887,42|-5|415887,65|-8|415A89,85|-9|415A88,115|-6|415988,139|-6|415988,105|28|405887,73|33|415987,31|30|405887",
+        92,
+        206,
+        341,
+        566,
+        "485A7E-101010",
+        "20|17|405174-101010,34|58|425275-101010,-2|99|B9BFC2-101010,-1|115|C2CBD3-101010,14|125|38435B-101010,39|124|364564-101010,51|122|354464-101010,70|115|334260-101010,90|104|30405F-101010",
         0,
         0.9,
         "训练部队内部"
@@ -230,5 +234,16 @@ object MainBaseTutorial : IMainBaseTutorial {
         0,
         0.9,
         "误触魔法物品内部"
+    )
+    override val ShopAfterTutorial: ColorSchema = ColorSchema.parse(
+        1133,
+        568,
+        1263,
+        702,
+        "2F4C70-101010",
+        "-16|15|2E587E-101010,-40|36|1EADEA-101010,-46|19|2EC1EA-101010,-42|0|36C7EA-101010,-40|-19|CDFAFF-101010,50|38|1BA9EA-101010,56|15|30C4EA-101010,60|2|35C5E9-101010,57|-9|C3F6FF-101010",
+        0,
+        0.9,
+        "教程后的商店"
     )
 }
