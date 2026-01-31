@@ -113,8 +113,8 @@ class ControlWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner 
             PixelFormat.TRANSLUCENT
         ).apply {
             gravity = Gravity.TOP or Gravity.START
-            x = 0
-            y = 200
+            x = 1280
+            y = 360
         }
 
         controlComposeView = ComposeView(this).apply {
