@@ -30,9 +30,11 @@ object ScreenCaptureManager {
     private var mediaProjection: MediaProjection? = null
     private var virtualDisplay: VirtualDisplay? = null
     private var imageReader: ImageReader? = null
-    
-    // Cache for static screen strategy (Optional, for now just use timeout/retry)
-    // private var cachedBitmap: Bitmap? = null
+
+    // Cache for static screen strategy
+    private var cachedBitmap: Bitmap? = null
+    private var cachedCaptureResult: CaptureResult? = null
+    private var lastFrameTimestamp: Long = 0
 
     // --- New: Dedicated background thread for handling screenshots ---
     private var handlerThread: HandlerThread? = null
@@ -147,11 +149,11 @@ object ScreenCaptureManager {
 
     private fun ensureVirtualDisplay(projection: MediaProjection) {
         if (virtualDisplay == null) {
-             // If ImageReader is needed, ensure it's ready
-             if (imageReader == null) prepareImageReader()
+            // If ImageReader is needed, ensure it's ready
+            if (imageReader == null) prepareImageReader()
 
-             try {
-                 virtualDisplay = projection.createVirtualDisplay(
+            try {
+                virtualDisplay = projection.createVirtualDisplay(
                     "ScreenCapture",
                     screenWidth,
                     screenHeight,
@@ -161,21 +163,21 @@ object ScreenCaptureManager {
                     null,
                     backgroundHandler
                 )
-             } catch (e: Exception) {
-                 Timber.e(e, "ensureVirtualDisplay: Error creating VirtualDisplay")
-                 cleanupDisplayResources()
-             }
+            } catch (e: Exception) {
+                Timber.e(e, "ensureVirtualDisplay: Error creating VirtualDisplay")
+                cleanupDisplayResources()
+            }
         } else {
             // If VirtualDisplay already exists, check if size has changed
             // Note: resize is not supported in all versions, simple handling here: if size changed, destroy and recreate
             // But usually updateMetrics has been called in capture(), so we can assume metrics are new
-             // Simple check if imageReader matches
-             if (imageReader?.width != screenWidth || imageReader?.height != screenHeight) {
-                 Timber.d("ensureVirtualDisplay: Size changed, recreating resources")
-                 cleanupDisplayResources()
-                 prepareImageReader()
-                 try {
-                     virtualDisplay = projection.createVirtualDisplay(
+            // Simple check if imageReader matches
+            if (imageReader?.width != screenWidth || imageReader?.height != screenHeight) {
+                Timber.d("ensureVirtualDisplay: Size changed, recreating resources")
+                cleanupDisplayResources()
+                prepareImageReader()
+                try {
+                    virtualDisplay = projection.createVirtualDisplay(
                         "ScreenCapture",
                         screenWidth,
                         screenHeight,
@@ -185,10 +187,10 @@ object ScreenCaptureManager {
                         null,
                         backgroundHandler
                     )
-                 } catch (e: Exception) {
-                     Timber.e(e, "ensureVirtualDisplay: Error recreating VirtualDisplay")
-                 }
-             }
+                } catch (e: Exception) {
+                    Timber.e(e, "ensureVirtualDisplay: Error recreating VirtualDisplay")
+                }
+            }
         }
     }
 
@@ -217,7 +219,7 @@ object ScreenCaptureManager {
     private fun prepareImageReader() {
         if (imageReader == null || imageReader?.width != screenWidth || imageReader?.height != screenHeight) {
             imageReader?.close()
-             // Use RGBA_8888 format, maxImages set to 2 is sufficient
+            // Use RGBA_8888 format, maxImages set to 2 is sufficient
             imageReader = ImageReader.newInstance(screenWidth, screenHeight, PixelFormat.RGBA_8888, 2)
         }
     }
@@ -240,6 +242,12 @@ object ScreenCaptureManager {
         virtualDisplay = null
         imageReader?.close()
         imageReader = null
+
+        // Clear caches so we don't return stale data after a reset
+        cachedBitmap = null
+        cachedCaptureResult = null
+        lastFrameTimestamp = 0
+
         // Do NOT set mediaProjection to null here, so we can reuse it
     }
 
@@ -287,7 +295,7 @@ object ScreenCaptureManager {
                     if (cont.isActive) cont.resume(null)
                     return@suspendCancellableCoroutine
                 }
-                
+
                 // Helper to process image
                 fun processImage(image: android.media.Image) {
                     try {
@@ -307,6 +315,10 @@ object ScreenCaptureManager {
                                     if (it != bitmap) bitmap.recycle()
                                 }
                             }
+                            // Update cache
+                            cachedBitmap = finalBitmap
+                            lastFrameTimestamp = System.currentTimeMillis()
+
                             if (cont.isActive) cont.resume(finalBitmap)
                         } else {
                             val capacity = buffer.capacity()
@@ -322,6 +334,11 @@ object ScreenCaptureManager {
                                 pixelStride = pixelStride,
                                 rowStride = rowStride
                             )
+
+                            // Update cache
+                            cachedCaptureResult = result
+                            lastFrameTimestamp = System.currentTimeMillis()
+
                             if (cont.isActive) cont.resume(result)
                         }
                     } catch (e: Exception) {
@@ -336,21 +353,25 @@ object ScreenCaptureManager {
                 try {
                     val latestImage = reader.acquireLatestImage()
                     if (latestImage != null) {
-                         processImage(latestImage)
-                         return@suspendCancellableCoroutine
+                        processImage(latestImage)
+                        return@suspendCancellableCoroutine
                     }
-                } catch (e: Exception) {
+                } catch (_: Exception) {
                     // ignore
                 }
 
                 // 2. No image available, wait for new one
                 reader.setOnImageAvailableListener({ _reader ->
                     _reader.setOnImageAvailableListener(null, null)
-                    val image = try { _reader.acquireLatestImage() } catch (e: Exception) { null }
+                    val image = try {
+                        _reader.acquireLatestImage()
+                    } catch (_: Exception) {
+                        null
+                    }
                     if (image != null) {
                         processImage(image)
                     } else {
-                         if (cont.isActive) cont.resume(null)
+                        if (cont.isActive) cont.resume(null)
                     }
                 }, backgroundHandler)
 
@@ -360,26 +381,37 @@ object ScreenCaptureManager {
             }
         }
 
-        // First attempt: Set timeout to 150ms (Increased from 50ms)
-        // If screen is static, reused VirtualDisplay may not produce new frames, causing suspend to hang
-        val result = withTimeoutOrNull(150) {
+        // 1. Try to get a new frame (Short timeout)
+        val result = withTimeoutOrNull(100) {
             attemptCapture()
         }
 
         if (result != null) {
             return@withLock result
-        } else {
-            // Timeout: VirtualDisplay is likely not producing frames due to static screen, or ImageReader has issues
-            // Force reset resources (will destroy VirtualDisplay)
-            Timber.d("capture: Timeout waiting for image, recreating VirtualDisplay to force update")
-            cleanupDisplayResources()
-            
-            // Second attempt: Since resources have been cleaned up, attemptCapture will rebuild VirtualDisplay internally
-            // Rebuilding VirtualDisplay usually sends the first frame immediately without delay, so no long timeout needed here
-            // But for safety, still give it some time
-             return@withLock withTimeoutOrNull(200) {
-                attemptCapture()
+        }
+
+        // 2. Timeout: Check if we can reuse cached frame
+        val now = System.currentTimeMillis()
+        val isCacheValid = (now - lastFrameTimestamp) < 3000 // 3 seconds valid window
+
+        if (isCacheValid) {
+            if (asBitmap && cachedBitmap != null) {
+                // Timber.v("capture: Reusing cached bitmap")
+                return@withLock cachedBitmap
+            } else if (!asBitmap && cachedCaptureResult != null) {
+                // Timber.v("capture: Reusing cached result")
+                return@withLock cachedCaptureResult
             }
+        }
+
+        // 3. Cache expired or not available -> Force reset
+        Timber.d("capture: No new frame for >3s, recreating resources")
+        cleanupDisplayResources()
+
+        // 4. Retry after reset (longer timeout to allow setup)
+        return@withLock withTimeoutOrNull(200) {
+            attemptCapture()
         }
     }
 }
+
