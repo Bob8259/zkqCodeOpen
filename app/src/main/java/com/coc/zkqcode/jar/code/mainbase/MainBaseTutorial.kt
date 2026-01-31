@@ -12,6 +12,7 @@ import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.InGamesVars
 import com.coc.zkqcode.jar.code.universal.clickRightBottom
 import com.coc.zkqcode.jar.code.universal.smalltools.checkReconnections
+import com.coc.zkqcode.jar.code.universal.smalltools.getStaticConfig
 import com.coc.zkqcode.jar.code.universal.smalltools.killApp
 import com.coc.zkqcode.jar.code.universal.smalltools.runApp
 import com.coc.zkqcode.jar.code.universal.smalltools.setZKQInputMethod
@@ -24,18 +25,19 @@ class MainBaseTutorial {
         val durationMillis = 300_000L
         val startTime = System.currentTimeMillis()
 
-        // Expanded list of schemas that follow the standard find -> tap(point) pattern
+        // Standard schemas that follow a simple "find and tap" pattern
         val prioritySchemas = listOf(
             MyColors.PrivacyInfo,
-            MyColors.TutorialBuildClick,
             MyColors.TutorialGoblinAttack,
             MyColors.VillagerAttack,
             MyColors.TutorialTrain,
             MyColors.AttackMap,
             MyColors.AttackGoblin,
-            MyColors.TutorialUpgradeTownHall
+            MyColors.TutorialUpgradeTownHall,
+            MyColors.TutorialMagicalItem,
+            MyColors.TutorialMagicalItemInner
         )
-
+        var speakingCount = 0
         while (currentCoroutineContext().isActive) {
             val currentTime = System.currentTimeMillis()
             val elapsed = currentTime - startTime
@@ -44,41 +46,59 @@ class MainBaseTutorial {
 
             val remainingSeconds = ((durationMillis - elapsed) / 1000).toInt()
             ShowMessage("主世界教程中，还剩${remainingSeconds}秒")
+            val screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult
+                ?: logAndStop("in isInHomePage, screen capture failed.")
 
-            // 1. Process standard priority schemas
-            for (schema in prioritySchemas) {
-                findMultiColors(schema = schema)?.let { point ->
+            // 1. Process standard priority schemas (Find -> Tap)
+            prioritySchemas.forEach { schema ->
+                findMultiColors(byteBuffer = screenBuffer, schema = schema)?.let { point ->
                     TouchActions.tap(point.x, point.y)
                     delayWithMultiplier(500)
                 }
             }
-            // Important Notice
-            findMultiColors(schema = MyColors.SpeakingVillager)?.let {
-                TouchActions.tap(415, 410)
-                delayWithMultiplier(500)
-                TouchActions.tap(706, 554)
-                delayWithMultiplier(500)
-                TouchActions.tap(670, 386)
-                delayWithMultiplier(500)
-                TouchActions.tap(706, 554)
-                delayWithMultiplier(500)
-            }
-            // 2. Handle specific UI elements with fixed offset/coordinate requirements
 
-            // Important Notice
+            // 2. Handle specific UI elements with complex or fixed-coordinate logic
+
+            // Speaking Villager sequence
+            findMultiColors(schema = MyColors.SpeakingVillager)?.let {
+                speakingCount++
+                // speaking count > 5 means that the tutorial is in the middle, not at the beggining. So we might need to attack a goblin
+                // Thus, we need to use the new sequence to enter troop training page
+                val sequence = if (speakingCount > 5) {
+                    listOf(415 to 410, 706 to 554, 670 to 386, 706 to 554)
+                } else {
+                    listOf(415 to 410)
+                }
+                sequence.forEach { (x, y) ->
+                    TouchActions.tap(x, y)
+                    delayWithMultiplier(500)
+                }
+            }
+
+            // Important Notice tap
             findMultiColors(schema = MyColors.ImportantNotice)?.let {
                 TouchActions.tap(344, 510)
                 delayWithMultiplier(500)
             }
 
+            // Building logic with Gem speed-up check
+            findMultiColors(schema = MyColors.TutorialBuildClick)?.let { point ->
+                TouchActions.tap(point.x, point.y)
+                delayWithMultiplier(500)
+                val isSpeedUp = getStaticConfig(Schema.GLOBAL_SETTINGS.CREATE_GEM_BUILD.key) == "1"
+                if (isSpeedUp) {
+                    TouchActions.tap(643, 556) // Use gem to speed up
+                }
+            }
+
             // Age Entry Workflow
             findMultiColors(schema = MyColors.EnterAge)?.let {
-                TouchActions.tap(640, 347)
                 delayWithMultiplier(500)
-                TouchActions.tap(633, 539)
-                delayWithMultiplier(500)
-                TouchActions.tap(773, 546)
-                delayWithMultiplier(500)
+                val sequence = listOf(640 to 347, 640 to 347, 773 to 546)
+                sequence.forEach { (x, y) ->
+                    TouchActions.tap(x, y)
+                    delayWithMultiplier(500)
+                }
             }
 
             // Shop Navigation
@@ -93,14 +113,14 @@ class MainBaseTutorial {
                 delayWithMultiplier(1500)
             }
 
-            // Wizard Attack Sequence (Multiple taps for rapid interaction)
+            // Wizard Attack / Blue Troop anti-stuck (Restart App)
             findMultiColors(schema = MyColors.TutorialBlueTroop)?.let {
                 killApp("com.supercell.clashofclans")
                 delayWithMultiplier(1000)
                 runApp("com.supercell.clashofclans")
             }
 
-
+            // Troop Training sequence
             findMultiColors(schema = MyColors.TutorialTrainInner)?.let {
                 TouchActions.tap(666, 250)
                 delayWithMultiplier(1000)
@@ -109,41 +129,53 @@ class MainBaseTutorial {
                     delayWithMultiplier(10)
                 }
                 repeat(3) {
-                    TouchActions.tap(1231, 64)//close training page
+                    TouchActions.tap(1231, 64) // Close training page
                     delayWithMultiplier(50)
                 }
             }
+
+            // Village Naming Logic
             findMultiColors(schema = MyColors.MyVillageIsCalled)?.let {
                 setZKQInputMethod()
                 TouchActions.tap(625, 297)
                 delayWithMultiplier(200)
-                var gameName = GlobalVars.configStates[Schema.GLOBAL_SETTINGS.CREATE_PREFIX.key]?.value
-                    ?: logAndStop("Can not get config for ${Schema.GLOBAL_SETTINGS.CREATE_PREFIX.key}")
-                val addSuffix = (GlobalVars.configStates[Schema.GLOBAL_SETTINGS.ADD_SUFFIX_SETTING.key]?.value
-                    ?: logAndStop("Can not get config for ${Schema.GLOBAL_SETTINGS.CREATE_PREFIX.key}")) == "1"
-                if (addSuffix) gameName += InGamesVars.currentAccountNumber
+
+                var gameName = getStaticConfig(Schema.GLOBAL_SETTINGS.CREATE_PREFIX.key)
+                val addSuffix = getStaticConfig(Schema.GLOBAL_SETTINGS.ADD_SUFFIX_SETTING.key) == "1"
+
+                if (addSuffix) {
+                    gameName += InGamesVars.currentAccountNumber
+                }
+
                 ZKQInputMethodService.instance?.commitGameName(gameName)
                 delayWithMultiplier(300)
                 TouchActions.tap(641, 368)
             }
+
+            // Tutorial Conclusion and Cleanup
             findMultiColors(schema = MyColors.TrainTroops)?.let {
                 ShowMessage("教程结束，即将进行首尾工作")
-                TouchActions.tap(598, 43)//工人
+
+                // Worker tap sequence
+                TouchActions.tap(598, 43)
                 delayWithMultiplier(300)
                 repeat(3) {
                     TouchActions.tap(649, 672)
                     delayWithMultiplier(100)
                 }
-                TouchActions.tap(202, 668)//令牌
+
+                // Token/Pass tap sequence
+                TouchActions.tap(202, 668)
                 delayWithMultiplier(300)
                 repeat(10) {
                     TouchActions.tap(574, 47)
                     delayWithMultiplier(100)
                 }
             }
-            // 3. Maintenance checks
+
+            // Maintenance checks
             checkReconnections()
-            delayWithMultiplier(200)
+            delayWithMultiplier(100)
         }
     }
 

@@ -17,3 +17,7 @@ fun getConfigRuntime(configName: String): String {
         ?: logAndStop("Can not get the config for ${configName}_c$configNumber")
     return result
 }
+
+fun getStaticConfig(key: String): String {
+    return GlobalVars.configStates[key]?.value ?: logAndStop("Failed to get configuration for: $key")
+}
