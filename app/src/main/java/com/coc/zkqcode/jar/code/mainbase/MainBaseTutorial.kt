@@ -3,16 +3,15 @@ package com.coc.zkqcode.jar.code.mainbase
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.system.inputmethod.ZKQInputMethodService
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
-import com.coc.zkqcode.core.util.basic.RunShell
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.basic.findMultiColors
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndStop
 import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.MyColors
+import com.coc.zkqcode.jar.code.universal.InGamesVars
 import com.coc.zkqcode.jar.code.universal.clickRightBottom
 import com.coc.zkqcode.jar.code.universal.smalltools.checkReconnections
-import com.coc.zkqcode.jar.code.universal.smalltools.getConfigRuntime
 import com.coc.zkqcode.jar.code.universal.smalltools.killApp
 import com.coc.zkqcode.jar.code.universal.smalltools.runApp
 import com.coc.zkqcode.jar.code.universal.smalltools.setZKQInputMethod
@@ -33,7 +32,8 @@ class MainBaseTutorial {
             MyColors.VillagerAttack,
             MyColors.TutorialTrain,
             MyColors.AttackMap,
-            MyColors.AttackGoblin
+            MyColors.AttackGoblin,
+            MyColors.TutorialUpgradeTownHall
         )
 
         while (currentCoroutineContext().isActive) {
@@ -55,6 +55,10 @@ class MainBaseTutorial {
             // Important Notice
             findMultiColors(schema = MyColors.SpeakingVillager)?.let {
                 TouchActions.tap(415, 410)
+                delayWithMultiplier(500)
+                TouchActions.tap(706, 554)
+                delayWithMultiplier(500)
+                TouchActions.tap(670, 386)
                 delayWithMultiplier(500)
                 TouchActions.tap(706, 554)
                 delayWithMultiplier(500)
@@ -113,16 +117,32 @@ class MainBaseTutorial {
                 setZKQInputMethod()
                 TouchActions.tap(625, 297)
                 delayWithMultiplier(200)
-                val gameName = GlobalVars.configStates[Schema.GLOBAL_SETTINGS.CREATE_PREFIX.key]?.value
+                var gameName = GlobalVars.configStates[Schema.GLOBAL_SETTINGS.CREATE_PREFIX.key]?.value
                     ?: logAndStop("Can not get config for ${Schema.GLOBAL_SETTINGS.CREATE_PREFIX.key}")
+                val addSuffix = (GlobalVars.configStates[Schema.GLOBAL_SETTINGS.ADD_SUFFIX_SETTING.key]?.value
+                    ?: logAndStop("Can not get config for ${Schema.GLOBAL_SETTINGS.CREATE_PREFIX.key}")) == "1"
+                if (addSuffix) gameName += InGamesVars.currentAccountNumber
                 ZKQInputMethodService.instance?.commitGameName(gameName)
                 delayWithMultiplier(300)
                 TouchActions.tap(641, 368)
             }
-
+            findMultiColors(schema = MyColors.TrainTroops)?.let {
+                ShowMessage("教程结束，即将进行首尾工作")
+                TouchActions.tap(598, 43)//工人
+                delayWithMultiplier(300)
+                repeat(3) {
+                    TouchActions.tap(649, 672)
+                    delayWithMultiplier(100)
+                }
+                TouchActions.tap(202, 668)//令牌
+                delayWithMultiplier(300)
+                repeat(10) {
+                    TouchActions.tap(574, 47)
+                    delayWithMultiplier(100)
+                }
+            }
             // 3. Maintenance checks
             checkReconnections()
-            clickRightBottom()
             delayWithMultiplier(200)
         }
     }

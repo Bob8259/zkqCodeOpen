@@ -1,6 +1,5 @@
 package com.coc.zkqcode.jar.code.colorschema
 
-import androidx.compose.ui.graphics.Color
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.FeatureColors
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.IFeatureColors
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.IUIColors
@@ -80,8 +79,14 @@ object MyColors : IWorkerColors by WorkerColors, IUIColors by UIColors, IFeature
         "拒绝优化"
     )
     val TutorialShop: ColorSchema = ColorSchema.parse(
-        1140,572,1260,699,"7AF9FF-101010","5|20|94FFFF-101010,6|35|2F4968-101010,36|44|20A3E5-101010,33|38|49D2FF-101010,24|25|3D6493-101010,36|9|375472-101010,34|-3|F0F4EB-101010,43|-3|ECF1E5-101010,53|2|EEF5E9-101010",0,0.9
-,
+        1140,
+        572,
+        1260,
+        699,
+        "7AF9FF",
+        "5|20|94FFFF,6|35|2F4968,36|44|20A3E5,33|38|49D2FF,24|25|3D6493,36|9|375472,34|-3|F0F4EB,43|-3|ECF1E5,53|2|EEF5E9",
+        0,
+        0.9,
         "商店箭头"
     )
     val ShopInnerArrow: ColorSchema = ColorSchema.parse(
@@ -96,14 +101,11 @@ object MyColors : IWorkerColors by WorkerColors, IUIColors by UIColors, IFeature
         "商店内部箭头"
     )
     val TutorialBuildClick: ColorSchema = ColorSchema.parse(
-        140,
-        27,
-        1074,
-        608,
-        "FFFFFF",
-        "9|-13|FFFFFF,21|-1|1DD25B,21|9|15B846,13|13|14B746,-5|17|15BF51,-19|18|15C359,-22|13|14BA4A,-13|13|14B746,-3|16|15BC4C",
+        121, 60, 1155, 611,
+        "FEFEFE",
+        "3|5|FEFEFE,9|-2|FEFEFE,13|-8|FDFDFE,27|-2|2AF8A3,23|8|16BE4B,19|15|14B645,13|21|15BF53,-2|22|16C358,-14|15|14B645",
         0,
-        0.9,
+        0.93,
         "教程建造绿色箭头"
     )
     val TutorialGoblinAttack: ColorSchema = ColorSchema.parse(
@@ -133,8 +135,8 @@ object MyColors : IWorkerColors by WorkerColors, IUIColors by UIColors, IFeature
         586,
         207,
         619,
-        "C08545-101010",
-        "1|-2|C78948-101010,8|-9|DD9853-101010,13|-3|CB8E4D-101010,13|-2|C88C4C-101010,9|-3|CA8D4C-101010,5|-6|D4924F-101010,-1|-3|CA8B4A-101010,-3|0|C08545-101010,-4|-6|D3914E-101010",
+        "C08545",
+        "1|-2|C78948,8|-9|DD9853,13|-3|CB8E4D,13|-2|C88C4C,9|-3|CA8D4C,5|-6|D4924F,-1|-3|CA8B4A,-3|0|C08545,-4|-6|D3914E",
         0,
         0.9,
         "蓝色部队标志"
@@ -144,8 +146,8 @@ object MyColors : IWorkerColors by WorkerColors, IUIColors by UIColors, IFeature
         503,
         771,
         622,
-        "F1EDF8-101010",
-        "8|6|EDE8EF-101010,18|15|E9DCDC-101010,26|21|1D476B-101010,27|28|264873-101010,32|31|27649E-101010,17|28|347FAC-101010,26|17|3A8AB7-101010,6|13|D3A68A-101010,-6|2|C29B83-101010",
+        "F1EDF8",
+        "8|6|EDE8EF,18|15|E9DCDC,26|21|1D476B,27|28|264873,32|31|27649E,17|28|347FAC,26|17|3A8AB7,6|13|D3A68A,-6|2|C29B83",
         0,
         0.9,
         "训练部队"
@@ -155,8 +157,8 @@ object MyColors : IWorkerColors by WorkerColors, IUIColors by UIColors, IFeature
         105,
         368,
         176,
-        "405786-101010",
-        "29|-3|415887-101010,42|-5|415887-101010,65|-8|415A89-101010,85|-9|415A88-101010,115|-6|415988-101010,139|-6|415988-101010,105|28|405887-101010,73|33|415987-101010,31|30|405887-101010",
+        "405786",
+        "29|-3|415887,42|-5|415887,65|-8|415A89,85|-9|415A88,115|-6|415988,139|-6|415988,105|28|405887,73|33|415987,31|30|405887",
         0,
         0.9,
         "训练部队内部"
@@ -166,8 +168,8 @@ object MyColors : IWorkerColors by WorkerColors, IUIColors by UIColors, IFeature
         580,
         144,
         674,
-        "D5F0FF-101010",
-        "-14|2|C2E5F8-101010,-20|-14|D6F1FF-101010,0|-26|DAEDF9-101010,15|-23|9EA8F5-101010,21|-18|A9C9DE-101010,23|-13|B5CFDD-101010,18|-5|B6D0FC-101010,-3|7|486BE2-101010,3|15|E0F5FF-101010",
+        "D5F0FF",
+        "-14|2|C2E5F8,-20|-14|D6F1FF,0|-26|DAEDF9,15|-23|9EA8F5,21|-18|A9C9DE,23|-13|B5CFDD,18|-5|B6D0FC,-3|7|486BE2,3|15|E0F5FF",
         0,
         0.9,
         "进攻地图"
@@ -177,8 +179,8 @@ object MyColors : IWorkerColors by WorkerColors, IUIColors by UIColors, IFeature
         470,
         520,
         538,
-        "53C7FF-101010",
-        "20|-4|54CAFF-101010,44|-8|56CBFF-101010,65|-7|55CBFF-101010,77|-1|53C7FF-101010,87|9|4ABDFF-101010,87|22|145EF1-101010,74|27|1256EE-101010,37|36|1250EC-101010,10|33|1251ED-101010",
+        "53C7FF",
+        "20|-4|54CAFF,44|-8|56CBFF,65|-7|55CBFF,77|-1|53C7FF,87|9|4ABDFF,87|22|145EF1,74|27|1256EE,37|36|1250EC,10|33|1251ED",
         0,
         0.9,
         "哥布林森林"
@@ -188,11 +190,22 @@ object MyColors : IWorkerColors by WorkerColors, IUIColors by UIColors, IFeature
         197,
         909,
         434,
-        "E0E8E8-101010",
-        "21|11|E0E8E8-101010,351|5|E0E8E8-101010,392|13|E0E8E8-101010,392|154|E0E8E8-101010,393|169|E0E8E8-101010,146|141|79F5D8-101010,200|138|7FF7DB-101010,15|148|E0E8E8-101010,4|151|E0E8E8-101010",
+        "E0E8E8",
+        "21|11|E0E8E8,351|5|E0E8E8,392|13|E0E8E8,392|154|E0E8E8,393|169|E0E8E8,146|141|79F5D8,200|138|7FF7DB,15|148|E0E8E8,4|151|E0E8E8",
         0,
         0.9,
         "村庄取名"
+    )
+    val TutorialUpgradeTownHall: ColorSchema = ColorSchema.parse(
+        799,
+        578,
+        1003,
+        678,
+        "89F6D4",
+        "24|9|87F1CF,45|7|88F2D0,75|7|88F2D0,104|4|88F4D1,114|-2|89F8D5,107|48|48C997,87|46|48CA99,29|45|48CB99,10|42|49CD9C",
+        0,
+        0.9,
+        "教程升级大本营"
     )
     //以上颜色是主世界教程颜色
 }
