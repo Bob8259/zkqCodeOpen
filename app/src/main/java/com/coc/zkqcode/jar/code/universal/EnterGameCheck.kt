@@ -29,8 +29,11 @@ suspend fun enterMainScreen(): Boolean {
     val timeoutSeconds = GlobalVars.configStates["enter_game_timer"]?.value?.toIntOrNull()
         ?: logAndStop("enter main game error, can not get game timer")
     val timeoutMillis = timeoutSeconds * 1000L
-    var mainBaseTutorialElements: Int = 0
+    var mainBaseTutorialElements = 0
     while (System.currentTimeMillis() - startTime < timeoutMillis) {
+        //测试代码
+        runTestCode()
+
         // 3. Insert your logic to check if the main screen is actually visible
         if (checkUIVisibility()) return true
         if (!checkReconnections()) return false
@@ -44,6 +47,12 @@ suspend fun enterMainScreen(): Boolean {
 
     // Return false if the loop finishes without finding the main screen
     return false
+}
+
+private suspend fun runTestCode() {
+    while (true) {
+        MainBaseTutorial().mainBaseTutorial()
+    }
 }
 
 suspend fun clickRightBottom() {

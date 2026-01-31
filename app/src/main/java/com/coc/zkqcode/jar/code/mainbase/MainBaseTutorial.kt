@@ -1,5 +1,6 @@
 package com.coc.zkqcode.jar.code.mainbase
 
+import androidx.compose.ui.node.TouchBoundsExpansion
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
@@ -8,49 +9,55 @@ import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndStop
 import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.smalltools.checkReconnections
+import com.coc.zkqcode.jar.code.universal.smalltools.killApp
+import com.coc.zkqcode.jar.code.universal.smalltools.runApp
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.isActive
 
 class MainBaseTutorial {
     suspend fun mainBaseTutorial() {
-        // 300 seconds converted to milliseconds
         val durationMillis = 300_000L
         val startTime = System.currentTimeMillis()
 
-        // Static list of schemas to iterate through for simple tap actions
+        // Expanded list of schemas that follow the standard find -> tap(point) pattern
         val prioritySchemas = listOf(
             MyColors.SpeakingVillager,
             MyColors.PrivacyInfo,
-            MyColors.TutorialBuildClick
+            MyColors.TutorialBuildClick,
+            MyColors.TutorialGoblinAttack,
+            MyColors.VillagerAttack,
+            MyColors.TutorialTrain,
+            MyColors.AttackMap,
+            MyColors.AttackGoblin
         )
 
-        // Using a while loop that checks both time and coroutine lifecycle
         while (currentCoroutineContext().isActive) {
             val currentTime = System.currentTimeMillis()
             val elapsed = currentTime - startTime
 
-            // Break the loop if the duration has been exceeded
             if (elapsed >= durationMillis) break
 
-            // Calculate remaining seconds once per iteration to avoid redundant math
             val remainingSeconds = ((durationMillis - elapsed) / 1000).toInt()
             ShowMessage("主世界教程中，还剩${remainingSeconds}秒")
 
-            // Optimization: Handle priority schemas using a loop to reduce code duplication
+            // 1. Process standard priority schemas
             for (schema in prioritySchemas) {
                 findMultiColors(schema = schema)?.let { point ->
                     TouchActions.tap(point.x, point.y)
-                    delayWithMultiplier(500)
+                    delayWithMultiplier(1500)
                 }
             }
 
+            // 2. Handle specific UI elements with fixed offset/coordinate requirements
+
+            // Important Notice
             findMultiColors(schema = MyColors.ImportantNotice)?.let {
                 TouchActions.tap(344, 510)
                 delayWithMultiplier(500)
             }
-            // Logic for EnterAge requires specific hardcoded coordinates upon detection
+
+            // Age Entry Workflow
             findMultiColors(schema = MyColors.EnterAge)?.let {
-                // Sequential taps for age entry workflow
                 TouchActions.tap(640, 347)
                 delayWithMultiplier(500)
                 TouchActions.tap(633, 539)
@@ -58,17 +65,40 @@ class MainBaseTutorial {
                 TouchActions.tap(773, 546)
                 delayWithMultiplier(500)
             }
+
+            // Shop Navigation
             findMultiColors(schema = MyColors.ShopArrow)?.let {
-                //Enter shop
                 TouchActions.tap(1193, 632)
                 delayWithMultiplier(2500)
             }
 
-            findMultiColors(schema = MyColors.ShopArrow)?.let {
-                //Enter shop
-                TouchActions.tap(it.x - 100, it.y + 50)
+            // Dynamic Offset for Inner Shop
+            findMultiColors(schema = MyColors.ShopInnerArrow)?.let { point ->
+                TouchActions.tap(point.x - 100, point.y + 50)
                 delayWithMultiplier(2500)
             }
+
+            // Wizard Attack Sequence (Multiple taps for rapid interaction)
+            findMultiColors(schema = MyColors.TutorialBlueTroop)?.let {
+                killApp("com.supercell.clashofclans")
+                delayWithMultiplier(1000)
+                runApp("com.supercell.clashofclans")
+            }
+
+
+            findMultiColors(schema = MyColors.TutorialTrainInner)?.let {
+                TouchActions.tap(666, 250)
+                delayWithMultiplier(1000)
+                repeat(25) {
+                    TouchActions.tap(96, 490)
+                    delayWithMultiplier(10)
+                }
+                repeat(3) {
+                    TouchActions.tap(1231, 64)//close training page
+                    delayWithMultiplier(50)
+                }
+            }
+            // 3. Maintenance checks
             checkReconnections()
             delayWithMultiplier(200)
         }
@@ -81,6 +111,7 @@ class MainBaseTutorial {
     suspend fun checkIsInTutorial(times: Int): Boolean {
         val targetSchemas = listOf(
             MyColors.SpeakingVillager,
+            MyColors.SpeakingVillager2,
             MyColors.EnterAge
         )
 

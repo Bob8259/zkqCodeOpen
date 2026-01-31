@@ -73,7 +73,7 @@ private suspend fun checkPrivacy() {
 }
 
 private suspend fun reExtractGameSavings() {
-    // 1. 硬编码配置项
+    // 1. 配置项
     val packageName = "com.supercell.clashofclans"
     val folderName = "zkqGlobalGameSave"
     val targetSubDirs = listOf("shared_prefs")
@@ -85,14 +85,12 @@ private suspend fun reExtractGameSavings() {
     val gameRootDir = "$sdPath/zkqFiles/$folderName"
     val targetSaveDir = "$gameRootDir/$suffix"
 
-    // 3. 检查存档是否已存在，若存在则直接跳过
-    val checkExistCmd = "[ -d \"$targetSaveDir/shared_prefs\" ]"
-    if (Shell.cmd(checkExistCmd).exec().isSuccess) {
-        return
-    }
+    // 3. 核心修改：如果文件夹存在，直接删除以便重新覆盖
+    // 使用 [ -d ] 判断目录是否存在，若存在则执行 rm -rf
+    val cleanCmd = "[ -d \"$targetSaveDir\" ] && rm -rf \"$targetSaveDir\""
+    RunShell.run(cleanCmd)
 
-    // 4. 静默创建目录结构
-    RunShell.run("mkdir -p \"$gameRootDir\"")
+    // 4. 创建目录结构（rm 之后需要重新创建）
     RunShell.run("mkdir -p \"$targetSaveDir\"")
 
     // 5. 执行数据拷贝
@@ -100,7 +98,9 @@ private suspend fun reExtractGameSavings() {
         val destPath = "$targetSaveDir/$dir"
         // 创建目标子目录
         RunShell.run("mkdir -p \"$destPath\"")
+
         // 使用 Root 权限从 /data/data/ 复制到 SD 卡
+        // 注意：这里拷贝的是内容，建议保留目录权限或结构
         val copyCmd = "cp -r /data/data/$packageName/$dir/* \"$destPath\""
         RunShell.run(copyCmd)
     }
