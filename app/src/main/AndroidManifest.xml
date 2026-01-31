@@ -104,7 +104,7 @@
         </service>
 
         <service
-            android:name=".core.system.inputmethod.InputMethodService"
+            android:name=".core.system.inputmethod.ZKQInputMethodService"
             android:label="@string/app_name"
             android:permission="android.permission.BIND_INPUT_METHOD"
             android:exported="true">
