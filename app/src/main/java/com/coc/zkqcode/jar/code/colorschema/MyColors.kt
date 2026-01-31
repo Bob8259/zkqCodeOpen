@@ -207,5 +207,27 @@ object MyColors : IWorkerColors by WorkerColors, IUIColors by UIColors, IFeature
         0.9,
         "教程升级大本营"
     )
+    val TutorialMagicalItem: ColorSchema = ColorSchema.parse(
+        953,
+        85,
+        1027,
+        150,
+        "FAF6F6",
+        "4|-3|FFFFFF,7|-12|FFFFFF,17|-2|7972FF,15|10|1511EA,11|20|2B23CC,1|20|2B23CC,-19|16|211BDA,-17|5|1611EC,-17|-2|7972FF",
+        0,
+        0.9,
+        "误触魔法物品"
+    )
+    val TutorialMagicalItemInner: ColorSchema = ColorSchema.parse(
+        965,
+        58,
+        1016,
+        111,
+        "FFFFFF",
+        "0|4|FFFFFF,4|8|FBFBFB,17|9|221EF7,12|-8|8785FF,-3|-9|8785FF,-11|-5|8684FF,-13|1|7F7CFF,-15|10|221EF7,0|18|221FE7",
+        0,
+        0.9,
+        "误触魔法物品内部"
+    )
     //以上颜色是主世界教程颜色
 }
