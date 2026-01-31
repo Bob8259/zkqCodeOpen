@@ -32,7 +32,7 @@ suspend fun enterMainScreen(): Boolean {
     var mainBaseTutorialElements = 0
     while (System.currentTimeMillis() - startTime < timeoutMillis) {
         //测试代码
-        runTestCode()
+//        runTestCode()
 
         // 3. Insert your logic to check if the main screen is actually visible
         if (checkUIVisibility()) return true
@@ -60,7 +60,7 @@ suspend fun clickRightBottom() {
 }
 
 private suspend fun checkUIVisibility(): Boolean {
-    if (!isGameAtFront(InGamesVars.currentGamePackage.toString())) {
+    if (!isGameAtFront()) {
         when (InGamesVars.currentGamePackage) {
             0 -> {//国服
                 runApp("com.tencent.tmgp.supercell.clashofclans")
@@ -89,7 +89,7 @@ private suspend fun checkUIVisibility(): Boolean {
 
 suspend fun zoomSmallMainBase() {
     pinchIn(141, 423, 1052, 352, 638, 365)
-    delayWithMultiplier(500)
+    delayWithMultiplier(300)
     swipe(218, 523, 939, 162)
 }
 

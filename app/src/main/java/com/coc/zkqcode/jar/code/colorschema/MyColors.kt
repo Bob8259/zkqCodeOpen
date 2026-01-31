@@ -25,4 +25,16 @@ object MyColors : IWorkerColors by WorkerColors, IUIColors by UIColors, IFeature
     )
 
     //以上颜色是夜世界教程颜色
+    //前期检测颜色
+    val UpgradeToTH6: ColorSchema = ColorSchema.parse(
+        700,
+        189,
+        725,
+        221,
+        "1919FF-101010",
+        "2|-6|1919FF-101010,2|-6|1919FF-101010,6|0|1919FF-101010,8|2|1919FF-101010,11|4|1919FF-101010,7|8|1919FF-101010,0|7|1919FF-101010,0|5|1919FF-101010,1|1|1919FF-101010",
+        0,
+        0.9,
+        "需要将大本营升至6级"
+    )
 }
