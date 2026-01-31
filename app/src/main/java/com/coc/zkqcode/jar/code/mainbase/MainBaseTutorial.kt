@@ -1,6 +1,5 @@
 package com.coc.zkqcode.jar.code.mainbase
 
-import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.system.inputmethod.ZKQInputMethodService
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.core.util.basic.ShowMessage
@@ -10,7 +9,6 @@ import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndStop
 import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.InGamesVars
-import com.coc.zkqcode.jar.code.universal.clickRightBottom
 import com.coc.zkqcode.jar.code.universal.smalltools.checkReconnections
 import com.coc.zkqcode.jar.code.universal.smalltools.getStaticConfig
 import com.coc.zkqcode.jar.code.universal.smalltools.killApp
@@ -33,7 +31,6 @@ class MainBaseTutorial {
             MyColors.TutorialTrain,
             MyColors.AttackMap,
             MyColors.AttackGoblin,
-            MyColors.TutorialUpgradeTownHall,
             MyColors.TutorialMagicalItem,
             MyColors.TutorialMagicalItemInner
         )
@@ -45,7 +42,7 @@ class MainBaseTutorial {
             if (elapsed >= durationMillis) break
 
             val remainingSeconds = ((durationMillis - elapsed) / 1000).toInt()
-            ShowMessage("主世界教程中，还剩${remainingSeconds}秒")
+            ShowMessage("账户${InGamesVars.currentAccountNumber}\n主世界教程中，还剩${remainingSeconds}秒")
             val screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult
                 ?: logAndStop("in isInHomePage, screen capture failed.")
 
@@ -56,8 +53,6 @@ class MainBaseTutorial {
                     delayWithMultiplier(500)
                 }
             }
-
-            // 2. Handle specific UI elements with complex or fixed-coordinate logic
 
             // Speaking Villager sequence
             findMultiColors(schema = MyColors.SpeakingVillager)?.let {
@@ -103,21 +98,34 @@ class MainBaseTutorial {
 
             // Shop Navigation
             findMultiColors(schema = MyColors.TutorialShop)?.let {
-                TouchActions.tap(1193, 632)
-                delayWithMultiplier(1500)
+                val point = findMultiColors(schema = MyColors.ShopAfterTutorial)
+                if (point == null) {
+                    TouchActions.tap(1193, 632)
+                    delayWithMultiplier(1500)
+                }
             }
 
             // Dynamic Offset for Inner Shop
-            findMultiColors(schema = MyColors.ShopInnerArrow)?.let { point ->
-                TouchActions.tap(point.x - 100, point.y + 50)
-                delayWithMultiplier(1500)
+            findMultiColors(schema = MyColors.ShopInnerArrow)?.let {
+                TouchActions.tap(it.x - 100, it.y + 50)
+                delayWithMultiplier(500)
+
             }
 
             // Wizard Attack / Blue Troop anti-stuck (Restart App)
             findMultiColors(schema = MyColors.TutorialBlueTroop)?.let {
+                delayWithMultiplier(500)
                 killApp("com.supercell.clashofclans")
                 delayWithMultiplier(1000)
                 runApp("com.supercell.clashofclans")
+            }
+            findMultiColors(schema = MyColors.TutorialUpgradeTownHall)?.let {
+                TouchActions.tap(it.x, it.y)
+                delayWithMultiplier(500)
+                val isSpeedUp = getStaticConfig(Schema.GLOBAL_SETTINGS.CREATE_GEM_BUILD.key) == "1"
+                if (isSpeedUp) {
+                    TouchActions.tap(708, 549) // Use gem to speed up
+                }
             }
 
             // Troop Training sequence
@@ -159,9 +167,9 @@ class MainBaseTutorial {
                 // Worker tap sequence
                 TouchActions.tap(598, 43)
                 delayWithMultiplier(300)
-                repeat(3) {
+                repeat(5) {
                     TouchActions.tap(649, 672)
-                    delayWithMultiplier(100)
+                    delayWithMultiplier(300)
                 }
 
                 // Token/Pass tap sequence
@@ -169,7 +177,7 @@ class MainBaseTutorial {
                 delayWithMultiplier(300)
                 repeat(10) {
                     TouchActions.tap(574, 47)
-                    delayWithMultiplier(100)
+                    delayWithMultiplier(300)
                 }
             }
 
