@@ -23,8 +23,7 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.unit.toSize
-import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
@@ -163,10 +162,9 @@ class ControlWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner 
         var componentSize by remember { mutableStateOf(Size.Zero) }
         var isAtRightSide by remember { mutableStateOf(false) }
 
-        val configuration = LocalConfiguration.current
-        val density = LocalDensity.current
-        val screenWidth = with(density) { configuration.screenWidthDp.dp.toPx() }.roundToInt()
-        val screenHeight = with(density) { configuration.screenHeightDp.dp.toPx() }.roundToInt()
+        val windowInfo = LocalWindowInfo.current
+        val screenWidth = windowInfo.containerSize.width
+        val screenHeight = windowInfo.containerSize.height
 
         var isDragging by remember { mutableStateOf(false) }
 
