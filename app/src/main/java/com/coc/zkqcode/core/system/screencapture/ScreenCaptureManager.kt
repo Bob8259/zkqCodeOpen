@@ -50,7 +50,8 @@ object ScreenCaptureManager {
 
     private val projectionCallback = object : MediaProjection.Callback() {
         override fun onStop() {
-            cleanupProjectionResources()
+            cleanupDisplayResources()
+            mediaProjection = null
         }
     }
 
@@ -136,7 +137,8 @@ object ScreenCaptureManager {
         }
 
         // Clean up resources like VirtualDisplay and ImageReader
-        cleanupProjectionResources()
+        cleanupDisplayResources()
+        mediaProjection = null
 
         // Clear cached permission credentials
         cachedResultCode = null
@@ -161,7 +163,7 @@ object ScreenCaptureManager {
                 )
              } catch (e: Exception) {
                  Timber.e(e, "ensureVirtualDisplay: Error creating VirtualDisplay")
-                 cleanupProjectionResources()
+                 cleanupDisplayResources()
              }
         } else {
             // If VirtualDisplay already exists, check if size has changed
@@ -170,7 +172,7 @@ object ScreenCaptureManager {
              // Simple check if imageReader matches
              if (imageReader?.width != screenWidth || imageReader?.height != screenHeight) {
                  Timber.d("ensureVirtualDisplay: Size changed, recreating resources")
-                 cleanupProjectionResources()
+                 cleanupDisplayResources()
                  prepareImageReader()
                  try {
                      virtualDisplay = projection.createVirtualDisplay(
@@ -207,7 +209,7 @@ object ScreenCaptureManager {
             virtualDisplay != null
         } catch (e: Exception) {
             Timber.e(e, "takeScreenshot: Error during capture setup")
-            cleanupProjectionResources()
+            cleanupDisplayResources()
             false
         }
     }
@@ -233,17 +235,18 @@ object ScreenCaptureManager {
         }
     }
 
-    private fun cleanupProjectionResources() {
+    private fun cleanupDisplayResources() {
         virtualDisplay?.release()
         virtualDisplay = null
         imageReader?.close()
         imageReader = null
-        mediaProjection = null
+        // Do NOT set mediaProjection to null here, so we can reuse it
     }
 
     fun releaseAll() {
         runCatching { mediaProjection?.stop() }
-        cleanupProjectionResources()
+        cleanupDisplayResources()
+        mediaProjection = null
         cachedResultCode = null
         cachedIntentData = null
         // Stop background thread
@@ -357,9 +360,9 @@ object ScreenCaptureManager {
             }
         }
 
-        // First attempt: Set timeout to 50ms
+        // First attempt: Set timeout to 150ms (Increased from 50ms)
         // If screen is static, reused VirtualDisplay may not produce new frames, causing suspend to hang
-        val result = withTimeoutOrNull(50) {
+        val result = withTimeoutOrNull(150) {
             attemptCapture()
         }
 
@@ -369,7 +372,7 @@ object ScreenCaptureManager {
             // Timeout: VirtualDisplay is likely not producing frames due to static screen, or ImageReader has issues
             // Force reset resources (will destroy VirtualDisplay)
             Timber.d("capture: Timeout waiting for image, recreating VirtualDisplay to force update")
-            cleanupProjectionResources()
+            cleanupDisplayResources()
             
             // Second attempt: Since resources have been cleaned up, attemptCapture will rebuild VirtualDisplay internally
             // Rebuilding VirtualDisplay usually sends the first frame immediately without delay, so no long timeout needed here
