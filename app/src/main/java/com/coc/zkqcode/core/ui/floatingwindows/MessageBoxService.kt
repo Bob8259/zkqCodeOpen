@@ -183,7 +183,11 @@ class MessageBoxService : Service(), LifecycleOwner, SavedStateRegistryOwner {
         return START_NOT_STICKY
     }
 
+    private var isForeground = false
+
     private fun updateForegroundRecord() {
+        if (isForeground) return // Avoid redundant calls if already foreground
+
         val notification = NotificationHelper.createNotification(this)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             val type = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
@@ -192,9 +196,19 @@ class MessageBoxService : Service(), LifecycleOwner, SavedStateRegistryOwner {
             } else {
                 ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION
             }
-            startForeground(1000, notification, type)
+            try {
+                startForeground(1000, notification, type)
+                isForeground = true
+            } catch (e: Exception) {
+                 e.printStackTrace()
+            }
         } else {
-            startForeground(1000, notification)
+            try {
+                startForeground(1000, notification)
+                isForeground = true
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
     }
 
