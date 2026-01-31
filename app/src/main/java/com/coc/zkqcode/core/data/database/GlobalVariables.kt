@@ -9,7 +9,7 @@ import com.coc.zkqcode.core.data.websocket.ServerActions
 import com.coc.zkqcode.interfaces.MainCode
 
 object GlobalVars {
-    // Basic componeents
+    // Basic components
     var serverActions by mutableStateOf<ServerActions?>(null)
     var pluginUI: MainCode? = null
     var serverPath: String = ""
