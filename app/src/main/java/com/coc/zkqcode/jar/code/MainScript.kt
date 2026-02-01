@@ -54,7 +54,7 @@ class MainScript {
                     delay(500)
                     break // 跳出内层循环，重新检查账号状态
                 }
-                if (!PreCheck().doAllPreChecks()) {
+                if (!PreCheck().playNightBase()) {
                     delay(500)
                     break // 跳出内层循环，重新检查账号状态
                 }

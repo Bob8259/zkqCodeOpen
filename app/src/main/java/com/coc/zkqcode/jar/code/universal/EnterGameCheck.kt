@@ -14,6 +14,7 @@ import com.coc.zkqcode.jar.code.universal.tutorial.AllTutorials
 import com.coc.zkqcode.jar.code.universal.smalltools.checkReconnections
 import com.coc.zkqcode.jar.code.universal.smalltools.isGameAtFront
 import com.coc.zkqcode.jar.code.universal.smalltools.runApp
+import com.coc.zkqcode.jar.code.universal.smalltools.runGame
 import kotlinx.coroutines.delay
 
 
@@ -61,19 +62,7 @@ suspend fun clickRightBottom() {
 
 private suspend fun checkUIVisibility(): Boolean {
     if (!isGameAtFront()) {
-        when (InGamesVars.currentGamePackage) {
-            0 -> {//国服
-                runApp("com.tencent.tmgp.supercell.clashofclans")
-            }
-
-            1 -> {//国际服
-                runApp("com.supercell.clashofclans")
-            }
-
-            2 -> {//私服
-                runApp("com.supercell.clashofclans1")
-            }
-        }
+        runGame()
     } else {
         if (isInHomePage()) {
             ShowMessage("已进入主界面")
@@ -89,7 +78,7 @@ private suspend fun checkUIVisibility(): Boolean {
 
 suspend fun zoomSmallMainBase() {
     pinchIn(141, 423, 1052, 352, 638, 365)
-    delayWithMultiplier(300)
+    delayWithMultiplier(200)
     swipe(218, 523, 939, 162)
 }
 

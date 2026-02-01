@@ -1,8 +1,10 @@
 package com.coc.zkqcode.core.util.basic
 
 import android.content.Context
+import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.ui.floatingwindows.MessageBoxHelper.showFloatingMessage
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndStop
+import kotlinx.coroutines.delay
 import timber.log.Timber
 import java.lang.ref.WeakReference
 
@@ -16,12 +18,15 @@ object ShowMessage {
     }
 
     operator fun invoke(text: String) {
+        if (!GlobalVars.isPlaying.value) {
+            return//the user paused the script, then we should also stop
+        }
         val now = System.currentTimeMillis()
         // If message is the same and it hasn't been long since last show, ignore it to save Binder IPC
         if (text == lastMessage && (now - lastShowTime) < 500) {
             return
         }
-        
+
         lastMessage = text
         lastShowTime = now
 

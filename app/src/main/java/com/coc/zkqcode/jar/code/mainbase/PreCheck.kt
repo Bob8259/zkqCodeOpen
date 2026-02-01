@@ -13,20 +13,22 @@ import com.coc.zkqcode.jar.code.universal.smalltools.getConfigRuntime
 import com.coc.zkqcode.jar.ui.schema.Schema
 
 class PreCheck {
-    suspend fun doAllPreChecks(): Boolean {
+    suspend fun playNightBase(): Boolean {
         if (!claimAchievement()) return false
         val noNightBase = getConfigRuntime(
-                        Schema.NIGHT_BASE_SETTINGS.NO_BUILDER_BASE.key
+            Schema.NIGHT_BASE_SETTINGS.NO_BUILDER_BASE.key
         ) == "1"
-        if (!noNightBase) {
-            EnterTargetBase().enterNightBase(true)//check if night base is unlocked or not.
-        }
+        if (noNightBase) return true//if no night base, then directly return.
+
+        EnterTargetBase().enterNightBase(true)//check if night base is unlocked or not.
+
+
         return true
     }
 
     suspend fun claimAchievement(): Boolean {
         val isClaimAchievement = getConfigRuntime(
-                        Schema.MAIN_BASE_SETTINGS.CLAIM_ACHIEVEMENT_GEMS.key
+            Schema.MAIN_BASE_SETTINGS.CLAIM_ACHIEVEMENT_GEMS.key
         ) == "1"
         if (isClaimAchievement) {
             val point = findMultiColors(schema = MyColors.Achievement)
