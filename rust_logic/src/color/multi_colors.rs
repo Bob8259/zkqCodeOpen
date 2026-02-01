@@ -31,8 +31,40 @@ extern "C" {
     fn AndroidBitmap_unlockPixels(env: *mut jni::sys::JNIEnv, bitmap: jobject) -> i32;
 }
 
+struct BitmapLock<'a> {
+    env: &'a JNIEnv<'a>,
+    bitmap: JObject<'a>,
+    pixels: *mut std::ffi::c_void,
+}
+
+impl<'a> BitmapLock<'a> {
+    fn lock(env: &'a JNIEnv<'a>, bitmap: JObject<'a>) -> Option<Self> {
+        let mut pixels = std::ptr::null_mut();
+        unsafe {
+            if AndroidBitmap_lockPixels(env.get_native_interface(), bitmap.as_raw(), &mut pixels)
+                < 0
+            {
+                return None;
+            }
+        }
+        Some(Self {
+            env,
+            bitmap,
+            pixels,
+        })
+    }
+}
+
+impl Drop for BitmapLock<'_> {
+    fn drop(&mut self) {
+        unsafe {
+            AndroidBitmap_unlockPixels(self.env.get_native_interface(), self.bitmap.as_raw());
+        }
+    }
+}
+
 #[no_mangle]
-pub unsafe extern "system" fn find_multi_colors(
+pub extern "system" fn find_multi_colors(
     env: JNIEnv,
     _class: JObject,
     bitmap: JObject,
@@ -46,18 +78,20 @@ pub unsafe extern "system" fn find_multi_colors(
     direction: jint,
 ) -> jintArray {
     let mut info = AndroidBitmapInfo::default();
-    if AndroidBitmap_getInfo(env.get_native_interface(), bitmap.as_raw(), &mut info) < 0 {
-        return std::ptr::null_mut();
+    unsafe {
+        if AndroidBitmap_getInfo(env.get_native_interface(), bitmap.as_raw(), &mut info) < 0 {
+            return std::ptr::null_mut();
+        }
     }
 
     if info.format != ANDROID_BITMAP_FORMAT_RGBA_8888 {
         return std::ptr::null_mut();
     }
 
-    let mut pixels = std::ptr::null_mut();
-    if AndroidBitmap_lockPixels(env.get_native_interface(), bitmap.as_raw(), &mut pixels) < 0 {
-        return std::ptr::null_mut();
-    }
+    let lock = match BitmapLock::lock(&env, bitmap) {
+        Some(l) => l,
+        None => return std::ptr::null_mut(),
+    };
 
     let offsets_len = env.get_array_length(&flat_offsets).unwrap_or(0) as usize;
     let mut offsets_vec = vec![0i32; offsets_len];
@@ -65,17 +99,18 @@ pub unsafe extern "system" fn find_multi_colors(
         .get_int_array_region(&flat_offsets, 0, &mut offsets_vec)
         .is_err()
     {
-        AndroidBitmap_unlockPixels(env.get_native_interface(), bitmap.as_raw());
         return std::ptr::null_mut();
     }
 
     let stride = info.stride as usize;
-    let pixels_ptr = pixels as *const u8;
+    let pixels_ptr = lock.pixels as *const u8;
 
     let get_pixel = |x: i32, y: i32| {
         let offset = (y as usize * stride) + (x as usize * 4);
-        let p = pixels_ptr.add(offset) as *const u32;
-        *p
+        unsafe {
+            let p = pixels_ptr.add(offset) as *const u32;
+            *p
+        }
     };
 
     let result = find_multi_colors_internal(
@@ -92,14 +127,13 @@ pub unsafe extern "system" fn find_multi_colors(
         get_pixel,
     );
 
-    AndroidBitmap_unlockPixels(env.get_native_interface(), bitmap.as_raw());
-
     if let Some((fx, fy)) = result {
-        let res_arr = env.new_int_array(2).unwrap();
-        let buf = [fx, fy];
-        env.set_int_array_region(&res_arr, 0, &buf).unwrap();
-        res_arr.as_raw()
-    } else {
-        std::ptr::null_mut()
+        if let Ok(res_arr) = env.new_int_array(2) {
+            let buf = [fx, fy];
+            if env.set_int_array_region(&res_arr, 0, &buf).is_ok() {
+                return res_arr.as_raw();
+            }
+        }
     }
+    std::ptr::null_mut()
 }
