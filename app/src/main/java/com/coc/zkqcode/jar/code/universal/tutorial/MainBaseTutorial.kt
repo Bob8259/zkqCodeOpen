@@ -12,8 +12,10 @@ import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.InGamesVars
 import com.coc.zkqcode.jar.code.universal.smalltools.getStaticConfig
 import com.coc.zkqcode.jar.code.universal.smalltools.killApp
+import com.coc.zkqcode.jar.code.universal.smalltools.killGame
 import com.coc.zkqcode.jar.code.universal.smalltools.reExtractGameSavings
 import com.coc.zkqcode.jar.code.universal.smalltools.runApp
+import com.coc.zkqcode.jar.code.universal.smalltools.runGame
 import com.coc.zkqcode.jar.code.universal.smalltools.setZKQInputMethod
 import com.coc.zkqcode.jar.ui.schema.Schema
 
@@ -106,9 +108,9 @@ object MainBaseTutorial {
         // Wizard Attack / Blue Troop anti-stuck (Restart App)
         findMultiColors(schema = MyColors.TutorialBlueTroop)?.let {
             delayWithMultiplier(500)
-            killApp("com.supercell.clashofclans")
+            killGame()
             delayWithMultiplier(1000)
-            runApp("com.supercell.clashofclans")
+            runGame()
         }
         findMultiColors(schema = MyColors.TutorialUpgradeTownHall)?.let {
             TouchActions.tap(it.x, it.y)

@@ -2,7 +2,6 @@ package com.coc.zkqcode.jar.code.universal.smalltools
 
 import android.os.Environment
 import com.coc.zkqcode.core.data.database.GlobalVars
-import com.coc.zkqcode.jar.ui.schema.Schema
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.core.util.basic.RunShell
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
@@ -11,7 +10,7 @@ import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndStop
 import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.InGamesVars
-import com.topjohnwu.superuser.Shell
+import com.coc.zkqcode.jar.ui.schema.Schema
 import kotlinx.coroutines.delay
 
 
