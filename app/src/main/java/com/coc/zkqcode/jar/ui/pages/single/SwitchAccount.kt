@@ -42,6 +42,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import androidx.core.content.edit
 import com.coc.zkqcode.core.util.basic.ShowMessage
+import kotlinx.coroutines.withContext
 
 @Composable
 fun SwitchAccount(onClose: () -> Unit) {
@@ -233,8 +234,10 @@ fun SwitchAccount(onClose: () -> Unit) {
                                         Shell.cmd(cmd).exec()
                                     }
                                 }
-                                ShowMessage("切号完成")
-                                onClose()
+                                withContext(Dispatchers.Main) {
+                                    ShowMessage("切号完成")
+                                    onClose()
+                                }
                             }
                         }
                     )
