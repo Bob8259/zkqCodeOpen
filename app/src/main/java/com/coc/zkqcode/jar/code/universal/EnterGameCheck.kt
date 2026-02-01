@@ -10,7 +10,7 @@ import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.core.util.touchactions.TouchActions.pinchIn
 import com.coc.zkqcode.core.util.touchactions.TouchActions.swipe
 import com.coc.zkqcode.jar.code.colorschema.MyColors
-import com.coc.zkqcode.jar.code.mainbase.MainBaseTutorial
+import com.coc.zkqcode.jar.code.universal.tutorial.AllTutorials
 import com.coc.zkqcode.jar.code.universal.smalltools.checkReconnections
 import com.coc.zkqcode.jar.code.universal.smalltools.isGameAtFront
 import com.coc.zkqcode.jar.code.universal.smalltools.runApp
@@ -32,7 +32,7 @@ suspend fun enterMainScreen(): Boolean {
     var mainBaseTutorialElements = 0
     while (System.currentTimeMillis() - startTime < timeoutMillis) {
         //测试代码
-//        runTestCode()
+        runTestCode()
 
         // 3. Insert your logic to check if the main screen is actually visible
         if (checkUIVisibility()) return true
@@ -40,7 +40,7 @@ suspend fun enterMainScreen(): Boolean {
         ShowMessage("账号${InGamesVars.currentAccountNumber}，倒计时${((timeoutMillis - System.currentTimeMillis() + startTime) / 1000).toInt()}秒\n请手动给主世界和夜世界切换默认场景")
         closeAdvertisements()
         clickRightBottom()
-        if (MainBaseTutorial().checkIsInTutorial(mainBaseTutorialElements)) mainBaseTutorialElements++
+        if (AllTutorials().checkIsInTutorial(mainBaseTutorialElements)) mainBaseTutorialElements++
         // 4. Wait for 1 second before checking again to save CPU cycles
         delay(300)
     }
@@ -51,7 +51,7 @@ suspend fun enterMainScreen(): Boolean {
 
 private suspend fun runTestCode() {
     while (true) {
-        MainBaseTutorial().mainBaseTutorial()
+        AllTutorials().allBaseTutorial()
     }
 }
 
