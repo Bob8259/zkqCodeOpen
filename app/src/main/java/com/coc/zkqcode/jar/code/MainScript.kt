@@ -3,19 +3,17 @@ package com.coc.zkqcode.jar.code
 import android.os.Environment
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.util.basic.ShowMessage
-import com.coc.zkqcode.core.util.fileactions.FileHelper.readJson
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndStop
 import com.coc.zkqcode.jar.code.mainbase.PreCheck
 import com.coc.zkqcode.jar.code.universal.InGamesVars
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
+import com.coc.zkqcode.jar.code.universal.smalltools.readMemory
 import com.coc.zkqcode.jar.ui.schema.Schema
-import com.google.gson.JsonObject
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 
 class MainScript {
-    private var localMemory: JsonObject? = null
 
     // 辅助函数：快速获取配置值，若为空则触发 logAndStop
     private fun getConfigOrStop(key: String): String {
@@ -23,12 +21,9 @@ class MainScript {
     }
 
     suspend fun runMainScript() {
-        val memoryPath = "${Environment.getExternalStorageDirectory().path}/zkqFiles/memory.json"
-
         while (currentCoroutineContext().isActive) {
             // 1. 初始化/更新本地内存状态
-            localMemory = readJson(memoryPath)
-            val startAccount = localMemory?.get("accountNumber")?.asInt ?: 1
+            val startAccount = readMemory("accountNumber").toIntOrNull() ?: 1
             val accountTotal = getConfigOrStop(Schema.GLOBAL_SETTINGS.ACCOUNT_COUNT.key).toInt()
 
             // 2. 查找第一个开启的账号
