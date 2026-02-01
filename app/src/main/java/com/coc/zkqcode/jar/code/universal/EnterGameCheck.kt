@@ -12,9 +12,11 @@ import com.coc.zkqcode.core.util.touchactions.TouchActions.swipe
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.tutorial.AllTutorials
 import com.coc.zkqcode.jar.code.universal.smalltools.checkReconnections
+import com.coc.zkqcode.jar.code.universal.smalltools.getStaticConfig
 import com.coc.zkqcode.jar.code.universal.smalltools.isGameAtFront
 import com.coc.zkqcode.jar.code.universal.smalltools.runApp
 import com.coc.zkqcode.jar.code.universal.smalltools.runGame
+import com.coc.zkqcode.jar.ui.schema.Schema
 import kotlinx.coroutines.delay
 
 
@@ -33,7 +35,7 @@ suspend fun enterMainScreen(): Boolean {
     var mainBaseTutorialElements = 0
     while (System.currentTimeMillis() - startTime < timeoutMillis) {
         //测试代码
-        runTestCode()
+//        runTestCode()
 
         // 3. Insert your logic to check if the main screen is actually visible
         if (checkUIVisibility()) return true
@@ -114,6 +116,26 @@ suspend fun closeAdvertisements() {
             // 4. Retake the screenBuffer so the next schema check uses the updated screen
             screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult
                 ?: return@forEach // Use return@forEach to skip to next if capture fails
+        }
+    }
+    findMultiColors(schema = MyColors.ReturnAwards)?.let {
+        // Define the coordinate pairs in order of execution
+        val tapPoints = listOf(
+            257 to 297,
+            464 to 307,
+            662 to 305,
+            267 to 512,
+            466 to 511,
+            654 to 515,
+            882 to 513,
+            1077 to 101
+        )
+
+        // Iterate through points to reduce code redundancy
+        tapPoints.forEach { (x, y) ->
+            TouchActions.tap(x, y)
+            // Maintains functional parity with the original 100ms delay per tap
+            delayWithMultiplier(100)
         }
     }
 }

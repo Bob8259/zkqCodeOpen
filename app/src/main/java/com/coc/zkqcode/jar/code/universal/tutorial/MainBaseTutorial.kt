@@ -5,17 +5,12 @@ import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.basic.findMultiColors
-import com.coc.zkqcode.core.util.fileactions.LogHelper
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndStop
 import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.InGamesVars
 import com.coc.zkqcode.jar.code.universal.smalltools.getStaticConfig
-import com.coc.zkqcode.jar.code.universal.smalltools.killApp
-import com.coc.zkqcode.jar.code.universal.smalltools.killGame
 import com.coc.zkqcode.jar.code.universal.smalltools.reExtractGameSavings
-import com.coc.zkqcode.jar.code.universal.smalltools.runApp
-import com.coc.zkqcode.jar.code.universal.smalltools.runGame
 import com.coc.zkqcode.jar.code.universal.smalltools.setZKQInputMethod
 import com.coc.zkqcode.jar.ui.schema.Schema
 
@@ -23,21 +18,21 @@ object MainBaseTutorial {
 
     private var speakingCount = 0
 
-    suspend fun mainBaseTutorial() {
+    suspend fun mainBaseTutorial(): Boolean {
         // Standard schemas that follow a simple "find and tap" pattern
         val prioritySchemas = listOf(
             MyColors.PrivacyInfo,
             MyColors.TutorialGoblinAttack,
             MyColors.VillagerAttack,
             MyColors.TutorialTrain,
-            MyColors.AttackMap,
             MyColors.AttackGoblin,
             MyColors.TutorialMagicalItem,
-            MyColors.TutorialMagicalItemInner
+            MyColors.TutorialMagicalItemInner,
+            MyColors.MainBackToCamp
         )
 
         val screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult
-            ?: LogHelper.logAndStop("in isInHomePage, screen capture failed.")
+            ?: logAndStop("in isInHomePage, screen capture failed.")
 
         // 1. Process standard priority schemas (Find -> Tap)
         prioritySchemas.forEach { schema ->
@@ -53,7 +48,14 @@ object MainBaseTutorial {
             // speaking count > 5 means that the tutorial is in the middle, not at the beggining. So we might need to attack a goblin
             // Thus, we need to use the new sequence to enter troop training page
             val sequence = if (speakingCount > 5) {
-                listOf(415 to 410, 706 to 554, 670 to 386, 706 to 554)
+                listOf(
+                    415 to 410,
+                    706 to 554,
+                    670 to 386,
+                    706 to 554,
+                    823 to 260,
+                    706 to 554,
+                )//训练营，训练部队按钮，主世界大本营，主世界大本营升级，夜世界大本营，夜世界大本营升级
             } else {
                 listOf(415 to 410)
             }
@@ -68,7 +70,12 @@ object MainBaseTutorial {
             TouchActions.tap(344, 510)
             delayWithMultiplier(500)
         }
-
+        findMultiColors(schema = MyColors.AttackMap)?.let {
+            if (findMultiColors(schema = MyColors.TrainTroops) == null && findMultiColors(schema = MyColors.ShopAfterTutorial) == null) {
+                TouchActions.tap(it.x, it.y)
+                delayWithMultiplier(500)
+            }
+        }
         // Building logic with Gem speed-up check
         findMultiColors(schema = MyColors.TutorialBuildClick)?.let { point ->
             TouchActions.tap(point.x, point.y)
@@ -91,8 +98,7 @@ object MainBaseTutorial {
 
         // Shop Navigation
         findMultiColors(schema = MyColors.TutorialShop)?.let {
-            val point = findMultiColors(schema = MyColors.ShopAfterTutorial)
-            if (point == null) {
+            if (findMultiColors(schema = MyColors.TrainTroops) == null && findMultiColors(schema = MyColors.ShopAfterTutorial) == null) {
                 TouchActions.tap(1193, 632)
                 delayWithMultiplier(1500)
             }
@@ -106,11 +112,28 @@ object MainBaseTutorial {
         }
 
         // Wizard Attack / Blue Troop anti-stuck (Restart App)
+        // Check for the multi-color schema before executing the sequence
         findMultiColors(schema = MyColors.TutorialBlueTroop)?.let {
-            delayWithMultiplier(500)
-            killGame()
-            delayWithMultiplier(1000)
-            runGame()
+            // Define the tap sequence as a list of pairs (x, y)
+            val tapPoints = listOf(
+                148 to 650,
+                759 to 336,
+                840 to 263,
+                142 to 173,
+                1161 to 168,
+                589 to 243,
+                735 to 85,
+                589 to 243,
+                735 to 85,
+                589 to 243,
+                735 to 85,
+                589 to 243,
+                735 to 85,
+            )
+            tapPoints.forEachIndexed { _, (x, y) ->
+                TouchActions.tap(x, y)
+                delayWithMultiplier(100)
+            }
         }
         findMultiColors(schema = MyColors.TutorialUpgradeTownHall)?.let {
             TouchActions.tap(it.x, it.y)
@@ -173,6 +196,12 @@ object MainBaseTutorial {
                 delayWithMultiplier(300)
             }
             reExtractGameSavings()
+            return true
         }
+        findMultiColors(schema = MyColors.ReturnAwards)?.let {
+            return true
+        }
+
+        return false
     }
 }

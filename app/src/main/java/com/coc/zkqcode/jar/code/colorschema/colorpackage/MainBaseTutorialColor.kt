@@ -90,7 +90,7 @@ object MainBaseTutorial : IMainBaseTutorial {
         "5|20|94FFFF,6|35|2F4968,36|44|20A3E5,33|38|49D2FF,24|25|3D6493,36|9|375472,34|-3|F0F4EB,43|-3|ECF1E5,53|2|EEF5E9",
         0,
         0.9,
-        "商店箭头"
+        "商店按钮"
     )
     override val ShopInnerArrow: ColorSchema = ColorSchema.parse(
         117,
@@ -137,10 +137,7 @@ object MainBaseTutorial : IMainBaseTutorial {
         "村民建议进攻哥布林"
     )
     override val TutorialBlueTroop: ColorSchema = ColorSchema.parse(
-        98,
-        586,
-        207,
-        619,
+        97, 582, 205, 618,
         "C08545",
         "1|-2|C78948,8|-9|DD9853,13|-3|CB8E4D,13|-2|C88C4C,9|-3|CA8D4C,5|-6|D4924F,-1|-3|CA8B4A,-3|0|C08545,-4|-6|D3914E",
         0,
