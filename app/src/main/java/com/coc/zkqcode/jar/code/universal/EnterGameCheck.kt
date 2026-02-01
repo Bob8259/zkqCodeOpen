@@ -10,6 +10,7 @@ import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.core.util.touchactions.TouchActions.pinchIn
 import com.coc.zkqcode.core.util.touchactions.TouchActions.swipe
 import com.coc.zkqcode.jar.code.colorschema.MyColors
+import com.coc.zkqcode.jar.code.mainbase.TrainTroops
 import com.coc.zkqcode.jar.code.universal.tutorial.AllTutorials
 import com.coc.zkqcode.jar.code.universal.smalltools.checkReconnections
 import com.coc.zkqcode.jar.code.universal.smalltools.getStaticConfig
@@ -35,7 +36,7 @@ suspend fun enterMainScreen(): Boolean {
     var mainBaseTutorialElements = 0
     while (System.currentTimeMillis() - startTime < timeoutMillis) {
         //测试代码
-//        runTestCode()
+        runTestCode()
 
         // 3. Insert your logic to check if the main screen is actually visible
         if (checkUIVisibility()) return true
@@ -54,7 +55,8 @@ suspend fun enterMainScreen(): Boolean {
 
 private suspend fun runTestCode() {
     while (true) {
-        AllTutorials.allBaseTutorial()
+        TrainTroops.trainTroops()
+        delay(1000)
     }
 }
 
