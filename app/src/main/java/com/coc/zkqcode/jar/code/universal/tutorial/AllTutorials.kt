@@ -27,8 +27,8 @@ object AllTutorials {
             val remainingSeconds = ((durationMillis - elapsed) / 1000).toInt()
             ShowMessage("账户${InGamesVars.currentAccountNumber}\n教程中，还剩${remainingSeconds}秒")
 
-            MainBaseTutorial.mainBaseTutorial()
-            NightBaseTutorial.nightBaseTutorial()
+            if(MainBaseTutorial.mainBaseTutorial()) break
+            if(NightBaseTutorial.nightBaseTutorial()) break
             // Maintenance checks
             checkReconnections()
             delayWithMultiplier(100)

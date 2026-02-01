@@ -50,6 +50,8 @@ class EnterTargetBase {
                         while (System.currentTimeMillis() - boatSearchStart < 1000L) {
                             val boatPoint = findMultiColors(schema = MyColors.RebuildBoat)
                             if (boatPoint != null) {
+                                TouchActions.tap(boatPoint.x, boatPoint.y)
+                                delayWithMultiplier(500)
                                 AllTutorials.allBaseTutorial()
                                 break
                             }
