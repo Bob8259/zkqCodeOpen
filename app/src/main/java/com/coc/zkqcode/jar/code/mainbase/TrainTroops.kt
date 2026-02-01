@@ -1,6 +1,5 @@
 package com.coc.zkqcode.jar.code.mainbase
 
-import android.icu.text.SymbolTable
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
@@ -9,82 +8,139 @@ import com.coc.zkqcode.core.util.basic.findMultiColorsUntil
 import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.InGamesVars
+import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.smalltools.readMemory
 import com.coc.zkqcode.jar.code.universal.smalltools.writeMemory
-import kotlinx.coroutines.time.delay
 import java.util.Calendar
 import kotlin.math.abs
 
 object TrainTroops {
-    suspend fun trainTroops() {
-        val accountKey = "MainBaseTrainTroops${InGamesVars.currentAccountNumber}"
-        val lastTrainingTime = readMemory(accountKey).toIntOrNull()
+    suspend fun trainTroops(): Boolean {
+        val storageKey = "MainBaseTrainTroops${InGamesVars.currentAccountNumber}"
+        val lastTrainingTime = readMemory(storageKey).toIntOrNull()
 
         val calendar = Calendar.getInstance()
         val dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH)
 
-        // Check if training has already been performed today
-        if (lastTrainingTime != null && abs(lastTrainingTime - dayOfMonth) == 0) {
-            return
-        }
+        if (lastTrainingTime == null || abs(lastTrainingTime - dayOfMonth) > 0) {
+            ShowMessage("准备训练部队")
+            GlobalVars.absorbEdge = 1
 
-        GlobalVars.absorbEdge = 1
+            // Open training menu
+            var point = findMultiColorsUntil(schema = MyColors.TrainTroops, duration = 1500)
+            if (point != null) {
+                TouchActions.tap(point.x, point.y)
+                delayWithMultiplier(500)
+            } else {
+                ShowMessage("训练部队失败")
+                GlobalVars.absorbEdge = 0
+                return enterMainScreen()
+            }
 
-        // Step 1: Open Training Menu
-        var point = findMultiColorsUntil(schema = MyColors.TrainTroops, duration = 1500)
-        if (point == null) return handleTrainingFailure()
-        TouchActions.tap(point.x, point.y)
-        delayWithMultiplier(500)
+            // Verify training page
+            point = findMultiColorsUntil(schema = MyColors.AttackInTrainingPage, duration = 1500)
+            if (point == null) {
+                ShowMessage("训练部队失败")
+                GlobalVars.absorbEdge = 0
+                return enterMainScreen()
+            }
 
-        // Step 2: Navigate to Attack/Training Page
-        point = findMultiColorsUntil(schema = MyColors.AttackInTrainingPage, duration = 1500)
-        if (point == null) return handleTrainingFailure()
-        TouchActions.tap(point.x, point.y)
-        delayWithMultiplier(500)
-
-        // Step 3: Clear existing troops
-        point = findMultiColorsUntil(schema = MyColors.DeleteAll1, duration = 1500)
-        if (point == null) return handleTrainingFailure()
-
-        TouchActions.tap(point.x, point.y)
-        delayWithMultiplier(500)
-
-        point = findMultiColorsUntil(schema = MyColors.MiddleGreenYes, duration = 1500)
-        if (point != null) {
-            TouchActions.tap(point.x, point.y)
-            delayWithMultiplier(500)
-
-            // Fixed coordinate tap for UI transition
-            TouchActions.tap(891, 234)
-            delayWithMultiplier(1200)
-
-            // Step 4: Batch train specific units (Dragons)
-            repeat(5) {
-                point = findMultiColors(schema = MyColors.TrainDragon)
-                if (point != null) {
-                    repeat(25) {
-                        TouchActions.tap(point!!.x, point!!.y)
-                        delayWithMultiplier(40)
-                    }
+            // Clean Queue 1
+            point = findMultiColorsUntil(schema = MyColors.DeleteAll1, duration = 1000)
+            if (point != null) {
+                TouchActions.tap(point.x, point.y)
+                delayWithMultiplier(500)
+                findMultiColorsUntil(schema = MyColors.MiddleGreenYes, duration = 1500)?.let {
+                    TouchActions.tap(it.x, it.y)
+                    delayWithMultiplier(500)
                 }
             }
 
-            // Save success state to memory
-            writeMemory(accountKey, dayOfMonth.toString())
-        } else {
-            return handleTrainingFailure()
+            // Train Troops Tab
+            TouchActions.tap(891, 234)
+            delayWithMultiplier(800)
+
+            for (i in 1..8) {
+                // Priority training check
+                val dragonPoint = findMultiColors(schema = MyColors.TrainDragon)
+                if (dragonPoint != null) {
+                    repeat(25) { TouchActions.tap(dragonPoint.x, dragonPoint.y); delayWithMultiplier(40) }
+                    break
+                }
+
+                findMultiColors(schema = MyColors.TrainGiant)?.let { p ->
+                    repeat(5) { TouchActions.tap(p.x, p.y); delayWithMultiplier(40) }
+                }
+                findMultiColors(schema = MyColors.TrainArcher)?.let { p ->
+                    repeat(40) { TouchActions.tap(p.x, p.y); delayWithMultiplier(40) }
+                }
+                findMultiColors(schema = MyColors.TrainBarbarian)?.let { p ->
+                    repeat(40) { TouchActions.tap(p.x, p.y); delayWithMultiplier(40) }
+                }
+
+                if (findMultiColors(schema = MyColors.GrayBarbarian) != null) break
+                delayWithMultiplier(300)
+            }
+
+            // Close tab and Clean Queue 2
+            TouchActions.tap(219, 139)
+            delayWithMultiplier(1000)
+            point = findMultiColorsUntil(schema = MyColors.DeleteAll2, duration = 500)
+            if (point != null) {
+                TouchActions.tap(point.x, point.y)
+                delayWithMultiplier(500)
+                findMultiColorsUntil(schema = MyColors.MiddleGreenYes, duration = 1500)?.let {
+                    TouchActions.tap(it.x, it.y)
+                    delayWithMultiplier(500)
+                }
+            }
+
+            // Spell Tab
+            TouchActions.tap(797, 420)
+            delayWithMultiplier(1000)
+            if (findMultiColorsUntil(schema = MyColors.TrainLighteningSpell, duration = 500) != null) {
+                // Optimized sequence of taps for lightning spells
+                val spellCoords = listOf(351 to 621, 351 to 621, 351 to 621, 220 to 499, 91 to 494, 91 to 494, 91 to 494, 91 to 494)
+                for (coord in spellCoords) {
+                    TouchActions.tap(coord.first, coord.second)
+                    delayWithMultiplier(50)
+                }
+            }
+
+            // Close tab and Clean Queue 3
+            TouchActions.tap(219, 139)
+            delayWithMultiplier(1000)
+            point = findMultiColorsUntil(schema = MyColors.DeleteAll3, duration = 500)
+            if (point != null) {
+                TouchActions.tap(point.x, point.y)
+                delayWithMultiplier(500)
+                findMultiColorsUntil(schema = MyColors.MiddleGreenYes, duration = 1500)?.let {
+                    TouchActions.tap(it.x, it.y)
+                    delayWithMultiplier(500)
+                }
+            }
+
+            // Siege Machines Tab
+            TouchActions.tap(1126, 423)
+            delayWithMultiplier(1000)
+            if (findMultiColorsUntil(schema = MyColors.TrainSiegeMachine, duration = 500) != null) {
+                val siegeCoords = listOf(1047 to 543, 610 to 535, 364 to 536, 138 to 541)
+                for (coord in siegeCoords) {
+                    TouchActions.tap(coord.first, coord.second)
+                    delayWithMultiplier(50)
+                }
+            }
+
+            // Final Close
+            TouchActions.tap(219, 139)
+            delayWithMultiplier(1000)
+            TouchActions.tap(1232, 65)
+            delayWithMultiplier(300)
+
+            writeMemory(storageKey, dayOfMonth.toString())
+            GlobalVars.absorbEdge = 0
+            return enterMainScreen()
         }
-
-        // Reset state on success
-        GlobalVars.absorbEdge = 0
-    }
-
-    /**
-     * Handles failed attempts by notifying the user and resetting state.
-     * Maintains original Chinese strings as requested.
-     */
-    private fun handleTrainingFailure() {
-        ShowMessage("训练部队失败")
-        GlobalVars.absorbEdge = 0
+        return true
     }
 }
