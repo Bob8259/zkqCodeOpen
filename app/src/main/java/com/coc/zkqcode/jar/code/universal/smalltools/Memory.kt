@@ -4,6 +4,10 @@ import android.os.Environment
 import com.coc.zkqcode.core.util.fileactions.FileHelper
 import com.google.gson.JsonObject
 
+//Memory list
+//
+//MainBaseTrainTroops$accountNumber: The time when the troops are trained.
+
 private val sdPath = Environment.getExternalStorageDirectory().path
 private val memoryPath = "$sdPath/zkqFiles/memory.json"
 

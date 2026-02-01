@@ -4,7 +4,8 @@ import android.os.Environment
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndStop
-import com.coc.zkqcode.jar.code.mainbase.PreCheck
+import com.coc.zkqcode.jar.code.mainbase.MainBaseScript
+import com.coc.zkqcode.jar.code.universal.precheck.PreCheck
 import com.coc.zkqcode.jar.code.universal.InGamesVars
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.smalltools.readMemory
@@ -43,18 +44,25 @@ class MainScript {
             // 4. 执行主逻辑循环
             InGamesVars.currentAccountNumber = activeAccount
             while (currentCoroutineContext().isActive) {
-                InGamesVars.currentGamePackage = getConfigOrStop("game_version${InGamesVars.currentAccountNumber}").toInt()
+                InGamesVars.currentGamePackage =
+                    getConfigOrStop("game_version${InGamesVars.currentAccountNumber}").toInt()
                 if (!enterMainScreen()) {
                     ShowMessage("进入游戏失败")
                     delay(500)
                     break // 跳出内层循环，重新检查账号状态
                 }
                 if (!PreCheck().playNightBase()) {
+                    ShowMessage("夜世界操作失败")
                     delay(500)
                     break // 跳出内层循环，重新检查账号状态
                 }
-                delay(2000)
+                if (!MainBaseScript.playMainBase()) {
+                    ShowMessage("主世界操作失败")
+                    delay(500)
+                    break // 跳出内层循环，重新检查账号状态
+                }
             }
+            delay(2000)
         }
     }
 }
