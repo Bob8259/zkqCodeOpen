@@ -84,7 +84,7 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *reserved) {
     }
 
     // Start security monitor thread
-    start_security_monitor();
+    // start_security_monitor();
 
     return JNI_VERSION_1_6;
 }

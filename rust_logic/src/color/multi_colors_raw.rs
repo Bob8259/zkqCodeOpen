@@ -4,7 +4,7 @@ use jni::sys::{jint, jintArray};
 use jni::JNIEnv;
 
 #[no_mangle]
-pub unsafe extern "system" fn find_multi_colors_raw(
+pub extern "system" fn find_multi_colors_raw(
     env: JNIEnv,
     _class: JObject,
     byte_buffer: JByteBuffer,
@@ -39,8 +39,10 @@ pub unsafe extern "system" fn find_multi_colors_raw(
 
     let get_pixel = |x: i32, y: i32| {
         let offset = (y as usize * stride_usize) + (x as usize * 4);
-        let p = src_buf.add(offset) as *const u32;
-        *p
+        unsafe {
+            let p = src_buf.add(offset) as *const u32;
+            *p
+        }
     };
 
     let result = find_multi_colors_internal(
@@ -58,11 +60,12 @@ pub unsafe extern "system" fn find_multi_colors_raw(
     );
 
     if let Some((fx, fy)) = result {
-        let res_arr = env.new_int_array(2).unwrap();
-        let buf = [fx, fy];
-        env.set_int_array_region(&res_arr, 0, &buf).unwrap();
-        res_arr.as_raw()
-    } else {
-        std::ptr::null_mut()
+        if let Ok(res_arr) = env.new_int_array(2) {
+            let buf = [fx, fy];
+            if env.set_int_array_region(&res_arr, 0, &buf).is_ok() {
+                return res_arr.as_raw();
+            }
+        }
     }
+    std::ptr::null_mut()
 }
