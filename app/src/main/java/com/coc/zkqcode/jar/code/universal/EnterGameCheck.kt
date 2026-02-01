@@ -55,9 +55,13 @@ suspend fun enterMainScreen(): Boolean {
 
 private suspend fun runTestCode() {
     while (true) {
+        ShowMessage("测试代码开始")
+        delay(3000)
         TrainTroops.trainTroops()
-        delay(1000)
+        ShowMessage("测试代码结束")
+        delay(5000)
     }
+
 }
 
 suspend fun clickRightBottom() {
@@ -139,6 +143,12 @@ suspend fun closeAdvertisements() {
             // Maintains functional parity with the original 100ms delay per tap
             delayWithMultiplier(100)
         }
+    }
+    findMultiColors(schema = MyColors.TrainingPage)?.let {
+        TouchActions.tap(219, 139)//close training tap
+        delayWithMultiplier(1000)
+        TouchActions.tap(1232, 65)//close training page
+        delayWithMultiplier(300)
     }
 }
 
