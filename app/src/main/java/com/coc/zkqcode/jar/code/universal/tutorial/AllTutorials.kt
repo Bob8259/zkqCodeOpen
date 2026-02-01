@@ -1,6 +1,5 @@
 package com.coc.zkqcode.jar.code.universal.tutorial
 
-import com.coc.zkqcode.core.system.inputmethod.ZKQInputMethodService
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
@@ -10,16 +9,10 @@ import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.InGamesVars
 import com.coc.zkqcode.jar.code.universal.smalltools.checkReconnections
-import com.coc.zkqcode.jar.code.universal.smalltools.getStaticConfig
-import com.coc.zkqcode.jar.code.universal.smalltools.killApp
-import com.coc.zkqcode.jar.code.universal.smalltools.reExtractGameSavings
-import com.coc.zkqcode.jar.code.universal.smalltools.runApp
-import com.coc.zkqcode.jar.code.universal.smalltools.setZKQInputMethod
-import com.coc.zkqcode.jar.ui.schema.Schema
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.isActive
 
-class AllTutorials {
+object AllTutorials {
 
     suspend fun allBaseTutorial() {
         val durationMillis = 300_000L
@@ -35,7 +28,7 @@ class AllTutorials {
             ShowMessage("账户${InGamesVars.currentAccountNumber}\n教程中，还剩${remainingSeconds}秒")
 
             MainBaseTutorial.mainBaseTutorial()
-
+            NightBaseTutorial.nightBaseTutorial()
             // Maintenance checks
             checkReconnections()
             delayWithMultiplier(100)

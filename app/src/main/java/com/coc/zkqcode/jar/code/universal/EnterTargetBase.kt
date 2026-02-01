@@ -5,7 +5,8 @@ import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.basic.findMultiColors
 import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.MyColors
-import com.coc.zkqcode.jar.code.nightbase.NightBaseTutorial
+import com.coc.zkqcode.jar.code.universal.tutorial.AllTutorials
+import com.coc.zkqcode.jar.code.universal.tutorial.NightBaseTutorial
 import kotlinx.coroutines.delay
 
 class EnterTargetBase {
@@ -49,7 +50,7 @@ class EnterTargetBase {
                         while (System.currentTimeMillis() - boatSearchStart < 1000L) {
                             val boatPoint = findMultiColors(schema = MyColors.RebuildBoat)
                             if (boatPoint != null) {
-                                NightBaseTutorial().nightBaseTutorial()
+                                AllTutorials.allBaseTutorial()
                                 break
                             }
                             delay(20) // Polling interval
