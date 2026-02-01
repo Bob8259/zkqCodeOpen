@@ -6,6 +6,7 @@ import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.basic.findMultiColors
 import com.coc.zkqcode.core.util.fileactions.LogHelper
+import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndStop
 import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.InGamesVars
@@ -145,7 +146,7 @@ object MainBaseTutorial {
                 gameName += InGamesVars.currentAccountNumber
             }
 
-            ZKQInputMethodService.Companion.instance?.commitGameName(gameName)
+            ZKQInputMethodService.instance?.commitGameName(gameName) ?: logAndStop("获取输入法失败")
             delayWithMultiplier(300)
             TouchActions.tap(641, 368)
         }

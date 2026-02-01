@@ -40,7 +40,7 @@ suspend fun enterMainScreen(): Boolean {
         ShowMessage("账号${InGamesVars.currentAccountNumber}，倒计时${((timeoutMillis - System.currentTimeMillis() + startTime) / 1000).toInt()}秒\n请手动给主世界和夜世界切换默认场景")
         closeAdvertisements()
         clickRightBottom()
-        if (AllTutorials().checkIsInTutorial(mainBaseTutorialElements)) mainBaseTutorialElements++
+        if (AllTutorials.checkIsInTutorial(mainBaseTutorialElements)) mainBaseTutorialElements++
         // 4. Wait for 1 second before checking again to save CPU cycles
         delay(300)
     }
@@ -51,7 +51,7 @@ suspend fun enterMainScreen(): Boolean {
 
 private suspend fun runTestCode() {
     while (true) {
-        AllTutorials().allBaseTutorial()
+        AllTutorials.allBaseTutorial()
     }
 }
 
