@@ -11,6 +11,9 @@ import com.coc.zkqcode.core.util.touchactions.TouchActions.pinchIn
 import com.coc.zkqcode.core.util.touchactions.TouchActions.swipe
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.mainbase.TrainTroops
+import com.coc.zkqcode.jar.code.mainbase.zoomSmallMainBase
+import com.coc.zkqcode.jar.code.nightbase.collectNightBaseResources
+import com.coc.zkqcode.jar.code.nightbase.zoomSmallNightBase
 import com.coc.zkqcode.jar.code.universal.tutorial.AllTutorials
 import com.coc.zkqcode.jar.code.universal.smalltools.checkReconnections
 import com.coc.zkqcode.jar.code.universal.smalltools.getStaticConfig
@@ -43,7 +46,11 @@ suspend fun enterMainScreen(): Boolean {
         if (!checkReconnections()) return false
         ShowMessage("账号${InGamesVars.currentAccountNumber}，倒计时${((timeoutMillis - System.currentTimeMillis() + startTime) / 1000).toInt()}秒\n请手动给主世界和夜世界切换默认场景")
         closeAdvertisements()
-        clickRightBottom()
+        repeat(3) {
+            clickRightBottom()
+            delayWithMultiplier(100)
+        }
+
         if (AllTutorials.checkIsInTutorial(mainBaseTutorialElements)) mainBaseTutorialElements++
         // 4. Wait for 1 second before checking again to save CPU cycles
         delay(300)
@@ -57,7 +64,7 @@ private suspend fun runTestCode() {
     while (true) {
         ShowMessage("测试代码开始")
         delay(3000)
-        TrainTroops.trainTroops()
+        collectNightBaseResources()
         ShowMessage("测试代码结束")
         delay(5000)
     }
@@ -84,11 +91,6 @@ private suspend fun checkUIVisibility(): Boolean {
     return false
 }
 
-suspend fun zoomSmallMainBase() {
-    pinchIn(141, 423, 1052, 352, 638, 365)
-    delayWithMultiplier(200)
-    swipe(218, 523, 939, 162)
-}
 
 suspend fun closeAdvertisements() {
     // 1. Capture the screen and cast safely (Use 'var' so we can update it)
@@ -104,7 +106,8 @@ suspend fun closeAdvertisements() {
         MyColors.NewShopButton,
         MyColors.CNProsperity,
         MyColors.MagicalItem,
-        MyColors.CNPuppetAd
+        MyColors.CNPuppetAd,
+        MyColors.CNBackFromAwards
     )
 
     // 3. Iterate through schemas

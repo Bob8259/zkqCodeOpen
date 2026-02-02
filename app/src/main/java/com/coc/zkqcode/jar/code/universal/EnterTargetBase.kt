@@ -5,21 +5,28 @@ import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.basic.findMultiColors
 import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.MyColors
+import com.coc.zkqcode.jar.code.mainbase.zoomSmallMainBase
 import com.coc.zkqcode.jar.code.universal.tutorial.AllTutorials
-import com.coc.zkqcode.jar.code.universal.tutorial.NightBaseTutorial
 import kotlinx.coroutines.delay
 
 class EnterTargetBase {
+    /**
+     * Implementation skipped as per user request.
+     */
     suspend fun enterMainBase() {
-
+        // No implementation required
     }
 
-    suspend fun enterNightBase(isCheck: Boolean) {
+    /**
+     * Optimizes the transition to the Night Base with improved polling and logic flow.
+     */
+    suspend fun enterNightBase(isCheck: Boolean): Boolean {
         ShowMessage("准备进入夜世界")
-        // Initialize view
+
+        // Ensure consistent view before attempting interaction
         zoomSmallMainBase()
 
-        // List of coordinates to cycle through
+        // List of potential boat locations to handle perspective shifts
         val boatLocations = listOf(
             317 to 474,
             336 to 512,
@@ -27,27 +34,35 @@ class EnterTargetBase {
         )
 
         for ((x, y) in boatLocations) {
-            // Perform the tap action
             TouchActions.tap(x, y)
 
             if (isCheck) {
-                val duration = 500L
-                val startTime = System.currentTimeMillis()
+                val checkDuration = 500L
+                val loopStartTime = System.currentTimeMillis()
 
-                // Main validation loop (0.5s window)
-                while (System.currentTimeMillis() - startTime < duration) {
+                // Polling loop for state transition (0.5s window)
+                while (System.currentTimeMillis() - loopStartTime < checkDuration) {
 
-                    // 1. Search for RebuildNightBase
-                    val point = findMultiColors(schema = MyColors.RebuildNightBase)
+                    // 1. Check for Night Base success indicator
+                    // Checked early to ensure fast return on successful transition
+                    if (findMultiColors(schema = MyColors.NightBaseWorker) != null) {
+                        return true
+                    }
 
-                    if (point != null) {
-                        TouchActions.tap(point.x, point.y)
+                    // 2. Check for Main Base indicator (failure to switch)
+                    if (findMultiColors(schema = MyColors.UpgradeToTH6) != null) {
+                        return false
+                    }
+
+                    // 3. Handle Tutorial / Rebuild state
+                    val rebuildPoint = findMultiColors(schema = MyColors.RebuildNightBase)
+                    if (rebuildPoint != null) {
+                        TouchActions.tap(rebuildPoint.x, rebuildPoint.y)
                         delayWithMultiplier(300)
 
-                        // Logic: Keep finding MyColors.RebuildBoat for another 1 second
-                        val boatSearchStart = System.currentTimeMillis()
-
-                        while (System.currentTimeMillis() - boatSearchStart < 1000L) {
+                        // Secondary loop: Search for RebuildBoat within a 1s window
+                        val boatSearchStartTime = System.currentTimeMillis()
+                        while (System.currentTimeMillis() - boatSearchStartTime < 1000L) {
                             val boatPoint = findMultiColors(schema = MyColors.RebuildBoat)
                             if (boatPoint != null) {
                                 TouchActions.tap(boatPoint.x, boatPoint.y)
@@ -55,26 +70,18 @@ class EnterTargetBase {
                                 AllTutorials.allBaseTutorial()
                                 break
                             }
-                            delay(20) // Polling interval
+                            delay(20) // Tight polling for tutorial interaction
                         }
-
-                        // If found, we've handled the tutorial; if not, loop continues normally as requested
                     }
 
-                    // 2. Search for UpgradeToTH6 color schema
-                    val th6Point = findMultiColors(schema = MyColors.UpgradeToTH6)
-
-                    if (th6Point != null) {
-                        InGamesVars.isNightBaseUnlocked = false
-                        return // Exit the entire function
-                    }
-
-                    // Standard delay to prevent high CPU usage during the 0.5s window
-                    delay(10)
+                    // Standard delay to maintain performance and avoid high CPU usage
+                    delay(100)
                 }
+            } else {
+                // If no check is requested, provide a brief delay before trying next coordinate
+                delay(200)
             }
         }
+        return false
     }
-
-
 }

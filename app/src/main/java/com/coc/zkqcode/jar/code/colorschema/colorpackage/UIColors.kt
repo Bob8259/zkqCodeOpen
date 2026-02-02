@@ -11,6 +11,10 @@ interface IUIColors {
     val CNPuppetAd: ColorSchema
     val Achievement: ColorSchema
     val ClaimAchievement: ColorSchema
+    val ReturnAwards: ColorSchema
+    val NightBackToCamp: ColorSchema
+    val MainBackToCamp: ColorSchema
+    val CNBackFromAwards: ColorSchema
 }
 
 object UIColors : IUIColors {
@@ -100,5 +104,52 @@ object UIColors : IUIColors {
         0,
         0.9,
         "领取成就绿色按钮"
+    )
+
+    override val ReturnAwards: ColorSchema = ColorSchema.parse(
+        110,
+        44,
+        1173,
+        679,
+        "00528D",
+        "116|-2|00518B,-68|491|00CCF3,-78|517|00DCFA,-78|523|00DDFA,801|536|00DDFA,840|529|009BD8,846|515|008AED,840|399|00437A,839|354|004279",
+        0,
+        0.9, "回归奖励"
+    )
+
+    override val NightBackToCamp: ColorSchema = ColorSchema.parse(
+        553,
+        574,
+        728,
+        648,
+        "8BEABD",
+        "18|-1|8CEABE,46|-1|8CEABE,68|0|8BEABD,80|2|88E9BB,89|35|3AD48B,62|38|3AD38B,35|32|3AD48B,22|34|3AD48B,-16|29|3AD48B",
+        0,
+        0.9,
+        "回营"
+    )
+
+    override val MainBackToCamp: ColorSchema = ColorSchema.parse(
+        554,
+        578,
+        726,
+        658,
+        "79F6D9",
+        "40|-5|83F8DD,69|-7|86F8DF,88|8|69F2D0,97|11|64EFCB,96|33|1EBB6C,79|37|1FBB6C,39|35|1FBB6C,18|35|1FBB6C,0|32|1FBC6D",
+        0,
+        0.9,
+        "主世界回营"
+    )
+
+    override val CNBackFromAwards: ColorSchema = ColorSchema.parse(
+        62,
+        74,
+        97,
+        122,
+        "37E0FA-101010",
+        "0|2|39E2F7-101010,-2|3|3AE1F9-101010,-5|13|0DA2D1-101010,-2|16|0DA1D0-101010,-1|18|10A3CF-101010,2|12|0D8CBC-101010,2|8|3AE0F8-101010,5|8|0EA3CF-101010,5|12|066E9E-101010",
+        0,
+        0.9,
+        "垃圾奖励"
     )
 }

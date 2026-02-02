@@ -1,5 +1,6 @@
 package com.coc.zkqcode.jar.code.universal.precheck
 
+import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.basic.findMultiColors
 import com.coc.zkqcode.core.util.basic.findMultiColorsUntil
@@ -10,19 +11,7 @@ import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.smalltools.getConfigRuntime
 import com.coc.zkqcode.jar.ui.schema.Schema
 
-class PreCheck {
-    suspend fun playNightBase(): Boolean {
-        if (!claimAchievement()) return false
-        val noNightBase = getConfigRuntime(
-            Schema.NIGHT_BASE_SETTINGS.NO_BUILDER_BASE.key
-        ) == "1"
-        if (noNightBase) return true//if no night base, then directly return.
-
-        EnterTargetBase().enterNightBase(true)//check if night base is unlocked or not.
-
-
-        return true
-    }
+object PreCheck {
 
     suspend fun claimAchievement(): Boolean {
         val isClaimAchievement = getConfigRuntime(
