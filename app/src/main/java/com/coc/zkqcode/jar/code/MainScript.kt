@@ -5,6 +5,7 @@ import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndStop
 import com.coc.zkqcode.jar.code.mainbase.MainBaseScript
+import com.coc.zkqcode.jar.code.nightbase.playNightBase
 import com.coc.zkqcode.jar.code.universal.precheck.PreCheck
 import com.coc.zkqcode.jar.code.universal.InGamesVars
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
@@ -51,7 +52,7 @@ class MainScript {
                     delay(500)
                     break // 跳出内层循环，重新检查账号状态
                 }
-                if (!PreCheck().playNightBase()) {
+                if (!playNightBase()) {
                     ShowMessage("夜世界操作失败")
                     delay(500)
                     break // 跳出内层循环，重新检查账号状态
