@@ -10,7 +10,6 @@ import com.coc.zkqcode.jar.code.universal.smalltools.getConfigRuntime
 import com.coc.zkqcode.jar.ui.schema.Schema
 
 object PreCheck {
-
     suspend fun claimAchievement(): Boolean {
         val isClaimAchievement = getConfigRuntime(
             Schema.MAIN_BASE_SETTINGS.CLAIM_ACHIEVEMENT_GEMS.key
@@ -27,8 +26,8 @@ object PreCheck {
 
     private suspend fun claimAchievementHelper() {
         TouchActions.tap(51, 45)
-        delayWithMultiplier(800)
-        val point = findMultiColorsUntil(schema = MyColors.ClaimAchievement, duration = 1000)
+        delayWithMultiplier(2000)
+        val point = findMultiColorsUntil(schema = MyColors.ClaimAchievement, duration = 200)
         if (point != null)
             TouchActions.tap(point.x, point.y)
     }

@@ -28,12 +28,13 @@ suspend fun collectNightBaseResources() {
             }
         }
     }
-
+    swipe(587, 420, 587, 700)
+    delayWithMultiplier(100)
     // List of coordinates to tap and check for resource carts
     val targets = listOf(
-        Pair(769, 43),
-        Pair(807, 87),
-        Pair(845, 98)
+        Pair(816, 300),
+        Pair(862, 334),
+        Pair(826, 358)
     )
 
     targets.forEach { (tx, ty) ->

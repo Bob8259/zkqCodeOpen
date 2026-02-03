@@ -9,7 +9,6 @@ import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndStop
 import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.mainbase.zoomSmallMainBase
-import com.coc.zkqcode.jar.code.nightbase.collectNightBaseResources
 import com.coc.zkqcode.jar.code.universal.smalltools.checkReconnections
 import com.coc.zkqcode.jar.code.universal.smalltools.isGameAtFront
 import com.coc.zkqcode.jar.code.universal.smalltools.runGame
@@ -32,9 +31,6 @@ suspend fun enterMainScreen(): Boolean {
     val timeoutMillis = timeoutSeconds * 1000L
     var mainBaseTutorialElements = 0
     while (System.currentTimeMillis() - startTime < timeoutMillis) {
-        //测试代码
-//        runTestCode()
-
         // 3. Insert your logic to check if the main screen is actually visible
         if (checkUIVisibility()) return true
         if (!checkReconnections()) return false
@@ -56,16 +52,6 @@ suspend fun enterMainScreen(): Boolean {
     return false
 }
 
-private suspend fun runTestCode() {
-    while (true) {
-        ShowMessage("测试代码开始")
-        delay(3000)
-        collectNightBaseResources()
-        ShowMessage("测试代码结束")
-        delay(5000)
-    }
-
-}
 
 suspend fun clickRightBottom() {
     TouchActions.tap(1277, 557)
@@ -76,9 +62,9 @@ private suspend fun checkUIVisibility(): Boolean {
         runGame()
     } else {
         if (isInHomePage()) {
-            ShowMessage("已进入主界面")
-            delay(500)
+            delay(800)
             if (isInHomePage()) {
+                ShowMessage("已进入主界面")
                 zoomSmallMainBase()
                 return true
             }

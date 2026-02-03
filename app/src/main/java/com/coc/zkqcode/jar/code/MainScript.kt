@@ -1,21 +1,20 @@
 package com.coc.zkqcode.jar.code
 
-import android.os.Environment
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndStop
-import com.coc.zkqcode.jar.code.mainbase.MainBaseScript
+import com.coc.zkqcode.jar.code.nightbase.collectNightBaseResources
 import com.coc.zkqcode.jar.code.nightbase.playNightBase
-import com.coc.zkqcode.jar.code.universal.precheck.PreCheck
 import com.coc.zkqcode.jar.code.universal.InGamesVars
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
+import com.coc.zkqcode.jar.code.universal.isInHomePage
 import com.coc.zkqcode.jar.code.universal.smalltools.readMemory
 import com.coc.zkqcode.jar.ui.schema.Schema
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 
-class MainScript {
+object MainScript {
 
     // 辅助函数：快速获取配置值，若为空则触发 logAndStop
     private fun getConfigOrStop(key: String): String {
@@ -45,6 +44,9 @@ class MainScript {
             // 4. 执行主逻辑循环
             InGamesVars.currentAccountNumber = activeAccount
             while (currentCoroutineContext().isActive) {
+                //测试代码
+                runTestCode()
+
                 InGamesVars.currentGamePackage =
                     getConfigOrStop("game_version${InGamesVars.currentAccountNumber}").toInt()
                 if (!enterMainScreen()) {
@@ -66,4 +68,16 @@ class MainScript {
             delay(2000)
         }
     }
+
+    private suspend fun runTestCode() {
+        while (true) {
+            ShowMessage("测试代码开始")
+            delay(3000)
+            collectNightBaseResources()
+            ShowMessage("测试代码结束")
+            delay(5000)
+        }
+
+    }
 }
+

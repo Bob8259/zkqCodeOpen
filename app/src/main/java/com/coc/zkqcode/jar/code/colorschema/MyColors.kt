@@ -51,7 +51,7 @@ object MyColors : IWorkerColors by WorkerColors, IUIColors by UIColors, IFeature
         "D3D3D3-101010",
         "28|3|D2D2D2-101010,66|0|D3D3D3-101010,82|4|D2D2D2-101010,86|11|CDCDCD-101010,87|30|ADADAD-101010,78|39|ACACAC-101010,45|36|ADADAD-101010,18|34|ADADAD-101010,-8|27|ADADAD-101010",
         0,
-        0.9,
+        0.98,
         "无法收集圣水车"
     )
     val CollectExilerCart: ColorSchema = ColorSchema.parse(
@@ -62,7 +62,7 @@ object MyColors : IWorkerColors by WorkerColors, IUIColors by UIColors, IFeature
         "8DEABE-101010",
         "25|-3|8EEABF-101010,65|-1|8EEABF-101010,101|0|8DEABE-101010,107|5|87E9BB-101010,106|35|3AD48B-101010,95|40|39CE87-101010,64|37|3AD38A-101010,13|31|3AD48B-101010,-2|29|3AD48B-101010",
         0,
-        0.9,
+        0.98,
         "收集圣水车"
     )
     val NightBaseCollectGold1: ColorSchema =
