@@ -29,6 +29,19 @@ object MyColors : IWorkerColors by WorkerColors, IUIColors by UIColors, IFeature
         "需要将大本营升至6级"
     )
 
+    //The followings are UI Colors
+    val CollectChest: ColorSchema = ColorSchema.parse(
+        547,
+        569,
+        735,
+        627,
+        "88E9BB-101010",
+        "39|-2|8BEABD-101010,83|-7|8EEABF-101010,129|-5|8EEABF-101010,130|18|3AD48B-101010,124|26|3AD48B-101010,107|32|39D38A-101010,47|34|39D088-101010,19|30|3AD48B-101010,6|25|3AD48B-101010",
+        0,
+        0.9,
+        "领取宝箱"
+    )
+
     //The followings are Night Base Resources Collection colors
     val CannotCollectExilerCart: ColorSchema = ColorSchema.parse(
         859,

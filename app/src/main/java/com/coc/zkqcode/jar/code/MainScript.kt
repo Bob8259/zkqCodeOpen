@@ -57,11 +57,11 @@ class MainScript {
                     delay(500)
                     break // 跳出内层循环，重新检查账号状态
                 }
-                if (!MainBaseScript.playMainBase()) {
-                    ShowMessage("主世界操作失败")
-                    delay(500)
-                    break // 跳出内层循环，重新检查账号状态
-                }
+//                if (!MainBaseScript.playMainBase()) {
+//                    ShowMessage("主世界操作失败")
+//                    delay(500)
+//                    break // 跳出内层循环，重新检查账号状态
+//                }
             }
             delay(2000)
         }
