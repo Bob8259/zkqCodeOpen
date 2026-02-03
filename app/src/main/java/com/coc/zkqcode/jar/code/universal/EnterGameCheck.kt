@@ -7,21 +7,15 @@ import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.basic.findMultiColors
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndStop
 import com.coc.zkqcode.core.util.touchactions.TouchActions
-import com.coc.zkqcode.core.util.touchactions.TouchActions.pinchIn
-import com.coc.zkqcode.core.util.touchactions.TouchActions.swipe
 import com.coc.zkqcode.jar.code.colorschema.MyColors
-import com.coc.zkqcode.jar.code.mainbase.TrainTroops
 import com.coc.zkqcode.jar.code.mainbase.zoomSmallMainBase
 import com.coc.zkqcode.jar.code.nightbase.collectNightBaseResources
-import com.coc.zkqcode.jar.code.nightbase.zoomSmallNightBase
-import com.coc.zkqcode.jar.code.universal.tutorial.AllTutorials
 import com.coc.zkqcode.jar.code.universal.smalltools.checkReconnections
-import com.coc.zkqcode.jar.code.universal.smalltools.getStaticConfig
 import com.coc.zkqcode.jar.code.universal.smalltools.isGameAtFront
-import com.coc.zkqcode.jar.code.universal.smalltools.runApp
 import com.coc.zkqcode.jar.code.universal.smalltools.runGame
-import com.coc.zkqcode.jar.ui.schema.Schema
+import com.coc.zkqcode.jar.code.universal.tutorial.AllTutorials
 import kotlinx.coroutines.delay
+import kotlin.random.Random
 
 
 /**
@@ -39,21 +33,23 @@ suspend fun enterMainScreen(): Boolean {
     var mainBaseTutorialElements = 0
     while (System.currentTimeMillis() - startTime < timeoutMillis) {
         //测试代码
-        runTestCode()
+//        runTestCode()
 
         // 3. Insert your logic to check if the main screen is actually visible
         if (checkUIVisibility()) return true
         if (!checkReconnections()) return false
         ShowMessage("账号${InGamesVars.currentAccountNumber}，倒计时${((timeoutMillis - System.currentTimeMillis() + startTime) / 1000).toInt()}秒\n请手动给主世界和夜世界切换默认场景")
         closeAdvertisements()
-        repeat(3) {
-            clickRightBottom()
-            delayWithMultiplier(100)
-        }
 
+        if (Random.nextDouble() > 0.6) {
+            repeat(3) {
+                clickRightBottom()
+                delayWithMultiplier(100)
+            }
+        }
         if (AllTutorials.checkIsInTutorial(mainBaseTutorialElements)) mainBaseTutorialElements++
-        // 4. Wait for 1 second before checking again to save CPU cycles
-        delay(300)
+        // 4. Wait before checking again to save CPU cycles
+        delay(100)
     }
 
     // Return false if the loop finishes without finding the main screen
@@ -107,7 +103,8 @@ suspend fun closeAdvertisements() {
         MyColors.CNProsperity,
         MyColors.MagicalItem,
         MyColors.CNPuppetAd,
-        MyColors.CNBackFromAwards
+        MyColors.CNBackFromAwards,
+        MyColors.CollectChest
     )
 
     // 3. Iterate through schemas
