@@ -14,6 +14,8 @@ ok-http = "4.12.0"
 gson = "2.10.1"
 webkit = "1.12.1"
 timber = "5.0.1"
+text-recognition-chinese = "16.0.1"
+
 
 
 [libraries]
@@ -40,6 +42,8 @@ gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
 kotlin-reflect = { group = "org.jetbrains.kotlin", name = "kotlin-reflect", version.ref = "kotlin" }
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version = "2.8.0" }
 timber = { group = "com.jakewharton.timber", name = "timber", version.ref = "timber" }
+mlkit-text-recognition-chinese = { group = "com.google.mlkit", name = "text-recognition-chinese", version.ref = "text-recognition-chinese" }
+
 
 
 
