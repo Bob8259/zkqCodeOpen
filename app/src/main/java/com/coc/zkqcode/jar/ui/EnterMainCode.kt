@@ -61,6 +61,6 @@ class EnterMainCode : MainCode {
     }
 
     override suspend fun runBot() {
-        MainScript().runMainScript()
+        MainScript.runMainScript()
     }
 }
