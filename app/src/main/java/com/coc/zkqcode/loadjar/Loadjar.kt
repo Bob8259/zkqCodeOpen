@@ -91,10 +91,7 @@ class Loadjar(private val context: Context) {
 
             // Load the jar using DexClassLoader
             val classLoader = DexClassLoader(
-                jarFile.absolutePath,
-                dexOutputDir.absolutePath,
-                null,
-                context.classLoader
+                jarFile.absolutePath, dexOutputDir.absolutePath, null, context.classLoader
             )
 
             // Load the plugin implementation class
@@ -121,61 +118,55 @@ class Loadjar(private val context: Context) {
             val decryptedBytes = com.coc.zkqcode.nativehelper.RustTools.decryptJar(encryptedBytes)
             if (decryptedBytes.isEmpty()) return false
 
-            val classLoader: ClassLoader =
-                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-                    // 3. Load from memory (Android 8.0+)
-                    // Since the decrypted bytes are a JAR, we need to extract classes.dex first
-                    var dexBytes: ByteArray? = null
-                    java.util.zip.ZipInputStream(java.io.ByteArrayInputStream(decryptedBytes))
-                        .use { zipStream ->
-                            var entry = zipStream.nextEntry
-                            while (entry != null) {
-                                if (entry.name == "classes.dex") {
-                                    dexBytes = zipStream.readBytes()
-                                    break
-                                }
-                                entry = zipStream.nextEntry
-                            }
+            val classLoader: ClassLoader = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                // 3. Load from memory (Android 8.0+)
+                // Since the decrypted bytes are a JAR, we need to extract classes.dex first
+                var dexBytes: ByteArray? = null
+                java.util.zip.ZipInputStream(java.io.ByteArrayInputStream(decryptedBytes)).use { zipStream ->
+                    var entry = zipStream.nextEntry
+                    while (entry != null) {
+                        if (entry.name == "classes.dex") {
+                            dexBytes = zipStream.readBytes()
+                            break
                         }
-
-                    if (dexBytes == null) {
-                        return false
+                        entry = zipStream.nextEntry
                     }
-
-                    val buffer = java.nio.ByteBuffer.wrap(dexBytes)
-                    dalvik.system.InMemoryDexClassLoader(buffer, context.classLoader)
-                } else {
-                    // 4. Fallback for older versions: Use in-memory file descriptor (memfd/ashmem)
-                    Timber.d(
-                        "loadEncryptedPlugin: Using fallback for API ${android.os.Build.VERSION.SDK_INT}"
-                    )
-
-                    val fd =
-                        com.coc.zkqcode.nativehelper.RustTools.createInMemoryDex(decryptedBytes)
-
-                    if (fd < 0) {
-                        Timber.e(
-                            "loadEncryptedPlugin: Failed to create in-memory dex, fd=$fd"
-                        )
-                        return false
-                    }
-                    Timber.d(
-                        "loadEncryptedPlugin: Created in-memory dex, fd=$fd"
-                    )
-
-                    // Use procfs path to the file descriptor
-                    val dexPath = "/proc/self/fd/$fd"
-                    val dexOutputDir = context.codeCacheDir
-
-                    Timber.d("loadEncryptedPlugin: Loading from $dexPath")
-
-                    DexClassLoader(
-                        dexPath,
-                        dexOutputDir.absolutePath,
-                        null,
-                        context.classLoader
-                    )
                 }
+
+                if (dexBytes == null) {
+                    return false
+                }
+
+                val buffer = java.nio.ByteBuffer.wrap(dexBytes)
+                dalvik.system.InMemoryDexClassLoader(buffer, context.classLoader)
+            } else {
+                // 4. Fallback for older versions: Use in-memory file descriptor (memfd/ashmem)
+                Timber.d(
+                    "loadEncryptedPlugin: Using fallback for API ${android.os.Build.VERSION.SDK_INT}"
+                )
+
+                val fd = com.coc.zkqcode.nativehelper.RustTools.createInMemoryDex(decryptedBytes)
+
+                if (fd < 0) {
+                    Timber.e(
+                        "loadEncryptedPlugin: Failed to create in-memory dex, fd=$fd"
+                    )
+                    return false
+                }
+                Timber.d(
+                    "loadEncryptedPlugin: Created in-memory dex, fd=$fd"
+                )
+
+                // Use procfs path to the file descriptor
+                val dexPath = "/proc/self/fd/$fd"
+                val dexOutputDir = context.codeCacheDir
+
+                Timber.d("loadEncryptedPlugin: Loading from $dexPath")
+
+                DexClassLoader(
+                    dexPath, dexOutputDir.absolutePath, null, context.classLoader
+                )
+            }
 
             // 5. Instantiate Plugin
             val pluginClass = classLoader.loadClass("com.coc.zkqcode.jar.ui.EnterMainCode")
@@ -197,8 +188,6 @@ class Loadjar(private val context: Context) {
         val privateDir = context.filesDir
         val assetsDir = File(privateDir, "assets")
 
-        // 1. Create only if the folder does not exist, or clean up for updates
-        // Note: If the jar is in assets, do not delete it in this method unless you have finished loading it
         if (!assetsDir.exists()) {
             assetsDir.mkdirs()
         }
@@ -206,30 +195,25 @@ class Loadjar(private val context: Context) {
         try {
             val assetList = context.assets.list("") ?: emptyArray()
             for (assetName in assetList) {
-                // Filter out system folders, known non-resource files, and all images
-                if (assetName == "images" || assetName == "webkit" || assetName == "sounds" ||
-                    assetName.endsWith(".png", true) || assetName.endsWith(".jpg", true) ||
-                    assetName.endsWith(".jpeg", true) || assetName.endsWith(
-                        ".webp", true
-                    ) || assetName.startsWith(
-                        "server",
-                        true
-                    )
-                ) continue
 
-                // Key point: Try to determine if it is a file. assets.open will report an error for folders.
+                // --- MODIFIED FILTER RULE ---
+                // Only proceed if the file ends with .jar (case-insensitive)
+                if (!assetName.endsWith(".jar", ignoreCase = true)) {
+                    continue
+                }
+                // ----------------------------
+
                 try {
                     val outputFile = File(assetsDir, assetName)
 
-                    // Copy only if it is a file
                     context.assets.open(assetName).use { input ->
                         outputFile.outputStream().use { output ->
                             input.copyTo(output)
                         }
                     }
                 } catch (e: Exception) {
-                    // If open fails, it means this is a folder, so we skip it
-                    println("Skip directory or unreadable file: $assetName, error: $e")
+                    // This handles cases where .jar might be a directory name (unlikely but safe)
+                    println("Failed to copy asset: $assetName, error: $e")
                 }
             }
         } catch (e: Exception) {

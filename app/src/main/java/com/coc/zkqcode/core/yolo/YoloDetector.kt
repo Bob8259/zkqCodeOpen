@@ -143,8 +143,16 @@ object YoloDetector {
         val byteBuffer = ByteBuffer.allocateDirect(bufferSize)
         byteBuffer.order(ByteOrder.nativeOrder())
         
+        // MediaProjection might return HARDWARE bitmaps (API 26+), which don't support getPixels directly.
+        val softwareBitmap = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O && 
+            scaledBitmap.config == Bitmap.Config.HARDWARE) {
+            scaledBitmap.copy(Bitmap.Config.ARGB_8888, false)
+        } else {
+            scaledBitmap
+        }
+
         val intValues = IntArray(inputSize * inputSize)
-        scaledBitmap.getPixels(intValues, 0, scaledBitmap.width, 0, 0, scaledBitmap.width, scaledBitmap.height)
+        softwareBitmap.getPixels(intValues, 0, softwareBitmap.width, 0, 0, softwareBitmap.width, softwareBitmap.height)
         
         var pixel = 0
         for (i in 0 until inputSize) {
@@ -154,24 +162,36 @@ object YoloDetector {
                 val g = (value shr 8 and 0xFF)
                 val b = (value and 0xFF)
 
-                if (inputDataType == DataType.FLOAT32) {
-                    byteBuffer.putFloat(r / 255.0f)
-                    byteBuffer.putFloat(g / 255.0f)
-                    byteBuffer.putFloat(b / 255.0f)
-                } else if (inputDataType == DataType.INT8) {
-                    val rNormalized = (r / 255.0f / inputScale + inputZeroPoint)
-                    val gNormalized = (g / 255.0f / inputScale + inputZeroPoint)
-                    val bNormalized = (b / 255.0f / inputScale + inputZeroPoint)
-
-                    byteBuffer.put(rNormalized.toInt().toByte())
-                    byteBuffer.put(gNormalized.toInt().toByte())
-                    byteBuffer.put(bNormalized.toInt().toByte())
-                } else if (inputDataType == DataType.UINT8) {
-                     byteBuffer.put((r).toByte())
-                     byteBuffer.put((g).toByte())
-                     byteBuffer.put((b).toByte())
+                when (inputDataType) {
+                    DataType.FLOAT32 -> {
+                        byteBuffer.putFloat(r / 255.0f)
+                        byteBuffer.putFloat(g / 255.0f)
+                        byteBuffer.putFloat(b / 255.0f)
+                    }
+                    DataType.INT8 -> {
+                        val rNormalized = (r / 255.0f / inputScale + inputZeroPoint)
+                        val gNormalized = (g / 255.0f / inputScale + inputZeroPoint)
+                        val bNormalized = (b / 255.0f / inputScale + inputZeroPoint)
+                        
+                        byteBuffer.put(rNormalized.toInt().toByte())
+                        byteBuffer.put(gNormalized.toInt().toByte())
+                        byteBuffer.put(bNormalized.toInt().toByte())
+                    }
+                    DataType.UINT8 -> {
+                        byteBuffer.put(r.toByte())
+                        byteBuffer.put(g.toByte())
+                        byteBuffer.put(b.toByte())
+                    }
+                    else -> {}
                 }
             }
+        }
+        
+        if (softwareBitmap != scaledBitmap) {
+            softwareBitmap.recycle()
+        }
+        if (scaledBitmap != bitmap) {
+            scaledBitmap.recycle()
         }
         return byteBuffer
     }
