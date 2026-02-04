@@ -40,10 +40,12 @@ libsu-core = { group = "com.github.topjohnwu.libsu", name = "core", version.ref 
 okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "ok-http" }
 gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
 kotlin-reflect = { group = "org.jetbrains.kotlin", name = "kotlin-reflect", version.ref = "kotlin" }
-androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version = "2.8.0" }
+androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version = "2.8.5" }
 timber = { group = "com.jakewharton.timber", name = "timber", version.ref = "timber" }
 mlkit-text-recognition-chinese = { group = "com.google.mlkit", name = "text-recognition-chinese", version.ref = "text-recognition-chinese" }
 mlkit-text-recognition = { group = "com.google.mlkit", name = "text-recognition", version = "16.0.1" }
+tensorflow-lite = { group = "org.tensorflow", name = "tensorflow-lite", version = "2.17.0" }
+tensorflow-lite-support = { group = "org.tensorflow", name = "tensorflow-lite-support", version = "0.5.0" }
 
 
 
