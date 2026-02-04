@@ -26,15 +26,33 @@
 }
 
 
-# 1. 保护你自己的所有代码
+# ==========================================================
+# 1. 保护你自己的所有代码 (保持现状)
+# ==========================================================
 -keep class com.coc.zkqcode.interfaces.** { *; }
 -keep class com.coc.zkqcode.core.** { *; }
 -keep class com.coc.zkqcode.nativehelper.** { *; }
 -keep class com.coc.zkqcode.statehelper.** { *; }
 -keep class com.coc.zkqcode.MainActivity { *; }
 
-# 2. 核心：保护所有 JAR 可能用到的第三方库名号
-# 既然你的项目依赖了这么多，JAR 很可能也用了它们
+# ==========================================================
+# 2. Google ML Kit 专用规则 (解决找不到类的问题)
+# ==========================================================
+# 保持 ML Kit 文本识别的所有类及其成员
+-keep class com.google.mlkit.vision.text.** { *; }
+-keep class com.google.mlkit.common.** { *; }
+
+# 保持 Google API 和 GMS 相关内部调用 (ML Kit 依赖这些进行模型加载)
+-keep class com.google.android.gms.common.** { *; }
+-keep class com.google.android.gms.tasks.** { *; }
+-keep class com.google.android.gms.internal.mlkit_vision_text_common.** { *; }
+
+# 如果你使用了分块加载模型，建议加上这个
+-keep class com.google.mlkit.vision.common.** { *; }
+
+# ==========================================================
+# 3. 基础第三方库保护
+# ==========================================================
 -keep class androidx.compose.** { *; }
 -keep class androidx.navigation.** { *; }
 -keep class com.google.gson.** { *; }
@@ -43,14 +61,9 @@
 -keep class timber.log.** { *; }
 -keep class com.topjohnwu.superuser.** { *; }
 
-# 3. 针对 Kotlin 运行时的保护（重要）
+# ==========================================================
+# 4. Kotlin 运行时与协程 (关键，因为你的报错涉及 Dispatcher)
+# ==========================================================
 -keep class kotlin.** { *; }
 -keep class kotlinx.** { *; }
-
-# 4. 基础属性保持
--keepattributes Exceptions,Signature,InnerClasses,SourceFile,LineNumberTable,*Annotation*,EnclosingMethod
-
-# 3. 单独给 loadjar 开个口子：允许混淆它
-# 注意：在 ProGuard 中，如果有两条规则冲突，Keep 优先。
-# 但我们可以通过“混淆配置”让 R8 尝试处理它。
-# 事实上，如果你已经 -keep 了整个包，loadjar 也会被保护。
+-keepattributes Signature, InnerClasses, EnclosingMethod, *Annotation*, Exceptions
