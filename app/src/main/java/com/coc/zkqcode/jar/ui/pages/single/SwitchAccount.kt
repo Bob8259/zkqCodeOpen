@@ -169,6 +169,7 @@ fun SwitchAccount(onClose: () -> Unit) {
                         text = "确认切号",
                         onClick = {
                             scope.launch(Dispatchers.IO) {
+                                GlobalVars.isSwitchingAccount = true
                                 val accNum = accountNumber.ifEmpty { "1" }
                                 ShowMessage("正在切换账号$accNum")
                                 // 1. Get Game Version
@@ -182,6 +183,7 @@ fun SwitchAccount(onClose: () -> Unit) {
                                     val pathKey = "${ACCOUNT_SETTINGS.CN_PATH.key}$accNum"
                                     val savePathName = GlobalVars.configStates[pathKey]!!.value
                                     if (savePathName.isEmpty()) {
+                                        GlobalVars.isSwitchingAccount = false
                                         return@launch
                                     }
                                     val sourceDir = "$sdPath/zkqFiles/zkqCNGameSave/$savePathName"
@@ -189,6 +191,7 @@ fun SwitchAccount(onClose: () -> Unit) {
                                     if (!Shell.cmd("[ -d \"$sourceDir\" ]").exec().isSuccess) {
                                         ShowMessage("存档文件不存在！\n请仔细检查存档路径以及游戏版本！")
                                         // Handle error (optional: could add a toast here if context was available, but simple return for now as per minimal change)
+                                        GlobalVars.isSwitchingAccount = false
                                         return@launch
                                     }
 
@@ -210,6 +213,7 @@ fun SwitchAccount(onClose: () -> Unit) {
                                     val pathKey = "${ACCOUNT_SETTINGS.GLOBAL_PATH.key}$accNum"
                                     val savePathName = GlobalVars.configStates[pathKey]!!.value
                                     if (savePathName.isEmpty()) {
+                                        GlobalVars.isSwitchingAccount = false
                                         return@launch
                                     }
 
@@ -219,6 +223,7 @@ fun SwitchAccount(onClose: () -> Unit) {
                                     // Check existence
                                     if (!Shell.cmd("[ -d \"$sourceDir\" ]").exec().isSuccess) {
                                         ShowMessage("存档文件不存在！\n请仔细检查存档路径以及游戏版本！")
+                                        GlobalVars.isSwitchingAccount = false
                                         return@launch
                                     }
 
@@ -234,6 +239,7 @@ fun SwitchAccount(onClose: () -> Unit) {
                                         Shell.cmd(cmd).exec()
                                     }
                                 }
+                                GlobalVars.isSwitchingAccount = false
                                 withContext(Dispatchers.Main) {
                                     ShowMessage("切号完成")
                                     onClose()
