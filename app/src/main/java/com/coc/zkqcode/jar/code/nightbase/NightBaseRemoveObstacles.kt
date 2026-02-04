@@ -6,6 +6,7 @@ import com.coc.zkqcode.core.yolo.YoloDetector
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import android.graphics.Bitmap
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndStop
+import kotlin.math.sqrt
 
 
 suspend fun nightBaseRemoveObstacles() {
@@ -18,7 +19,7 @@ suspend fun nightBaseRemoveObstacles() {
 
 }
 
-suspend fun removeObstacles(): List<DetectionResult> {
+suspend fun detectObstacles(): List<DetectionResult> {
     val screenBuffer = ScreenCaptureManager.capture(asBitmap = true) as? Bitmap
         ?: logAndStop("in TextRecognizer, screen capture failed.")
 
@@ -70,5 +71,34 @@ suspend fun removeObstacles(): List<DetectionResult> {
         throw e
     }
 
-    return detections
+    // Filter detections outside [100, 1180] x-range
+    val initialFiltered = detections.filter { it.boundingBox.centerX() in 100f..1180f }
+
+    // Filter close detections: if distance < 5 pixels, keep only the one with higher score
+    val filteredDetections = mutableListOf<DetectionResult>()
+    for (detection in initialFiltered) {
+        var isTooClose = false
+        val iterator = filteredDetections.listIterator()
+        while (iterator.hasNext()) {
+            val existing = iterator.next()
+            
+            val dx = detection.boundingBox.centerX() - existing.boundingBox.centerX()
+            val dy = detection.boundingBox.centerY() - existing.boundingBox.centerY()
+            val distance = sqrt((dx * dx + dy * dy).toDouble())
+            
+            if (distance < 5.0) {
+                isTooClose = true
+                if (detection.score > existing.score) {
+                    iterator.remove()
+                    iterator.add(detection)
+                }
+                break
+            }
+        }
+        if (!isTooClose) {
+            filteredDetections.add(detection)
+        }
+    }
+
+    return filteredDetections
 }

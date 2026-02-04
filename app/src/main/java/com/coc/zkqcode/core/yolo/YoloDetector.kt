@@ -11,6 +11,7 @@ import java.nio.ByteOrder
 import java.nio.MappedByteBuffer
 import java.nio.channels.FileChannel
 import com.coc.zkqcode.core.util.fileactions.LogHelper
+import androidx.core.graphics.scale
 
 data class DetectionResult(
     val boundingBox: RectF,
@@ -82,7 +83,7 @@ object YoloDetector {
         return fileChannel.map(FileChannel.MapMode.READ_ONLY, startOffset, declaredLength)
     }
 
-    fun detect(bitmap: Bitmap, clearWeightsAfter: Boolean = true): List<DetectionResult> {
+    fun detect(bitmap: Bitmap, clearWeightsAfter: Boolean = true, threshold: Float = 0.3f): List<DetectionResult> {
         // Ensure weights are loaded strictly for this detection
         loadWeights()
         
@@ -104,8 +105,7 @@ object YoloDetector {
             for (detection in outputArray) {
                 // detection: [x1, y1, x2, y2, score, class]
                 val score = detection[4]
-                // Using 0.25f as threshold as per example
-                if (score > 0.25f) {
+                if (score > threshold) {
                     // Assuming normalized coordinates [0, 1] from model
                     val x1 = detection[0] * bitmap.width
                     val y1 = detection[1] * bitmap.height
@@ -132,7 +132,7 @@ object YoloDetector {
     }
 
     private fun convertBitmapToByteBuffer(bitmap: Bitmap): ByteBuffer {
-        val scaledBitmap = Bitmap.createScaledBitmap(bitmap, inputSize, inputSize, true)
+        val scaledBitmap = bitmap.scale(inputSize, inputSize)
         
         val bufferSize = if (inputDataType == DataType.FLOAT32) {
              4 * inputSize * inputSize * 3
@@ -162,7 +162,7 @@ object YoloDetector {
                     val rNormalized = (r / 255.0f / inputScale + inputZeroPoint)
                     val gNormalized = (g / 255.0f / inputScale + inputZeroPoint)
                     val bNormalized = (b / 255.0f / inputScale + inputZeroPoint)
-                    
+
                     byteBuffer.put(rNormalized.toInt().toByte())
                     byteBuffer.put(gNormalized.toInt().toByte())
                     byteBuffer.put(bNormalized.toInt().toByte())

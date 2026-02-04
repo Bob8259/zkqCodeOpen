@@ -4,16 +4,10 @@ import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndStop
 import com.coc.zkqcode.core.util.touchactions.TouchActions
-import com.coc.zkqcode.jar.code.nightbase.NightBaseWorkerAndResearch
-import com.coc.zkqcode.jar.code.nightbase.collectNightBaseResources
+import com.coc.zkqcode.jar.code.nightbase.detectObstacles
 import com.coc.zkqcode.jar.code.nightbase.playNightBase
-import com.coc.zkqcode.jar.code.nightbase.removeObstacles
-import com.coc.zkqcode.core.yolo.DetectionResult
 import com.coc.zkqcode.jar.code.universal.InGamesVars
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
-import com.coc.zkqcode.jar.code.universal.isInHomePage
-import com.coc.zkqcode.jar.code.universal.recognizer.RecognizeResources
-import com.coc.zkqcode.jar.code.universal.recognizer.TextRecognizer
 import com.coc.zkqcode.jar.code.universal.smalltools.readMemory
 import com.coc.zkqcode.jar.ui.schema.Schema
 import kotlinx.coroutines.currentCoroutineContext
@@ -79,7 +73,7 @@ object MainScript {
         while (true) {
             ShowMessage("测试代码开始")
             delay(3000)
-            val obstacles = removeObstacles()
+            val obstacles = detectObstacles()
             obstacles.forEach { obstacle ->
                 val box = obstacle.boundingBox
                 ShowMessage("x: ${box.centerX().toInt()}, y: ${box.centerY().toInt()}")
