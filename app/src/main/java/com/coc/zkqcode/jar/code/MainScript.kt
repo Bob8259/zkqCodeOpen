@@ -3,9 +3,12 @@ package com.coc.zkqcode.jar.code
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndStop
+import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.jar.code.nightbase.NightBaseWorkerAndResearch
 import com.coc.zkqcode.jar.code.nightbase.collectNightBaseResources
 import com.coc.zkqcode.jar.code.nightbase.playNightBase
+import com.coc.zkqcode.jar.code.nightbase.removeObstacles
+import com.coc.zkqcode.core.yolo.DetectionResult
 import com.coc.zkqcode.jar.code.universal.InGamesVars
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.isInHomePage
@@ -75,12 +78,17 @@ object MainScript {
     private suspend fun runTestCode() {
         while (true) {
             ShowMessage("测试代码开始")
-            delay(1300)
-            val resources = NightBaseWorkerAndResearch.detectWorkerNumber()
-            ShowMessage("Available: ${resources.available}, Total: ${resources.total}")
+            delay(3000)
+            val obstacles = removeObstacles()
+            obstacles.forEach { obstacle ->
+                val box = obstacle.boundingBox
+                ShowMessage("x: ${box.centerX().toInt()}, y: ${box.centerY().toInt()}")
+                TouchActions.tap(box.centerX().toInt(), box.centerY().toInt())
+                delay(2000)
+            }
             delay(1500)
+            ShowMessage("测试代码结束")
         }
-
     }
 }
 

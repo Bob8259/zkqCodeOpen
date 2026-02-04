@@ -82,7 +82,7 @@ object YoloDetector {
         return fileChannel.map(FileChannel.MapMode.READ_ONLY, startOffset, declaredLength)
     }
 
-    fun detect(bitmap: Bitmap): List<DetectionResult> {
+    fun detect(bitmap: Bitmap, clearWeightsAfter: Boolean = true): List<DetectionResult> {
         // Ensure weights are loaded strictly for this detection
         loadWeights()
         
@@ -106,10 +106,11 @@ object YoloDetector {
                 val score = detection[4]
                 // Using 0.25f as threshold as per example
                 if (score > 0.25f) {
-                    val x1 = detection[0]
-                    val y1 = detection[1]
-                    val x2 = detection[2]
-                    val y2 = detection[3]
+                    // Assuming normalized coordinates [0, 1] from model
+                    val x1 = detection[0] * bitmap.width
+                    val y1 = detection[1] * bitmap.height
+                    val x2 = detection[2] * bitmap.width
+                    val y2 = detection[3] * bitmap.height
                     val classIdx = detection[5]
                     
                     detections.add(
@@ -123,8 +124,10 @@ object YoloDetector {
             }
             return detections
         } finally {
-            // Strictly clean weights after detection
-            clearWeights()
+            // Strictly clean weights after detection if requested
+            if (clearWeightsAfter) {
+                clearWeights()
+            }
         }
     }
 
