@@ -18,11 +18,11 @@ object GlobalVars {
 
     // Auto-run features
     var isAutoRunEnabled by mutableStateOf(true)
-    var autoRunTimer by mutableIntStateOf(0)//测试专用，记得改回60
+    var autoRunTimer by mutableIntStateOf(10)//测试专用，记得改回60
 
 
     // Window positioning
-    var absorbEdge by mutableIntStateOf(10) // 1: Left, 0: Right
+    var absorbEdge by mutableIntStateOf(0) // 1: Left, 0: Right
     var absorbYPercentage by mutableIntStateOf(50) // Percentage of Y axis
     var updateWindowPosition by mutableStateOf(false)
 
