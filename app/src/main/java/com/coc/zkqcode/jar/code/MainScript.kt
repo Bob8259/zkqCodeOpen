@@ -1,9 +1,6 @@
 package com.coc.zkqcode.jar.code
 
-import android.graphics.Bitmap
 import com.coc.zkqcode.core.data.database.GlobalVars
-import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
-import com.coc.zkqcode.core.mlkit.ChineseTextRecognizer
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndStop
 import com.coc.zkqcode.jar.code.nightbase.collectNightBaseResources
@@ -11,6 +8,8 @@ import com.coc.zkqcode.jar.code.nightbase.playNightBase
 import com.coc.zkqcode.jar.code.universal.InGamesVars
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.isInHomePage
+import com.coc.zkqcode.jar.code.universal.recognizer.RecognizeResources
+import com.coc.zkqcode.jar.code.universal.recognizer.TextRecognizer
 import com.coc.zkqcode.jar.code.universal.smalltools.readMemory
 import com.coc.zkqcode.jar.ui.schema.Schema
 import kotlinx.coroutines.currentCoroutineContext
@@ -75,32 +74,12 @@ object MainScript {
     private suspend fun runTestCode() {
         while (true) {
             ShowMessage("测试代码开始")
-            delay(3000)
-            val screenBuffer = ScreenCaptureManager.capture(asBitmap = true) as? Bitmap
-                ?: logAndStop("in isInHomePage, screen capture failed.")
-            
-            // Define crop area: (1004, 21) to (1217, 126)
-            val left = 1004
-            val top = 21
-            val width = 1217 - 1004 // 213
-            val height = 126 - 21   // 105
-            
-            try {
-                // Ensure crop area is within bitmap bounds
-                if (left + width <= screenBuffer.width && top + height <= screenBuffer.height) {
-                    val croppedBitmap = Bitmap.createBitmap(screenBuffer, left, top, width, height)
-                    
-                    // Use ChineseTextRecognizer to recognize text and digits
-                    ChineseTextRecognizer.recognizeChineseText(croppedBitmap)
-                } else {
-                    logAndStop("Crop area ($left, $top, $width, $height) is out of bitmap bounds (${screenBuffer.width}x${screenBuffer.height})")
-                }
-            } catch (e: Exception) {
-                logAndStop("Error during cropping or recognition: ${e.message}")
-            }
+            delay(300)
+            val resources = RecognizeResources.recognizeMyResources()
+            ShowMessage("Gold: ${resources.gold}, Elixir: ${resources.elixir}, Dark Elixir: ${resources.darkElixir}")
 
             ShowMessage("测试代码结束")
-            delay(5000)
+            delay(1500)
         }
 
     }
