@@ -22,9 +22,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.unit.toSize
 import androidx.compose.ui.platform.LocalWindowInfo
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.toSize
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
@@ -37,8 +36,13 @@ import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.statehelper.AppMode
 import com.coc.zkqcode.statehelper.AppStateManager
 import com.topjohnwu.superuser.Shell
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
-import kotlinx.coroutines.*
 
 class ControlWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner {
 
@@ -66,7 +70,7 @@ class ControlWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner 
         serviceScope.launch(Dispatchers.IO) {
             while (true) {
                 val configCount = GlobalVars.configStates["config_count"]?.value
-                if (configCount == null) {
+                if (GlobalVars.isConfigLoaded && configCount == null) {
                     Shell.cmd("am start -n com.coc.zkqcode/.MainActivity >>/dev/null 2>&1").exec()
                     GlobalVars.autoRunTimer = 5
                 }

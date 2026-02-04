@@ -42,7 +42,6 @@ import com.topjohnwu.superuser.Shell
 fun CheckRootScreen() {
     val context = LocalContext.current
     var status by remember { mutableStateOf(RootStatus.CHECKING) }
-    var isConfigInitialized by remember { mutableStateOf(false) }
 
     // 使用 LaunchedEffect 监听并检测
     LaunchedEffect(Unit) {
@@ -50,10 +49,6 @@ fun CheckRootScreen() {
         Shell.cmd("adb shell input keyevent 4").exec()
         status = PermissionManager.checkAndGrantPermissions(context) { newStatus ->
             status = newStatus
-            // Reset config initialization if status changes back from granted (though unlikely in this flow)
-            if (newStatus != RootStatus.GRANTED) {
-                isConfigInitialized = false
-            }
         }
     }
 
@@ -114,54 +109,42 @@ fun CheckRootScreen() {
                     GlobalVars.serverActions = ServerActions(serverConnection)
                 }
 
-                // Initialize states from Schema
-                val actions = GlobalVars.serverActions
-                if (actions != null) {
-                    // Wait for configs to load
-                    snapshotFlow { actions.isLoading }.collect { isLoading ->
-                        if (!isLoading) {
-                            ConfigManager.initializeAllConfigs(actions)
-                            isConfigInitialized = true
-                        }
-                    }
-                }
+
             }
 
-            if (!isConfigInitialized) {
-                FullScreenMessage("正在初始化配置文件...")
-            } else {
-                // Start the floating window service when root check passes AND config is initialized
-                LaunchedEffect(Unit) {
-                    val serviceIntent = Intent(context, UIWindowService::class.java)
-                    context.startService(serviceIntent)
-                    (context as? MainActivity)?.requestMediaProjection()
-                }
-                Column(
-                    modifier = Modifier.fillMaxSize(),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    FullScreenMessage("权限检查通过，配置加载完成。\n正在显示主界面...\n若未能自动显示，请手动点击按钮显示主界面")
-                    Spacer(modifier = Modifier.height(16.dp))
-                    CustomButton(
-                        text = "显示主界面",
-                        onClick = {
-                            AppStateManager.setMode(AppMode.Main)
-                            val serviceIntent = Intent(context, UIWindowService::class.java)
-                            GlobalVars.isAutoRunEnabled = true
-                            GlobalVars.autoRunTimer = 60
-                            GlobalVars.updateWindowPosition = false
-                            context.startService(serviceIntent)
-                        }
-                    )
-                }
+
+            // Start the floating window service when root check passes AND config is initialized
+            LaunchedEffect(Unit) {
+                val serviceIntent = Intent(context, UIWindowService::class.java)
+                context.startService(serviceIntent)
+                (context as? MainActivity)?.requestMediaProjection()
             }
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                FullScreenMessage("权限检查通过，配置加载完成。\n正在显示主界面...\n若未能自动显示，请手动点击按钮显示主界面")
+                Spacer(modifier = Modifier.height(16.dp))
+                CustomButton(
+                    text = "显示主界面",
+                    onClick = {
+                        AppStateManager.setMode(AppMode.Main)
+                        val serviceIntent = Intent(context, UIWindowService::class.java)
+                        GlobalVars.isAutoRunEnabled = true
+                        GlobalVars.autoRunTimer = 60
+                        GlobalVars.updateWindowPosition = false
+                        context.startService(serviceIntent)
+                    }
+                )
+            }
+
         }
     }
 }
 
 @Composable
-private fun FullScreenMessage(message: String) {
+fun FullScreenMessage(message: String) {
     Text(
         text = message,
         textAlign = TextAlign.Center,
