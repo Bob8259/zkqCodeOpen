@@ -2,8 +2,6 @@
 
 package com.coc.zkqcode.jar.ui.schema
 
-import com.coc.zkqcode.core.data.database.SchemaRegistry
-
 /**
  * The single source of truth for any setting in the app.
  */

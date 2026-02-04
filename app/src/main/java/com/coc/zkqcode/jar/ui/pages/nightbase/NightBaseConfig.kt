@@ -10,10 +10,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.coc.zkqcode.core.ui.components.CustomButton
-import com.coc.zkqcode.core.ui.components.SettingCheckBox
+import com.coc.zkqcode.jar.ui.components.CustomButton
+import com.coc.zkqcode.jar.ui.components.SettingCheckBox
 import com.coc.zkqcode.core.data.database.GlobalVars
-import com.coc.zkqcode.core.ui.components.SettingInputRow
+import com.coc.zkqcode.jar.ui.components.SettingInputRow
 import com.coc.zkqcode.jar.ui.schema.Schema.NIGHT_BASE_SETTINGS
 
 fun LazyListScope.NightBaseConfig(

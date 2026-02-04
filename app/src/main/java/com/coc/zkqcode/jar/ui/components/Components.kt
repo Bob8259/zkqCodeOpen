@@ -1,4 +1,4 @@
-package com.coc.zkqcode.core.ui.components
+package com.coc.zkqcode.jar.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
