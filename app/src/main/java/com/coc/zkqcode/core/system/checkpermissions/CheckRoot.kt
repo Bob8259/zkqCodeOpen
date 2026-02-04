@@ -132,7 +132,6 @@ fun CheckRootScreen() {
             } else {
                 // Start the floating window service when root check passes AND config is initialized
                 LaunchedEffect(Unit) {
-
                     val serviceIntent = Intent(context, UIWindowService::class.java)
                     context.startService(serviceIntent)
                     (context as? MainActivity)?.requestMediaProjection()

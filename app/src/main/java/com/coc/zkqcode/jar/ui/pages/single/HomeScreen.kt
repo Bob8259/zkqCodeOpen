@@ -51,7 +51,6 @@ fun HomeScreen(
     onNavigateNightPriority: (Int) -> Unit = {}
 ) {
 
-
     // Ensure all keys are initialized if not already (safeguard)
     val actions = GlobalVars.serverActions
     if (actions != null && GlobalVars.configStates.isEmpty()) {
