@@ -8,6 +8,7 @@ import com.coc.zkqcode.core.system.screencapture.ProjectionPermissionHelper
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.fileactions.LogHelper
+import com.coc.zkqcode.core.yolo.YoloDetector
 import timber.log.Timber
 
 class MainActivity : ComponentActivity() {
@@ -20,6 +21,7 @@ class MainActivity : ComponentActivity() {
         System.loadLibrary("rust_logic")
         ScreenCaptureManager.init(this)
         LogHelper.initTimber(this)
+        YoloDetector.initialize(this)
         Timber.v("MainActivity Start!")
         setContent {
             CheckRootScreen()
