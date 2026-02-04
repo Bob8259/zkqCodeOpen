@@ -18,7 +18,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -28,12 +27,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.coc.zkqcode.MainActivity
-import com.coc.zkqcode.jar.ui.schema.ConfigManager
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.data.websocket.ServerActions
 import com.coc.zkqcode.core.data.websocket.ServerConnection
-import com.coc.zkqcode.jar.ui.components.CustomButton
 import com.coc.zkqcode.core.ui.floatingwindows.UIWindowService
+import com.coc.zkqcode.core.ui.localcomponents.LocalCustomButton
 import com.coc.zkqcode.statehelper.AppMode
 import com.coc.zkqcode.statehelper.AppStateManager
 import com.topjohnwu.superuser.Shell
@@ -126,7 +124,7 @@ fun CheckRootScreen() {
             ) {
                 FullScreenMessage("权限检查通过，配置加载完成。\n正在显示主界面...\n若未能自动显示，请手动点击按钮显示主界面")
                 Spacer(modifier = Modifier.height(16.dp))
-                CustomButton(
+                LocalCustomButton(
                     text = "显示主界面",
                     onClick = {
                         AppStateManager.setMode(AppMode.Main)
