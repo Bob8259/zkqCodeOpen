@@ -67,3 +67,22 @@
 -keep class kotlin.** { *; }
 -keep class kotlinx.** { *; }
 -keepattributes Signature, InnerClasses, EnclosingMethod, *Annotation*, Exceptions
+
+# ==========================================================
+# 5. TensorFlow Lite 专用规则
+# ==========================================================
+
+# 保持 TFLite 核心库的所有类及其成员 (防止 JNI 调用失败)
+-keep class org.tensorflow.lite.** { *; }
+
+# 保持 TFLite Support 库 (如果你使用了 Interpreter, TensorBuffer, ImageProcessor 等)
+-keep class org.tensorflow.lite.support.** { *; }
+
+# 特别保护 Native 方法，因为 TFLite 严重依赖 C++ 底层实现
+-keepclasseswithmembernames class * {
+    native <methods>;
+}
+
+# 预防元数据解析错误 (如果你的模型包含 Metadata)
+-keepattributes RuntimeVisibleAnnotations, RuntimeInvisibleAnnotations
+-keep class org.tensorflow.lite.annotations.** { *; }
