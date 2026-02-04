@@ -1,42 +1,45 @@
 package com.coc.zkqcode.core.ui.floatingwindows
 
-import android.content.pm.ServiceInfo
-
 import android.app.Service
 import android.content.Intent
+import android.content.pm.ServiceInfo
+import android.content.res.Configuration
 import android.graphics.PixelFormat
 import android.os.Build
 import android.os.IBinder
 import android.view.Gravity
 import android.view.WindowManager
-import androidx.compose.ui.platform.ComposeView
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.LifecycleRegistry
-import androidx.lifecycle.setViewTreeLifecycleOwner
-import androidx.savedstate.SavedStateRegistry
-import androidx.savedstate.SavedStateRegistryController
-import androidx.savedstate.SavedStateRegistryOwner
-import androidx.savedstate.setViewTreeSavedStateRegistryOwner
-import com.coc.zkqcode.loadjar.Loadjar
-import com.coc.zkqcode.statehelper.AppMode
-import com.coc.zkqcode.statehelper.AppStateManager
-import androidx.compose.runtime.mutableStateOf
-import kotlinx.coroutines.*
-import android.content.res.Configuration
-import androidx.lifecycle.ViewModelStore
-import androidx.lifecycle.ViewModelStoreOwner
-import androidx.lifecycle.setViewTreeViewModelStoreOwner
 import androidx.activity.OnBackPressedDispatcher
 import androidx.activity.OnBackPressedDispatcherOwner
 import androidx.activity.setViewTreeOnBackPressedDispatcherOwner
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Density
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LifecycleRegistry
+import androidx.lifecycle.ViewModelStore
+import androidx.lifecycle.ViewModelStoreOwner
+import androidx.lifecycle.setViewTreeLifecycleOwner
+import androidx.lifecycle.setViewTreeViewModelStoreOwner
+import androidx.savedstate.SavedStateRegistry
+import androidx.savedstate.SavedStateRegistryController
+import androidx.savedstate.SavedStateRegistryOwner
+import androidx.savedstate.setViewTreeSavedStateRegistryOwner
 import com.coc.zkqcode.core.data.database.GlobalVars
+import com.coc.zkqcode.loadjar.Loadjar
+import com.coc.zkqcode.statehelper.AppMode
+import com.coc.zkqcode.statehelper.AppStateManager
 import com.topjohnwu.superuser.Shell
-import com.coc.zkqcode.core.util.fileactions.LogHelper.showDebugInfo
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class UIWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner, ViewModelStoreOwner,
     OnBackPressedDispatcherOwner {
@@ -85,7 +88,7 @@ class UIWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner, View
         serviceScope.launch(Dispatchers.IO) {
             while (true) {
                 val configCount = GlobalVars.configStates["config_count"]?.value
-                if (configCount == null) {
+                if (GlobalVars.isConfigLoaded && configCount == null) {
                     Shell.cmd("am start -n com.coc.zkqcode/.MainActivity >>/dev/null 2>&1").exec()
                     GlobalVars.autoRunTimer = 5
                 }

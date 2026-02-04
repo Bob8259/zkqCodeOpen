@@ -14,9 +14,11 @@ object GlobalVars {
     var pluginUI: MainCode? = null
     var serverPath: String = ""
 
+    var isConfigLoaded: Boolean = false
+
     // Auto-run features
     var isAutoRunEnabled by mutableStateOf(true)
-    var autoRunTimer by mutableIntStateOf(0)//测试专用，记得改回60
+    var autoRunTimer by mutableIntStateOf(10)//测试专用，记得改回60
 
 
     // Window positioning
