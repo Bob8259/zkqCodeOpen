@@ -10,8 +10,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.coc.zkqcode.core.ui.components.CustomButton
-import com.coc.zkqcode.core.ui.components.SettingCheckBox
+import com.coc.zkqcode.jar.ui.components.CustomButton
+import com.coc.zkqcode.jar.ui.components.SettingCheckBox
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.jar.ui.schema.Schema.NIGHT_BASE_TROOPS
 import kotlin.collections.set

@@ -7,8 +7,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.coc.zkqcode.core.ui.components.SettingCheckBox
-import com.coc.zkqcode.core.ui.components.SettingInputRow
+import com.coc.zkqcode.jar.ui.components.SettingCheckBox
+import com.coc.zkqcode.jar.ui.components.SettingInputRow
 import com.coc.zkqcode.jar.ui.schema.Schema.GLOBAL_SETTINGS
 
 @Composable

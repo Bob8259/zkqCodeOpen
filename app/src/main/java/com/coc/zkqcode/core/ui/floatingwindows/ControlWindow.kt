@@ -26,7 +26,7 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import com.coc.zkqcode.core.ui.components.CustomAlertDialog
+import com.coc.zkqcode.jar.ui.components.CustomAlertDialog
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.exit.AppExitHelper

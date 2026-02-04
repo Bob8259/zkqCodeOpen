@@ -1,9 +1,10 @@
-package com.coc.zkqcode.core.util.basic
+package com.coc.zkqcode.jar.code.universal.colors
 
 import android.graphics.Bitmap
 import android.graphics.Point
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.core.data.database.GlobalVars
+import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndStop
 import com.coc.zkqcode.jar.code.colorschema.ColorSchema
 import com.coc.zkqcode.nativehelper.RustTools

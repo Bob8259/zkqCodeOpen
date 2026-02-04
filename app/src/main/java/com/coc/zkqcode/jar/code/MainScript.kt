@@ -74,11 +74,9 @@ object MainScript {
     private suspend fun runTestCode() {
         while (true) {
             ShowMessage("测试代码开始")
-            delay(300)
+            delay(1300)
             val resources = RecognizeResources.recognizeMyResources()
             ShowMessage("Gold: ${resources.gold}, Elixir: ${resources.elixir}, Dark Elixir: ${resources.darkElixir}")
-
-            ShowMessage("测试代码结束")
             delay(1500)
         }
 
