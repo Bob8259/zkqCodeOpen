@@ -3,6 +3,7 @@ package com.coc.zkqcode.jar.code
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndStop
+import com.coc.zkqcode.jar.code.nightbase.NightBaseWorkerAndResearch
 import com.coc.zkqcode.jar.code.nightbase.collectNightBaseResources
 import com.coc.zkqcode.jar.code.nightbase.playNightBase
 import com.coc.zkqcode.jar.code.universal.InGamesVars
@@ -75,8 +76,8 @@ object MainScript {
         while (true) {
             ShowMessage("测试代码开始")
             delay(1300)
-            val resources = RecognizeResources.recognizeMyResources()
-            ShowMessage("Gold: ${resources.gold}, Elixir: ${resources.elixir}, Dark Elixir: ${resources.darkElixir}")
+            val resources = NightBaseWorkerAndResearch.detectWorkerNumber()
+            ShowMessage("Available: ${resources.available}, Total: ${resources.total}")
             delay(1500)
         }
 

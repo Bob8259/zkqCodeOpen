@@ -64,6 +64,7 @@ object RecognizeResources {
         val digitsOnly = text.replace("G", "6")
             .replace("o", "0").replace("O", "0")
             .replace("s", "5").replace("S", "5")
+            .replace("z", "2").replace("Z", "2")
             .replace("I", "1").replace("l", "1")
             .replace(Regex("[^0-9]"), "")
         return digitsOnly.toIntOrNull() ?: 0
