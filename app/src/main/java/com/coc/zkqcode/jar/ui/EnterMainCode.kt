@@ -14,6 +14,7 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import kotlinx.coroutines.flow.first
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.system.checkpermissions.FullScreenMessage
 import com.coc.zkqcode.interfaces.MainCode
@@ -33,9 +34,14 @@ class EnterMainCode : MainCode {
         var isConfigInitialized by remember { mutableStateOf(false) }
 
         LaunchedEffect(Unit) {
+            if (GlobalVars.isConfigLoaded) {
+                isConfigInitialized = true
+                return@LaunchedEffect
+            }
             val actions = GlobalVars.serverActions
             if (actions != null) {
                 // Wait for configs to load
+                snapshotFlow { actions.isLoading }.first { !it }
                 ConfigManager.initializeAllConfigs(actions)
                 isConfigInitialized = true
                 GlobalVars.isConfigLoaded = true
