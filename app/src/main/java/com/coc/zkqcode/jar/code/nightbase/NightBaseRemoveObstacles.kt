@@ -5,11 +5,16 @@ import com.coc.zkqcode.core.yolo.DetectionResult
 import com.coc.zkqcode.core.yolo.YoloDetector
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import android.graphics.Bitmap
+import android.graphics.Point
+import androidx.compose.material3.ShortNavigationBar
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.basic.ShowMessage.invoke
+import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndStop
 import com.coc.zkqcode.core.util.touchactions.TouchActions
+import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.InGamesVars
+import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.recognizer.RecognizeResources
 import com.coc.zkqcode.jar.code.universal.smalltools.readMemory
@@ -20,9 +25,7 @@ import kotlin.math.sqrt
 
 
 suspend fun nightBaseRemoveObstacles(): Boolean {
-    zoomSmallNightBase()
-    swipe(587, 420, 587, 670)
-
+    enterFirstArea()
 //    val worker = NightBaseWorkerAndResearch.detectWorkerNumber()
 //    if (worker.total == 2) {
 //
@@ -45,13 +48,51 @@ private suspend fun enterFirstArea() {
         return
     }
     ShowMessage("第一区域准备移除障碍物")
+    enterEditMode()
     zoomSmallNightBase()
-
+    removeObstacles()
+    swipe(1036, 78, 1100, 455, 700)
+    removeObstacles()
+    
 }
 
-private suspend fun enterEditMode(){
-    if(InGamesVars.currentGamePackage==0){
-        val point =
+private suspend fun enterEditMode() {
+    // Select the initial schema based on the game package version
+    val initialSchema = if (InGamesVars.currentGamePackage == 0) {
+        MyColors.CNEditBaseButton
+    } else {
+        MyColors.GlobalEditBaseButton
+    }
+
+    // Attempt to locate the initial edit button
+    findMultiColorsUntil(schema = initialSchema, duration = 1500)?.let {
+        TouchActions.tap(it.x, it.y)
+    } ?: return
+
+    // Sequence of interactions to navigate through the edit menus
+    // 1. Locate and click the specific Green Edit Button
+    findMultiColorsUntil(schema = MyColors.GreenEditBaseButton, duration = 1500)?.let {
+        TouchActions.tap(it.x, it.y)
+    }
+
+    // 2. Locate and click the confirmation (Yes) button
+    findMultiColorsUntil(schema = MyColors.MiddleGreenYes, duration = 1000)?.let {
+        TouchActions.tap(it.x, it.y)
+    }
+
+    // 3. Locate "Remove All", confirm the action, and perform final layout taps
+    findMultiColorsUntil(schema = MyColors.EditModeRemoveAll, duration = 1000)?.let {
+        TouchActions.tap(it.x, it.y)
+
+        // Re-confirm deletion
+        findMultiColorsUntil(schema = MyColors.MiddleGreenYes, duration = 1000)?.let { yesPoint ->
+            TouchActions.tap(yesPoint.x, yesPoint.y)
+        }
+
+        // Post-action delays and fixed-coordinate taps to finalize state
+        delayWithMultiplier(500)
+        TouchActions.tap(1005, 265)
+        delayWithMultiplier(500)
     }
 }
 
@@ -59,9 +100,18 @@ private suspend fun removeObstacles() {
     val obstacles = detectObstacles()
     obstacles.forEach { obstacle ->
         val box = obstacle.boundingBox
-        ShowMessage("x: ${box.centerX().toInt()}, y: ${box.centerY().toInt()}")
-        TouchActions.tap(box.centerX().toInt(), box.centerY().toInt())
-        delay(2000)
+        val centerX = box.centerX().toInt()
+        val centerY = box.centerY().toInt()
+        ShowMessage("x: $centerX, y: $centerY")
+        TouchActions.tap(centerX, centerY)
+        delayWithMultiplier(500)
+        // Tap confirmation/action button
+        TouchActions.tap(616, 488)
+        delayWithMultiplier(100)
+        repeat(2) {
+            TouchActions.tap(14, 558)
+            if (it == 0) delayWithMultiplier(100) else delayWithMultiplier(500)
+        }
     }
 }
 

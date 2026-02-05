@@ -2,9 +2,10 @@ package com.coc.zkqcode.jar.code
 
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.util.basic.ShowMessage
+import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndStop
 import com.coc.zkqcode.core.util.touchactions.TouchActions
-import com.coc.zkqcode.jar.code.nightbase.detectObstacles
+import com.coc.zkqcode.jar.code.nightbase.nightBaseRemoveObstacles
 import com.coc.zkqcode.jar.code.nightbase.playNightBase
 import com.coc.zkqcode.jar.code.universal.InGamesVars
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
@@ -44,11 +45,12 @@ object MainScript {
             // 4. 执行主逻辑循环
             InGamesVars.currentAccountNumber = activeAccount
             while (currentCoroutineContext().isActive) {
-                //测试代码
-                runTestCode()
-
                 InGamesVars.currentGamePackage =
                     getConfigOrStop("game_version${InGamesVars.currentAccountNumber}").toInt()
+                ShowMessage("version:${InGamesVars.currentGamePackage}")
+
+                //测试代码
+                runTestCode()
                 if (!enterMainScreen()) {
                     ShowMessage("进入游戏失败")
                     delay(500)
@@ -73,7 +75,7 @@ object MainScript {
         while (true) {
             ShowMessage("测试代码开始")
             delay(3000)
-
+            nightBaseRemoveObstacles()
             delay(1500)
             ShowMessage("测试代码结束")
         }

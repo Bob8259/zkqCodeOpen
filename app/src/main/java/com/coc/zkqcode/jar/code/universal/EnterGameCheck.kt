@@ -90,8 +90,10 @@ private suspend fun closeAdvertisements() {
         MyColors.MagicalItem,
         MyColors.CNPuppetAd,
         MyColors.CNBackFromAwards,
-        MyColors.CollectChest
-    )
+        MyColors.CollectChest,
+        MyColors.EditModeWrench,
+
+        )
 
     // 3. Iterate through schemas
     homeSchemas.forEach { schema ->
@@ -129,6 +131,11 @@ private suspend fun closeAdvertisements() {
             // Maintains functional parity with the original 100ms delay per tap
             delayWithMultiplier(100)
         }
+    }
+    findMultiColors(schema = MyColors.CancelEditMode)?.let {
+        TouchActions.tap(it.x, it.y)
+        delayWithMultiplier(500)
+        TouchActions.tap(788, 464)
     }
     findMultiColors(schema = MyColors.TrainingPage)?.let {
         TouchActions.tap(219, 139)//close training tap
