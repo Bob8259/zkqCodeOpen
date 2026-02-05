@@ -3,6 +3,7 @@ package com.coc.zkqcode.jar.code.universal.smalltools
 import com.coc.zkqcode.jar.code.universal.InGamesVars
 
 suspend fun runGame() {
+
     when (InGamesVars.currentGamePackage) {
         0 -> {//国服
             runApp("com.tencent.tmgp.supercell.clashofclans")
