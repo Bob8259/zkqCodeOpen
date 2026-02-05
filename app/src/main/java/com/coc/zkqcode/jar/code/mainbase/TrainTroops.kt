@@ -100,7 +100,8 @@ object TrainTroops {
             delayWithMultiplier(1000)
             if (findMultiColorsUntil(schema = MyColors.TrainLighteningSpell, duration = 500) != null) {
                 // Optimized sequence of taps for lightning spells
-                val spellCoords = listOf(351 to 621, 351 to 621, 351 to 621, 220 to 499, 91 to 494, 91 to 494, 91 to 494, 91 to 494)
+                val spellCoords =
+                    listOf(351 to 621, 351 to 621, 351 to 621, 220 to 499, 91 to 494, 91 to 494, 91 to 494, 91 to 494)
                 for (coord in spellCoords) {
                     TouchActions.tap(coord.first, coord.second)
                     delayWithMultiplier(50)
@@ -140,7 +141,9 @@ object TrainTroops {
             writeMemory(storageKey, dayOfMonth.toString())
             GlobalVars.absorbEdge = 0
             return enterMainScreen()
+        } else {
+            ShowMessage("该账号今日已练兵")
+            return true
         }
-        return true
     }
 }

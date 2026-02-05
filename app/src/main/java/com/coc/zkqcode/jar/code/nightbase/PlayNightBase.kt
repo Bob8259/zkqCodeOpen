@@ -20,7 +20,7 @@ suspend fun playNightBase(): Boolean {
     else {
         ShowMessage("进入夜世界成功")
     }
-    collectNightBaseResources()
-    nightBaseRemoveObstacles()
+    if (!collectNightBaseResources()) return false
+    if (!nightBaseRemoveObstacles()) return false
     return true
 }
