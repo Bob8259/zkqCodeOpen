@@ -5,6 +5,7 @@ import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndStop
 import com.coc.zkqcode.core.util.touchactions.TouchActions
+import com.coc.zkqcode.jar.code.nightbase.NightBaseTrainTroops
 import com.coc.zkqcode.jar.code.nightbase.nightBaseRemoveObstacles
 import com.coc.zkqcode.jar.code.nightbase.playNightBase
 import com.coc.zkqcode.jar.code.universal.InGamesVars
@@ -50,7 +51,7 @@ object MainScript {
                 ShowMessage("version:${InGamesVars.currentGamePackage}")
 
                 //测试代码
-//                runTestCode()
+                runTestCode()
                 if (!enterMainScreen()) {
                     ShowMessage("进入游戏失败")
                     delay(500)
@@ -75,7 +76,7 @@ object MainScript {
         while (true) {
             ShowMessage("测试代码开始")
             delay(3000)
-            nightBaseRemoveObstacles()
+            NightBaseTrainTroops.trainWithConditions()
             delay(1500)
             ShowMessage("测试代码结束")
         }

@@ -22,5 +22,6 @@ suspend fun playNightBase(): Boolean {
     }
     if (!collectNightBaseResources()) return false
     if (!nightBaseRemoveObstacles()) return false
+
     return true
 }
