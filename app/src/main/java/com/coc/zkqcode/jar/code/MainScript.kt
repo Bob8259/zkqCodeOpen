@@ -50,7 +50,7 @@ object MainScript {
                 ShowMessage("version:${InGamesVars.currentGamePackage}")
 
                 //测试代码
-                runTestCode()
+//                runTestCode()
                 if (!enterMainScreen()) {
                     ShowMessage("进入游戏失败")
                     delay(500)

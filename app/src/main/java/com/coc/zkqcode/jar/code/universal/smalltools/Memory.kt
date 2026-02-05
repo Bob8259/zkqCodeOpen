@@ -6,8 +6,8 @@ import com.google.gson.JsonObject
 
 //Memory list
 //
-//MainBaseTrainTroops$accountNumber: The time when the troops are trained.
-
+//MainBaseTrainTroops${InGamesVars.currentAccountNumber} : The time when the troops are trained.
+//NightBaseRemoveObstacles${InGamesVars.currentAccountNumber}
 private val sdPath = Environment.getExternalStorageDirectory().path
 private val memoryPath = "$sdPath/zkqFiles/memory.json"
 
