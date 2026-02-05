@@ -1,60 +1,68 @@
 package com.coc.zkqcode.jar.code.nightbase
 
-import com.coc.zkqcode.core.util.touchactions.TouchActions.swipe
-import com.coc.zkqcode.core.yolo.DetectionResult
-import com.coc.zkqcode.core.yolo.YoloDetector
-import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import android.graphics.Bitmap
-import android.graphics.Point
-import androidx.compose.material3.ShortNavigationBar
+import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.core.util.basic.ShowMessage
-import com.coc.zkqcode.core.util.basic.ShowMessage.invoke
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndStop
 import com.coc.zkqcode.core.util.touchactions.TouchActions
+import com.coc.zkqcode.core.util.touchactions.TouchActions.swipe
+import com.coc.zkqcode.core.yolo.DetectionResult
+import com.coc.zkqcode.core.yolo.YoloDetector
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.InGamesVars
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.recognizer.RecognizeResources
 import com.coc.zkqcode.jar.code.universal.smalltools.readMemory
-import kotlinx.coroutines.delay
+import com.coc.zkqcode.jar.code.universal.smalltools.writeMemory
 import java.util.Calendar
 import kotlin.math.abs
 import kotlin.math.sqrt
 
 
 suspend fun nightBaseRemoveObstacles(): Boolean {
-    enterFirstArea()
-//    val worker = NightBaseWorkerAndResearch.detectWorkerNumber()
-//    if (worker.total == 2) {
-//
-//    }
-    return enterMainScreen()
-}
-
-private suspend fun enterFirstArea() {
+    val worker = NightBaseWorkerAndResearch.detectWorkerNumber()
     val resources = RecognizeResources.recognizeMyResources()
     val storageKey = "NightBaseRemoveObstacles${InGamesVars.currentAccountNumber}"
     val lastCleaningTime = readMemory(storageKey).toIntOrNull()
-    val calendar = Calendar.getInstance()
-    val hourOfDay = calendar.get(Calendar.HOUR_OF_DAY)
-    if (lastCleaningTime != null && abs(lastCleaningTime - hourOfDay) < 8) {
+    val currentHour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
+
+    // Simplified time check as requested
+    if (lastCleaningTime != null && abs(lastCleaningTime - currentHour) < 8) {
         ShowMessage("距离上次除草不足8小时，暂不除草")
-        return
+        return true
     }
-    if (resources.gold < 400000 && resources.elixir < 400000) {
-        ShowMessage("检测金：${resources.gold}，检测水：${resources.elixir}\n不足40万，暂不除草")
-        return
+
+    // Resource threshold check
+    if (resources.gold < 600000 && resources.elixir < 600000) {
+        ShowMessage("检测金：${resources.gold}，检测水：${resources.elixir}\n不足60万，暂不除草")
+        return true
     }
+
     ShowMessage("第一区域准备移除障碍物")
     enterEditMode()
     zoomSmallNightBase()
+
+    // First Area Operations
     removeObstacles()
     swipe(1036, 78, 1100, 455, 700)
     removeObstacles()
-    
+
+    // Second Area Operations (conditional on worker count)
+    if (worker.total == 2) {
+        ShowMessage("当前已解锁第二区域")
+        swipe(672, 159, 1206, 420, 700)
+        removeObstacles()
+        swipe(867, 163, 1211, 450, 700)
+        removeObstacles()
+    }
+
+    // Update the storage with the current hour after completion
+    writeMemory(storageKey, currentHour.toString())
+    return enterMainScreen()
 }
+
 
 private suspend fun enterEditMode() {
     // Select the initial schema based on the game package version
