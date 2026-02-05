@@ -52,7 +52,7 @@ fun LazyListScope.NightBaseConfig(
                 Row {
                     SettingCheckBox(
                         key = "${NIGHT_BASE_SETTINGS.BUILDER_BASE_FARMING.key}_c${index}",
-                        explain = "紫孔雀会自动配兵，暂不支持手动配兵。若未勾选“上分模式”和“刷圣水车”，紫孔雀就会根据账号的资源数量，智能选择对战模式。"
+                        explain = "辅助会自动配兵，暂不支持手动配兵。若未勾选“上分模式”和“刷圣水车”，辅助就会根据账号的资源数量，智能选择对战模式。"
                     )
                     SettingCheckBox(key = "${NIGHT_BASE_SETTINGS.STOP_WHEN_RESOURCE_FULL.key}_c${index}")
                 }
@@ -62,7 +62,7 @@ fun LazyListScope.NightBaseConfig(
                 Row {
                     SettingCheckBox(
                         key = "${NIGHT_BASE_SETTINGS.TROPHY_PUSHING_MODE.key}_c${index}",
-                        explain = "勾选后，紫孔雀会使用暗夜女巫进行上分，刷圣水效率会显著降低，请谨慎勾选。不可与“刷圣水车”同时勾选。"
+                        explain = "勾选后，辅助会使用暗夜女巫进行上分，刷圣水效率会显著降低，请谨慎勾选。不可与“刷圣水车”同时勾选。"
                     )
                     SettingCheckBox(
                         key = "${NIGHT_BASE_SETTINGS.ELIXIR_CART_FARMING.key}_c${index}",

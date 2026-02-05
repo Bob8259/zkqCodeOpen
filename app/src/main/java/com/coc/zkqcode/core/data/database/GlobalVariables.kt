@@ -18,7 +18,7 @@ object GlobalVars {
 
     // Auto-run features
     var isAutoRunEnabled by mutableStateOf(true)
-    var autoRunTimer by mutableIntStateOf(0)//测试专用，记得改回60
+    var autoRunTimer by mutableIntStateOf(10)//测试专用，记得改回60
 
 
     // Window positioning
