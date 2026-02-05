@@ -113,4 +113,5 @@ object MyColors : IWorkerColors by WorkerColors, IUIColors by UIColors, IFeature
             0.92,
             "收集宝石2"
         )
+    
 }

@@ -74,7 +74,7 @@ private suspend fun checkUIVisibility(): Boolean {
 }
 
 
-suspend fun closeAdvertisements() {
+private suspend fun closeAdvertisements() {
     // 1. Capture the screen and cast safely (Use 'var' so we can update it)
     var screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult
         ?: logAndStop("failed to take screenshot at close advertisement")
@@ -138,7 +138,7 @@ suspend fun closeAdvertisements() {
     }
 }
 
-suspend fun isInHomePage(): Boolean {
+private suspend fun isInHomePage(): Boolean {
     // 1. Capture the screen and cast safely
     val screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult
         ?: logAndStop("in isInHomePage, screen capture failed.")

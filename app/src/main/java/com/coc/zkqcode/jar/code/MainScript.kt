@@ -73,13 +73,7 @@ object MainScript {
         while (true) {
             ShowMessage("测试代码开始")
             delay(3000)
-            val obstacles = detectObstacles()
-            obstacles.forEach { obstacle ->
-                val box = obstacle.boundingBox
-                ShowMessage("x: ${box.centerX().toInt()}, y: ${box.centerY().toInt()}")
-                TouchActions.tap(box.centerX().toInt(), box.centerY().toInt())
-                delay(2000)
-            }
+
             delay(1500)
             ShowMessage("测试代码结束")
         }

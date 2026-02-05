@@ -5,8 +5,9 @@ import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.core.util.touchactions.TouchActions.swipe
 import com.coc.zkqcode.jar.code.colorschema.MyColors
+import com.coc.zkqcode.jar.code.universal.enterMainScreen
 
-suspend fun collectNightBaseResources() {
+suspend fun collectNightBaseResources(): Boolean {
     zoomSmallNightBase()
     swipe(587, 420, 587, 700)
     delayWithMultiplier(100)
@@ -55,4 +56,5 @@ suspend fun collectNightBaseResources() {
             }
         }
     }
+    return enterMainScreen()
 }
