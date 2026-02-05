@@ -12,5 +12,5 @@ suspend fun zoomSmallNightBase() {
     }
     delayWithMultiplier(200)
     swipe(981, 485, 519, 278, delayTime = 800)
-    delayWithMultiplier(100)
+    delayWithMultiplier(200)
 }

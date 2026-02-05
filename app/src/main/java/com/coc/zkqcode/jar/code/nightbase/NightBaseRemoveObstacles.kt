@@ -41,9 +41,9 @@ suspend fun nightBaseRemoveObstacles(): Boolean {
     }
 
     ShowMessage("第一区域准备移除障碍物")
+    zoomSmallNightBase()
     enterEditMode()
     zoomSmallNightBase()
-
     // First Area Operations
     removeObstacles()
     swipe(1036, 78, 1100, 455, 700)
@@ -53,6 +53,9 @@ suspend fun nightBaseRemoveObstacles(): Boolean {
     if (worker.total == 2) {
         ShowMessage("当前已解锁第二区域")
         swipe(672, 159, 1206, 420, 700)
+        TouchActions.tap(1228, 316)
+        delayWithMultiplier(500)
+        removeAllBuildings()
         removeObstacles()
         swipe(867, 163, 1211, 450, 700)
         removeObstacles()
@@ -87,7 +90,10 @@ private suspend fun enterEditMode() {
     findMultiColorsUntil(schema = MyColors.MiddleGreenYes, duration = 1000)?.let {
         TouchActions.tap(it.x, it.y)
     }
+    removeAllBuildings()
+}
 
+private suspend fun removeAllBuildings() {
     // 3. Locate "Remove All", confirm the action, and perform final layout taps
     findMultiColorsUntil(schema = MyColors.EditModeRemoveAll, duration = 1000)?.let {
         TouchActions.tap(it.x, it.y)
@@ -105,6 +111,7 @@ private suspend fun enterEditMode() {
 }
 
 private suspend fun removeObstacles() {
+    delayWithMultiplier(200)
     val obstacles = detectObstacles()
     obstacles.forEach { obstacle ->
         val box = obstacle.boundingBox
