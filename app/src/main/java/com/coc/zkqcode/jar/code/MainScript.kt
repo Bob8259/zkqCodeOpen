@@ -76,7 +76,7 @@ object MainScript {
         while (true) {
             ShowMessage("测试代码开始")
             delay(3000)
-            NightBaseTrainTroops.trainWithConditions()
+            // call the functions here, and use ShowMessage to show all info
             delay(1500)
             ShowMessage("测试代码结束")
         }
