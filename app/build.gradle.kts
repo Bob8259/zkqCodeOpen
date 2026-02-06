@@ -13,7 +13,7 @@ android {
     val localProperties = Properties()
     val localPropertiesFile = rootProject.file("local.properties")
     if (localPropertiesFile.exists()) {
-        localPropertiesFile.inputStream().use { 
+        localPropertiesFile.inputStream().use {
             localProperties.load(it)
         }
     }
@@ -175,7 +175,22 @@ tasks.register<Exec>("rustBuild") {
     group = "build"
     description = "Build Rust logic using cargo-ndk"
     workingDir = file("../rust_logic")
-    commandLine("cargo", "ndk", "-t", "arm64-v8a", "-t", "armeabi-v7a", "-t", "x86", "-t", "x86_64", "-o", "../app/src/main/jniLibs", "build", "--release")
+    commandLine(
+        "cargo",
+        "ndk",
+        "-t",
+        "arm64-v8a",
+        "-t",
+        "armeabi-v7a",
+        "-t",
+        "x86",
+        "-t",
+        "x86_64",
+        "-o",
+        "../app/src/main/jniLibs",
+        "build",
+        "--release"
+    )
 }
 
 dependencies {
