@@ -51,7 +51,11 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
-
+    kotlin {
+        compilerOptions {
+            jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11
+        }
+    }
     buildFeatures {
         compose = true
         buildConfig = true
@@ -64,12 +68,6 @@ android {
         }
     }
 
-}
-
-kotlin {
-    compilerOptions {
-        jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11
-    }
 }
 
 // 1. 定义一个独立的 Task 来执行部署
