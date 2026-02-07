@@ -78,12 +78,12 @@ object MainScript {
             ShowMessage("测试代码开始")
             delay(3000)
 
-            // Detect buildings and their costs
+            // Detect building names
             val buildings = detectBuildingList()
             if (buildings.isEmpty()) {
                 ShowMessage("未检测到建筑")
             } else {
-                val info = buildings.joinToString("\n") { "${it.name} : ${it.cost}" }
+                val info = buildings.joinToString("\n")
                 ShowMessage("检测到 ${buildings.size} 个建筑:\n$info")
             }
 
