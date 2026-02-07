@@ -5,7 +5,6 @@ package com.coc.zkqcode.jar.ui
 import android.content.Context
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -14,11 +13,11 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import kotlinx.coroutines.flow.first
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.system.checkpermissions.FullScreenMessage
 import com.coc.zkqcode.interfaces.MainCode
 import com.coc.zkqcode.jar.code.MainScript
+import com.coc.zkqcode.jar.ui.components.CustomButton
 import com.coc.zkqcode.jar.ui.pages.mainbase.MainBaseUpgradePriority
 import com.coc.zkqcode.jar.ui.pages.nightbase.NightBaseUpgradePriority
 import com.coc.zkqcode.jar.ui.pages.single.HomeScreen
@@ -26,6 +25,7 @@ import com.coc.zkqcode.jar.ui.pages.single.SwitchAccount
 import com.coc.zkqcode.jar.ui.schema.ConfigManager
 import com.coc.zkqcode.statehelper.AppMode
 import com.coc.zkqcode.statehelper.AppStateManager
+import kotlinx.coroutines.flow.first
 
 class EnterMainCode : MainCode {
     @Composable
@@ -49,7 +49,13 @@ class EnterMainCode : MainCode {
 
         }
         if (!isConfigInitialized) {
-            FullScreenMessage("正在初始化配置文件...")
+            FullScreenMessage("正在初始化配置文件...\n若长时间卡在此界面，请取消初始化后重启辅助。")
+            CustomButton(
+                text = "取消初始化",
+                onClick = {
+                    onClose()
+                }
+            )
             return
         }
 
