@@ -115,13 +115,18 @@ private fun levenshteinDistance(s1: String, s2: String): Int {
 }
 
 /**
+ * Data class representing a detected building with its name and position.
+ */
+data class DetectedBuilding(val name: String, val x: Int, val y: Int)
+
+/**
  * Detects building names from the screen.
  *
  * Scans the area (480, 100) to (900, 530) for Chinese text (building names).
  *
- * @return A list of building name strings.
+ * @return A list of [DetectedBuilding] objects.
  */
-suspend fun detectBuildingList(): List<String> {
+suspend fun detectBuildingList(): List<DetectedBuilding> {
     val startX = 400
     val startY = 100
     val endX = 900
@@ -136,7 +141,7 @@ suspend fun detectBuildingList(): List<String> {
     val screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult
         ?: logAndStop("failed to take screenshot at night base upgrade")
 
-    // Filter, clean, and return only building names (Chinese text)
+    // Filter, clean, and return building names with positions
     // For each detected text, exclude it if more than 10 pixels of FF887F are found in the specified area
     return results.filter { item ->
         val pos = item.position ?: return@filter false
@@ -147,9 +152,17 @@ suspend fun detectBuildingList(): List<String> {
         val y = pos.top + startY
 
         val count = countPixelsInArea(screenBuffer, x + 200, y - 20, x + 430, y + 10, 0xFF887F)
-//            count <= 10
-        true
-    }.map { cleanBuildingName(it.text) }
+        count <= 10
+    }.map { item ->
+        val pos = item.position!!
+        val x = pos.left + startX
+        val y = pos.top + startY
+        DetectedBuilding(
+            name = cleanBuildingName(item.text),
+            x = x,
+            y = y
+        )
+    }
 }
 
 /**
