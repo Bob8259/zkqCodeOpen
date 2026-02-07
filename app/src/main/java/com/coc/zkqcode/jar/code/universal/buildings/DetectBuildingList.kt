@@ -41,7 +41,7 @@ private val ocrMisreadPrefixes = listOf("斬", "靳", "鼾")
  * - Strips trailing "x" / "X" followed by digits (e.g. "储金罐x2" → "储金罐")
  */
 private fun cleanBuildingName(raw: String): String {
-    var name = raw.replace(" ", "")
+    var name = raw.replace(" ", "").replace("|", "")
     for (char in ocrMisreadPrefixes) {
         if (name.startsWith(char)) {
             name = "新" + name.removePrefix(char)
