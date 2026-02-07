@@ -76,7 +76,7 @@ object MainScript {
     private suspend fun runTestCode() {
         while (true) {
             ShowMessage("测试代码开始")
-            delay(3000)
+            delay(1000)
 
             // Detect building names
             val buildings = detectBuildingList()
@@ -86,8 +86,6 @@ object MainScript {
                 val info = buildings.joinToString("\n")
                 ShowMessage("检测到 ${buildings.size} 个建筑:\n$info")
             }
-
-            delay(3000)
             ShowMessage("测试代码结束")
         }
     }
