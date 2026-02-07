@@ -37,8 +37,7 @@ suspend fun detectBuildingList(): List<String> {
 
     // Filter, clean, and return only building names (Chinese text)
     // For each detected text, exclude it if more than 10 pixels of FF887F are found in the specified area
-    return results
-        .filter { item ->
+    return results.filter { item ->
             val pos = item.position ?: return@filter false
             if (!chineseRegex.containsMatchIn(item.text)) return@filter false
 
@@ -48,17 +47,14 @@ suspend fun detectBuildingList(): List<String> {
 
             val count = countPixelsInArea(screenBuffer, x + 200, y - 20, x + 430, y + 10, 0xFF887F)
             count <= 10
-        }
-        .map { cleanBuildingName(it.text) }
+        }.map { cleanBuildingName(it.text) }
 }
 
 /**
  * Counts pixels of a target color within a specified rectangle in a capture result.
  */
 private fun countPixelsInArea(
-    result: ScreenCaptureManager.CaptureResult,
-    x1: Int, y1: Int, x2: Int, y2: Int,
-    targetColor: Int
+    result: ScreenCaptureManager.CaptureResult, x1: Int, y1: Int, x2: Int, y2: Int, targetColor: Int
 ): Int {
     val buf = result.buffer
     val width = result.width
@@ -115,7 +111,8 @@ private fun cleanBuildingName(raw: String): String {
     }
     name = name.replace("减墙", "城墙")
     name = name.replace("部落械堡", "部落城堡")
-
+    name = name.replace("部落城堡加", "部落城堡")
+    name = name.replace("大宁护者", "大守护者")
     name = trailingCountRegex.replace(name, "")
     return name
 }
