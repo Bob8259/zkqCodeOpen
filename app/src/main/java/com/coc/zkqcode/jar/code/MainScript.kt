@@ -9,6 +9,7 @@ import com.coc.zkqcode.jar.code.nightbase.NightBaseTrainTroops
 import com.coc.zkqcode.jar.code.nightbase.nightBaseRemoveObstacles
 import com.coc.zkqcode.jar.code.nightbase.playNightBase
 import com.coc.zkqcode.jar.code.universal.InGamesVars
+import com.coc.zkqcode.jar.code.universal.buildings.detectBuildingList
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.smalltools.readMemory
 import com.coc.zkqcode.jar.ui.schema.Schema
@@ -76,8 +77,17 @@ object MainScript {
         while (true) {
             ShowMessage("测试代码开始")
             delay(3000)
-            // call the functions here, and use ShowMessage to show all info
-            delay(1500)
+
+            // Detect buildings and their costs
+            val buildings = detectBuildingList()
+            if (buildings.isEmpty()) {
+                ShowMessage("未检测到建筑")
+            } else {
+                val info = buildings.joinToString("\n") { "${it.name} : ${it.cost}" }
+                ShowMessage("检测到 ${buildings.size} 个建筑:\n$info")
+            }
+
+            delay(3000)
             ShowMessage("测试代码结束")
         }
     }
