@@ -3,6 +3,7 @@
 package com.coc.zkqcode.jar.ui
 
 import android.content.Context
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -14,7 +15,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.coc.zkqcode.core.data.database.GlobalVars
-import com.coc.zkqcode.core.system.checkpermissions.FullScreenMessage
 import com.coc.zkqcode.interfaces.MainCode
 import com.coc.zkqcode.jar.code.MainScript
 import com.coc.zkqcode.jar.ui.components.CustomButton
@@ -49,7 +49,7 @@ class EnterMainCode : MainCode {
 
         }
         if (!isConfigInitialized) {
-            FullScreenMessage("正在初始化配置文件...\n若长时间卡在此界面，请取消初始化后重启辅助。")
+            Text("正在初始化配置文件...\n若长时间卡在此界面，请取消初始化后重启辅助。")
             CustomButton(
                 text = "取消初始化",
                 onClick = {
