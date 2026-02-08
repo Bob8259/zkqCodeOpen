@@ -8,6 +8,7 @@ import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.core.util.touchactions.TouchActions.pinchOut
 import com.coc.zkqcode.jar.code.nightbase.NightBaseTrainTroops
 import com.coc.zkqcode.jar.code.nightbase.NightBaseUpgradeBuildings
+import com.coc.zkqcode.jar.code.nightbase.NightBaseWorkerAndResearch
 import com.coc.zkqcode.jar.code.nightbase.nightBaseRemoveObstacles
 import com.coc.zkqcode.jar.code.nightbase.playNightBase
 import com.coc.zkqcode.jar.code.nightbase.upgradehelper.nightBaseFindBuildButton
@@ -82,7 +83,9 @@ object MainScript {
             runApp("com.supercell.clashofclans2")
             enterMainScreen()
             delayWithMultiplier(500)
-            NightBaseUpgradeBuildings.buildAllNewBuildings()
+            val workerNumber = NightBaseWorkerAndResearch.detectWorkerNumber()
+            ShowMessage("worker: ${workerNumber.available}/${workerNumber.total}")
+//            NightBaseUpgradeBuildings.buildAllNewBuildings()
             ShowMessage("测试代码结束")
             delayWithMultiplier(5000)
         }

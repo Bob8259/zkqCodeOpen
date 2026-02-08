@@ -47,30 +47,30 @@ object TextRecognizer {
 
         try {
             if (startX + width <= screenBuffer.width && startY + height <= screenBuffer.height) {
-                // 1. 裁剪原始区域
+                // 1. Crop the original region
                 val croppedBitmap = Bitmap.createBitmap(screenBuffer, startX, startY, width, height)
 
-                // 2. 【核心优化】应用预处理：灰度化 + 二值化
-                // 阈值 140 是根据你 Python 测试效果定的
+                // 2. [Core Optimization] Apply preprocessing: grayscale + binarization
+                // Threshold 140 is determined based on Python test results
                 val processedBitmap = preprocess(croppedBitmap, threshold = 140)
 
-                // 3. 识别处理后的图片
+                // 3. Recognize the processed image
                 return recognizeTextSync(processedBitmap, useChinese)
             } else {
                 return emptyList()
             }
         } catch (e: CancellationException) {
-            // 重点：如果是取消异常，必须重新抛出，让协程系统处理
+            // Important: if it's a cancellation exception, must rethrow it for coroutine system to handle
             throw e
         } catch (e: Exception) {
-            // 这里才处理真正的业务错误（如内存溢出、Bitmap 创建失败等）
+            // Handle actual business errors here (e.g., out of memory, Bitmap creation failure, etc.)
             logAndStop("Error during cropping or recognition: ${e.message}")
         }
     }
 
     /**
-     * 图像预处理：灰度化 + 二值化
-     * 消除背景干扰，让 ML Kit 更容易识别文字轮廓
+     * Image preprocessing: grayscale + binarization
+     * Eliminates background interference, making it easier for ML Kit to recognize text contours
      */
     private fun preprocess(src: Bitmap, threshold: Int): Bitmap {
         val width = src.width
@@ -84,10 +84,10 @@ object TextRecognizer {
             val g = (color shr 8) and 0xFF
             val b = color and 0xFF
 
-            // 灰度化公式
+            // Grayscale conversion formula
             val gray = (r * 0.299 + g * 0.587 + b * 0.114).toInt()
 
-            // 二值化：白色背景 0xFFFFFFFF, 黑色文字 0xFF000000
+            // Binarization: white background 0xFFFFFFFF, black text 0xFF000000
             pixels[i] = if (gray > threshold) -0x1 else -0x1000000
         }
 
@@ -105,7 +105,7 @@ object TextRecognizer {
             }
             val recognizer = TextRecognition.getClient(options)
 
-            // 这里的 InputImage 接收的是我们处理过的二值化 Bitmap
+            // The InputImage here receives our processed binarized Bitmap
             val image = InputImage.fromBitmap(bitmap, 0)
 
             try {
