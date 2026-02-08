@@ -10,6 +10,7 @@ import com.coc.zkqcode.jar.code.nightbase.NightBaseTrainTroops
 import com.coc.zkqcode.jar.code.nightbase.NightBaseUpgradeBuildings
 import com.coc.zkqcode.jar.code.nightbase.nightBaseRemoveObstacles
 import com.coc.zkqcode.jar.code.nightbase.playNightBase
+import com.coc.zkqcode.jar.code.nightbase.upgradehelper.nightBaseFindBuildButton
 import com.coc.zkqcode.jar.code.universal.InGamesVars
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.smalltools.readMemory
@@ -78,11 +79,14 @@ object MainScript {
     private suspend fun runTestCode() {
         while (true) {
             ShowMessage("测试代码开始")
-            runApp("com.supercell.clashofclans2")
-            enterMainScreen()
+//            runApp("com.supercell.clashofclans2")
+//            enterMainScreen()
             delayWithMultiplier(500)
-            NightBaseUpgradeBuildings.buildAllNewBuildings()
+//            NightBaseUpgradeBuildings.buildAllNewBuildings()
+            val greenTick = nightBaseFindBuildButton(type = "Tick")
+            ShowMessage("x ${greenTick?.x}, y ${greenTick?.y}")
             ShowMessage("测试代码结束")
+            delayWithMultiplier(500)
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.coc.zkqcode.jar.code.colorschema
 
+import androidx.compose.ui.graphics.Color
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.FeatureColors
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.IFeatureColors
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.IMainBaseTraining
@@ -60,4 +61,5 @@ object MyColors : IWorkerColors by WorkerColors, IUIColors by UIColors, IFeature
         0.9,
         "商店内部城墙"
     )
+
 }

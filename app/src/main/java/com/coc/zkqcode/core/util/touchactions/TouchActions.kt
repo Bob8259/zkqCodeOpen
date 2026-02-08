@@ -313,8 +313,8 @@ object TouchActions {
             )
         )
 
-        // Random delay of 20-60 milliseconds
-        val randomDelay = Random.nextLong(20, 41)
+        // Random delay
+        val randomDelay = Random.nextLong(10, 21)
         delay((randomDelay * delayMultiplier).toLong())
 
         if (isJitter) {
