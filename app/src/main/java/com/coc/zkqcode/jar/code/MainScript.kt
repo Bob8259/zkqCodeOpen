@@ -81,7 +81,7 @@ object MainScript {
             runApp("com.supercell.clashofclans2")
             enterMainScreen()
             delayWithMultiplier(500)
-            NightBaseUpgradeBuildings.detectUpgradableBuildings()
+            NightBaseUpgradeBuildings.buildAllNewBuildings()
             ShowMessage("测试代码结束")
         }
     }
