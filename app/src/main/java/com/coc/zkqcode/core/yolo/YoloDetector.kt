@@ -38,13 +38,13 @@ object YoloDetector {
         appContext = context.applicationContext
     }
 
-    fun loadWeights() {
+    fun loadWeights(modelType: String? = null) {
         if (interpreter != null) return // Already loaded
         
         val context = appContext ?: LogHelper.logAndStop("YoloDetector must be initialized with context before loading weights")
         
         try {
-            val model = loadModelFile(context)
+            val model = loadModelFile(context, modelType)
             val options = Interpreter.Options()
             interpreter = Interpreter(model, options)
             
@@ -74,7 +74,13 @@ object YoloDetector {
         interpreter = null
     }
 
-    private fun loadModelFile(context: Context): MappedByteBuffer {
+    private fun loadModelFile(context: Context, modelType: String? = null): MappedByteBuffer {
+        if (modelType == "remove-obstacle") {
+            val modelFile = java.io.File(context.filesDir, "assets/obstacles_detector.tflite")
+            val inputStream = java.io.FileInputStream(modelFile)
+            val fileChannel = inputStream.channel
+            return fileChannel.map(FileChannel.MapMode.READ_ONLY, 0, modelFile.length())
+        }
         val fileDescriptor = context.assets.openFd(MODEL_PATH)
         val inputStream = FileInputStream(fileDescriptor.fileDescriptor)
         val fileChannel = inputStream.channel

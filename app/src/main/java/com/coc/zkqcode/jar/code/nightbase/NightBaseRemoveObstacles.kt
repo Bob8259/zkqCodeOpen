@@ -138,7 +138,7 @@ private suspend fun detectObstacles(): List<DetectionResult> {
         return emptyList()
     }
 
-    YoloDetector.loadWeights()
+    YoloDetector.loadWeights("remove-obstacle")
 
     val detections = mutableListOf<DetectionResult>()
 
