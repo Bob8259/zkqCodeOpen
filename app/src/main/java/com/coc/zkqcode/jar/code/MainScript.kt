@@ -79,7 +79,8 @@ object MainScript {
         while (true) {
             ShowMessage("测试代码开始")
             runApp("com.supercell.clashofclans2")
-            delay(3000)
+            enterMainScreen()
+            delayWithMultiplier(500)
             NightBaseUpgradeBuildings.detectUpgradableBuildings()
             ShowMessage("测试代码结束")
         }
