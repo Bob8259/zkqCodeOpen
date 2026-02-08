@@ -15,6 +15,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import androidx.core.graphics.createBitmap
+import kotlin.coroutines.cancellation.CancellationException
 
 data class RecognizedText(
     val text: String,
@@ -58,7 +59,11 @@ object TextRecognizer {
             } else {
                 return emptyList()
             }
+        } catch (e: CancellationException) {
+            // 重点：如果是取消异常，必须重新抛出，让协程系统处理
+            throw e
         } catch (e: Exception) {
+            // 这里才处理真正的业务错误（如内存溢出、Bitmap 创建失败等）
             logAndStop("Error during cropping or recognition: ${e.message}")
         }
     }
