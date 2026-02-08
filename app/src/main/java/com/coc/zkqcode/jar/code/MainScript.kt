@@ -5,13 +5,16 @@ import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndStop
 import com.coc.zkqcode.core.util.touchactions.TouchActions
+import com.coc.zkqcode.core.util.touchactions.TouchActions.pinchOut
 import com.coc.zkqcode.jar.code.nightbase.NightBaseTrainTroops
+import com.coc.zkqcode.jar.code.nightbase.NightBaseUpgradeBuildings
 import com.coc.zkqcode.jar.code.nightbase.nightBaseRemoveObstacles
 import com.coc.zkqcode.jar.code.nightbase.playNightBase
 import com.coc.zkqcode.jar.code.universal.InGamesVars
 import com.coc.zkqcode.jar.code.universal.buildings.detectBuildingList
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.smalltools.readMemory
+import com.coc.zkqcode.jar.code.universal.smalltools.runApp
 import com.coc.zkqcode.jar.ui.schema.Schema
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
@@ -76,16 +79,9 @@ object MainScript {
     private suspend fun runTestCode() {
         while (true) {
             ShowMessage("测试代码开始")
-            delay(1000)
-
-            // Detect building names
-            val buildings = detectBuildingList()
-            if (buildings.isEmpty()) {
-                ShowMessage("未检测到建筑")
-            } else {
-                val info = buildings.joinToString("\n")
-                ShowMessage("检测到 ${buildings.size} 个建筑:\n$info")
-            }
+            runApp("com.supercell.clashofclans2")
+            delay(3000)
+            NightBaseUpgradeBuildings.detectUpgradableBuildings()
             ShowMessage("测试代码结束")
         }
     }

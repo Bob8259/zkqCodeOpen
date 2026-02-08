@@ -1,6 +1,7 @@
 package com.coc.zkqcode.jar.code.universal.buildings
 
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
+import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndStop
 import com.coc.zkqcode.jar.code.universal.recognizer.TextRecognizer
 import kotlin.math.max
@@ -89,8 +90,6 @@ private val ALL_BUILDINGS = listOf(
     "野蛮人之王",
     "飞盾战神",
     "亡灵王子",
-    "远袭者",
-    "粉碎者"
 )
 
 /**
@@ -137,9 +136,29 @@ suspend fun detectBuildingList(): List<DetectedBuilding> {
 
     if (results.isEmpty()) return emptyList()
 
+    // Show raw detected results for debugging
+    val rawSummary = results.joinToString(separator = " | ") { item ->
+        val pos = item.position
+        if (pos == null) {
+            item.text
+        } else {
+            val x = pos.left + startX
+            val y = pos.top + startY
+            "${item.text}($x,$y)"
+        }
+    }
+    ShowMessage(rawSummary)
+
     // Take a screenshot for color checking
     val screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult
         ?: logAndStop("failed to take screenshot at night base upgrade")
+
+    // If "建议升级" is detected, only keep results below it (greater y)
+    val upgradeY = results.mapNotNull { item ->
+        val pos = item.position ?: return@mapNotNull null
+        val cleaned = cleanBuildingName(item.text)
+        if (cleaned == "建议升级") pos.top + startY else null
+    }.minOrNull()
 
     // Filter, clean, and return building names with positions
     // For each detected text, exclude it if more than 10 pixels of FF887F are found in the specified area
@@ -150,17 +169,19 @@ suspend fun detectBuildingList(): List<DetectedBuilding> {
         // Absolute position to the screen
         val x = pos.left + startX
         val y = pos.top + startY
+        if (upgradeY != null && y <= upgradeY) return@filter false
 
         val count = countPixelsInArea(screenBuffer, x + 200, y - 20, x + 430, y + 10, 0xFF887F)
-        count <= 10
+        if (count > 10) return@filter false
+
+        val cleanedName = cleanBuildingName(item.text)
+        cleanedName in ALL_BUILDINGS
     }.map { item ->
         val pos = item.position!!
         val x = pos.left + startX
         val y = pos.top + startY
         DetectedBuilding(
-            name = cleanBuildingName(item.text),
-            x = x,
-            y = y
+            name = cleanBuildingName(item.text), x = x, y = y
         )
     }
 }
@@ -256,13 +277,15 @@ private fun cleanBuildingName(raw: String): String {
         "據地巨石" to "撼地巨石",
         "想地巨石" to "撼地巨石",
         "远装者" to "远袭者",
+        "建议升级:" to "建议升级",
+        "建议升级：" to "建议升级",
+        "建议升级及:" to "建议升级",
     )
 
     // Apply all string replacements
     corrections.forEach { (error, correction) ->
         name = name.replace(error, correction)
     }
-
     // Remove all text starting from 'x' or 'X' (e.g. "建筑xgas6" -> "建筑")
     // The Regex handles the requirement: "Remove all text starting from 'x' or 'X'"
     name = name.replace(Regex("[xX].*"), "")

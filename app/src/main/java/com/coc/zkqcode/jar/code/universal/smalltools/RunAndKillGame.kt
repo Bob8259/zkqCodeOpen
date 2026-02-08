@@ -12,7 +12,7 @@ suspend fun runGame() {
             runApp("com.supercell.clashofclans")
         }
         2 -> {//私服
-            runApp("com.supercell.clashofclans1")
+            runApp("com.supercell.clashofclans2")
         }
     }
 }
@@ -26,7 +26,7 @@ suspend fun killGame() {
             killApp("com.supercell.clashofclans")
         }
         2 -> {//私服
-            killApp("com.supercell.clashofclans1")
+            killApp("com.supercell.clashofclans2")
         }
     }
 }
