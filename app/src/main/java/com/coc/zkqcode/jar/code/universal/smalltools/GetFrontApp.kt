@@ -16,7 +16,7 @@ suspend fun isGameAtFront(): Boolean {
         """([a-zA-Z0-9._]+/[a-zA-Z0-9._$ ]+)""".toRegex().find(rawResult)?.value?.trim() ?: "None"
     if ((frontApp.contains("com.supercell.clashofclans") && gamePackage == "1") ||
         (frontApp.contains("com.tencent.tmgp.supercell.clashofclans") && gamePackage == "0") ||
-        (frontApp.contains("com.supercell.clashofclans1") && gamePackage == "2")
+        (frontApp.contains("com.supercell.clashofclans2") && gamePackage == "2")
     ) {
         return true
     } else {
