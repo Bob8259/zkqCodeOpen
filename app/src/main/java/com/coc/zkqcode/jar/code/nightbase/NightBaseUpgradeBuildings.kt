@@ -52,7 +52,7 @@ object NightBaseUpgradeBuildings {
     }
 
     suspend fun buildAllNewBuildings() {
-        ShowMessage("准备建造新建造")
+        ShowMessage("准备建造新建筑")
         zoomSmallNightBase()
         TouchActions.swipe(620, 443, 620, 720, delayTime = 700)
         var isBuildWalls = false
@@ -68,10 +68,20 @@ object NightBaseUpgradeBuildings {
                 val greenTick = nightBaseFindBuildButton(type = "Tick")
                 if (greenTick != null) {
                     TouchActions.tap(greenTick.x, greenTick.y)
-                    ShowMessage("x ${greenTick.x}, y ${greenTick.y}")
-                    delayWithMultiplier(10000)
+                    if (isBuildWalls) {
+                        tryToBatchBuildWalls(greenTick.x, greenTick.y)
+                    }
                 }
             }
         }
+    }
+
+    private suspend fun tryToBatchBuildWalls(x: Int, y: Int) {
+        val centerX = x - 20
+        val centerY = y + 45
+        TouchActions.tap(centerX, centerY)
+        delayWithMultiplier(500)
+        TouchActions.pinchOut(centerX - 300, centerY, centerX + 300, centerY, centerX, centerY)
+        delayWithMultiplier(10000)
     }
 }

@@ -4,7 +4,6 @@ import android.graphics.Point
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndStop
-import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.ColorSchema
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 
