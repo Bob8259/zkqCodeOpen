@@ -5,8 +5,10 @@ import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.nightbase.upgradehelper.iterateNightBaseBuildingUpgradeList
+import com.coc.zkqcode.jar.code.nightbase.upgradehelper.nightBaseFindBuildButton
 import com.coc.zkqcode.jar.code.nightbase.upgradehelper.nightBaseFindNewBuildings
 import com.coc.zkqcode.jar.code.universal.buildings.ALL_BUILDINGS
+import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 
 object NightBaseUpgradeBuildings {
@@ -52,9 +54,24 @@ object NightBaseUpgradeBuildings {
     suspend fun buildAllNewBuildings() {
         ShowMessage("准备建造新建造")
         zoomSmallNightBase()
-        val isBuildWalls = false
+        TouchActions.swipe(620, 443, 620, 720, delayTime = 700)
+        var isBuildWalls = false
         if (nightBaseFindNewBuildings()) {
-
+            val shopArrow = findMultiColorsUntil(schema = MyColors.InnerShopArrow, duration = 5000)
+            if (shopArrow != null) {
+                val isWall = findMultiColors(schema = MyColors.WallInShop)
+                if (isWall != null) {
+                    isBuildWalls = true
+                }
+                TouchActions.tap(shopArrow.x - 100, shopArrow.y + 50)
+                delayWithMultiplier(500)
+                val greenTick = nightBaseFindBuildButton(type = "Tick")
+                if (greenTick != null) {
+                    TouchActions.tap(greenTick.x, greenTick.y)
+                    ShowMessage("x ${greenTick.x}, y ${greenTick.y}")
+                    delayWithMultiplier(10000)
+                }
+            }
         }
     }
 }
