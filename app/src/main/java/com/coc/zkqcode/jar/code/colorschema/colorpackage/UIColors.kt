@@ -15,6 +15,9 @@ interface IUIColors {
     val NightBackToCamp: ColorSchema
     val MainBackToCamp: ColorSchema
     val CNBackFromAwards: ColorSchema
+    val CollectChest: ColorSchema
+    val EditModeWrench: ColorSchema
+    val CancelEditMode: ColorSchema
 }
 
 object UIColors : IUIColors {
@@ -151,5 +154,39 @@ object UIColors : IUIColors {
         0,
         0.9,
         "垃圾奖励"
+    )
+
+    override val CollectChest: ColorSchema = ColorSchema.parse(
+        547,
+        569,
+        735,
+        627,
+        "88E9BB",
+        "39|-2|8BEABD,83|-7|8EEABF,129|-5|8EEABF,130|18|3AD48B,124|26|3AD48B,107|32|39D38A,47|34|39D088,19|30|3AD48B,6|25|3AD48B",
+        0,
+        0.9,
+        "领取宝箱"
+    )
+    override val EditModeWrench: ColorSchema = ColorSchema.parse(
+        1197,
+        285,
+        1257,
+        345,
+        "FFFFFF-101010",
+        "-13|-15|ECFCF8-101010,-1|-20|EFFDFB-101010,4|-21|EFFDFB-101010,13|-21|EFFDFB-101010,18|-17|EDFDF9-101010,22|-10|E9FAF7-101010,6|2|FFFFFF-101010,8|6|FFFFFF-101010,27|5|BDDDDB-101010",
+        0,
+        0.9,
+        "编辑模式扳手"
+    )
+    override val CancelEditMode: ColorSchema = ColorSchema.parse(
+        1051,
+        484,
+        1269,
+        537,
+        "817CFF-101010",
+        "26|2|7D78FF-101010,50|1|7F7AFF-101010,75|1|7F7AFF-101010,85|24|1712E6-101010,64|29|1511DA-101010,40|29|1511DA-101010,-68|9|FFFFFF-101010,-76|15|FFFEF9-101010,-71|27|1611DF-101010",
+        0,
+        0.9,
+        "取消编辑模式"
     )
 }
