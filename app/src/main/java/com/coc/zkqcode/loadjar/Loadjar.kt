@@ -197,8 +197,8 @@ class Loadjar(private val context: Context) {
             for (assetName in assetList) {
 
                 // --- MODIFIED FILTER RULE ---
-                // Only proceed if the file ends with .jar (case-insensitive)
-                if (!assetName.endsWith(".jar", ignoreCase = true)) {
+                // Only proceed if the file ends with .jar or .tflite (case-insensitive)
+                if (!assetName.endsWith(".jar", ignoreCase = true) && !assetName.endsWith(".tflite", ignoreCase = true)) {
                     continue
                 }
                 // ----------------------------
