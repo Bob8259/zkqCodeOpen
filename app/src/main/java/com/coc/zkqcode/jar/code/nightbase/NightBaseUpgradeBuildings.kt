@@ -24,7 +24,8 @@ object NightBaseUpgradeBuildings {
                 TouchActions.swipe(666, 170, 666, 540)
                 delayWithMultiplier(500)
 
-                val buildings = detectBuildingList()
+                val result = detectBuildingList()
+                val buildings = result.buildings
                 if (buildings.isEmpty()) {
                     ShowMessage("未检测到建筑")
                 } else {
@@ -35,6 +36,24 @@ object NightBaseUpgradeBuildings {
                     }
                     val info = buildings.joinToString("\n")
                     ShowMessage("检测到 ${buildings.size} 个建筑:\n$info")
+                }
+
+                if (result.suggestUpgradeDetected) {
+                    repeat(2) {
+                        TouchActions.swipe(666, 170, 666, 30)
+                        delayWithMultiplier(500)
+                        val extraResult = detectBuildingList()
+                        extraResult.buildings.forEach { building ->
+                            if (upgradableBuildingsMap.containsKey(building.name)) {
+                                upgradableBuildingsMap[building.name] = true
+                            }
+                        }
+                        if (extraResult.buildings.isNotEmpty()) {
+                            val info = extraResult.buildings.joinToString("\n")
+                            ShowMessage("建议升级额外检测到 ${extraResult.buildings.size} 个建筑:\n$info")
+                        }
+                    }
+                    break
                 }
             }
             val summary = upgradableBuildingsMap.filter { it.value }.keys.joinToString(", ")

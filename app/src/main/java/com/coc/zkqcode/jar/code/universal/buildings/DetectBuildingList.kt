@@ -12,7 +12,7 @@ import com.coc.zkqcode.jar.code.universal.recognizer.TextRecognizer
  *
  * @return A list of [DetectedBuilding] objects.
  */
-suspend fun detectBuildingList(): List<DetectedBuilding> {
+suspend fun detectBuildingList(): BuildingDetectionResult {
     val startX = 400
     val startY = 100
     val endX = 900
@@ -21,7 +21,7 @@ suspend fun detectBuildingList(): List<DetectedBuilding> {
     // Recognize text in the specified area
     val results = TextRecognizer.recognize(startX, startY, endX, endY, useChinese = true)
 
-    if (results.isEmpty()) return emptyList()
+    if (results.isEmpty()) return BuildingDetectionResult(emptyList(), false)
 
     // Show raw detected results for debugging
     val rawSummary = results.joinToString(separator = " | ") { item ->
@@ -40,11 +40,15 @@ suspend fun detectBuildingList(): List<DetectedBuilding> {
     val screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult
         ?: logAndStop("failed to take screenshot at night base upgrade")
 
+    var suggestUpgradeDetected = false
     // If "建议升级" is detected, only keep results below it (greater y)
     val upgradeY = results.mapNotNull { item ->
         val pos = item.position ?: return@mapNotNull null
         val cleaned = cleanBuildingName(item.text)
-        if (cleaned == "建议升级") pos.top + startY else null
+        if (cleaned == "建议升级") {
+            suggestUpgradeDetected = true
+            pos.top + startY
+        } else null
     }.minOrNull()
 
     // Filter, clean, and return building names with positions
@@ -83,8 +87,8 @@ suspend fun detectBuildingList(): List<DetectedBuilding> {
 
     // If any "New" building is detected, return only those
     if (newBuildings.isNotEmpty()) {
-        return newBuildings
+        return BuildingDetectionResult(newBuildings, suggestUpgradeDetected)
     }
 
-    return allBuildings.map { it.first }
+    return BuildingDetectionResult(allBuildings.map { it.first }, suggestUpgradeDetected)
 }

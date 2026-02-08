@@ -21,6 +21,14 @@ internal val ocrMisreadPrefixes = listOf("斬", "靳", "鼾")
 data class DetectedBuilding(val name: String, val x: Int, val y: Int)
 
 /**
+ * Result of building detection containing the list of buildings and a flag for "建议升级".
+ */
+data class BuildingDetectionResult(
+    val buildings: List<DetectedBuilding>,
+    val suggestUpgradeDetected: Boolean
+)
+
+/**
  * 基准建筑列表
  */
 val ALL_BUILDINGS = listOf(
