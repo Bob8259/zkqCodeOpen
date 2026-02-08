@@ -75,7 +75,52 @@ private val nightBaseBuildTickSchemas = listOf(
         0.9,
         "绿色勾勾"
     ),
-)
+    ColorSchema.parse(
+        106,
+        70,
+        1115,
+        682,
+        "3C9F8E",
+        "3|0|3C9F8E,7|0|306F63,10|0|ADA0A0,13|0|ADA0A0,0|10|1B772E,3|10|383730,7|10|ADA0A0,10|10|15170D,13|10|1B772E",
+        0,
+        0.9,
+        "绿色勾勾"
+    ),
+    ColorSchema.parse(
+        106,
+        70,
+        1115,
+        682,
+        "39BAA5",
+        "3|0|37A593,7|0|474A48,11|0|B9B1B1,14|0|B7AFAF,0|9|169A3C,3|9|CDC9C9,7|9|CAC5C5,11|9|179138,14|9|168D37",
+        0,
+        0.9,
+        "绿色勾勾"
+    ),
+    ColorSchema.parse(
+        106,
+        70,
+        1115,
+        682,
+        "35A794",
+        "3|0|2E8374,7|0|B3ACAC,10|0|B6AFAF,13|0|B9B2B2,0|9|178233,3|9|B6AFAF,7|9|BAB4B4,10|9|178A36,13|9|168C37",
+        0,
+        0.9,
+        "绿色勾勾"
+    ),
+    ColorSchema.parse(
+        106,
+        70,
+        1115,
+        682,
+        "49F8DD",
+        "3|0|49F7DC,7|0|152E2B,10|0|F5F5F5,13|0|F4F4F4,0|10|15B848,3|10|E7E9E8,7|10|F5F5F5,10|10|117831,13|10|15B447",
+        0,
+        0.9,
+        "绿色勾勾"
+    ),
+
+    )
 
 private val nightBaseBuildCrossSchemas = listOf(
     // Note: In MyColors, Cross1 was identical to Tick1. Keeping it for consistency in searching both types.
@@ -145,6 +190,51 @@ private val nightBaseBuildCrossSchemas = listOf(
         0.9,
         "红色叉叉"
     ),
+    ColorSchema.parse(
+        106,
+        70,
+        1115,
+        682,
+        "30223C",
+        "4|0|ADA0A0,8|0|948787,11|0|ADA0A0,15|0|64539E,0|10|15080B,4|10|ADA0A0,8|10|322525,11|10|ADA0A0,15|10|16087E",
+        0,
+        0.9,
+        "红色叉叉"
+    ),
+    ColorSchema.parse(
+        106,
+        70,
+        1115,
+        682,
+        "7972D9",
+        "4|0|DBD9D9,8|0|756ED3,12|0|D6D3D3,16|0|746CCE,0|9|100CBF,4|9|E9E8E8,8|9|0D0C0C,12|9|E6E5E5,16|9|0F0CB9",
+        0,
+        0.9,
+        "红色叉叉"
+    ),
+    ColorSchema.parse(
+        106,
+        70,
+        1115,
+        682,
+        "594B91",
+        "3|0|B1A7A7,7|0|1A1010,10|0|B0A6A6,13|0|322645,0|9|12091F,3|9|B6AEAE,7|9|110909,10|9|B5ADAD,13|9|12091A",
+        0,
+        0.9,
+        "红色叉叉"
+    ),
+    ColorSchema.parse(
+        106,
+        70,
+        1115,
+        682,
+        "8984FB",
+        "4|0|FFFFFF,8|0|E2E2E2,11|0|FEFEFE,15|0|8883FA,0|9|0E0DB4,4|9|FEFEFE,8|9|0D0D0D,11|9|FEFEFE,15|9|0F0DC7",
+        0,
+        0.9,
+        "红色叉叉"
+    ),
+
 
     )
 
