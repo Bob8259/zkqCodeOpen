@@ -101,7 +101,52 @@ private val nightBaseBuildCrossSchemas = listOf(
         0.9,
         "红色叉叉"
     ),
-)
+    ColorSchema.parse(
+        106,
+        70,
+        1115,
+        682,
+        "392B4D",
+        "3|0|ADA0A0,7|0|ADA0A0,10|0|150808,13|0|62539C,0|7|ADA0A0,3|7|ADA0A0,7|7|897C7C,10|7|ADA0A0,13|7|16087F",
+        0,
+        0.9,
+        "红色叉叉"
+    ),
+    ColorSchema.parse(
+        106,
+        70,
+        1115,
+        682,
+        "100F12",
+        "3|0|F2F1F1,6|0|0D0C0C,9|0|EBEAEA,12|0|232034,0|9|9C9B9B,3|9|E5E3E3,6|9|0E0B8A,9|9|DDDBDB,12|9|141111",
+        0,
+        0.9,
+        "红色叉叉"
+    ),
+    ColorSchema.parse(
+        106,
+        70,
+        1115,
+        682,
+        "4F4889",
+        "3|0|D1CECE,6|0|120F0F,9|0|D3D1D1,12|0|1E1C1C,0|9|0F0A20,3|9|C2BDBD,6|9|0F0A28,9|9|C3BFBF,12|9|615D5D",
+        0,
+        0.9,
+        "红色叉叉"
+    ),
+    ColorSchema.parse(
+        106,
+        70,
+        1115,
+        682,
+        "24223C",
+        "3|0|F9F9F9,7|0|1D1D1D,10|0|F7F6F6,13|0|49457F,0|9|0D0D0E,3|9|FCFCFC,7|9|0D0D0D,10|9|FAFAFA,13|9|0F0DC7",
+        0,
+        0.9,
+        "红色叉叉"
+    ),
+
+    )
 
 suspend fun nightBaseFindBuildButton(duration: Int = 2000, type: String): Point? {
     val startTime = System.currentTimeMillis()
