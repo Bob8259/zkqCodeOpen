@@ -29,7 +29,8 @@ object TextRecognizer {
         startY: Int,
         endX: Int,
         endY: Int,
-        useChinese: Boolean = true
+        useChinese: Boolean = true,
+        threshold: Int = 140
     ): List<RecognizedText> {
         val screenBuffer = ScreenCaptureManager.capture(asBitmap = true) as? Bitmap
             ?: logAndStop("in TextRecognizer, screen capture failed.")
@@ -51,8 +52,8 @@ object TextRecognizer {
                 val croppedBitmap = Bitmap.createBitmap(screenBuffer, startX, startY, width, height)
 
                 // 2. [Core Optimization] Apply preprocessing: grayscale + binarization
-                // Threshold 140 is determined based on Python test results
-                val processedBitmap = preprocess(croppedBitmap, threshold = 140)
+                // Threshold is determined based on Python test results
+                val processedBitmap = preprocess(croppedBitmap, threshold = threshold)
 
                 // 3. Recognize the processed image
                 return recognizeTextSync(processedBitmap, useChinese)
