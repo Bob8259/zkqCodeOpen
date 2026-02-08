@@ -1,6 +1,5 @@
 package com.coc.zkqcode.jar.code.colorschema
 
-import androidx.compose.ui.graphics.Color
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.FeatureColors
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.IFeatureColors
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.IMainBaseTraining
@@ -35,5 +34,7 @@ object MyColors : IWorkerColors by WorkerColors, IUIColors by UIColors, IFeature
     val WallInShop: ColorSchema = ColorSchema.parse(
         618, 401, 658, 453, "EADEAC", "8|0|567188,16|0|5C96CD,24|0|7BDBF3,32|0|EADEAC,0|26|4F9371,8|26|325A47,16|26|47956C,24|26|57B688,32|26|63CD98", 0, 0.9, "商店内部城墙"
     )
-
+    val NewBuildings: ColorSchema = ColorSchema.parse(
+        501, 142, 705, 598, "0DFF0D", "3|0|0DFF0D,2|4|0DFD0D,1|7|0DFF0D,2|10|0DFF0D,2|9|0DFF0D,2|5|0DFF0D,2|5|0DFF0D,1|4|0DFF0D,0|4|0DFF0D", 0, 0.9, "新字"
+    )
 }

@@ -79,14 +79,12 @@ object MainScript {
     private suspend fun runTestCode() {
         while (true) {
             ShowMessage("测试代码开始")
-//            runApp("com.supercell.clashofclans2")
-//            enterMainScreen()
+            runApp("com.supercell.clashofclans2")
+            enterMainScreen()
             delayWithMultiplier(500)
-//            NightBaseUpgradeBuildings.buildAllNewBuildings()
-            val greenTick = nightBaseFindBuildButton(type = "Cross")
-            ShowMessage("x ${greenTick?.x}, y ${greenTick?.y}")
+            NightBaseUpgradeBuildings.buildAllNewBuildings()
             ShowMessage("测试代码结束")
-            delayWithMultiplier(500)
+            delayWithMultiplier(5000)
         }
     }
 }
