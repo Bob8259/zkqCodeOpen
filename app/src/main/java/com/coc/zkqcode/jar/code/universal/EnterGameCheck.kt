@@ -65,7 +65,6 @@ private suspend fun checkUIVisibility(): Boolean {
             delay(800)
             if (isInHomePage()) {
                 ShowMessage("已进入主界面")
-                zoomSmallMainBase()
                 return true
             }
         }
