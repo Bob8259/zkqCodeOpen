@@ -14,59 +14,93 @@ private val nightBaseBuildTickSchemas = listOf(
         70,
         1115,
         682,
-        "43F7D9",
-        "3|0|2A423D,7|0|7C8E8B,11|0|F7F7F7,14|0|738380,0|8|17BB4A,3|8|DCE1DE,7|8|F9F9F9,11|8|16BA49,14|8|15BA49",
+        "49F6DB",
+        "3|0|49F6DB,7|0|152E2B,10|0|F7F7F7,13|0|F7F7F7,0|8|18BF4C,3|8|F9F9F9,7|8|F9F9F9,10|8|0E2615,13|8|18BE4C",
         0,
-        0.9, "绿色勾勾1"
+        0.9,
+        "绿色勾勾"
+    ),
+    ColorSchema.parse(
+        106,
+        70,
+        1115,
+        682,
+        "43F6DA",
+        "3|0|43F4D7,6|0|152E2B,9|0|F7F7F7,12|0|F7F7F7,0|9|16BA49,3|9|F9F9F9,6|9|F9F9F9,9|9|105626,12|9|15B948",
+        0,
+        0.9,
+        "绿色勾勾"
+    ),
+    ColorSchema.parse(
+        106,
+        70,
+        1115,
+        682,
+        "399F8D",
+        "4|0|389A88,8|0|368375,11|0|ADA0A0,15|0|ADA0A0,0|9|1B782F,4|9|1A1C12,8|9|ADA0A0,11|9|2A2B22,15|9|1B782F",
+        0,
+        0.9,
+        "绿色勾勾"
+    ),
+    ColorSchema.parse(
+        106,
+        70,
+        1115,
+        682,
+        "38AE9A",
+        "4|0|255B51,8|0|B1A7A7,11|0|B0A5A5,15|0|282B2A,0|9|197E31,4|9|B1A7A7,8|9|AFA4A4,11|9|1A7A30,15|9|1A782F",
+        0,
+        0.9,
+        "绿色勾勾"
+    ),
+    ColorSchema.parse(
+        106,
+        70,
+        1115,
+        682,
+        "38CEAE",
+        "3|0|A0A5A2,7|0|D6D5D5,10|0|D8D7D7,13|0|DAD9D9,0|9|148F37,3|9|3A463B,7|9|B6B6B4,10|9|149238,13|9|149439",
+        0,
+        0.9,
+        "绿色勾勾"
+    ),
+    ColorSchema.parse(
+        106,
+        70,
+        1115,
+        682,
+        "49F6DB",
+        "3|0|49F6DB,6|0|152E2B,9|0|F7F7F7,12|0|F7F7F7,0|9|17BB4A,3|9|F9F9F9,6|9|F9F9F9,9|9|12652B,12|9|16BA49",
+        0,
+        0.9,
+        "绿色勾勾"
     ),
 )
 
 private val nightBaseBuildCrossSchemas = listOf(
     // Note: In MyColors, Cross1 was identical to Tick1. Keeping it for consistency in searching both types.
     ColorSchema.parse(
-        94,
-        72,
-        1193,
-        618,
-        "3DA08E",
-        "3|0|3DA08E,7|0|2E685D,10|0|ADA0A0,13|0|ADA0A0,0|9|1B792F,3|9|A49897,7|9|ADA0A0,10|9|15180D,13|9|1B792F",
+        106,
+        70,
+        1115,
+        682,
+        "817BED",
+        "3|0|F4F4F4,6|0|0C0C0C,9|0|F6F6F6,12|0|333157,0|8|0D0C49,3|8|F5F5F5,6|8|0E0D64,9|8|F8F8F8,12|8|0D0D1B",
         0,
         0.9,
-        "红色叉叉1"
+        "红色叉叉"
     ),
     ColorSchema.parse(
-        94,
-        72,
-        1193,
-        618,
-        "565398",
-        "3|0|EFEFEF,6|0|F1F1F1,9|0|F3F3F3,12|0|847FF0,0|8|B0B0B0,3|8|EDEDED,6|8|0D0C92,9|8|F3F3F3,12|8|0C0C16",
+        106,
+        70,
+        1115,
+        682,
+        "0C0C0C",
+        "3|0|F4F4F4,6|0|161620,9|0|F6F6F6,12|0|242138,0|9|717171,3|9|F5F5F5,6|9|0E0D7F,9|9|F8F8F8,12|9|0D0D0D",
         0,
         0.9,
-        "红色叉叉2"
+        "红色叉叉"
     ),
-    ColorSchema.parse(
-        94,
-        72,
-        1193,
-        618,
-        "191826",
-        "3|0|F7F7F7,6|0|1D1C2D,9|0|F6F6F6,12|0|211F33,0|9|515151,3|9|F8F8F8,6|9|0E0DA4,9|9|F7F7F7,12|9|0E0E0E",
-        0,
-        0.9,
-        "红色叉叉3"
-    ),
-    ColorSchema.parse(
-        94,
-        72,
-        1193,
-        618,
-        "1F1E32",
-        "3|0|F3F3F3,7|0|212033,11|0|F5F5F5,14|0|857FF3,0|9|0D0C76,3|9|F1F1F1,7|9|5B5B5B,11|9|A2A2A3,14|9|0E0DC7",
-        0,
-        0.9,
-        "红色叉叉4"
-    )
 )
 
 suspend fun nightBaseFindBuildButton(duration: Int = 2000, type: String): Point? {
@@ -84,7 +118,7 @@ suspend fun nightBaseFindBuildButton(duration: Int = 2000, type: String): Point?
             val point = findMultiColors(schema = schema, byteBuffer = screenBuffer)
             if (point != null) return point
         }
-        delayWithMultiplier(100)
+        delayWithMultiplier(200)
     }
     return null
 }
