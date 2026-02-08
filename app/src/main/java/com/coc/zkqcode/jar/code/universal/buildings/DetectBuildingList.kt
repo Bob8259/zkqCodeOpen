@@ -67,11 +67,8 @@ suspend fun detectBuildingList(): BuildingDetectionResult {
         val rawCleaned = item.text.replace(" ", "").replace("|", "")
         val isNew = ocrMisreadPrefixes.any { rawCleaned.startsWith(it) } || rawCleaned.startsWith("新")
 
-        // Skip the color exclusion filter for "New" buildings as they are always prioritized
-        if (!isNew) {
-            val count = countPixelsInArea(screenBuffer, x + 200, y - 20, x + 430, y + 10, 0xFF887F)
-            if (count > 10) return@mapNotNull null
-        }
+        val count = countPixelsInArea(screenBuffer, x + 200, y - 20, x + 430, y + 10, 0xFF887F)
+        if (count > 10) return@mapNotNull null
 
         val cleanedName = cleanBuildingName(item.text)
         if (cleanedName in ALL_BUILDINGS) {
