@@ -58,8 +58,15 @@ object NightBaseUpgradeBuildings {
     }
 
     suspend fun buildAllNewBuildings(): Boolean {
+        val startTime = System.currentTimeMillis()
         val workerNumber = NightBaseWorkerAndResearch.detectWorkerNumber()
         while (true) {
+            val elapsedTime = System.currentTimeMillis() - startTime
+            val remainingMinutes = (600_000 - elapsedTime) / 60_000.0
+            if (elapsedTime > 600_000) {
+                break
+            }
+            ShowMessage("建造中，剩余${"%.2f".format(remainingMinutes)}分钟后强制退出")
             if (workerNumber.available == 0 || (workerNumber.available == 1 && getConfigRuntime(Schema.NIGHT_BASE_SETTINGS.NIGHT_SAVE_WORKER.key) == "1")) {
                 break
             }

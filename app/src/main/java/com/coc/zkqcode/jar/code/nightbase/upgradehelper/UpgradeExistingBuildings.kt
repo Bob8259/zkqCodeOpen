@@ -1,6 +1,6 @@
 package com.coc.zkqcode.jar.code.nightbase.upgradehelper
 
-object NightBaseUpgradeBuildings {
+object UpgradeExistingBuildings {
     suspend fun getOrderedList(){
         
     }
