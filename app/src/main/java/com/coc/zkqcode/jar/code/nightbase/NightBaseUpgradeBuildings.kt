@@ -5,6 +5,7 @@ import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.ColorSchema
 import com.coc.zkqcode.jar.code.colorschema.MyColors
+import com.coc.zkqcode.jar.code.nightbase.upgradehelper.UpgradeExistingBuildings
 import com.coc.zkqcode.jar.code.nightbase.upgradehelper.iterateNightBaseBuildingUpgradeList
 import com.coc.zkqcode.jar.code.nightbase.upgradehelper.nightBaseFindBuildButton
 import com.coc.zkqcode.jar.code.nightbase.upgradehelper.nightBaseFindNewBuildings
@@ -22,8 +23,9 @@ object NightBaseUpgradeBuildings {
         upgradableBuildingsMap.keys.forEach { upgradableBuildingsMap[it] = false }
         var isNewBuildingDetected = false
         zoomSmallNightBase()
+
         val worker = findMultiColorsUntil(schema = MyColors.NightBaseWorker, duration = 1000)
-        if (worker != null) {
+        if (checkContinueBuild() && worker != null) {
             TouchActions.tap(worker.x, worker.y)
             delayWithMultiplier(500)
             TouchActions.swipe(666, 200, 666, -1000)
@@ -48,9 +50,10 @@ object NightBaseUpgradeBuildings {
             if (isNewBuildingDetected) {
                 if (!buildAllNewBuildings()) return false
             }
-            val summary = upgradableBuildingsMap.filter { it.value }.keys.joinToString("\n")
+            val upgradableList = upgradableBuildingsMap.filter { it.value }.keys.toList()
+            val summary = upgradableList.joinToString("\n")
             ShowMessage("所有可升级建筑: $summary")
-
+            UpgradeExistingBuildings.upgradeAllExistingBuildings(upgradableList)
         } else {
             ShowMessage("未检测到夜世界工人")
         }
@@ -59,7 +62,6 @@ object NightBaseUpgradeBuildings {
 
     suspend fun buildAllNewBuildings(): Boolean {
         val startTime = System.currentTimeMillis()
-        val workerNumber = NightBaseWorkerAndResearch.detectWorkerNumber()
         while (true) {
             val elapsedTime = System.currentTimeMillis() - startTime
             val remainingMinutes = (600_000 - elapsedTime) / 60_000.0
@@ -67,13 +69,20 @@ object NightBaseUpgradeBuildings {
                 break
             }
             ShowMessage("建造中，剩余${"%.2f".format(remainingMinutes)}分钟后强制退出")
-            if (workerNumber.available == 0 || (workerNumber.available == 1 && getConfigRuntime(Schema.NIGHT_BASE_SETTINGS.NIGHT_SAVE_WORKER.key) == "1")) {
+            if (!checkContinueBuild()) {
                 break
             }
             if (!buildOneNewBuildings()) break
             if (!enterMainScreen()) return false
         }
         return enterMainScreen()
+    }
+
+    suspend fun checkContinueBuild(): Boolean {
+        val workerNumber = NightBaseWorkerAndResearch.detectWorkerNumber()
+        ShowMessage("夜世界工人数量：${workerNumber.available}/${workerNumber.total}")
+        delayWithMultiplier(500)
+        return !(workerNumber.available == 0 || (workerNumber.available == 1 && getConfigRuntime(Schema.NIGHT_BASE_SETTINGS.NIGHT_SAVE_WORKER.key) == "1"))
     }
 
     //For other functions, return false usually means fails to go back to main screen.

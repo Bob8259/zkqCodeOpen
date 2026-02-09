@@ -23,8 +23,8 @@ object NightBaseWorkerAndResearch {
             // Define the crop region for the worker number text
             val startX = worker.x - 50
             val startY = 0
-            val endX = worker.x + 200
-            val endY = 100
+            val endX = worker.x + 350
+            val endY = 70
 
             val results = TextRecognizer.recognize(startX, startY, endX, endY, useChinese = false, applyPreprocess = false, saveImage = true)
             ShowMessage("text ${results.toString()}")
@@ -48,7 +48,6 @@ object NightBaseWorkerAndResearch {
 
         if (match != null) {
             val (available, total) = match.destructured
-            ShowMessage("夜世界工人数量：${available}/${total}")
             return WorkerInfo(available.toInt(), total.toInt())
         }
         return WorkerInfo(0, 0)
