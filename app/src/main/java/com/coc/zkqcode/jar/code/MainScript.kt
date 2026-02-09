@@ -53,7 +53,6 @@ object MainScript {
             while (currentCoroutineContext().isActive) {
                 InGamesVars.currentGamePackage =
                     getConfigOrStop("game_version${InGamesVars.currentAccountNumber}").toInt()
-                ShowMessage("version:${InGamesVars.currentGamePackage}")
 
                 //测试代码
                 runTestCode()
@@ -82,10 +81,10 @@ object MainScript {
             ShowMessage("测试代码开始")
             runApp("com.supercell.clashofclans2")
             enterMainScreen()
-            delayWithMultiplier(1000)
-            NightBaseUpgradeBuildings.buildAllNewBuildings()
+            delayWithMultiplier(200)
+            NightBaseUpgradeBuildings.upgradeBuildings()
             ShowMessage("测试代码结束")
-            delayWithMultiplier(5000)
+            delayWithMultiplier(1000)
         }
     }
 }
