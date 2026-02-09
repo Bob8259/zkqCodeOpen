@@ -53,7 +53,7 @@ object NightBaseUpgradeBuildings {
             val upgradableList = upgradableBuildingsMap.filter { it.value }.keys.toList()
             val summary = upgradableList.joinToString("\n")
             ShowMessage("所有可升级建筑: $summary")
-            UpgradeExistingBuildings.upgradeAllExistingBuildings(upgradableList)
+            if (!UpgradeExistingBuildings.upgradeAllExistingBuildings(upgradableList)) return false
         } else {
             ShowMessage("未检测到夜世界工人")
         }
