@@ -75,6 +75,8 @@ object ScreenCaptureManager {
         ensureHandlerThread() // Start thread during initialization
     }
 
+    fun getContext(): Context? = appContext
+
     private fun updateMetrics() {
         val context = appContext ?: return
         val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager

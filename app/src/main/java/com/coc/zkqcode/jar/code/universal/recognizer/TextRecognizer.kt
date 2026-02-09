@@ -15,6 +15,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import androidx.core.graphics.createBitmap
+import java.io.File
+import java.io.FileOutputStream
 import kotlin.coroutines.cancellation.CancellationException
 
 data class RecognizedText(
@@ -30,7 +32,9 @@ object TextRecognizer {
         endX: Int,
         endY: Int,
         useChinese: Boolean = true,
-        threshold: Int = 140
+        threshold: Int = 140,
+        saveImage: Boolean = false,
+        applyPreprocess: Boolean = true
     ): List<RecognizedText> {
         val screenBuffer = ScreenCaptureManager.capture(asBitmap = true) as? Bitmap
             ?: logAndStop("in TextRecognizer, screen capture failed.")
@@ -51,12 +55,30 @@ object TextRecognizer {
                 // 1. Crop the original region
                 val croppedBitmap = Bitmap.createBitmap(screenBuffer, startX, startY, width, height)
 
-                // 2. [Core Optimization] Apply preprocessing: grayscale + binarization
-                // Threshold is determined based on Python test results
-                val processedBitmap = preprocess(croppedBitmap, threshold = threshold)
+                // 2. [Core Optimization] Apply preprocessing (optional)
+                val bitmapToRecognize = if (applyPreprocess) {
+                    preprocess(croppedBitmap, threshold = threshold)
+                } else {
+                    croppedBitmap
+                }
 
-                // 3. Recognize the processed image
-                return recognizeTextSync(processedBitmap, useChinese)
+                // 2.1 Save the image if requested
+                if (saveImage) {
+                    ScreenCaptureManager.getContext()?.let { context ->
+                        try {
+                            val file = File(context.filesDir, "test.png")
+                            FileOutputStream(file).use { out ->
+                                bitmapToRecognize.compress(Bitmap.CompressFormat.PNG, 100, out)
+                            }
+                            showDebugInfo("Image saved to: ${file.absolutePath}")
+                        } catch (e: Exception) {
+                            showDebugInfo("Failed to save image: ${e.message}")
+                        }
+                    }
+                }
+
+                // 3. Recognize the image
+                return recognizeTextSync(bitmapToRecognize, useChinese)
             } else {
                 return emptyList()
             }

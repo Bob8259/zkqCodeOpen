@@ -48,8 +48,9 @@ object NightBaseUpgradeBuildings {
             if (isNewBuildingDetected) {
                 if (!buildAllNewBuildings()) return false
             }
-            val summary = upgradableBuildingsMap.filter { it.value }.keys.joinToString(", ")
+            val summary = upgradableBuildingsMap.filter { it.value }.keys.joinToString("\n")
             ShowMessage("所有可升级建筑: $summary")
+
         } else {
             ShowMessage("未检测到夜世界工人")
         }
