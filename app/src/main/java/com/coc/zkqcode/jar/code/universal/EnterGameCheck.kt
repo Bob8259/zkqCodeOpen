@@ -104,7 +104,7 @@ private suspend fun closeAdvertisements() {
             TouchActions.tap(point.x, point.y)
 
             // Wait for the animation/transition to finish
-            delay(500)
+            delay(1000)
 
             // 4. Retake the screenBuffer so the next schema check uses the updated screen
             screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult

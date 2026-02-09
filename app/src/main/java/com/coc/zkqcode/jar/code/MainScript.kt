@@ -81,7 +81,7 @@ object MainScript {
             ShowMessage("测试代码开始")
             runApp("com.supercell.clashofclans2")
             enterMainScreen()
-            delayWithMultiplier(200)
+            delayWithMultiplier(1000)
             NightBaseUpgradeBuildings.upgradeBuildings()
             ShowMessage("测试代码结束")
             delayWithMultiplier(1000)
