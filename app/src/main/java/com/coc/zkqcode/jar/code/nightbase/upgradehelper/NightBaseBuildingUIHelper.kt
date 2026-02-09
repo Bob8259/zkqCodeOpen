@@ -17,14 +17,14 @@ suspend fun iterateNightBaseBuildingUpgradeList(onDetect: suspend (BuildingDetec
 
         if (result.suggestUpgradeDetected) {
             repeat(2) {
-                TouchActions.swipe(666, 170, 666, 30)
-                delayWithMultiplier(500)
+                TouchActions.swipe(666, 170, 666, 30, delayTime = 600)
+                delayWithMultiplier(200)
                 val extraResult = detectBuildingList()
                 if (onDetect(extraResult)) return
             }
             break@loop
         }
-        TouchActions.swipe(666, 170, 666, 540)
-        delayWithMultiplier(500)
+        TouchActions.swipe(666, 170, 666, 540, delayTime = 600)
+        delayWithMultiplier(200)
     }
 }
