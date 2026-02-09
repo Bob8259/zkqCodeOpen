@@ -9,7 +9,6 @@ object UpgradeExistingBuildings {
     suspend fun upgradeAllExistingBuildings(buildings: List<String>) {
         val orderedList = getOrderedList(buildings)
         // Implementation for upgrading buildings using orderedList will go here
-        ShowMessage(orderedList.toString())
     }
 
     private fun getOrderedList(buildings: List<String>): List<String> {
