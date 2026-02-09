@@ -82,10 +82,8 @@ object MainScript {
             ShowMessage("测试代码开始")
             runApp("com.supercell.clashofclans2")
             enterMainScreen()
-            delayWithMultiplier(500)
-            val workerNumber = NightBaseWorkerAndResearch.detectWorkerNumber()
-            ShowMessage("worker: ${workerNumber.available}/${workerNumber.total}")
-//            NightBaseUpgradeBuildings.buildAllNewBuildings()
+            delayWithMultiplier(1000)
+            NightBaseUpgradeBuildings.buildAllNewBuildings()
             ShowMessage("测试代码结束")
             delayWithMultiplier(5000)
         }

@@ -26,7 +26,7 @@ object NightBaseWorkerAndResearch {
             val endX = worker.x + 120
             val endY = 60
 
-            val results = TextRecognizer.recognize(startX, startY, endX, endY, useChinese = false)
+            val results = TextRecognizer.recognize(startX, startY, endX, endY, useChinese = false, threshold = 290)
             val combinedText = results.joinToString("") { it.text }
             return parseWorkerInfo(combinedText)
         }
@@ -44,8 +44,10 @@ object NightBaseWorkerAndResearch {
             .replace("Z", "2").replace("z", "2").replace("S", "5").replace("s", "5").replace("G", "6")
 
         val match = Regex("""(\d+)/(\d+)""").find(cleaned)
+        ShowMessage("text $text")
         if (match != null) {
             val (available, total) = match.destructured
+            ShowMessage("夜世界工人数量：${available}/${total}")
             return WorkerInfo(available.toInt(), total.toInt())
         }
         return WorkerInfo(0, 0)
