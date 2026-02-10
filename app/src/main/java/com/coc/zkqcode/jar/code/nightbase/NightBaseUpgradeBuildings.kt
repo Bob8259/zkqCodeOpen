@@ -31,7 +31,7 @@ object NightBaseUpgradeBuildings {
             if (worker != null) {
                 TouchActions.tap(worker.x, worker.y)
                 delayWithMultiplier(500)
-                TouchActions.swipe(666, 200, 666, -1000)
+                TouchActions.swipe(666, 170, 666, -1200)
                 iterateNightBaseBuildingUpgradeList { result ->
                     val buildings = result.buildings
                     if (buildings.isEmpty()) {

@@ -17,32 +17,49 @@ import com.coc.zkqcode.jar.ui.schema.details.NightBaseBuildingsPriority
 object UpgradeExistingBuildings {
     suspend fun upgradeAllExistingBuildings(buildings: List<String>): Boolean {
         val orderedList = getOrderedList(buildings)
+
         for (building in orderedList) {
+            // Ensure UI state is clean at the start of each iteration
             clickRightBottom()
+
+            // Locate the worker icon
             val worker = findMultiColorsUntil(schema = MyColors.NightBaseWorker, duration = 1000)
-            if (checkContinueBuild() && worker != null) {
-                TouchActions.tap(worker.x, worker.y)
-                delayWithMultiplier(500)
-                if (findSpecificBuilding(building)) {
-                    val hammer = findMultiColorsUntil(schema = MyColors.UpgradeHammer, duration = 1000)
-                    if (hammer != null) {
-                        TouchActions.tap(hammer.x, hammer.y)
-                        delayWithMultiplier(500)
-                        if (findMultiColors(schema = MyColors.NightBaseInsufficientResources) != null) {
-                            ShowMessage("资源不足，退出")
-                            clickRightBottom()
-                            return false
-                        } else {
-                            ShowMessage("升级成功")
-                            TouchActions.tap(633, 631)
-                            delayWithMultiplier(500)
-                            clickRightBottom()
-                        }
-                    }
-                }
+
+            // Pre-condition check: If cannot continue building or worker not found, skip to next
+            if (!checkContinueBuild() || worker == null) {
+                break
             }
-            clickRightBottom()
+
+            TouchActions.tap(worker.x, worker.y)
+            delayWithMultiplier(500)
+
+            // Locate the specific building in the UI
+            if (!findSpecificBuilding(building)) {
+                continue
+            }
+
+            // Check for the upgrade action (Hammer icon)
+            val hammer = findMultiColorsUntil(schema = MyColors.UpgradeHammer, duration = 1000) ?: continue
+
+            TouchActions.tap(hammer.x, hammer.y)
+            delayWithMultiplier(500)
+
+            // Check for resource availability immediately after clicking upgrade
+            if (findMultiColors(schema = MyColors.NightBaseInsufficientResources) != null) {
+                ShowMessage("资源不足，退出")
+                clickRightBottom()
+                return false // Stop processing if resources are depleted
+            }
+
+            // Successful upgrade flow
+            ShowMessage("升级成功")
+            TouchActions.tap(633, 631) // Confirm upgrade/close dialog
+            delayWithMultiplier(500)
+
         }
+
+        // Final UI reset before returning to main screen
+        clickRightBottom()
         return enterMainScreen()
     }
 
