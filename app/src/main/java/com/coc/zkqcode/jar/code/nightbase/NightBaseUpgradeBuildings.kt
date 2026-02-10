@@ -149,10 +149,11 @@ object NightBaseUpgradeBuildings {
         // Define color schemas for the batch build arrow
         val batchBuildWallsArrowColors: List<ColorSchema> = listOf(
             ColorSchema.parse(
-                centerX - 400, centerY - 500, centerX + 400, centerY + 100, "7DFDC9", "3|0|7BFDC8,6|0|7CFDC7,9|0|7DFDC9,12|0|7DFDC8,0|8|7DFCC8,3|8|7CFCC8,6|8|7CFCC8,9|8|7CFCC8,12|8|7CFCC8", 0, 0.94
-            ),
-            ColorSchema.parse(
-                centerX - 400, centerY - 500, centerX + 400, centerY + 100, "3CC180", "2|0|3EBF80,4|0|3FBF80,6|0|41BD7E,8|0|44B97C,0|6|26D68A,2|6|27D589,4|6|28D588,6|6|29D488,8|6|2BCF86", 0, 0.94
+                centerX - 400, centerY - 500, centerX + 400, centerY + 100, "7DFDC9", "3|0|7BFDC8,6|0|7CFDC7,9|0|7DFDC9,12|0|7DFDC8,0|8|7DFCC8,3|8|7CFCC8,6|8|7CFCC8,9|8|7CFCC8,12|8|7CFCC8", 0, 0.93
+            ), ColorSchema.parse(
+                centerX - 400, centerY - 500, centerX + 400, centerY + 100, "3CC180", "2|0|3EBF80,4|0|3FBF80,6|0|41BD7E,8|0|44B97C,0|6|26D68A,2|6|27D589,4|6|28D588,6|6|29D488,8|6|2BCF86", 0, 0.93
+            ), ColorSchema.parse(
+                centerX - 400, centerY - 500, centerX + 400, centerY + 100, "39996A", "2|0|39996A,4|0|39996A,5|0|39996A,7|0|39996B,0|5|3B9B6B,2|5|3B9B6A,4|5|3B9B6A,5|5|3B9B6A,7|5|3B9B6A", 0, 0.93
             )
         )
 

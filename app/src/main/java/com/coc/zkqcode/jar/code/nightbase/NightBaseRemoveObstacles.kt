@@ -29,15 +29,22 @@ suspend fun nightBaseRemoveObstacles(): Boolean {
     val currentHour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
 
     // Simplified time check as requested
-    if (lastCleaningTime != null && abs(lastCleaningTime - currentHour) < 8) {
-        ShowMessage("距离上次除草不足8小时，暂不除草")
-        return true
-    }
+//    if (lastCleaningTime != null && abs(lastCleaningTime - currentHour) < 8) {
+//        ShowMessage("距离上次除草不足8小时，暂不除草")
+//        return true
+//    }
 
     // Resource threshold check
-    if (resources.gold < 600000 && resources.elixir < 600000) {
-        ShowMessage("检测金：${resources.gold}，检测水：${resources.elixir}\n不足60万，暂不除草")
-        return true
+    if (worker.total == 2) {
+        if (resources.gold < 600000 && resources.elixir < 600000) {
+            ShowMessage("检测金：${resources.gold}，检测水：${resources.elixir}\n不足60万，暂不除草")
+            return true
+        }
+    } else {
+        if (resources.gold < 300000 && resources.elixir < 300000) {
+            ShowMessage("检测金：${resources.gold}，检测水：${resources.elixir}\n不足30万，暂不除草")
+            return true
+        }
     }
 
     ShowMessage("第一区域准备移除障碍物")
