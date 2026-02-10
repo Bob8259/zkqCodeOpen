@@ -37,7 +37,7 @@ object UpgradeExistingBuildings {
             if (!findSpecificBuilding(building)) {
                 continue
             }
-
+            TouchActions.tap(1233, 37)// tap gold to close worker list
             // Check for the upgrade action (Hammer icon)
             val hammer = findMultiColorsUntil(schemas = listOf(MyColors.UpgradeHammer), duration = 1000) ?: continue
 
@@ -88,8 +88,10 @@ object UpgradeExistingBuildings {
             settingDef.displayName to priority
         }
 
-        return buildings.sortedBy {
-            priorityMap[it] ?: logAndStop("Building $it not found in upgrade priority list. Please check NightBaseBuildingsPriority configuration.")
-        }
+        return buildings
+            .filter { it in priorityMap }
+            .sortedBy {
+                priorityMap[it]!!
+            }
     }
 }

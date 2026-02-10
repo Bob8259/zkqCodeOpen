@@ -32,7 +32,7 @@ object RecognizeResources {
         val endX = 1245
         val endY = 201
 
-        val results = TextRecognizer.recognize(startX, startY, endX, endY, useChinese = false)
+        val results = TextRecognizer.recognize(startX, startY, endX, endY, useChinese = false, applyPreprocess = false)
 
         // Sort by the top coordinate of the bounding box
         val sortedResults = results.sortedBy { it.position?.top ?: Int.MAX_VALUE }
