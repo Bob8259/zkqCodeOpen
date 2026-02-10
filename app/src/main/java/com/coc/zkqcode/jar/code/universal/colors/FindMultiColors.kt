@@ -96,7 +96,7 @@ suspend fun findMultiColors(
 suspend fun findMultiColorsUntil(
     bitmap: Bitmap? = null,
     byteBuffer: ScreenCaptureManager.CaptureResult? = null,
-    schema: ColorSchema,
+    schemas: List<ColorSchema>,
     duration: Int
 ): Point? {
     val startTime = System.currentTimeMillis()
@@ -104,8 +104,11 @@ suspend fun findMultiColorsUntil(
         ?: logAndStop("Failed to get delayMultiplier")
 
     while (true) {
-        val result = findMultiColors(bitmap, byteBuffer, schema)
-        if (result != null) return result
+        val captured = if (bitmap == null && byteBuffer == null) ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult else null
+        for (schema in schemas) {
+            val result = findMultiColors(bitmap, byteBuffer ?: captured, schema)
+            if (result != null) return result
+        }
         if (System.currentTimeMillis() - startTime >= duration * multiplier) break
         delay(100)
     }

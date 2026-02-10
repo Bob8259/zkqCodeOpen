@@ -11,20 +11,23 @@ import com.coc.zkqcode.jar.code.universal.buildings.detectBuildingList
  * If [onDetect] returns true, the iteration stops immediately.
  */
 suspend fun iterateNightBaseBuildingUpgradeList(onDetect: suspend (BuildingDetectionResult) -> Boolean) {
+    var previousBuildingNames: List<String>? = null
     loop@ for (i in 1..12) {
         val result = detectBuildingList()
         if (onDetect(result)) return
 
-        if (result.suggestUpgradeDetected) {
+        val currentBuildingNames = result.buildings.map { it.name }.sorted()
+        if (previousBuildingNames != null && currentBuildingNames == previousBuildingNames) {
             repeat(2) {
-                TouchActions.swipe(666, 170, 666, 30, delayTime = 600)
+                TouchActions.swipe(666, 170, 666, 300, delayTime = 600)
                 delayWithMultiplier(200)
                 val extraResult = detectBuildingList()
                 if (onDetect(extraResult)) return
             }
             break@loop
         }
-        TouchActions.swipe(666, 170, 666, 540, delayTime = 600)
+        previousBuildingNames = currentBuildingNames
+        TouchActions.swipe(666, 500, 666, 120, delayTime = 600)
         delayWithMultiplier(200)
     }
 }

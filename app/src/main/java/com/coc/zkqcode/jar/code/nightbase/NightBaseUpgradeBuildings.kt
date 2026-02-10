@@ -27,11 +27,9 @@ object NightBaseUpgradeBuildings {
         clickRightBottom()
 
         if (checkContinueBuild()) {
-            val worker = findMultiColorsUntil(schema = MyColors.NightBaseWorker, duration = 1000)
+            val worker = findMultiColorsUntil(schemas = listOf(MyColors.NightBaseWorker), duration = 1000)
             if (worker != null) {
                 TouchActions.tap(worker.x, worker.y)
-                delayWithMultiplier(500)
-                TouchActions.swipe(666, 170, 666, -1200)
                 delayWithMultiplier(500)
                 iterateNightBaseBuildingUpgradeList { result ->
                     val buildings = result.buildings
@@ -72,6 +70,7 @@ object NightBaseUpgradeBuildings {
                 break
             }
             ShowMessage("建造中，剩余${"%.2f".format(remainingMinutes)}分钟后强制退出")
+            zoomSmallNightBase(isForBuild = true)
             if (!checkContinueBuild()) {
                 break
             }
@@ -91,24 +90,23 @@ object NightBaseUpgradeBuildings {
     //But for this function, false means no new buildings.
     private suspend fun buildOneNewBuildings(): Boolean {
         ShowMessage("准备建造新建筑")
-        zoomSmallNightBase(isForBuild = true)
+
         // Find out the position of new buildings
         if (nightBaseFindNewBuildings()) {
             // Search for the shop arrow indicator
-            val shopArrow = findMultiColorsUntil(schema = MyColors.InnerShopArrow, duration = 5000)
+            val shopArrow = findMultiColorsUntil(schemas = listOf(MyColors.InnerShopArrow), duration = 5000)
 
             if (shopArrow != null) {
                 // Determine building type before interacting with the UI to ensure state accuracy
                 val isWall = findMultiColors(schema = MyColors.WallInShop) != null
-
-                // Offset tap from the arrow to select the actual building icon
-                TouchActions.tap(shopArrow.x - 100, shopArrow.y + 50)
+                TouchActions.tap(shopArrow.x - 50, shopArrow.y + 50)
                 delayWithMultiplier(500)
-
                 // Locate the confirmation button (Green Tick)
                 val greenTick = nightBaseFindBuildButton(type = "Tick")
                 if (greenTick != null) {
-                    TouchActions.tap(greenTick.x, greenTick.y)
+                    delayWithMultiplier(100)
+                    ShowMessage("点击绿色按钮：${greenTick.x}, ${greenTick.y}")
+                    TouchActions.tap(greenTick.x, greenTick.y, isJitter = false)
 
                     // If the building was identified as a wall, trigger the batch building logic
                     if (isWall) {
@@ -147,20 +145,25 @@ object NightBaseUpgradeBuildings {
 
         // Tap again to focus or confirm
         TouchActions.tap(centerX, centerY)
-
-        // Define the color schema for the batch build arrow
-        val batchBuildWallsArrowColor: ColorSchema = ColorSchema.parse(
-            centerX - 400, centerY - 300, centerX + 400, centerY + 300, "2DEC98", "4|0|2CEB97,8|0|2CEC98,11|0|2CEB98,15|0|2DEC98,0|10|2DEB96,4|10|2CEC97,8|10|2DEC97,11|10|2CEB98,15|10|2CEA97", 0, 0.9
+        TouchActions.swipe(280, 480, 280, 280, delayTime = 600)
+        // Define color schemas for the batch build arrow
+        val batchBuildWallsArrowColors: List<ColorSchema> = listOf(
+            ColorSchema.parse(
+                centerX - 400, centerY - 500, centerX + 400, centerY + 100, "7DFDC9", "3|0|7BFDC8,6|0|7CFDC7,9|0|7DFDC9,12|0|7DFDC8,0|8|7DFCC8,3|8|7CFCC8,6|8|7CFCC8,9|8|7CFCC8,12|8|7CFCC8", 0, 0.94
+            ),
+            ColorSchema.parse(
+                centerX - 400, centerY - 500, centerX + 400, centerY + 100, "3CC180", "2|0|3EBF80,4|0|3FBF80,6|0|41BD7E,8|0|44B97C,0|6|26D68A,2|6|27D589,4|6|28D588,6|6|29D488,8|6|2BCF86", 0, 0.94
+            )
         )
 
         // Locate the arrow element within the specified duration
-        val batchBuildWallsArrow = findMultiColorsUntil(schema = batchBuildWallsArrowColor, duration = 2000)
+        val batchBuildWallsArrow = findMultiColorsUntil(schemas = batchBuildWallsArrowColors, duration = 2000)
 
         if (batchBuildWallsArrow != null) {
             val arrowX = batchBuildWallsArrow.x
             val arrowY = batchBuildWallsArrow.y
             val dx = arrowX - centerX
-            val dy = arrowY - centerY
+            val dy = arrowY - centerY - 200
 
             // Ensure dx is not zero to prevent division by zero when calculating slope
             if (dx != 0) {
@@ -176,6 +179,5 @@ object NightBaseUpgradeBuildings {
                 TouchActions.swipe(arrowX, arrowY, arrowX, endY)
             }
         }
-        zoomSmallNightBase(isForBuild = true)
     }
 }

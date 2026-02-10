@@ -76,18 +76,18 @@ private suspend fun enterEditMode() {
     }
 
     // Attempt to locate the initial edit button
-    findMultiColorsUntil(schema = initialSchema, duration = 1500)?.let {
+    findMultiColorsUntil(schemas = listOf(initialSchema), duration = 1500)?.let {
         TouchActions.tap(it.x, it.y)
     } ?: return
 
     // Sequence of interactions to navigate through the edit menus
     // 1. Locate and click the specific Green Edit Button
-    findMultiColorsUntil(schema = MyColors.GreenEditBaseButton, duration = 1500)?.let {
+    findMultiColorsUntil(schemas = listOf(MyColors.GreenEditBaseButton), duration = 1500)?.let {
         TouchActions.tap(it.x, it.y)
     }
 
     // 2. Locate and click the confirmation (Yes) button
-    findMultiColorsUntil(schema = MyColors.MiddleGreenYes, duration = 1000)?.let {
+    findMultiColorsUntil(schemas = listOf(MyColors.MiddleGreenYes), duration = 1000)?.let {
         TouchActions.tap(it.x, it.y)
     }
     removeAllBuildings()
@@ -95,11 +95,11 @@ private suspend fun enterEditMode() {
 
 private suspend fun removeAllBuildings() {
     // 3. Locate "Remove All", confirm the action, and perform final layout taps
-    findMultiColorsUntil(schema = MyColors.EditModeRemoveAll, duration = 1000)?.let {
+    findMultiColorsUntil(schemas = listOf(MyColors.EditModeRemoveAll), duration = 1000)?.let {
         TouchActions.tap(it.x, it.y)
 
         // Re-confirm deletion
-        findMultiColorsUntil(schema = MyColors.MiddleGreenYes, duration = 1000)?.let { yesPoint ->
+        findMultiColorsUntil(schemas = listOf(MyColors.MiddleGreenYes), duration = 1000)?.let { yesPoint ->
             TouchActions.tap(yesPoint.x, yesPoint.y)
         }
 
