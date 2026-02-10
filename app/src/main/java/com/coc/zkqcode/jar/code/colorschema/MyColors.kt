@@ -37,4 +37,5 @@ object MyColors : IWorkerColors by WorkerColors, IUIColors by UIColors, IFeature
     val NewBuildings: ColorSchema = ColorSchema.parse(
         501, 142, 705, 598, "0DFF0D", "3|0|0DFF0D,2|4|0DFD0D,1|7|0DFF0D,2|10|0DFF0D,2|9|0DFF0D,2|5|0DFF0D,2|5|0DFF0D,1|4|0DFF0D,0|4|0DFF0D", 0, 0.9, "新字"
     )
+
 }

@@ -1,11 +1,14 @@
 package com.coc.zkqcode.jar.code.nightbase.upgradehelper
 
 import com.coc.zkqcode.core.util.basic.ShowMessage
+import com.coc.zkqcode.jar.code.universal.buildings.BuildingDetectionResult
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndStop
 import com.coc.zkqcode.core.util.touchactions.TouchActions
+import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.nightbase.NightBaseUpgradeBuildings.checkContinueBuild
 import com.coc.zkqcode.jar.code.universal.clickRightBottom
+import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.smalltools.getConfigRuntime
 import com.coc.zkqcode.jar.ui.schema.details.NightBaseBuildingsPriority
@@ -15,7 +18,10 @@ object UpgradeExistingBuildings {
         val orderedList = getOrderedList(buildings)
         for (building in orderedList) {
             clickRightBottom()
-            if (checkContinueBuild()) {
+            val worker = findMultiColorsUntil(schema = MyColors.NightBaseWorker, duration = 1000)
+            if (checkContinueBuild() && worker != null) {
+                TouchActions.tap(worker.x, worker.y)
+                delayWithMultiplier(500)
                 findSpecificBuilding(building)
             }
             clickRightBottom()
@@ -27,17 +33,19 @@ object UpgradeExistingBuildings {
         var found = false
         ShowMessage("准备寻找$buildingName")
         iterateNightBaseBuildingUpgradeList { result ->
-            val building = result.buildings.find { it.name == buildingName }
-            if (building != null) {
-                TouchActions.tap(building.x, building.y)
-                delayWithMultiplier(1500)
-                found = true
-                true
-            } else {
-                false
-            }
+            val tapped = tryUpgradeBuilding(result, buildingName)
+            if (tapped) found = true
+            tapped
         }
         return found
+    }
+
+    private suspend fun tryUpgradeBuilding(result: BuildingDetectionResult, buildingName: String): Boolean {
+        val building = result.buildings.find { it.name == buildingName } ?: return false
+        TouchActions.tap(building.x, building.y)
+        delayWithMultiplier(1500)
+
+        return true
     }
 
     private fun getOrderedList(buildings: List<String>): List<String> {

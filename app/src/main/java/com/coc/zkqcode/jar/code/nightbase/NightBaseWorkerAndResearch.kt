@@ -26,7 +26,7 @@ object NightBaseWorkerAndResearch {
             val endX = worker.x + 350
             val endY = 70
 
-            val results = TextRecognizer.recognize(startX, startY, endX, endY, useChinese = false, applyPreprocess = false, saveImage = true)
+            val results = TextRecognizer.recognize(startX, startY, endX, endY, useChinese = false, applyPreprocess = false)
             ShowMessage("text ${results.toString()}")
             val combinedText = results.joinToString("") { it.text }
             return parseWorkerInfo(combinedText)
