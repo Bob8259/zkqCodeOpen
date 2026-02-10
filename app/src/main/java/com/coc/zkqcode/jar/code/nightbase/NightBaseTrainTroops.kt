@@ -27,7 +27,7 @@ object NightBaseTrainTroops {
 
     private suspend fun trainTroops() {
         // Attempt to locate the initial training button
-        val trainingButton = findMultiColorsUntil(schema = MyColors.TrainTroops, duration = 1500)
+        val trainingButton = findMultiColorsUntil(schemas = listOf(MyColors.TrainTroops), duration = 1500)
 
         if (trainingButton == null) {
             ShowMessage("夜世界练兵失败")
@@ -39,7 +39,7 @@ object NightBaseTrainTroops {
         delayWithMultiplier(400)
 
         // Clear existing troops if the clear button is present
-        val cleanTroops = findMultiColorsUntil(schema = MyColors.RedCleanButton, duration = 1000)
+        val cleanTroops = findMultiColorsUntil(schemas = listOf(MyColors.RedCleanButton), duration = 1000)
         if (cleanTroops != null) {
             TouchActions.tap(cleanTroops.x, cleanTroops.y)
             delayWithMultiplier(500)

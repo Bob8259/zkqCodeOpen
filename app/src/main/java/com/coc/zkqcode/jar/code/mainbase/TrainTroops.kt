@@ -27,7 +27,7 @@ object TrainTroops {
             GlobalVars.absorbEdge = 1
 
             // Open training menu
-            var point = findMultiColorsUntil(schema = MyColors.TrainTroops, duration = 1500)
+            var point = findMultiColorsUntil(schemas = listOf(MyColors.TrainTroops), duration = 1500)
             if (point != null) {
                 TouchActions.tap(point.x, point.y)
                 delayWithMultiplier(500)
@@ -38,7 +38,7 @@ object TrainTroops {
             }
 
             // Verify training page
-            point = findMultiColorsUntil(schema = MyColors.AttackInTrainingPage, duration = 1500)
+            point = findMultiColorsUntil(schemas = listOf(MyColors.AttackInTrainingPage), duration = 1500)
             if (point == null) {
                 ShowMessage("训练部队失败")
                 GlobalVars.absorbEdge = 0
@@ -46,11 +46,11 @@ object TrainTroops {
             }
 
             // Clean Queue 1
-            point = findMultiColorsUntil(schema = MyColors.DeleteAll1, duration = 1000)
+            point = findMultiColorsUntil(schemas = listOf(MyColors.DeleteAll1), duration = 1000)
             if (point != null) {
                 TouchActions.tap(point.x, point.y)
                 delayWithMultiplier(500)
-                findMultiColorsUntil(schema = MyColors.MiddleGreenYes, duration = 1500)?.let {
+                findMultiColorsUntil(schemas = listOf(MyColors.MiddleGreenYes), duration = 1500)?.let {
                     TouchActions.tap(it.x, it.y)
                     delayWithMultiplier(500)
                 }
@@ -85,11 +85,11 @@ object TrainTroops {
             // Close tab and Clean Queue 2
             TouchActions.tap(219, 139)
             delayWithMultiplier(1000)
-            point = findMultiColorsUntil(schema = MyColors.DeleteAll2, duration = 500)
+            point = findMultiColorsUntil(schemas = listOf(MyColors.DeleteAll2), duration = 500)
             if (point != null) {
                 TouchActions.tap(point.x, point.y)
                 delayWithMultiplier(500)
-                findMultiColorsUntil(schema = MyColors.MiddleGreenYes, duration = 1500)?.let {
+                findMultiColorsUntil(schemas = listOf(MyColors.MiddleGreenYes), duration = 1500)?.let {
                     TouchActions.tap(it.x, it.y)
                     delayWithMultiplier(500)
                 }
@@ -98,7 +98,7 @@ object TrainTroops {
             // Spell Tab
             TouchActions.tap(797, 420)
             delayWithMultiplier(1000)
-            if (findMultiColorsUntil(schema = MyColors.TrainLighteningSpell, duration = 500) != null) {
+            if (findMultiColorsUntil(schemas = listOf(MyColors.TrainLighteningSpell), duration = 500) != null) {
                 // Optimized sequence of taps for lightning spells
                 val spellCoords =
                     listOf(351 to 621, 351 to 621, 351 to 621, 220 to 499, 91 to 494, 91 to 494, 91 to 494, 91 to 494)
@@ -111,11 +111,11 @@ object TrainTroops {
             // Close tab and Clean Queue 3
             TouchActions.tap(219, 139)
             delayWithMultiplier(1000)
-            point = findMultiColorsUntil(schema = MyColors.DeleteAll3, duration = 500)
+            point = findMultiColorsUntil(schemas = listOf(MyColors.DeleteAll3), duration = 500)
             if (point != null) {
                 TouchActions.tap(point.x, point.y)
                 delayWithMultiplier(500)
-                findMultiColorsUntil(schema = MyColors.MiddleGreenYes, duration = 1500)?.let {
+                findMultiColorsUntil(schemas = listOf(MyColors.MiddleGreenYes), duration = 1500)?.let {
                     TouchActions.tap(it.x, it.y)
                     delayWithMultiplier(500)
                 }
@@ -124,7 +124,7 @@ object TrainTroops {
             // Siege Machines Tab
             TouchActions.tap(1126, 423)
             delayWithMultiplier(1000)
-            if (findMultiColorsUntil(schema = MyColors.TrainSiegeMachine, duration = 500) != null) {
+            if (findMultiColorsUntil(schemas = listOf(MyColors.TrainSiegeMachine), duration = 500) != null) {
                 val siegeCoords = listOf(1047 to 543, 610 to 535, 364 to 536, 138 to 541)
                 for (coord in siegeCoords) {
                     TouchActions.tap(coord.first, coord.second)

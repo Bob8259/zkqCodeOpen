@@ -23,7 +23,7 @@ object UpgradeExistingBuildings {
             clickRightBottom()
 
             // Locate the worker icon
-            val worker = findMultiColorsUntil(schema = MyColors.NightBaseWorker, duration = 1000)
+            val worker = findMultiColorsUntil(schemas = listOf(MyColors.NightBaseWorker), duration = 1000)
 
             // Pre-condition check: If cannot continue building or worker not found, skip to next
             if (!checkContinueBuild() || worker == null) {
@@ -39,7 +39,7 @@ object UpgradeExistingBuildings {
             }
 
             // Check for the upgrade action (Hammer icon)
-            val hammer = findMultiColorsUntil(schema = MyColors.UpgradeHammer, duration = 1000) ?: continue
+            val hammer = findMultiColorsUntil(schemas = listOf(MyColors.UpgradeHammer), duration = 1000) ?: continue
 
             TouchActions.tap(hammer.x, hammer.y)
             delayWithMultiplier(500)

@@ -4,15 +4,15 @@ import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.MyColors
+import com.coc.zkqcode.jar.code.nightbase.zoomSmallNightBase
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 
 suspend fun nightBaseFindNewBuildings(): Boolean {
-    val worker = findMultiColorsUntil(schema = MyColors.NightBaseWorker, duration = 1000)
+
+    val worker = findMultiColorsUntil(schemas = listOf(MyColors.NightBaseWorker), duration = 1000)
     if (worker != null) {
         TouchActions.tap(worker.x, worker.y)
-        delayWithMultiplier(500)
-        TouchActions.swipe(666, 150, 666, -1200)
         delayWithMultiplier(500)
         var found = false
         iterateNightBaseBuildingUpgradeList { result ->
