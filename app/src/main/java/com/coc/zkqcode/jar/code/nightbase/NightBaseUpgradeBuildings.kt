@@ -32,6 +32,7 @@ object NightBaseUpgradeBuildings {
                 TouchActions.tap(worker.x, worker.y)
                 delayWithMultiplier(500)
                 TouchActions.swipe(666, 170, 666, -1200)
+                delayWithMultiplier(500)
                 iterateNightBaseBuildingUpgradeList { result ->
                     val buildings = result.buildings
                     if (buildings.isEmpty()) {
@@ -141,7 +142,7 @@ object NightBaseUpgradeBuildings {
         delayWithMultiplier(500)
 
         // Zoom out to reveal more of the map/UI
-        TouchActions.pinchOut(centerX - 300, centerY, centerX + 300, centerY, centerX, centerY)
+        TouchActions.pinchOut(centerX - 100, centerY, centerX + 100, centerY, centerX, centerY)
         delayWithMultiplier(800)
 
         // Tap again to focus or confirm
@@ -175,5 +176,6 @@ object NightBaseUpgradeBuildings {
                 TouchActions.swipe(arrowX, arrowY, arrowX, endY)
             }
         }
+        zoomSmallNightBase(isForBuild = true)
     }
 }
