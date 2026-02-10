@@ -12,8 +12,8 @@ suspend fun nightBaseFindNewBuildings(): Boolean {
     if (worker != null) {
         TouchActions.tap(worker.x, worker.y)
         delayWithMultiplier(500)
-        TouchActions.swipe(666, 200, 666, -1000)
-
+        TouchActions.swipe(666, 150, 666, -1200)
+        delayWithMultiplier(500)
         var found = false
         iterateNightBaseBuildingUpgradeList { result ->
             val buildings = result.buildings

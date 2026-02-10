@@ -185,7 +185,7 @@ class ControlWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner 
 
         LaunchedEffect(Unit) {
             while (true) {
-                delay(1000)
+                delay(500)
                 if (GlobalVars.updateWindowPosition && !isDragging) {
                     val absorbEdge = GlobalVars.absorbEdge
                     val absorbYPercentage = GlobalVars.absorbYPercentage

@@ -79,7 +79,7 @@ fun SwitchAccount(onClose: () -> Unit) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             // Top Text aligned to start
             Text(
-                text = "小提示：在悬浮窗点击此按钮，即可回到切号工具",
+                text = "小提示：在悬浮窗点击此按钮，即可回到切号工具。\n注意：每次关闭切号工具时，辅助会从新开始运行。",
                 style = MaterialTheme.typography.titleMedium,
                 color = Color.Black,
                 modifier = Modifier
@@ -170,6 +170,7 @@ fun SwitchAccount(onClose: () -> Unit) {
                         onClick = {
                             scope.launch(Dispatchers.IO) {
                                 GlobalVars.isSwitchingAccount = true
+                                GlobalVars.updateWindowPosition = true
                                 val accNum = accountNumber.ifEmpty { "1" }
                                 ShowMessage("正在切换账号$accNum")
                                 // 1. Get Game Version
@@ -252,6 +253,7 @@ fun SwitchAccount(onClose: () -> Unit) {
                         onClick = {
                             AppStateManager.setMode(AppMode.Run) //just to close the ui
                             GlobalVars.isPlaying.value = false
+                            GlobalVars.updateWindowPosition = true
                             scope.launch {
                                 onClose()
                             }

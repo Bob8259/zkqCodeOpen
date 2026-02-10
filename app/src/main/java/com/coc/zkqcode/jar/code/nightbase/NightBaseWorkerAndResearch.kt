@@ -23,7 +23,7 @@ object NightBaseWorkerAndResearch {
             // Define the crop region for the worker number text
             val startX = worker.x - 50
             val startY = 0
-            val endX = worker.x + 350
+            val endX = worker.x + 400
             val endY = 70
 
             val results = TextRecognizer.recognize(startX, startY, endX, endY, useChinese = false, applyPreprocess = false)
