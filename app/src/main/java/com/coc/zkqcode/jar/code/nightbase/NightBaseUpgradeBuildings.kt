@@ -50,12 +50,12 @@ object NightBaseUpgradeBuildings {
                     }
                     isNewBuildingDetected
                 }
-                if (isNewBuildingDetected) {
-                    if (!buildAllNewBuildings()) return false
-                }
                 val upgradableList = upgradableBuildingsMap.filter { it.value }.keys.toList()
                 val summary = upgradableList.joinToString("\n")
                 ShowMessage("所有可升级建筑: $summary")
+                if (isNewBuildingDetected) {
+                    if (!buildAllNewBuildings()) return false
+                }
                 if (!UpgradeExistingBuildings.upgradeAllExistingBuildings(upgradableList)) return false
             }
         }
