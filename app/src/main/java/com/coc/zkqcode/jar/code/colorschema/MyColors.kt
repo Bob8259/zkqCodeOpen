@@ -34,8 +34,17 @@ object MyColors : IWorkerColors by WorkerColors, IUIColors by UIColors, IFeature
     val WallInShop: ColorSchema = ColorSchema.parse(
         618, 401, 658, 453, "EADEAC", "8|0|567188,16|0|5C96CD,24|0|7BDBF3,32|0|EADEAC,0|26|4F9371,8|26|325A47,16|26|47956C,24|26|57B688,32|26|63CD98", 0, 0.9, "商店内部城墙"
     )
-    val NewBuildings: ColorSchema = ColorSchema.parse(
-        501, 142, 705, 598, "0DFF0D", "3|0|0DFF0D,2|4|0DFD0D,1|7|0DFF0D,2|10|0DFF0D,2|9|0DFF0D,2|5|0DFF0D,2|5|0DFF0D,1|4|0DFF0D,0|4|0DFF0D", 0, 0.9, "新字"
+    val UpgradeHammer: ColorSchema = ColorSchema.parse(
+        146, 499, 1154, 626, "E6E6F3", "11|-8|DEDFEF,12|2|476ECD,18|7|5582F0,21|9|5A82EF,25|10|4F74D5,30|14|5F87F0,38|18|5C7EE3,-4|10|CFDCE7,-2|1|D3D3DE", 0, 0.9, "升级锤子"
     )
-
+    val NightBaseInsufficientResources: ColorSchema = ColorSchema.parse(
+        560,
+        600,
+        726,
+        656,
+        "7F88FF",
+        "1|0|7F88FF,2|0|7F88FF,3|0|7F88FF,3|1|7F88FF,2|1|7F88FF,0|1|7F88FF,0|1|7F88FF,0|2|7F88FF,1|2|7F88FF",
+        0,
+        0.9, "夜世界升级资源不足"
+    )
 }

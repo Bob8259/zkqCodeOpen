@@ -23,7 +23,7 @@ object NightBaseUpgradeBuildings {
     suspend fun upgradeBuildings(): Boolean {
         upgradableBuildingsMap.keys.forEach { upgradableBuildingsMap[it] = false }
         var isNewBuildingDetected = false
-        zoomSmallNightBase()
+        zoomSmallNightBase(true)
         clickRightBottom()
 
         if (checkContinueBuild()) {
@@ -90,9 +90,7 @@ object NightBaseUpgradeBuildings {
     //But for this function, false means no new buildings.
     private suspend fun buildOneNewBuildings(): Boolean {
         ShowMessage("准备建造新建筑")
-        zoomSmallNightBase()
-        // Swipe to adjust view for potential building locations
-        TouchActions.swipe(620, 443, 620, 720, delayTime = 700)
+        zoomSmallNightBase(isForBuild = true)
         // Find out the position of new buildings
         if (nightBaseFindNewBuildings()) {
             // Search for the shop arrow indicator

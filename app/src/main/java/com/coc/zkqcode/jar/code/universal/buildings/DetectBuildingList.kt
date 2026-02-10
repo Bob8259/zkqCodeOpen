@@ -19,7 +19,7 @@ suspend fun detectBuildingList(): BuildingDetectionResult {
     val endY = 560
 
     // Recognize text in the specified area
-    val results = TextRecognizer.recognize(startX, startY, endX, endY, useChinese = true, threshold = 135, saveImage = true)
+    val results = TextRecognizer.recognize(startX, startY, endX, endY, useChinese = true, threshold = 135)
 
     if (results.isEmpty()) return BuildingDetectionResult(emptyList(), false)
 

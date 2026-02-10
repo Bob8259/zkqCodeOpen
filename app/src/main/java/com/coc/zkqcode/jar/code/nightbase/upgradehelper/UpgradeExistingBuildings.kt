@@ -8,6 +8,7 @@ import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.nightbase.NightBaseUpgradeBuildings.checkContinueBuild
 import com.coc.zkqcode.jar.code.universal.clickRightBottom
+import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.smalltools.getConfigRuntime
@@ -22,7 +23,23 @@ object UpgradeExistingBuildings {
             if (checkContinueBuild() && worker != null) {
                 TouchActions.tap(worker.x, worker.y)
                 delayWithMultiplier(500)
-                findSpecificBuilding(building)
+                if (findSpecificBuilding(building)) {
+                    val hammer = findMultiColorsUntil(schema = MyColors.UpgradeHammer, duration = 1000)
+                    if (hammer != null) {
+                        TouchActions.tap(hammer.x, hammer.y)
+                        delayWithMultiplier(500)
+                        if (findMultiColors(schema = MyColors.NightBaseInsufficientResources) != null) {
+                            ShowMessage("资源不足，退出")
+                            clickRightBottom()
+                            return false
+                        } else {
+                            ShowMessage("升级成功")
+                            TouchActions.tap(633, 631)
+                            delayWithMultiplier(500)
+                            clickRightBottom()
+                        }
+                    }
+                }
             }
             clickRightBottom()
         }
@@ -33,20 +50,19 @@ object UpgradeExistingBuildings {
         var found = false
         ShowMessage("准备寻找$buildingName")
         iterateNightBaseBuildingUpgradeList { result ->
-            val tapped = tryUpgradeBuilding(result, buildingName)
-            if (tapped) found = true
-            tapped
+            val building = result.buildings.find { it.name == buildingName }
+            if (building != null) {
+                TouchActions.tap(building.x, building.y)
+                delayWithMultiplier(1500)
+                found = true
+                true
+            } else {
+                false
+            }
         }
         return found
     }
 
-    private suspend fun tryUpgradeBuilding(result: BuildingDetectionResult, buildingName: String): Boolean {
-        val building = result.buildings.find { it.name == buildingName } ?: return false
-        TouchActions.tap(building.x, building.y)
-        delayWithMultiplier(1500)
-
-        return true
-    }
 
     private fun getOrderedList(buildings: List<String>): List<String> {
         val priorityMap = NightBaseBuildingsPriority.all.associate { settingDef ->
