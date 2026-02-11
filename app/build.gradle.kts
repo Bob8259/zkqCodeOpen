@@ -102,22 +102,37 @@ tasks.register<Exec>("deployPatch") {
     val outputJar = "$workingDir/src/main/assets/code.jar"
     val flagFile = file("$workingDir/build/tmp/d8_flags.txt")
 
-    // --- 准备待转换的文件 ---
-    val dependencyFiles = configurations.getByName("debugRuntimeClasspath").files
-    val classFiles = fileTree(classDir) {
-        include("com/coc/zkqcode/jar/**/*.class")
-    }.files.map { it.absolutePath }
-
     // 设置执行的程序
     executable = d8Path
 
     doFirst {
+        // --- 准备待转换的文件 ---
+        val dependencyFiles = configurations.getByName("debugRuntimeClasspath").files
+        
+        // 尝试从多个可能的路径查找 class 文件
+        val possibleClassDirs = listOf(
+            file("$workingDir/build/tmp/kotlin-classes/debug"),
+            file("$workingDir/build/intermediates/built_in_kotlinc/debug/compileDebugKotlin/classes"),
+            file("$workingDir/build/intermediates/javac/debug/classes")
+        )
+
+        val classFiles = mutableListOf<String>()
+        possibleClassDirs.forEach { dir ->
+            if (dir.exists()) {
+                val files = fileTree(dir) {
+                    include("com/coc/zkqcode/jar/**/*.class")
+                }.files.map { it.absolutePath }
+                classFiles.addAll(files)
+                println("Found ${files.size} class files in ${dir.absolutePath}")
+            }
+        }
+
         // 清理旧产物
         val jarFile = file(outputJar)
         if (jarFile.exists()) jarFile.delete()
 
         if (classFiles.isEmpty()) {
-            throw GradleException("未找到待转换的 class 文件，请检查路径: $classDir")
+            throw GradleException("未找到待转换的 class 文件，请检查路径: ${possibleClassDirs.joinToString(", ")}")
         }
 
         // 构建 D8 参数列表
