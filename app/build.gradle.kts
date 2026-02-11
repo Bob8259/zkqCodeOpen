@@ -76,7 +76,6 @@ tasks.register<Exec>("deployPatch") {
 
     // --- 路径配置 ---
     val workingDir = project.projectDir.absolutePath
-    val classDir = "$workingDir/build/tmp/kotlin-classes/debug"
     val sdkDir = System.getenv("ANDROID_HOME") ?: "C:/Users/Azik/AppData/Local/Android/Sdk"
 
     // 自动寻找本机安装的最高版本 Build-Tools (例如 36.1.0)
