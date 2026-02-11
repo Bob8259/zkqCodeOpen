@@ -77,7 +77,7 @@ tasks.register<Exec>("deployPatch") {
     // --- 路径配置 ---
     val workingDir = project.projectDir.absolutePath
     val classDir = "$workingDir/build/tmp/kotlin-classes/debug"
-    val sdkDir = System.getenv("ANDROID_HOME") ?: "C:/Users/Azikaban/AppData/Local/Android/Sdk"
+    val sdkDir = System.getenv("ANDROID_HOME") ?: "C:/Users/Azik/AppData/Local/Android/Sdk"
 
     // 自动寻找本机安装的最高版本 Build-Tools (例如 36.1.0)
     val buildToolsDir = file("$sdkDir/build-tools")
@@ -98,7 +98,7 @@ tasks.register<Exec>("deployPatch") {
     }
 
     // 建议使用 android-34 或 35 的 jar 作为类库参考
-    val sdkPlatform = "$sdkDir/platforms/android-34/android.jar"
+    val sdkPlatform = "$sdkDir/platforms/android-36/android.jar"
     val outputJar = "$workingDir/src/main/assets/code.jar"
     val flagFile = file("$workingDir/build/tmp/d8_flags.txt")
 
