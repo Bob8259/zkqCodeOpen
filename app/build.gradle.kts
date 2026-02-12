@@ -66,25 +66,55 @@ kotlin {
         jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11
     }
 }
-// 1. 定义一个独立的 Task 来执行部署
+// Clean old jar class files before recompilation
+tasks.register("cleanJarClasses") {
+    group = "custom"
+    description = "Remove previously built jar class files to avoid stale classes"
+
+    val workingDir = project.projectDir.absolutePath
+    val possibleClassDirs = listOf(
+        file("$workingDir/build/tmp/kotlin-classes/debug"),
+        file("$workingDir/build/intermediates/built_in_kotlinc/debug/compileDebugKotlin/classes"),
+        file("$workingDir/build/intermediates/javac/debug/classes")
+    )
+
+    doLast {
+        possibleClassDirs.forEach { dir ->
+            val jarClassDir = File(dir, "com/coc/zkqcode/jar")
+            if (jarClassDir.exists()) {
+                jarClassDir.deleteRecursively()
+                println("Cleaned old classes from: ${jarClassDir.absolutePath}")
+            }
+        }
+    }
+}
+
+// Make assembleDebug depend on cleanJarClasses so old classes are removed before compilation
+tasks.configureEach {
+    if (name == "assembleDebug") {
+        dependsOn("cleanJarClasses")
+    }
+}
+
+// Define a standalone task for deployment
 tasks.register<Exec>("deployPatch") {
     group = "custom"
-    description = "编译并打包 UI 插件到 Assets 目录"
+    description = "Compile and package UI plugin into the Assets directory"
 
-    // 确保在执行此任务前先编译出最新的 class 文件
+    // Ensure the latest class files are compiled before running this task
     dependsOn("assembleDebug")
 
-    // --- 路径配置 ---
+    // --- Path configuration ---
     val workingDir = project.projectDir.absolutePath
-    val sdkDir = System.getenv("ANDROID_HOME") ?: "C:/Users/Azik/AppData/Local/Android/Sdk"
+    val sdkDir = System.getenv("ANDROID_HOME") ?: "C:/Users/Azika/AppData/Local/Android/Sdk"
 
-    // 自动寻找本机安装的最高版本 Build-Tools (例如 36.1.0)
+    // Auto-detect the highest installed Build-Tools version (e.g. 36.1.0)
     val buildToolsDir = file("$sdkDir/build-tools")
     val highestBuildTools = buildToolsDir.listFiles()
         ?.filter { it.isDirectory && it.name.contains(".") }
         ?.maxByOrNull { versionFile ->
             versionFile.name.split(".").mapNotNull { it.toIntOrNull() }.let { parts ->
-                // 将版本号转为数字列表进行比较，如 [36, 1, 0]
+                // Convert version string to a comparable number, e.g. [36, 1, 0]
                 parts.fold(0) { acc, i -> acc * 100 + i }
             }
         }
@@ -92,23 +122,23 @@ tasks.register<Exec>("deployPatch") {
     val d8Path = if (highestBuildTools != null) {
         "${highestBuildTools.absolutePath}/d8.bat"
     } else {
-        // 如果没找到，尝试指向你确有的版本作为兜底
+        // Fallback to a known version if auto-detection fails
         "$sdkDir/build-tools/36.1.0/d8.bat"
     }
 
-    // 建议使用 android-34 或 35 的 jar 作为类库参考
+    // Use the android platform jar as library reference
     val sdkPlatform = "$sdkDir/platforms/android-36/android.jar"
     val outputJar = "$workingDir/src/main/assets/code.jar"
     val flagFile = file("$workingDir/build/tmp/d8_flags.txt")
 
-    // 设置执行的程序
+    // Set the executable
     executable = d8Path
 
     doFirst {
-        // --- 准备待转换的文件 ---
+        // --- Prepare files for conversion ---
         val dependencyFiles = configurations.getByName("debugRuntimeClasspath").files
         
-        // 尝试从多个可能的路径查找 class 文件
+        // Search for class files in all possible output directories
         val possibleClassDirs = listOf(
             file("$workingDir/build/tmp/kotlin-classes/debug"),
             file("$workingDir/build/intermediates/built_in_kotlinc/debug/compileDebugKotlin/classes"),
@@ -126,15 +156,15 @@ tasks.register<Exec>("deployPatch") {
             }
         }
 
-        // 清理旧产物
+        // Clean old output artifact
         val jarFile = file(outputJar)
         if (jarFile.exists()) jarFile.delete()
 
         if (classFiles.isEmpty()) {
-            throw GradleException("未找到待转换的 class 文件，请检查路径: ${possibleClassDirs.joinToString(", ")}")
+            throw GradleException("No class files found for conversion. Check paths: ${possibleClassDirs.joinToString(", ")}")
         }
 
-        // 构建 D8 参数列表
+        // Build D8 argument list
         val content = mutableListOf<String>()
         content.add("--release")
         content.add("--min-api")
@@ -144,7 +174,7 @@ tasks.register<Exec>("deployPatch") {
         content.add("--output")
         content.add(outputJar)
 
-        // 添加依赖库 (只包含 jar)
+        // Add dependency libraries (jars only)
         dependencyFiles.forEach { file ->
             if (file.extension == "jar") {
                 content.add("--classpath")
@@ -152,12 +182,12 @@ tasks.register<Exec>("deployPatch") {
             }
         }
 
-        // 添加我们自己的类文件
+        // Add our own class files
         classFiles.forEach {
             content.add(it)
         }
 
-        // 写入参数文件，解决命令行过长和编码问题
+        // Write args to a flag file to avoid command-line length and encoding issues
         flagFile.parentFile.mkdirs()
         flagFile.writeText(content.joinToString("\n"), Charsets.UTF_8)
 
@@ -168,7 +198,7 @@ tasks.register<Exec>("deployPatch") {
         println("--------------------------------------------------")
     }
 
-    // 使用 @ 符号让 d8 读取参数文件
+    // Use @ syntax to let d8 read args from the flag file
     args("@${flagFile.absolutePath}")
 
     doLast {
@@ -177,6 +207,34 @@ tasks.register<Exec>("deployPatch") {
         } else {
             println("--- ERROR: Output file was not generated ---")
         }
+    }
+}
+
+tasks.register("deployAndReload") {
+    group = "custom"
+    description = "Build JAR, push to device, and trigger debug reload"
+    dependsOn("deployPatch")
+
+    val outputJar = "${project.projectDir.absolutePath}/src/main/assets/code.jar"
+    val devicePath = "/data/data/com.coc.zkqcode/files/assets/code.jar"
+
+    doLast {
+        // 1. Push JAR to sdcard first (adb push can't write to /data/data directly)
+        ProcessBuilder("adb", "push", outputJar, "/sdcard/code.jar")
+            .inheritIO().start().waitFor()
+
+        // 2. Copy to private app dir with root
+        ProcessBuilder("adb", "shell", "su", "-c",
+            "'cp /sdcard/code.jar $devicePath && chmod 644 $devicePath'")
+            .inheritIO().start().waitFor()
+        println("--- Pushed code.jar to device ---")
+
+        // 3. Send reload broadcast
+        ProcessBuilder("adb", "shell", "am", "broadcast",
+            "-a", "com.coc.zkqcode.DEBUG_RELOAD",
+            "-n", "com.coc.zkqcode/.core.system.daemon.DebugReloadReceiver")
+            .inheritIO().start().waitFor()
+        println("--- deployAndReload complete ---")
     }
 }
 

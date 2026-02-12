@@ -77,6 +77,15 @@
             </intent-filter>
         </receiver>
 
+        <receiver
+            android:name=".core.system.daemon.DebugReloadReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.coc.zkqcode.DEBUG_RELOAD" />
+            </intent-filter>
+        </receiver>
+
         <service
             android:name=".core.system.daemon.DaemonService"
             android:enabled="true"

@@ -83,7 +83,6 @@ object MainScript {
             enterMainScreen()
             delayWithMultiplier(1000)
             NightBaseUpgradeBuildings.upgradeBuildings()
-            ShowMessage("测试代码结束")
             delayWithMultiplier(1000)
         }
     }
