@@ -119,8 +119,7 @@ class UIWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner, View
             width,
             height,
             windowType,
-            WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or
-                    WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,
+            WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,
             PixelFormat.TRANSLUCENT
         ).apply {
             gravity = Gravity.CENTER
@@ -157,8 +156,8 @@ class UIWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner, View
             }
 
             else -> {
-
                 closeMainUI()
+                GlobalVars.isPlaying.value = true
                 startService(Intent(this, ControlWindowService::class.java))
             }
         }
@@ -201,8 +200,7 @@ class UIWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner, View
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
         } else {
-            @Suppress("DEPRECATION")
-            WindowManager.LayoutParams.TYPE_PHONE
+            @Suppress("DEPRECATION") WindowManager.LayoutParams.TYPE_PHONE
         }
     }
 
@@ -243,8 +241,7 @@ class UIWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner, View
         val notification = NotificationHelper.createNotification(this)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             val type = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE or
-                        ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION
+                ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE or ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION
             } else {
                 ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION
             }
