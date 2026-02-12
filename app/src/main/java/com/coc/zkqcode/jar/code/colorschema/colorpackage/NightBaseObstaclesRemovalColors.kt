@@ -1,0 +1,57 @@
+package com.coc.zkqcode.jar.code.colorschema.colorpackage
+
+import com.coc.zkqcode.jar.code.colorschema.ColorSchema
+
+interface INightBaseObstaclesRemovalColors {
+    val CNEditBaseButton: ColorSchema
+    val GlobalEditBaseButton: ColorSchema
+    val GreenEditBaseButton: ColorSchema
+    val EditModeRemoveAll: ColorSchema
+}
+
+object NightBaseObstaclesRemovalColors : INightBaseObstaclesRemovalColors {
+    override val CNEditBaseButton: ColorSchema = ColorSchema.parse(
+        1050,
+        630,
+        1118,
+        698,
+        "E4F7F5",
+        "1|-3|E4F7F5,5|-6|FFFFFF,11|-28|FFFFFF,11|-32|FFFFFF,24|-8|FFFFFF,28|-8|FFFFFF,29|-6|F5FFFF,27|-11|FFFFFF,29|-11|FFFFFF",
+        0,
+        0.9,
+        "编辑阵型按钮"
+    )
+    override val GlobalEditBaseButton: ColorSchema = ColorSchema.parse(
+        1196,
+        412,
+        1262,
+        470,
+        "E4F7F5",
+        "1|-3|E4F7F5,5|-6|FFFFFF,11|-28|FFFFFF,11|-32|FFFFFF,24|-8|FFFFFF,28|-8|FFFFFF,29|-6|F5FFFF,27|-11|FFFFFF,29|-11|FFFFFF",
+        0,
+        0.9,
+        "编辑阵型按钮"
+    )
+    override val GreenEditBaseButton: ColorSchema = ColorSchema.parse(
+        236,
+        620,
+        425,
+        701,
+        "84F8DE-101010",
+        "16|-1|85F8DF-101010,40|-3|89F9E0-101010,60|-1|85F8DF-101010,108|6|7AF6DA-101010,116|48|1FBB6C-101010,87|54|1FBD70-101010,57|49|1FBB6D-101010,0|51|1FBC6E-101010,-8|48|1FBB6C-101010",
+        0,
+        0.9,
+        "绿色编辑阵型"
+    )
+    override val EditModeRemoveAll: ColorSchema = ColorSchema.parse(
+        1043,
+        11,
+        1269,
+        138,
+        "FFFFFF-101010",
+        "5|2|FFFFFF-101010,18|5|FFFFFF-101010,21|5|FFFFFF-101010,31|-1|81F4D9-101010,17|-5|85F6DD-101010,-4|20|FFFFFF-101010,12|20|FFFFFF-101010,7|27|30B76E-101010,17|26|2FBB72-101010",
+        0,
+        0.9,
+        "移除全部"
+    )
+}
