@@ -49,7 +49,7 @@ class Loadjar(private val context: Context) {
      */
     fun startLoading(assetFileName: String = "code.jar", onStatusChange: (String) -> Unit) {
         onStatusChange("加载中...")
-        // Always create a new assets folder and extract all assets
+        // Create assets folder and extract assets (skipping existing .jar files)
         extractAllAssets()
 
         val assetsDir = File(context.filesDir, "assets")
@@ -182,7 +182,7 @@ class Loadjar(private val context: Context) {
     }
 
     /**
-     * Always create a new assets folder and extract all assets into it
+     * Create assets folder and extract assets into it, skipping .jar files that already exist
      */
     private fun extractAllAssets(): File {
         val privateDir = context.filesDir
@@ -205,6 +205,11 @@ class Loadjar(private val context: Context) {
 
                 try {
                     val outputFile = File(assetsDir, assetName)
+
+                    // If it's a jar and it already exists, don't overwrite it
+                    if (assetName.endsWith(".jar", ignoreCase = true) && outputFile.exists()) {
+                        continue
+                    }
 
                     context.assets.open(assetName).use { input ->
                         outputFile.outputStream().use { output ->
