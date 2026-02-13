@@ -5,10 +5,12 @@ import kotlin.math.sqrt
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
+import com.coc.zkqcode.core.util.bugreporter.BugReporter
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndStop
 import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.core.yolo.YoloDetector
 import com.coc.zkqcode.jar.code.colorschema.MyColors
+import com.coc.zkqcode.jar.code.nightbase.upgradehelper.FindBuildPosition
 import com.coc.zkqcode.jar.code.nightbase.upgradehelper.UpgradeExistingBuildings
 import com.coc.zkqcode.jar.code.nightbase.upgradehelper.iterateNightBaseBuildingUpgradeList
 import com.coc.zkqcode.jar.code.nightbase.upgradehelper.nightBaseFindBuildButton
@@ -120,15 +122,20 @@ object NightBaseUpgradeBuildings {
                     if (isWall) {
                         tryToBatchBuildWalls(greenTick.x, greenTick.y)
                     }
+                    clickRightBottom()
                     return true
                 } else {
+                    ShowMessage("未找到绿色按钮，错误截图已保存到/sdcard/zkqFiles/bugReporter\n请将截图反馈给作者")
+                    BugReporter.takeScreenshot("Green_Tick_Not_Found")
                     val redCross = nightBaseFindBuildButton(type = "Cross")
                     if (redCross != null) {
-                        ShowMessage("建造失败，尝试取消")
-                        TouchActions.tap(redCross.x, redCross.y)
+                        ShowMessage("建造失败，尝试寻找空位")
+                        FindBuildPosition.tryToFindBuildPosition(redCross.x, redCross.y)
                     } else {
-                        ShowMessage("取消失败，尝试重启游戏")
+                        ShowMessage("未找到红色叉，错误截图已保存到/sdcard/zkqFiles/bugReporter\n请将截图反馈给作者")
+                        BugReporter.takeScreenshot("Red_Cross_Not_Found")
                         killGame()
+                        clickRightBottom()
                         return false
                     }
                 }
