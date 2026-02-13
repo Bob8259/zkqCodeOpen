@@ -13,7 +13,7 @@ internal val chineseRegex = Regex("[\u4e00-\u9fff]")
 /**
  * Characters commonly misread by OCR that should be replaced with "新"
  */
-internal val ocrMisreadPrefixes = listOf("斬", "靳", "鼾")
+internal val ocrMisreadPrefixes = listOf("斬", "靳", "斩", "鼾")
 
 /**
  * Data class representing a detected building with its name and position.
