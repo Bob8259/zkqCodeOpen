@@ -1,6 +1,7 @@
 package com.coc.zkqcode.jar.code.nightbase
 
 import android.graphics.Bitmap
+import kotlin.math.sqrt
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
@@ -32,7 +33,8 @@ object NightBaseUpgradeBuildings {
         clickRightBottom()
 //        resources = RecognizeResources.recognizeMyResources()
         if (checkContinueBuild()) {
-            val worker = findMultiColorsUntil(schemas = listOf(MyColors.NightBaseWorker), duration = 1000)
+            val worker =
+                findMultiColorsUntil(schemas = listOf(MyColors.NightBaseWorker), duration = 1000)
             if (worker != null) {
                 TouchActions.tap(worker.x, worker.y)
                 delayWithMultiplier(500)
@@ -88,7 +90,9 @@ object NightBaseUpgradeBuildings {
     suspend fun checkContinueBuild(): Boolean {
         val workerNumber = NightBaseWorkerAndResearch.detectWorkerNumber()
         ShowMessage("夜世界工人数量：${workerNumber.available}/${workerNumber.total}")
-        return !(workerNumber.available == 0 || (workerNumber.available == 1 && getConfigRuntime(Schema.NIGHT_BASE_SETTINGS.NIGHT_SAVE_WORKER.key) == "1"))
+        return !(workerNumber.available == 0 || (workerNumber.available == 1 && getConfigRuntime(
+            Schema.NIGHT_BASE_SETTINGS.NIGHT_SAVE_WORKER.key
+        ) == "1"))
     }
 
     //For other functions, return false usually means fails to go back to main screen.
@@ -99,7 +103,8 @@ object NightBaseUpgradeBuildings {
         // Find out the position of new buildings
         if (nightBaseFindNewBuildings()) {
             // Search for the shop arrow indicator
-            val shopArrow = findMultiColorsUntil(schemas = listOf(MyColors.InnerShopArrow), duration = 5000)
+            val shopArrow =
+                findMultiColorsUntil(schemas = listOf(MyColors.InnerShopArrow), duration = 5000)
 
             if (shopArrow != null) {
                 // Determine building type before interacting with the UI to ensure state accuracy
@@ -139,18 +144,18 @@ object NightBaseUpgradeBuildings {
     private suspend fun tryToBatchBuildWalls(x: Int, y: Int) {
         val centerX = x - 20
         val centerY = y + 45
-
+        ShowMessage("center ${centerX}, ${centerY}")
         // Initial interaction to trigger wall building UI
         TouchActions.tap(centerX, centerY)
         delayWithMultiplier(500)
 
         // Zoom out to reveal more of the map/UI
-        TouchActions.pinchOut(centerX - 100, centerY, centerX + 100, centerY, centerX, centerY)
+        TouchActions.pinchOut(centerX - 90, centerY, centerX + 90, centerY, centerX, centerY)
         delayWithMultiplier(800)
 
         // Tap again to focus or confirm
         TouchActions.tap(centerX, centerY)
-        TouchActions.swipe(280, 480, 280, 280, delayTime = 600)
+        TouchActions.swipe(280, 480, 280, 320, delayTime = 600)
         // Locate the arrow element using YOLO detector
         val screenBuffer = ScreenCaptureManager.capture(asBitmap = true) as? Bitmap
             ?: logAndStop("in NightBaseUpgradeBuildings, screen capture failed.")
@@ -161,21 +166,19 @@ object NightBaseUpgradeBuildings {
             val arrowX = batchBuildWallsArrow.boundingBox.centerX().toInt()
             val arrowY = batchBuildWallsArrow.boundingBox.centerY().toInt()
             ShowMessage("批量建造箭头：$arrowX, $arrowY")
+            val targetCenterY = centerY - 150
             val dx = arrowX - centerX
-            val dy = arrowY - centerY - 200
+            val dy = arrowY - targetCenterY
+            val distance = sqrt((dx * dx + dy * dy).toDouble())
 
-            // Ensure dx is not zero to prevent division by zero when calculating slope
-            if (dx != 0) {
+            if (distance > 0) {
                 // Calculate trajectory based on the vector from center to the detected arrow
                 val targetOffset = 5000
-                val endX = arrowX + targetOffset
-                val endY = arrowY + (targetOffset * dy / dx)
+                val endX = (arrowX + (dx / distance) * targetOffset).toInt()
+                val endY = (arrowY + (dy / distance) * targetOffset).toInt()
 
+                ShowMessage("Swiping from ($arrowX, $arrowY) to ($endX, $endY)")
                 TouchActions.swipe(arrowX, arrowY, endX, endY)
-            } else if (dy != 0) {
-                // Vertical swipe fallback if dx is 0 but dy is not
-                val endY = arrowY + (if (dy > 0) 5000 else -5000)
-                TouchActions.swipe(arrowX, arrowY, arrowX, endY)
             }
         }
     }
