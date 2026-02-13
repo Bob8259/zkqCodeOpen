@@ -1,9 +1,12 @@
 package com.coc.zkqcode.jar.code.nightbase
 
+import android.graphics.Bitmap
+import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
+import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndStop
 import com.coc.zkqcode.core.util.touchactions.TouchActions
-import com.coc.zkqcode.jar.code.colorschema.ColorSchema
+import com.coc.zkqcode.core.yolo.YoloDetector
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.nightbase.upgradehelper.UpgradeExistingBuildings
 import com.coc.zkqcode.jar.code.nightbase.upgradehelper.iterateNightBaseBuildingUpgradeList
@@ -14,8 +17,6 @@ import com.coc.zkqcode.jar.code.universal.clickRightBottom
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
-import com.coc.zkqcode.jar.code.universal.recognizer.RecognizeResources
-import com.coc.zkqcode.jar.code.universal.recognizer.Resources
 import com.coc.zkqcode.jar.code.universal.smalltools.getConfigRuntime
 import com.coc.zkqcode.jar.code.universal.smalltools.killGame
 import com.coc.zkqcode.jar.ui.schema.Schema
@@ -149,30 +150,17 @@ object NightBaseUpgradeBuildings {
 
         // Tap again to focus or confirm
         TouchActions.tap(centerX, centerY)
-        delayWithMultiplier(80000)
         TouchActions.swipe(280, 480, 280, 280, delayTime = 600)
-        // Define color schemas for the batch build arrow
-        val batchBuildWallsArrowColors: List<ColorSchema> = listOf(
-            ColorSchema.parse(
-                centerX - 400, centerY - 500, centerX + 400, centerY + 100, "7DFDC9", "3|0|7BFDC8,6|0|7CFDC7,9|0|7DFDC9,12|0|7DFDC8,0|8|7DFCC8,3|8|7CFCC8,6|8|7CFCC8,9|8|7CFCC8,12|8|7CFCC8", 0, 0.94
-            ), ColorSchema.parse(
-                centerX - 400, centerY - 500, centerX + 400, centerY + 100, "3CC180", "2|0|3EBF80,4|0|3FBF80,6|0|41BD7E,8|0|44B97C,0|6|26D68A,2|6|27D589,4|6|28D588,6|6|29D488,8|6|2BCF86", 0, 0.94
-            ), ColorSchema.parse(
-                centerX - 400, centerY - 500, centerX + 400, centerY + 100, "39996A", "2|0|39996A,4|0|39996A,5|0|39996A,7|0|39996B,0|5|3B9B6B,2|5|3B9B6A,4|5|3B9B6A,5|5|3B9B6A,7|5|3B9B6A", 0, 0.94
-            ), ColorSchema.parse(
-                centerX - 400, centerY - 500, centerX + 400, centerY + 100, "68B393", "3|0|68B293,5|0|67B192,7|0|66AF90,10|0|66AD8F,0|5|69B595,3|5|68B393,5|5|68B293,7|5|67B192,10|5|67AF90", 0, 0.94
-            ), ColorSchema.parse(
-                centerX - 400, centerY - 500, centerX + 400, centerY + 100, "629F83", "3|0|63A083,6|0|63A084,9|0|64A084,12|0|63A084,0|5|63A084,3|5|63A084,6|5|63A084,9|5|63A084,12|5|63A084", 0, 0.94
-            )
-        )
-
-        // Locate the arrow element within the specified duration
-        val batchBuildWallsArrow = findMultiColorsUntil(schemas = batchBuildWallsArrowColors, duration = 2000)
+        // Locate the arrow element using YOLO detector
+        val screenBuffer = ScreenCaptureManager.capture(asBitmap = true) as? Bitmap
+            ?: logAndStop("in NightBaseUpgradeBuildings, screen capture failed.")
+        val detections = YoloDetector.detect(screenBuffer, modelType = "walls-detect")
+        val batchBuildWallsArrow = detections.maxByOrNull { it.score }
 
         if (batchBuildWallsArrow != null) {
-            ShowMessage("批量建造箭头：${batchBuildWallsArrow.x}, ${batchBuildWallsArrow.y}")
-            val arrowX = batchBuildWallsArrow.x
-            val arrowY = batchBuildWallsArrow.y
+            val arrowX = batchBuildWallsArrow.boundingBox.centerX().toInt()
+            val arrowY = batchBuildWallsArrow.boundingBox.centerY().toInt()
+            ShowMessage("批量建造箭头：$arrowX, $arrowY")
             val dx = arrowX - centerX
             val dy = arrowY - centerY - 200
 

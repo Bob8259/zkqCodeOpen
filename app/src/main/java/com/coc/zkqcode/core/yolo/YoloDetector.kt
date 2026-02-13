@@ -24,7 +24,9 @@ object YoloDetector {
     private const val MODEL_PATH = "obstacles_detector.tflite"
     
     private var interpreter: Interpreter? = null
-    private var inputSize = 0
+    private var currentModelType: String? = null
+    private var inputWidth = 0
+    private var inputHeight = 0
     
     // Model input details
     private var inputDataType: DataType = DataType.FLOAT32
@@ -39,7 +41,9 @@ object YoloDetector {
     }
 
     fun loadWeights(modelType: String? = null) {
-        if (interpreter != null) return // Already loaded
+        if (interpreter != null && currentModelType == modelType) return // Already loaded
+        
+        clearWeights() // Load new model if type changed or not loaded
         
         val context = appContext ?: LogHelper.logAndStop("YoloDetector must be initialized with context before loading weights")
         
@@ -49,9 +53,11 @@ object YoloDetector {
             interpreter = Interpreter(model, options)
             
             val inputTensor = interpreter!!.getInputTensor(0)
-            val shape = inputTensor.shape() // [1, size, size, 3]
-            inputSize = shape[1]
+            val shape = inputTensor.shape() // [1, height, width, 3] or [1, size, size, 3]
+            inputHeight = shape[1]
+            inputWidth = shape[2]
             inputDataType = inputTensor.dataType()
+            currentModelType = modelType
             
             // Check quantization
             if (inputDataType == DataType.INT8 || inputDataType == DataType.UINT8) {
@@ -72,6 +78,7 @@ object YoloDetector {
     fun clearWeights() {
         interpreter?.close()
         interpreter = null
+        currentModelType = null
     }
 
     private fun loadModelFile(context: Context, modelType: String? = null): MappedByteBuffer {
@@ -80,6 +87,13 @@ object YoloDetector {
             val inputStream = java.io.FileInputStream(modelFile)
             val fileChannel = inputStream.channel
             return fileChannel.map(FileChannel.MapMode.READ_ONLY, 0, modelFile.length())
+        } else if (modelType == "walls-detect") {
+            val fileDescriptor = context.assets.openFd("walls_detect.tflite")
+            val inputStream = FileInputStream(fileDescriptor.fileDescriptor)
+            val fileChannel = inputStream.channel
+            val startOffset = fileDescriptor.startOffset
+            val declaredLength = fileDescriptor.declaredLength
+            return fileChannel.map(FileChannel.MapMode.READ_ONLY, startOffset, declaredLength)
         }
         val fileDescriptor = context.assets.openFd(MODEL_PATH)
         val inputStream = FileInputStream(fileDescriptor.fileDescriptor)
@@ -89,9 +103,9 @@ object YoloDetector {
         return fileChannel.map(FileChannel.MapMode.READ_ONLY, startOffset, declaredLength)
     }
 
-    fun detect(bitmap: Bitmap, clearWeightsAfter: Boolean = true, threshold: Float = 0.3f): List<DetectionResult> {
+    fun detect(bitmap: Bitmap, modelType: String? = null, clearWeightsAfter: Boolean = true, threshold: Float = 0.3f): List<DetectionResult> {
         // Ensure weights are loaded strictly for this detection
-        loadWeights()
+        loadWeights(modelType)
         
         if (interpreter == null) return emptyList()
 
@@ -138,12 +152,12 @@ object YoloDetector {
     }
 
     private fun convertBitmapToByteBuffer(bitmap: Bitmap): ByteBuffer {
-        val scaledBitmap = bitmap.scale(inputSize, inputSize)
+        val scaledBitmap = bitmap.scale(inputWidth, inputHeight)
         
         val bufferSize = if (inputDataType == DataType.FLOAT32) {
-             4 * inputSize * inputSize * 3
+             4 * inputWidth * inputHeight * 3
         } else {
-             1 * inputSize * inputSize * 3
+             1 * inputWidth * inputHeight * 3
         }
         
         val byteBuffer = ByteBuffer.allocateDirect(bufferSize)
@@ -157,12 +171,12 @@ object YoloDetector {
             scaledBitmap
         }
 
-        val intValues = IntArray(inputSize * inputSize)
+        val intValues = IntArray(inputWidth * inputHeight)
         softwareBitmap.getPixels(intValues, 0, softwareBitmap.width, 0, 0, softwareBitmap.width, softwareBitmap.height)
         
         var pixel = 0
-        for (i in 0 until inputSize) {
-            for (j in 0 until inputSize) {
+        for (i in 0 until inputHeight) {
+            for (j in 0 until inputWidth) {
                 val value = intValues[pixel++]
                 val r = (value shr 16 and 0xFF)
                 val g = (value shr 8 and 0xFF)
