@@ -149,6 +149,7 @@ object NightBaseUpgradeBuildings {
 
         // Tap again to focus or confirm
         TouchActions.tap(centerX, centerY)
+        delayWithMultiplier(80000)
         TouchActions.swipe(280, 480, 280, 280, delayTime = 600)
         // Define color schemas for the batch build arrow
         val batchBuildWallsArrowColors: List<ColorSchema> = listOf(

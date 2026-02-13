@@ -71,15 +71,15 @@ object MainBaseTutorial : IMainBaseTutorial {
         "输入年龄"
     )
     override val PrivacyInfo: ColorSchema = ColorSchema.parse(
-        76,
-        542,
-        617,
-        608,
-        "B8CACB",
-        "-79|8|B8CACB,-52|-16|B8CACB,121|-17|B8CACB,191|-9|B8CACB,230|16|B8CACB,229|26|B8CACB,243|34|B8CACB,263|27|B8CACB,329|30|B8CACB",
+        678,
+        528,
+        1215,
+        569,
+        "3CA8EF",
+        "107|0|3CA8EF,215|0|3CA8EF,322|0|3CA8EF,429|0|3CA8EF,0|21|3CA8EF,107|21|3CA8EF,215|21|FFFFFF,322|21|3CA8EF,429|21|3CA8EF",
         0,
         0.9,
-        "拒绝优化"
+        "确定优化"
     )
     override val TutorialShop: ColorSchema = ColorSchema.parse(
         1140,

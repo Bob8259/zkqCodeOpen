@@ -30,6 +30,7 @@ import androidx.savedstate.SavedStateRegistryController
 import androidx.savedstate.SavedStateRegistryOwner
 import androidx.savedstate.setViewTreeSavedStateRegistryOwner
 import com.coc.zkqcode.core.data.database.GlobalVars
+import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.loadjar.Loadjar
 import com.coc.zkqcode.statehelper.AppMode
 import com.coc.zkqcode.statehelper.AppStateManager
@@ -157,7 +158,11 @@ class UIWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner, View
 
             else -> {
                 closeMainUI()
-                GlobalVars.isPlaying.value = true
+                if (!GlobalVars.isPlaying.value) {// if the script is pause, then run the script for a little bit, show the message, then pause again
+                    GlobalVars.isPlaying.value = true
+                    ShowMessage("当前已暂停运行。\n若要启动辅助，请通过悬浮窗启动。")
+                    GlobalVars.isPlaying.value = false
+                }
                 startService(Intent(this, ControlWindowService::class.java))
             }
         }
