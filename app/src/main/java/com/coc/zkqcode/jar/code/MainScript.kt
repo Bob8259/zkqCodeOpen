@@ -11,6 +11,7 @@ import com.coc.zkqcode.jar.code.nightbase.NightBaseUpgradeBuildings
 import com.coc.zkqcode.jar.code.nightbase.NightBaseWorkerAndResearch
 import com.coc.zkqcode.jar.code.nightbase.nightBaseRemoveObstacles
 import com.coc.zkqcode.jar.code.nightbase.playNightBase
+import com.coc.zkqcode.jar.code.nightbase.upgradehelper.FindBuildPosition
 import com.coc.zkqcode.jar.code.nightbase.upgradehelper.nightBaseFindBuildButton
 import com.coc.zkqcode.jar.code.universal.InGamesVars
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
@@ -82,7 +83,9 @@ object MainScript {
             runApp("com.supercell.clashofclans2")
             enterMainScreen()
             delayWithMultiplier(1000)
-            NightBaseUpgradeBuildings.upgradeBuildings()
+            val redCross = nightBaseFindBuildButton(type = "Cross")
+            if (redCross != null)
+                FindBuildPosition.tryToFindBuildPosition(redCross.x, redCross.y)
             delayWithMultiplier(1000)
         }
     }

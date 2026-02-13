@@ -2,6 +2,7 @@ package com.coc.zkqcode.jar.code.nightbase
 
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
+import com.coc.zkqcode.core.util.bugreporter.BugReporter
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.recognizer.TextRecognizer
@@ -30,8 +31,8 @@ object NightBaseWorkerAndResearch {
             val combinedText = results.joinToString("") { it.text }
             return parseWorkerInfo(combinedText)
         }
-        ShowMessage("未检测到夜世界工人")
-        delayWithMultiplier(500)
+        ShowMessage("未检测到夜世界工人，已将错误截图保存到/sdcard/zkqFiles/bugReporter\n请反馈给作者")
+        BugReporter.takeScreenshot("Night_Base_Worker_Not_Detected")
         return WorkerInfo(0, 0)
     }
 
