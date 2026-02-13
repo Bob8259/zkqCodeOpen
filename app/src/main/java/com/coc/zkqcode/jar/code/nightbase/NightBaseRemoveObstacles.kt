@@ -29,10 +29,10 @@ suspend fun nightBaseRemoveObstacles(): Boolean {
     val currentHour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
 
     // Simplified time check as requested
-//    if (lastCleaningTime != null && abs(lastCleaningTime - currentHour) < 8) {
-//        ShowMessage("距离上次除草不足8小时，暂不除草")
-//        return true
-//    }
+    if (lastCleaningTime != null && abs(lastCleaningTime - currentHour) < 8) {
+        ShowMessage("距离上次除草不足8小时，暂不除草")
+       return true
+    }
 
     // Resource threshold check
     if (worker.total == 2) {
@@ -139,7 +139,7 @@ private suspend fun removeObstacles() {
 
 private suspend fun detectObstacles(): List<DetectionResult> {
     val screenBuffer = ScreenCaptureManager.capture(asBitmap = true) as? Bitmap
-        ?: logAndStop("in TextRecognizer, screen capture failed.")
+        ?: logAndStop("in NightBaseRemoveObstacles, screen capture failed.")
 
     if (screenBuffer.width != 1280 || screenBuffer.height != 720) {
         return emptyList()
