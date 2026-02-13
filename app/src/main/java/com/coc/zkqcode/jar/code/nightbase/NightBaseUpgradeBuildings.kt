@@ -25,13 +25,11 @@ import com.coc.zkqcode.jar.ui.schema.Schema
 object NightBaseUpgradeBuildings {
     private val upgradableBuildingsMap = ALL_BUILDINGS.associateWith { false }.toMutableMap()
 
-    //    private var resources: Resources? = null
     suspend fun upgradeBuildings(): Boolean {
         upgradableBuildingsMap.keys.forEach { upgradableBuildingsMap[it] = false }
         var isNewBuildingDetected = false
         zoomSmallNightBase(true)
         clickRightBottom()
-//        resources = RecognizeResources.recognizeMyResources()
         if (checkContinueBuild()) {
             val worker =
                 findMultiColorsUntil(schemas = listOf(MyColors.NightBaseWorker), duration = 1000)
@@ -144,7 +142,6 @@ object NightBaseUpgradeBuildings {
     private suspend fun tryToBatchBuildWalls(x: Int, y: Int) {
         val centerX = x - 20
         val centerY = y + 45
-        ShowMessage("center ${centerX}, ${centerY}")
         // Initial interaction to trigger wall building UI
         TouchActions.tap(centerX, centerY)
         delayWithMultiplier(500)
@@ -177,7 +174,6 @@ object NightBaseUpgradeBuildings {
                 val endX = (arrowX + (dx / distance) * targetOffset).toInt()
                 val endY = (arrowY + (dy / distance) * targetOffset).toInt()
 
-                ShowMessage("Swiping from ($arrowX, $arrowY) to ($endX, $endY)")
                 TouchActions.swipe(arrowX, arrowY, endX, endY)
             }
         }
