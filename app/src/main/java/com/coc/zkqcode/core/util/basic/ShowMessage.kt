@@ -4,7 +4,6 @@ import android.content.Context
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.ui.floatingwindows.MessageBoxHelper.showFloatingMessage
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndStop
-import com.coc.zkqcode.core.util.fileactions.LogHelper.showDebugInfo
 import timber.log.Timber
 import java.lang.ref.WeakReference
 
