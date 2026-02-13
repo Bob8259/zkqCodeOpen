@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Handler
 import android.os.Looper
+import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.loadjar.Loadjar
 import com.coc.zkqcode.statehelper.AppMode
 import com.coc.zkqcode.statehelper.AppStateManager
@@ -25,6 +26,7 @@ class DebugReloadReceiver : BroadcastReceiver() {
             Timber.d("DebugReload: $status")
             if (status == "Plugin loaded successfully") {
                 // 3. Re-run bot after reload
+                GlobalVars.isPlaying.value = true
                 Handler(Looper.getMainLooper()).postDelayed({
                     AppStateManager.setMode(AppMode.Run)
                     Timber.d("DebugReload: Bot restarted")

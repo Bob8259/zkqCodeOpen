@@ -8,6 +8,59 @@ import kotlin.random.Random
 import kotlin.math.sqrt
 
 object TouchActions {
+    private fun getDelayMultiplier(): Float {
+        return GlobalVars.configStates["delay_multiplier"]?.value?.toFloat()
+            ?: logAndStop("Failed to get delayMultiplier")
+    }
+
+    private fun getServerActions() = GlobalVars.serverActions ?: logAndStop("Server actions not found")
+
+    suspend fun touchDown(x: Float, y: Float, id: Int) {
+        getServerActions().sendActionSync(
+            mapOf(
+                "actionType" to "touch_action",
+                "subAction" to "touchdown",
+                "x" to x,
+                "y" to y,
+                "id" to id
+            )
+        )
+    }
+
+    suspend fun touchMove(x: Float, y: Float, id: Int, isJitter: Boolean = true) {
+        var finalX = x
+        var finalY = y
+        if (isJitter) {
+            finalX += Random.nextInt(-1, 2).toFloat()
+            finalY += Random.nextInt(-1, 2).toFloat()
+        }
+        getServerActions().sendActionSync(
+            mapOf(
+                "actionType" to "touch_action",
+                "subAction" to "touchmove",
+                "x" to finalX,
+                "y" to finalY,
+                "id" to id
+            )
+        )
+    }
+
+    suspend fun touchUp(id: Int) {
+        getServerActions().sendActionSync(
+            mapOf(
+                "actionType" to "touch_action",
+                "subAction" to "touchup",
+                "id" to id
+            )
+        )
+    }
+
+    private suspend fun waitForPlay() {
+        while (!GlobalVars.isPlaying.value) {
+            delay(1000)
+        }
+    }
+
     suspend fun swipe(
         startX: Int,
         startY: Int,
@@ -16,25 +69,11 @@ object TouchActions {
         delayTime: Long? = null,
         isJitter: Boolean = true
     ) {
-        while (!GlobalVars.isPlaying.value) {
-            delay(1000)//the user paused the script, then we should also stop
-        }
+        waitForPlay()
         val actualDelayTime = delayTime ?: Random.nextLong(300, 401)
-        val serverActions =
-            GlobalVars.serverActions ?: logAndStop("Server actions not found at swipe")
-        val delayMultiplier = GlobalVars.configStates["delay_multiplier"]?.value?.toFloat()
-            ?: logAndStop("Failed to get delayMultiplier at swipe")
+        val delayMultiplier = getDelayMultiplier()
 
-        // Send touchdown at x,y
-        serverActions.sendActionSync(
-            mapOf(
-                "actionType" to "touch_action",
-                "subAction" to "touchdown",
-                "x" to startX.toFloat(),
-                "y" to startY.toFloat(),
-                "id" to 1
-            )
-        )
+        touchDown(startX.toFloat(), startY.toFloat(), 1)
 
         // Delay for time * 0.7
         delay((actualDelayTime * 0.7 * delayMultiplier).toLong())
@@ -50,14 +89,7 @@ object TouchActions {
         // Delay for 'time'
         delay((actualDelayTime * delayMultiplier).toLong())
 
-        // Touch up
-        serverActions.sendActionSync(
-            mapOf(
-                "actionType" to "touch_action",
-                "subAction" to "touchup",
-                "id" to 1
-            )
-        )
+        touchUp(1)
     }
 
     suspend fun pinchIn(
@@ -70,34 +102,12 @@ object TouchActions {
         duration: Long? = null,
         isJitter: Boolean = true
     ) {
-        while (!GlobalVars.isPlaying.value) {
-            delay(1000)//the user paused the script, then we should also stop
-        }
+        waitForPlay()
         val actualDuration = duration ?: Random.nextLong(300, 401)
-        val serverActions =
-            GlobalVars.serverActions ?: logAndStop("Failed to get serverAction at pinchIn")
-        val delayMultiplier = GlobalVars.configStates["delay_multiplier"]?.value?.toFloat()
-            ?: logAndStop("Failed to get delayMultiplier at pinchIn")
+        val delayMultiplier = getDelayMultiplier()
 
-        // Start P1 and P2
-        serverActions.sendActionSync(
-            mapOf(
-                "actionType" to "touch_action",
-                "subAction" to "touchdown",
-                "x" to x1.toFloat(),
-                "y" to y1.toFloat(),
-                "id" to 1
-            )
-        )
-        serverActions.sendActionSync(
-            mapOf(
-                "actionType" to "touch_action",
-                "subAction" to "touchdown",
-                "x" to x2.toFloat(),
-                "y" to y2.toFloat(),
-                "id" to 2
-            )
-        )
+        touchDown(x1.toFloat(), y1.toFloat(), 1)
+        touchDown(x2.toFloat(), y2.toFloat(), 2)
 
         val moveDuration = (actualDuration * delayMultiplier).toLong()
         performMove(
@@ -107,13 +117,8 @@ object TouchActions {
             PointerMove(2, x2.toFloat(), y2.toFloat(), finalX.toFloat(), finalY.toFloat())
         )
 
-        // End P1 and P2
-        serverActions.sendActionSync(
-            mapOf("actionType" to "touch_action", "subAction" to "touchup", "id" to 1)
-        )
-        serverActions.sendActionSync(
-            mapOf("actionType" to "touch_action", "subAction" to "touchup", "id" to 2)
-        )
+        touchUp(1)
+        touchUp(2)
     }
 
     suspend fun pinchOut(
@@ -126,34 +131,12 @@ object TouchActions {
         duration: Long? = null,
         isJitter: Boolean = true
     ) {
-        while (!GlobalVars.isPlaying.value) {
-            delay(1000)//the user paused the script, then we should also stop
-        }
+        waitForPlay()
         val actualDuration = duration ?: Random.nextLong(300, 501)
-        val serverActions =
-            GlobalVars.serverActions ?: logAndStop("Failed to get serverAction at pinchOut")
-        val delayMultiplier = GlobalVars.configStates["delay_multiplier"]?.value?.toFloat()
-            ?: logAndStop("Failed to get delayMultiplier at pinchOut")
+        val delayMultiplier = getDelayMultiplier()
 
-        // Start P1 and P2 at center
-        serverActions.sendActionSync(
-            mapOf(
-                "actionType" to "touch_action",
-                "subAction" to "touchdown",
-                "x" to finalX.toFloat(),
-                "y" to finalY.toFloat(),
-                "id" to 1
-            )
-        )
-        serverActions.sendActionSync(
-            mapOf(
-                "actionType" to "touch_action",
-                "subAction" to "touchdown",
-                "x" to finalX.toFloat(),
-                "y" to finalY.toFloat(),
-                "id" to 2
-            )
-        )
+        touchDown(finalX.toFloat(), finalY.toFloat(), 1)
+        touchDown(finalX.toFloat(), finalY.toFloat(), 2)
 
         val moveDuration = (actualDuration * delayMultiplier).toLong()
         performMove(
@@ -163,13 +146,8 @@ object TouchActions {
             PointerMove(2, finalX.toFloat(), finalY.toFloat(), x2.toFloat(), y2.toFloat())
         )
 
-        // End P1 and P2
-        serverActions.sendActionSync(
-            mapOf("actionType" to "touch_action", "subAction" to "touchup", "id" to 1)
-        )
-        serverActions.sendActionSync(
-            mapOf("actionType" to "touch_action", "subAction" to "touchup", "id" to 2)
-        )
+        touchUp(1)
+        touchUp(2)
     }
 
     private class PointerMove(
@@ -185,7 +163,7 @@ object TouchActions {
         isJitter: Boolean,
         vararg pointers: PointerMove
     ) {
-        val serverActions = GlobalVars.serverActions ?: logAndStop("Server actions not found at performMove")
+        GlobalVars.serverActions ?: logAndStop("Server actions not found at performMove")
         val delayMultiplier = GlobalVars.configStates["delay_multiplier"]?.value?.toFloat()
             ?: logAndStop("Failed to get delayMultiplier at performMove")
 
@@ -197,15 +175,7 @@ object TouchActions {
                 pointers.forEach { p ->
                     val currentX = p.fromX + (p.toX - p.fromX) * t
                     val currentY = p.fromY + (p.toY - p.fromY) * t
-                    serverActions.sendActionSync(
-                        mapOf(
-                            "actionType" to "touch_action",
-                            "subAction" to "touchmove",
-                            "x" to currentX,
-                            "y" to currentY,
-                            "id" to p.id
-                        )
-                    )
+                    touchMove(currentX, currentY, p.id, isJitter = false)
                 }
                 delay((stepInterval * delayMultiplier).toLong())
             }
@@ -273,15 +243,7 @@ object TouchActions {
                 state.lastNoiseX += (Random.nextFloat() - 0.5f) * 0.4f
                 state.lastNoiseY += (Random.nextFloat() - 0.5f) * 0.4f
 
-                serverActions.sendActionSync(
-                    mapOf(
-                        "actionType" to "touch_action",
-                        "subAction" to "touchmove",
-                        "x" to (bX + state.lastNoiseX),
-                        "y" to (bY + state.lastNoiseY),
-                        "id" to p.id
-                    )
-                )
+                touchMove(bX + state.lastNoiseX, bY + state.lastNoiseY, p.id, isJitter = false)
             }
 
             val varDelay = (avgDelay * Random.nextDouble(0.8, 1.2)).toLong()
@@ -294,24 +256,10 @@ object TouchActions {
         y: Int,
         isJitter: Boolean = true
     ) {
-        while (!GlobalVars.isPlaying.value) {
-            delay(1000)//the user paused the script, then we should also stop
-        }
-        val serverActions =
-            GlobalVars.serverActions ?: logAndStop("Server actions not found at tap")
-        val delayMultiplier = GlobalVars.configStates["delay_multiplier"]?.value?.toFloat()
-            ?: logAndStop("Failed to get delayMultiplier at tap")
+        waitForPlay()
+        val delayMultiplier = getDelayMultiplier()
 
-        // Send touchdown at x,y
-        serverActions.sendActionSync(
-            mapOf(
-                "actionType" to "touch_action",
-                "subAction" to "touchdown",
-                "x" to x.toFloat(),
-                "y" to y.toFloat(),
-                "id" to 1
-            )
-        )
+        touchDown(x.toFloat(), y.toFloat(), 1)
 
         // Random delay
         val randomDelay = Random.nextLong(20, 31)
@@ -320,24 +268,9 @@ object TouchActions {
         if (isJitter) {
             val offsetX = Random.nextInt(-3, 4)
             val offsetY = Random.nextInt(-3, 4)
-            serverActions.sendActionSync(
-                mapOf(
-                    "actionType" to "touch_action",
-                    "subAction" to "touchmove",
-                    "x" to (x + offsetX).toFloat(),
-                    "y" to (y + offsetY).toFloat(),
-                    "id" to 1,
-                )
-            )
+            touchMove((x + offsetX).toFloat(), (y + offsetY).toFloat(), 1, isJitter = false)
         }
 
-        // Touch up
-        serverActions.sendActionSync(
-            mapOf(
-                "actionType" to "touch_action",
-                "subAction" to "touchup",
-                "id" to 1
-            )
-        )
+        touchUp(1)
     }
 }
