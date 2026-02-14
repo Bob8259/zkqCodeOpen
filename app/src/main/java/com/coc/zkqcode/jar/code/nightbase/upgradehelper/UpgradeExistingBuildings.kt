@@ -23,7 +23,8 @@ object UpgradeExistingBuildings {
             clickRightBottom()
 
             // Locate the worker icon
-            val worker = findMultiColorsUntil(schemas = listOf(MyColors.NightBaseWorker), duration = 1000)
+            val worker =
+                findMultiColorsUntil(schemas = listOf(MyColors.NightBaseWorker), duration = 1000)
 
             // Pre-condition check: If cannot continue building or worker not found, skip to next
             if (!checkContinueBuild() || worker == null) {
@@ -39,7 +40,9 @@ object UpgradeExistingBuildings {
             }
             TouchActions.tap(1233, 37)// tap gold to close worker list
             // Check for the upgrade action (Hammer icon)
-            val hammer = findMultiColorsUntil(schemas = listOf(MyColors.UpgradeHammer), duration = 1000) ?: continue
+            val hammer =
+                findMultiColorsUntil(schemas = listOf(MyColors.UpgradeHammer), duration = 1000)
+                    ?: continue
 
             TouchActions.tap(hammer.x, hammer.y)
             delayWithMultiplier(500)
@@ -69,7 +72,7 @@ object UpgradeExistingBuildings {
         iterateNightBaseBuildingUpgradeList { result ->
             val building = result.buildings.find { it.name == buildingName }
             if (building != null) {
-                TouchActions.tap(building.x, building.y)
+                TouchActions.tap(building.x + 20, building.y + 20)
                 delayWithMultiplier(1500)
                 found = true
                 true
@@ -84,7 +87,8 @@ object UpgradeExistingBuildings {
     private fun getOrderedList(buildings: List<String>): List<String> {
         val priorityMap = NightBaseBuildingsPriority.all.associate { settingDef ->
             val priorityStr = getConfigRuntime(settingDef.key)
-            val priority = priorityStr.toIntOrNull() ?: logAndStop("Invalid priority configuration for ${settingDef.displayName}, value: $priorityStr")
+            val priority = priorityStr.toIntOrNull()
+                ?: logAndStop("Invalid priority configuration for ${settingDef.displayName}, value: $priorityStr")
             settingDef.displayName to priority
         }
 

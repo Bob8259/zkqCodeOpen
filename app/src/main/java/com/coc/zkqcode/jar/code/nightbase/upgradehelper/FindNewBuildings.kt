@@ -23,7 +23,7 @@ suspend fun nightBaseFindNewBuildings(): Boolean {
                 val newBuilding = buildings.find { it.name.startsWith("新") }
                 if (newBuilding != null) {
                     ShowMessage("检测到新建筑: ${newBuilding.name}")
-                    TouchActions.tap(newBuilding.x, newBuilding.y)
+                    TouchActions.tap(newBuilding.x + 20, newBuilding.y + 20)
                     found = true
                     delayWithMultiplier(1500)
                     return@iterateNightBaseBuildingUpgradeList true

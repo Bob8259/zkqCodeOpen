@@ -3,6 +3,7 @@
 package com.coc.zkqcode.jar.ui
 
 import android.content.Context
+import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -49,13 +50,15 @@ class EnterMainCode : MainCode {
 
         }
         if (!isConfigInitialized) {
-            Text("正在初始化配置文件...\n若长时间卡在此界面，请取消初始化后重启辅助。")
-            CustomButton(
-                text = "取消初始化",
-                onClick = {
-                    onClose()
-                }
-            )
+            Column {
+                Text("正在初始化配置文件...\n若长时间卡在此界面，请取消初始化后重启辅助。")
+                CustomButton(
+                    text = "取消初始化",
+                    onClick = {
+                        onClose()
+                    }
+                )
+            }
             return
         }
 

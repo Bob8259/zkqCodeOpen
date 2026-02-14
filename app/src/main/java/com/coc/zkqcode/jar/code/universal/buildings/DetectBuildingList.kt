@@ -81,7 +81,7 @@ suspend fun detectBuildingList(): BuildingDetectionResult {
 
     // Filter to get only the buildings marked as "New"
     val newBuildings = allBuildings.filter { it.second }.map { it.first }
-
+    ShowMessage("Building list $newBuildings")
     // If any "New" building is detected, return only those
     if (newBuildings.isNotEmpty()) {
         return BuildingDetectionResult(newBuildings, suggestUpgradeDetected)
