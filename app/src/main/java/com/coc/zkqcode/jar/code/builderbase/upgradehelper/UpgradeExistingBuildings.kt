@@ -1,12 +1,11 @@
 package com.coc.zkqcode.jar.code.builderbase.upgradehelper
 
 import com.coc.zkqcode.core.util.basic.ShowMessage
-import com.coc.zkqcode.jar.code.universal.buildings.BuildingDetectionResult
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndStop
 import com.coc.zkqcode.core.util.touchactions.TouchActions
-import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.builderbase.BuilderBaseUpgradeBuildings.checkContinueBuild
+import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.clickRightBottom
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
@@ -50,14 +49,15 @@ object UpgradeExistingBuildings {
 
             // Check for resource availability immediately after clicking upgrade
             if (findMultiColors(schema = MyColors.BuilderBaseInsufficientResources) != null) {
-                ShowMessage("资源不足，退出")
                 clickRightBottom()
-                return false // Stop processing if resources are depleted
+                continue // skip this building
             }
 
             // Successful upgrade flow
+
+            TouchActions.tap(633, 631) // normal upgrade or unlock new buildings
+            TouchActions.tap(982, 634)// machines
             ShowMessage("升级成功")
-            TouchActions.tap(633, 631) // Confirm upgrade/close dialog
             delayWithMultiplier(500)
 
         }

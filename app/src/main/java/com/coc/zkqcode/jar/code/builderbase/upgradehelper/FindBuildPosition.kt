@@ -29,16 +29,13 @@ object FindBuildPosition {
         lastY = y
     }
 
-    suspend fun tryToFindBuildPosition(crossX: Int, crossY: Int): Point? {
-        val centerX = crossX + 20
-        val centerY = crossY + 45
-        TouchActions.swipe(centerX, centerY, 620, 720, delayTime = 600)
-        delayWithMultiplier(50)
-        TouchActions.swipe(990, 700, 990, 380, delayTime = 600)
+    suspend fun tryToFindBuildPosition(): Point? {
         val redCross = builderBaseFindBuildButton(type = "Cross")
         if (redCross != null) {
-            val downX = (redCross.x + 20).toFloat()
-            val downY = (redCross.y + 45).toFloat()
+            val centerX = redCross.x + 20
+            val centerY = redCross.y + 45
+            val downX = centerX.toFloat()
+            val downY = centerY.toFloat()
             TouchActions.touchDown(downX, downY, 1)
             lastX = downX
             lastY = downY
@@ -111,7 +108,7 @@ object FindBuildPosition {
                 return result
             }
         }
-        
+
         TouchActions.touchUp(1)
         return null
     }
