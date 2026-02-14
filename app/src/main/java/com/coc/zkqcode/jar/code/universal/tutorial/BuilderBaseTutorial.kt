@@ -5,8 +5,8 @@ import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 
-object NightBaseTutorial {
-    suspend fun nightBaseTutorial(): Boolean {
+object BuilderBaseTutorial {
+    suspend fun builderBaseTutorial(): Boolean {
         // 1. Upgrade Night TH
         findMultiColors(schema = MyColors.UpgradeNightTH)?.let {
             TouchActions.tap(it.x, it.y)

@@ -2,7 +2,7 @@ package com.coc.zkqcode.jar.code.colorschema.colorpackage
 
 import com.coc.zkqcode.jar.code.colorschema.ColorSchema
 
-interface INightBaseTutorial {
+interface IBuilderBaseTutorial {
     val RebuildBoat: ColorSchema
     val UpgradeNightTH: ColorSchema
     val BuilderMaster: ColorSchema
@@ -11,7 +11,7 @@ interface INightBaseTutorial {
     val NightDeployBarbs: ColorSchema
 }
 
-object NightBaseTutorial : INightBaseTutorial {
+object BuilderBaseTutorial : IBuilderBaseTutorial {
     override val RebuildBoat: ColorSchema = ColorSchema.parse(
         580,
         501,

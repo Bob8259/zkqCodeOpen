@@ -21,7 +21,7 @@ import com.coc.zkqcode.interfaces.MainCode
 import com.coc.zkqcode.jar.code.MainScript
 import com.coc.zkqcode.jar.ui.components.CustomButton
 import com.coc.zkqcode.jar.ui.pages.mainbase.MainBaseUpgradePriority
-import com.coc.zkqcode.jar.ui.pages.nightbase.NightBaseUpgradePriority
+import com.coc.zkqcode.jar.ui.pages.builderbase.BuilderBaseUpgradePriority
 import com.coc.zkqcode.jar.ui.pages.single.HomeScreen
 import com.coc.zkqcode.jar.ui.pages.single.SwitchAccount
 import com.coc.zkqcode.jar.ui.schema.ConfigManager
@@ -97,7 +97,7 @@ class EnterMainCode : MainCode {
                 }
                 composable("night_priority/{index}") { backStackEntry ->
                     val index = backStackEntry.arguments?.getString("index")?.toIntOrNull() ?: 1
-                    NightBaseUpgradePriority(
+                    BuilderBaseUpgradePriority(
                         index = index,
                         onSaveSuccess = {
                             navController.popBackStack()

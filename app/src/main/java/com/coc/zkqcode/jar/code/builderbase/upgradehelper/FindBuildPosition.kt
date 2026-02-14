@@ -1,4 +1,4 @@
-package com.coc.zkqcode.jar.code.nightbase.upgradehelper
+package com.coc.zkqcode.jar.code.builderbase.upgradehelper
 
 import android.graphics.Point
 import com.coc.zkqcode.core.util.basic.ShowMessage
@@ -16,7 +16,7 @@ object FindBuildPosition {
         TouchActions.swipe(centerX, centerY, 620, 720, delayTime = 600)
         delayWithMultiplier(50)
         TouchActions.swipe(990, 700, 990, 380, delayTime = 600)
-        val redCross = nightBaseFindBuildButton(type = "Cross")
+        val redCross = builderBaseFindBuildButton(type = "Cross")
         if (redCross != null) {
             TouchActions.touchDown((redCross.x + 20).toFloat(), (redCross.y + 45).toFloat(), 1)
             delayWithMultiplier(100)
@@ -96,11 +96,11 @@ object FindBuildPosition {
     private suspend fun checkArea(startX: Int, endX: Int, y: Int, step: Int): Point? {
         for (x in startX..endX step step) {
             TouchActions.touchMove(x.toFloat(), y.toFloat(), id = 1, isJitter = false)
-            var greenTick = nightBaseFindBuildButton(type = "Tick", duration = 100)
+            var greenTick = builderBaseFindBuildButton(type = "Tick", duration = 100)
             if (greenTick != null) {
                 delayWithMultiplier(200)
                 TouchActions.touchUp(1)
-                greenTick = nightBaseFindBuildButton(type = "Tick", duration = 80)
+                greenTick = builderBaseFindBuildButton(type = "Tick", duration = 80)
                 if (greenTick != null) {
                     delayWithMultiplier(100)
                     TouchActions.tap(greenTick.x, greenTick.y)

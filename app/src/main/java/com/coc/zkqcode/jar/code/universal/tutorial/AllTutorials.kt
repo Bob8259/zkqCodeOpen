@@ -28,7 +28,7 @@ object AllTutorials {
             ShowMessage("账户${InGamesVars.currentAccountNumber}\n教程中，还剩${remainingSeconds}秒")
 
             if(MainBaseTutorial.mainBaseTutorial()) break
-            if(NightBaseTutorial.nightBaseTutorial()) break
+            if(BuilderBaseTutorial.builderBaseTutorial()) break
             // Maintenance checks
             checkReconnections()
             delayWithMultiplier(100)

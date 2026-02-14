@@ -6,7 +6,7 @@ interface IWorkerColors {
     val MainBaseWorker: ColorSchema
     val GoblinWorker: ColorSchema
     val GoblinWorker2: ColorSchema
-    val NightBaseWorker: ColorSchema
+    val BuilderBaseWorker: ColorSchema
 }
 
 object WorkerColors : IWorkerColors {
@@ -40,7 +40,7 @@ object WorkerColors : IWorkerColors {
         0,
         0.9,
     )
-    override val NightBaseWorker: ColorSchema = ColorSchema.parse(
+    override val BuilderBaseWorker: ColorSchema = ColorSchema.parse(
         518,
         5,
         1009,

@@ -24,18 +24,18 @@ object SchemaRegistry {
         ),
         ConfigModule("MAIN_BASE_BUILDINGS", Scope.PROFILE, Schema.MAIN_BASE_BUILDINGS.all),
         ConfigModule("MAIN_BASE_PETS", Scope.PROFILE, Schema.MAIN_BASE_PETS.all),
-        ConfigModule("NIGHT_BASE_SETTINGS", Scope.PROFILE, Schema.NIGHT_BASE_SETTINGS.all),
-        ConfigModule("NIGHT_BASE_TROOPS", Scope.PROFILE, Schema.NIGHT_BASE_TROOPS.all),
+        ConfigModule("BUILDER_BASE_SETTINGS", Scope.PROFILE, Schema.BUILDER_BASE_SETTINGS.all),
+        ConfigModule("BUILDER_BASE_TROOPS", Scope.PROFILE, Schema.BUILDER_BASE_TROOPS.all),
         ConfigModule(
             "MAIN_BASE_BUILDING_PRIORITIES",
             Scope.PROFILE,
             Schema.MAIN_BASE_BUILDING_PRIORITIES.all
         ),
-        ConfigModule("NIGHT_BASE_BUILDINGS", Scope.PROFILE, Schema.NIGHT_BASE_BUILDINGS.all),
+        ConfigModule("BUILDER_BASE_BUILDINGS", Scope.PROFILE, Schema.BUILDER_BASE_BUILDINGS.all),
         ConfigModule(
-            "NIGHT_BASE_BUILDINGS_PRIORITY",
+            "BUILDER_BASE_BUILDINGS_PRIORITY",
             Scope.PROFILE,
-            Schema.NIGHT_BASE_BUILDINGS_PRIORITY.all
+            Schema.BUILDER_BASE_BUILDINGS_PRIORITY.all
         ),
     )
 }

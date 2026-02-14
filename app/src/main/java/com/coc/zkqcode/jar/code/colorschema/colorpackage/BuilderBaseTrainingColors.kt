@@ -2,12 +2,12 @@ package com.coc.zkqcode.jar.code.colorschema.colorpackage
 
 import com.coc.zkqcode.jar.code.colorschema.ColorSchema
 
-interface INightBaseTrainingColors {
+interface IBuilderBaseTrainingColors {
     val RedCleanButton: ColorSchema
     val TrainNightWitch: ColorSchema
 }
 
-object NightBaseTrainingColors : INightBaseTrainingColors {
+object BuilderBaseTrainingColors : IBuilderBaseTrainingColors {
     override val RedCleanButton: ColorSchema = ColorSchema.parse(
         973,
         348,

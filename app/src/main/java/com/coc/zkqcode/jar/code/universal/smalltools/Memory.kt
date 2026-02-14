@@ -7,8 +7,8 @@ import com.google.gson.JsonObject
 //Memory list
 //
 //MainBaseTrainTroops${InGamesVars.currentAccountNumber}
-//NightBaseRemoveObstacles${InGamesVars.currentAccountNumber}
-//NightBaseTrainTroops${InGamesVars.currentAccountNumber}
+//BuilderBaseRemoveObstacles${InGamesVars.currentAccountNumber}
+//BuilderBaseTrainTroops${InGamesVars.currentAccountNumber}
 
 private val sdPath = Environment.getExternalStorageDirectory().path
 private val memoryPath = "$sdPath/zkqFiles/memory.json"

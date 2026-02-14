@@ -4,7 +4,7 @@ package com.coc.zkqcode.jar.ui.schema.details
 
 import com.coc.zkqcode.jar.ui.schema.SettingDef
 
-object NightBaseTroops {
+object BuilderBaseTroops {
     val RAGED_BARBARIAN = SettingDef("raged_barbarian", "狂暴野蛮人", 1, "MAIN_BASE_SETTINGS")
     val SNEAKY_ARCHER = SettingDef("sneaky_archer", "隐秘弓箭手", 1, "MAIN_BASE_SETTINGS")
     val BETA_MINION = SettingDef("beta_minion", "异变亡灵", 1, "MAIN_BASE_SETTINGS")

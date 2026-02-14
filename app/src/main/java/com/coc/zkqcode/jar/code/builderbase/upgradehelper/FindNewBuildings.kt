@@ -1,21 +1,21 @@
-package com.coc.zkqcode.jar.code.nightbase.upgradehelper
+package com.coc.zkqcode.jar.code.builderbase.upgradehelper
 
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.MyColors
-import com.coc.zkqcode.jar.code.nightbase.zoomSmallNightBase
+import com.coc.zkqcode.jar.code.builderbase.zoomSmallBuilderBase
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 
-suspend fun nightBaseFindNewBuildings(): Boolean {
+suspend fun builderBaseFindNewBuildings(): Boolean {
 
-    val worker = findMultiColorsUntil(schemas = listOf(MyColors.NightBaseWorker), duration = 1000)
+    val worker = findMultiColorsUntil(schemas = listOf(MyColors.BuilderBaseWorker), duration = 1000)
     if (worker != null) {
         TouchActions.tap(worker.x, worker.y)
         delayWithMultiplier(500)
         var found = false
-        iterateNightBaseBuildingUpgradeList { result ->
+        iterateBuilderBaseBuildingUpgradeList { result ->
             val buildings = result.buildings
             if (buildings.isEmpty()) {
                 ShowMessage("未检测到可升级建筑")
@@ -26,7 +26,7 @@ suspend fun nightBaseFindNewBuildings(): Boolean {
                     TouchActions.tap(newBuilding.x + 20, newBuilding.y + 20)
                     found = true
                     delayWithMultiplier(1500)
-                    return@iterateNightBaseBuildingUpgradeList true
+                    return@iterateBuilderBaseBuildingUpgradeList true
                 }
             }
             false

@@ -1,4 +1,4 @@
-package com.coc.zkqcode.jar.code.nightbase.upgradehelper
+package com.coc.zkqcode.jar.code.builderbase.upgradehelper
 
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.touchactions.TouchActions
@@ -6,11 +6,11 @@ import com.coc.zkqcode.jar.code.universal.buildings.BuildingDetectionResult
 import com.coc.zkqcode.jar.code.universal.buildings.detectBuildingList
 
 /**
- * Iterates through the building upgrade list in Night Base.
+ * Iterates through the building upgrade list in Builder Base.
  * Performs swipes and calls [onDetect] for each detection result.
  * If [onDetect] returns true, the iteration stops immediately.
  */
-suspend fun iterateNightBaseBuildingUpgradeList(onDetect: suspend (BuildingDetectionResult) -> Boolean) {
+suspend fun iterateBuilderBaseBuildingUpgradeList(onDetect: suspend (BuildingDetectionResult) -> Boolean) {
     var previousBuildingNames: List<String>? = null
     loop@ for (i in 1..12) {
         val result = detectBuildingList()

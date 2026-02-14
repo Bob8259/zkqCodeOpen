@@ -1,4 +1,4 @@
-package com.coc.zkqcode.jar.ui.pages.nightbase
+package com.coc.zkqcode.jar.ui.pages.builderbase
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -38,8 +38,8 @@ import com.coc.zkqcode.core.ui.reorderable.rememberReorderableLazyGridState
 import kotlinx.coroutines.launch
 
 @Composable
-fun NightBaseUpgradePriority(index: Int, onSaveSuccess: () -> Unit) {
-    val allPriorities = Schema.NIGHT_BASE_BUILDINGS_PRIORITY.all
+fun BuilderBaseUpgradePriority(index: Int, onSaveSuccess: () -> Unit) {
+    val allPriorities = Schema.BUILDER_BASE_BUILDINGS_PRIORITY.all
 
     // Sort items based on current value in GlobalVars.
     // If a value is missing or invalid, treat it as very low priority (high index).

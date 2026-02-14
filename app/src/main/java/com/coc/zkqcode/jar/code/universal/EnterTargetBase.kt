@@ -18,9 +18,9 @@ class EnterTargetBase {
     }
 
     /**
-     * Optimizes the transition to the Night Base with improved polling and logic flow.
+     * Optimizes the transition to the Builder Base with improved polling and logic flow.
      */
-    suspend fun enterNightBase(isCheck: Boolean): Boolean {
+    suspend fun enterBuilderBase(isCheck: Boolean): Boolean {
         ShowMessage("准备进入夜世界")
 
         // Ensure consistent view before attempting interaction
@@ -43,9 +43,9 @@ class EnterTargetBase {
                 // Polling loop for state transition (0.5s window)
                 while (System.currentTimeMillis() - loopStartTime < checkDuration) {
 
-                    // 1. Check for Night Base success indicator
+                    // 1. Check for Builder Base success indicator
                     // Checked early to ensure fast return on successful transition
-                    if (findMultiColors(schema = MyColors.NightBaseWorker) != null) {
+                    if (findMultiColors(schema = MyColors.BuilderBaseWorker) != null) {
                         return true
                     }
 
@@ -55,7 +55,7 @@ class EnterTargetBase {
                     }
 
                     // 3. Handle Tutorial / Rebuild state
-                    val rebuildPoint = findMultiColors(schema = MyColors.RebuildNightBase)
+                    val rebuildPoint = findMultiColors(schema = MyColors.RebuildBuilderBase)
                     if (rebuildPoint != null) {
                         TouchActions.tap(rebuildPoint.x, rebuildPoint.y)
                         delayWithMultiplier(300)

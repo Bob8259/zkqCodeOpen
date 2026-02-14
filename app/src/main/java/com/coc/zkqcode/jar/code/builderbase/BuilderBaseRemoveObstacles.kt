@@ -1,4 +1,4 @@
-package com.coc.zkqcode.jar.code.nightbase
+package com.coc.zkqcode.jar.code.builderbase
 
 import android.graphics.Bitmap
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
@@ -21,10 +21,10 @@ import kotlin.math.abs
 import kotlin.math.sqrt
 
 
-suspend fun nightBaseRemoveObstacles(): Boolean {
-    val worker = NightBaseWorkerAndResearch.detectWorkerNumber()
+suspend fun builderBaseRemoveObstacles(): Boolean {
+    val worker = BuilderBaseWorkerAndResearch.detectWorkerNumber()
     val resources = RecognizeResources.recognizeMyResources()
-    val storageKey = "NightBaseRemoveObstacles${InGamesVars.currentAccountNumber}"
+    val storageKey = "BuilderBaseRemoveObstacles${InGamesVars.currentAccountNumber}"
     val lastCleaningTime = readMemory(storageKey).toIntOrNull()
     val currentHour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
 
@@ -48,9 +48,9 @@ suspend fun nightBaseRemoveObstacles(): Boolean {
     }
 
     ShowMessage("第一区域准备移除障碍物")
-    zoomSmallNightBase()
+    zoomSmallBuilderBase()
     enterEditMode()
-    zoomSmallNightBase()
+    zoomSmallBuilderBase()
     // First Area Operations
     removeObstacles()
     swipe(1036, 78, 1100, 455, 700)
@@ -139,7 +139,7 @@ private suspend fun removeObstacles() {
 
 private suspend fun detectObstacles(): List<DetectionResult> {
     val screenBuffer = ScreenCaptureManager.capture(asBitmap = true) as? Bitmap
-        ?: logAndStop("in NightBaseRemoveObstacles, screen capture failed.")
+        ?: logAndStop("in BuilderBaseRemoveObstacles, screen capture failed.")
 
     if (screenBuffer.width != 1280 || screenBuffer.height != 720) {
         return emptyList()

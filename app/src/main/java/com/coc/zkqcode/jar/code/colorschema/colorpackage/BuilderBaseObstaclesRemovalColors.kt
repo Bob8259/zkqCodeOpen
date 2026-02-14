@@ -2,14 +2,14 @@ package com.coc.zkqcode.jar.code.colorschema.colorpackage
 
 import com.coc.zkqcode.jar.code.colorschema.ColorSchema
 
-interface INightBaseObstaclesRemovalColors {
+interface IBuilderBaseObstaclesRemovalColors {
     val CNEditBaseButton: ColorSchema
     val GlobalEditBaseButton: ColorSchema
     val GreenEditBaseButton: ColorSchema
     val EditModeRemoveAll: ColorSchema
 }
 
-object NightBaseObstaclesRemovalColors : INightBaseObstaclesRemovalColors {
+object BuilderBaseObstaclesRemovalColors : IBuilderBaseObstaclesRemovalColors {
     override val CNEditBaseButton: ColorSchema = ColorSchema.parse(
         1050,
         630,

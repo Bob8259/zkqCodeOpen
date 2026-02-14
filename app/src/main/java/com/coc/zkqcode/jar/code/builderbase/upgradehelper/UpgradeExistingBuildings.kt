@@ -1,4 +1,4 @@
-package com.coc.zkqcode.jar.code.nightbase.upgradehelper
+package com.coc.zkqcode.jar.code.builderbase.upgradehelper
 
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.jar.code.universal.buildings.BuildingDetectionResult
@@ -6,14 +6,14 @@ import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndStop
 import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.MyColors
-import com.coc.zkqcode.jar.code.nightbase.NightBaseUpgradeBuildings.checkContinueBuild
+import com.coc.zkqcode.jar.code.builderbase.BuilderBaseUpgradeBuildings.checkContinueBuild
 import com.coc.zkqcode.jar.code.universal.clickRightBottom
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.smalltools.getConfigRuntime
-import com.coc.zkqcode.jar.ui.schema.details.NightBaseBuildings
-import com.coc.zkqcode.jar.ui.schema.details.NightBaseBuildingsPriority
+import com.coc.zkqcode.jar.ui.schema.details.BuilderBaseBuildings
+import com.coc.zkqcode.jar.ui.schema.details.BuilderBaseBuildingsPriority
 
 object UpgradeExistingBuildings {
     suspend fun upgradeAllExistingBuildings(buildings: List<String>): Boolean {
@@ -25,7 +25,7 @@ object UpgradeExistingBuildings {
 
             // Locate the worker icon
             val worker =
-                findMultiColorsUntil(schemas = listOf(MyColors.NightBaseWorker), duration = 1000)
+                findMultiColorsUntil(schemas = listOf(MyColors.BuilderBaseWorker), duration = 1000)
 
             // Pre-condition check: If cannot continue building or worker not found, skip to next
             if (!checkContinueBuild() || worker == null) {
@@ -49,7 +49,7 @@ object UpgradeExistingBuildings {
             delayWithMultiplier(500)
 
             // Check for resource availability immediately after clicking upgrade
-            if (findMultiColors(schema = MyColors.NightBaseInsufficientResources) != null) {
+            if (findMultiColors(schema = MyColors.BuilderBaseInsufficientResources) != null) {
                 ShowMessage("资源不足，退出")
                 clickRightBottom()
                 return false // Stop processing if resources are depleted
@@ -70,7 +70,7 @@ object UpgradeExistingBuildings {
     private suspend fun findSpecificBuilding(buildingName: String): Boolean {
         var found = false
         ShowMessage("准备寻找$buildingName")
-        iterateNightBaseBuildingUpgradeList { result ->
+        iterateBuilderBaseBuildingUpgradeList { result ->
             val building = result.buildings.find { it.name == buildingName }
             if (building != null) {
                 TouchActions.tap(building.x + 20, building.y + 20)
@@ -87,11 +87,11 @@ object UpgradeExistingBuildings {
 
     private fun getOrderedList(buildings: List<String>): List<String> {
         // Filter buildings that are enabled in settings
-        val enabledBuildingNames = NightBaseBuildings.all.filter {
+        val enabledBuildingNames = BuilderBaseBuildings.all.filter {
             getConfigRuntime(it.key) == "1"
         }.map { it.displayName }.toSet()
 
-        val priorityMap = NightBaseBuildingsPriority.all.associate { settingDef ->
+        val priorityMap = BuilderBaseBuildingsPriority.all.associate { settingDef ->
             val priorityStr = getConfigRuntime(settingDef.key)
             val priority = priorityStr.toIntOrNull()
                 ?: logAndStop("Invalid priority configuration for ${settingDef.displayName}, value: $priorityStr")

@@ -1,4 +1,4 @@
-package com.coc.zkqcode.jar.ui.pages.nightbase
+package com.coc.zkqcode.jar.ui.pages.builderbase
 
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
@@ -17,8 +17,8 @@ import com.coc.zkqcode.jar.ui.schema.Schema
 import kotlin.collections.set
 
 @Composable
-fun NightBaseUpgradeConfigs(index: Int, onNavigatePriority: (Int) -> Unit = {}){
-    val items = Schema.NIGHT_BASE_BUILDINGS.all
+fun BuilderBaseUpgradeConfigs(index: Int, onNavigatePriority: (Int) -> Unit = {}){
+    val items = Schema.BUILDER_BASE_BUILDINGS.all
     val isExpanded = remember { mutableStateOf(true) }
 
     // 一键全选

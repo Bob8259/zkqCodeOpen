@@ -4,7 +4,7 @@ package com.coc.zkqcode.jar.ui.pages.single
 
 import androidx.compose.foundation.lazy.LazyListScope
 import com.coc.zkqcode.jar.ui.pages.mainbase.MainBaseConfig
-import com.coc.zkqcode.jar.ui.pages.nightbase.NightBaseConfig
+import com.coc.zkqcode.jar.ui.pages.builderbase.BuilderBaseConfig
 
 fun LazyListScope.GameConfig(
     index: Int,
@@ -21,7 +21,7 @@ fun LazyListScope.GameConfig(
         onToggleExpanded = onToggleMainExpanded,
         onNavigatePriority = onNavigatePriority
     )
-    NightBaseConfig(
+    BuilderBaseConfig(
         index = index,
         isExpanded = isNightExpanded,
         onToggleExpanded = onToggleNightExpanded,
