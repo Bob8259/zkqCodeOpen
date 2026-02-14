@@ -114,13 +114,26 @@ object NightBaseUpgradeBuildings {
                 // Locate the confirmation button (Green Tick)
                 val greenTick = nightBaseFindBuildButton(type = "Tick")
                 if (greenTick != null) {
-                    delayWithMultiplier(100)
-                    ShowMessage("点击绿色按钮：${greenTick.x}, ${greenTick.y}")
-                    TouchActions.tap(greenTick.x, greenTick.y, isJitter = false)
-
-                    // If the building was identified as a wall, trigger the batch building logic
                     if (isWall) {
+                        delayWithMultiplier(100)
+                        ShowMessage("点击绿色按钮：${greenTick.x}, ${greenTick.y}")
+                        TouchActions.tap(greenTick.x, greenTick.y, isJitter = false)
+                        // If the building was identified as a wall, trigger the batch building logic
                         tryToBatchBuildWalls(greenTick.x, greenTick.y)
+                    } else {
+                        // For non-wall buildings, try to click the green tick multiple times if it's still there
+                        for (i in 1..5) {
+                            val currentTick =
+                                nightBaseFindBuildButton(duration = 1000, type = "Tick")
+                            if (currentTick != null) {
+                                delayWithMultiplier(100)
+                                ShowMessage("点击第 $i 次绿色按钮：${currentTick.x}, ${currentTick.y}")
+                                TouchActions.tap(currentTick.x, currentTick.y, isJitter = false)
+                                delayWithMultiplier(200)
+                            } else {
+                                break
+                            }
+                        }
                     }
                     clickRightBottom()
                     return true
