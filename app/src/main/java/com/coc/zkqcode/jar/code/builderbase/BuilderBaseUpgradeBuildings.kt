@@ -1,28 +1,26 @@
 package com.coc.zkqcode.jar.code.builderbase
 
 import android.graphics.Bitmap
-import kotlin.math.sqrt
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
-import com.coc.zkqcode.core.util.bugreporter.BugReporter
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndStop
 import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.core.yolo.YoloDetector
-import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.builderbase.upgradehelper.FindBuildPosition
 import com.coc.zkqcode.jar.code.builderbase.upgradehelper.UpgradeExistingBuildings
-import com.coc.zkqcode.jar.code.builderbase.upgradehelper.iterateBuilderBaseBuildingUpgradeList
 import com.coc.zkqcode.jar.code.builderbase.upgradehelper.builderBaseFindBuildButton
 import com.coc.zkqcode.jar.code.builderbase.upgradehelper.builderBaseFindNewBuildings
+import com.coc.zkqcode.jar.code.builderbase.upgradehelper.iterateBuilderBaseBuildingUpgradeList
+import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.buildings.ALL_BUILDINGS
 import com.coc.zkqcode.jar.code.universal.clickRightBottom
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.smalltools.getConfigRuntime
-import com.coc.zkqcode.jar.code.universal.smalltools.killGame
 import com.coc.zkqcode.jar.ui.schema.Schema
+import kotlin.math.sqrt
 
 object BuilderBaseUpgradeBuildings {
     private val upgradableBuildingsMap = ALL_BUILDINGS.associateWith { false }.toMutableMap()
@@ -30,7 +28,6 @@ object BuilderBaseUpgradeBuildings {
     suspend fun upgradeBuildings(): Boolean {
         upgradableBuildingsMap.keys.forEach { upgradableBuildingsMap[it] = false }
         var isNewBuildingDetected = false
-        zoomSmallBuilderBase(true)
         clickRightBottom()
         if (checkContinueBuild()) {
             val worker =
@@ -83,7 +80,6 @@ object BuilderBaseUpgradeBuildings {
                 break
             }
             ShowMessage("建造中，剩余${"%.2f".format(remainingMinutes)}分钟后强制退出")
-            zoomSmallBuilderBase(isForBuild = true)
             if (!checkContinueBuild()) {
                 break
             }
@@ -124,17 +120,8 @@ object BuilderBaseUpgradeBuildings {
 
         // 5. If initial tick is missing, attempt to find a new position via the Red Cross
         if (targetTick == null) {
-            val redCross = builderBaseFindBuildButton(type = "Cross")
-            if (redCross == null) {
-                ShowMessage("未找到红色叉，错误截图已保存到/sdcard/zkqFiles/bugReporter\n请将截图反馈给作者")
-                BugReporter.takeScreenshot("Red_Cross_Not_Found")
-                killGame()
-                clickRightBottom()
-                return false
-            }
-
             ShowMessage("建造失败，尝试寻找空位")
-            targetTick = FindBuildPosition.tryToFindBuildPosition(redCross.x, redCross.y)
+            targetTick = FindBuildPosition.tryToFindBuildPosition()
         }
 
         // 6. Execute the building logic if a valid tick position is identified
@@ -148,7 +135,7 @@ object BuilderBaseUpgradeBuildings {
             } else {
                 // Handle standard building with retry logic
                 for (i in 1..5) {
-                    val currentTick = builderBaseFindBuildButton(duration = 1000, type = "Tick")
+                    val currentTick = builderBaseFindBuildButton(duration = 500, type = "Tick")
                     if (currentTick != null) {
                         ShowMessage("点击第 $i 次绿色按钮：${currentTick.x}, ${currentTick.y}")
                         TouchActions.tap(currentTick.x, currentTick.y)

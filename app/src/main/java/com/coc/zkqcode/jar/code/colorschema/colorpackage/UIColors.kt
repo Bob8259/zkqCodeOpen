@@ -18,6 +18,7 @@ interface IUIColors {
     val CollectChest: ColorSchema
     val EditModeWrench: ColorSchema
     val CancelEditMode: ColorSchema
+    val GoldenPass: ColorSchema
 }
 
 object UIColors : IUIColors {
@@ -188,5 +189,15 @@ object UIColors : IUIColors {
         0,
         0.9,
         "取消编辑模式"
+    )
+    override val GoldenPass: ColorSchema = ColorSchema.parse(
+        1118,
+        84,
+        1157,
+        124,
+        "8381FF",
+        "8|0|FFFFFF,16|0|111115,23|0|FFFFFF,31|0|8381FF,0|20|221EF7,8|20|FBFBFB,16|20|181715,23|20|FBFBFB,31|20|221EF7",
+        0,
+        0.9, "黄金令牌"
     )
 }
