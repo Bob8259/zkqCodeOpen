@@ -34,38 +34,61 @@ object FindBuildPosition {
         val stepX = 3
         val stepY = 20
 
-        // 1. Trapezoid area (y: 130 to 300)
-        for (y in 130..300 step stepY) {
-            val ratio = (y - 130).toFloat() / (300 - 130)
-            val startX = (440 + (170 - 440) * ratio).toInt()
-            val endX = (790 + (1080 - 790) * ratio).toInt()
-            val result = checkArea(startX, endX, y, stepX)
-            if (result != null) {
-                TouchActions.touchUp(1)
-                return result
-            }
-        }
+        val areaIndices = listOf(1, 2, 3).shuffled()
 
-        // 2. Rectangle area (y: 301 to 380)
-        for (y in 301..380 step stepY) {
-            val result = checkArea(170, 1080, y, stepX)
-            if (result != null) {
-                TouchActions.touchUp(1)
-                return result
+        for (index in areaIndices) {
+            val result = when (index) {
+                1 -> {
+                    // 1. Trapezoid area (y: 130 to 300)
+                    var found: Point? = null
+                    for (y in 130..300 step stepY) {
+                        val ratio = (y - 130).toFloat() / (300 - 130)
+                        val startX = (440 + (170 - 440) * ratio).toInt()
+                        val endX = (790 + (1080 - 790) * ratio).toInt()
+                        val checkResult = checkArea(startX, endX, y, stepX)
+                        if (checkResult != null) {
+                            found = checkResult
+                            break
+                        }
+                    }
+                    found
+                }
+                2 -> {
+                    // 2. Rectangle area (y: 301 to 380)
+                    var found: Point? = null
+                    for (y in 301..380 step stepY) {
+                        val checkResult = checkArea(170, 1080, y, stepX)
+                        if (checkResult != null) {
+                            found = checkResult
+                            break
+                        }
+                    }
+                    found
+                }
+                3 -> {
+                    // 3. Triangle area (y: 381 to 690)
+                    var found: Point? = null
+                    for (y in 381..690 step stepY) {
+                        val ratio = (y - 381).toFloat() / (690 - 381)
+                        val startX = (170 + (625 - 170) * ratio).toInt()
+                        val endX = (1080 + (625 - 1080) * ratio).toInt()
+                        val checkResult = checkArea(startX, endX, y, stepX)
+                        if (checkResult != null) {
+                            found = checkResult
+                            break
+                        }
+                    }
+                    found
+                }
+                else -> null
             }
-        }
 
-        // 3. Triangle area (y: 381 to 690)
-        for (y in 381..690 step stepY) {
-            val ratio = (y - 381).toFloat() / (690 - 381)
-            val startX = (170 + (625 - 170) * ratio).toInt()
-            val endX = (1080 + (625 - 1080) * ratio).toInt()
-            val result = checkArea(startX, endX, y, stepX)
             if (result != null) {
                 TouchActions.touchUp(1)
                 return result
             }
         }
+        
         TouchActions.touchUp(1)
         return null
     }
