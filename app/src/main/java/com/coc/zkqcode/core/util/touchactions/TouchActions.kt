@@ -55,6 +55,22 @@ object TouchActions {
         )
     }
 
+    suspend fun moveSmoothly(
+        fromX: Float,
+        fromY: Float,
+        toX: Float,
+        toY: Float,
+        duration: Long,
+        id: Int = 1,
+        isJitter: Boolean = false
+    ) {
+        performMove(
+            duration = duration,
+            isJitter = isJitter,
+            PointerMove(id, fromX, fromY, toX, toY)
+        )
+    }
+
     private suspend fun waitForPlay() {
         while (!GlobalVars.isPlaying.value) {
             delay(1000)
