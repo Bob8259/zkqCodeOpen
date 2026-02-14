@@ -100,63 +100,67 @@ object NightBaseUpgradeBuildings {
     private suspend fun buildOneNewBuildings(): Boolean {
         ShowMessage("准备建造新建筑")
 
-        // Find out the position of new buildings
-        if (nightBaseFindNewBuildings()) {
-            // Search for the shop arrow indicator
-            val shopArrow =
-                findMultiColorsUntil(schemas = listOf(MyColors.InnerShopArrow), duration = 5000)
+        // 1. Identify the position of new buildings; return early if not found
+        if (!nightBaseFindNewBuildings()) return false
 
-            if (shopArrow != null) {
-                // Determine building type before interacting with the UI to ensure state accuracy
-                val isWall = findMultiColors(schema = MyColors.WallInShop) != null
-                TouchActions.tap(shopArrow.x - 50, shopArrow.y + 50)
-                delayWithMultiplier(500)
-                // Locate the confirmation button (Green Tick)
-                val greenTick = nightBaseFindBuildButton(type = "Tick")
-                if (greenTick != null) {
-                    if (isWall) {
+        // 2. Locate the shop arrow indicator
+        val shopArrow = findMultiColorsUntil(schemas = listOf(MyColors.InnerShopArrow), duration = 5000)
+            ?: return false
+
+        // 3. Determine building type (Wall vs. Others) before UI state changes
+        val isWall = findMultiColors(schema = MyColors.WallInShop) != null
+        TouchActions.tap(shopArrow.x - 50, shopArrow.y + 50)
+        delayWithMultiplier(500)
+
+        // 4. Locate the confirmation button (Green Tick)
+        var targetTick = nightBaseFindBuildButton(type = "Tick")
+
+        // 5. If initial tick is missing, attempt to find a new position via the Red Cross
+        if (targetTick == null) {
+            val redCross = nightBaseFindBuildButton(type = "Cross")
+            if (redCross == null) {
+                ShowMessage("未找到红色叉，错误截图已保存到/sdcard/zkqFiles/bugReporter\n请将截图反馈给作者")
+                BugReporter.takeScreenshot("Red_Cross_Not_Found")
+                killGame()
+                clickRightBottom()
+                return false
+            }
+
+            ShowMessage("建造失败，尝试寻找空位")
+            targetTick = FindBuildPosition.tryToFindBuildPosition(redCross.x, redCross.y)
+        }
+
+        // 6. Execute the building logic if a valid tick position is identified
+        if (targetTick != null) {
+            if (isWall) {
+                // Handle wall batch building
+                delayWithMultiplier(100)
+                ShowMessage("点击绿色按钮：${targetTick.x}, ${targetTick.y}")
+                TouchActions.tap(targetTick.x, targetTick.y)
+                tryToBatchBuildWalls(targetTick.x, targetTick.y)
+            } else {
+                // Handle standard building with retry logic
+                for (i in 1..5) {
+                    val currentTick = nightBaseFindBuildButton(duration = 1000, type = "Tick")
+                    if (currentTick != null) {
                         delayWithMultiplier(100)
-                        ShowMessage("点击绿色按钮：${greenTick.x}, ${greenTick.y}")
-                        TouchActions.tap(greenTick.x, greenTick.y, isJitter = false)
-                        // If the building was identified as a wall, trigger the batch building logic
-                        tryToBatchBuildWalls(greenTick.x, greenTick.y)
+                        ShowMessage("点击第 $i 次绿色按钮：${currentTick.x}, ${currentTick.y}")
+                        TouchActions.tap(currentTick.x, currentTick.y)
+                        delayWithMultiplier(200)
                     } else {
-                        // For non-wall buildings, try to click the green tick multiple times if it's still there
-                        for (i in 1..5) {
-                            val currentTick =
-                                nightBaseFindBuildButton(duration = 1000, type = "Tick")
-                            if (currentTick != null) {
-                                delayWithMultiplier(100)
-                                ShowMessage("点击第 $i 次绿色按钮：${currentTick.x}, ${currentTick.y}")
-                                TouchActions.tap(currentTick.x, currentTick.y, isJitter = false)
-                                delayWithMultiplier(200)
-                            } else {
-                                break
-                            }
+                        // Cleanup if tick disappears
+                        nightBaseFindBuildButton(type = "Cross")?.let { cross ->
+                            TouchActions.tap(cross.x, cross.y)
                         }
-                    }
-                    clickRightBottom()
-                    return true
-                } else {
-                    ShowMessage("未找到绿色按钮，错误截图已保存到/sdcard/zkqFiles/bugReporter\n请将截图反馈给作者")
-                    BugReporter.takeScreenshot("Green_Tick_Not_Found")
-                    val redCross = nightBaseFindBuildButton(type = "Cross")
-                    if (redCross != null) {
-                        ShowMessage("建造失败，尝试寻找空位")
-                        FindBuildPosition.tryToFindBuildPosition(redCross.x, redCross.y)
-                    } else {
-                        ShowMessage("未找到红色叉，错误截图已保存到/sdcard/zkqFiles/bugReporter\n请将截图反馈给作者")
-                        BugReporter.takeScreenshot("Red_Cross_Not_Found")
-                        killGame()
-                        clickRightBottom()
-                        return false
+                        break // Exit loop if button is no longer found
                     }
                 }
             }
-            return false
-        } else {
-            return false
+            clickRightBottom()
+            return true
         }
+
+        return false
     }
 
     private suspend fun tryToBatchBuildWalls(x: Int, y: Int) {
