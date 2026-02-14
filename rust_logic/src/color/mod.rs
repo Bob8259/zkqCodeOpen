@@ -1,11 +1,5 @@
 use crate::security::anti_debug::G_SECURITY_POISON_FLAG;
-use rand::Rng;
-use std::sync::atomic::{AtomicBool, AtomicU64, AtomicUsize, Ordering};
-use std::time::{SystemTime, UNIX_EPOCH};
-
-static G_CALL_COUNTER: AtomicUsize = AtomicUsize::new(0);
-static G_LAST_CHECK_TIME: AtomicU64 = AtomicU64::new(0);
-static G_TIME_MANIPULATED: AtomicBool = AtomicBool::new(false);
+use std::sync::atomic::{Ordering};
 
 pub mod multi_colors;
 pub mod multi_colors_raw;
@@ -27,10 +21,7 @@ pub fn is_color_match(pixel: u32, target_color: u32, threshold: i32) -> bool {
     let poison_val = G_SECURITY_POISON_FLAG.load(Ordering::SeqCst);
     let mut effective_threshold = threshold;
     if poison_val != 0 {
-        effective_threshold = threshold - (poison_val % 5);
-        if effective_threshold < 0 {
-            effective_threshold = 0;
-        }
+        effective_threshold = 20;
     }
 
     (pr - tr).abs() <= effective_threshold
@@ -59,33 +50,6 @@ where
     y1 = y1.max(0);
     x2 = x2.min(width - 1);
     y2 = y2.min(height - 1);
-
-    // Increment call counter
-    let count = G_CALL_COUNTER.fetch_add(1, Ordering::SeqCst) + 1;
-
-    if count % 50 == 0 {
-        let current_time = SystemTime::now()
-            .duration_since(UNIX_EPOCH)
-            .unwrap_or_default()
-            .as_secs();
-        let last_time = G_LAST_CHECK_TIME.load(Ordering::SeqCst);
-
-        if last_time != 0 && current_time < last_time + 1 {
-            // Time manipulation detected: less than 1 second passed for 10 calls
-            G_TIME_MANIPULATED.store(true, Ordering::SeqCst);
-        } else {
-            // Reset for the next batch
-            G_LAST_CHECK_TIME.store(current_time, Ordering::SeqCst);
-        }
-    }
-
-    // If manipulation detected, return a random position
-    if G_TIME_MANIPULATED.load(Ordering::SeqCst) {
-        let mut rng = rand::thread_rng();
-        let rx = rng.gen_range(x1..=x2);
-        let ry = rng.gen_range(y1..=y2);
-        return Some((rx, ry));
-    }
 
     if direction == 1 {
         // From bottom-right to top-left
