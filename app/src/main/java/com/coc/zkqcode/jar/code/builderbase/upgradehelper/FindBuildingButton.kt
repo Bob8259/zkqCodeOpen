@@ -1,4 +1,4 @@
-package com.coc.zkqcode.jar.code.nightbase.upgradehelper
+package com.coc.zkqcode.jar.code.builderbase.upgradehelper
 
 import android.graphics.Point
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
@@ -7,7 +7,7 @@ import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndStop
 import com.coc.zkqcode.jar.code.colorschema.ColorSchema
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 
-private val nightBaseBuildTickSchemas = listOf(
+private val builderBaseBuildTickSchemas = listOf(
     ColorSchema.parse(
         105,
         70,
@@ -120,7 +120,7 @@ private val nightBaseBuildTickSchemas = listOf(
     ),
 )
 
-private val nightBaseBuildCrossSchemas = listOf(
+private val builderBaseBuildCrossSchemas = listOf(
     ColorSchema.parse(
         105,
         70,
@@ -233,11 +233,11 @@ private val nightBaseBuildCrossSchemas = listOf(
     ),
 )
 
-suspend fun nightBaseFindBuildButton(duration: Int = 2000, type: String): Point? {
+suspend fun builderBaseFindBuildButton(duration: Int = 2000, type: String): Point? {
     val startTime = System.currentTimeMillis()
     val targetSchemas = when (type) {
-        "Tick" -> nightBaseBuildTickSchemas
-        "Cross" -> nightBaseBuildCrossSchemas
+        "Tick" -> builderBaseBuildTickSchemas
+        "Cross" -> builderBaseBuildCrossSchemas
         else -> return null
     }
 

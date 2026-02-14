@@ -6,13 +6,13 @@ import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndStop
 import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.core.util.touchactions.TouchActions.pinchOut
-import com.coc.zkqcode.jar.code.nightbase.NightBaseTrainTroops
-import com.coc.zkqcode.jar.code.nightbase.NightBaseUpgradeBuildings
-import com.coc.zkqcode.jar.code.nightbase.NightBaseWorkerAndResearch
-import com.coc.zkqcode.jar.code.nightbase.nightBaseRemoveObstacles
-import com.coc.zkqcode.jar.code.nightbase.playNightBase
-import com.coc.zkqcode.jar.code.nightbase.upgradehelper.FindBuildPosition
-import com.coc.zkqcode.jar.code.nightbase.upgradehelper.nightBaseFindBuildButton
+import com.coc.zkqcode.jar.code.builderbase.BuilderBaseTrainTroops
+import com.coc.zkqcode.jar.code.builderbase.BuilderBaseUpgradeBuildings
+import com.coc.zkqcode.jar.code.builderbase.BuilderBaseWorkerAndResearch
+import com.coc.zkqcode.jar.code.builderbase.builderBaseRemoveObstacles
+import com.coc.zkqcode.jar.code.builderbase.playBuilderBase
+import com.coc.zkqcode.jar.code.builderbase.upgradehelper.FindBuildPosition
+import com.coc.zkqcode.jar.code.builderbase.upgradehelper.builderBaseFindBuildButton
 import com.coc.zkqcode.jar.code.universal.InGamesVars
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.smalltools.readMemory
@@ -62,7 +62,7 @@ object MainScript {
                     delay(500)
                     break // 跳出内层循环，重新检查账号状态
                 }
-                if (!playNightBase()) {
+                if (!playBuilderBase()) {
                     ShowMessage("夜世界操作失败")
                     delay(500)
                     break // 跳出内层循环，重新检查账号状态
@@ -83,8 +83,8 @@ object MainScript {
             runApp("com.supercell.clashofclans2")
             enterMainScreen()
             delayWithMultiplier(1000)
-            NightBaseUpgradeBuildings.upgradeBuildings()
-//            val redCross = nightBaseFindBuildButton(type = "Cross")
+            BuilderBaseUpgradeBuildings.upgradeBuildings()
+//            val redCross = builderBaseFindBuildButton(type = "Cross")
 //            if (redCross != null)
 //                FindBuildPosition.tryToFindBuildPosition(redCross.x, redCross.y)
             delayWithMultiplier(1000)

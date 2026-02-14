@@ -1,4 +1,4 @@
-package com.coc.zkqcode.jar.ui.pages.nightbase
+package com.coc.zkqcode.jar.ui.pages.builderbase
 
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
@@ -13,12 +13,12 @@ import androidx.compose.ui.unit.dp
 import com.coc.zkqcode.jar.ui.components.CustomButton
 import com.coc.zkqcode.jar.ui.components.SettingCheckBox
 import com.coc.zkqcode.core.data.database.GlobalVars
-import com.coc.zkqcode.jar.ui.schema.Schema.NIGHT_BASE_TROOPS
+import com.coc.zkqcode.jar.ui.schema.Schema.BUILDER_BASE_TROOPS
 import kotlin.collections.set
 
 @Composable
-fun NightBaseResearchConfigs(index: Int) {
-    val items = NIGHT_BASE_TROOPS.all
+fun BuilderBaseResearchConfigs(index: Int) {
+    val items = BUILDER_BASE_TROOPS.all
     val isExpanded = remember { mutableStateOf(true) }
 
     // 一键全选

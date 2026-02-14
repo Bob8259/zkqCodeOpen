@@ -1,4 +1,4 @@
-package com.coc.zkqcode.jar.code.nightbase
+package com.coc.zkqcode.jar.code.builderbase
 
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
@@ -12,10 +12,10 @@ import com.coc.zkqcode.jar.code.universal.smalltools.writeMemory
 import java.util.Calendar
 import kotlin.math.abs
 
-object NightBaseTrainTroops {
+object BuilderBaseTrainTroops {
 
     suspend fun trainWithConditions() {
-        val storageKey = "NightBaseTrainTroops${InGamesVars.currentAccountNumber}"
+        val storageKey = "BuilderBaseTrainTroops${InGamesVars.currentAccountNumber}"
         val lastTrainingTime = readMemory(storageKey).toIntOrNull()
         val calendar = Calendar.getInstance()
         val dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH)

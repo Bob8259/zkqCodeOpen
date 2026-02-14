@@ -1,4 +1,4 @@
-package com.coc.zkqcode.jar.code.nightbase
+package com.coc.zkqcode.jar.code.builderbase
 
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
@@ -12,14 +12,14 @@ import com.coc.zkqcode.jar.code.universal.recognizer.TextRecognizer
  */
 data class WorkerInfo(val available: Int, val total: Int)
 
-object NightBaseWorkerAndResearch {
+object BuilderBaseWorkerAndResearch {
 
     /**
-     * Detects the number of workers in the Night Base.
+     * Detects the number of workers in the Builder Base.
      * @return A [WorkerInfo] object. If detection fails, returns (0, 0).
      */
     suspend fun detectWorkerNumber(): WorkerInfo {
-        val worker = findMultiColors(schema = MyColors.NightBaseWorker)
+        val worker = findMultiColors(schema = MyColors.BuilderBaseWorker)
         if (worker != null) {
             // Define the crop region for the worker number text
             val startX = worker.x - 50
@@ -32,7 +32,7 @@ object NightBaseWorkerAndResearch {
             return parseWorkerInfo(combinedText)
         }
         ShowMessage("未检测到夜世界工人，已将错误截图保存到/sdcard/zkqFiles/bugReporter\n请反馈给作者")
-        BugReporter.takeScreenshot("Night_Base_Worker_Not_Detected")
+        BugReporter.takeScreenshot("Builder_Base_Worker_Not_Detected")
         return WorkerInfo(0, 0)
     }
 

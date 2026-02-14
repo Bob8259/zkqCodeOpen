@@ -37,8 +37,8 @@ object Schema {
     val MAIN_BASE_BUILDINGS = MainBaseBuildings
     val MAIN_BASE_BUILDING_PRIORITIES = MainBaseBuildingPriorities
 
-    val NIGHT_BASE_SETTINGS = NightBaseSettings
-    val NIGHT_BASE_TROOPS = NightBaseTroops
-    val NIGHT_BASE_BUILDINGS = NightBaseBuildings
-    val NIGHT_BASE_BUILDINGS_PRIORITY = NightBaseBuildingsPriority
+    val BUILDER_BASE_SETTINGS = BuilderBaseSettings
+    val BUILDER_BASE_TROOPS = BuilderBaseTroops
+    val BUILDER_BASE_BUILDINGS = BuilderBaseBuildings
+    val BUILDER_BASE_BUILDINGS_PRIORITY = BuilderBaseBuildingsPriority
 }

@@ -1,4 +1,4 @@
-package com.coc.zkqcode.jar.code.nightbase
+package com.coc.zkqcode.jar.code.builderbase
 
 import android.graphics.Bitmap
 import kotlin.math.sqrt
@@ -10,11 +10,11 @@ import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndStop
 import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.core.yolo.YoloDetector
 import com.coc.zkqcode.jar.code.colorschema.MyColors
-import com.coc.zkqcode.jar.code.nightbase.upgradehelper.FindBuildPosition
-import com.coc.zkqcode.jar.code.nightbase.upgradehelper.UpgradeExistingBuildings
-import com.coc.zkqcode.jar.code.nightbase.upgradehelper.iterateNightBaseBuildingUpgradeList
-import com.coc.zkqcode.jar.code.nightbase.upgradehelper.nightBaseFindBuildButton
-import com.coc.zkqcode.jar.code.nightbase.upgradehelper.nightBaseFindNewBuildings
+import com.coc.zkqcode.jar.code.builderbase.upgradehelper.FindBuildPosition
+import com.coc.zkqcode.jar.code.builderbase.upgradehelper.UpgradeExistingBuildings
+import com.coc.zkqcode.jar.code.builderbase.upgradehelper.iterateBuilderBaseBuildingUpgradeList
+import com.coc.zkqcode.jar.code.builderbase.upgradehelper.builderBaseFindBuildButton
+import com.coc.zkqcode.jar.code.builderbase.upgradehelper.builderBaseFindNewBuildings
 import com.coc.zkqcode.jar.code.universal.buildings.ALL_BUILDINGS
 import com.coc.zkqcode.jar.code.universal.clickRightBottom
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
@@ -24,21 +24,21 @@ import com.coc.zkqcode.jar.code.universal.smalltools.getConfigRuntime
 import com.coc.zkqcode.jar.code.universal.smalltools.killGame
 import com.coc.zkqcode.jar.ui.schema.Schema
 
-object NightBaseUpgradeBuildings {
+object BuilderBaseUpgradeBuildings {
     private val upgradableBuildingsMap = ALL_BUILDINGS.associateWith { false }.toMutableMap()
 
     suspend fun upgradeBuildings(): Boolean {
         upgradableBuildingsMap.keys.forEach { upgradableBuildingsMap[it] = false }
         var isNewBuildingDetected = false
-        zoomSmallNightBase(true)
+        zoomSmallBuilderBase(true)
         clickRightBottom()
         if (checkContinueBuild()) {
             val worker =
-                findMultiColorsUntil(schemas = listOf(MyColors.NightBaseWorker), duration = 1000)
+                findMultiColorsUntil(schemas = listOf(MyColors.BuilderBaseWorker), duration = 1000)
             if (worker != null) {
                 TouchActions.tap(worker.x, worker.y)
                 delayWithMultiplier(500)
-                iterateNightBaseBuildingUpgradeList { result ->
+                iterateBuilderBaseBuildingUpgradeList { result ->
                     val buildings = result.buildings
                     if (buildings.isEmpty()) {
                         ShowMessage("未检测到可升级建筑")
@@ -83,7 +83,7 @@ object NightBaseUpgradeBuildings {
                 break
             }
             ShowMessage("建造中，剩余${"%.2f".format(remainingMinutes)}分钟后强制退出")
-            zoomSmallNightBase(isForBuild = true)
+            zoomSmallBuilderBase(isForBuild = true)
             if (!checkContinueBuild()) {
                 break
             }
@@ -94,10 +94,10 @@ object NightBaseUpgradeBuildings {
     }
 
     suspend fun checkContinueBuild(): Boolean {
-        val workerNumber = NightBaseWorkerAndResearch.detectWorkerNumber()
+        val workerNumber = BuilderBaseWorkerAndResearch.detectWorkerNumber()
         ShowMessage("夜世界工人数量：${workerNumber.available}/${workerNumber.total}")
         return !(workerNumber.available == 0 || (workerNumber.available == 1 && getConfigRuntime(
-            Schema.NIGHT_BASE_SETTINGS.NIGHT_SAVE_WORKER.key
+            Schema.BUILDER_BASE_SETTINGS.NIGHT_SAVE_WORKER.key
         ) == "1"))
     }
 
@@ -107,7 +107,7 @@ object NightBaseUpgradeBuildings {
         ShowMessage("准备建造新建筑")
 
         // 1. Identify the position of new buildings; return early if not found
-        if (!nightBaseFindNewBuildings()) return false
+        if (!builderBaseFindNewBuildings()) return false
 
         // 2. Locate the shop arrow indicator
         val shopArrow =
@@ -120,11 +120,11 @@ object NightBaseUpgradeBuildings {
         delayWithMultiplier(500)
 
         // 4. Locate the confirmation button (Green Tick)
-        var targetTick = nightBaseFindBuildButton(type = "Tick")
+        var targetTick = builderBaseFindBuildButton(type = "Tick")
 
         // 5. If initial tick is missing, attempt to find a new position via the Red Cross
         if (targetTick == null) {
-            val redCross = nightBaseFindBuildButton(type = "Cross")
+            val redCross = builderBaseFindBuildButton(type = "Cross")
             if (redCross == null) {
                 ShowMessage("未找到红色叉，错误截图已保存到/sdcard/zkqFiles/bugReporter\n请将截图反馈给作者")
                 BugReporter.takeScreenshot("Red_Cross_Not_Found")
@@ -148,13 +148,13 @@ object NightBaseUpgradeBuildings {
             } else {
                 // Handle standard building with retry logic
                 for (i in 1..5) {
-                    val currentTick = nightBaseFindBuildButton(duration = 1000, type = "Tick")
+                    val currentTick = builderBaseFindBuildButton(duration = 1000, type = "Tick")
                     if (currentTick != null) {
                         ShowMessage("点击第 $i 次绿色按钮：${currentTick.x}, ${currentTick.y}")
                         TouchActions.tap(currentTick.x, currentTick.y)
                     } else {
                         // Cleanup if tick disappears
-                        nightBaseFindBuildButton(type = "Cross")?.let { cross ->
+                        builderBaseFindBuildButton(type = "Cross")?.let { cross ->
                             TouchActions.tap(cross.x, cross.y)
                         }
                         break // Exit loop if button is no longer found
@@ -184,7 +184,7 @@ object NightBaseUpgradeBuildings {
         TouchActions.swipe(280, 480, 280, 320, delayTime = 600)
         // Locate the arrow element using YOLO detector
         val screenBuffer = ScreenCaptureManager.capture(asBitmap = true) as? Bitmap
-            ?: logAndStop("in NightBaseUpgradeBuildings, screen capture failed.")
+            ?: logAndStop("in BuilderBaseUpgradeBuildings, screen capture failed.")
         val detections = YoloDetector.detect(screenBuffer, modelType = "walls-detect")
         val batchBuildWallsArrow = detections.maxByOrNull { it.score }
 

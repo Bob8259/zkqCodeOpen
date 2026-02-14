@@ -7,7 +7,7 @@ interface IFeatureColors {
     val NewShopButton: ColorSchema
     val MagicalItem: ColorSchema
     val TrainTroops: ColorSchema
-    val RebuildNightBase: ColorSchema
+    val RebuildBuilderBase: ColorSchema
 }
 
 object FeatureColors : IFeatureColors {
@@ -54,7 +54,7 @@ object FeatureColors : IFeatureColors {
         0,
         0.9
     )
-    override val RebuildNightBase: ColorSchema = ColorSchema.parse(
+    override val RebuildBuilderBase: ColorSchema = ColorSchema.parse(
         580,
         501,
         706,

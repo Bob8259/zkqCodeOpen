@@ -1,4 +1,4 @@
-package com.coc.zkqcode.jar.code.nightbase
+package com.coc.zkqcode.jar.code.builderbase
 
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
@@ -7,18 +7,18 @@ import com.coc.zkqcode.core.util.touchactions.TouchActions.swipe
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
 
-suspend fun collectNightBaseResources(): Boolean {
-    zoomSmallNightBase()
+suspend fun collectBuilderBaseResources(): Boolean {
+    zoomSmallBuilderBase()
     swipe(587, 420, 587, 700)
     delayWithMultiplier(100)
 
     repeat(3) {
         // Define the resource schemas to iterate through in each cycle
         val resourceSchemas = listOf(
-            MyColors.NightBaseCollectGem1,
-            MyColors.NightBaseCollectGold1,
-            MyColors.NightBaseCollectExiler1,
-            MyColors.NightBaseCollectGem2
+            MyColors.BuilderBaseCollectGem1,
+            MyColors.BuilderBaseCollectGold1,
+            MyColors.BuilderBaseCollectExiler1,
+            MyColors.BuilderBaseCollectGem2
         )
 
         for (schema in resourceSchemas) {

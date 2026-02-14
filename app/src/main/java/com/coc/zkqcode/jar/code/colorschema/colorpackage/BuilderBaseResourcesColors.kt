@@ -2,16 +2,16 @@ package com.coc.zkqcode.jar.code.colorschema.colorpackage
 
 import com.coc.zkqcode.jar.code.colorschema.ColorSchema
 
-interface INightBaseResourcesColors {
+interface IBuilderBaseResourcesColors {
     val CannotCollectExilerCart: ColorSchema
     val CollectExilerCart: ColorSchema
-    val NightBaseCollectGold1: ColorSchema
-    val NightBaseCollectExiler1: ColorSchema
-    val NightBaseCollectGem1: ColorSchema
-    val NightBaseCollectGem2: ColorSchema
+    val BuilderBaseCollectGold1: ColorSchema
+    val BuilderBaseCollectExiler1: ColorSchema
+    val BuilderBaseCollectGem1: ColorSchema
+    val BuilderBaseCollectGem2: ColorSchema
 }
 
-object NightBaseResourcesColors : INightBaseResourcesColors {
+object BuilderBaseResourcesColors : IBuilderBaseResourcesColors {
     override val CannotCollectExilerCart: ColorSchema = ColorSchema.parse(
         859,
         569,
@@ -34,7 +34,7 @@ object NightBaseResourcesColors : INightBaseResourcesColors {
         0.98,
         "收集圣水车"
     )
-    override val NightBaseCollectGold1: ColorSchema =
+    override val BuilderBaseCollectGold1: ColorSchema =
         ColorSchema.parse(
             115,
             86,
@@ -46,7 +46,7 @@ object NightBaseResourcesColors : INightBaseResourcesColors {
             0.92,
             "收集金币1"
         )
-    override val NightBaseCollectExiler1: ColorSchema =
+    override val BuilderBaseCollectExiler1: ColorSchema =
         ColorSchema.parse(
             115,
             82,
@@ -58,7 +58,7 @@ object NightBaseResourcesColors : INightBaseResourcesColors {
             0.92,
             "收集圣水1"
         )
-    override val NightBaseCollectGem1: ColorSchema =
+    override val BuilderBaseCollectGem1: ColorSchema =
         ColorSchema.parse(
             115,
             86,
@@ -70,7 +70,7 @@ object NightBaseResourcesColors : INightBaseResourcesColors {
             0.92,
             "收集宝石1"
         )
-    override val NightBaseCollectGem2: ColorSchema =
+    override val BuilderBaseCollectGem2: ColorSchema =
         ColorSchema.parse(
             115,
             106,
