@@ -1,5 +1,3 @@
-@file:Suppress("ClassName")
-
 package com.coc.zkqcode.jar.ui.schema.details
 
 import com.coc.zkqcode.jar.ui.schema.SettingDef
