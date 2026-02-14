@@ -12,12 +12,13 @@ import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.smalltools.getConfigRuntime
+import com.coc.zkqcode.jar.ui.schema.details.NightBaseBuildings
 import com.coc.zkqcode.jar.ui.schema.details.NightBaseBuildingsPriority
 
 object UpgradeExistingBuildings {
     suspend fun upgradeAllExistingBuildings(buildings: List<String>): Boolean {
         val orderedList = getOrderedList(buildings)
-
+        
         for (building in orderedList) {
             // Ensure UI state is clean at the start of each iteration
             clickRightBottom()
@@ -85,6 +86,11 @@ object UpgradeExistingBuildings {
 
 
     private fun getOrderedList(buildings: List<String>): List<String> {
+        // Filter buildings that are enabled in settings
+        val enabledBuildingNames = NightBaseBuildings.all.filter {
+            getConfigRuntime(it.key) == "1"
+        }.map { it.displayName }.toSet()
+
         val priorityMap = NightBaseBuildingsPriority.all.associate { settingDef ->
             val priorityStr = getConfigRuntime(settingDef.key)
             val priority = priorityStr.toIntOrNull()
@@ -93,7 +99,7 @@ object UpgradeExistingBuildings {
         }
 
         return buildings
-            .filter { it in priorityMap }
+            .filter { it in priorityMap && it in enabledBuildingNames }
             .sortedBy {
                 priorityMap[it]!!
             }
