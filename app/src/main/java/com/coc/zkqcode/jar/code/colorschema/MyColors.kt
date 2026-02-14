@@ -19,12 +19,15 @@ import com.coc.zkqcode.jar.code.colorschema.colorpackage.BuilderBaseTutorial
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.UIColors
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.WorkerColors
 
-object MyColors : IWorkerColors by WorkerColors, IUIColors by UIColors, IFeatureColors by FeatureColors, IMainBaseTutorial by MainBaseTutorial, IBuilderBaseTutorial by BuilderBaseTutorial,
-    IMainBaseTraining by MainBaseTraining, IBuilderBaseResourcesColors by BuilderBaseResourcesColors, IBuilderBaseObstaclesRemovalColors by BuilderBaseObstaclesRemovalColors,
-    IBuilderBaseTrainingColors by BuilderBaseTrainingColors {
-    //以下是前期检测颜色
+object MyColors : IWorkerColors by WorkerColors, IUIColors by UIColors, IFeatureColors by FeatureColors, IMainBaseTutorial by MainBaseTutorial,
+    IBuilderBaseTutorial by BuilderBaseTutorial, IMainBaseTraining by MainBaseTraining, IBuilderBaseResourcesColors by BuilderBaseResourcesColors,
+    IBuilderBaseObstaclesRemovalColors by BuilderBaseObstaclesRemovalColors, IBuilderBaseTrainingColors by BuilderBaseTrainingColors {
+    //以下是基础检测颜色
     val UpgradeToTH6: ColorSchema = ColorSchema.parse(
         700, 189, 725, 221, "1919FF", "2|-6|1919FF,2|-6|1919FF,6|0|1919FF,8|2|1919FF,11|4|1919FF,7|8|1919FF,0|7|1919FF,0|5|1919FF,1|1|1919FF", 0, 0.9, "需要将大本营升至6级"
+    )
+    val OrangeTutorialArrow: ColorSchema = ColorSchema.parse(
+        513, 415, 843, 668, "22ADFD", "6|0|20B5FC,12|0|20BAFD,17|0|20B9FD,23|0|1FAFFD,0|23|58EAF1,6|23|51E7F2,12|23|4FE4F1,17|23|4DE3F2,23|23|4CE0F0", 0, 0.9, "教程橙色箭头"
     )
 
     //The followings are Builder Base Upgrade color

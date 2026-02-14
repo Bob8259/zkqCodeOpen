@@ -84,7 +84,7 @@ object YoloDetector {
     private fun loadModelFile(context: Context, modelType: String? = null): MappedByteBuffer {
         if (modelType == "remove-obstacle") {
             val modelFile = java.io.File(context.filesDir, "assets/obstacles_detector.tflite")
-            val inputStream = java.io.FileInputStream(modelFile)
+            val inputStream = FileInputStream(modelFile)
             val fileChannel = inputStream.channel
             return fileChannel.map(FileChannel.MapMode.READ_ONLY, 0, modelFile.length())
         } else if (modelType == "walls-detect") {
@@ -175,8 +175,8 @@ object YoloDetector {
         softwareBitmap.getPixels(intValues, 0, softwareBitmap.width, 0, 0, softwareBitmap.width, softwareBitmap.height)
         
         var pixel = 0
-        for (i in 0 until inputHeight) {
-            for (j in 0 until inputWidth) {
+        for (i in 0..inputHeight) {
+            for (j in 0..inputWidth) {
                 val value = intValues[pixel++]
                 val r = (value shr 16 and 0xFF)
                 val g = (value shr 8 and 0xFF)

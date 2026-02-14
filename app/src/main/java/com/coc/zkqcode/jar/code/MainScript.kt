@@ -10,6 +10,7 @@ import com.coc.zkqcode.jar.code.builderbase.BuilderBaseTrainTroops
 import com.coc.zkqcode.jar.code.builderbase.BuilderBaseUpgradeBuildings
 import com.coc.zkqcode.jar.code.builderbase.BuilderBaseWorkerAndResearch
 import com.coc.zkqcode.jar.code.builderbase.builderBaseRemoveObstacles
+import com.coc.zkqcode.jar.code.builderbase.clickOttosOutPost
 import com.coc.zkqcode.jar.code.builderbase.playBuilderBase
 import com.coc.zkqcode.jar.code.builderbase.upgradehelper.FindBuildPosition
 import com.coc.zkqcode.jar.code.builderbase.upgradehelper.builderBaseFindBuildButton
@@ -83,10 +84,8 @@ object MainScript {
             runApp("com.supercell.clashofclans2")
             enterMainScreen()
             delayWithMultiplier(1000)
-            BuilderBaseUpgradeBuildings.upgradeBuildings()
-//            val redCross = builderBaseFindBuildButton(type = "Cross")
-//            if (redCross != null)
-//                FindBuildPosition.tryToFindBuildPosition(redCross.x, redCross.y)
+//            BuilderBaseUpgradeBuildings.upgradeBuildings()
+            clickOttosOutPost()
             delayWithMultiplier(1000)
         }
     }
