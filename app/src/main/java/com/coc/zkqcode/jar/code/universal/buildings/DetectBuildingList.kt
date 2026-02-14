@@ -63,17 +63,14 @@ suspend fun detectBuildingList(): BuildingDetectionResult {
         val y = pos.top + startY
         if (upgradeY != null && y <= upgradeY) return@mapNotNull null
 
-        // Check for "New" prefix BEFORE full cleanup
-        val rawCleaned = item.text.replace(" ", "").replace("|", "")
-        val isNew = ocrMisreadPrefixes.any { rawCleaned.startsWith(it) } || rawCleaned.startsWith("新")
-
         val count = countPixelsInArea(screenBuffer, x + 200, y - 20, x + 430, y + 10, 0xFF887F)
         if (count > 10) return@mapNotNull null
 
         val cleanedName = cleanBuildingName(item.text)
-        if (cleanedName in ALL_BUILDINGS) {
-            val finalName = if (isNew) "新$cleanedName" else cleanedName
-            DetectedBuilding(name = finalName, x = x, y = y) to isNew
+        val isNew = cleanedName.startsWith("新")
+
+        if (isNew || cleanedName in ALL_BUILDINGS) {
+            DetectedBuilding(name = cleanedName, x = x, y = y) to isNew
         } else {
             null
         }
@@ -81,7 +78,7 @@ suspend fun detectBuildingList(): BuildingDetectionResult {
 
     // Filter to get only the buildings marked as "New"
     val newBuildings = allBuildings.filter { it.second }.map { it.first }
-    ShowMessage("Building list $newBuildings")
+
     // If any "New" building is detected, return only those
     if (newBuildings.isNotEmpty()) {
         return BuildingDetectionResult(newBuildings, suggestUpgradeDetected)

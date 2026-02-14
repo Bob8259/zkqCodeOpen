@@ -18,7 +18,7 @@ suspend fun nightBaseFindNewBuildings(): Boolean {
         iterateNightBaseBuildingUpgradeList { result ->
             val buildings = result.buildings
             if (buildings.isEmpty()) {
-                ShowMessage("未检测到建筑")
+                ShowMessage("未检测到可升级建筑")
             } else {
                 val newBuilding = buildings.find { it.name.startsWith("新") }
                 if (newBuilding != null) {

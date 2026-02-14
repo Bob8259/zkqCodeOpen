@@ -29,7 +29,7 @@ data class BuildingDetectionResult(
 )
 
 /**
- * 基准建筑列表
+ * List of benchmark buildings
  */
 val ALL_BUILDINGS = listOf(
     "城墙",
@@ -211,7 +211,12 @@ fun cleanBuildingName(raw: String): String {
     // Remove all text starting from 'x' or 'X' (e.g. "建筑xgas6" -> "建筑")
     name = name.replace(Regex("[xX].*"), "")
 
-    // C. 模糊匹配逻辑
+    // If the name starts with "新", keep it as is to skip fuzzy matching
+    if (name.startsWith("新")) {
+        return name
+    }
+
+    // C. Fuzzy matching logic
     if (name.length >= 3) {
         var bestMatch: String? = null
         var minDistance = Int.MAX_VALUE
@@ -240,7 +245,7 @@ fun cleanBuildingName(raw: String): String {
 }
 
 /**
- * 计算两个字符串的编辑距离 (Levenshtein Distance)
+ * Calculates the edit distance (Levenshtein Distance) between two strings
  */
 fun levenshteinDistance(s1: String, s2: String): Int {
     val dp = IntArray(s2.length + 1) { it }
