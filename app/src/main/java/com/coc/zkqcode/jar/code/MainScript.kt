@@ -83,9 +83,10 @@ object MainScript {
             runApp("com.supercell.clashofclans2")
             enterMainScreen()
             delayWithMultiplier(1000)
-            val redCross = nightBaseFindBuildButton(type = "Cross")
-            if (redCross != null)
-                FindBuildPosition.tryToFindBuildPosition(redCross.x, redCross.y)
+            NightBaseUpgradeBuildings.upgradeBuildings()
+//            val redCross = nightBaseFindBuildButton(type = "Cross")
+//            if (redCross != null)
+//                FindBuildPosition.tryToFindBuildPosition(redCross.x, redCross.y)
             delayWithMultiplier(1000)
         }
     }

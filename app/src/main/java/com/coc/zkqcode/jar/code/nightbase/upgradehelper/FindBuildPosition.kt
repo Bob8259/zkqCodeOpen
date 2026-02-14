@@ -31,7 +31,7 @@ object FindBuildPosition {
     }
 
     private suspend fun iterateThroughAllPossiblePositions(): Boolean {
-        val step = 15
+        val step = 12
 
         // 1. Trapezoid area (y: 130 to 300)
         for (y in 130..300 step step) {
@@ -60,7 +60,7 @@ object FindBuildPosition {
     private suspend fun checkArea(startX: Int, endX: Int, y: Int, step: Int): Boolean {
         for (x in startX..endX step step) {
             TouchActions.touchMove(x.toFloat(), y.toFloat(), id = 1, isJitter = false)
-            var greenTick = nightBaseFindBuildButton(type = "Tick", duration = 200)
+            var greenTick = nightBaseFindBuildButton(type = "Tick", duration = 220)
             if (greenTick != null) {
                 delayWithMultiplier(200)
                 TouchActions.touchUp(1)
