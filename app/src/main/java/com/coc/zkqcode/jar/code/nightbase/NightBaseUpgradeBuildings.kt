@@ -61,8 +61,11 @@ object NightBaseUpgradeBuildings {
                 ShowMessage("所有可升级建筑: $summary")
                 if (isNewBuildingDetected) {
                     if (!buildAllNewBuildings()) return false
+                    upgradeBuildings()
+                } else {
+                    if (!UpgradeExistingBuildings.upgradeAllExistingBuildings(upgradableList)) return false
                 }
-                if (!UpgradeExistingBuildings.upgradeAllExistingBuildings(upgradableList)) return false
+
             }
         }
         return enterMainScreen()
@@ -104,8 +107,9 @@ object NightBaseUpgradeBuildings {
         if (!nightBaseFindNewBuildings()) return false
 
         // 2. Locate the shop arrow indicator
-        val shopArrow = findMultiColorsUntil(schemas = listOf(MyColors.InnerShopArrow), duration = 5000)
-            ?: return false
+        val shopArrow =
+            findMultiColorsUntil(schemas = listOf(MyColors.InnerShopArrow), duration = 5000)
+                ?: return false
 
         // 3. Determine building type (Wall vs. Others) before UI state changes
         val isWall = findMultiColors(schema = MyColors.WallInShop) != null

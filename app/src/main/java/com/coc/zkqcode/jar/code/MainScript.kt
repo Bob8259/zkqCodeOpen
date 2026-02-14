@@ -87,7 +87,7 @@ object MainScript {
 //            val redCross = nightBaseFindBuildButton(type = "Cross")
 //            if (redCross != null)
 //                FindBuildPosition.tryToFindBuildPosition(redCross.x, redCross.y)
-            delayWithMultiplier(1000)
+            delayWithMultiplier(10000)
         }
     }
 }
