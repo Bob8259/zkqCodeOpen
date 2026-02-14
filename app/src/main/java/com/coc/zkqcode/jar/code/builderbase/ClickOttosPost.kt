@@ -9,24 +9,25 @@ import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.InGamesVars
 import com.coc.zkqcode.jar.code.universal.clickRightBottom
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
+import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.smalltools.readMemory
 import com.coc.zkqcode.jar.code.universal.smalltools.writeMemory
 import java.util.Calendar
 
-suspend fun clickOttosOutPost() {
+suspend fun clickOttosOutPost(): Boolean {
     val storageKey = "ClickOttosPost${InGamesVars.currentAccountNumber}"
     val lastClickDay = readMemory(storageKey).toIntOrNull()
     val currentDay = Calendar.getInstance().get(Calendar.DAY_OF_YEAR)
 
     if (lastClickDay != null && lastClickDay == currentDay) {
         ShowMessage("今日已检测奥仔哨站，暂不点击")
-        return
+        return true
     }
 
     val worker = BuilderBaseWorkerAndResearch.detectWorkerNumber()
     if (worker.total < 2) {
         writeMemory(storageKey, currentDay.toString())
-        return
+        return true
     }
     pinchIn(141, 423, 1052, 352, 638, 365)
     delayWithMultiplier(200)
@@ -44,4 +45,5 @@ suspend fun clickOttosOutPost() {
         }
     }
     writeMemory(storageKey, currentDay.toString())
+    return enterMainScreen()
 }

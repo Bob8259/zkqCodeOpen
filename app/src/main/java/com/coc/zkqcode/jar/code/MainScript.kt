@@ -4,16 +4,8 @@ import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndStop
-import com.coc.zkqcode.core.util.touchactions.TouchActions
-import com.coc.zkqcode.core.util.touchactions.TouchActions.pinchOut
-import com.coc.zkqcode.jar.code.builderbase.BuilderBaseTrainTroops
 import com.coc.zkqcode.jar.code.builderbase.BuilderBaseUpgradeBuildings
-import com.coc.zkqcode.jar.code.builderbase.BuilderBaseWorkerAndResearch
-import com.coc.zkqcode.jar.code.builderbase.builderBaseRemoveObstacles
-import com.coc.zkqcode.jar.code.builderbase.clickOttosOutPost
 import com.coc.zkqcode.jar.code.builderbase.playBuilderBase
-import com.coc.zkqcode.jar.code.builderbase.upgradehelper.FindBuildPosition
-import com.coc.zkqcode.jar.code.builderbase.upgradehelper.builderBaseFindBuildButton
 import com.coc.zkqcode.jar.code.universal.InGamesVars
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.smalltools.readMemory
@@ -84,8 +76,7 @@ object MainScript {
             runApp("com.supercell.clashofclans2")
             enterMainScreen()
             delayWithMultiplier(1000)
-//            BuilderBaseUpgradeBuildings.upgradeBuildings()
-            clickOttosOutPost()
+            BuilderBaseUpgradeBuildings.upgradeBuildings()
             delayWithMultiplier(1000)
         }
     }
