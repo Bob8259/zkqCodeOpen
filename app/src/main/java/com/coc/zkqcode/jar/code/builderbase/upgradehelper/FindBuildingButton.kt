@@ -233,7 +233,7 @@ private val builderBaseBuildCrossSchemas = listOf(
     ),
 )
 
-suspend fun builderBaseFindBuildButton(duration: Int = 2000, type: String): Point? {
+suspend fun builderBaseFindBuildButton(duration: Int = 1200, type: String): Point? {
     val startTime = System.currentTimeMillis()
     val targetSchemas = when (type) {
         "Tick" -> builderBaseBuildTickSchemas

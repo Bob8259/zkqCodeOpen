@@ -7,9 +7,28 @@ import com.coc.zkqcode.core.util.bugreporter.BugReporter
 import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.jar.code.universal.clickRightBottom
 import com.coc.zkqcode.jar.code.universal.smalltools.killGame
+import kotlin.math.sqrt
+import kotlin.random.Random
 
 
 object FindBuildPosition {
+    private var lastX = 0f
+    private var lastY = 0f
+
+    private suspend fun moveWithDelay(x: Float, y: Float) {
+        val dx = x - lastX
+        val dy = y - lastY
+        val distance = sqrt(dx * dx + dy * dy)
+        if (distance > 15) {
+            val duration = Random.nextInt(100, 201).toLong()
+            TouchActions.moveSmoothly(lastX, lastY, x, y, duration, id = 1, isJitter = false)
+        } else {
+            TouchActions.touchMove(x, y, id = 1, isJitter = false)
+        }
+        lastX = x
+        lastY = y
+    }
+
     suspend fun tryToFindBuildPosition(crossX: Int, crossY: Int): Point? {
         val centerX = crossX + 20
         val centerY = crossY + 45
@@ -18,7 +37,11 @@ object FindBuildPosition {
         TouchActions.swipe(990, 700, 990, 380, delayTime = 600)
         val redCross = builderBaseFindBuildButton(type = "Cross")
         if (redCross != null) {
-            TouchActions.touchDown((redCross.x + 20).toFloat(), (redCross.y + 45).toFloat(), 1)
+            val downX = (redCross.x + 20).toFloat()
+            val downY = (redCross.y + 45).toFloat()
+            TouchActions.touchDown(downX, downY, 1)
+            lastX = downX
+            lastY = downY
             delayWithMultiplier(100)
             return iterateThroughAllPossiblePositions()
         } else {
@@ -31,7 +54,7 @@ object FindBuildPosition {
     }
 
     private suspend fun iterateThroughAllPossiblePositions(): Point? {
-        val stepX = 3
+        val stepX = 10
         val stepY = 20
 
         val areaIndices = listOf(1, 2, 3).shuffled()
@@ -95,8 +118,8 @@ object FindBuildPosition {
 
     private suspend fun checkArea(startX: Int, endX: Int, y: Int, step: Int): Point? {
         for (x in startX..endX step step) {
-            TouchActions.touchMove(x.toFloat(), y.toFloat(), id = 1, isJitter = false)
-            var greenTick = builderBaseFindBuildButton(type = "Tick", duration = 100)
+            moveWithDelay(x.toFloat(), y.toFloat())
+            var greenTick = builderBaseFindBuildButton(type = "Tick", duration = 120)
             if (greenTick != null) {
                 delayWithMultiplier(200)
                 TouchActions.touchUp(1)

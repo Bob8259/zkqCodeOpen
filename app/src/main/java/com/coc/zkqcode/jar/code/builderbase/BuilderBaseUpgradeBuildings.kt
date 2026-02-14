@@ -105,7 +105,7 @@ object BuilderBaseUpgradeBuildings {
     //But for this function, false means no new buildings.
     private suspend fun buildOneNewBuildings(): Boolean {
         ShowMessage("准备建造新建筑")
-
+        zoomSmallBuilderBase(isForBuild = true)
         // 1. Identify the position of new buildings; return early if not found
         if (!builderBaseFindNewBuildings()) return false
 
