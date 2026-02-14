@@ -31,14 +31,15 @@ object FindBuildPosition {
     }
 
     private suspend fun iterateThroughAllPossiblePositions(): Point? {
-        val step = 10
+        val stepX = 3
+        val stepY = 20
 
         // 1. Trapezoid area (y: 130 to 300)
-        for (y in 130..300 step step) {
+        for (y in 130..300 step stepY) {
             val ratio = (y - 130).toFloat() / (300 - 130)
             val startX = (440 + (170 - 440) * ratio).toInt()
             val endX = (790 + (1080 - 790) * ratio).toInt()
-            val result = checkArea(startX, endX, y, step)
+            val result = checkArea(startX, endX, y, stepX)
             if (result != null) {
                 TouchActions.touchUp(1)
                 return result
@@ -46,8 +47,8 @@ object FindBuildPosition {
         }
 
         // 2. Rectangle area (y: 301 to 380)
-        for (y in 301..380 step step) {
-            val result = checkArea(170, 1080, y, step)
+        for (y in 301..380 step stepY) {
+            val result = checkArea(170, 1080, y, stepX)
             if (result != null) {
                 TouchActions.touchUp(1)
                 return result
@@ -55,11 +56,11 @@ object FindBuildPosition {
         }
 
         // 3. Triangle area (y: 381 to 690)
-        for (y in 381..690 step step) {
+        for (y in 381..690 step stepY) {
             val ratio = (y - 381).toFloat() / (690 - 381)
             val startX = (170 + (625 - 170) * ratio).toInt()
             val endX = (1080 + (625 - 1080) * ratio).toInt()
-            val result = checkArea(startX, endX, y, step)
+            val result = checkArea(startX, endX, y, stepX)
             if (result != null) {
                 TouchActions.touchUp(1)
                 return result
@@ -72,7 +73,7 @@ object FindBuildPosition {
     private suspend fun checkArea(startX: Int, endX: Int, y: Int, step: Int): Point? {
         for (x in startX..endX step step) {
             TouchActions.touchMove(x.toFloat(), y.toFloat(), id = 1, isJitter = false)
-            var greenTick = nightBaseFindBuildButton(type = "Tick", duration = 220)
+            var greenTick = nightBaseFindBuildButton(type = "Tick", duration = 100)
             if (greenTick != null) {
                 delayWithMultiplier(200)
                 TouchActions.touchUp(1)
