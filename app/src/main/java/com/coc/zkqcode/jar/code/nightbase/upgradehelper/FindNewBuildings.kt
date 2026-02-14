@@ -28,8 +28,6 @@ suspend fun nightBaseFindNewBuildings(): Boolean {
                     delayWithMultiplier(1500)
                     return@iterateNightBaseBuildingUpgradeList true
                 }
-                val info = buildings.joinToString("\n")
-                ShowMessage("检测到 ${buildings.size} 个建筑:\n$info")
             }
             false
         }

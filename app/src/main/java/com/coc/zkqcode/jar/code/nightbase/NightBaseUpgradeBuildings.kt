@@ -150,10 +150,8 @@ object NightBaseUpgradeBuildings {
                 for (i in 1..5) {
                     val currentTick = nightBaseFindBuildButton(duration = 1000, type = "Tick")
                     if (currentTick != null) {
-                        delayWithMultiplier(100)
                         ShowMessage("点击第 $i 次绿色按钮：${currentTick.x}, ${currentTick.y}")
                         TouchActions.tap(currentTick.x, currentTick.y)
-                        delayWithMultiplier(200)
                     } else {
                         // Cleanup if tick disappears
                         nightBaseFindBuildButton(type = "Cross")?.let { cross ->

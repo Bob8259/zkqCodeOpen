@@ -12,6 +12,7 @@ object NightBaseBuildings {
     val STAR_LABORATORY = SettingDef("star_laboratory", "星空实验室", 1, "NIGHT_BASE_SETTINGS")
     val NIGHT_GOLD_STORAGE = SettingDef("night_gold_storage", "储金罐", 1, "NIGHT_BASE_SETTINGS")
     val NIGHT_ELIXIR_STORAGE = SettingDef("night_elixir_storage", "圣水瓶", 1, "NIGHT_BASE_SETTINGS")
+    val NIGHT_GOLD_MINE = SettingDef("night_gold_mine", "金矿", 1, "NIGHT_BASE_SETTINGS")
  
     // 军队建筑
     val BUILDER_BARRACKS = SettingDef("builder_barracks", "建筑大师训练营", 1, "NIGHT_BASE_SETTINGS")
@@ -32,6 +33,7 @@ object NightBaseBuildings {
         STAR_LABORATORY,
         NIGHT_GOLD_STORAGE,
         NIGHT_ELIXIR_STORAGE,
+        NIGHT_GOLD_MINE,
         BUILDER_BARRACKS,
         BATTLE_MACHINE,
         BATTLE_COPTER,
@@ -54,6 +56,8 @@ object NightBaseBuildingsPriority {
         SettingDef("night_gold_storage_priority", "储金罐", 5, "NIGHT_BASE_SETTINGS_PRIORITY")
     val NIGHT_ELIXIR_STORAGE_PRIORITY =
         SettingDef("night_elixir_storage_priority", "圣水瓶", 6, "NIGHT_BASE_SETTINGS_PRIORITY")
+    val NIGHT_GOLD_MINE_PRIORITY =
+        SettingDef("night_gold_mine_priority", "金矿", 13, "NIGHT_BASE_SETTINGS_PRIORITY")
  
     // 军队建筑
     val BUILDER_BARRACKS_PRIORITY =
@@ -83,6 +87,7 @@ object NightBaseBuildingsPriority {
         STAR_LABORATORY_PRIORITY,
         NIGHT_GOLD_STORAGE_PRIORITY,   // Updated
         NIGHT_ELIXIR_STORAGE_PRIORITY, // Updated
+        NIGHT_GOLD_MINE_PRIORITY,
         BUILDER_BARRACKS_PRIORITY,
         BATTLE_MACHINE_PRIORITY,
         BATTLE_COPTER_PRIORITY,

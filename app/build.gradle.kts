@@ -71,22 +71,22 @@ tasks.register("cleanJarClasses") {
     group = "custom"
     description = "Remove previously built jar class files to avoid stale classes"
 
-    val workingDir = project.projectDir.absolutePath
-    val possibleClassDirs = listOf(
-        file("$workingDir/build/tmp/kotlin-classes/debug"),
-        file("$workingDir/build/intermediates/built_in_kotlinc/debug/compileDebugKotlin/classes"),
-        file("$workingDir/build/intermediates/javac/debug/classes")
-    )
-
-    doLast {
-        possibleClassDirs.forEach { dir ->
-            val jarClassDir = File(dir, "com/coc/zkqcode/jar")
-            if (jarClassDir.exists()) {
-                jarClassDir.deleteRecursively()
-                println("Cleaned old classes from: ${jarClassDir.absolutePath}")
-            }
-        }
-    }
+//    val workingDir = project.projectDir.absolutePath
+//    val possibleClassDirs = listOf(
+//        file("$workingDir/build/tmp/kotlin-classes/debug"),
+//        file("$workingDir/build/intermediates/built_in_kotlinc/debug/compileDebugKotlin/classes"),
+//        file("$workingDir/build/intermediates/javac/debug/classes")
+//    )
+//
+//    doLast {
+//        possibleClassDirs.forEach { dir ->
+//            val jarClassDir = File(dir, "com/coc/zkqcode/jar")
+//            if (jarClassDir.exists()) {
+//                jarClassDir.deleteRecursively()
+//                println("Cleaned old classes from: ${jarClassDir.absolutePath}")
+//            }
+//        }
+//    }
 }
 
 // Make assembleDebug depend on cleanJarClasses so old classes are removed before compilation

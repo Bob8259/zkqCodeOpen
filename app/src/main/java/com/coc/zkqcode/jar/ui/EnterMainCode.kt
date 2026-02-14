@@ -16,6 +16,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.coc.zkqcode.core.data.database.GlobalVars
+import com.coc.zkqcode.core.util.basic.RunShell
 import com.coc.zkqcode.interfaces.MainCode
 import com.coc.zkqcode.jar.code.MainScript
 import com.coc.zkqcode.jar.ui.components.CustomButton
@@ -26,7 +27,9 @@ import com.coc.zkqcode.jar.ui.pages.single.SwitchAccount
 import com.coc.zkqcode.jar.ui.schema.ConfigManager
 import com.coc.zkqcode.statehelper.AppMode
 import com.coc.zkqcode.statehelper.AppStateManager
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
 
 class EnterMainCode : MainCode {
     @Composable
@@ -55,7 +58,9 @@ class EnterMainCode : MainCode {
                 CustomButton(
                     text = "取消初始化",
                     onClick = {
-                        onClose()
+                        runBlocking(Dispatchers.IO) {
+                            RunShell.runNoOutput("am force-stop com.coc.zkqcode")// got some errors, otherwise the configs can be loaded.
+                        }
                     }
                 )
             }
