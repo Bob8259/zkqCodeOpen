@@ -81,7 +81,7 @@ suspend fun nightBaseFindBuildButton(duration: Int = 2000, type: String): Point?
             val point = findMultiColors(schema = schema, byteBuffer = screenBuffer)
             if (point != null) return point
         }
-        delayWithMultiplier(200)
+        delayWithMultiplier(20)
     }
     return null
 }
