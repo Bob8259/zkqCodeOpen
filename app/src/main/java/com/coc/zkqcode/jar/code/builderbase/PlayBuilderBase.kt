@@ -21,7 +21,8 @@ suspend fun playBuilderBase(): Boolean {
         ShowMessage("进入夜世界成功")
     }
     if (!collectBuilderBaseResources()) return false
+    if (!clickOttosOutPost()) return false
     if (!builderBaseRemoveObstacles()) return false
-
+    if (!BuilderBaseUpgradeBuildings.upgradeBuildings()) return false
     return true
 }
