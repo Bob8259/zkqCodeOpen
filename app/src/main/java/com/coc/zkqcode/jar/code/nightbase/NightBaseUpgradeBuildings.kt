@@ -41,7 +41,7 @@ object NightBaseUpgradeBuildings {
                 iterateNightBaseBuildingUpgradeList { result ->
                     val buildings = result.buildings
                     if (buildings.isEmpty()) {
-                        ShowMessage("未检测到建筑")
+                        ShowMessage("未检测到可升级建筑")
                     } else {
                         buildings.forEach { building ->
                             if (upgradableBuildingsMap.containsKey(building.name)) {
@@ -51,7 +51,10 @@ object NightBaseUpgradeBuildings {
                                 isNewBuildingDetected = true
                             }
                         }
-                        val info = buildings.joinToString("\n")
+                        val info = buildings.chunked(4)
+                            .joinToString("\n") { chunk ->
+                                chunk.joinToString(" ") { it.name }
+                            }
                         ShowMessage("检测到 ${buildings.size} 个建筑:\n$info")
                     }
                     isNewBuildingDetected
