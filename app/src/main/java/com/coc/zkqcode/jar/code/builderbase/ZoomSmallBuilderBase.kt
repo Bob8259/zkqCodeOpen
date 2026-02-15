@@ -7,8 +7,8 @@ import com.coc.zkqcode.core.util.touchactions.TouchActions.swipe
 suspend fun zoomSmallBuilderBase(isForBuild: Boolean = false) {
     pinchIn(141, 423, 1052, 352, 638, 365)
     delayWithMultiplier(200)
-    repeat(3) {
-        swipe(981, 485, 162, 202, delayTime = 100)
+    repeat(2) {
+        swipe(981, 485, 0, 0, delayTime = 120)
     }
     delayWithMultiplier(200)
     swipe(981, 485, 519, 278, delayTime = 800)
