@@ -1,4 +1,4 @@
-package com.coc.zkqcode.jar.code.builderbase
+package com.coc.zkqcode.jar.code.builderbase.resources
 
 import android.graphics.Bitmap
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
@@ -9,6 +9,8 @@ import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.core.util.touchactions.TouchActions.swipe
 import com.coc.zkqcode.core.yolo.DetectionResult
 import com.coc.zkqcode.core.yolo.YoloDetector
+import com.coc.zkqcode.jar.code.builderbase.others.BuilderBaseWorkerAndResearch
+import com.coc.zkqcode.jar.code.builderbase.others.zoomSmallBuilderBase
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.InGamesVars
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil

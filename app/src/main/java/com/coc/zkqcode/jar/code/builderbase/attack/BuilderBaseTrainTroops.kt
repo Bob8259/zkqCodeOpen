@@ -1,4 +1,4 @@
-package com.coc.zkqcode.jar.code.builderbase
+package com.coc.zkqcode.jar.code.builderbase.attack
 
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier

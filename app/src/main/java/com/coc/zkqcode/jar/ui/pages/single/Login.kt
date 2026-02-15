@@ -77,7 +77,6 @@ private suspend fun solvePoW(nonce: String): String = withContext(Dispatchers.De
     return@withContext "" // Should not reach here
 }
 
-@Suppress("AssignedValueIsNeverRead")
 @Composable
 fun LoginScreen() {
     val scope = rememberCoroutineScope()
@@ -126,7 +125,7 @@ fun LoginScreen() {
                 val responseStr = withContext(Dispatchers.IO) {
                     httpClient.newCall(challengeRequest).execute().use { response ->
                         if (!response.isSuccessful) throw IOException("Unexpected code $response")
-                        response.body?.string() ?: ""
+                        response.body.string()
                     }
                 }
                 val json = JSONObject(responseStr)
@@ -188,48 +187,42 @@ fun LoginScreen() {
                 override fun onResponse(call: Call, response: Response) {
                     if (response.isSuccessful) {
                         isLoginButtonEnabled = true
-                        val responseBody = response.body?.string()
-                        if (responseBody != null) {
-                            // 4. Decrypt Response via Native Layer
-                            val decrypted = try {
-                                RustTools.decryptLoginResponse(responseBody)
-                            } catch (e: Exception) {
-                                "Error: Decryption exception: ${e.message}"
-                            }
+                        val responseBody = response.body.string()
+                        // 4. Decrypt Response via Native Layer
+                        val decrypted = try {
+                            RustTools.decryptLoginResponse(responseBody)
+                        } catch (e: Exception) {
+                            "Error: Decryption exception: ${e.message}"
+                        }
 
-                            // 5. Parse Decrypted Result
-                            // Expected format: gem=xxx OR Error message
-                            if (decrypted.startsWith("Error")) {
-                                gemInfo = "登录失败: $decrypted"
-                                showMessage = true
-                                GlobalVars.configStates[GLOBAL_SETTINGS.GEM_COUNT.key]!!.value = ""
-                            } else {
-                                val gemRegex = """gem=([\d.]+)""".toRegex()
-                                val gemMatch = gemRegex.find(decrypted)
-
-                                if (gemMatch != null) {
-                                    val gem = gemMatch.groupValues[1]
-                                    formattedGem = String.format(Locale.US, "%.4f", gem.toDouble())
-                                    gem.toDoubleOrNull()?.let {
-                                        showMessage = (it < 0.000001)
-                                    }
-                                    GlobalVars.configStates[GLOBAL_SETTINGS.GEM_COUNT.key]!!.value =
-                                        gem
-                                    gemInfo = "登录成功！卡班宝石数量 $formattedGem"
-                                } else {
-                                    gemInfo = "登录成功，但无法解析数据: $decrypted"
-                                    showMessage = true
-                                    GlobalVars.configStates[GLOBAL_SETTINGS.GEM_COUNT.key]!!.value =
-                                        ""
-                                }
-                            }
-                        } else {
-                            gemInfo = "登录失败：响应体为空"
+                        // 5. Parse Decrypted Result
+                        // Expected format: gem=xxx OR Error message
+                        if (decrypted.startsWith("Error")) {
+                            gemInfo = "登录失败: $decrypted"
                             showMessage = true
                             GlobalVars.configStates[GLOBAL_SETTINGS.GEM_COUNT.key]!!.value = ""
+                        } else {
+                            val gemRegex = """gem=([\d.]+)""".toRegex()
+                            val gemMatch = gemRegex.find(decrypted)
+
+                            if (gemMatch != null) {
+                                val gem = gemMatch.groupValues[1]
+                                formattedGem = String.format(Locale.US, "%.4f", gem.toDouble())
+                                gem.toDoubleOrNull()?.let {
+                                    showMessage = (it < 0.000001)
+                                }
+                                GlobalVars.configStates[GLOBAL_SETTINGS.GEM_COUNT.key]!!.value =
+                                    gem
+                                gemInfo = "登录成功！卡班宝石数量 $formattedGem"
+                            } else {
+                                gemInfo = "登录成功，但无法解析数据: $decrypted"
+                                showMessage = true
+                                GlobalVars.configStates[GLOBAL_SETTINGS.GEM_COUNT.key]!!.value =
+                                    ""
+                            }
                         }
                     } else {
-                        val responseBody = response.body?.string()
+                        val responseBody = response.body.string()
                         gemInfo = "登录失败：$responseBody"
                         showMessage = true
                         failTimesCount++

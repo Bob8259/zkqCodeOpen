@@ -1,7 +1,6 @@
-package com.coc.zkqcode.jar.code.builderbase
+package com.coc.zkqcode.jar.code.builderbase.others
 
 import com.coc.zkqcode.core.util.basic.ShowMessage
-import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.bugreporter.BugReporter
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors

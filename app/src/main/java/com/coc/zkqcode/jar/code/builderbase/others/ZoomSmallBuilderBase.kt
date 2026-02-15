@@ -1,4 +1,4 @@
-package com.coc.zkqcode.jar.code.builderbase
+package com.coc.zkqcode.jar.code.builderbase.others
 
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.touchactions.TouchActions.pinchIn

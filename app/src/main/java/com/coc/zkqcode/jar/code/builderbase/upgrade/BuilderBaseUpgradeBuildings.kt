@@ -1,4 +1,4 @@
-package com.coc.zkqcode.jar.code.builderbase
+package com.coc.zkqcode.jar.code.builderbase.upgrade
 
 import android.graphics.Bitmap
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
@@ -7,11 +7,8 @@ import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndStop
 import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.core.yolo.YoloDetector
-import com.coc.zkqcode.jar.code.builderbase.upgradehelper.FindBuildPosition
-import com.coc.zkqcode.jar.code.builderbase.upgradehelper.UpgradeExistingBuildings
-import com.coc.zkqcode.jar.code.builderbase.upgradehelper.builderBaseFindBuildButton
-import com.coc.zkqcode.jar.code.builderbase.upgradehelper.builderBaseFindNewBuildings
-import com.coc.zkqcode.jar.code.builderbase.upgradehelper.iterateBuilderBaseBuildingUpgradeList
+import com.coc.zkqcode.jar.code.builderbase.others.BuilderBaseWorkerAndResearch
+import com.coc.zkqcode.jar.code.builderbase.others.zoomSmallBuilderBase
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.buildings.ALL_BUILDINGS
 import com.coc.zkqcode.jar.code.universal.clickRightBottom
