@@ -1,6 +1,12 @@
 package com.coc.zkqcode.jar.code.builderbase.research
 
-object BuilderBaseResearch {
+import com.coc.zkqcode.jar.code.builderbase.others.BuilderBaseWorkerAndResearch
 
+object BuilderBaseResearch {
+    suspend fun research() {
+        if (BuilderBaseWorkerAndResearch.detectResearch()) {
+            //TODO
+        }
+    }
 
 }
