@@ -10,8 +10,7 @@ object BuilderBaseSettings {
     val SWITCH_ACCOUNT_AFTER_BATTLES = SettingDef(
         "switch_account_after_battles", "每次对战以下局数后切号", 2, "BUILDER_BASE_SETTINGS"
     )
-    val STOP_WHEN_RESOURCE_FULL =
-        SettingDef("stop_when_resource_full", "资源满后停止对战", 1, "BUILDER_BASE_SETTINGS")
+    val STOP_WHEN_RESOURCE_FULL = SettingDef("stop_when_resource_full", "资源满后停止对战", 1, "BUILDER_BASE_SETTINGS")
     val TROPHY_PUSHING_MODE = SettingDef("trophy_pushing_mode", "上分模式", 0, "BUILDER_BASE_SETTINGS")
     val ELIXIR_CART_FARMING = SettingDef("elixir_cart_farming", "刷圣水车", 0, "BUILDER_BASE_SETTINGS")
     val BUILDER_BASE_RESEARCH = SettingDef("builder_base_research", "夜世界研究", 1, "BUILDER_BASE_SETTINGS")
@@ -31,6 +30,6 @@ object BuilderBaseSettings {
         NIGHT_BUILD_SETTING,
         NIGHT_WALL_UPGRADE_SETTINGS,
         NIGHT_REMOVE_OBSTACLES,
-        NIGHT_SAVE_WORKER
+        NIGHT_SAVE_WORKER,
     )
 }

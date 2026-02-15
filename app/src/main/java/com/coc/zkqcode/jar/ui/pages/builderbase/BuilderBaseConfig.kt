@@ -17,24 +17,16 @@ import com.coc.zkqcode.jar.ui.components.SettingInputRow
 import com.coc.zkqcode.jar.ui.schema.Schema.BUILDER_BASE_SETTINGS
 
 fun LazyListScope.BuilderBaseConfig(
-    index: Int,
-    isExpanded: Boolean,
-    onToggleExpanded: () -> Unit,
-    onNavigateNightPriority: (Int) -> Unit = {}
+    index: Int, isExpanded: Boolean, onToggleExpanded: () -> Unit, onNavigateNightPriority: (Int) -> Unit = {}
 ) {
     item {
         FlowRow {
             Text(
-                text = "以下是夜世界设置",
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(10.dp),
-                textAlign = TextAlign.Start
+                text = "以下是夜世界设置", fontSize = 20.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(10.dp), textAlign = TextAlign.Start
             )
             // 添加一个按钮来控制缩放
             CustomButton(
-                onClick = onToggleExpanded,
-                text = if (isExpanded) "▼ 缩起夜世界设置" else "▶ 展开夜世界设置"
+                onClick = onToggleExpanded, text = if (isExpanded) "▼ 缩起夜世界设置" else "▶ 展开夜世界设置"
             )
         }
     }
@@ -71,11 +63,11 @@ fun LazyListScope.BuilderBaseConfig(
                 }
             }
             item { SettingCheckBox(key = "${BUILDER_BASE_SETTINGS.BUILDER_BASE_RESEARCH.key}_c${index}") }
-            
+
             if (GlobalVars.configStates["${BUILDER_BASE_SETTINGS.BUILDER_BASE_RESEARCH.key}_c${index}"]?.value == "1") {
                 item { BuilderBaseResearchConfigs(index = index) }
             }
-            
+
             item {
                 FlowRow {
                     SettingCheckBox(key = "${BUILDER_BASE_SETTINGS.NIGHT_BUILD_SETTING.key}_c${index}")
@@ -84,7 +76,7 @@ fun LazyListScope.BuilderBaseConfig(
                     SettingCheckBox(key = "${BUILDER_BASE_SETTINGS.NIGHT_SAVE_WORKER.key}_c${index}")
                 }
             }
-            
+
             if (GlobalVars.configStates["${BUILDER_BASE_SETTINGS.NIGHT_BUILD_SETTING.key}_c${index}"]?.value == "1") {
                 item { BuilderBaseUpgradeConfigs(index = index, onNavigatePriority = onNavigateNightPriority) }
             }
