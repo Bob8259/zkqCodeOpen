@@ -15,51 +15,62 @@ import com.coc.zkqcode.jar.ui.schema.details.BuilderBaseBuildings
 import com.coc.zkqcode.jar.ui.schema.details.BuilderBaseBuildingsPriority
 
 object UpgradeExistingBuildings {
+    private val uniqueBuildings = setOf(
+        "建筑大师大本营", "宝石矿井", "时光钟楼", "星空实验室", "奥仔哨站",
+        "建筑大师训练营", "治疗小屋",
+        "战争机器", "战斗直升机",
+        "守卫岗哨", "空中炸弹发射器", "熔岩火炮", "巨型加农炮", "超级特斯拉电磁塔", "熔岩发射器", "十字连弩"
+    )
+
     suspend fun upgradeAllExistingBuildings(buildings: List<String>): Boolean {
         val orderedList = getOrderedList(buildings)
-        
+
         for (building in orderedList) {
-            // Ensure UI state is clean at the start of each iteration
-            clickRightBottom()
-
-            // Locate the worker icon
-            val worker =
-                findMultiColorsUntil(schemas = listOf(MyColors.BuilderBaseWorker), duration = 1000)
-
-            // Pre-condition check: If cannot continue building or worker not found, skip to next
-            if (!checkContinueBuild() || worker == null) {
-                break
-            }
-
-            TouchActions.tap(worker.x, worker.y)
-            delayWithMultiplier(500)
-
-            // Locate the specific building in the UI
-            if (!findSpecificBuilding(building)) {
-                continue
-            }
-            TouchActions.tap(1233, 37)// tap gold to close worker list
-            // Check for the upgrade action (Hammer icon)
-            val hammer =
-                findMultiColorsUntil(schemas = listOf(MyColors.UpgradeHammer), duration = 1000)
-                    ?: continue
-
-            TouchActions.tap(hammer.x, hammer.y)
-            delayWithMultiplier(500)
-
-            // Check for resource availability immediately after clicking upgrade
-            if (findMultiColors(schema = MyColors.BuilderBaseInsufficientResources) != null) {
+            val maxAttempts = if (building in uniqueBuildings) 1 else 4
+            
+            for (attempt in 1..maxAttempts) {
+                // Ensure UI state is clean at the start of each iteration
                 clickRightBottom()
-                continue // skip this building
+
+                // Locate the worker icon
+                val worker =
+                    findMultiColorsUntil(schemas = listOf(MyColors.BuilderBaseWorker), duration = 1000)
+
+                // Pre-condition check: If cannot continue building or worker not found, skip to next
+                if (!checkContinueBuild() || worker == null) {
+                    return enterMainScreen() // If we can't build anymore, might as well stop everything
+                }
+
+                TouchActions.tap(worker.x, worker.y)
+                delayWithMultiplier(500)
+
+                // Locate the specific building in the UI
+                if (!findSpecificBuilding(building)) {
+                    TouchActions.tap(1233, 37)// tap gold to close worker list
+                    break // Not found this building anymore, go to next building type
+                }
+                
+                TouchActions.tap(1233, 37)// tap gold to close worker list
+
+                // Check for the upgrade action (Hammer icon)
+                val hammer =
+                    findMultiColorsUntil(schemas = listOf(MyColors.UpgradeHammer), duration = 1000) ?: continue // Should not happen if build was found, but be safe
+
+                TouchActions.tap(hammer.x, hammer.y)
+                delayWithMultiplier(500)
+
+                // Check for resource availability immediately after clicking upgrade
+                if (findMultiColors(schema = MyColors.BuilderBaseInsufficientResources) != null) {
+                    clickRightBottom()
+                    break // insufficient resources for this building, skip to next building type
+                }
+
+                // Successful upgrade flow
+                TouchActions.tap(633, 631) // normal upgrade or unlock new buildings
+                TouchActions.tap(982, 634)// machines
+                ShowMessage("升级成功: $building (第 $attempt 个)")
+                delayWithMultiplier(500)
             }
-
-            // Successful upgrade flow
-
-            TouchActions.tap(633, 631) // normal upgrade or unlock new buildings
-            TouchActions.tap(982, 634)// machines
-            ShowMessage("升级成功")
-            delayWithMultiplier(500)
-
         }
 
         // Final UI reset before returning to main screen
