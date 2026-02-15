@@ -1,4 +1,4 @@
-package com.coc.zkqcode.jar.code.builderbase.upgradehelper
+package com.coc.zkqcode.jar.code.builderbase.upgrade
 
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.touchactions.TouchActions
