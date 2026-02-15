@@ -23,7 +23,7 @@ object BuilderBaseWorkerAndResearch {
             // Define the crop region for the worker number text
             val startX = worker.x - 50
             val startY = 0
-            val endX = worker.x + 400
+            val endX = worker.x + 500
             val endY = 70
 
             val results = TextRecognizer.recognize(startX, startY, endX, endY, useChinese = false, applyPreprocess = false)
@@ -38,7 +38,7 @@ object BuilderBaseWorkerAndResearch {
     /**
      * Parses the recognized text into WorkerInfo.
      */
-    private fun parseWorkerInfo(text: String): WorkerInfo {
+    internal fun parseWorkerInfo(text: String): WorkerInfo {
         // Clean text and handle common OCR misrecognitions
         val cleaned = text.replace(" ", "").replace("o", "0").replace("O", "0").replace("I", "1").replace("l", "1")
             .replace("Z", "2").replace("z", "2").replace("S", "5").replace("s", "5").replace("G", "6")
@@ -46,13 +46,38 @@ object BuilderBaseWorkerAndResearch {
         val match = Regex("""(\d+)/(\d+)""").find(cleaned)
 
         if (match != null) {
-            val (available, total) = match.destructured
-            return WorkerInfo(available.toInt(), total.toInt())
+            var (availableStr, totalStr) = match.destructured
+
+            // Filter: If xx/xx, keep the last digit of the first part and the first digit of the second part
+            // For example: 12/53 -> 2/5, 1/22 -> 1/2
+            if (availableStr.length > 1) {
+                availableStr = availableStr.last().toString()
+            }
+            if (totalStr.length > 1) {
+                totalStr = totalStr.first().toString()
+            }
+
+            return WorkerInfo(availableStr.toInt(), totalStr.toInt())
         }
         return WorkerInfo(0, 0)
     }
 
-    suspend fun detectResearch() {
+    suspend fun detectResearch(): Boolean {
+        val worker = findMultiColors(schema = MyColors.ResearchIcon)
+        if (worker != null) {
+            // Define the crop region for the worker number text
+            val startX = worker.x - 500
+            val startY = 0
+            val endX = worker.x + 120
+            val endY = 70
 
+            val results = TextRecognizer.recognize(startX, startY, endX, endY, useChinese = false, applyPreprocess = false)
+            val combinedText = results.joinToString("") { it.text }
+            val researcherInfo = parseWorkerInfo(combinedText)
+            return researcherInfo.available > 0
+        }
+        ShowMessage("未检测到夜世界研究标准，已将错误截图保存到/sdcard/zkqFiles/bugReporter\n请反馈给作者")
+        BugReporter.takeScreenshot("Builder_Base_Research_Not_Detected")
+        return false
     }
 }
