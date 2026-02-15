@@ -4,8 +4,6 @@ import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.MyColors
-import com.coc.zkqcode.jar.code.builderbase.zoomSmallBuilderBase
-import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 
 suspend fun builderBaseFindNewBuildings(): Boolean {
@@ -22,6 +20,7 @@ suspend fun builderBaseFindNewBuildings(): Boolean {
             } else {
                 val newBuilding = buildings.find { it.name.startsWith("新") }
                 if (newBuilding != null) {
+                    if (newBuilding.y > 530) return@iterateBuilderBaseBuildingUpgradeList false
                     ShowMessage("检测到新建筑: ${newBuilding.name}")
                     TouchActions.tap(newBuilding.x + 20, newBuilding.y + 20)
                     found = true
