@@ -73,10 +73,12 @@ object BuilderBaseUpgradeBuildings {
 
     suspend fun buildAllNewBuildings(): Boolean {
         val startTime = System.currentTimeMillis()
+        // 15分钟对应的毫秒数是 900,000
+        val timeoutMillis = 900_000L
         while (true) {
             val elapsedTime = System.currentTimeMillis() - startTime
-            val remainingMinutes = (600_000 - elapsedTime) / 60_000.0
-            if (elapsedTime > 600_000) {
+            val remainingMinutes = (timeoutMillis - elapsedTime) / 60_000.0
+            if (elapsedTime > timeoutMillis) {
                 break
             }
             ShowMessage("建造中，剩余${"%.2f".format(remainingMinutes)}分钟后强制退出")
@@ -113,7 +115,7 @@ object BuilderBaseUpgradeBuildings {
         // 3. Determine building type (Wall vs. Others) before UI state changes
         val isWall = findMultiColors(schema = MyColors.WallInShop) != null
         TouchActions.tap(shopArrow.x - 50, shopArrow.y + 50)
-        delayWithMultiplier(500)
+        delayWithMultiplier(1500)
 
         // 4. Locate the confirmation button (Green Tick)
         var targetTick = builderBaseFindBuildButton(type = "Tick")
