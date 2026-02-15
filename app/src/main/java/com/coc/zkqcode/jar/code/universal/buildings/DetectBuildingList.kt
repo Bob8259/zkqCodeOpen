@@ -21,7 +21,7 @@ suspend fun detectBuildingList(): BuildingDetectionResult {
     // Recognize text in the specified area
     val results = TextRecognizer.recognize(startX, startY, endX, endY, useChinese = true, threshold = 135)
 
-    if (results.isEmpty()) return BuildingDetectionResult(emptyList(), false)
+    if (results.isEmpty()) return BuildingDetectionResult(emptyList())
 
     // Show raw detected results for debugging
     val rawSummary = results.joinToString(separator = " | ") { item ->
@@ -40,13 +40,11 @@ suspend fun detectBuildingList(): BuildingDetectionResult {
     val screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult
         ?: logAndStop("failed to take screenshot at night base upgrade")
 
-    var suggestUpgradeDetected = false
     // If "建议升级" is detected, only keep results below it (greater y)
     val upgradeY = results.mapNotNull { item ->
         val pos = item.position ?: return@mapNotNull null
         val cleaned = cleanBuildingName(item.text)
         if (cleaned == "建议升级") {
-            suggestUpgradeDetected = true
             pos.top + startY
         } else null
     }.minOrNull()
@@ -81,8 +79,8 @@ suspend fun detectBuildingList(): BuildingDetectionResult {
 
     // If any "New" building is detected, return only those
     if (newBuildings.isNotEmpty()) {
-        return BuildingDetectionResult(newBuildings, suggestUpgradeDetected)
+        return BuildingDetectionResult(newBuildings)
     }
 
-    return BuildingDetectionResult(allBuildings.map { it.first }, suggestUpgradeDetected)
+    return BuildingDetectionResult(allBuildings.map { it.first })
 }
