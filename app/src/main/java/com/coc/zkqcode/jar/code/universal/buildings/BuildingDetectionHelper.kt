@@ -201,7 +201,8 @@ fun cleanBuildingName(raw: String): String {
         "建议升级：" to "建议升级",
         "建议升级及:" to "建议升级",
         "乒营" to "兵营",
-        "箭增" to "箭塔"
+        "箭增" to "箭塔",
+        "據地" to "撼地",
     )
 
     // Apply all string replacements
