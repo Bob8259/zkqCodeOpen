@@ -20,16 +20,16 @@ object BuilderBaseTroops {
 
     val all = listOf(
         RAGED_BARBARIAN,
-        SNEAKY_ARCHER,
-        BETA_MINION,
-        BOMBER,
-        BABY_DRAGON,
-        CANNON_CART,
-        POWER_PEKKA,
         BOXER_GIANT,
-        NIGHT_WITCH,
+        BOMBER,
+        CANNON_CART,
         DROP_SHIP,
         HOG_GLIDER,
+        SNEAKY_ARCHER,
+        BETA_MINION,
+        BABY_DRAGON,
+        NIGHT_WITCH,
+        POWER_PEKKA,
         ELECTROFIRE_WIZARD
     )
 }

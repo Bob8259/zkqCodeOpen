@@ -74,9 +74,10 @@ object BuilderBaseWorkerAndResearch {
             val results = TextRecognizer.recognize(startX, startY, endX, endY, useChinese = false, applyPreprocess = false)
             val combinedText = results.joinToString("") { it.text }
             val researcherInfo = parseWorkerInfo(combinedText)
+            ShowMessage("夜世界研究数量：${researcherInfo.available}/${researcherInfo.total}")
             return researcherInfo.available > 0
         }
-        ShowMessage("未检测到夜世界研究标准，已将错误截图保存到/sdcard/zkqFiles/bugReporter\n请反馈给作者")
+        ShowMessage("未检测到夜世界研究，已将错误截图保存到/sdcard/zkqFiles/bugReporter\n请反馈给作者")
         BugReporter.takeScreenshot("Builder_Base_Research_Not_Detected")
         return false
     }

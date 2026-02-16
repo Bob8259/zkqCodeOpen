@@ -6,6 +6,7 @@ import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndStop
 import com.coc.zkqcode.jar.code.builderbase.upgrade.BuilderBaseUpgradeBuildings
 import com.coc.zkqcode.jar.code.builderbase.others.playBuilderBase
+import com.coc.zkqcode.jar.code.builderbase.research.BuilderBaseResearch
 import com.coc.zkqcode.jar.code.universal.InGamesVars
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.smalltools.readMemory
@@ -45,8 +46,7 @@ object MainScript {
             // 4. 执行主逻辑循环
             InGamesVars.currentAccountNumber = activeAccount
             while (currentCoroutineContext().isActive) {
-                InGamesVars.currentGamePackage =
-                    getConfigOrStop("game_version${InGamesVars.currentAccountNumber}").toInt()
+                InGamesVars.currentGamePackage = getConfigOrStop("game_version${InGamesVars.currentAccountNumber}").toInt()
 
                 //测试代码
                 runTestCode()
@@ -76,7 +76,7 @@ object MainScript {
             runApp("com.supercell.clashofclans2")
             enterMainScreen()
             delayWithMultiplier(1000)
-            BuilderBaseUpgradeBuildings.upgradeBuildings()
+            BuilderBaseResearch.research()
             delayWithMultiplier(1000)
         }
     }
