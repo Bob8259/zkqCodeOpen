@@ -14,60 +14,59 @@ import com.coc.zkqcode.jar.code.universal.smalltools.getConfigRuntime
 import com.coc.zkqcode.jar.ui.schema.Schema
 import com.coc.zkqcode.jar.ui.schema.details.BuilderBaseTroops
 
-object BuilderBaseResearch {
-    suspend fun research(): Boolean {
-        if (BuilderBaseWorkerAndResearch.detectResearch() && getConfigRuntime(Schema.BUILDER_BASE_SETTINGS.BUILDER_BASE_RESEARCH.key) == "1") {
-            val research = findMultiColors(schema = MyColors.ResearchIcon)
-            if (research != null) {
-                TouchActions.tap(research.x, research.y)
+
+suspend fun builderBaseResearch(): Boolean {
+    if (BuilderBaseWorkerAndResearch.detectResearch() && getConfigRuntime(Schema.BUILDER_BASE_SETTINGS.BUILDER_BASE_RESEARCH.key) == "1") {
+        val research = findMultiColors(schema = MyColors.ResearchIcon)
+        if (research != null) {
+            TouchActions.tap(research.x, research.y)
+            delayWithMultiplier(600)
+            TouchActions.tap(research.x, research.y + 130)//Open research tab
+            val backArrow = findMultiColorsUntil(schemas = listOf(MyColors.BuilderResearchBackArrow), duration = 1000)
+            if (backArrow != null) {
+                TouchActions.tap(backArrow.x, backArrow.y)
                 delayWithMultiplier(600)
-                TouchActions.tap(research.x, research.y + 130)//Open research tab
-                val backArrow = findMultiColorsUntil(schemas = listOf(MyColors.BuilderResearchBackArrow), duration = 1000)
-                if (backArrow != null) {
-                    TouchActions.tap(backArrow.x, backArrow.y)
-                    delayWithMultiplier(600)
-                    checkAllResearch()
-                }
+                builderBasecheckAllResearch()
             }
         }
-        return enterMainScreen()
     }
+    return enterMainScreen()
+}
 
-    suspend fun checkAllResearch() {
-        for (i in BuilderBaseTroops.all.indices) {
-            val troop = BuilderBaseTroops.all[i]
-            if (getConfigRuntime(troop.key) == "1") {
-                val row = i / 6
-                val col = i % 6
+suspend fun builderBasecheckAllResearch() {
+    for (i in BuilderBaseTroops.all.indices) {
+        val troop = BuilderBaseTroops.all[i]
+        if (getConfigRuntime(troop.key) == "1") {
+            val row = i / 6
+            val col = i % 6
 
-                val x1 = 310 + col * 140
-                val y1 = if (row == 0) 460 else 600
-                val x2 = x1 + 40
-                val y2 = if (row == 0) 500 else 640
+            val x1 = 310 + col * 140
+            val y1 = if (row == 0) 460 else 600
+            val x2 = x1 + 40
+            val y2 = if (row == 0) 500 else 640
 
-                val elixirIcon = findMultiColors(schema = MyColors.BuilderResearchElixir.rescope(x1, y1, x2, y2))
-                if (elixirIcon != null) {
-                    val resX1 = x1 - 100
-                    val insufficient = findMultiColors(schema = MyColors.BuilderResearchInsufficientResources.rescope(resX1, y1, x1, y2))
-                    if (insufficient == null) {
-                        ShowMessage("开始研究 ${troop.displayName}")
-                        TouchActions.tap(elixirIcon.x, elixirIcon.y)
-                        delayWithMultiplier(500)
-                        TouchActions.tap(955, 610)
-                        delayWithMultiplier(200)
-                        clickRightBottom()
-                        delayWithMultiplier(100)
-                        clickRightBottom()
-                        return
-                    } else {
-                        ShowMessage("${troop.displayName} 资源不足")
-                    }
+            val elixirIcon = findMultiColors(schema = MyColors.BuilderResearchElixir.rescope(x1, y1, x2, y2))
+            if (elixirIcon != null) {
+                val resX1 = x1 - 100
+                val insufficient = findMultiColors(schema = MyColors.BuilderResearchInsufficientResources.rescope(resX1, y1, x1, y2))
+                if (insufficient == null) {
+                    ShowMessage("开始研究 ${troop.displayName}")
+                    TouchActions.tap(elixirIcon.x, elixirIcon.y)
+                    delayWithMultiplier(500)
+                    TouchActions.tap(955, 610)
+                    delayWithMultiplier(200)
+                    clickRightBottom()
+                    delayWithMultiplier(100)
+                    clickRightBottom()
+                    return
+                } else {
+                    ShowMessage("${troop.displayName} 资源不足")
                 }
             }
         }
     }
+}
 
-    private fun ColorSchema.rescope(x1: Int, y1: Int, x2: Int, y2: Int): ColorSchema {
-        return ColorSchema(x1, y1, x2, y2, mainColor, threshold, offsets, direction, name)
-    }
+private fun ColorSchema.rescope(x1: Int, y1: Int, x2: Int, y2: Int): ColorSchema {
+    return ColorSchema(x1, y1, x2, y2, mainColor, threshold, offsets, direction, name)
 }
