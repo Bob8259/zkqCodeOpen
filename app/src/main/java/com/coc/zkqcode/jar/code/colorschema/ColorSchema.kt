@@ -29,7 +29,7 @@ class ColorSchema(
 
             // 3. 解析偏移点字符串
             val offsets: MutableList<OffsetPoint?> = ArrayList()
-            if (offsetStr != null && !offsetStr.isEmpty()) {
+            if (!offsetStr.isNullOrEmpty()) {
                 val points =
                     offsetStr.split(",".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
                 for (p in points) {

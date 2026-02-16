@@ -1,4 +1,3 @@
-@file:Suppress("ClassName")
 
 package com.coc.zkqcode.jar.ui.schema.details
 
