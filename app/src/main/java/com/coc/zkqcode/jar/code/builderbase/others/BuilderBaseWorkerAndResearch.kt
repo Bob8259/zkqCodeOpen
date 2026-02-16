@@ -63,12 +63,12 @@ object BuilderBaseWorkerAndResearch {
     }
 
     suspend fun detectResearch(): Boolean {
-        val worker = findMultiColors(schema = MyColors.ResearchIcon)
-        if (worker != null) {
+        val research = findMultiColors(schema = MyColors.ResearchIcon)
+        if (research != null) {
             // Define the crop region for the worker number text
-            val startX = worker.x - 500
+            val startX = research.x - 500
             val startY = 0
-            val endX = worker.x + 120
+            val endX = research.x + 120
             val endY = 70
 
             val results = TextRecognizer.recognize(startX, startY, endX, endY, useChinese = false, applyPreprocess = false)
