@@ -7,6 +7,8 @@ import com.coc.zkqcode.core.util.bugreporter.BugReporter
 import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.jar.code.universal.clickRightBottom
 import com.coc.zkqcode.jar.code.universal.smalltools.killGame
+import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.withContext
 import kotlin.math.sqrt
 import kotlin.random.Random
 
@@ -37,10 +39,16 @@ object FindBuildPosition {
             val downX = centerX.toFloat()
             val downY = centerY.toFloat()
             TouchActions.touchDown(downX, downY, 1)
-            lastX = downX
-            lastY = downY
-            delayWithMultiplier(100)
-            return iterateThroughAllPossiblePositions()
+            try {
+                lastX = downX
+                lastY = downY
+                delayWithMultiplier(100)
+                return iterateThroughAllPossiblePositions()
+            } finally {
+                withContext(NonCancellable) {
+                    TouchActions.touchUp(1)
+                }
+            }
         } else {
             ShowMessage("未找到红色叉，错误截图已保存到/sdcard/zkqFiles/bugReporter\n请将截图反馈给作者")
             BugReporter.takeScreenshot("Red_Cross_Not_Found")
@@ -104,12 +112,10 @@ object FindBuildPosition {
             }
 
             if (result != null) {
-                TouchActions.touchUp(1)
                 return result
             }
         }
 
-        TouchActions.touchUp(1)
         return null
     }
 

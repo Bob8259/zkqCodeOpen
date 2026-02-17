@@ -2,12 +2,16 @@ package com.coc.zkqcode.core.util.touchactions
 
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndStop
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.withContext
 import kotlin.random.Random
 
 import kotlin.math.sqrt
 
 object TouchActions {
+    private val activePointers = mutableSetOf<Int>()
+
     private fun getDelayMultiplier(): Float {
         return GlobalVars.configStates["delay_multiplier"]?.value?.toFloat()
             ?: logAndStop("Failed to get delayMultiplier")
@@ -16,6 +20,7 @@ object TouchActions {
     private fun getServerActions() = GlobalVars.serverActions ?: logAndStop("Server actions not found")
 
     suspend fun touchDown(x: Float, y: Float, id: Int) {
+        activePointers.add(id)
         getServerActions().sendActionSync(
             mapOf(
                 "actionType" to "touch_action",
@@ -46,6 +51,7 @@ object TouchActions {
     }
 
     suspend fun touchUp(id: Int) {
+        activePointers.remove(id)
         getServerActions().sendActionSync(
             mapOf(
                 "actionType" to "touch_action",
@@ -53,6 +59,16 @@ object TouchActions {
                 "id" to id
             )
         )
+    }
+
+    suspend fun releaseAllPointers() {
+        val pointersCopy = activePointers.toSet()
+        for (id in pointersCopy) {
+            try {
+                touchUp(id)
+            } catch (_: Exception) { }
+        }
+        activePointers.clear()
     }
 
     suspend fun moveSmoothly(
@@ -90,22 +106,25 @@ object TouchActions {
         val delayMultiplier = getDelayMultiplier()
 
         touchDown(startX.toFloat(), startY.toFloat(), 1)
+        try {
+            // Delay for time * 0.7
+            delay((actualDelayTime * 0.7 * delayMultiplier).toLong())
 
-        // Delay for time * 0.7
-        delay((actualDelayTime * 0.7 * delayMultiplier).toLong())
+            // Move loop
+            val moveDuration = (actualDelayTime * 0.5 * delayMultiplier).toLong()
+            performMove(
+                duration = moveDuration,
+                isJitter = isJitter,
+                PointerMove(1, startX.toFloat(), startY.toFloat(), endX.toFloat(), endY.toFloat())
+            )
 
-        // Move loop
-        val moveDuration = (actualDelayTime * 0.5 * delayMultiplier).toLong()
-        performMove(
-            duration = moveDuration,
-            isJitter = isJitter,
-            PointerMove(1, startX.toFloat(), startY.toFloat(), endX.toFloat(), endY.toFloat())
-        )
-
-        // Delay for 'time'
-        delay((actualDelayTime * delayMultiplier).toLong())
-
-        touchUp(1)
+            // Delay for 'time'
+            delay((actualDelayTime * delayMultiplier).toLong())
+        } finally {
+            withContext(NonCancellable) {
+                touchUp(1)
+            }
+        }
     }
 
     suspend fun pinchIn(
@@ -124,17 +143,20 @@ object TouchActions {
 
         touchDown(x1.toFloat(), y1.toFloat(), 1)
         touchDown(x2.toFloat(), y2.toFloat(), 2)
-
-        val moveDuration = (actualDuration * delayMultiplier).toLong()
-        performMove(
-            duration = moveDuration,
-            isJitter = isJitter,
-            PointerMove(1, x1.toFloat(), y1.toFloat(), finalX.toFloat(), finalY.toFloat()),
-            PointerMove(2, x2.toFloat(), y2.toFloat(), finalX.toFloat(), finalY.toFloat())
-        )
-
-        touchUp(1)
-        touchUp(2)
+        try {
+            val moveDuration = (actualDuration * delayMultiplier).toLong()
+            performMove(
+                duration = moveDuration,
+                isJitter = isJitter,
+                PointerMove(1, x1.toFloat(), y1.toFloat(), finalX.toFloat(), finalY.toFloat()),
+                PointerMove(2, x2.toFloat(), y2.toFloat(), finalX.toFloat(), finalY.toFloat())
+            )
+        } finally {
+            withContext(NonCancellable) {
+                touchUp(1)
+                touchUp(2)
+            }
+        }
     }
 
     suspend fun pinchOut(
@@ -153,17 +175,20 @@ object TouchActions {
 
         touchDown(finalX.toFloat(), finalY.toFloat(), 1)
         touchDown(finalX.toFloat(), finalY.toFloat(), 2)
-
-        val moveDuration = (actualDuration * delayMultiplier).toLong()
-        performMove(
-            duration = moveDuration,
-            isJitter = isJitter,
-            PointerMove(1, finalX.toFloat(), finalY.toFloat(), x1.toFloat(), y1.toFloat()),
-            PointerMove(2, finalX.toFloat(), finalY.toFloat(), x2.toFloat(), y2.toFloat())
-        )
-
-        touchUp(1)
-        touchUp(2)
+        try {
+            val moveDuration = (actualDuration * delayMultiplier).toLong()
+            performMove(
+                duration = moveDuration,
+                isJitter = isJitter,
+                PointerMove(1, finalX.toFloat(), finalY.toFloat(), x1.toFloat(), y1.toFloat()),
+                PointerMove(2, finalX.toFloat(), finalY.toFloat(), x2.toFloat(), y2.toFloat())
+            )
+        } finally {
+            withContext(NonCancellable) {
+                touchUp(1)
+                touchUp(2)
+            }
+        }
     }
 
     private class PointerMove(
@@ -276,17 +301,20 @@ object TouchActions {
         val delayMultiplier = getDelayMultiplier()
 
         touchDown(x.toFloat(), y.toFloat(), 1)
+        try {
+            // Random delay
+            val randomDelay = Random.nextLong(20, 31)
+            delay((randomDelay * delayMultiplier).toLong())
 
-        // Random delay
-        val randomDelay = Random.nextLong(20, 31)
-        delay((randomDelay * delayMultiplier).toLong())
-
-        if (isJitter) {
-            val offsetX = Random.nextInt(-3, 4)
-            val offsetY = Random.nextInt(-3, 4)
-            touchMove((x + offsetX).toFloat(), (y + offsetY).toFloat(), 1, isJitter = false)
+            if (isJitter) {
+                val offsetX = Random.nextInt(-3, 4)
+                val offsetY = Random.nextInt(-3, 4)
+                touchMove((x + offsetX).toFloat(), (y + offsetY).toFloat(), 1, isJitter = false)
+            }
+        } finally {
+            withContext(NonCancellable) {
+                touchUp(1)
+            }
         }
-
-        touchUp(1)
     }
 }
