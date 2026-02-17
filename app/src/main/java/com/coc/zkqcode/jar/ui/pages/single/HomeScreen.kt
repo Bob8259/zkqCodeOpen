@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.PrimaryScrollableTabRow
@@ -88,7 +89,15 @@ fun HomeScreen(
     val tabs =
         listOf("主页设置", "账号设置", "提取存档") + List(configCount) { "配置文件${it + 1}" }
 
+    val lazyListState = rememberLazyListState()
     val scope = rememberCoroutineScope()
+    val scrollToBottom: () -> Unit = {
+        scope.launch {
+            // Small delay to let AnimatedVisibility content measure
+            kotlinx.coroutines.delay(300L)
+            lazyListState.animateScrollToItem(lazyListState.layoutInfo.totalItemsCount - 1)
+        }
+    }
     val saveAndRun = {
         scope.launch {
             ConfigManager.saveAndRun {
@@ -153,6 +162,7 @@ fun HomeScreen(
 
         // 2. 中间的内容区域 (使用 weight 占据剩余空间)
         LazyColumn(
+            state = lazyListState,
             modifier = Modifier
                 .weight(1f)
                 .padding(4.dp)
@@ -250,9 +260,14 @@ fun HomeScreen(
                         isMainExpanded = currentMainExpanded,
                         onToggleMainExpanded = { mainBaseExpandedStates[selectedTabIndex] = !currentMainExpanded },
                         isNightExpanded = currentNightExpanded,
-                        onToggleNightExpanded = { builderBaseExpandedStates[selectedTabIndex] = !currentNightExpanded },
+                        onToggleNightExpanded = {
+                            val newExpanded = !currentNightExpanded
+                            builderBaseExpandedStates[selectedTabIndex] = newExpanded
+                            if (newExpanded) scrollToBottom()
+                        },
                         onNavigatePriority = onNavigatePriority,
-                        onNavigateNightPriority = onNavigateNightPriority
+                        onNavigateNightPriority = onNavigateNightPriority,
+                        onScrollToBottom = scrollToBottom
                     )
                 }
             }

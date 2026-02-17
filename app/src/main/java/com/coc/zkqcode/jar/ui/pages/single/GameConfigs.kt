@@ -13,7 +13,8 @@ fun LazyListScope.GameConfig(
     isNightExpanded: Boolean,
     onToggleNightExpanded: () -> Unit,
     onNavigatePriority: (Int) -> Unit = {},
-    onNavigateNightPriority: (Int) -> Unit = {}
+    onNavigateNightPriority: (Int) -> Unit = {},
+    onScrollToBottom: () -> Unit = {}
 ) {
     MainBaseConfig(
         index = index,
@@ -25,6 +26,7 @@ fun LazyListScope.GameConfig(
         index = index,
         isExpanded = isNightExpanded,
         onToggleExpanded = onToggleNightExpanded,
-        onNavigateNightPriority = onNavigateNightPriority
+        onNavigateNightPriority = onNavigateNightPriority,
+        onScrollToBottom = onScrollToBottom
     )
 }
