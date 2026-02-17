@@ -17,6 +17,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.util.basic.RunShell
+import com.coc.zkqcode.core.util.fileactions.LogHelper.showDebugInfo
 import com.coc.zkqcode.interfaces.MainCode
 import com.coc.zkqcode.jar.code.MainScript
 import com.coc.zkqcode.jar.ui.components.CustomButton
@@ -38,19 +39,33 @@ class EnterMainCode : MainCode {
         var isConfigInitialized by remember { mutableStateOf(false) }
 
         LaunchedEffect(Unit) {
+            showDebugInfo("[EnterMainCode] LaunchedEffect started, isConfigLoaded=${GlobalVars.isConfigLoaded}")
             if (GlobalVars.isConfigLoaded) {
+                showDebugInfo("[EnterMainCode] Config already loaded, skipping init")
                 isConfigInitialized = true
                 return@LaunchedEffect
             }
-            val actions = GlobalVars.serverActions
-            if (actions != null) {
-                // Wait for configs to load
-                snapshotFlow { actions.isLoading }.first { !it }
-                ConfigManager.initializeAllConfigs(actions)
-                isConfigInitialized = true
-                GlobalVars.isConfigLoaded = true
-            }
 
+            // Wait for serverActions to become available (may be null if UIWindowService
+            // was restarted by Android before CheckRoot finishes setting up serverActions)
+            val actions = GlobalVars.serverActions ?: run {
+                showDebugInfo("[EnterMainCode] serverActions is NULL, waiting for it to be set...")
+                snapshotFlow { GlobalVars.serverActions }.first { it != null }!!
+            }
+            showDebugInfo("[EnterMainCode] serverActions ready, isLoading=${actions.isLoading}")
+
+            // Wait for configs to load
+            snapshotFlow { actions.isLoading }.first { !it }
+            showDebugInfo("[EnterMainCode] isLoading became false, calling initializeAllConfigs")
+            try {
+                ConfigManager.initializeAllConfigs(actions)
+                showDebugInfo("[EnterMainCode] initializeAllConfigs completed successfully")
+            } catch (e: Exception) {
+                showDebugInfo("[EnterMainCode] initializeAllConfigs FAILED: ${e.message}")
+            }
+            isConfigInitialized = true
+            GlobalVars.isConfigLoaded = true
+            showDebugInfo("[EnterMainCode] Config initialization done")
         }
         if (!isConfigInitialized) {
             Column {
@@ -59,7 +74,7 @@ class EnterMainCode : MainCode {
                     text = "取消初始化",
                     onClick = {
                         runBlocking(Dispatchers.IO) {
-                            RunShell.runNoOutput("am force-stop com.coc.zkqcode")// got some errors, otherwise the configs can be loaded.
+                            RunShell.runNoOutput("am force-stop com.coc.zkqcode >>/dev/null 2>&1")// got some errors, otherwise the configs can be loaded.
                         }
                     }
                 )
