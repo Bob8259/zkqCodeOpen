@@ -37,8 +37,7 @@ object MainBaseTutorial {
         // 1. Process standard priority schemas (Find -> Tap)
         prioritySchemas.forEach { schema ->
             findMultiColors(byteBuffer = screenBuffer, schema = schema)?.let { point ->
-                TouchActions.tap(point.x, point.y)
-                delayWithMultiplier(500)
+                TouchActions.tap(point.x, point.y, delayTime = 500)
             }
         }
 
@@ -60,54 +59,46 @@ object MainBaseTutorial {
                 listOf(415 to 410)
             }
             sequence.forEach { (x, y) ->
-                TouchActions.tap(x, y)
-                delayWithMultiplier(500)
+                TouchActions.tap(x, y, delayTime = 500)
             }
         }
 
         // Important Notice tap
         findMultiColors(schema = MyColors.ImportantNotice)?.let {
-            TouchActions.tap(344, 510)
-            delayWithMultiplier(500)
+            TouchActions.tap(344, 510, delayTime = 500)
         }
         findMultiColors(schema = MyColors.AttackMap)?.let {
             if (findMultiColors(schema = MyColors.TrainTroops) == null && findMultiColors(schema = MyColors.ShopAfterTutorial) == null) {
-                TouchActions.tap(it.x, it.y)
-                delayWithMultiplier(500)
+                TouchActions.tap(it.x, it.y, delayTime = 500)
             }
         }
         // Building logic with Gem speed-up check
         findMultiColors(schema = MyColors.TutorialBuildClick)?.let { point ->
-            TouchActions.tap(point.x, point.y)
-            delayWithMultiplier(500)
+            TouchActions.tap(point.x, point.y, delayTime = 500)
             val isSpeedUp = getStaticConfig(Schema.GLOBAL_SETTINGS.CREATE_GEM_BUILD.key) == "1"
             if (isSpeedUp) {
                 TouchActions.tap(643, 556) // Use gem to speed up
             }
         }
 
-        // Age Entry Workflow
-        findMultiColors(schema = MyColors.EnterAge)?.let {
-            delayWithMultiplier(500)
-            val sequence = listOf(640 to 347, 640 to 347, 773 to 546)
-            sequence.forEach { (x, y) ->
-                TouchActions.tap(x, y)
-                delayWithMultiplier(500)
+            // Age Entry Workflow
+            findMultiColors(schema = MyColors.EnterAge)?.let {
+                val sequence = listOf(640 to 347, 640 to 347, 773 to 546)
+                sequence.forEach { (x, y) ->
+                    TouchActions.tap(x, y, delayTime = 500)
+                }
             }
-        }
 
         // Shop Navigation
         findMultiColors(schema = MyColors.TutorialShop)?.let {
             if (findMultiColors(schema = MyColors.TrainTroops) == null && findMultiColors(schema = MyColors.ShopAfterTutorial) == null) {
-                TouchActions.tap(1193, 632)
-                delayWithMultiplier(1500)
+                TouchActions.tap(1193, 632, delayTime = 1500)
             }
         }
 
         // Dynamic Offset for Inner Shop
         findMultiColors(schema = MyColors.ShopInnerArrow)?.let {
-            TouchActions.tap(it.x - 100, it.y + 50)
-            delayWithMultiplier(500)
+            TouchActions.tap(it.x - 100, it.y + 50, delayTime = 500)
 
         }
 
@@ -131,13 +122,11 @@ object MainBaseTutorial {
                 735 to 85,
             )
             tapPoints.forEachIndexed { _, (x, y) ->
-                TouchActions.tap(x, y)
-                delayWithMultiplier(100)
+                TouchActions.tap(x, y, delayTime = 100)
             }
         }
         findMultiColors(schema = MyColors.TutorialUpgradeTownHall)?.let {
-            TouchActions.tap(it.x, it.y)
-            delayWithMultiplier(500)
+            TouchActions.tap(it.x, it.y, delayTime = 500)
             val isSpeedUp = getStaticConfig(Schema.GLOBAL_SETTINGS.CREATE_GEM_BUILD.key) == "1"
             if (isSpeedUp) {
                 TouchActions.tap(708, 549) // Use gem to speed up
@@ -146,23 +135,19 @@ object MainBaseTutorial {
 
         // Troop Training sequence
         findMultiColors(schema = MyColors.TutorialTrainInner)?.let {
-            TouchActions.tap(666, 250)
-            delayWithMultiplier(1000)
+            TouchActions.tap(666, 250, delayTime = 1000)
             repeat(25) {
-                TouchActions.tap(96, 490)
-                delayWithMultiplier(10)
+                TouchActions.tap(96, 490, delayTime = 10)
             }
             repeat(3) {
-                TouchActions.tap(1231, 64) // Close training page
-                delayWithMultiplier(50)
+                TouchActions.tap(1231, 64, delayTime = 50) // Close training page
             }
         }
 
         // Village Naming Logic
         findMultiColors(schema = MyColors.MyVillageIsCalled)?.let {
             setZKQInputMethod()
-            TouchActions.tap(625, 297)
-            delayWithMultiplier(200)
+            TouchActions.tap(625, 297, delayTime = 200)
 
             var gameName = getStaticConfig(Schema.GLOBAL_SETTINGS.CREATE_PREFIX.key)
             val addSuffix = getStaticConfig(Schema.GLOBAL_SETTINGS.ADD_SUFFIX_SETTING.key) == "1"
@@ -172,8 +157,7 @@ object MainBaseTutorial {
             }
 
             ZKQInputMethodService.instance?.commitGameName(gameName) ?: logAndStop("获取输入法失败")
-            delayWithMultiplier(300)
-            TouchActions.tap(641, 368)
+            TouchActions.tap(641, 368, delayTime = 300)
         }
 
         // Tutorial Conclusion and Cleanup
@@ -181,19 +165,15 @@ object MainBaseTutorial {
             ShowMessage("教程结束，即将进行首尾工作")
 
             // Worker tap sequence
-            TouchActions.tap(598, 43)
-            delayWithMultiplier(300)
+            TouchActions.tap(598, 43, delayTime = 300)
             repeat(5) {
-                TouchActions.tap(649, 672)
-                delayWithMultiplier(300)
+                TouchActions.tap(649, 672, delayTime = 300)
             }
 
             // Token/Pass tap sequence
-            TouchActions.tap(202, 668)
-            delayWithMultiplier(300)
+            TouchActions.tap(202, 668, delayTime = 300)
             repeat(10) {
-                TouchActions.tap(574, 47)
-                delayWithMultiplier(300)
+                TouchActions.tap(574, 47, delayTime = 300)
             }
             reExtractGameSavings()
             return true

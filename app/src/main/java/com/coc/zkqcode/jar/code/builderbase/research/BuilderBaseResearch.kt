@@ -19,13 +19,11 @@ suspend fun builderBaseResearch(): Boolean {
     if (BuilderBaseWorkerAndResearch.detectResearch() && getBooleanConfigRuntime(Schema.BUILDER_BASE_SETTINGS.BUILDER_BASE_RESEARCH.key)) {
         val research = findMultiColors(schema = MyColors.ResearchIcon)
         if (research != null) {
-            TouchActions.tap(research.x, research.y)
-            delayWithMultiplier(600)
+            TouchActions.tap(research.x, research.y, delayTime = 600)
             TouchActions.tap(research.x, research.y + 130)//Open research tab
             val backArrow = findMultiColorsUntil(schemas = listOf(MyColors.BuilderResearchBackArrow), duration = 1000)
             if (backArrow != null) {
-                TouchActions.tap(backArrow.x, backArrow.y)
-                delayWithMultiplier(600)
+                TouchActions.tap(backArrow.x, backArrow.y, delayTime = 600)
                 builderBasecheckAllResearch()
             }
         }
@@ -51,10 +49,8 @@ suspend fun builderBasecheckAllResearch() {
                 val insufficient = findMultiColors(schema = MyColors.BuilderResearchInsufficientResources.rescope(resX1, y1, x1, y2))
                 if (insufficient == null) {
                     ShowMessage("开始研究 ${troop.displayName}")
-                    TouchActions.tap(elixirIcon.x, elixirIcon.y)
-                    delayWithMultiplier(500)
-                    TouchActions.tap(955, 610)
-                    delayWithMultiplier(200)
+                    TouchActions.tap(elixirIcon.x, elixirIcon.y, delayTime = 500)
+                    TouchActions.tap(955, 610, delayTime = 200)
                     clickRightBottom(2)
                     return
                 } else {

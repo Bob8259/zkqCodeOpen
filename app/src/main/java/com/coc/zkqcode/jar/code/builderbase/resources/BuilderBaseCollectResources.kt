@@ -10,8 +10,7 @@ import com.coc.zkqcode.jar.code.universal.enterMainScreen
 
 suspend fun collectBuilderBaseResources(): Boolean {
     zoomSmallBuilderBase()
-    swipe(587, 420, 587, 700)
-    delayWithMultiplier(100)
+    swipe(587, 420, 587, 700, delayTime = 100)
 
     repeat(3) {
         // Define the resource schemas to iterate through in each cycle

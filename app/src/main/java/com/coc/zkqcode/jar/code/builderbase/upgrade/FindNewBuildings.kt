@@ -10,8 +10,7 @@ suspend fun builderBaseFindNewBuildings(): Boolean {
 
     val worker = findMultiColorsUntil(schemas = listOf(MyColors.BuilderBaseWorker), duration = 1000)
     if (worker != null) {
-        TouchActions.tap(worker.x, worker.y)
-        delayWithMultiplier(500)
+        TouchActions.tap(worker.x, worker.y, delayTime = 500)
         var found = false
         iterateBuilderBaseBuildingUpgradeList { result ->
             val buildings = result.buildings
@@ -22,9 +21,7 @@ suspend fun builderBaseFindNewBuildings(): Boolean {
                 if (newBuilding != null) {
                     if (newBuilding.y > 530) return@iterateBuilderBaseBuildingUpgradeList false
                     ShowMessage("检测到新建筑: ${newBuilding.name}")
-                    TouchActions.tap(newBuilding.x + 20, newBuilding.y + 20)
-                    found = true
-                    delayWithMultiplier(1500)
+                    TouchActions.tap(newBuilding.x + 20, newBuilding.y + 20, delayTime = 1500)
                     return@iterateBuilderBaseBuildingUpgradeList true
                 }
             }

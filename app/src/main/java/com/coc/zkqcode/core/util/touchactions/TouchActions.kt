@@ -1,6 +1,7 @@
 package com.coc.zkqcode.core.util.touchactions
 
 import com.coc.zkqcode.core.data.database.GlobalVars
+import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndStop
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.delay
@@ -66,7 +67,8 @@ object TouchActions {
         for (id in pointersCopy) {
             try {
                 touchUp(id)
-            } catch (_: Exception) { }
+            } catch (_: Exception) {
+            }
         }
         activePointers.clear()
     }
@@ -295,7 +297,8 @@ object TouchActions {
     suspend fun tap(
         x: Int,
         y: Int,
-        isJitter: Boolean = true
+        isJitter: Boolean = true,
+        delayTime: Int = 10
     ) {
         waitForPlay()
         val delayMultiplier = getDelayMultiplier()
@@ -314,6 +317,7 @@ object TouchActions {
         } finally {
             withContext(NonCancellable) {
                 touchUp(1)
+                delayWithMultiplier(delayTime)
             }
         }
     }

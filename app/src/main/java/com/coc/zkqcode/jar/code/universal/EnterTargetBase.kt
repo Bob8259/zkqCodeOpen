@@ -57,16 +57,14 @@ suspend fun enterBuilderBase(isCheck: Boolean): Boolean {
                 // 3. Handle Tutorial / Rebuild state
                 val rebuildPoint = findMultiColors(schema = MyColors.RebuildBuilderBase)
                 if (rebuildPoint != null) {
-                    TouchActions.tap(rebuildPoint.x, rebuildPoint.y)
-                    delayWithMultiplier(300)
+                    TouchActions.tap(rebuildPoint.x, rebuildPoint.y, delayTime = 300)
 
                     // Secondary loop: Search for RebuildBoat within a 1s window
                     val boatSearchStartTime = System.currentTimeMillis()
                     while (System.currentTimeMillis() - boatSearchStartTime < 1000L) {
                         val boatPoint = findMultiColors(schema = MyColors.RebuildBoat)
                         if (boatPoint != null) {
-                            TouchActions.tap(boatPoint.x, boatPoint.y)
-                            delayWithMultiplier(500)
+                            TouchActions.tap(boatPoint.x, boatPoint.y, delayTime = 500)
                             AllTutorials.allBaseTutorial()
                             break
                         }

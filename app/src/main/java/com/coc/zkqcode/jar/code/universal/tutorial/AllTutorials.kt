@@ -56,8 +56,7 @@ object AllTutorials {
         if (point != null) {
             if (times < 10) {
                 // New logic: Perform a direct tap if times is less than 10
-                TouchActions.tap(point.x, point.y)
-                delayWithMultiplier(500)
+                TouchActions.tap(point.x, point.y, delayTime = 500)
             } else {
                 // Existing logic: Trigger the complex tutorial sequence if times is 10 or more
                 allBaseTutorial()

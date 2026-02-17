@@ -41,8 +41,7 @@ object UpgradeExistingBuildings {
                     return enterMainScreen() // If we can't build anymore, might as well stop everything
                 }
 
-                TouchActions.tap(worker.x, worker.y)
-                delayWithMultiplier(500)
+                TouchActions.tap(worker.x, worker.y, delayTime = 500)
 
                 // Locate the specific building in the UI
                 if (!findSpecificBuilding(building)) {
@@ -56,8 +55,7 @@ object UpgradeExistingBuildings {
                 val hammer =
                     findMultiColorsUntil(schemas = listOf(MyColors.UpgradeHammer), duration = 1000) ?: continue // Should not happen if build was found, but be safe
 
-                TouchActions.tap(hammer.x, hammer.y)
-                delayWithMultiplier(500)
+                TouchActions.tap(hammer.x, hammer.y, delayTime = 500)
 
                 // Check for resource availability immediately after clicking upgrade
                 if (findMultiColors(schema = MyColors.BuilderBaseInsufficientResources) != null) {
@@ -67,9 +65,8 @@ object UpgradeExistingBuildings {
 
                 // Successful upgrade flow
                 TouchActions.tap(633, 631) // normal upgrade or unlock new buildings
-                TouchActions.tap(982, 634)// machines
+                TouchActions.tap(982, 634, delayTime = 500)// machines
                 ShowMessage("升级成功: $building (第 $attempt 个)")
-                delayWithMultiplier(500)
             }
         }
 
@@ -84,8 +81,7 @@ object UpgradeExistingBuildings {
         iterateBuilderBaseBuildingUpgradeList { result ->
             val building = result.buildings.find { it.name == buildingName }
             if (building != null) {
-                TouchActions.tap(building.x + 20, building.y + 20)
-                delayWithMultiplier(1500)
+                TouchActions.tap(building.x + 20, building.y + 20, delayTime = 1500)
                 found = true
                 true
             } else {

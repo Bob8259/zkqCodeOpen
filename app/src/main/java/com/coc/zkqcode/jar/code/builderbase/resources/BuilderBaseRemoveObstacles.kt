@@ -62,8 +62,7 @@ suspend fun builderBaseRemoveObstacles(): Boolean {
     if (worker.total == 2) {
         ShowMessage("当前已解锁第二区域")
         swipe(672, 159, 1206, 420, 700)
-        TouchActions.tap(1228, 316)
-        delayWithMultiplier(500)
+        TouchActions.tap(1228, 316, delayTime = 500)
         removeAllBuildings()
         removeObstacles()
         swipe(867, 163, 1211, 450, 700)
@@ -114,8 +113,7 @@ private suspend fun removeAllBuildings() {
 
         // Post-action delays and fixed-coordinate taps to finalize state
         delayWithMultiplier(500)
-        TouchActions.tap(1005, 265)
-        delayWithMultiplier(500)
+        TouchActions.tap(1005, 265, delayTime = 500)
     }
 }
 
@@ -127,14 +125,11 @@ private suspend fun removeObstacles() {
         val centerX = box.centerX().toInt()
         val centerY = box.centerY().toInt()
         ShowMessage("x: $centerX, y: $centerY")
-        TouchActions.tap(centerX, centerY)
-        delayWithMultiplier(500)
+        TouchActions.tap(centerX, centerY, delayTime = 500)
         // Tap confirmation/action button
-        TouchActions.tap(616, 488)
-        delayWithMultiplier(100)
+        TouchActions.tap(616, 488, delayTime = 100)
         repeat(2) {
-            TouchActions.tap(14, 558)
-            if (it == 0) delayWithMultiplier(100) else delayWithMultiplier(500)
+            TouchActions.tap(14, 558, delayTime = if (it == 0) 100 else 500)
         }
     }
 }

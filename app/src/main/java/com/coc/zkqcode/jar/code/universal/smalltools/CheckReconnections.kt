@@ -65,8 +65,7 @@ suspend fun checkReconnections(): Boolean {
 private suspend fun checkPrivacy() {
     val point = findMultiColors(schema = MyColors.PrivacyInfo)
     if (point != null) {
-        TouchActions.tap(point.x, point.y)
-        delayWithMultiplier(200)
+        TouchActions.tap(point.x, point.y, delayTime = 200)
         reExtractGameSavings()
     }
 }
