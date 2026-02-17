@@ -41,8 +41,10 @@ import com.coc.zkqcode.jar.ui.components.SettingDropdown
 import com.coc.zkqcode.jar.ui.components.SettingInputRow
 import com.coc.zkqcode.core.ui.theme.AppColors
 import com.coc.zkqcode.core.util.exit.AppExitHelper
+import com.coc.zkqcode.core.util.fileactions.LogHelper.showDebugInfo
 import com.coc.zkqcode.statehelper.AppMode
 import com.coc.zkqcode.statehelper.AppStateManager
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
@@ -94,7 +96,8 @@ fun HomeScreen(
     val scrollToBottom: () -> Unit = {
         scope.launch {
             // Small delay to let AnimatedVisibility content measure
-            kotlinx.coroutines.delay(300L)
+            showDebugInfo("scrollToBottom")
+            delay(300L)
             lazyListState.animateScrollToItem(lazyListState.layoutInfo.totalItemsCount - 1)
         }
     }
@@ -120,7 +123,7 @@ fun HomeScreen(
     // Auto-Run Timer Logic
     LaunchedEffect(GlobalVars.isAutoRunEnabled, GlobalVars.autoRunTimer) {
         if (GlobalVars.isAutoRunEnabled) {
-            kotlinx.coroutines.delay(1000L)
+            delay(1000L)
             GlobalVars.autoRunTimer--
             if (GlobalVars.autoRunTimer <= 0) {
                 saveAndRun()

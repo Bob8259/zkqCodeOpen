@@ -28,6 +28,7 @@ fun LazyListScope.MainBaseConfig(
     onToggleExpanded: () -> Unit,
     onNavigatePriority: (Int) -> Unit = {}
 ) {
+    // Header
     item {
         FlowRow {
             Text(
@@ -37,7 +38,6 @@ fun LazyListScope.MainBaseConfig(
                 modifier = Modifier.padding(10.dp),
                 textAlign = TextAlign.Start
             )
-            // 添加一个按钮来控制缩放
             CustomButton(
                 onClick = onToggleExpanded,
                 text = if (isExpanded) "▼ 缩起主世界设置" else "▶ 展开主世界设置"
@@ -45,6 +45,7 @@ fun LazyListScope.MainBaseConfig(
         }
     }
 
+    // Attack & Resource requirements
     item {
         AnimatedVisibility(visible = isExpanded) {
             Column {
@@ -57,6 +58,14 @@ fun LazyListScope.MainBaseConfig(
                 SettingInputRow(key = "${MAIN_BASE_SETTINGS.GOLD_REQUIREMENT.key}_c$index")
                 SettingInputRow(key = "${MAIN_BASE_SETTINGS.ELIXIR_REQUIREMENT.key}_c$index")
                 SettingInputRow(key = "${MAIN_BASE_SETTINGS.DARK_ELIXIR_REQUIREMENT.key}_c$index")
+            }
+        }
+    }
+
+    // Battle adjustments
+    item {
+        AnimatedVisibility(visible = isExpanded) {
+            Column {
                 FlowRow {
                     SettingCheckBox(
                         key = "${MAIN_BASE_SETTINGS.DYNAMIC_ADJUSTMENT.key}_c$index",
@@ -72,26 +81,38 @@ fun LazyListScope.MainBaseConfig(
                 AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.PLAY_LADDER.key}_c$index"]?.value == "1") {
                     SettingCheckBox(key = "${MAIN_BASE_SETTINGS.CHANGE_BASE.key}_c$index")
                 }
+            }
+        }
+    }
 
-                FlowRow {
-                    SettingCheckBox(
-                        key = "${MAIN_BASE_SETTINGS.WAIT_FOR_BATTLE.key}_c$index",
-                        explain = "勾选后，如果当前处于对战冷却时间，则会一直等待到冷却结束。"
-                    )
-                    SettingCheckBox(
-                        key = "${MAIN_BASE_SETTINGS.RESTART_GAME.key}_c$index",
-                        explain = "勾选后，部署完所有部队后，辅助会重启游戏。仅对主世界对战有效。"
-                    )
-                    SettingCheckBox(
-                        key = "${MAIN_BASE_SETTINGS.MANUAL_TRAINING.key}_c$index",
-                        explain = "勾选后，辅助将不会进入配兵页面，请手动配兵。\n\n注意：辅助不会自动开启超级兵。"
-                    )
-                    SettingCheckBox(
-                        key = "${MAIN_BASE_SETTINGS.CHANGE_HEROES.key}_c$index",
-                        explain = "勾选后，辅助会随机更换英雄，宠物以及装备。可能影响到升级穿戴装备的功能，请谨慎勾选。"
-                    )
-                }
+    // Battle behavior options
+    item {
+        AnimatedVisibility(visible = isExpanded) {
+            FlowRow {
+                SettingCheckBox(
+                    key = "${MAIN_BASE_SETTINGS.WAIT_FOR_BATTLE.key}_c$index",
+                    explain = "勾选后，如果当前处于对战冷却时间，则会一直等待到冷却结束。"
+                )
+                SettingCheckBox(
+                    key = "${MAIN_BASE_SETTINGS.RESTART_GAME.key}_c$index",
+                    explain = "勾选后，部署完所有部队后，辅助会重启游戏。仅对主世界对战有效。"
+                )
+                SettingCheckBox(
+                    key = "${MAIN_BASE_SETTINGS.MANUAL_TRAINING.key}_c$index",
+                    explain = "勾选后，辅助将不会进入配兵页面，请手动配兵。\n\n注意：辅助不会自动开启超级兵。"
+                )
+                SettingCheckBox(
+                    key = "${MAIN_BASE_SETTINGS.CHANGE_HEROES.key}_c$index",
+                    explain = "勾选后，辅助会随机更换英雄，宠物以及装备。可能影响到升级穿戴装备的功能，请谨慎勾选。"
+                )
+            }
+        }
+    }
 
+    // AI deploy & Tactics
+    item {
+        AnimatedVisibility(visible = isExpanded) {
+            Column {
                 AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.AI_DEPLOY_TROOPS.key}_c$index"]?.value == "0") {
                     SettingDropdown(
                         key = "${MAIN_BASE_SETTINGS.TACTICS_MODE.key}_c$index",
@@ -118,7 +139,14 @@ fun LazyListScope.MainBaseConfig(
                     thickness = 1.dp,
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 1f)
                 )
+            }
+        }
+    }
 
+    // Donation & Clan Castle
+    item {
+        AnimatedVisibility(visible = isExpanded) {
+            Column {
                 FlowRow {
                     SettingCheckBox(key = "${MAIN_BASE_SETTINGS.DONATION_SETTING.key}_c$index")
                     SettingCheckBox(key = "${MAIN_BASE_SETTINGS.REQUEST_REINFORCEMENT_SETTING.key}_c$index")
@@ -129,7 +157,14 @@ fun LazyListScope.MainBaseConfig(
                 AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.DONATION_SETTING.key}_c$index"]?.value == "1") {
                     SettingInputRow(key = "${MAIN_BASE_SETTINGS.DONATION_TIMES.key}_c$index")
                 }
+            }
+        }
+    }
 
+    // Research configs
+    item {
+        AnimatedVisibility(visible = isExpanded) {
+            Column {
                 AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.RESEARCH_SETTING.key}_c$index"]?.value == "1") {
                     ResearchConfigs(index)
                 }
@@ -139,7 +174,14 @@ fun LazyListScope.MainBaseConfig(
                     thickness = 1.dp,
                     color = MaterialTheme.colorScheme.onSurface
                 )
+            }
+        }
+    }
 
+    // Building & Wall settings
+    item {
+        AnimatedVisibility(visible = isExpanded) {
+            Column {
                 FlowRow {
                     SettingCheckBox(key = "${MAIN_BASE_SETTINGS.BUILD_SETTING.key}_c$index")
                     SettingCheckBox(key = "${MAIN_BASE_SETTINGS.WALL_UPGRADE_SETTINGS.key}_c$index")
@@ -157,32 +199,58 @@ fun LazyListScope.MainBaseConfig(
                         SettingInputRow(key = "${MAIN_BASE_SETTINGS.UPGRADE_WALL_THRESHOLD.key}_c$index")
                     }
                 }
+            }
+        }
+    }
 
+    // Upgrade configs
+    item {
+        AnimatedVisibility(visible = isExpanded) {
+            Column {
                 AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.BUILD_SETTING.key}_c$index"]?.value == "1") {
                     UpgradeConfigs(index, onNavigatePriority)
                 }
+            }
+        }
+    }
 
+    // Pet upgrades
+    item {
+        AnimatedVisibility(visible = isExpanded) {
+            Column {
                 SettingCheckBox(key = "${MAIN_BASE_SETTINGS.UPGRADE_PETS.key}_c$index")
 
                 AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.UPGRADE_PETS.key}_c$index"]?.value == "1") {
                     PetConfigs(index)
                 }
+            }
+        }
+    }
 
-                FlowRow {
-                    SettingCheckBox(
-                        key = "${MAIN_BASE_SETTINGS.HELPER_SETTINGS.key}_c$index",
-                        explain = "勾选后，会自动用实验助手以及建筑工人学徒。"
-                    )
-                    SettingCheckBox(
-                        key = "${MAIN_BASE_SETTINGS.UPGRADE_RESEARCH_HELPER.key}_c$index",
-                        explain = "升级实验助手的优先级高于购买建筑工人和升级工人学徒，请谨慎勾选！"
-                    )
-                    SettingCheckBox(
-                        key = "${MAIN_BASE_SETTINGS.UPGRADE_BUILDER_APPRENTICE.key}_c$index",
-                        explain = "升级工人学徒的优先级高于购买建筑工人，请谨慎勾选！"
-                    )
-                }
+    // Helper settings
+    item {
+        AnimatedVisibility(visible = isExpanded) {
+            FlowRow {
+                SettingCheckBox(
+                    key = "${MAIN_BASE_SETTINGS.HELPER_SETTINGS.key}_c$index",
+                    explain = "勾选后，会自动用实验助手以及建筑工人学徒。"
+                )
+                SettingCheckBox(
+                    key = "${MAIN_BASE_SETTINGS.UPGRADE_RESEARCH_HELPER.key}_c$index",
+                    explain = "升级实验助手的优先级高于购买建筑工人和升级工人学徒，请谨慎勾选！"
+                )
+                SettingCheckBox(
+                    key = "${MAIN_BASE_SETTINGS.UPGRADE_BUILDER_APPRENTICE.key}_c$index",
+                    explain = "升级工人学徒的优先级高于购买建筑工人，请谨慎勾选！"
+                )
+            }
+        }
+    }
 
+    // Clan Games & War
+    item {
+        AnimatedVisibility(visible = isExpanded) {
+            Column {
                 FlowRow {
                     SettingCheckBox(
                         key = "${MAIN_BASE_SETTINGS.DO_CLAN_GAMES.key}_c$index",
@@ -205,7 +273,14 @@ fun LazyListScope.MainBaseConfig(
                     SettingCheckBox(key = "${MAIN_BASE_SETTINGS.START_LEAGUE_SETTINGS.key}_c$index")
                     SettingCheckBox(key = "${MAIN_BASE_SETTINGS.START_RAID.key}_c$index")
                 }
+            }
+        }
+    }
 
+    // Shop purchases
+    item {
+        AnimatedVisibility(visible = isExpanded) {
+            Column {
                 FlowRow {
                     listOf(
                         MAIN_BASE_SETTINGS.BUY_STAR_ORE_WITH_RAID_MEDAL,
@@ -235,35 +310,48 @@ fun LazyListScope.MainBaseConfig(
                     thickness = 1.dp,
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 1f)
                 )
+            }
+        }
+    }
 
-                FlowRow {
-                    SettingCheckBox(key = "${MAIN_BASE_SETTINGS.UPGRADE_WEARABLE_GEAR.key}_c$index")
-                    SettingCheckBox(key = "${MAIN_BASE_SETTINGS.UPGRADE_ALL_GEAR.key}_c$index")
-                    SettingCheckBox(
-                        key = "${MAIN_BASE_SETTINGS.REMOVE_OBSTACLES.key}_c$index",
-                        explain = "勾选后，当主世界奖杯大于500时生效。有极小概率（约1%）移除稀有物品"
-                    )
+    // Gear & Rewards
+    item {
+        AnimatedVisibility(visible = isExpanded) {
+            FlowRow {
+                SettingCheckBox(key = "${MAIN_BASE_SETTINGS.UPGRADE_WEARABLE_GEAR.key}_c$index")
+                SettingCheckBox(key = "${MAIN_BASE_SETTINGS.UPGRADE_ALL_GEAR.key}_c$index")
+                SettingCheckBox(
+                    key = "${MAIN_BASE_SETTINGS.REMOVE_OBSTACLES.key}_c$index",
+                    explain = "勾选后，当主世界奖杯大于500时生效。有极小概率（约1%）移除稀有物品"
+                )
 
-                    SettingCheckBox(key = "${MAIN_BASE_SETTINGS.CLAIM_TIMED_REWARDS.key}_c$index")
-                    SettingCheckBox(
-                        key = "${MAIN_BASE_SETTINGS.CLAIM_TOKEN_REWARDS.key}_c$index",
-                        explain = "仅在资源全满后才会领取"
-                    )
+                SettingCheckBox(key = "${MAIN_BASE_SETTINGS.CLAIM_TIMED_REWARDS.key}_c$index")
+                SettingCheckBox(
+                    key = "${MAIN_BASE_SETTINGS.CLAIM_TOKEN_REWARDS.key}_c$index",
+                    explain = "仅在资源全满后才会领取"
+                )
 
-                    SettingCheckBox(key = "${MAIN_BASE_SETTINGS.CLAIM_CAPITAL_GOLD.key}_c$index")
-                    SettingCheckBox(key = "${MAIN_BASE_SETTINGS.DONATE_CAPITAL_GOLD.key}_c$index")
-                    SettingCheckBox(key = "${MAIN_BASE_SETTINGS.CLAIM_FREE_SHOP_REWARDS.key}_c$index")
+                SettingCheckBox(key = "${MAIN_BASE_SETTINGS.CLAIM_CAPITAL_GOLD.key}_c$index")
+                SettingCheckBox(key = "${MAIN_BASE_SETTINGS.DONATE_CAPITAL_GOLD.key}_c$index")
+                SettingCheckBox(key = "${MAIN_BASE_SETTINGS.CLAIM_FREE_SHOP_REWARDS.key}_c$index")
 
-                    SettingCheckBox(key = "${MAIN_BASE_SETTINGS.CLAIM_ACHIEVEMENT_GEMS.key}_c$index")
-                    SettingCheckBox(
-                        key = "${MAIN_BASE_SETTINGS.AUTO_JOIN_CLAN.key}_c$index",
-                        explain = "勾选此选项后，紫孔雀不仅会自动加部落，也会自动建造部落城堡。但若不勾选此选项，就既不会加部落，也不会建造部落城堡。注意：加部落功能仅对未加入部落的账号生效。"
-                    )
-                    SettingCheckBox(
-                        key = "${MAIN_BASE_SETTINGS.USE_TEMP_ITEMS.key}_c$index",
-                        explain = "勾选此选项后，紫孔雀会使用研究浓汤和建筑工人大餐。并且为了防止重复使用导致道具失效，每次只会使用一个道具。"
-                    )
-                }
+                SettingCheckBox(key = "${MAIN_BASE_SETTINGS.CLAIM_ACHIEVEMENT_GEMS.key}_c$index")
+                SettingCheckBox(
+                    key = "${MAIN_BASE_SETTINGS.USE_TEMP_ITEMS.key}_c$index",
+                    explain = "勾选此选项后，紫孔雀会使用研究浓汤和建筑工人大餐。并且为了防止重复使用导致道具失效，每次只会使用一个道具。"
+                )
+            }
+        }
+    }
+
+    // Clan join
+    item {
+        AnimatedVisibility(visible = isExpanded) {
+            Column {
+                SettingCheckBox(
+                    key = "${MAIN_BASE_SETTINGS.AUTO_JOIN_CLAN.key}_c$index",
+                    explain = "勾选此选项后，紫孔雀不仅会自动加部落，也会自动建造部落城堡。但若不勾选此选项，就既不会加部落，也不会建造部落城堡。注意：加部落功能仅对未加入部落的账号生效。"
+                )
 
                 AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.AUTO_JOIN_CLAN.key}_c$index"]?.value == "1") {
                     Column {
@@ -271,7 +359,14 @@ fun LazyListScope.MainBaseConfig(
                         SettingInputRow(key = "${MAIN_BASE_SETTINGS.CLAN_JOIN_MESSAGE.key}_c$index")
                     }
                 }
+            }
+        }
+    }
 
+    // Consecutive clans & Invite
+    item {
+        AnimatedVisibility(visible = isExpanded) {
+            Column {
                 FlowRow {
                     SettingCheckBox(
                         key = "${MAIN_BASE_SETTINGS.CREATE_CONSECUTIVE_CLANS.key}_c$index",
