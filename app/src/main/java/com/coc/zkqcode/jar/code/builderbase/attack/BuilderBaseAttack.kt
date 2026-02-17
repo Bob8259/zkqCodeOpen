@@ -10,21 +10,21 @@ import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.enterBuilderBase
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.smalltools.checkReconnections
-import com.coc.zkqcode.jar.code.universal.smalltools.getConfigRuntime
+import com.coc.zkqcode.jar.code.universal.smalltools.getBooleanConfigRuntime
 import com.coc.zkqcode.jar.ui.schema.Schema
 
 suspend fun builderBaseAttack(): Boolean {
-    if (getConfigRuntime(Schema.BUILDER_BASE_SETTINGS.BUILDER_BASE_FARMING.key) != "1") {
+    if (!getBooleanConfigRuntime(Schema.BUILDER_BASE_SETTINGS.BUILDER_BASE_FARMING.key)) {
         ShowMessage("未开启打夜世界")
         return true
     }
     val goldPosition = findMultiColors(schema = MyColors.BuilderBaseGold)
     val exilePosition = findMultiColors(schema = MyColors.BuilderBaseExiler)
     val isResourcesFull = goldPosition != null && exilePosition != null && goldPosition.x < 1015 && exilePosition.x < 1015
-    if (isResourcesFull && getConfigRuntime(Schema.BUILDER_BASE_SETTINGS.STOP_WHEN_RESOURCE_FULL.key) == "1") {
+    if (isResourcesFull && getBooleanConfigRuntime(Schema.BUILDER_BASE_SETTINGS.STOP_WHEN_RESOURCE_FULL.key)) {
         ShowMessage("资源已满，停止对战")
     } else {
-        if (getConfigRuntime(Schema.BUILDER_BASE_SETTINGS.TROPHY_PUSHING_MODE.key) == "1")
+        if (getBooleanConfigRuntime(Schema.BUILDER_BASE_SETTINGS.TROPHY_PUSHING_MODE.key))
 
             if (goldPosition != null && goldPosition.x < 1015) {
                 realAttack("gold")

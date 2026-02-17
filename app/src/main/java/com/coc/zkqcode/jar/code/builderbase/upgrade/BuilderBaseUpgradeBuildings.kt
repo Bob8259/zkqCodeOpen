@@ -15,7 +15,7 @@ import com.coc.zkqcode.jar.code.universal.clickRightBottom
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
-import com.coc.zkqcode.jar.code.universal.smalltools.getConfigRuntime
+import com.coc.zkqcode.jar.code.universal.smalltools.getBooleanConfigRuntime
 import com.coc.zkqcode.jar.ui.schema.Schema
 import kotlin.math.sqrt
 
@@ -91,9 +91,9 @@ suspend fun buildAllNewBuildings(): Boolean {
 suspend fun checkContinueBuild(): Boolean {
     val workerNumber = BuilderBaseWorkerAndResearch.detectWorkerNumber()
     ShowMessage("夜世界工人数量：${workerNumber.available}/${workerNumber.total}")
-    return !(workerNumber.available == 0 || (workerNumber.available == 1 && getConfigRuntime(
+    return !(workerNumber.available == 0 || (workerNumber.available == 1 && getBooleanConfigRuntime(
         Schema.BUILDER_BASE_SETTINGS.NIGHT_SAVE_WORKER.key
-    ) == "1"))
+    )))
 }
 
 //For other functions, return false usually means fails to go back to main screen.
