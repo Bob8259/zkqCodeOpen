@@ -9,6 +9,7 @@ import com.coc.zkqcode.jar.code.universal.clickRightBottom
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
+import com.coc.zkqcode.jar.code.universal.smalltools.getBooleanConfigRuntime
 import com.coc.zkqcode.jar.code.universal.smalltools.getConfigRuntime
 import com.coc.zkqcode.jar.ui.schema.details.BuilderBaseBuildings
 import com.coc.zkqcode.jar.ui.schema.details.BuilderBaseBuildingsPriority
@@ -98,7 +99,7 @@ object UpgradeExistingBuildings {
     private fun getOrderedList(buildings: List<String>): List<String> {
         // Filter buildings that are enabled in settings
         val enabledBuildingNames = BuilderBaseBuildings.all.filter {
-            getConfigRuntime(it.key) == "1"
+            getBooleanConfigRuntime(it.key)
         }.map { it.displayName }.toSet()
 
         val priorityMap = BuilderBaseBuildingsPriority.all.associate { settingDef ->

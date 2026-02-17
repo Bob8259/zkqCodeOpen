@@ -10,13 +10,13 @@ import com.coc.zkqcode.jar.code.universal.clickRightBottom
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
-import com.coc.zkqcode.jar.code.universal.smalltools.getConfigRuntime
+import com.coc.zkqcode.jar.code.universal.smalltools.getBooleanConfigRuntime
 import com.coc.zkqcode.jar.ui.schema.Schema
 import com.coc.zkqcode.jar.ui.schema.details.BuilderBaseTroops
 
 
 suspend fun builderBaseResearch(): Boolean {
-    if (BuilderBaseWorkerAndResearch.detectResearch() && getConfigRuntime(Schema.BUILDER_BASE_SETTINGS.BUILDER_BASE_RESEARCH.key) == "1") {
+    if (BuilderBaseWorkerAndResearch.detectResearch() && getBooleanConfigRuntime(Schema.BUILDER_BASE_SETTINGS.BUILDER_BASE_RESEARCH.key)) {
         val research = findMultiColors(schema = MyColors.ResearchIcon)
         if (research != null) {
             TouchActions.tap(research.x, research.y)
@@ -36,7 +36,7 @@ suspend fun builderBaseResearch(): Boolean {
 suspend fun builderBasecheckAllResearch() {
     for (i in BuilderBaseTroops.all.indices) {
         val troop = BuilderBaseTroops.all[i]
-        if (getConfigRuntime(troop.key) == "1") {
+        if (getBooleanConfigRuntime(troop.key)) {
             val row = i / 6
             val col = i % 6
 

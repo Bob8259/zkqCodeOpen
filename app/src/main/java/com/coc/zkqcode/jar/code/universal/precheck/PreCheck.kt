@@ -6,14 +6,14 @@ import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
-import com.coc.zkqcode.jar.code.universal.smalltools.getConfigRuntime
+import com.coc.zkqcode.jar.code.universal.smalltools.getBooleanConfigRuntime
 import com.coc.zkqcode.jar.ui.schema.Schema
 
 object PreCheck {
     suspend fun claimAchievement(): Boolean {
-        val isClaimAchievement = getConfigRuntime(
+        val isClaimAchievement = getBooleanConfigRuntime(
             Schema.MAIN_BASE_SETTINGS.CLAIM_ACHIEVEMENT_GEMS.key
-        ) == "1"
+        )
         if (isClaimAchievement) {
             val point = findMultiColors(schema = MyColors.Achievement)
             if (point != null) {
