@@ -1,5 +1,7 @@
 package com.coc.zkqcode.jar.ui.pages.builderbase
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
@@ -46,26 +48,30 @@ fun BuilderBaseUpgradeConfigs(index: Int, onNavigatePriority: (Int) -> Unit = {}
             }
         }
     }
-    Row {
-        CustomButton(text = "一键全选", onClick = selectAll)
-        CustomButton(text = "一键反选", onClick = invertSelection)
-        CustomButton(text = if (isExpanded.value) "缩起" else "展开", onClick = { isExpanded.value = !isExpanded.value })
-    }
+    Column {
+        Row {
+            CustomButton(text = "一键全选", onClick = selectAll)
+            CustomButton(text = "一键反选", onClick = invertSelection)
+            CustomButton(text = if (isExpanded.value) "缩起" else "展开", onClick = { isExpanded.value = !isExpanded.value })
+        }
 
-    if (isExpanded.value) {
-        CustomButton(
-            onClick = { onNavigatePriority(index) },
-            text = "点击调整夜世界升级优先度"
-        )
-        FlowRow {
-            items.forEach { item ->
-                SettingCheckBox(key = "${item.key}_c${index}")
+        AnimatedVisibility(visible = isExpanded.value) {
+            Column {
+                CustomButton(
+                    onClick = { onNavigatePriority(index) },
+                    text = "点击调整夜世界升级优先度"
+                )
+                FlowRow {
+                    items.forEach { item ->
+                        SettingCheckBox(key = "${item.key}_c${index}")
+                    }
+                }
             }
         }
+        HorizontalDivider(
+            modifier = Modifier.padding(top = 6.dp),
+            thickness = 1.dp,
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 1f)
+        )
     }
-    HorizontalDivider(
-        modifier = Modifier.padding(top = 6.dp),
-        thickness = 1.dp,
-        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 1f)
-    )
 }
