@@ -45,7 +45,7 @@ object FindBuildPosition {
             ShowMessage("未找到红色叉，错误截图已保存到/sdcard/zkqFiles/bugReporter\n请将截图反馈给作者")
             BugReporter.takeScreenshot("Red_Cross_Not_Found")
             killGame()
-            clickRightBottom()
+            clickRightBottom(1)
             return null
         }
     }

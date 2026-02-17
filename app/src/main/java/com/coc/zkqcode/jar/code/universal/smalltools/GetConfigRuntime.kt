@@ -18,6 +18,10 @@ fun getConfigRuntime(configName: String): String {
     return result
 }
 
+fun getBooleanConfigRuntime(configName: String): Boolean {
+    return getConfigRuntime(configName) == "1"
+}
+
 fun getStaticConfig(key: String): String {
     return GlobalVars.configStates[key]?.value ?: logAndStop("Failed to get configuration for: $key")
 }

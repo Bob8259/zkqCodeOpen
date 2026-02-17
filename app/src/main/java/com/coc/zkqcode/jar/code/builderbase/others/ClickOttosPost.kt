@@ -40,7 +40,7 @@ suspend fun clickOttosOutPost(): Boolean {
         if (arrow != null) {
             TouchActions.tap(arrow.x + 20, arrow.y + 100)
             delayWithMultiplier(10)
-            clickRightBottom()
+            clickRightBottom(1)
             delayWithMultiplier(50)
         }
     }

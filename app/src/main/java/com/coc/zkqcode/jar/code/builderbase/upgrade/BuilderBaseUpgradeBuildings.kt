@@ -25,7 +25,7 @@ private val upgradableBuildingsMap = ALL_BUILDINGS.associateWith { false }.toMut
 suspend fun builderBaseUpgradeBuildings(): Boolean {
     upgradableBuildingsMap.keys.forEach { upgradableBuildingsMap[it] = false }
     var isNewBuildingDetected = false
-    clickRightBottom()
+    clickRightBottom(1)
     if (checkContinueBuild()) {
         val worker =
             findMultiColorsUntil(schemas = listOf(MyColors.BuilderBaseWorker), duration = 1000)
@@ -147,7 +147,7 @@ private suspend fun buildOneNewBuildings(): Boolean {
                 }
             }
         }
-        clickRightBottom()
+        clickRightBottom(1)
         return true
     }
 

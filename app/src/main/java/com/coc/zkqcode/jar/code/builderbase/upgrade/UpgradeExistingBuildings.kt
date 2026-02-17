@@ -26,10 +26,10 @@ object UpgradeExistingBuildings {
 
         for (building in orderedList) {
             val maxAttempts = if (building in uniqueBuildings) 1 else 4
-            
+
             for (attempt in 1..maxAttempts) {
                 // Ensure UI state is clean at the start of each iteration
-                clickRightBottom()
+                clickRightBottom(1)
 
                 // Locate the worker icon
                 val worker =
@@ -48,7 +48,7 @@ object UpgradeExistingBuildings {
                     TouchActions.tap(1233, 37)// tap gold to close worker list
                     break // Not found this building anymore, go to next building type
                 }
-                
+
                 TouchActions.tap(1233, 37)// tap gold to close worker list
 
                 // Check for the upgrade action (Hammer icon)
@@ -60,7 +60,7 @@ object UpgradeExistingBuildings {
 
                 // Check for resource availability immediately after clicking upgrade
                 if (findMultiColors(schema = MyColors.BuilderBaseInsufficientResources) != null) {
-                    clickRightBottom()
+                    clickRightBottom(1)
                     break // insufficient resources for this building, skip to next building type
                 }
 
@@ -73,7 +73,7 @@ object UpgradeExistingBuildings {
         }
 
         // Final UI reset before returning to main screen
-        clickRightBottom()
+        clickRightBottom(1)
         return enterMainScreen()
     }
 
