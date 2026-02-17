@@ -68,16 +68,6 @@ class ControlWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner 
         windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
         showControlWindow()
         startBotLogic()
-        serviceScope.launch(Dispatchers.IO) {
-            while (true) {
-                val configCount = GlobalVars.configStates["config_count"]?.value
-                if (GlobalVars.isConfigLoaded && configCount == null) {
-                    Shell.cmd("am start -n com.coc.zkqcode/.MainActivity >>/dev/null 2>&1").exec()
-                    GlobalVars.autoRunTimer = 5
-                }
-                delay(1000)
-            }
-        }
     }
 
     private fun startBotLogic() {
