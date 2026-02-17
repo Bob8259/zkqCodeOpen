@@ -1,5 +1,6 @@
 package com.coc.zkqcode.jar.code.universal.smalltools
 
+import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.jar.code.universal.InGamesVars
 
 suspend fun runGame() {
@@ -15,6 +16,7 @@ suspend fun runGame() {
             runApp("com.supercell.clashofclans2")
         }
     }
+    delayWithMultiplier(3000)
 }
 
 suspend fun killGame() {
@@ -29,4 +31,5 @@ suspend fun killGame() {
             killApp("com.supercell.clashofclans2")
         }
     }
+    delayWithMultiplier(1000)
 }
