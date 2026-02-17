@@ -102,9 +102,7 @@ class ControlWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner 
         }
     }
 
-    @Suppress("AssignedValueIsNeverRead")
     private fun showControlWindow() {
-
         val windowType = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
         } else {
@@ -269,6 +267,12 @@ class ControlWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner 
     }
 
     override fun onBind(intent: Intent?): IBinder? = null
+
+    override fun onTaskRemoved(rootIntent: Intent?) {
+        super.onTaskRemoved(rootIntent)
+        Shell.cmd("am start -n com.coc.zkqcode/.MainActivity >>/dev/null 2>&1").exec()
+        GlobalVars.autoRunTimer = 5
+    }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         updateForegroundRecord()
