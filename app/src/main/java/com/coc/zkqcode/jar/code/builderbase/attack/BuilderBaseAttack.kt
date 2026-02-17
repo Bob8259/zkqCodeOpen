@@ -104,7 +104,7 @@ private suspend fun normalBattle() {
     } else {
         swipe(100, 117, 1280, 720, delayTime = 120)
     }
-
+    
 }
 
 private suspend fun waitLoop() {
