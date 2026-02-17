@@ -31,6 +31,7 @@ import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.data.websocket.ServerActions
 import com.coc.zkqcode.core.data.websocket.ServerConnection
 import com.coc.zkqcode.core.ui.floatingwindows.UIWindowService
+import com.coc.zkqcode.core.util.fileactions.LogHelper.showDebugInfo
 import com.coc.zkqcode.core.ui.localcomponents.LocalCustomButton
 import com.coc.zkqcode.statehelper.AppMode
 import com.coc.zkqcode.statehelper.AppStateManager
@@ -94,28 +95,37 @@ fun CheckRootScreen() {
         RootStatus.GRANTED -> {
             // Initialize ServerActions and Configs once Root is GRANTED
             LaunchedEffect(Unit) {
+                showDebugInfo("[CheckRoot] LaunchedEffect started, status=GRANTED")
                 // Get and store default IME
                 if (GlobalVars.defaultInputMethod == null) {
+                    showDebugInfo("[CheckRoot] Getting default IME...")
                     val result = Shell.cmd("settings get secure default_input_method").exec()
                     if (result.isSuccess && result.out.isNotEmpty()) {
                         GlobalVars.defaultInputMethod = result.out[0]
+                        showDebugInfo("[CheckRoot] Default IME: ${result.out[0]}")
+                    } else {
+                        showDebugInfo("[CheckRoot] Failed to get default IME")
                     }
+                } else {
+                    showDebugInfo("[CheckRoot] Default IME already set: ${GlobalVars.defaultInputMethod}")
                 }
 
+                showDebugInfo("[CheckRoot] serverActions is currently: ${GlobalVars.serverActions}")
                 if (GlobalVars.serverActions == null) {
+                    showDebugInfo("[CheckRoot] Creating ServerConnection and ServerActions...")
                     val serverConnection = ServerConnection("ws://localhost:6839/zkq")
                     GlobalVars.serverActions = ServerActions(serverConnection)
+                    showDebugInfo("[CheckRoot] ServerActions created: ${GlobalVars.serverActions}")
+                } else {
+                    showDebugInfo("[CheckRoot] ServerActions already exists, skipping creation")
                 }
 
-
-            }
-
-
-            // Start the floating window service when root check passes AND config is initialized
-            LaunchedEffect(Unit) {
+                // Start the floating window service AFTER serverActions is ready
+                showDebugInfo("[CheckRoot] Starting UIWindowService...")
                 val serviceIntent = Intent(context, UIWindowService::class.java)
                 context.startService(serviceIntent)
                 (context as? MainActivity)?.requestMediaProjection()
+                showDebugInfo("[CheckRoot] UIWindowService started")
             }
             Column(
                 modifier = Modifier.fillMaxSize(),
