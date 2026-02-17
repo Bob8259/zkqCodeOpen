@@ -55,9 +55,7 @@ suspend fun builderBasecheckAllResearch() {
                     delayWithMultiplier(500)
                     TouchActions.tap(955, 610)
                     delayWithMultiplier(200)
-                    clickRightBottom()
-                    delayWithMultiplier(100)
-                    clickRightBottom()
+                    clickRightBottom(2)
                     return
                 } else {
                     ShowMessage("${troop.displayName} 资源不足")

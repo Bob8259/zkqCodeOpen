@@ -9,79 +9,78 @@ import com.coc.zkqcode.jar.code.mainbase.zoomSmallMainBase
 import com.coc.zkqcode.jar.code.universal.tutorial.AllTutorials
 import kotlinx.coroutines.delay
 
-class EnterTargetBase {
-    /**
-     * Implementation skipped as per user request.
-     */
-    suspend fun enterMainBase() {
-        // No implementation required
-    }
 
-    /**
-     * Optimizes the transition to the Builder Base with improved polling and logic flow.
-     */
-    suspend fun enterBuilderBase(isCheck: Boolean): Boolean {
-        ShowMessage("准备进入夜世界")
+/**
+ * Implementation skipped as per user request.
+ */
+suspend fun enterMainBase() {
+    // No implementation required
+}
 
-        // Ensure consistent view before attempting interaction
-        zoomSmallMainBase()
+/**
+ * Optimizes the transition to the Builder Base with improved polling and logic flow.
+ */
+suspend fun enterBuilderBase(isCheck: Boolean): Boolean {
+    ShowMessage("准备进入夜世界")
 
-        // List of potential boat locations to handle perspective shifts
-        val boatLocations = listOf(
-            317 to 474,
-            336 to 512,
-            313 to 568
-        )
+    // Ensure consistent view before attempting interaction
+    zoomSmallMainBase()
 
-        for ((x, y) in boatLocations) {
-            TouchActions.tap(x, y)
+    // List of potential boat locations to handle perspective shifts
+    val boatLocations = listOf(
+        317 to 474,
+        336 to 512,
+        313 to 568
+    )
 
-            if (isCheck) {
-                val checkDuration = 500L
-                val loopStartTime = System.currentTimeMillis()
+    for ((x, y) in boatLocations) {
+        TouchActions.tap(x, y)
 
-                // Polling loop for state transition (0.5s window)
-                while (System.currentTimeMillis() - loopStartTime < checkDuration) {
+        if (isCheck) {
+            val checkDuration = 500L
+            val loopStartTime = System.currentTimeMillis()
 
-                    // 1. Check for Builder Base success indicator
-                    // Checked early to ensure fast return on successful transition
-                    if (findMultiColors(schema = MyColors.BuilderBaseWorker) != null) {
-                        return true
-                    }
+            // Polling loop for state transition (0.5s window)
+            while (System.currentTimeMillis() - loopStartTime < checkDuration) {
 
-                    // 2. Check for Main Base indicator (failure to switch)
-                    if (findMultiColors(schema = MyColors.UpgradeToTH6) != null) {
-                        return false
-                    }
-
-                    // 3. Handle Tutorial / Rebuild state
-                    val rebuildPoint = findMultiColors(schema = MyColors.RebuildBuilderBase)
-                    if (rebuildPoint != null) {
-                        TouchActions.tap(rebuildPoint.x, rebuildPoint.y)
-                        delayWithMultiplier(300)
-
-                        // Secondary loop: Search for RebuildBoat within a 1s window
-                        val boatSearchStartTime = System.currentTimeMillis()
-                        while (System.currentTimeMillis() - boatSearchStartTime < 1000L) {
-                            val boatPoint = findMultiColors(schema = MyColors.RebuildBoat)
-                            if (boatPoint != null) {
-                                TouchActions.tap(boatPoint.x, boatPoint.y)
-                                delayWithMultiplier(500)
-                                AllTutorials.allBaseTutorial()
-                                break
-                            }
-                            delay(20) // Tight polling for tutorial interaction
-                        }
-                    }
-
-                    // Standard delay to maintain performance and avoid high CPU usage
-                    delay(100)
+                // 1. Check for Builder Base success indicator
+                // Checked early to ensure fast return on successful transition
+                if (findMultiColors(schema = MyColors.BuilderBaseWorker) != null) {
+                    return true
                 }
-            } else {
-                // If no check is requested, provide a brief delay before trying next coordinate
-                delay(200)
+
+                // 2. Check for Main Base indicator (failure to switch)
+                if (findMultiColors(schema = MyColors.UpgradeToTH6) != null) {
+                    return false
+                }
+
+                // 3. Handle Tutorial / Rebuild state
+                val rebuildPoint = findMultiColors(schema = MyColors.RebuildBuilderBase)
+                if (rebuildPoint != null) {
+                    TouchActions.tap(rebuildPoint.x, rebuildPoint.y)
+                    delayWithMultiplier(300)
+
+                    // Secondary loop: Search for RebuildBoat within a 1s window
+                    val boatSearchStartTime = System.currentTimeMillis()
+                    while (System.currentTimeMillis() - boatSearchStartTime < 1000L) {
+                        val boatPoint = findMultiColors(schema = MyColors.RebuildBoat)
+                        if (boatPoint != null) {
+                            TouchActions.tap(boatPoint.x, boatPoint.y)
+                            delayWithMultiplier(500)
+                            AllTutorials.allBaseTutorial()
+                            break
+                        }
+                        delay(20) // Tight polling for tutorial interaction
+                    }
+                }
+
+                // Standard delay to maintain performance and avoid high CPU usage
+                delay(100)
             }
+        } else {
+            // If no check is requested, provide a brief delay before trying next coordinate
+            delay(200)
         }
-        return false
     }
+    return false
 }

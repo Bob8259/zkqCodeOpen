@@ -4,11 +4,10 @@ import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
-import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndStop
 import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.MyColors
-import com.coc.zkqcode.jar.code.mainbase.zoomSmallMainBase
+import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.smalltools.checkReconnections
 import com.coc.zkqcode.jar.code.universal.smalltools.isGameAtFront
 import com.coc.zkqcode.jar.code.universal.smalltools.runGame
@@ -38,10 +37,7 @@ suspend fun enterMainScreen(): Boolean {
         closeAdvertisements()
 
         if (Random.nextDouble() > 0.6) {
-            repeat(3) {
-                clickRightBottom()
-                delayWithMultiplier(100)
-            }
+            clickRightBottom(3)
         }
         if (AllTutorials.checkIsInTutorial(mainBaseTutorialElements)) mainBaseTutorialElements++
         // 4. Wait before checking again to save CPU cycles
@@ -53,8 +49,11 @@ suspend fun enterMainScreen(): Boolean {
 }
 
 
-suspend fun clickRightBottom() {
-    TouchActions.tap(1277, 557)
+suspend fun clickRightBottom(times: Int, delayTime: Int = 50) {
+    repeat(times) {
+        TouchActions.tap(1277, 557)
+        delayWithMultiplier(delayTime)
+    }
 }
 
 private suspend fun checkUIVisibility(): Boolean {
