@@ -51,8 +51,7 @@ suspend fun enterMainScreen(): Boolean {
 
 suspend fun clickRightBottom(times: Int, delayTime: Int = 50) {
     repeat(times) {
-        TouchActions.tap(1277, 557)
-        delayWithMultiplier(delayTime)
+        TouchActions.tap(1277, 557, delayTime = delayTime)
     }
 }
 
@@ -100,10 +99,7 @@ private suspend fun closeAdvertisements() {
 
         if (point != null) {
             // If found, perform the tap
-            TouchActions.tap(point.x, point.y)
-
-            // Wait for the animation/transition to finish
-            delay(1000)
+            TouchActions.tap(point.x, point.y, delayTime = 1000)
 
             // 4. Retake the screenBuffer so the next schema check uses the updated screen
             screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult
@@ -125,21 +121,16 @@ private suspend fun closeAdvertisements() {
 
         // Iterate through points to reduce code redundancy
         tapPoints.forEach { (x, y) ->
-            TouchActions.tap(x, y)
-            // Maintains functional parity with the original 100ms delay per tap
-            delayWithMultiplier(100)
+            TouchActions.tap(x, y, delayTime = 100)
         }
     }
     findMultiColors(schema = MyColors.CancelEditMode)?.let {
-        TouchActions.tap(it.x, it.y)
-        delayWithMultiplier(500)
+        TouchActions.tap(it.x, it.y, delayTime = 500)
         TouchActions.tap(788, 464)
     }
     findMultiColors(schema = MyColors.TrainingPage)?.let {
-        TouchActions.tap(219, 139)//close training tap
-        delayWithMultiplier(1000)
-        TouchActions.tap(1232, 65)//close training page
-        delayWithMultiplier(300)
+        TouchActions.tap(219, 139, delayTime = 1000)//close training tap
+        TouchActions.tap(1232, 65, delayTime = 300)//close training page
     }
 }
 

@@ -30,8 +30,7 @@ suspend fun builderBaseUpgradeBuildings(): Boolean {
         val worker =
             findMultiColorsUntil(schemas = listOf(MyColors.BuilderBaseWorker), duration = 1000)
         if (worker != null) {
-            TouchActions.tap(worker.x, worker.y)
-            delayWithMultiplier(500)
+            TouchActions.tap(worker.x, worker.y, delayTime = 500)
             iterateBuilderBaseBuildingUpgradeList { result ->
                 val buildings = result.buildings
                 if (buildings.isEmpty()) {
@@ -111,8 +110,7 @@ private suspend fun buildOneNewBuildings(): Boolean {
 
     // 3. Determine building type (Wall vs. Others) before UI state changes
     val isWall = findMultiColors(schema = MyColors.WallInShop) != null
-    TouchActions.tap(shopArrow.x - 50, shopArrow.y + 50)
-    delayWithMultiplier(1500)
+    TouchActions.tap(shopArrow.x - 50, shopArrow.y + 50, delayTime = 1500)
 
     // 4. Locate the confirmation button (Green Tick)
     var targetTick = builderBaseFindBuildButton(type = "Tick")
@@ -127,9 +125,7 @@ private suspend fun buildOneNewBuildings(): Boolean {
     if (targetTick != null) {
         if (isWall) {
             // Handle wall batch building
-            delayWithMultiplier(100)
-            ShowMessage("点击绿色按钮：${targetTick.x}, ${targetTick.y}")
-            TouchActions.tap(targetTick.x, targetTick.y)
+            TouchActions.tap(targetTick.x, targetTick.y, delayTime = 100)
             tryToBatchBuildWalls(targetTick.x, targetTick.y)
         } else {
             // Handle standard building with retry logic

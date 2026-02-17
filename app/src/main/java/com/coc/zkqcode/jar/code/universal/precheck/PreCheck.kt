@@ -25,8 +25,7 @@ object PreCheck {
     }
 
     private suspend fun claimAchievementHelper() {
-        TouchActions.tap(51, 45)
-        delayWithMultiplier(2000)
+        TouchActions.tap(51, 45, delayTime = 2000)
         val point = findMultiColorsUntil(schemas = listOf(MyColors.ClaimAchievement), duration = 200)
         if (point != null)
             TouchActions.tap(point.x, point.y)

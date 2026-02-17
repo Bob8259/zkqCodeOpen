@@ -69,14 +69,12 @@ private suspend fun realAttack(mode: String) {
         val trainTroopButton = findMultiColors(schema = MyColors.TrainTroops)
         if (trainTroopButton != null) {
 
-            TouchActions.tap(86, 638)
-            delayWithMultiplier(500)
+            TouchActions.tap(86, 638, delayTime = 500)
         }
         checkReconnections()
         val attackNow = findMultiColors(schema = MyColors.AttackNow)
         if (attackNow != null) {
-            TouchActions.tap(attackNow.x, attackNow.y)
-            delayWithMultiplier(200)
+            TouchActions.tap(attackNow.x, attackNow.y, delayTime = 200)
             val warning = findMultiColorsUntil(schemas = listOf(MyColors.TrainTroopsWarning), duration = 500)
             if (warning != null) {
                 clickRightBottom(2)
@@ -89,6 +87,7 @@ private suspend fun realAttack(mode: String) {
         }
         val switchTroopButton = findMultiColors(schema = MyColors.SwitchTroopButton)
         if (switchTroopButton != null) {
+            delayWithMultiplier(500)
             if (mode == "gold") {
                 normalBattle()
             }
@@ -97,14 +96,14 @@ private suspend fun realAttack(mode: String) {
 }
 
 private suspend fun normalBattle() {
-    pinchIn(141, 423, 1052, 352, 638, 365)
-    delayWithMultiplier(200)
+    pinchIn(141, 423, 1052, 352, 638, 365, delayTime = 200)
     if (Random.nextBoolean()) {
         swipe(981, 485, 0, 0, delayTime = 120)
     } else {
         swipe(100, 117, 1280, 720, delayTime = 120)
     }
-    
+    TouchActions.tap(126, 638)//Battle Machine
+    TouchActions.tap(605, 553)
 }
 
 private suspend fun waitLoop() {
@@ -127,8 +126,7 @@ private suspend fun waitLoop() {
     }
 
     if (lastPosition != null) {
-        TouchActions.tap(lastPosition.x, lastPosition.y)
-        delayWithMultiplier(200)
+        TouchActions.tap(lastPosition.x, lastPosition.y, delayTime = 200)
     }
 }
 
@@ -142,14 +140,12 @@ private suspend fun builderBaseTrainTroops() {
     }
 
     // Enter training menu
-    TouchActions.tap(trainingButton.x, trainingButton.y)
-    delayWithMultiplier(400)
+    TouchActions.tap(trainingButton.x, trainingButton.y, delayTime = 400)
 
     // Clear existing troops if the clear button is present
     val cleanTroops = findMultiColorsUntil(schemas = listOf(MyColors.RedCleanButton), duration = 1000)
     if (cleanTroops != null) {
-        TouchActions.tap(cleanTroops.x, cleanTroops.y)
-        delayWithMultiplier(500)
+        TouchActions.tap(cleanTroops.x, cleanTroops.y, delayTime = 500)
     }
 
     /**
@@ -157,8 +153,7 @@ private suspend fun builderBaseTrainTroops() {
      */
     suspend fun tapRepeat(x: Int, y: Int, times: Int = 10) {
         repeat(times) {
-            TouchActions.tap(x, y)
-            delayWithMultiplier(50)
+            TouchActions.tap(x, y, delayTime = 50)
         }
     }
 
@@ -175,8 +170,7 @@ private suspend fun builderBaseTrainTroops() {
     }
 
     // Close the training interface
-    TouchActions.tap(1152, 102)
-    delayWithMultiplier(300)
+    TouchActions.tap(1152, 102, delayTime = 300)
 }
 
 suspend fun builderBaseTrainWithConditions(): Boolean {
