@@ -4,9 +4,8 @@ import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndStop
-import com.coc.zkqcode.jar.code.builderbase.upgrade.BuilderBaseUpgradeBuildings
+import com.coc.zkqcode.jar.code.builderbase.attack.builderBaseAttack
 import com.coc.zkqcode.jar.code.builderbase.others.playBuilderBase
-import com.coc.zkqcode.jar.code.builderbase.research.BuilderBaseResearch
 import com.coc.zkqcode.jar.code.universal.InGamesVars
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.smalltools.readMemory
@@ -76,7 +75,7 @@ object MainScript {
             runApp("com.supercell.clashofclans2")
             enterMainScreen()
             delayWithMultiplier(1000)
-            BuilderBaseResearch.research()
+            builderBaseAttack()
             delayWithMultiplier(1000)
         }
     }
