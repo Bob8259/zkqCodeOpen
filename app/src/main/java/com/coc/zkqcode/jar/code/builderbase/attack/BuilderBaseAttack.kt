@@ -1,37 +1,64 @@
 package com.coc.zkqcode.jar.code.builderbase.attack
 
+import android.graphics.Point
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.touchactions.TouchActions
+import com.coc.zkqcode.core.util.touchactions.TouchActions.pinchIn
+import com.coc.zkqcode.core.util.touchactions.TouchActions.swipe
 import com.coc.zkqcode.jar.code.colorschema.MyColors
+import com.coc.zkqcode.jar.code.universal.InGamesVars
 import com.coc.zkqcode.jar.code.universal.clickRightBottom
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
-import com.coc.zkqcode.jar.code.universal.enterBuilderBase
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.smalltools.checkReconnections
 import com.coc.zkqcode.jar.code.universal.smalltools.getBooleanConfigRuntime
+import com.coc.zkqcode.jar.code.universal.smalltools.readMemory
+import com.coc.zkqcode.jar.code.universal.smalltools.writeMemory
 import com.coc.zkqcode.jar.ui.schema.Schema
+import java.util.Calendar
+import kotlin.random.Random
 
 suspend fun builderBaseAttack(): Boolean {
-    if (!getBooleanConfigRuntime(Schema.BUILDER_BASE_SETTINGS.BUILDER_BASE_FARMING.key)) {
+    // 1. Check if Builder Base farming is enabled
+    val isEnabled = getBooleanConfigRuntime(Schema.BUILDER_BASE_SETTINGS.BUILDER_BASE_FARMING.key)
+    if (!isEnabled) {
         ShowMessage("未开启打夜世界")
         return true
     }
-    val goldPosition = findMultiColors(schema = MyColors.BuilderBaseGold)
-    val exilePosition = findMultiColors(schema = MyColors.BuilderBaseExiler)
-    val isResourcesFull = goldPosition != null && exilePosition != null && goldPosition.x < 1015 && exilePosition.x < 1015
-    if (isResourcesFull && getBooleanConfigRuntime(Schema.BUILDER_BASE_SETTINGS.STOP_WHEN_RESOURCE_FULL.key)) {
+
+    // 2. Locate resource indicators
+    val goldPos = findMultiColors(schema = MyColors.BuilderBaseGold)
+    val exilePos = findMultiColors(schema = MyColors.BuilderBaseExiler)
+
+    // Define resource fullness (threshold: < 1015 indicates full/near full based on original logic)
+    val isGoldFull = goldPos != null && goldPos.x < 1015
+    val isExileFull = exilePos != null && exilePos.x < 1015
+    val stopIfFull = getBooleanConfigRuntime(Schema.BUILDER_BASE_SETTINGS.STOP_WHEN_RESOURCE_FULL.key)
+
+    // 3. Determine action based on resource state and settings
+    if (isGoldFull && isExileFull && stopIfFull) {
         ShowMessage("资源已满，停止对战")
     } else {
-        if (getBooleanConfigRuntime(Schema.BUILDER_BASE_SETTINGS.TROPHY_PUSHING_MODE.key))
-
-            if (goldPosition != null && goldPosition.x < 1015) {
-                realAttack("gold")
-            } else {
-                realAttack("exile")
+        // Evaluate attack strategy
+        val attackType = when {
+            getBooleanConfigRuntime(Schema.BUILDER_BASE_SETTINGS.TROPHY_PUSHING_MODE.key) -> {
+                ShowMessage("已勾选上分模式")
+                "gold"
             }
+
+            getBooleanConfigRuntime(Schema.BUILDER_BASE_SETTINGS.ELIXIR_CART_FARMING.key) -> {
+                ShowMessage("已勾选刷圣水车模式")
+                "exile"
+            }
+            // If gold is not full (x > 1014), prioritize gold; otherwise, default to exile
+            goldPos != null && goldPos.x > 1014 -> "gold"
+            else -> "exile"
+        }
+        realAttack(attackType)
     }
+    // 4. Return to main screen
     return enterMainScreen()
 }
 
@@ -56,7 +83,52 @@ private suspend fun realAttack(mode: String) {
                 builderBaseTrainTroops()
             }
         }
+        val search = findMultiColors(schema = MyColors.CancelAttackSearch)
+        if (search != null) {
+            waitLoop()
+        }
+        val switchTroopButton = findMultiColors(schema = MyColors.SwitchTroopButton)
+        if (switchTroopButton != null) {
+            if (mode == "gold") {
+                normalBattle()
+            }
+        }
+    }
+}
 
+private suspend fun normalBattle() {
+    pinchIn(141, 423, 1052, 352, 638, 365)
+    delayWithMultiplier(200)
+    if (Random.nextBoolean()) {
+        swipe(981, 485, 0, 0, delayTime = 120)
+    } else {
+        swipe(100, 117, 1280, 720, delayTime = 120)
+    }
+
+}
+
+private suspend fun waitLoop() {
+    val totalDuration = 15_000L
+    val startTime = System.currentTimeMillis()
+    var lastPosition: Point? = null
+
+    while (true) {
+        val elapsed = System.currentTimeMillis() - startTime
+        val remainingMs = totalDuration - elapsed
+
+        val pos = findMultiColors(schema = MyColors.CancelAttackSearch)
+        if (pos != null) lastPosition = pos
+
+        if (remainingMs <= 0) break
+
+        val remainingSeconds = remainingMs / 1000.0
+        ShowMessage("搜索中，剩余 ${"%.1f".format(remainingSeconds)} 秒")
+        delayWithMultiplier(100)
+    }
+
+    if (lastPosition != null) {
+        TouchActions.tap(lastPosition.x, lastPosition.y)
+        delayWithMultiplier(200)
     }
 }
 
@@ -107,3 +179,18 @@ private suspend fun builderBaseTrainTroops() {
     delayWithMultiplier(300)
 }
 
+suspend fun builderBaseTrainWithConditions(): Boolean {
+    val storageKey = "BuilderBaseTrainTroops${InGamesVars.currentAccountNumber}"
+    val lastTrainingTime = readMemory(storageKey).toIntOrNull()
+
+    // Use Calendar only once to retrieve the current day of the month
+    val currentDay = Calendar.getInstance().get(Calendar.DAY_OF_MONTH)
+    if (lastTrainingTime != currentDay) {
+        builderBaseTrainTroops()
+        writeMemory(storageKey, currentDay.toString())
+        return enterMainScreen()
+    }
+
+    // Returns true if training was already completed today
+    return true
+}

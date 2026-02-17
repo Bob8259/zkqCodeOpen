@@ -1,6 +1,8 @@
-package com.coc.zkqcode.jar.code.builderbase.others
+package com.coc.zkqcode.jar.code.builderbase
 
 import com.coc.zkqcode.core.util.basic.ShowMessage
+import com.coc.zkqcode.jar.code.builderbase.attack.builderBaseTrainWithConditions
+import com.coc.zkqcode.jar.code.builderbase.others.clickOttosOutPost
 import com.coc.zkqcode.jar.code.builderbase.research.builderBaseResearch
 import com.coc.zkqcode.jar.code.universal.precheck.PreCheck
 import com.coc.zkqcode.jar.code.universal.smalltools.getBooleanConfigRuntime
@@ -29,5 +31,6 @@ suspend fun playBuilderBase(): Boolean {
     if (!builderBaseRemoveObstacles()) return false
     if (!builderBaseUpgradeBuildings()) return false
     if (!builderBaseResearch()) return false
+    if (!builderBaseTrainWithConditions()) return false
     return true
 }
