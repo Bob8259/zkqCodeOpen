@@ -1,3 +1,5 @@
+@file:Suppress("PropertyName")
+
 package com.coc.zkqcode.jar.code.colorschema.colorpackage
 
 import com.coc.zkqcode.jar.code.colorschema.ColorSchema
@@ -12,7 +14,7 @@ interface IUIColors {
     val Achievement: ColorSchema
     val ClaimAchievement: ColorSchema
     val ReturnAwards: ColorSchema
-    val NightBackToCamp: ColorSchema
+    val BuilderBackToCamp: ColorSchema
     val MainBackToCamp: ColorSchema
     val CNBackFromAwards: ColorSchema
     val CollectChest: ColorSchema
@@ -54,8 +56,8 @@ object UIColors : IUIColors {
         110, 44, 1173, 679, "00528D", "116|-2|00518B,-68|491|00CCF3,-78|517|00DCFA,-78|523|00DDFA,801|536|00DDFA,840|529|009BD8,846|515|008AED,840|399|00437A,839|354|004279", 0, 0.9, "回归奖励"
     )
 
-    override val NightBackToCamp: ColorSchema = ColorSchema.parse(
-        553, 574, 728, 648, "8BEABD", "18|-1|8CEABE,46|-1|8CEABE,68|0|8BEABD,80|2|88E9BB,89|35|3AD48B,62|38|3AD38B,35|32|3AD48B,22|34|3AD48B,-16|29|3AD48B", 0, 0.9, "回营"
+    override val BuilderBackToCamp: ColorSchema = ColorSchema.parse(
+        553, 574, 728, 648, "8BEABD", "18|-1|8CEABE,46|-1|8CEABE,68|0|8BEABD,80|2|88E9BB,89|35|3AD48B,62|38|3AD38B,35|32|3AD48B,22|34|3AD48B,-16|29|3AD48B", 0, 0.9, "夜世界回营"
     )
 
     override val MainBackToCamp: ColorSchema = ColorSchema.parse(

@@ -45,4 +45,7 @@ object MyColors : IWorkerColors by WorkerColors, IUIColors by UIColors, IFeature
     val SwitchTroopButton: ColorSchema = ColorSchema.parse(
         116, 663, 618, 709, "F3F3F3", "2|0|F3F3F3,9|-4|86E0B4,20|-2|F4F4F4,20|6|E2DEDC,8|14|22A565,-7|13|23AA67,0|-1|F3F3F3,9|-4|86E0B4,9|-6|86E0B4", 0, 0.9, "切换部队标志"
     )
+    val ExitBattleButton: ColorSchema = ColorSchema.parse(
+        33, 491, 153, 518, "5F5DF4", "24|0|5F5DF4,18|2|5F5DF2,72|0|5F5DF4,96|0|5F5DF4,0|13|0E0DCE,24|13|0E0DCE,46|18|0E0DCF,72|13|0E0DCE,96|13|0E0DCE", 0, 0.9, "红色退出对战"
+    )
 }
