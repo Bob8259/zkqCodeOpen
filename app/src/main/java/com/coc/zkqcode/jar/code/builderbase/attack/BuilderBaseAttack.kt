@@ -14,6 +14,7 @@ import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.smalltools.checkReconnections
 import com.coc.zkqcode.jar.code.universal.smalltools.getBooleanConfigRuntime
+import com.coc.zkqcode.jar.code.universal.smalltools.getConfigRuntime
 import com.coc.zkqcode.jar.code.universal.smalltools.readMemory
 import com.coc.zkqcode.jar.code.universal.smalltools.writeMemory
 import com.coc.zkqcode.jar.ui.schema.Schema
@@ -31,10 +32,11 @@ suspend fun builderBaseAttack(): Boolean {
     // 2. Locate resource indicators
     val goldPos = findMultiColors(schema = MyColors.BuilderBaseGold)
     val exilePos = findMultiColors(schema = MyColors.BuilderBaseExiler)
+    ShowMessage("goldPos: $goldPos, exilePos: $exilePos")
+    // Define resource fullness (threshold: < 1016 indicates full/near full based on original logic)
+    val isGoldFull = goldPos != null && goldPos.x < 1016
 
-    // Define resource fullness (threshold: < 1015 indicates full/near full based on original logic)
-    val isGoldFull = goldPos != null && goldPos.x < 1015
-    val isExileFull = exilePos != null && exilePos.x < 1015
+    val isExileFull = exilePos != null && exilePos.x < 1016
     val stopIfFull = getBooleanConfigRuntime(Schema.BUILDER_BASE_SETTINGS.STOP_WHEN_RESOURCE_FULL.key)
 
     // 3. Determine action based on resource state and settings
@@ -52,20 +54,29 @@ suspend fun builderBaseAttack(): Boolean {
                 ShowMessage("已勾选刷圣水车模式")
                 "exile"
             }
-            // If gold is not full (x > 1014), prioritize gold; otherwise, default to exile
-            goldPos != null && goldPos.x > 1014 -> "gold"
+            // If gold is not full (x > 1016), prioritize gold; otherwise, default to exile
+            goldPos == null || goldPos.x > 1016 -> "gold"
             else -> "exile"
         }
-        realAttack(attackType)
+        val battleTimes = getConfigRuntime(Schema.BUILDER_BASE_SETTINGS.SWITCH_ACCOUNT_AFTER_BATTLES.key).toIntOrNull() ?: 0
+        repeat(battleTimes) { index ->
+            if (!realAttack(attackType, index + 1)) return false
+        }
     }
     // 4. Return to main screen
     return enterMainScreen()
 }
 
-private suspend fun realAttack(mode: String) {
-    var startTime = System.currentTimeMillis()
-    var elapsedTime = 0
+private suspend fun realAttack(mode: String, battleNumber: Int = 1): Boolean {
+    val startTime = System.currentTimeMillis()
     while (true) {
+        val elapsed = System.currentTimeMillis() - startTime
+        if (elapsed > 8 * 60 * 1000L) {
+            ShowMessage("战斗超过8分钟，强制退出")
+            break
+        }
+        val remainingMin = (8 * 60 * 1000L - elapsed) / 60000.0
+        ShowMessage("对战中，第${battleNumber}局\n剩余${"%.1f".format(remainingMin)}分钟")
         val trainTroopButton = findMultiColors(schema = MyColors.TrainTroops)
         if (trainTroopButton != null) {
 
@@ -94,12 +105,14 @@ private suspend fun realAttack(mode: String) {
                 deployAndExit()
             }
         }
-        val builderBaseEndBattle = findMultiColors(schema = MyColors.ExitBattleButton)
+        val builderBaseEndBattle = findMultiColors(schema = MyColors.BuilderBackToCamp)
         if (builderBaseEndBattle != null) {
             TouchActions.tap(builderBaseEndBattle.x, builderBaseEndBattle.y, delayTime = 200)
             break
         }
+        delayWithMultiplier(100)
     }
+    return enterMainScreen()
 }
 
 private suspend fun deployAndExit() {
@@ -129,7 +142,7 @@ private suspend fun normalBattle(isNormal: Boolean = true) {
     } else {
         Triple(100, 117, 1280) to alternativeDeployPositions
     }
-
+    delayWithMultiplier(100)
     swipe(swipeParams.first, swipeParams.second, swipeParams.third, if (swipeParams.third == 0) 0 else 720, delayTime = 120)
 
     // Deploy machine and troops to the same random position
@@ -144,7 +157,7 @@ private suspend fun normalBattle(isNormal: Boolean = true) {
 private suspend fun waitLoop() {
     val totalDuration = 15_000L
     val startTime = System.currentTimeMillis()
-    var lastPosition: Point? = null
+    var lastPosition: Point?
 
     while (true) {
         val elapsed = System.currentTimeMillis() - startTime
@@ -152,17 +165,14 @@ private suspend fun waitLoop() {
 
         val pos = findMultiColors(schema = MyColors.CancelAttackSearch)
         if (pos != null) lastPosition = pos
-
+        else return
         if (remainingMs <= 0) break
 
         val remainingSeconds = remainingMs / 1000.0
         ShowMessage("搜索中，剩余 ${"%.1f".format(remainingSeconds)} 秒")
         delayWithMultiplier(100)
     }
-
-    if (lastPosition != null) {
-        TouchActions.tap(lastPosition.x, lastPosition.y, delayTime = 200)
-    }
+    TouchActions.tap(lastPosition.x, lastPosition.y, delayTime = 200)
 }
 
 private suspend fun builderBaseTrainTroops() {
