@@ -90,20 +90,55 @@ private suspend fun realAttack(mode: String) {
             delayWithMultiplier(500)
             if (mode == "gold") {
                 normalBattle()
+            } else if (mode == "exile") {
+                deployAndExit()
             }
+        }
+        val builderBaseEndBattle = findMultiColors(schema = MyColors.ExitBattleButton)
+        if (builderBaseEndBattle != null) {
+            TouchActions.tap(builderBaseEndBattle.x, builderBaseEndBattle.y, delayTime = 200)
+            break
         }
     }
 }
 
-private suspend fun normalBattle() {
-    pinchIn(141, 423, 1052, 352, 638, 365, delayTime = 200)
-    if (Random.nextBoolean()) {
-        swipe(981, 485, 0, 0, delayTime = 120)
-    } else {
-        swipe(100, 117, 1280, 720, delayTime = 120)
+private suspend fun deployAndExit() {
+    normalBattle(false)
+    val exitButton = findMultiColorsUntil(schemas = listOf(MyColors.ExitBattleButton), duration = 2000)
+    if (exitButton != null) {
+        TouchActions.tap(exitButton.x, exitButton.y, delayTime = 200)
+        TouchActions.tap(775, 469, delayTime = 100)
     }
-    TouchActions.tap(126, 638)//Battle Machine
-    TouchActions.tap(605, 553)
+}
+
+private suspend fun normalBattle(isNormal: Boolean = true) {
+    // Define possible deploy positions for each swipe direction
+    val deployPositions = listOf(
+        Pair(605, 553), Pair(108, 183), Pair(330, 358), Pair(855, 371), Pair(1090, 180), Pair(271, 64)
+    )
+
+    val alternativeDeployPositions = listOf(
+        Pair(663, 205), Pair(1160, 564), Pair(913, 385), Pair(433, 374), Pair(758, 274)
+    )
+
+    pinchIn(141, 423, 1052, 352, 638, 365, duration = 200)
+
+    // Choose swipe direction and corresponding deploy positions
+    val (swipeParams, positions) = if (Random.nextBoolean()) {
+        Triple(981, 485, 0) to deployPositions
+    } else {
+        Triple(100, 117, 1280) to alternativeDeployPositions
+    }
+
+    swipe(swipeParams.first, swipeParams.second, swipeParams.third, if (swipeParams.third == 0) 0 else 720, delayTime = 120)
+
+    // Deploy machine and troops to the same random position
+    val deployPos = positions.random()
+    TouchActions.tap(126, 638, delayTime = 200) // Battle Machine
+    TouchActions.tap(deployPos.first, deployPos.second, delayTime = 200) // Deploy the Machine
+    if (!isNormal) return
+    TouchActions.tap(246, 646, delayTime = 200) // Troops
+    TouchActions.tap(deployPos.first, deployPos.second, delayTime = 200) // Deploy the Troops
 }
 
 private suspend fun waitLoop() {

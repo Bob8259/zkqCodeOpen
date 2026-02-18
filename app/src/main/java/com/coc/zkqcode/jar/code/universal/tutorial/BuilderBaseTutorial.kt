@@ -1,9 +1,8 @@
 package com.coc.zkqcode.jar.code.universal.tutorial
 
-import com.coc.zkqcode.core.util.basic.delayWithMultiplier
-import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.MyColors
+import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 
 object BuilderBaseTutorial {
     suspend fun builderBaseTutorial(): Boolean {
@@ -40,7 +39,7 @@ object BuilderBaseTutorial {
         }
 
         // 6. Back To Camp
-        findMultiColors(schema = MyColors.NightBackToCamp)?.let {
+        findMultiColors(schema = MyColors.BuilderBackToCamp)?.let {
             TouchActions.tap(it.x, it.y, delayTime = 500)
         }
 
