@@ -12,6 +12,13 @@ class ColorSchema(
     class OffsetPoint(val dx: Int, val dy: Int, val color: Int)
     companion object {
         /**
+         * Returns a copy of [schema] with new bounds but the same color/threshold/offsets/direction/name.
+         */
+        fun rescope(schema: ColorSchema, x1: Int, y1: Int, x2: Int, y2: Int, direction: Int = schema.direction): ColorSchema {
+            return ColorSchema(x1, y1, x2, y2, schema.mainColor, schema.threshold, schema.offsets, direction, schema.name)
+        }
+
+        /**
          * 核心解析方法
          */
         fun parse(

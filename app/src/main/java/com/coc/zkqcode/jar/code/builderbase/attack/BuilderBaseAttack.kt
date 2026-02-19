@@ -1,11 +1,15 @@
 package com.coc.zkqcode.jar.code.builderbase.attack
 
+import android.graphics.Bitmap
 import android.graphics.Point
+import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
+import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndStop
 import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.core.util.touchactions.TouchActions.pinchIn
 import com.coc.zkqcode.core.util.touchactions.TouchActions.swipe
+import com.coc.zkqcode.jar.code.colorschema.ColorSchema
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.InGamesVars
 import com.coc.zkqcode.jar.code.universal.clickRightBottom
@@ -110,6 +114,10 @@ private suspend fun realAttack(mode: String, battleNumber: Int = 1): Boolean {
             TouchActions.tap(builderBaseEndBattle.x, builderBaseEndBattle.y, delayTime = 200)
             break
         }
+        val machineSkills = findMultiColors(schema = MyColors.MachineSkills)
+        if (machineSkills != null) {
+            TouchActions.tap(machineSkills.x, machineSkills.y, delayTime = 200)
+        }
         delayWithMultiplier(100)
     }
     return enterMainScreen()
@@ -151,7 +159,71 @@ private suspend fun normalBattle(isNormal: Boolean = true) {
     TouchActions.tap(deployPos.first, deployPos.second, delayTime = 200) // Deploy the Machine
     if (!isNormal) return
     TouchActions.tap(246, 646, delayTime = 200) // Troops
-    TouchActions.tap(deployPos.first, deployPos.second, delayTime = 200) // Deploy the Troops
+    val nightWitch = findMultiColors(schema = MyColors.NightWitch)
+    if (nightWitch != null) {
+        TouchActions.touchDown((deployPos.first + Random.nextInt(1, 4)).toFloat(), (deployPos.second + Random.nextInt(1, 4)).toFloat(), 1)
+        delayWithMultiplier(4000)
+        TouchActions.touchUp(1)
+        ShowMessage("等女巫走一会")
+        delayWithMultiplier(Random.nextInt(5000, 10000))
+        repeat(6) {
+            val skillsPos = findMultiColors(
+                schema = ColorSchema.rescope(
+                    MyColors.TroopSkills,
+                    MyColors.TroopSkills.x1,
+                    MyColors.TroopSkills.y1,
+                    MyColors.TroopSkills.x2,
+                    MyColors.TroopSkills.y2,
+                    direction = Random.nextInt(0, 2)
+                )
+            )
+            if (skillsPos != null) {
+                TouchActions.tap(skillsPos.x, skillsPos.y + 100)
+                delayWithMultiplier(Random.nextInt(500, 4000))
+            }
+        }
+    } else {
+        val screenBitmap = ScreenCaptureManager.capture(asBitmap = true) as? Bitmap ?: logAndStop("in BuilderBaseNormalBattle, screen capture failed.")
+        var barbarianFound = true
+        for (attempt in 0 until 5) {
+            // Step 1: Touch down at a random position
+            var currentPos = deployPositions.random()
+            TouchActions.touchDown(currentPos.first.toFloat(), currentPos.second.toFloat(), 1)
+            delayWithMultiplier(100)
+
+            // Steps 2-3: Move smoothly to random positions until barbarian is gone
+            while (true) {
+                val nextPos = deployPositions.random()
+                TouchActions.moveSmoothly(
+                    fromX = currentPos.first.toFloat(),
+                    fromY = currentPos.second.toFloat(),
+                    toX = nextPos.first.toFloat(),
+                    toY = nextPos.second.toFloat(),
+                    duration = Random.next(200,500)
+                )
+                currentPos = nextPos
+                val barbarian = findMultiColors(schema = MyColors.BuilderBaseBarbarian)
+                if (barbarian == null) {
+                    barbarianFound = false
+                    break
+                }
+            }
+
+            // Step 4: Release finger
+            TouchActions.touchUp(1)
+
+            if (!barbarianFound) break
+
+            // Still found after this attempt; if it's the last attempt, hold and break
+            if (attempt == 4) {
+                val finalPos = deployPositions.random()
+                TouchActions.touchDown(finalPos.first.toFloat(), finalPos.second.toFloat(), 1)
+                delayWithMultiplier(4000)
+                TouchActions.touchUp(1)
+                break
+            }
+        }
+    }
 }
 
 private suspend fun waitLoop() {
@@ -170,7 +242,7 @@ private suspend fun waitLoop() {
 
         val remainingSeconds = remainingMs / 1000.0
         ShowMessage("搜索中，剩余 ${"%.1f".format(remainingSeconds)} 秒")
-        delayWithMultiplier(100)
+        delayWithMultiplier(1000)
     }
     TouchActions.tap(lastPosition.x, lastPosition.y, delayTime = 200)
 }

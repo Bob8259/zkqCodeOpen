@@ -78,7 +78,7 @@ object TouchActions {
         fromY: Float,
         toX: Float,
         toY: Float,
-        duration: Long,
+        duration: Int,
         id: Int = 1,
         isJitter: Boolean = false
     ) {
@@ -100,11 +100,11 @@ object TouchActions {
         startY: Int,
         endX: Int,
         endY: Int,
-        delayTime: Long? = null,
+        delayTime: Int? = null,
         isJitter: Boolean = true
     ) {
         waitForPlay()
-        val actualDelayTime = delayTime ?: Random.nextLong(300, 401)
+        val actualDelayTime = delayTime ?: Random.nextInt(300, 401)
         val delayMultiplier = getDelayMultiplier()
 
         touchDown(startX.toFloat(), startY.toFloat(), 1)
@@ -113,7 +113,7 @@ object TouchActions {
             delay((actualDelayTime * 0.7 * delayMultiplier).toLong())
 
             // Move loop
-            val moveDuration = (actualDelayTime * 0.5 * delayMultiplier).toLong()
+            val moveDuration = (actualDelayTime * 0.5 * delayMultiplier).toInt()
             performMove(
                 duration = moveDuration,
                 isJitter = isJitter,
@@ -146,7 +146,7 @@ object TouchActions {
         touchDown(x1.toFloat(), y1.toFloat(), 1)
         touchDown(x2.toFloat(), y2.toFloat(), 2)
         try {
-            val moveDuration = (actualDuration * delayMultiplier).toLong()
+            val moveDuration = (actualDuration * delayMultiplier).toInt()
             performMove(
                 duration = moveDuration,
                 isJitter = isJitter,
@@ -178,7 +178,7 @@ object TouchActions {
         touchDown(finalX.toFloat(), finalY.toFloat(), 1)
         touchDown(finalX.toFloat(), finalY.toFloat(), 2)
         try {
-            val moveDuration = (actualDuration * delayMultiplier).toLong()
+            val moveDuration = (actualDuration * delayMultiplier).toInt()
             performMove(
                 duration = moveDuration,
                 isJitter = isJitter,
@@ -202,7 +202,7 @@ object TouchActions {
     )
 
     private suspend fun performMove(
-        duration: Long,
+        duration: Int,
         isJitter: Boolean,
         vararg pointers: PointerMove
     ) {

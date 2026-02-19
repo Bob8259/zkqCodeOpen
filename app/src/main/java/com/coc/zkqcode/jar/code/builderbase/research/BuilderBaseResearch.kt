@@ -43,10 +43,10 @@ suspend fun builderBasecheckAllResearch() {
             val x2 = x1 + 40
             val y2 = if (row == 0) 500 else 640
 
-            val elixirIcon = findMultiColors(schema = MyColors.BuilderResearchElixir.rescope(x1, y1, x2, y2))
+            val elixirIcon = findMultiColors(schema = ColorSchema.rescope(MyColors.BuilderResearchElixir, x1, y1, x2, y2))
             if (elixirIcon != null) {
                 val resX1 = x1 - 100
-                val insufficient = findMultiColors(schema = MyColors.BuilderResearchInsufficientResources.rescope(resX1, y1, x1, y2))
+                val insufficient = findMultiColors(schema = ColorSchema.rescope(MyColors.BuilderResearchInsufficientResources, resX1, y1, x1, y2))
                 if (insufficient == null) {
                     ShowMessage("开始研究 ${troop.displayName}")
                     TouchActions.tap(elixirIcon.x, elixirIcon.y, delayTime = 500)
@@ -61,6 +61,4 @@ suspend fun builderBasecheckAllResearch() {
     }
 }
 
-private fun ColorSchema.rescope(x1: Int, y1: Int, x2: Int, y2: Int): ColorSchema {
-    return ColorSchema(x1, y1, x2, y2, mainColor, threshold, offsets, direction, name)
-}
+
