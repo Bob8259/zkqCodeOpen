@@ -1,11 +1,8 @@
 package com.coc.zkqcode.jar.code.builderbase.attack
 
-import android.graphics.Bitmap
 import android.graphics.Point
-import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
-import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndStop
 import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.core.util.touchactions.TouchActions.pinchIn
 import com.coc.zkqcode.core.util.touchactions.TouchActions.swipe
@@ -102,7 +99,7 @@ private suspend fun realAttack(mode: String, battleNumber: Int = 1): Boolean {
         }
         val switchTroopButton = findMultiColors(schema = MyColors.SwitchTroopButton)
         if (switchTroopButton != null) {
-            delayWithMultiplier(500)
+            delayWithMultiplier(1500)
             if (mode == "gold") {
                 normalBattle()
             } else if (mode == "exile") {
@@ -116,7 +113,7 @@ private suspend fun realAttack(mode: String, battleNumber: Int = 1): Boolean {
         }
         val machineSkills = findMultiColors(schema = MyColors.MachineSkills)
         if (machineSkills != null) {
-            TouchActions.tap(machineSkills.x, machineSkills.y, delayTime = 200)
+            TouchActions.tap(machineSkills.x, machineSkills.y + 100, delayTime = 200)
         }
         delayWithMultiplier(100)
     }
@@ -169,12 +166,7 @@ private suspend fun normalBattle(isNormal: Boolean = true) {
         repeat(6) {
             val skillsPos = findMultiColors(
                 schema = ColorSchema.rescope(
-                    MyColors.TroopSkills,
-                    MyColors.TroopSkills.x1,
-                    MyColors.TroopSkills.y1,
-                    MyColors.TroopSkills.x2,
-                    MyColors.TroopSkills.y2,
-                    direction = Random.nextInt(0, 2)
+                    MyColors.TroopSkills, MyColors.TroopSkills.x1, MyColors.TroopSkills.y1, MyColors.TroopSkills.x2, MyColors.TroopSkills.y2, direction = Random.nextInt(0, 2)
                 )
             )
             if (skillsPos != null) {
@@ -183,44 +175,25 @@ private suspend fun normalBattle(isNormal: Boolean = true) {
             }
         }
     } else {
-        val screenBitmap = ScreenCaptureManager.capture(asBitmap = true) as? Bitmap ?: logAndStop("in BuilderBaseNormalBattle, screen capture failed.")
-        var barbarianFound = true
-        for (attempt in 0 until 5) {
+        attemptLoop@ for (attempt in 0 until 5) {
             // Step 1: Touch down at a random position
             var currentPos = deployPositions.random()
             TouchActions.touchDown(currentPos.first.toFloat(), currentPos.second.toFloat(), 1)
-            delayWithMultiplier(100)
+            delayWithMultiplier(700)
 
             // Steps 2-3: Move smoothly to random positions until barbarian is gone
             while (true) {
                 val nextPos = deployPositions.random()
                 TouchActions.moveSmoothly(
-                    fromX = currentPos.first.toFloat(),
-                    fromY = currentPos.second.toFloat(),
-                    toX = nextPos.first.toFloat(),
-                    toY = nextPos.second.toFloat(),
-                    duration = Random.next(200,500)
+                    fromX = currentPos.first.toFloat(), fromY = currentPos.second.toFloat(), toX = nextPos.first.toFloat(), toY = nextPos.second.toFloat(), duration = Random.nextInt(200, 500)
                 )
                 currentPos = nextPos
                 val barbarian = findMultiColors(schema = MyColors.BuilderBaseBarbarian)
                 if (barbarian == null) {
-                    barbarianFound = false
-                    break
+                    // Step 4: Release finger and exit outer loop — barbarian is gone
+                    TouchActions.touchUp(1)
+                    break@attemptLoop
                 }
-            }
-
-            // Step 4: Release finger
-            TouchActions.touchUp(1)
-
-            if (!barbarianFound) break
-
-            // Still found after this attempt; if it's the last attempt, hold and break
-            if (attempt == 4) {
-                val finalPos = deployPositions.random()
-                TouchActions.touchDown(finalPos.first.toFloat(), finalPos.second.toFloat(), 1)
-                delayWithMultiplier(4000)
-                TouchActions.touchUp(1)
-                break
             }
         }
     }

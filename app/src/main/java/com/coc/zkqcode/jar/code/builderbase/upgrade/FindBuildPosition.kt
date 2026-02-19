@@ -22,7 +22,7 @@ object FindBuildPosition {
         val dy = y - lastY
         val distance = sqrt(dx * dx + dy * dy)
         if (distance > 15) {
-            val duration = Random.nextInt(100, 201).toLong()
+            val duration = Random.nextInt(100, 201)
             TouchActions.moveSmoothly(lastX, lastY, x, y, duration, id = 1, isJitter = false)
         } else {
             TouchActions.touchMove(x, y, id = 1, isJitter = false)
