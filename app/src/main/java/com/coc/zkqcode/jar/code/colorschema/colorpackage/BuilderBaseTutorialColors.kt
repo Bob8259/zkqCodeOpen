@@ -5,6 +5,7 @@ import com.coc.zkqcode.jar.code.colorschema.ColorSchema
 interface IBuilderBaseTutorial {
     val RebuildBoat: ColorSchema
     val UpgradeNightTH: ColorSchema
+    val UpgradeBarbarian: ColorSchema
     val BuilderMaster: ColorSchema
     val TutorialNightBarb: ColorSchema
     val NightAttack: ColorSchema
@@ -17,6 +18,9 @@ object BuilderBaseTutorial : IBuilderBaseTutorial {
     )
     override val UpgradeNightTH: ColorSchema = ColorSchema.parse(
         523, 573, 770, 691, "66F3D4", "-2|18|55E9C2,2|32|20C379,17|37|1FC379,47|39|20C47B,71|40|20C47C,131|43|20C178,159|21|10C6FD,161|2|57FCFF,170|0|28F8FF", 0, 0.9, "升级夜世界大本营"
+    )
+    override val UpgradeBarbarian: ColorSchema = ColorSchema.parse(
+        943, 617, 1045, 651, "FFFFFF", "21|0|FFFFFF,41|0|E4F8F4,61|0|ED2773,82|0|FF67C4,0|17|21CE8C,21|17|21CD8B,41|17|20CC8A,61|17|20C882,82|17|0D0D0D", 0, 0.9, "升级野蛮人"
     )
     override val BuilderMaster: ColorSchema = ColorSchema.parse(
         880, 362, 1213, 708, "22337A", "6|16|1C2B51,-28|59|204EAC,-34|90|142247,-1|112|122144,47|111|2A3A5F,97|99|6E4527,101|106|6C4426,101|140|6C4425,30|160|16224C", 0, 0.9, "睡醒建筑大师"

@@ -7,15 +7,21 @@ import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 object BuilderBaseTutorial {
     suspend fun builderBaseTutorial(): Boolean {
         // 1. Upgrade Night TH
-        findMultiColors(schema = MyColors.UpgradeNightTH)?.let {
-            TouchActions.tap(it.x, it.y, delayTime = 500)
+        listOf(
+            MyColors.UpgradeNightTH,
+            MyColors.UpgradeBarbarian
+        ).forEach { schema ->
+            findMultiColors(schema = schema)?.let {
+                TouchActions.tap(it.x, it.y, delayTime = 500)
+            }
         }
-
         // 2. Builder Master - Specific coordinate taps
         if (findMultiColors(schema = MyColors.BuilderMaster) != null) {
-            TouchActions.tap(615, 216, delayTime = 500)
-            TouchActions.tap(706, 555, delayTime = 500)
-            TouchActions.tap(685, 46, delayTime = 500)
+            TouchActions.tap(615, 216, delayTime = 200)
+            TouchActions.tap(706, 555, delayTime = 200)
+            TouchActions.tap(685, 46, delayTime = 200)
+            TouchActions.tap(592, 269, delayTime = 200)
+            TouchActions.tap(469, 304, delayTime = 200)
         }
 
         // 3. Tutorial Night Barb

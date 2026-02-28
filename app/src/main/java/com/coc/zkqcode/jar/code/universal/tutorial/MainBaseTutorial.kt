@@ -53,8 +53,9 @@ object MainBaseTutorial {
                     670 to 386,
                     706 to 554,
                     823 to 260,
+                    800 to 287,
                     706 to 554,
-                )//训练营，训练部队按钮，主世界大本营，主世界大本营升级，夜世界大本营，夜世界大本营升级
+                )//训练营，训练部队按钮，主世界大本营，主世界大本营升级，夜世界大本营，夜世界大本营2，夜世界大本营升级
             } else {
                 listOf(415 to 410)
             }
@@ -81,13 +82,13 @@ object MainBaseTutorial {
             }
         }
 
-            // Age Entry Workflow
-            findMultiColors(schema = MyColors.EnterAge)?.let {
-                val sequence = listOf(640 to 347, 640 to 347, 773 to 546)
-                sequence.forEach { (x, y) ->
-                    TouchActions.tap(x, y, delayTime = 500)
-                }
+        // Age Entry Workflow
+        findMultiColors(schema = MyColors.EnterAge)?.let {
+            val sequence = listOf(640 to 347, 640 to 347, 773 to 546)
+            sequence.forEach { (x, y) ->
+                TouchActions.tap(x, y, delayTime = 500)
             }
+        }
 
         // Shop Navigation
         findMultiColors(schema = MyColors.TutorialShop)?.let {

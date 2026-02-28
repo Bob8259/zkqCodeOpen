@@ -13,7 +13,7 @@ suspend fun runGame() {
             RunShell.runNoOutput("am start -n com.supercell.clashofclans/com.supercell.titan.GameApp")
         }
         2 -> {//私服
-            RunShell.runNoOutput("am start -n com.supercell.clashofclans2/com.atrasis.main.GameMain")
+            RunShell.runNoOutput("am start -n com.supercell.clashofclans1/com.atrasis.main.GameMain")
         }
     }
     delayWithMultiplier(5000)
@@ -28,7 +28,7 @@ suspend fun killGame() {
             killApp("com.supercell.clashofclans")
         }
         2 -> {//私服
-            killApp("com.supercell.clashofclans2")
+            killApp("com.supercell.clashofclans1")
         }
     }
     delayWithMultiplier(1000)

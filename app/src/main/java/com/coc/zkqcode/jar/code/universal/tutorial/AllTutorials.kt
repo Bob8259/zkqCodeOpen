@@ -43,7 +43,8 @@ object AllTutorials {
         val targetSchemas = listOf(
             MyColors.SpeakingVillager,
             MyColors.SpeakingVillager2,
-            MyColors.EnterAge
+            MyColors.EnterAge,
+            MyColors.BuilderMaster
         )
 
         val screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult
