@@ -74,8 +74,8 @@ object MainScript {
             ShowMessage("测试代码开始")
             runApp("com.supercell.clashofclans2")
             enterMainScreen()
-            delayWithMultiplier(1000)
-            builderBaseAttack()
+//            delayWithMultiplier(1000)
+//            builderBaseAttack()
             delayWithMultiplier(1000)
         }
     }

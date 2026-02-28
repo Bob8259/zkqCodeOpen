@@ -106,7 +106,7 @@ tasks.register<Exec>("deployPatch") {
 
     // --- Path configuration ---
     val workingDir = project.projectDir.absolutePath
-    val sdkDir = System.getenv("ANDROID_HOME") ?: "C:/Users/Azika/AppData/Local/Android/Sdk"
+    val sdkDir = System.getenv("ANDROID_HOME") ?: "C:/Users/Azikaban/AppData/Local/Android/Sdk"
 
     // Auto-detect the highest installed Build-Tools version (e.g. 36.1.0)
     val buildToolsDir = file("$sdkDir/build-tools")
