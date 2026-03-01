@@ -42,7 +42,7 @@ suspend fun builderBaseUpgradeBuildings(currentBase: BaseType = BaseType.Builder
         }
         if (worker != null) {
             TouchActions.tap(worker.x, worker.y, delayTime = 500)
-            iterateBuilderBaseBuildingUpgradeList { result ->
+            iterateBuilderBaseBuildingUpgradeList(currentBase = currentBase, onDetect = { result ->
                 val buildings = result.buildings
                 if (buildings.isEmpty()) {
                     ShowMessage("未检测到可升级建筑")
@@ -62,7 +62,7 @@ suspend fun builderBaseUpgradeBuildings(currentBase: BaseType = BaseType.Builder
                     ShowMessage("检测到 ${buildings.size} 个建筑:\n$info")
                 }
                 isNewBuildingDetected
-            }
+            })
             val upgradableList = upgradableBuildingsMap.filter { it.value }.keys.toList()
             val summary = upgradableList.joinToString("\n")
             ShowMessage("所有可升级建筑: $summary")

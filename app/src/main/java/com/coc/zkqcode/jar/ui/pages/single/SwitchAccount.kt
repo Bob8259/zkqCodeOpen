@@ -42,6 +42,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import androidx.core.content.edit
 import com.coc.zkqcode.core.util.basic.ShowMessage
+import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import kotlinx.coroutines.withContext
 
 @Composable
@@ -175,7 +176,12 @@ fun SwitchAccount(onClose: () -> Unit) {
                                 ShowMessage("正在切换账号$accNum")
                                 // 1. Get Game Version
                                 val versionKey = "${ACCOUNT_SETTINGS.GAME_VERSION.key}$accNum"
-                                val versionStr = GlobalVars.configStates[versionKey]!!.value
+                                val versionStr = GlobalVars.configStates[versionKey]?.value
+                                if (versionStr == null) {
+                                    ShowMessage("设置中未找到账号$accNum，请检查切号范围\n举个例子：\n如果只设置了3个账号，但是尝试切换第4个账号，就会出现此错误")
+                                    delayWithMultiplier(2000)
+                                    return@launch
+                                }
                                 val version = versionStr.toIntOrNull() ?: 0
                                 val sdPath = Environment.getExternalStorageDirectory().path
 

@@ -43,7 +43,7 @@ object UpgradeExistingBuildings {
                 TouchActions.tap(worker.x, worker.y, delayTime = 500)
 
                 // Locate the specific building in the UI
-                if (!findSpecificBuilding(building)) {
+                if (!findSpecificBuilding(building, currentBase)) {
                     TouchActions.tap(1233, 37)// tap gold to close worker list
                     break // Not found this building anymore, go to next building type
                 }
@@ -74,10 +74,10 @@ object UpgradeExistingBuildings {
         return enterMainScreen()
     }
 
-    private suspend fun findSpecificBuilding(buildingName: String): Boolean {
+    private suspend fun findSpecificBuilding(buildingName: String, currentBase: BaseType): Boolean {
         var found = false
         ShowMessage("准备寻找$buildingName")
-        iterateBuilderBaseBuildingUpgradeList { result ->
+        iterateBuilderBaseBuildingUpgradeList(currentBase = currentBase, onDetect = { result ->
             val building = result.buildings.find { it.name == buildingName }
             if (building != null) {
                 TouchActions.tap(building.x + 20, building.y + 20, delayTime = 1500)
@@ -86,7 +86,7 @@ object UpgradeExistingBuildings {
             } else {
                 false
             }
-        }
+        })
         return found
     }
 

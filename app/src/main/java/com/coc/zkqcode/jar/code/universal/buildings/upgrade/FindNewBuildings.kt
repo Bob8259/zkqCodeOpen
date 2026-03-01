@@ -9,13 +9,14 @@ suspend fun builderBaseFindNewBuildings(currentBase: BaseType): Boolean {
     val worker = when (currentBase) {
         BaseType.Builder ->
             findMultiColorsUntil(schemas = listOf(MyColors.BuilderBaseWorker), duration = 1000)
+
         BaseType.Main ->
             findMultiColorsUntil(schemas = listOf(MyColors.MainBaseWorker), duration = 1000)
     }
     if (worker != null) {
         TouchActions.tap(worker.x, worker.y, delayTime = 500)
         var found = false
-        iterateBuilderBaseBuildingUpgradeList { result ->
+        iterateBuilderBaseBuildingUpgradeList(currentBase = currentBase, onDetect = { result ->
             val buildings = result.buildings
             if (buildings.isEmpty()) {
                 ShowMessage("未检测到可升级建筑")
@@ -29,7 +30,7 @@ suspend fun builderBaseFindNewBuildings(currentBase: BaseType): Boolean {
                 }
             }
             false
-        }
+        })
         return found
     }
     return false
