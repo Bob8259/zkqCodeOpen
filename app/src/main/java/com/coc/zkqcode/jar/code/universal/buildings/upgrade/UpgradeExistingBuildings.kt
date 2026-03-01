@@ -21,7 +21,7 @@ object UpgradeExistingBuildings {
         "守卫岗哨", "空中炸弹发射器", "熔岩火炮", "巨型加农炮", "超级特斯拉电磁塔", "熔岩发射器", "十字连弩"
     )
 
-    suspend fun upgradeAllExistingBuildings(buildings: List<String>, currentBase: String): Boolean {
+    suspend fun upgradeAllExistingBuildings(buildings: List<String>, currentBase: BaseType): Boolean {
         val orderedList = getOrderedList(buildings)
 
         for (building in orderedList) {

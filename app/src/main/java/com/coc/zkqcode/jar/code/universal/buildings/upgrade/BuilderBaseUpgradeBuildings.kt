@@ -22,7 +22,12 @@ import kotlin.math.sqrt
 
 private val upgradableBuildingsMap = ALL_BUILDINGS.associateWith { false }.toMutableMap()
 
-suspend fun builderBaseUpgradeBuildings(currentBase: String = "Builder"): Boolean {
+enum class BaseType {
+    Builder,
+    Main
+}
+
+suspend fun builderBaseUpgradeBuildings(currentBase: BaseType = BaseType.Builder): Boolean {
     upgradableBuildingsMap.keys.forEach { upgradableBuildingsMap[it] = false }
     var isNewBuildingDetected = false
     clickRightBottom(1)
@@ -67,7 +72,7 @@ suspend fun builderBaseUpgradeBuildings(currentBase: String = "Builder"): Boolea
     return enterMainScreen()
 }
 
-suspend fun buildAllNewBuildings(currentBase: String): Boolean {
+suspend fun buildAllNewBuildings(currentBase: BaseType): Boolean {
     val startTime = System.currentTimeMillis()
     // 15分钟对应的毫秒数是 900,000
     val timeoutMillis = 900_000L
@@ -87,8 +92,8 @@ suspend fun buildAllNewBuildings(currentBase: String): Boolean {
     return enterMainScreen()
 }
 
-suspend fun checkContinueBuild(currentBase: String): Boolean {
-    if (currentBase == "Builder") {
+suspend fun checkContinueBuild(currentBase: BaseType): Boolean {
+    if (currentBase == BaseType.Builder) {
         val workerNumber = BuilderBaseWorkerAndResearch.detectWorkerNumber()
         ShowMessage("夜世界工人数量：${workerNumber.available}/${workerNumber.total}")
         return !(workerNumber.available == 0 || (workerNumber.available == 1 && getBooleanConfigRuntime(

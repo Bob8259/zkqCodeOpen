@@ -1,7 +1,6 @@
 package com.coc.zkqcode.jar.code.mainbase.others
 
 import com.coc.zkqcode.core.util.basic.ShowMessage
-import com.coc.zkqcode.core.util.basic.ShowMessage.invoke
 import com.coc.zkqcode.core.util.bugreporter.BugReporter
 import com.coc.zkqcode.jar.code.builderbase.others.BuilderBaseWorkerAndResearch.parseWorkerInfo
 import com.coc.zkqcode.jar.code.builderbase.others.WorkerInfo
