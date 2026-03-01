@@ -11,6 +11,7 @@ import com.coc.zkqcode.jar.code.builderbase.others.BuilderBaseWorkerAndResearch
 import com.coc.zkqcode.jar.code.builderbase.others.zoomSmallBuilderBase
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.mainbase.others.MainBaseWorkerAndResearch
+import com.coc.zkqcode.jar.code.mainbase.others.zoomSmallMainBase
 import com.coc.zkqcode.jar.code.universal.buildings.ALL_BUILDINGS
 import com.coc.zkqcode.jar.code.universal.clickRightBottom
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
@@ -24,8 +25,7 @@ import kotlin.math.sqrt
 private val upgradableBuildingsMap = ALL_BUILDINGS.associateWith { false }.toMutableMap()
 
 enum class BaseType {
-    Builder,
-    Main
+    Builder, Main
 }
 
 suspend fun builderBaseUpgradeBuildings(currentBase: BaseType = BaseType.Builder): Boolean {
@@ -34,11 +34,9 @@ suspend fun builderBaseUpgradeBuildings(currentBase: BaseType = BaseType.Builder
     clickRightBottom(1)
     if (checkContinueBuild(currentBase)) {
         val worker = when (currentBase) {
-            BaseType.Builder ->
-                findMultiColorsUntil(schemas = listOf(MyColors.BuilderBaseWorker), duration = 1000)
+            BaseType.Builder -> findMultiColorsUntil(schemas = listOf(MyColors.BuilderBaseWorker), duration = 1000)
 
-            BaseType.Main ->
-                findMultiColorsUntil(schemas = listOf(MyColors.MainBaseWorker), duration = 1000)
+            BaseType.Main -> findMultiColorsUntil(schemas = listOf(MyColors.MainBaseWorker), duration = 1000)
         }
         if (worker != null) {
             TouchActions.tap(worker.x, worker.y, delayTime = 500)
@@ -55,10 +53,9 @@ suspend fun builderBaseUpgradeBuildings(currentBase: BaseType = BaseType.Builder
                             isNewBuildingDetected = true
                         }
                     }
-                    val info = buildings.chunked(4)
-                        .joinToString("\n") { chunk ->
-                            chunk.joinToString(" ") { it.name }
-                        }
+                    val info = buildings.chunked(4).joinToString("\n") { chunk ->
+                        chunk.joinToString(" ") { it.name }
+                    }
                     ShowMessage("检测到 ${buildings.size} 个建筑:\n$info")
                 }
                 isNewBuildingDetected
@@ -126,14 +123,13 @@ suspend fun checkContinueBuild(currentBase: BaseType): Boolean {
 //But for this function, false means no new buildings.
 private suspend fun buildOneNewBuildings(currentBase: BaseType): Boolean {
     ShowMessage("准备建造新建筑")
-    zoomSmallBuilderBase(isForBuild = true)
+    if (currentBase == BaseType.Builder) zoomSmallBuilderBase(isForBuild = true)
+    else if (currentBase == BaseType.Main) zoomSmallMainBase(isForBuild = true)
     // 1. Identify the position of new buildings; return early if not found
     if (!builderBaseFindNewBuildings(currentBase)) return false
 
     // 2. Locate the shop arrow indicator
-    val shopArrow =
-        findMultiColorsUntil(schemas = listOf(MyColors.InnerShopArrow), duration = 5000)
-            ?: return false
+    val shopArrow = findMultiColorsUntil(schemas = listOf(MyColors.InnerShopArrow), duration = 5000) ?: return false
 
     // 3. Determine building type (Wall vs. Others) before UI state changes
     val isWall = findMultiColors(schema = MyColors.WallInShop) != null
@@ -192,8 +188,7 @@ private suspend fun tryToBatchBuildWalls(x: Int, y: Int) {
     TouchActions.tap(centerX, centerY)
     TouchActions.swipe(280, 480, 280, 320, delayTime = 600)
     // Locate the arrow element using YOLO detector
-    val screenBuffer = ScreenCaptureManager.capture(asBitmap = true) as? Bitmap
-        ?: logAndStop("in BuilderBaseUpgradeBuildings, screen capture failed.")
+    val screenBuffer = ScreenCaptureManager.capture(asBitmap = true) as? Bitmap ?: logAndStop("in BuilderBaseUpgradeBuildings, screen capture failed.")
     val detections = YoloDetector.detect(screenBuffer, modelType = "walls-detect")
     val batchBuildWallsArrow = detections.maxByOrNull { it.score }
 
