@@ -9,9 +9,11 @@ import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.core.yolo.YoloDetector
 import com.coc.zkqcode.jar.code.builderbase.others.BuilderBaseWorkerAndResearch
 import com.coc.zkqcode.jar.code.builderbase.others.zoomSmallBuilderBase
+import com.coc.zkqcode.jar.code.builderbase.upgrade.builderBaseFindBuildButton
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.mainbase.others.MainBaseWorkerAndResearch
 import com.coc.zkqcode.jar.code.mainbase.others.zoomSmallMainBase
+import com.coc.zkqcode.jar.code.mainbase.upgrade.mainBaseFindBuildButton
 import com.coc.zkqcode.jar.code.universal.buildings.ALL_BUILDINGS
 import com.coc.zkqcode.jar.code.universal.clickRightBottom
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
@@ -28,7 +30,7 @@ enum class BaseType {
     Builder, Main
 }
 
-suspend fun builderBaseUpgradeBuildings(currentBase: BaseType = BaseType.Builder): Boolean {
+suspend fun builderBaseUpgradeBuildings(currentBase: BaseType): Boolean {
     upgradableBuildingsMap.keys.forEach { upgradableBuildingsMap[it] = false }
     var isNewBuildingDetected = false
     clickRightBottom(1)
@@ -65,7 +67,7 @@ suspend fun builderBaseUpgradeBuildings(currentBase: BaseType = BaseType.Builder
             ShowMessage("所有可升级建筑: $summary")
             if (isNewBuildingDetected) {
                 if (!buildAllNewBuildings(currentBase)) return false
-                builderBaseUpgradeBuildings()
+                builderBaseUpgradeBuildings(currentBase)
             } else {
                 if (!UpgradeExistingBuildings.upgradeAllExistingBuildings(upgradableList, currentBase)) return false
             }
@@ -136,7 +138,7 @@ private suspend fun buildOneNewBuildings(currentBase: BaseType): Boolean {
     TouchActions.tap(shopArrow.x - 50, shopArrow.y + 50, delayTime = 1500)
 
     // 4. Locate the confirmation button (Green Tick)
-    var targetTick = builderBaseFindBuildButton(type = "Tick")
+    var targetTick = if (currentBase == BaseType.Main) mainBaseFindBuildButton(type = "Tick") else builderBaseFindBuildButton(type = "Tick")
 
     // 5. If initial tick is missing, attempt to find a new position via the Red Cross
     if (targetTick == null) {
@@ -153,7 +155,7 @@ private suspend fun buildOneNewBuildings(currentBase: BaseType): Boolean {
         } else {
             // Handle standard building with retry logic
             for (i in 1..5) {
-                val currentTick = builderBaseFindBuildButton(duration = 500, type = "Tick")
+                val currentTick = if (currentBase == BaseType.Main) mainBaseFindBuildButton(type = "Tick", duration = 500) else builderBaseFindBuildButton(type = "Tick", duration = 500)
                 if (currentTick != null) {
                     ShowMessage("点击第 $i 次绿色按钮：${currentTick.x}, ${currentTick.y}")
                     TouchActions.tap(currentTick.x, currentTick.y)

@@ -1,4 +1,4 @@
-package com.coc.zkqcode.jar.code.colorschema.colorpackage
+package com.coc.zkqcode.jar.code.colorschema.colorpackage.builderbase
 
 import com.coc.zkqcode.jar.code.colorschema.ColorSchema
 
