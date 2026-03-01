@@ -7,6 +7,8 @@ import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndStop
 import com.coc.zkqcode.jar.code.builderbase.playBuilderBase
 import com.coc.zkqcode.jar.code.mainbase.others.MainBaseWorkerAndResearch
 import com.coc.zkqcode.jar.code.universal.InGamesVars
+import com.coc.zkqcode.jar.code.universal.buildings.upgrade.BaseType
+import com.coc.zkqcode.jar.code.universal.buildings.upgrade.builderBaseUpgradeBuildings
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.smalltools.readMemory
 import com.coc.zkqcode.jar.code.universal.smalltools.runApp
@@ -75,7 +77,7 @@ object MainScript {
             runApp("com.supercell.clashofclans2")
             enterMainScreen()
             delayWithMultiplier(1000)
-//            builderBaseUpgradeBuildings("Builder")
+            builderBaseUpgradeBuildings(BaseType.Builder)
             val workerInfo = MainBaseWorkerAndResearch.detectWorkerNumber()
             ShowMessage("主世界工人数量：${workerInfo.available}/${workerInfo.total}")
             delayWithMultiplier(1000)
