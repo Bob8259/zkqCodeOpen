@@ -22,11 +22,11 @@ import kotlin.math.sqrt
 
 private val upgradableBuildingsMap = ALL_BUILDINGS.associateWith { false }.toMutableMap()
 
-suspend fun builderBaseUpgradeBuildings(): Boolean {
+suspend fun builderBaseUpgradeBuildings(currentBase: String = "Builder"): Boolean {
     upgradableBuildingsMap.keys.forEach { upgradableBuildingsMap[it] = false }
     var isNewBuildingDetected = false
     clickRightBottom(1)
-    if (checkContinueBuild()) {
+    if (checkContinueBuild(currentBase)) {
         val worker =
             findMultiColorsUntil(schemas = listOf(MyColors.BuilderBaseWorker), duration = 1000)
         if (worker != null) {
@@ -56,10 +56,10 @@ suspend fun builderBaseUpgradeBuildings(): Boolean {
             val summary = upgradableList.joinToString("\n")
             ShowMessage("所有可升级建筑: $summary")
             if (isNewBuildingDetected) {
-                if (!buildAllNewBuildings()) return false
+                if (!buildAllNewBuildings(currentBase)) return false
                 builderBaseUpgradeBuildings()
             } else {
-                if (!UpgradeExistingBuildings.upgradeAllExistingBuildings(upgradableList)) return false
+                if (!UpgradeExistingBuildings.upgradeAllExistingBuildings(upgradableList, currentBase)) return false
             }
 
         }
@@ -67,7 +67,7 @@ suspend fun builderBaseUpgradeBuildings(): Boolean {
     return enterMainScreen()
 }
 
-suspend fun buildAllNewBuildings(): Boolean {
+suspend fun buildAllNewBuildings(currentBase: String): Boolean {
     val startTime = System.currentTimeMillis()
     // 15分钟对应的毫秒数是 900,000
     val timeoutMillis = 900_000L
@@ -78,7 +78,7 @@ suspend fun buildAllNewBuildings(): Boolean {
             break
         }
         ShowMessage("建造中，剩余${"%.2f".format(remainingMinutes)}分钟后强制退出")
-        if (!checkContinueBuild()) {
+        if (!checkContinueBuild(currentBase)) {
             break
         }
         if (!buildOneNewBuildings()) break
@@ -87,12 +87,19 @@ suspend fun buildAllNewBuildings(): Boolean {
     return enterMainScreen()
 }
 
-suspend fun checkContinueBuild(): Boolean {
-    val workerNumber = BuilderBaseWorkerAndResearch.detectWorkerNumber()
-    ShowMessage("夜世界工人数量：${workerNumber.available}/${workerNumber.total}")
-    return !(workerNumber.available == 0 || (workerNumber.available == 1 && getBooleanConfigRuntime(
-        Schema.BUILDER_BASE_SETTINGS.NIGHT_SAVE_WORKER.key
-    )))
+suspend fun checkContinueBuild(currentBase: String): Boolean {
+    if (currentBase == "Builder") {
+        val workerNumber = BuilderBaseWorkerAndResearch.detectWorkerNumber()
+        ShowMessage("夜世界工人数量：${workerNumber.available}/${workerNumber.total}")
+        return !(workerNumber.available == 0 || (workerNumber.available == 1 && getBooleanConfigRuntime(
+            Schema.BUILDER_BASE_SETTINGS.NIGHT_SAVE_WORKER.key
+        )))
+    } else {
+
+        return false
+    }
+
+
 }
 
 //For other functions, return false usually means fails to go back to main screen.
