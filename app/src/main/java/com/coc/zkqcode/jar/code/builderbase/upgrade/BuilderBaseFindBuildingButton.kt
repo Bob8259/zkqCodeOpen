@@ -1,4 +1,4 @@
-package com.coc.zkqcode.jar.code.universal.buildings.upgrade
+package com.coc.zkqcode.jar.code.builderbase.upgrade
 
 import android.graphics.Point
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
