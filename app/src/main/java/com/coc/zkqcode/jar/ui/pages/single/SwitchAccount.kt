@@ -178,7 +178,7 @@ fun SwitchAccount(onClose: () -> Unit) {
                                 val versionKey = "${ACCOUNT_SETTINGS.GAME_VERSION.key}$accNum"
                                 val versionStr = GlobalVars.configStates[versionKey]?.value
                                 if (versionStr == null) {
-                                    ShowMessage("设置中未找到账号$accNum，请检查切号范围\n举个例子：\n如果只设置了3个账号，但是尝试切换第4个账号，就会出现此错误")
+                                    ShowMessage("设置中未找到账号$accNum，请检查切号范围\n举个例子：\n如果在辅助里只设置了3个账号\n但是尝试切换第4个账号，就会出现此错误")
                                     delayWithMultiplier(2000)
                                     return@launch
                                 }

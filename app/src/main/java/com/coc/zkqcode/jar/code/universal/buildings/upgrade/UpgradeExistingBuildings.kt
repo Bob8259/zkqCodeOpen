@@ -77,7 +77,7 @@ object UpgradeExistingBuildings {
     private suspend fun findSpecificBuilding(buildingName: String, currentBase: BaseType): Boolean {
         var found = false
         ShowMessage("准备寻找$buildingName")
-        iterateBuilderBaseBuildingUpgradeList(currentBase = currentBase, onDetect = { result ->
+        iterateBuilderBaseBuildingUpgradeList(onDetect = { result ->
             val building = result.buildings.find { it.name == buildingName }
             if (building != null) {
                 TouchActions.tap(building.x + 20, building.y + 20, delayTime = 1500)
