@@ -14,8 +14,7 @@ import com.coc.zkqcode.jar.code.universal.smalltools.writeMemory
 import java.util.Calendar
 import kotlin.math.abs
 
-object TrainTroops {
-    suspend fun trainTroops(): Boolean {
+    suspend fun mainBaseTrainTroops(): Boolean {
         val storageKey = "MainBaseTrainTroops${InGamesVars.currentAccountNumber}"
         val lastTrainingTime = readMemory(storageKey).toIntOrNull()
 
@@ -133,4 +132,3 @@ object TrainTroops {
             return true
         }
     }
-}

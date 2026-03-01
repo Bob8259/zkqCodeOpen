@@ -6,6 +6,7 @@ import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndStop
 import com.coc.zkqcode.jar.code.builderbase.attack.builderBaseAttack
 import com.coc.zkqcode.jar.code.builderbase.playBuilderBase
+import com.coc.zkqcode.jar.code.mainbase.playMainBase
 import com.coc.zkqcode.jar.code.universal.InGamesVars
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.smalltools.readMemory
@@ -59,7 +60,7 @@ object MainScript {
                     delay(500)
                     break // 跳出内层循环，重新检查账号状态
                 }
-//                if (!MainBaseScript.playMainBase()) {
+//                if (!playMainBase()) {
 //                    ShowMessage("主世界操作失败")
 //                    delay(500)
 //                    break // 跳出内层循环，重新检查账号状态
@@ -74,8 +75,8 @@ object MainScript {
             ShowMessage("测试代码开始")
             runApp("com.supercell.clashofclans2")
             enterMainScreen()
-//            delayWithMultiplier(1000)
-//            builderBaseAttack()
+            delayWithMultiplier(1000)
+            playMainBase()
             delayWithMultiplier(1000)
         }
     }
