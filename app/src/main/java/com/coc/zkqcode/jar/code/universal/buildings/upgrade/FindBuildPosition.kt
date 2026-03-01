@@ -1,4 +1,4 @@
-package com.coc.zkqcode.jar.code.builderbase.upgrade
+package com.coc.zkqcode.jar.code.universal.buildings.upgrade
 
 import android.graphics.Point
 import com.coc.zkqcode.core.util.basic.ShowMessage
