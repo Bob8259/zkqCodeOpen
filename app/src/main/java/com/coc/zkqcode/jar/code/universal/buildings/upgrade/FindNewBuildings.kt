@@ -26,6 +26,7 @@ suspend fun builderBaseFindNewBuildings(currentBase: BaseType): Boolean {
                     if (newBuilding.y > 530) return@iterateBuilderBaseBuildingUpgradeList false
                     ShowMessage("检测到新建筑: ${newBuilding.name}")
                     TouchActions.tap(newBuilding.x + 20, newBuilding.y + 20, delayTime = 1500)
+                    found = true
                     return@iterateBuilderBaseBuildingUpgradeList true
                 }
             }
