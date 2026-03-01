@@ -77,9 +77,8 @@ object MainScript {
             runApp("com.supercell.clashofclans2")
             enterMainScreen()
             delayWithMultiplier(1000)
-            builderBaseUpgradeBuildings(BaseType.Builder)
-            val workerInfo = MainBaseWorkerAndResearch.detectWorkerNumber()
-            ShowMessage("主世界工人数量：${workerInfo.available}/${workerInfo.total}")
+            builderBaseUpgradeBuildings(BaseType.Main)
+
             delayWithMultiplier(1000)
         }
     }

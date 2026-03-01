@@ -10,6 +10,7 @@ import com.coc.zkqcode.core.yolo.YoloDetector
 import com.coc.zkqcode.jar.code.builderbase.others.BuilderBaseWorkerAndResearch
 import com.coc.zkqcode.jar.code.builderbase.others.zoomSmallBuilderBase
 import com.coc.zkqcode.jar.code.colorschema.MyColors
+import com.coc.zkqcode.jar.code.mainbase.others.MainBaseWorkerAndResearch
 import com.coc.zkqcode.jar.code.universal.buildings.ALL_BUILDINGS
 import com.coc.zkqcode.jar.code.universal.clickRightBottom
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
@@ -32,8 +33,13 @@ suspend fun builderBaseUpgradeBuildings(currentBase: BaseType = BaseType.Builder
     var isNewBuildingDetected = false
     clickRightBottom(1)
     if (checkContinueBuild(currentBase)) {
-        val worker =
-            findMultiColorsUntil(schemas = listOf(MyColors.BuilderBaseWorker), duration = 1000)
+        val worker = when (currentBase) {
+            BaseType.Builder ->
+                findMultiColorsUntil(schemas = listOf(MyColors.BuilderBaseWorker), duration = 1000)
+
+            BaseType.Main ->
+                findMultiColorsUntil(schemas = listOf(MyColors.MainBaseWorker), duration = 1000)
+        }
         if (worker != null) {
             TouchActions.tap(worker.x, worker.y, delayTime = 500)
             iterateBuilderBaseBuildingUpgradeList { result ->
@@ -86,34 +92,43 @@ suspend fun buildAllNewBuildings(currentBase: BaseType): Boolean {
         if (!checkContinueBuild(currentBase)) {
             break
         }
-        if (!buildOneNewBuildings()) break
+        if (!buildOneNewBuildings(currentBase)) break
         if (!enterMainScreen()) return false
     }
     return enterMainScreen()
 }
 
 suspend fun checkContinueBuild(currentBase: BaseType): Boolean {
-    if (currentBase == BaseType.Builder) {
-        val workerNumber = BuilderBaseWorkerAndResearch.detectWorkerNumber()
-        ShowMessage("夜世界工人数量：${workerNumber.available}/${workerNumber.total}")
-        return !(workerNumber.available == 0 || (workerNumber.available == 1 && getBooleanConfigRuntime(
-            Schema.BUILDER_BASE_SETTINGS.NIGHT_SAVE_WORKER.key
-        )))
+    // 1. Determine base-specific data sources and config keys
+    val isBuilder = currentBase == BaseType.Builder
+
+    val workerNumber = if (isBuilder) {
+        BuilderBaseWorkerAndResearch.detectWorkerNumber()
     } else {
-
-        return false
+        MainBaseWorkerAndResearch.detectWorkerNumber()
     }
-
-
+    val configKey = if (isBuilder) {
+        Schema.BUILDER_BASE_SETTINGS.NIGHT_SAVE_WORKER.key
+    } else {
+        Schema.MAIN_BASE_SETTINGS.SAVE_WORKER.key
+    }
+    val baseName = if (isBuilder) "夜世界" else "主世界"
+    // 2. Log the worker status (Keep original Chinese strings)
+    ShowMessage("${baseName}工人数量：${workerNumber.available}/${workerNumber.total}")
+    // 3. Evaluate the exit condition:
+    // No workers available OR exactly one worker available while "Save Worker" config is enabled.
+    val isNoWorkerAvailable = workerNumber.available == 0
+    val isSavingLastWorker = workerNumber.available == 1 && getBooleanConfigRuntime(configKey)
+    return !(isNoWorkerAvailable || isSavingLastWorker)
 }
 
 //For other functions, return false usually means fails to go back to main screen.
 //But for this function, false means no new buildings.
-private suspend fun buildOneNewBuildings(): Boolean {
+private suspend fun buildOneNewBuildings(currentBase: BaseType): Boolean {
     ShowMessage("准备建造新建筑")
     zoomSmallBuilderBase(isForBuild = true)
     // 1. Identify the position of new buildings; return early if not found
-    if (!builderBaseFindNewBuildings()) return false
+    if (!builderBaseFindNewBuildings(currentBase)) return false
 
     // 2. Locate the shop arrow indicator
     val shopArrow =
