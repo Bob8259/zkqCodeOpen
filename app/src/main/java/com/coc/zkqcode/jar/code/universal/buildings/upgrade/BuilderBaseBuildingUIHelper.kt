@@ -10,7 +10,7 @@ import com.coc.zkqcode.jar.code.universal.buildings.detectBuildingList
  * Performs swipes and calls [onDetect] for each detection result.
  * If [onDetect] returns true, the iteration stops immediately.
  */
-suspend fun iterateBuilderBaseBuildingUpgradeList(onDetect: suspend (BuildingDetectionResult) -> Boolean) {
+suspend fun iterateBuilderBaseBuildingUpgradeList(currentBase:BaseType, onDetect: suspend (BuildingDetectionResult) -> Boolean) {
     var previousBuildingNames: List<String>? = null
     loop@ for (i in 1..12) {
         val result = detectBuildingList()
