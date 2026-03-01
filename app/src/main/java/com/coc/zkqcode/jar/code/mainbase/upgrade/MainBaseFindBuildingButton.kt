@@ -15,7 +15,10 @@ private val mainBaseBuildTickSchemas = listOf(
 
 private val mainBaseBuildCrossSchemas = listOf(
     ColorSchema.parse(
-        105, 70, 1115, 680, "FFFFFF", "-6|-1|8884F8,-4|-6|8B84FF,7|0|8784F7,7|-1|8884F8,7|5|0F0DC7,6|8|0E0DCB,1|8|0E0DCA,-4|8|0E0DCA,-7|6|0E0DC5", 0, 0.92, "红色叉叉1"
+        105, 70, 1115, 680, "FFFFFF", "-6|-1|8884F8,-6|-4|8A84FC,-3|-6|8B84FF,6|-6|8B84FF,7|5|0F0DC7,5|8|0E0DCA,0|8|0E0DCA,-4|8|0E0DCA,-6|7|0E0DC6", 0, 0.92, "红色叉叉1"
+    ),
+    ColorSchema.parse(
+        105, 70, 1115, 680, "FFFFFF", "-6|0|8784F5,-7|-7|8C84FF,0|-7|8B84FF,8|-7|877EFF,7|-2|8884F9,7|4|0F0DCB,5|8|0E0DC9,-2|8|0E0DC9,-7|7|0E0DC6", 0, 0.92, "红色叉叉2"
     ),
 )
 
