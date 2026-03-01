@@ -33,5 +33,4 @@ object MyColors : IWorkerColors by WorkerColors, IUIColors by UIColors, IFeature
     val BuilderBaseBarbarian: ColorSchema = ColorSchema.parse(
         193, 585, 1261, 623, "FF763A", "7|0|FF763A,15|0|FF773B,23|0|FF783C,30|0|FF793C,0|6|FF773A,7|6|FF793C,15|6|FF7B3E,23|6|FF7D40,30|6|FF7E41", 0, 0.9, "夜世界野蛮人"
     )
-
 }
