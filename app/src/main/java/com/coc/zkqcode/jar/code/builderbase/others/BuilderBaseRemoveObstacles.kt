@@ -29,12 +29,12 @@ suspend fun builderBaseRemoveObstacles(): Boolean {
 
     // Resource threshold check
     if (worker.total == 2) {
-        if (resources.gold < 600000 && resources.elixir < 600000) {
+        if (resources.gold < 600000 || resources.elixir < 600000) {
             ShowMessage("检测金：${resources.gold}，检测水：${resources.elixir}\n不足60万，暂不除草")
             return true
         }
     } else {
-        if (resources.gold < 300000 && resources.elixir < 300000) {
+        if (resources.gold < 300000 || resources.elixir < 300000) {
             ShowMessage("检测金：${resources.gold}，检测水：${resources.elixir}\n不足30万，暂不除草")
             return true
         }
