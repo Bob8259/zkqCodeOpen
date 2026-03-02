@@ -1,6 +1,5 @@
-package com.coc.zkqcode.jar.code.mainbase.precheck
+package com.coc.zkqcode.jar.code.builderbase.precheck
 
-import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.core.util.touchactions.TouchActions

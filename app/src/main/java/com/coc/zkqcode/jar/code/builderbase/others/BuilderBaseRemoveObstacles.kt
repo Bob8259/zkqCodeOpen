@@ -1,15 +1,11 @@
-package com.coc.zkqcode.jar.code.builderbase.resources
+package com.coc.zkqcode.jar.code.builderbase.others
 
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.core.util.touchactions.TouchActions.swipe
-import com.coc.zkqcode.jar.code.builderbase.others.BuilderBaseWorkerAndResearch
-import com.coc.zkqcode.jar.code.builderbase.others.zoomSmallBuilderBase
-import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.InGamesVars
-import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
-import com.coc.zkqcode.jar.code.universal.recognizer.RecognizeResources
+import com.coc.zkqcode.jar.code.universal.recognizer.recognizeMyResources
 import com.coc.zkqcode.jar.code.universal.remove.enterEditMode
 import com.coc.zkqcode.jar.code.universal.remove.removeAllBuildings
 import com.coc.zkqcode.jar.code.universal.remove.removeObstacles
@@ -20,7 +16,7 @@ import kotlin.math.abs
 
 suspend fun builderBaseRemoveObstacles(): Boolean {
     val worker = BuilderBaseWorkerAndResearch.detectWorkerNumber()
-    val resources = RecognizeResources.recognizeMyResources()
+    val resources = recognizeMyResources()
     val storageKey = "BuilderBaseRemoveObstacles${InGamesVars.currentAccountNumber}"
     val lastCleaningTime = readMemory(storageKey).toIntOrNull()
     val currentHour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
@@ -28,7 +24,7 @@ suspend fun builderBaseRemoveObstacles(): Boolean {
     // Simplified time check as requested
     if (lastCleaningTime != null && abs(lastCleaningTime - currentHour) < 8) {
         ShowMessage("距离上次除草不足8小时，暂不除草")
-       return true
+        return true
     }
 
     // Resource threshold check
@@ -45,7 +41,6 @@ suspend fun builderBaseRemoveObstacles(): Boolean {
     }
 
     ShowMessage("第一区域准备移除障碍物")
-    zoomSmallBuilderBase()
     enterEditMode()
     zoomSmallBuilderBase()
     // First Area Operations
