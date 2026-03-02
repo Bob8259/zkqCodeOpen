@@ -1,4 +1,4 @@
-package com.coc.zkqcode.jar.code.universal.precheck
+package com.coc.zkqcode.jar.code.mainbase.precheck
 
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
@@ -9,7 +9,7 @@ import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.smalltools.getBooleanConfigRuntime
 import com.coc.zkqcode.jar.ui.schema.Schema
 
-object PreCheck {
+
     suspend fun claimAchievement(): Boolean {
         val isClaimAchievement = getBooleanConfigRuntime(
             Schema.MAIN_BASE_SETTINGS.CLAIM_ACHIEVEMENT_GEMS.key
@@ -30,4 +30,3 @@ object PreCheck {
         if (point != null)
             TouchActions.tap(point.x, point.y)
     }
-}
