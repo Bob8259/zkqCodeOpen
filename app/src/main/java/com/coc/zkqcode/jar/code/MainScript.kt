@@ -11,6 +11,7 @@ import com.coc.zkqcode.jar.code.universal.InGamesVars
 import com.coc.zkqcode.jar.code.universal.buildings.upgrade.BaseType
 import com.coc.zkqcode.jar.code.universal.buildings.upgrade.builderBaseUpgradeBuildings
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
+import com.coc.zkqcode.jar.code.universal.remove.enterEditMode
 import com.coc.zkqcode.jar.code.universal.smalltools.readMemory
 import com.coc.zkqcode.jar.code.universal.smalltools.runApp
 import com.coc.zkqcode.jar.ui.schema.Schema
@@ -78,9 +79,8 @@ object MainScript {
             runApp("com.supercell.clashofclans2")
             enterMainScreen()
             delayWithMultiplier(1000)
-            builderBaseUpgradeBuildings(BaseType.Main)
-//            zoomSmallMainBase(isForBuild = true)
-            delayWithMultiplier(1000)
+            enterEditMode()
+            delayWithMultiplier(10000)
         }
     }
 }
