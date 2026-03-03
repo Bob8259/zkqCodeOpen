@@ -15,6 +15,7 @@ import com.coc.zkqcode.jar.code.mainbase.others.MainBaseWorkerAndResearch
 import com.coc.zkqcode.jar.code.mainbase.others.zoomSmallMainBase
 import com.coc.zkqcode.jar.code.mainbase.upgrade.mainBaseFindBuildButton
 import com.coc.zkqcode.jar.code.universal.buildings.ALL_BUILDINGS
+import com.coc.zkqcode.jar.code.universal.buildings.iterateBuilderBaseBuildingUpgradeList
 import com.coc.zkqcode.jar.code.universal.clickRightBottom
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
@@ -30,7 +31,7 @@ enum class BaseType {
     Builder, Main
 }
 
-suspend fun builderBaseUpgradeBuildings(currentBase: BaseType): Boolean {
+suspend fun upgradeBuildings(currentBase: BaseType): Boolean {
     upgradableBuildingsMap.keys.forEach { upgradableBuildingsMap[it] = false }
     var isNewBuildingDetected = false
     clickRightBottom(1)
@@ -67,7 +68,7 @@ suspend fun builderBaseUpgradeBuildings(currentBase: BaseType): Boolean {
             ShowMessage("所有可升级建筑: $summary")
             if (isNewBuildingDetected) {
                 if (!buildAllNewBuildings(currentBase)) return false
-                builderBaseUpgradeBuildings(currentBase)
+                upgradeBuildings(currentBase)
             } else {
                 if (!UpgradeExistingBuildings.upgradeAllExistingBuildings(upgradableList, currentBase)) return false
             }

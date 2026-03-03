@@ -10,7 +10,7 @@ import com.coc.zkqcode.jar.code.universal.smalltools.getBooleanConfigRuntime
 import com.coc.zkqcode.jar.code.builderbase.resources.collectBuilderBaseResources
 import com.coc.zkqcode.jar.code.builderbase.others.builderBaseRemoveObstacles
 import com.coc.zkqcode.jar.code.universal.buildings.upgrade.BaseType
-import com.coc.zkqcode.jar.code.universal.buildings.upgrade.builderBaseUpgradeBuildings
+import com.coc.zkqcode.jar.code.universal.buildings.upgrade.upgradeBuildings
 import com.coc.zkqcode.jar.code.universal.smalltools.enterBuilderBase
 import com.coc.zkqcode.jar.ui.schema.Schema
 
@@ -31,7 +31,7 @@ suspend fun playBuilderBase(): Boolean {
     if (!collectBuilderBaseResources()) return false
     if (!clickOttosOutPost()) return false
     if (!builderBaseRemoveObstacles()) return false
-    if (!builderBaseUpgradeBuildings(BaseType.Builder)) return false
+    if (!upgradeBuildings(BaseType.Builder)) return false
     if (!builderBaseResearch()) return false
     if (!builderBaseTrainWithConditions()) return false
     if (!builderBaseAttack()) return false
