@@ -25,6 +25,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.ui.localcomponents.LocalCustomAlertDialog
@@ -35,8 +37,23 @@ import com.coc.zkqcode.statehelper.AppMode
 import com.coc.zkqcode.statehelper.AppStateManager
 import kotlinx.coroutines.delay
 
-// Define a common icon size constant
-val ICON_SIZE = 40.dp
+// Base DPI for consistent physical size across devices
+private const val BASE_DPI = 320f
+
+// Base icon size at DPI 320 (38dp)
+private val BASE_ICON_SIZE_DP = 38.dp
+
+/**
+ * Calculate icon size that maintains consistent physical size across different DPI devices.
+ * At DPI 320, the size will be 38dp. On other DPI devices, it scales proportionally.
+ */
+@Composable
+fun getConsistentIconSize(): Dp {
+    val density = LocalDensity.current
+    val currentDpi = density.density * 160f
+    val scaleFactor = BASE_DPI / currentDpi
+    return BASE_ICON_SIZE_DP * scaleFactor
+}
 
 enum class ControlState {
     COLLAPSED, // State 1
@@ -71,6 +88,8 @@ fun ControlWindow(
             controlState = ControlState.COLLAPSED
         }
     }
+
+    val iconSize = getConsistentIconSize()
 
     val mainIcon = remember {
         context.assets.open("main_icon.png").use {
@@ -126,9 +145,9 @@ fun ControlWindow(
                 bitmap = mainIcon,
                 contentDescription = "Main Icon",
                 modifier = Modifier
-                    .size(ICON_SIZE)
+                    .size(iconSize)
                     .padding(4.dp)
-                    .offset(x = if (controlState == ControlState.HIDDEN) (-20).dp else 0.dp)
+                    .offset(x = if (controlState == ControlState.HIDDEN) (-30).dp else 0.dp)
                     .then(dragModifier)
                     .clickable {
                         controlState = when (controlState) {
@@ -145,7 +164,7 @@ fun ControlWindow(
                     bitmap = exitIcon,
                     contentDescription = "Exit",
                     modifier = Modifier
-                        .size(ICON_SIZE)
+                        .size(iconSize)
                         .padding(4.dp)
                         .clickable {
                             internalInteractionCount++
@@ -157,7 +176,7 @@ fun ControlWindow(
                     bitmap = settingIcon,
                     contentDescription = "Setting",
                     modifier = Modifier
-                        .size(ICON_SIZE)
+                        .size(iconSize)
                         .padding(4.dp)
                         .clickable {
                             internalInteractionCount++
@@ -170,7 +189,7 @@ fun ControlWindow(
                     bitmap = switchAccountIcon,
                     contentDescription = "Switch",
                     modifier = Modifier
-                        .size(ICON_SIZE)
+                        .size(iconSize)
                         .padding(4.dp)
                         .clickable {
                             internalInteractionCount++
@@ -183,7 +202,7 @@ fun ControlWindow(
                     bitmap = if (isPlaying) pauseIcon else playIcon,
                     contentDescription = if (isPlaying) "Pause" else "Play",
                     modifier = Modifier
-                        .size(ICON_SIZE)
+                        .size(iconSize)
                         .padding(4.dp)
                         .clickable {
                             internalInteractionCount++
@@ -203,7 +222,7 @@ fun ControlWindow(
                     bitmap = if (isPlaying) pauseIcon else playIcon,
                     contentDescription = if (isPlaying) "Pause" else "Play",
                     modifier = Modifier
-                        .size(ICON_SIZE)
+                        .size(iconSize)
                         .padding(4.dp)
                         .clickable {
                             internalInteractionCount++
@@ -219,7 +238,7 @@ fun ControlWindow(
                     bitmap = switchAccountIcon,
                     contentDescription = "Switch",
                     modifier = Modifier
-                        .size(ICON_SIZE)
+                        .size(iconSize)
                         .padding(4.dp)
                         .clickable {
                             internalInteractionCount++
@@ -232,7 +251,7 @@ fun ControlWindow(
                     bitmap = settingIcon,
                     contentDescription = "Setting",
                     modifier = Modifier
-                        .size(ICON_SIZE)
+                        .size(iconSize)
                         .padding(4.dp)
                         .clickable {
                             internalInteractionCount++
@@ -245,7 +264,7 @@ fun ControlWindow(
                     bitmap = exitIcon,
                     contentDescription = "Exit",
                     modifier = Modifier
-                        .size(ICON_SIZE)
+                        .size(iconSize)
                         .padding(4.dp)
                         .clickable {
                             internalInteractionCount++
@@ -259,9 +278,9 @@ fun ControlWindow(
                 bitmap = mainIcon,
                 contentDescription = "Main Icon",
                 modifier = Modifier
-                    .size(ICON_SIZE)
+                    .size(iconSize)
                     .padding(4.dp)
-                    .offset(x = if (controlState == ControlState.HIDDEN) (20).dp else 0.dp)
+                    .offset(x = if (controlState == ControlState.HIDDEN) (30).dp else 0.dp)
                     .then(dragModifier)
                     .clickable {
                         controlState = when (controlState) {
