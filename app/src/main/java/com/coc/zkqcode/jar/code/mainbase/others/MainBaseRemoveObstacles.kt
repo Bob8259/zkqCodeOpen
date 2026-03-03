@@ -7,8 +7,10 @@ import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.recognizer.recognizeMyResources
 import com.coc.zkqcode.jar.code.universal.remove.enterEditMode
 import com.coc.zkqcode.jar.code.universal.remove.removeObstacles
+import com.coc.zkqcode.jar.code.universal.smalltools.getBooleanConfigRuntime
 import com.coc.zkqcode.jar.code.universal.smalltools.readMemory
 import com.coc.zkqcode.jar.code.universal.smalltools.writeMemory
+import com.coc.zkqcode.jar.ui.schema.Schema
 import java.util.Calendar
 import kotlin.math.abs
 
@@ -30,17 +32,26 @@ suspend fun mainBaseRemoveObstacles(): Boolean {
     enterEditMode()
     zoomSmallMainBase()
     removeObstacles()
-
+    enhanceRemoveObstacles()
     removeLowerObstacles()
     TouchActions.swipe(981, 86, 290, 470, delayTime = 500)
     removeObstacles()
+    enhanceRemoveObstacles()
     writeMemory(storageKey, currentDay.toString())
     return enterMainScreen()
 }
+
 private suspend fun enhanceRemoveObstacles() {
-    //
-    performRemoveSequence()
+    if (getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.REMOVE_OBSTACLES_ENHANCEMENT.key)) {
+        repeat(10) {
+            val randomX = (100..1180).random()
+            val randomY = (1..560).random()
+            TouchActions.tap(randomX, randomY, delayTime = 400)
+            performRemoveSequence()
+        }
+    }
 }
+
 private suspend fun removeLowerObstacles() {
     val step = 25
     val yStart = 530
