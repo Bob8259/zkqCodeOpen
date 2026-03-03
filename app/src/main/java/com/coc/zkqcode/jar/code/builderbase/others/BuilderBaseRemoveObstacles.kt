@@ -12,7 +12,6 @@ import com.coc.zkqcode.jar.code.universal.remove.removeObstacles
 import com.coc.zkqcode.jar.code.universal.smalltools.readMemory
 import com.coc.zkqcode.jar.code.universal.smalltools.writeMemory
 import java.util.Calendar
-import kotlin.math.abs
 
 suspend fun builderBaseRemoveObstacles(): Boolean {
     val worker = BuilderBaseWorkerAndResearch.detectWorkerNumber()
