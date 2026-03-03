@@ -105,6 +105,8 @@ object MainBaseSettings {
     val UPGRADE_WEARABLE_GEAR = SettingDef("upgrade_wearable_gear", "升穿戴装备", 0, "MAIN_BASE_SETTINGS")
     val UPGRADE_ALL_GEAR = SettingDef("upgrade_all_gear", "升所有装备", 0, "MAIN_BASE_SETTINGS")
     val REMOVE_OBSTACLES = SettingDef("remove_obstacles", "移除障碍物", 0, "MAIN_BASE_SETTINGS")
+    val REMOVE_OBSTACLES_ENHANCEMENT = SettingDef("remove_obstacles_enhancement", "增强移除", 0, "MAIN_BASE_SETTINGS")
+
     val CLAIM_TIMED_REWARDS = SettingDef("claim_timed_rewards", "领限时活动奖励", 0, "MAIN_BASE_SETTINGS")
     val CLAIM_TOKEN_REWARDS = SettingDef("claim_token_rewards", "领令牌奖励", 0, "MAIN_BASE_SETTINGS")
     val CLAIM_CAPITAL_GOLD = SettingDef("claim_capital_gold", "领都城币", 0, "MAIN_BASE_SETTINGS")
@@ -184,6 +186,7 @@ object MainBaseSettings {
         UPGRADE_WEARABLE_GEAR,
         UPGRADE_ALL_GEAR,
         REMOVE_OBSTACLES,
+        REMOVE_OBSTACLES_ENHANCEMENT,
         CLAIM_TIMED_REWARDS,
         CLAIM_TOKEN_REWARDS,
         CLAIM_CAPITAL_GOLD,
