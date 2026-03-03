@@ -16,8 +16,6 @@ import com.coc.zkqcode.jar.ui.schema.Schema
 
 object MainBaseTutorial {
 
-    private var speakingCount = 0
-
     suspend fun mainBaseTutorial(): Boolean {
         // Standard schemas that follow a simple "find and tap" pattern
         val prioritySchemas = listOf(
@@ -43,27 +41,13 @@ object MainBaseTutorial {
 
         // Speaking Villager sequence
         findMultiColors(schema = MyColors.SpeakingVillager)?.let {
-            speakingCount++
-            // speaking count > 5 means that the tutorial is in the middle, not at the beggining. So we might need to attack a goblin
-            // Thus, we need to use the new sequence to enter troop training page
-            val sequence = if (speakingCount > 5) {
-                listOf(
-                    415 to 410,
-                    706 to 554,
-                    670 to 386,
-                    706 to 554,
-                    823 to 260,
-                    800 to 287,
-                    706 to 554,
-                )//训练营，训练部队按钮，主世界大本营，主世界大本营升级，夜世界大本营，夜世界大本营2，夜世界大本营升级
-            } else {
-                listOf(415 to 410)
-            }
-            sequence.forEach { (x, y) ->
-                TouchActions.tap(x, y, delayTime = 500)
-            }
+            delayWithMultiplier(600)
+            TouchActions.tap(it.x, it.y, delayTime = 500)
         }
-
+        findMultiColors(schema = MyColors.UpgradeTHArrow)?.let {
+            TouchActions.tap(it.x + 50, it.y + 100, delayTime = 500)
+            TouchActions.tap(703, 570, delayTime = 500)
+        }
         // Important Notice tap
         findMultiColors(schema = MyColors.ImportantNotice)?.let {
             TouchActions.tap(344, 510, delayTime = 500)

@@ -31,7 +31,7 @@ object AllTutorials {
             if(BuilderBaseTutorial.builderBaseTutorial()) break
             // Maintenance checks
             checkReconnections()
-            delayWithMultiplier(100)
+            delayWithMultiplier(200)
         }
     }
 

@@ -23,6 +23,7 @@ interface IMainBaseTutorial {
     val TutorialMagicalItem: ColorSchema
     val TutorialMagicalItemInner: ColorSchema
     val ShopAfterTutorial: ColorSchema
+    val UpgradeTHArrow: ColorSchema
 }
 
 object MainBaseTutorial : IMainBaseTutorial {
@@ -85,5 +86,8 @@ object MainBaseTutorial : IMainBaseTutorial {
     )
     override val ShopAfterTutorial: ColorSchema = ColorSchema.parse(
         1133, 568, 1263, 702, "2F4C70", "-16|15|2E587E,-40|36|1EADEA,-46|19|2EC1EA,-42|0|36C7EA,-40|-19|CDFAFF,50|38|1BA9EA,56|15|30C4EA,60|2|35C5E9,57|-9|C3F6FF", 0, 0.9, "教程后的商店"
+    )
+    override val UpgradeTHArrow: ColorSchema = ColorSchema.parse(
+        208, 38, 1053, 521, "1EAAFF", "28|26|07AEFF,41|29|07ACFF,61|14|0BAFFF,71|7|1CB6FF,56|1|029EFF,50|-18|11AAFF,45|-32|29B9FF,30|-27|22BAFF,27|-10|05A0FF", 0, 0.9, "升级大本营"
     )
 }
