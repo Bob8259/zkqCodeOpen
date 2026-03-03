@@ -4,8 +4,8 @@ import com.coc.zkqcode.jar.code.colorschema.colorpackage.builderbase.BuilderBase
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.FeatureColors
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.builderbase.IBuilderBaseAttackColors
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.IFeatureColors
-import com.coc.zkqcode.jar.code.colorschema.colorpackage.IMainBaseTraining
-import com.coc.zkqcode.jar.code.colorschema.colorpackage.IMainBaseTutorial
+import com.coc.zkqcode.jar.code.colorschema.colorpackage.mainbase.IMainBaseTraining
+import com.coc.zkqcode.jar.code.colorschema.colorpackage.mainbase.IMainBaseTutorial
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.builderbase.IBuilderBaseObstaclesRemovalColors
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.builderbase.BuilderBaseResearchColors
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.builderbase.IBuilderBaseResearchColors
@@ -15,8 +15,8 @@ import com.coc.zkqcode.jar.code.colorschema.colorpackage.builderbase.IBuilderBas
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.builderbase.IBuilderBaseUpgradeColors
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.IUIColors
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.IWorkerColors
-import com.coc.zkqcode.jar.code.colorschema.colorpackage.MainBaseTraining
-import com.coc.zkqcode.jar.code.colorschema.colorpackage.MainBaseTutorial
+import com.coc.zkqcode.jar.code.colorschema.colorpackage.mainbase.MainBaseTraining
+import com.coc.zkqcode.jar.code.colorschema.colorpackage.mainbase.MainBaseTutorial
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.builderbase.BuilderBaseObstaclesRemovalColors
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.builderbase.BuilderBaseResourcesColors
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.builderbase.BuilderBaseTrainingColors
