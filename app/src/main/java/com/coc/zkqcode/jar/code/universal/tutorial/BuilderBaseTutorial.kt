@@ -8,37 +8,37 @@ object BuilderBaseTutorial {
     suspend fun builderBaseTutorial(): Boolean {
         // 1. Upgrade Night TH
         listOf(
-            MyColors.UpgradeNightTH,
-            MyColors.UpgradeBarbarian
+            MyColors.UpgradeBuilderBaseTH,
+            MyColors.UpgradeBarbarian,
+            MyColors.BuilderMaster
         ).forEach { schema ->
             findMultiColors(schema = schema)?.let {
                 TouchActions.tap(it.x, it.y, delayTime = 500)
             }
         }
         // 2. Builder Master - Specific coordinate taps
-        if (findMultiColors(schema = MyColors.BuilderMaster) != null) {
-            TouchActions.tap(615, 216, delayTime = 200)
-            TouchActions.tap(706, 555, delayTime = 200)
-            TouchActions.tap(685, 46, delayTime = 200)
-            TouchActions.tap(592, 269, delayTime = 200)
-            TouchActions.tap(469, 304, delayTime = 200)
+        findMultiColors(schema = MyColors.UpgradeStarLab)?.let {
+            TouchActions.tap(it.x - 80, it.y + 100, delayTime = 500)
+            TouchActions.tap(707, 558, delayTime = 500)
         }
-
+        findMultiColors(schema = MyColors.BuilderBaseWorker)?.let {
+            TouchActions.tap(it.x, it.y, delayTime = 500)
+        }
         // 3. Tutorial Night Barb
-        findMultiColors(schema = MyColors.TutorialNightBarb)?.let {
+        findMultiColors(schema = MyColors.TutorialBuilderBaseBarb)?.let {
             TouchActions.tap(it.x, it.y, delayTime = 500)
             TouchActions.tap(952, 618, delayTime = 500)
             TouchActions.tap(979, 196, delayTime = 500)//use gem to speed up
         }
 
         // 4. Night Attack
-        findMultiColors(schema = MyColors.NightAttack)?.let {
+        findMultiColors(schema = MyColors.BuilderBaseAttack)?.let {
             TouchActions.tap(it.x, it.y, delayTime = 500)
             TouchActions.tap(938, 465, delayTime = 500)
         }
 
         // 5. Night Deploy Barbs - Multiple taps at the same location
-        if (findMultiColors(schema = MyColors.NightDeployBarbs) != null) {
+        if (findMultiColors(schema = MyColors.BuilderBaseDeployBarbs) != null) {
             repeat(3) {
                 TouchActions.tap(436, 464, delayTime = 500)
             }

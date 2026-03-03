@@ -40,6 +40,8 @@ suspend fun checkReconnections(): Boolean {
                 0 -> {
                     // Action: Tap the "Reload" button
                     TouchActions.tap(379, 458)
+                    TouchActions.tap(338, 511)//Tutorial "Confirm" button
+
                 }
 
                 1 -> {

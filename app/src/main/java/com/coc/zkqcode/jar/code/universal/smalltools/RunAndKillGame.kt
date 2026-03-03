@@ -16,7 +16,7 @@ suspend fun runGame() {
             RunShell.runNoOutput("am start -n com.atrasis.original/com.atrasis.main.AtrasisGameApp")
         }
     }
-    delayWithMultiplier(5000)
+    delayWithMultiplier(3000)
 }
 
 suspend fun killGame() {
