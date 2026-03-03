@@ -67,7 +67,7 @@ suspend fun removeObstacles() {
         // Tap confirmation/action button
         TouchActions.tap(616, 488, delayTime = 100)
         repeat(2) {
-            TouchActions.tap(14, 558, delayTime = if (it == 0) 100 else 500)
+            TouchActions.tap(14, 558, delayTime = 100)
         }
     }
 }

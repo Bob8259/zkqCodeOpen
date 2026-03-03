@@ -1,12 +1,14 @@
 package com.coc.zkqcode.jar.code.mainbase.others
 
 import com.coc.zkqcode.core.util.basic.ShowMessage
+import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.jar.code.universal.InGamesVars
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.recognizer.recognizeMyResources
 import com.coc.zkqcode.jar.code.universal.remove.enterEditMode
 import com.coc.zkqcode.jar.code.universal.remove.removeObstacles
 import com.coc.zkqcode.jar.code.universal.smalltools.readMemory
+import com.coc.zkqcode.jar.code.universal.smalltools.writeMemory
 import java.util.Calendar
 import kotlin.math.abs
 
@@ -14,23 +16,61 @@ suspend fun mainBaseRemoveObstacles(): Boolean {
     val resources = recognizeMyResources()
     val storageKey = "MainBaseRemoveObstacles${InGamesVars.currentAccountNumber}"
     val lastCleaningTime = readMemory(storageKey).toIntOrNull()
-    val currentHour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
-    // Simplified time check as requested
-    if (lastCleaningTime != null && abs(lastCleaningTime - currentHour) < 8) {
-        ShowMessage("距离上次除草不足8小时，暂不除草")
+    val currentDay = Calendar.getInstance().get(Calendar.DAY_OF_YEAR)
+    // Check if weed removal was done today
+    if (lastCleaningTime != null && lastCleaningTime == currentDay) {
+        ShowMessage("今天已移除障碍物，暂不移除")
         return true
     }
     if (resources.gold < 300000 || resources.elixir < 300000) {
-        ShowMessage("检测金：${resources.gold}，检测水：${resources.elixir}\n不足30万，暂不除草")
+        ShowMessage("检测金：${resources.gold}，检测水：${resources.elixir}\n不足30万，暂不移除")
         return true
     }
     ShowMessage("准备移除主世界障碍物")
     enterEditMode()
     zoomSmallMainBase()
     removeObstacles()
+
+    removeLowerObstacles()
+    TouchActions.swipe(981, 86, 290, 470, delayTime = 500)
+    removeObstacles()
+    writeMemory(storageKey, currentDay.toString())
     return enterMainScreen()
 }
+private suspend fun enhanceRemoveObstacles() {
+}
+private suspend fun removeLowerObstacles() {
+    val step = 25
+    val yStart = 530
+    val yEnd = 565
 
-private suspend fun removeLowerObstacles(){
+    // Loop through Y coordinates
+    for (y in yStart..yEnd step step) {
 
+        // Calculate the percentage of progress from top to bottom (0.0 to 1.0)
+        val progress = (y - yStart).toDouble() / (yEnd - yStart)
+
+        // Interpolate the X boundaries for the current Y
+        // Left edge moves from 549 to 608
+        val currentXStart = (549 + (608 - 549) * progress).toInt()
+        // Right edge moves from 794 to 759
+        val currentXEnd = (794 + (759 - 794) * progress).toInt()
+
+        // Loop through X coordinates for this specific "row"
+        for (x in currentXStart..currentXEnd step step) {
+            // 1. Tap the target area inside the trapezoid
+            TouchActions.tap(x, y, delayTime = 400)
+
+            // 2. Perform the "Remove" operation sequence
+            performRemoveSequence()
+        }
+    }
+}
+
+// Helper function to keep the loop clean
+private suspend fun performRemoveSequence() {
+    TouchActions.tap(616, 488, delayTime = 100)
+    repeat(2) {
+        TouchActions.tap(14, 558, delayTime = 100)
+    }
 }

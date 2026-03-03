@@ -322,9 +322,14 @@ fun LazyListScope.MainBaseConfig(
                 SettingCheckBox(key = "${MAIN_BASE_SETTINGS.UPGRADE_ALL_GEAR.key}_c$index")
                 SettingCheckBox(
                     key = "${MAIN_BASE_SETTINGS.REMOVE_OBSTACLES.key}_c$index",
-                    explain = "勾选后，当主世界奖杯大于500时生效。有极小概率（约1%）移除稀有物品"
+                    explain = "勾选后，当主世界奖杯大于500时生效。有小概率（约5%）移除稀有物品"
                 )
-
+                AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.REMOVE_OBSTACLES.key}_c$index"]?.value == "1") {
+                    SettingCheckBox(
+                        key = "${MAIN_BASE_SETTINGS.REMOVE_OBSTACLES_ENHANCEMENT.key}_c$index",
+                        explain = "勾选后，移除障碍物时增加随机点击，增大移除稀有物品的概率。\n适合批量挂小号时开启，防止地图建造空间不足。"
+                    )
+                }
                 SettingCheckBox(key = "${MAIN_BASE_SETTINGS.CLAIM_TIMED_REWARDS.key}_c$index")
                 SettingCheckBox(
                     key = "${MAIN_BASE_SETTINGS.CLAIM_TOKEN_REWARDS.key}_c$index",

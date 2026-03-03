@@ -19,23 +19,23 @@ suspend fun builderBaseRemoveObstacles(): Boolean {
     val resources = recognizeMyResources()
     val storageKey = "BuilderBaseRemoveObstacles${InGamesVars.currentAccountNumber}"
     val lastCleaningTime = readMemory(storageKey).toIntOrNull()
-    val currentHour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
+    val currentDay = Calendar.getInstance().get(Calendar.DAY_OF_YEAR)
 
-    // Simplified time check as requested
-    if (lastCleaningTime != null && abs(lastCleaningTime - currentHour) < 8) {
-        ShowMessage("距离上次除草不足8小时，暂不除草")
+    // Check if obstacle removal was done today
+    if (lastCleaningTime != null && lastCleaningTime == currentDay) {
+        ShowMessage("今天已移除障碍物，暂不移除")
         return true
     }
 
     // Resource threshold check
     if (worker.total == 2) {
         if (resources.gold < 600000 || resources.elixir < 600000) {
-            ShowMessage("检测金：${resources.gold}，检测水：${resources.elixir}\n不足60万，暂不除草")
+            ShowMessage("检测金：${resources.gold}，检测水：${resources.elixir}\n不足60万，暂不移除")
             return true
         }
     } else {
         if (resources.gold < 300000 || resources.elixir < 300000) {
-            ShowMessage("检测金：${resources.gold}，检测水：${resources.elixir}\n不足30万，暂不除草")
+            ShowMessage("检测金：${resources.gold}，检测水：${resources.elixir}\n不足30万，暂不移除")
             return true
         }
     }
@@ -60,6 +60,6 @@ suspend fun builderBaseRemoveObstacles(): Boolean {
     }
 
     // Update the storage with the current hour after completion
-    writeMemory(storageKey, currentHour.toString())
+    writeMemory(storageKey, currentDay.toString())
     return enterMainScreen()
 }
