@@ -12,7 +12,6 @@ import com.coc.zkqcode.jar.code.universal.smalltools.readMemory
 import com.coc.zkqcode.jar.code.universal.smalltools.writeMemory
 import com.coc.zkqcode.jar.ui.schema.Schema
 import java.util.Calendar
-import kotlin.math.abs
 
 suspend fun mainBaseRemoveObstacles(): Boolean {
     val resources = recognizeMyResources()
