@@ -30,3 +30,7 @@ suspend fun mainBaseRemoveObstacles(): Boolean {
     removeObstacles()
     return enterMainScreen()
 }
+
+private suspend fun removeLowerObstacles(){
+
+}
