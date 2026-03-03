@@ -38,6 +38,8 @@ suspend fun mainBaseRemoveObstacles(): Boolean {
     return enterMainScreen()
 }
 private suspend fun enhanceRemoveObstacles() {
+    //
+    performRemoveSequence()
 }
 private suspend fun removeLowerObstacles() {
     val step = 25
