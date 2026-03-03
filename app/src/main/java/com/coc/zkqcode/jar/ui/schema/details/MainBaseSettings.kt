@@ -32,6 +32,9 @@ object MainBaseSettings {
     ///////
     val BUILD_SETTING = SettingDef("build_setting", "自动建造", 1, "MAIN_BASE_SETTINGS")
     val WALL_UPGRADE_SETTINGS = SettingDef("wall_upgrade_settings", "升级城墙", 1, "MAIN_BASE_SETTINGS")
+    val INSTANT_UPGRADE = SettingDef("instant_upgrade", "用宝石升级消耗低于", 0, "MAIN_BASE_SETTINGS")
+    val INSTANT_UPGRADE_THRESHOLD = SettingDef("instant_upgrade_threshold", "宝石的建筑", "3", "MAIN_BASE_SETTINGS")
+
     val BATCH_WALL_UPGRADE_SETTINGS =
         SettingDef("batch_wall_upgrade_settings", "批量升级城墙", 1, "MAIN_BASE_SETTINGS")
     val SAVE_WORKER = SettingDef("save_worker", "留1工人升级城墙", 0, "MAIN_BASE_SETTINGS")
@@ -144,6 +147,8 @@ object MainBaseSettings {
         CHANGE_HEROES,
         BUILD_SETTING,
         WALL_UPGRADE_SETTINGS,
+        INSTANT_UPGRADE,
+        INSTANT_UPGRADE_THRESHOLD,
         BATCH_WALL_UPGRADE_SETTINGS,
         SAVE_WORKER,
         BUILDING_CONVERSION_SETTINGS,

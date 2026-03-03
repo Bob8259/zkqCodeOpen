@@ -57,29 +57,36 @@ import kotlinx.coroutines.delay
 
 @Composable
 fun InputRowWithCheckBox(
-    label: String,
-    value: String,
-    onValueChange: (String) -> Unit,
-    checkedState: String,
-    onCheckedChange: (Boolean) -> Unit,
-    checkBoxPath: String,
-    inputPath: String
+    checkBoxKey: String,
+    inputKey: String
 ) {
+    val checkBoxState = GlobalVars.configStates[checkBoxKey]
+        ?: logAndStop("Config: $checkBoxKey Not Found")
+    val inputState = GlobalVars.configStates[inputKey]
+        ?: logAndStop("Config: $inputKey Not Found")
+
+    val checkBoxLabel = Schema.getDisplayName(checkBoxKey)
+    val inputLabel = Schema.getDisplayName(inputKey)
 
     Row(
         verticalAlignment = Alignment.CenterVertically
     ) {
         CustomCheckBox(
-            text = label,
-            checkedState = checkedState,
-            onCheckStateChange = {
+            text = checkBoxLabel,
+            checkedState = checkBoxState.value,
+            onCheckStateChange = { checked ->
                 GlobalVars.isAutoRunEnabled = false
-                onCheckedChange(it)
+                checkBoxState.value = if (checked) "1" else "0"
             },
         )
         BasicTextField(
-            value = value, modifier = Modifier
-                .padding(end = 16.dp, top = 6.dp, start = 6.dp)
+            value = inputState.value,
+            onValueChange = { newValue ->
+                GlobalVars.isAutoRunEnabled = false
+                inputState.value = newValue
+            },
+            modifier = Modifier
+                .padding(end = 6.dp, top = 6.dp, start = 6.dp)
                 .background(
                     color = Color.LightGray,
                     shape = RoundedCornerShape(4.dp)
@@ -87,10 +94,17 @@ fun InputRowWithCheckBox(
                 .padding(4.dp)
                 .align(Alignment.CenterVertically)
                 .heightIn(max = 120.dp)
-                .verticalScroll(rememberScrollState()), onValueChange = { newValue ->
-                GlobalVars.isAutoRunEnabled = false
-                onValueChange(newValue)
-            })
+                .verticalScroll(rememberScrollState())
+        )
+        if (inputLabel.isNotEmpty()) {
+            Text(
+                text = inputLabel,
+                modifier = Modifier
+                    .padding(start = 2.dp, top = 7.dp)
+                    .align(Alignment.CenterVertically),
+                style = MaterialTheme.typography.labelMedium
+            )
+        }
     }
 }
 
@@ -186,12 +200,11 @@ class WindowCenterPositionProvider : PopupPositionProvider {
 
 @Composable
 fun SettingInputRow(key: String, afterChange: ((String) -> Unit)? = null) {
-    // 1. 统一获取状态和显示名称
+    // Get state and label (display name)
     val state = GlobalVars.configStates[key]
         ?: logAndStop("Config: $key Not Found")
     val label = Schema.getDisplayName(key)
 
-    // 2. 渲染 UI 逻辑
     Row(
         modifier = Modifier
             .padding(top = 2.dp)

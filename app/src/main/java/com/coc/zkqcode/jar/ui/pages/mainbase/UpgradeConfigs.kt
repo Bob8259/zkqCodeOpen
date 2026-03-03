@@ -16,6 +16,8 @@ import com.coc.zkqcode.jar.ui.components.SettingCheckBox
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.jar.ui.schema.Schema.MAIN_BASE_BUILDINGS
 import androidx.compose.runtime.saveable.rememberSaveable
+import com.coc.zkqcode.jar.ui.components.InputRowWithCheckBox
+import com.coc.zkqcode.jar.ui.schema.Schema.MAIN_BASE_SETTINGS
 
 @Composable
 fun UpgradeConfigs(index: Int, onNavigatePriority: (Int) -> Unit = {}) {
@@ -68,6 +70,7 @@ fun UpgradeConfigs(index: Int, onNavigatePriority: (Int) -> Unit = {}) {
                 }
             }
         }
+        InputRowWithCheckBox(checkBoxKey = "${MAIN_BASE_SETTINGS.INSTANT_UPGRADE.key}_c$index", inputKey = "${MAIN_BASE_SETTINGS.INSTANT_UPGRADE_THRESHOLD.key}_c$index")
         HorizontalDivider(
             modifier = Modifier.padding(top = 6.dp),
             thickness = 1.dp,
