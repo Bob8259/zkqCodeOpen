@@ -25,21 +25,24 @@ suspend fun enterMainScreen(): Boolean {
     val startTime = System.currentTimeMillis()
     // 2. Get the timeout duration from GlobalVars (assumed to be in seconds)
     // We multiply by 1000 to compare milliseconds to milliseconds
-    val timeoutSeconds = GlobalVars.configStates["enter_game_timer"]?.value?.toIntOrNull()
-        ?: logAndStop("enter main game error, can not get game timer")
+    val timeoutSeconds = GlobalVars.configStates["enter_game_timer"]?.value?.toIntOrNull() ?: logAndStop("enter main game error, can not get game timer")
     val timeoutMillis = timeoutSeconds * 1000L
     var mainBaseTutorialElements = 0
     while (System.currentTimeMillis() - startTime < timeoutMillis) {
         // 3. Insert your logic to check if the main screen is actually visible
-        if (checkUIVisibility()) return true
-        if (!checkReconnections()) return false
-        ShowMessage("账号${InGamesVars.currentAccountNumber}，倒计时${((timeoutMillis - System.currentTimeMillis() + startTime) / 1000).toInt()}秒\n请手动给主世界和夜世界切换默认场景")
-        closeAdvertisements()
+        if (!isGameAtFront()) {
+            runGame()
+        } else {
+            if (checkUIVisibility()) return true
+            if (!checkReconnections()) return false
+            ShowMessage("账号${InGamesVars.currentAccountNumber}，倒计时${((timeoutMillis - System.currentTimeMillis() + startTime) / 1000).toInt()}秒\n请手动给主世界和夜世界切换默认场景")
+            closeAdvertisements()
 
-        if (Random.nextDouble() > 0.7) {
-            clickRightBottom(3)
+            if (Random.nextDouble() > 0.7) {
+                clickRightBottom(3)
+            }
+            if (AllTutorials.checkIsInTutorial(mainBaseTutorialElements)) mainBaseTutorialElements++
         }
-        if (AllTutorials.checkIsInTutorial(mainBaseTutorialElements)) mainBaseTutorialElements++
         // 4. Wait before checking again to save CPU cycles
         delay(150)
     }
@@ -56,15 +59,11 @@ suspend fun clickRightBottom(times: Int, delayTime: Int = 50) {
 }
 
 private suspend fun checkUIVisibility(): Boolean {
-    if (!isGameAtFront()) {
-        runGame()
-    } else {
+    if (isInHomePage()) {
+        delay(800)
         if (isInHomePage()) {
-            delay(800)
-            if (isInHomePage()) {
-                ShowMessage("已进入主界面")
-                return true
-            }
+            ShowMessage("已进入主界面")
+            return true
         }
     }
     return false
@@ -73,8 +72,7 @@ private suspend fun checkUIVisibility(): Boolean {
 
 private suspend fun closeAdvertisements() {
     // 1. Capture the screen and cast safely (Use 'var' so we can update it)
-    var screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult
-        ?: logAndStop("failed to take screenshot at close advertisement")
+    var screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult ?: logAndStop("failed to take screenshot at close advertisement")
 
     // 2. Define the schemas to check against
     val homeSchemas = listOf(
@@ -102,21 +100,13 @@ private suspend fun closeAdvertisements() {
             TouchActions.tap(point.x, point.y, delayTime = 1000)
 
             // 4. Retake the screenBuffer so the next schema check uses the updated screen
-            screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult
-                ?: return@forEach // Use return@forEach to skip to next if capture fails
+            screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult ?: return@forEach // Use return@forEach to skip to next if capture fails
         }
     }
     findMultiColors(schema = MyColors.ReturnAwards)?.let {
         // Define the coordinate pairs in order of execution
         val tapPoints = listOf(
-            257 to 297,
-            464 to 307,
-            662 to 305,
-            267 to 512,
-            466 to 511,
-            654 to 515,
-            882 to 513,
-            1077 to 101
+            257 to 297, 464 to 307, 662 to 305, 267 to 512, 466 to 511, 654 to 515, 882 to 513, 1077 to 101
         )
 
         // Iterate through points to reduce code redundancy
@@ -136,8 +126,7 @@ private suspend fun closeAdvertisements() {
 
 private suspend fun isInHomePage(): Boolean {
     // 1. Capture the screen and cast safely
-    val screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult
-        ?: logAndStop("in isInHomePage, screen capture failed.")
+    val screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult ?: logAndStop("in isInHomePage, screen capture failed.")
 
     // 2. Define the schemas to check against
     val homeSchemas = listOf(

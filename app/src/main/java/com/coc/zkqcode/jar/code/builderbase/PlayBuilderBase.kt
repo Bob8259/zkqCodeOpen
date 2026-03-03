@@ -11,7 +11,7 @@ import com.coc.zkqcode.jar.code.builderbase.resources.collectBuilderBaseResource
 import com.coc.zkqcode.jar.code.builderbase.others.builderBaseRemoveObstacles
 import com.coc.zkqcode.jar.code.universal.buildings.upgrade.BaseType
 import com.coc.zkqcode.jar.code.universal.buildings.upgrade.builderBaseUpgradeBuildings
-import com.coc.zkqcode.jar.code.universal.enterBuilderBase
+import com.coc.zkqcode.jar.code.universal.smalltools.enterBuilderBase
 import com.coc.zkqcode.jar.ui.schema.Schema
 
 suspend fun playBuilderBase(): Boolean {
