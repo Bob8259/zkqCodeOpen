@@ -18,4 +18,4 @@ Server Address: ws://localhost:6839/zkq
 
 When adding debug information, you should use showDebugInfo, which can be imported from com.coc.zkqcode.core.util.fileactions.
 
-Write all comments in English, but for other content (e.g. debug information, variable names or display information) can be written in Chinese.
+When modify the code, you should add appropriate comments. Write all comments in English, but for other content (e.g. debug information, variable names or display information) can be written in Chinese.

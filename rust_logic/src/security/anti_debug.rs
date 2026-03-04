@@ -7,6 +7,15 @@ use std::sync::atomic::{AtomicI32, Ordering};
 use std::thread;
 use std::time::Duration;
 
+#[cfg(unix)]
+use std::ptr;
+
+#[cfg(unix)]
+use libc::ptrace;
+
+#[cfg(unix)]
+use libc::PTRACE_TRACEME;
+
 // Global shared variable to poison calculations if checks fail
 pub static G_SECURITY_POISON_FLAG: AtomicI32 = AtomicI32::new(0);
 
@@ -16,6 +25,8 @@ fn trigger_poison(reason: &str) {
         let val = 42;
         G_SECURITY_POISON_FLAG.store(val, Ordering::SeqCst);
         log::error!("Security monitor: Violation detected! Reason: {}", reason);
+        // Terminate the process immediately on security violation
+        std::process::exit(1);
     }
 }
 
@@ -61,6 +72,21 @@ fn check_debugger_present() {
                     }
                 }
             }
+        }
+    }
+}
+
+#[cfg(unix)]
+fn check_ptrace() {
+    unsafe {
+        let res = ptrace(
+            PTRACE_TRACEME,
+            0,
+            ptr::null_mut::<libc::c_void>(),
+            ptr::null_mut::<libc::c_void>(),
+        );
+        if res == -1 {
+            trigger_poison("ptrace detected");
         }
     }
 }
@@ -191,6 +217,8 @@ fn check_native_hooks() {
 }
 
 pub fn start_security_monitor() {
+    // Only enable security monitor in release builds
+    #[cfg(not(debug_assertions))]
     thread::spawn(|| {
         let result = panic::catch_unwind(|| {
             let mut heavy_check_counter = 0;
@@ -200,6 +228,9 @@ pub fn start_security_monitor() {
                 check_debugger_present();
                 check_env_injection();
                 check_time_drift();
+
+                #[cfg(unix)]
+                check_ptrace();
 
                 // --- Heavyweight Checks (Low Frequency: ~60s) ---
                 if heavy_check_counter >= 12 {
@@ -218,4 +249,10 @@ pub fn start_security_monitor() {
             // Silent panic handling
         }
     });
+
+    // In debug builds, do nothing
+    #[cfg(debug_assertions)]
+    {
+        log::info!("Security monitor disabled in debug build");
+    }
 }
