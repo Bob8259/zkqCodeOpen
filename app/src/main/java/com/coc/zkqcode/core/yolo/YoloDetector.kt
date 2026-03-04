@@ -94,6 +94,13 @@ object YoloDetector {
             val startOffset = fileDescriptor.startOffset
             val declaredLength = fileDescriptor.declaredLength
             return fileChannel.map(FileChannel.MapMode.READ_ONLY, startOffset, declaredLength)
+        } else if (modelType == "numbers") {
+            val fileDescriptor = context.assets.openFd("numbers_detector.tflite")
+            val inputStream = FileInputStream(fileDescriptor.fileDescriptor)
+            val fileChannel = inputStream.channel
+            val startOffset = fileDescriptor.startOffset
+            val declaredLength = fileDescriptor.declaredLength
+            return fileChannel.map(FileChannel.MapMode.READ_ONLY, startOffset, declaredLength)
         }
         val fileDescriptor = context.assets.openFd(MODEL_PATH)
         val inputStream = FileInputStream(fileDescriptor.fileDescriptor)
@@ -218,5 +225,50 @@ object YoloDetector {
             scaledBitmap.recycle()
         }
         return byteBuffer
+    }
+
+    /**
+     * Filters out detections that are too close to each other.
+     * If the distance between two detection centers is less than the threshold,
+     * only the one with the higher confidence score is kept.
+     *
+     * @param detections List of detection results to filter
+     * @param distanceThreshold Minimum distance between detection centers (default: 5.0 pixels)
+     * @return Filtered list of detections
+     */
+    fun filterCloseDetections(
+        detections: List<DetectionResult>,
+        distanceThreshold: Double = 5.0
+    ): List<DetectionResult> {
+        val filteredDetections = mutableListOf<DetectionResult>()
+
+        for (detection in detections) {
+            var isTooClose = false
+            val iterator = filteredDetections.listIterator()
+
+            while (iterator.hasNext()) {
+                val existing = iterator.next()
+
+                val dx = detection.boundingBox.centerX() - existing.boundingBox.centerX()
+                val dy = detection.boundingBox.centerY() - existing.boundingBox.centerY()
+                val distance = kotlin.math.sqrt((dx * dx + dy * dy).toDouble())
+
+                if (distance < distanceThreshold) {
+                    isTooClose = true
+                    // Keep the detection with higher confidence score
+                    if (detection.score > existing.score) {
+                        iterator.remove()
+                        iterator.add(detection)
+                    }
+                    break
+                }
+            }
+
+            if (!isTooClose) {
+                filteredDetections.add(detection)
+            }
+        }
+
+        return filteredDetections
     }
 }
