@@ -35,7 +35,23 @@ suspend fun upgradeAllExistingBuildings(buildings: List<String>, currentBase: Ba
         "超级特斯拉电磁塔",
         "熔岩发射器",
         "十字连弩",
-        "实验室"
+        "实验室",
+        "天鹰火炮",
+        "巨石碑",
+        "复合机械塔",
+        "复仇之塔",
+        "终极炸弹",
+        "暗黑重油罐",
+        "大本营",
+        "部落城堡",
+        "训练营",
+        "暗黑训练营",
+        "法术工厂",
+        "暗黑法术工厂",
+        "攻城机器工坊",
+        "战宠小屋",
+        "铁匠铺",
+        "英雄殿堂"
     )
     val orderedList = getOrderedList(buildings, currentBase)
     for (building in orderedList) {
