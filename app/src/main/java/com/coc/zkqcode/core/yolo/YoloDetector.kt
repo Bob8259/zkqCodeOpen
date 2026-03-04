@@ -2,6 +2,10 @@ package com.coc.zkqcode.core.yolo
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Matrix
+import android.graphics.Paint
 import android.graphics.RectF
 import org.tensorflow.lite.DataType
 import org.tensorflow.lite.Interpreter
@@ -11,6 +15,7 @@ import java.nio.ByteOrder
 import java.nio.MappedByteBuffer
 import java.nio.channels.FileChannel
 import com.coc.zkqcode.core.util.fileactions.LogHelper
+import com.coc.zkqcode.core.util.fileactions.LogHelper.showDebugInfo
 import androidx.core.graphics.scale
 
 data class DetectionResult(
@@ -110,15 +115,50 @@ object YoloDetector {
         return fileChannel.map(FileChannel.MapMode.READ_ONLY, startOffset, declaredLength)
     }
 
+    private fun resizeWithPadding(src: Bitmap, targetWidth: Int, targetHeight: Int): Triple<Bitmap, Float, Pair<Float, Float>> {
+        val srcWidth = src.width.toFloat()
+        val srcHeight = src.height.toFloat()
+        
+        // Calculate scale factor to fit while maintaining aspect ratio
+        val scale = Math.min(targetWidth.toFloat() / srcWidth, targetHeight.toFloat() / srcHeight)
+        
+        val newWidth = srcWidth * scale
+        val newHeight = srcHeight * scale
+        
+        // Calculate offsets to center the image
+        val offsetX = (targetWidth - newWidth) / 2f
+        val offsetY = (targetHeight - newHeight) / 2f
+        
+        val output = Bitmap.createBitmap(targetWidth, targetHeight, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(output)
+        canvas.drawColor(Color.BLACK)
+        
+        val matrix = Matrix()
+        matrix.postScale(scale, scale)
+        matrix.postTranslate(offsetX, offsetY)
+        
+        val paint = Paint()
+        paint.isFilterBitmap = true
+        
+        canvas.drawBitmap(src, matrix, paint)
+        
+        return Triple(output, scale, Pair(offsetX, offsetY))
+    }
+
     fun detect(bitmap: Bitmap, modelType: String? = null, clearWeightsAfter: Boolean = true, threshold: Float = 0.3f): List<DetectionResult> {
         // Ensure weights are loaded strictly for this detection
         loadWeights(modelType)
 
         if (interpreter == null) return emptyList()
 
+        var scaledBitmap: Bitmap? = null
         try {
-            // Preprocess image
-            val byteBuffer = convertBitmapToByteBuffer(bitmap)
+            // Preprocess & Save for debug with aspect ratio preservation
+            val (resized, scale, offset) = resizeWithPadding(bitmap, inputWidth, inputHeight)
+            scaledBitmap = resized
+            val (offX, offY) = offset
+            
+            val byteBuffer = convertBitmapToByteBuffer(scaledBitmap)
 
             // Output buffer [1, 300, 6]
             // 300 detections, each has 6 values: [x1, y1, x2, y2, score, class]
@@ -133,11 +173,12 @@ object YoloDetector {
                 // detection: [x1, y1, x2, y2, score, class]
                 val score = detection[4]
                 if (score > threshold) {
-                    // Assuming normalized coordinates [0, 1] from model
-                    val x1 = detection[0] * bitmap.width
-                    val y1 = detection[1] * bitmap.height
-                    val x2 = detection[2] * bitmap.width
-                    val y2 = detection[3] * bitmap.height
+                    // Map back to original coordinate space
+                    // Model returns normalized [0, 1] relative to the padded 640x640 (inputWidth x inputHeight) image
+                    val x1 = (detection[0] * inputWidth - offX) / scale
+                    val y1 = (detection[1] * inputHeight - offY) / scale
+                    val x2 = (detection[2] * inputWidth - offX) / scale
+                    val y2 = (detection[3] * inputHeight - offY) / scale
                     val classIdx = detection[5]
 
                     detections.add(
@@ -151,6 +192,9 @@ object YoloDetector {
             }
             return detections
         } finally {
+            if (scaledBitmap != null && scaledBitmap != bitmap) {
+                scaledBitmap.recycle()
+            }
             // Strictly clean weights after detection if requested
             if (clearWeightsAfter) {
                 clearWeights()
@@ -159,8 +203,7 @@ object YoloDetector {
     }
 
     private fun convertBitmapToByteBuffer(bitmap: Bitmap): ByteBuffer {
-        val scaledBitmap = bitmap.scale(inputWidth, inputHeight)
-
+        // Assume bitmap is already scaled to inputWidth x inputHeight
         val bufferSize = if (inputDataType == DataType.FLOAT32) {
             4 * inputWidth * inputHeight * 3
         } else {
@@ -172,11 +215,11 @@ object YoloDetector {
 
         // MediaProjection might return HARDWARE bitmaps (API 26+), which don't support getPixels directly.
         val softwareBitmap = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O &&
-            scaledBitmap.config == Bitmap.Config.HARDWARE
+            bitmap.config == Bitmap.Config.HARDWARE
         ) {
-            scaledBitmap.copy(Bitmap.Config.ARGB_8888, false)
+            bitmap.copy(Bitmap.Config.ARGB_8888, false)
         } else {
-            scaledBitmap
+            bitmap
         }
 
         val intValues = IntArray(inputWidth * inputHeight)
@@ -218,11 +261,8 @@ object YoloDetector {
             }
         }
 
-        if (softwareBitmap != scaledBitmap) {
+        if (softwareBitmap != bitmap) {
             softwareBitmap.recycle()
-        }
-        if (scaledBitmap != bitmap) {
-            scaledBitmap.recycle()
         }
         return byteBuffer
     }
