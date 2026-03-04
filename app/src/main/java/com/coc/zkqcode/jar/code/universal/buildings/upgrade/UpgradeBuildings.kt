@@ -213,7 +213,11 @@ private suspend fun tryToBatchBuildWalls(x: Int, y: Int, currentBase: BaseType) 
 
     // Tap again to focus or confirm
     TouchActions.tap(centerX, centerY)
-    TouchActions.swipe(280, 480, 280, 320, delayTime = 600)
+    val shouldSwipe = centerY >= 300
+    if (shouldSwipe) {
+        // Swipe up to avoid overlapping.
+        TouchActions.swipe(280, 480, 280, 320, delayTime = 600)//Swiped for 200 pixels here, so in the trajectory calculate, the offset for y should be 150
+    }
     // Locate the arrow element using YOLO detector
     val screenBuffer = ScreenCaptureManager.capture(asBitmap = true) as? Bitmap ?: logAndStop("in BuilderBaseUpgradeBuildings, screen capture failed.")
     val detections = YoloDetector.detect(screenBuffer, modelType = "walls-detect")
@@ -223,18 +227,18 @@ private suspend fun tryToBatchBuildWalls(x: Int, y: Int, currentBase: BaseType) 
         val arrowX = batchBuildWallsArrow.boundingBox.centerX().toInt()
         val arrowY = batchBuildWallsArrow.boundingBox.centerY().toInt()
         ShowMessage("批量建造箭头：$arrowX, $arrowY")
-        val targetCenterY = centerY - 150
+        val targetCenterY = if (shouldSwipe) centerY - 150 else centerY
         val dx = arrowX - centerX
         val dy = arrowY - targetCenterY
         val distance = sqrt((dx * dx + dy * dy).toDouble())
 
         if (distance > 0) {
             // Calculate trajectory based on the vector from center to the detected arrow
-            val targetOffset = 5000
+            val targetOffset = 3000
             val endX = (arrowX + (dx / distance) * targetOffset).toInt()
             val endY = (arrowY + (dy / distance) * targetOffset).toInt()
 
-            TouchActions.swipe(arrowX, arrowY, endX, endY)
+            TouchActions.swipe(arrowX, arrowY, endX, endY, delayTime = 300)
         }
     }
 }
