@@ -6,6 +6,7 @@ import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndStop
 import com.coc.zkqcode.jar.code.builderbase.playBuilderBase
 import com.coc.zkqcode.jar.code.colorschema.MyColors
+import com.coc.zkqcode.jar.code.mainbase.upgrade.mainBaseFindBuildButton
 import com.coc.zkqcode.jar.code.universal.InGamesVars
 import com.coc.zkqcode.jar.code.universal.buildings.upgrade.BaseType
 import com.coc.zkqcode.jar.code.universal.buildings.upgrade.upgradeBuildings
@@ -79,6 +80,7 @@ object MainScript {
             delayWithMultiplier(1000)
             upgradeBuildings(BaseType.Main)
             delayWithMultiplier(1000)
+//            ShowMessage(mainBaseFindBuildButton(type = "Tick").toString())
         }
     }
 

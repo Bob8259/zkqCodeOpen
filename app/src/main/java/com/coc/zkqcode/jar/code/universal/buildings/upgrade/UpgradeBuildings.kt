@@ -149,7 +149,7 @@ private suspend fun buildOneNewBuildings(currentBase: BaseType): Boolean {
     // 5. If initial tick is missing, attempt to find a new position via the Red Cross
     if (targetTick == null) {
         ShowMessage("建造失败，尝试寻找空位")
-        targetTick = FindBuildPosition.tryToFindBuildPosition()
+        targetTick = FindBuildPosition.tryToFindBuildPosition(currentBase)
     }
 
     // 6. Execute the building logic if a valid tick position is identified
@@ -159,7 +159,6 @@ private suspend fun buildOneNewBuildings(currentBase: BaseType): Boolean {
             TouchActions.tap(targetTick.x, targetTick.y, delayTime = 100)
             tryToBatchBuildWalls(targetTick.x, targetTick.y, currentBase)
             zoomOrNot = true// after building walls, zoom the map for the next build.
-
         } else {
             // Handle standard building with retry logic
             for (i in 1..5) {
@@ -183,6 +182,8 @@ private suspend fun buildOneNewBuildings(currentBase: BaseType): Boolean {
                         }
                     }
                 } else {
+                    clickRightBottom(1)
+                    delayWithMultiplier(500)
                     // Cleanup if tick disappears
                     builderBaseFindBuildButton(type = "Cross")?.let { cross ->
                         TouchActions.tap(cross.x, cross.y)
@@ -213,7 +214,7 @@ private suspend fun tryToBatchBuildWalls(x: Int, y: Int, currentBase: BaseType) 
 
     // Tap again to focus or confirm
     TouchActions.tap(centerX, centerY)
-    val shouldSwipe = centerY >= 300
+    val shouldSwipe = centerY >= 335
     if (shouldSwipe) {
         // Swipe up to avoid overlapping.
         TouchActions.swipe(280, 480, 280, 320, delayTime = 600)//Swiped for 200 pixels here, so in the trajectory calculate, the offset for y should be 150

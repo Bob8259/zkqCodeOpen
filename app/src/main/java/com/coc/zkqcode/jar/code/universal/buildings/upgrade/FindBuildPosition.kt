@@ -6,6 +6,7 @@ import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.bugreporter.BugReporter
 import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.jar.code.builderbase.upgrade.builderBaseFindBuildButton
+import com.coc.zkqcode.jar.code.mainbase.upgrade.mainBaseFindBuildButton
 import com.coc.zkqcode.jar.code.universal.clickRightBottom
 import com.coc.zkqcode.jar.code.universal.smalltools.killGame
 import kotlinx.coroutines.NonCancellable
@@ -32,8 +33,10 @@ object FindBuildPosition {
         lastY = y
     }
 
-    suspend fun tryToFindBuildPosition(): Point? {
-        val redCross = builderBaseFindBuildButton(type = "Cross")
+    suspend fun tryToFindBuildPosition(baseType: BaseType): Point? {
+
+        val redCross = if (baseType == BaseType.Main) mainBaseFindBuildButton(type = "Cross") else builderBaseFindBuildButton(type = "Cross")
+
         if (redCross != null) {
             val centerX = redCross.x + 20
             val centerY = redCross.y + 45
@@ -44,7 +47,7 @@ object FindBuildPosition {
                 lastX = downX
                 lastY = downY
                 delayWithMultiplier(100)
-                return iterateThroughAllPossiblePositions()
+                return iterateThroughAllPossiblePositions(baseType)
             } finally {
                 withContext(NonCancellable) {
                     TouchActions.touchUp(1)
@@ -59,7 +62,7 @@ object FindBuildPosition {
         }
     }
 
-    private suspend fun iterateThroughAllPossiblePositions(): Point? {
+    private suspend fun iterateThroughAllPossiblePositions(baseType: BaseType): Point? {
         val stepX = 10
         val stepY = 20
 
@@ -74,7 +77,7 @@ object FindBuildPosition {
                         val ratio = (y - 130).toFloat() / (300 - 130)
                         val startX = (440 + (170 - 440) * ratio).toInt()
                         val endX = (790 + (1080 - 790) * ratio).toInt()
-                        val checkResult = checkArea(startX, endX, y, stepX)
+                        val checkResult = checkArea(startX, endX, y, stepX, baseType)
                         if (checkResult != null) {
                             found = checkResult
                             break
@@ -82,11 +85,12 @@ object FindBuildPosition {
                     }
                     found
                 }
+
                 2 -> {
                     // 2. Rectangle area (y: 301 to 380)
                     var found: Point? = null
                     for (y in 301..380 step stepY) {
-                        val checkResult = checkArea(170, 1080, y, stepX)
+                        val checkResult = checkArea(170, 1080, y, stepX, baseType)
                         if (checkResult != null) {
                             found = checkResult
                             break
@@ -94,6 +98,7 @@ object FindBuildPosition {
                     }
                     found
                 }
+
                 3 -> {
                     // 3. Triangle area (y: 381 to 690)
                     var found: Point? = null
@@ -101,7 +106,7 @@ object FindBuildPosition {
                         val ratio = (y - 381).toFloat() / (690 - 381)
                         val startX = (170 + (625 - 170) * ratio).toInt()
                         val endX = (1080 + (625 - 1080) * ratio).toInt()
-                        val checkResult = checkArea(startX, endX, y, stepX)
+                        val checkResult = checkArea(startX, endX, y, stepX, baseType)
                         if (checkResult != null) {
                             found = checkResult
                             break
@@ -109,6 +114,7 @@ object FindBuildPosition {
                     }
                     found
                 }
+
                 else -> null
             }
 
@@ -120,17 +126,18 @@ object FindBuildPosition {
         return null
     }
 
-    private suspend fun checkArea(startX: Int, endX: Int, y: Int, step: Int): Point? {
+    private suspend fun checkArea(startX: Int, endX: Int, y: Int, step: Int, baseType: BaseType): Point? {
         for (x in startX..endX step step) {
             moveWithDelay(x.toFloat(), y.toFloat())
-            var greenTick = builderBaseFindBuildButton(type = "Tick", duration = 120)
+            var greenTick = if (baseType == BaseType.Main) mainBaseFindBuildButton(type = "Tick", duration = 120) else builderBaseFindBuildButton(type = "Tick", duration = 120)
+
             if (greenTick != null) {
                 delayWithMultiplier(200)
                 TouchActions.touchUp(1)
-                greenTick = builderBaseFindBuildButton(type = "Tick", duration = 80)
+                greenTick = if (baseType == BaseType.Main) mainBaseFindBuildButton(type = "Tick", duration = 80) else builderBaseFindBuildButton(type = "Tick", duration = 80)
+                
                 if (greenTick != null) {
-                    delayWithMultiplier(100)
-                    TouchActions.tap(greenTick.x, greenTick.y)
+                    delayWithMultiplier(100)//Do not click the green tick here
                     return greenTick
                 }
             }
