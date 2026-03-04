@@ -37,10 +37,22 @@ fn read_to_string_rustix(path: &str) -> Option<String> {
 fn check_debugger_present() {
     #[cfg(unix)]
     {
-        if let Some(content) = read_to_string_rustix("/proc/self/status") {
+        const XOR_KEY: u8 = 0x42;
+        
+        fn xor_decrypt(encrypted: &[u8]) -> String {
+            encrypted.iter().map(|&b| (b ^ XOR_KEY) as char).collect()
+        }
+        
+        const ENCRYPTED_PATH: [u8; 17] = [0x2f ^ XOR_KEY, 0x70 ^ XOR_KEY, 0x72 ^ XOR_KEY, 0x6f ^ XOR_KEY, 0x63 ^ XOR_KEY, 0x2f ^ XOR_KEY, 0x73 ^ XOR_KEY, 0x65 ^ XOR_KEY, 0x6c ^ XOR_KEY, 0x66 ^ XOR_KEY, 0x2f ^ XOR_KEY, 0x73 ^ XOR_KEY, 0x74 ^ XOR_KEY, 0x61 ^ XOR_KEY, 0x74 ^ XOR_KEY, 0x75 ^ XOR_KEY, 0x73 ^ XOR_KEY];
+        const ENCRYPTED_TRACER: [u8; 10] = [0x54 ^ XOR_KEY, 0x72 ^ XOR_KEY, 0x61 ^ XOR_KEY, 0x63 ^ XOR_KEY, 0x65 ^ XOR_KEY, 0x72 ^ XOR_KEY, 0x50 ^ XOR_KEY, 0x69 ^ XOR_KEY, 0x64 ^ XOR_KEY, 0x3a ^ XOR_KEY];
+        
+        let path = xor_decrypt(&ENCRYPTED_PATH);
+        let tracer = xor_decrypt(&ENCRYPTED_TRACER);
+        
+        if let Some(content) = read_to_string_rustix(&path) {
             for line in content.lines() {
-                if line.starts_with("TracerPid:") {
-                    let pid_str = line.replace("TracerPid:", "").trim().to_string();
+                if line.starts_with(&tracer) {
+                    let pid_str = line.replace(&tracer, "").trim().to_string();
                     if let Ok(pid) = pid_str.parse::<i32>() {
                         if pid != 0 {
                             trigger_poison("tracer pid detected");
