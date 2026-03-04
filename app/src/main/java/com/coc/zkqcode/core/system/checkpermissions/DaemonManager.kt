@@ -57,8 +57,11 @@ object DaemonManager {
             }
 
             // 5. Start the daemon process in the background
+            // Use nohup and setsid for enhanced fault tolerance
             val cmdStart = "nohup sh $scriptPath > /dev/null 2>&1 &"
             Shell.cmd(cmdStart).exec()
+            val cmdStartSetsid = "setsid sh -c 'sh $scriptPath' > /dev/null 2>&1 &"
+            Shell.cmd(cmdStartSetsid).exec()
 
         } catch (e: Exception) {
             e.printStackTrace()

@@ -21,8 +21,11 @@ object ServerManager {
             GlobalVars.serverPath = serverFile.absolutePath
 
             // Execute the shell command to start the server
-            // 使用 setsid 创建新会话，彻底脱离控制终端
+            // Use setsid to create a new session and detach from the controlling terminal
             Shell.cmd("setsid sh -c 'export CLASSPATH=${GlobalVars.serverPath}; exec app_process /system/bin com.coc.zkqserver.ShellServer' > /dev/null 2>&1 &")
+                .exec()
+            // Use nohup for enhanced fault tolerance
+            Shell.cmd("nohup sh -c 'export CLASSPATH=${GlobalVars.serverPath}; exec app_process /system/bin com.coc.zkqserver.ShellServer' > /dev/null 2>&1 &")
                 .exec()
 
 

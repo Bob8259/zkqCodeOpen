@@ -44,7 +44,10 @@ class ServerActions(
     }
 
     private fun performConnect() {
+        // Use setsid to create a new session and nohup for enhanced fault tolerance
         Shell.cmd("setsid sh -c 'export CLASSPATH=${GlobalVars.serverPath}; exec app_process /system/bin com.coc.zkqserver.ShellServer' > /dev/null 2>&1 &")
+            .exec()
+        Shell.cmd("nohup sh -c 'export CLASSPATH=${GlobalVars.serverPath}; exec app_process /system/bin com.coc.zkqserver.ShellServer' > /dev/null 2>&1 &")
             .exec()
         serverConnection.connect(
             // Do not modify these logics. This is designed for an ultra-fast config loading.
