@@ -7,26 +7,12 @@ use std::sync::atomic::{AtomicI32, Ordering};
 use std::thread;
 use std::time::Duration;
 
-#[cfg(unix)]
-use std::ptr;
-
-#[cfg(unix)]
-use libc::ptrace;
-
-#[cfg(unix)]
-use libc::PTRACE_TRACEME;
-
-// Global shared variable to poison calculations if checks fail
 pub static G_SECURITY_POISON_FLAG: AtomicI32 = AtomicI32::new(0);
 
-/// Poison trigger: Sets the global poison flag if it's currently 0.
 fn trigger_poison(reason: &str) {
     if G_SECURITY_POISON_FLAG.load(Ordering::SeqCst) == 0 {
-        let val = 42;
-        G_SECURITY_POISON_FLAG.store(val, Ordering::SeqCst);
+        G_SECURITY_POISON_FLAG.store(42, Ordering::SeqCst);
         log::error!("Security monitor: Violation detected! Reason: {}", reason);
-        // Terminate the process immediately on security violation
-        std::process::exit(1);
     }
 }
 
@@ -76,86 +62,62 @@ fn check_debugger_present() {
     }
 }
 
-#[cfg(unix)]
-fn check_ptrace() {
-    unsafe {
-        let res = ptrace(
-            PTRACE_TRACEME,
-            0,
-            ptr::null_mut::<libc::c_void>(),
-            ptr::null_mut::<libc::c_void>(),
-        );
-        if res == -1 {
-            trigger_poison("ptrace detected");
-        }
-    }
-}
-
-// 2. LD_PRELOAD Injection Check
 fn check_env_injection() {
     if env::var("LD_PRELOAD").is_ok() {
         trigger_poison("LD_PRELOAD detected");
     }
 }
 
-// 2.1 Time Drift Check
 fn check_time_drift() {
     let start = std::time::Instant::now();
-    // Execute a very short block of code
     let mut _x = 0;
     for i in 0..100 {
         _x += i;
     }
-
-    if start.elapsed().as_micros() > 5000 {
-        // If this code execution exceeds 5ms, it is likely being suspended
+    
+    if start.elapsed().as_micros() > 500 {
         trigger_poison("time drift detected");
     }
 }
 
-// 3. Frida Memory Scan (/proc/self/maps)
-// 5. Unauthorized Libs / Memory Segments
 fn check_memory_maps() {
     #[cfg(unix)]
     {
         if let Some(maps) = read_to_string_rustix("/proc/self/maps") {
-            let mut detected = false;
             for line in maps.lines() {
                 if line.contains("frida") || line.contains("gadget") || line.contains("gum-js") {
-                    detected = true;
-                    break;
+                    trigger_poison("unauthorized memory segment detected");
+                    return;
                 }
                 if line.contains("/data/local/tmp") {
-                    detected = true;
-                    break;
+                    trigger_poison("unauthorized memory segment detected");
+                    return;
                 }
                 if line.contains("rwxp") && line.contains("[anon]") {
-                    detected = true;
-                    break;
+                    trigger_poison("unauthorized memory segment detected");
+                    return;
                 }
-            }
-            if detected {
-                trigger_poison("unauthorized memory segment detected");
             }
         }
     }
 }
 
-// 4. Frida Default Port Check (27042)
 fn check_frida_port() {
     if let Ok(addr) = "127.0.0.1:27042".parse() {
-        if let Ok(_) = TcpStream::connect_timeout(&addr, Duration::from_millis(200)) {
+        if TcpStream::connect_timeout(&addr, Duration::from_millis(200)).is_ok() {
             trigger_poison("frida port detected");
         }
     }
 }
 
-// 6. Native Hooks via Stack Unwinding
 fn check_native_hooks() {
     #[cfg(target_os = "android")]
     {
         use libc::{c_char, c_void, dladdr, Dl_info};
         use std::ffi::CStr;
+        use std::sync::atomic::AtomicBool;
+        
+        static HOOK_DETECTED: AtomicBool = AtomicBool::new(false);
 
         #[repr(C)]
         #[allow(non_camel_case_types)]
@@ -202,6 +164,7 @@ fn check_native_hooks() {
                         || fname.contains("xposed")
                         || fname.contains("frida")
                     {
+                        HOOK_DETECTED.store(true, Ordering::SeqCst);
                         G_SECURITY_POISON_FLAG.store(42, Ordering::SeqCst);
                         return _Unwind_Reason_Code::_URC_END_OF_STACK;
                     }
@@ -213,26 +176,24 @@ fn check_native_hooks() {
         unsafe {
             _Unwind_Backtrace(unwind_callback, std::ptr::null_mut());
         }
+        
+        if HOOK_DETECTED.load(Ordering::SeqCst) {
+            trigger_poison("native hooks detected");
+        }
     }
 }
 
 pub fn start_security_monitor() {
-    // Only enable security monitor in release builds
     #[cfg(not(debug_assertions))]
     thread::spawn(|| {
         let result = panic::catch_unwind(|| {
             let mut heavy_check_counter = 0;
 
             loop {
-                // --- Lightweight Checks (High Frequency: ~5s) ---
                 check_debugger_present();
                 check_env_injection();
                 check_time_drift();
 
-                #[cfg(unix)]
-                check_ptrace();
-
-                // --- Heavyweight Checks (Low Frequency: ~60s) ---
                 if heavy_check_counter >= 12 {
                     check_memory_maps();
                     check_frida_port();
@@ -246,11 +207,9 @@ pub fn start_security_monitor() {
         });
 
         if let Err(_e) = result {
-            // Silent panic handling
         }
     });
 
-    // In debug builds, do nothing
     #[cfg(debug_assertions)]
     {
         log::info!("Security monitor disabled in debug build");
