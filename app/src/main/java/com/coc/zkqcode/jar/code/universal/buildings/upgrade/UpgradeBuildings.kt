@@ -21,6 +21,7 @@ import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.smalltools.getBooleanConfigRuntime
+import com.coc.zkqcode.jar.code.universal.smalltools.getConfigRuntime
 import com.coc.zkqcode.jar.ui.schema.Schema
 import kotlin.math.sqrt
 
@@ -162,8 +163,18 @@ private suspend fun buildOneNewBuildings(currentBase: BaseType): Boolean {
                     TouchActions.tap(currentTick.x, currentTick.y, delayTime = 500)
                     if (currentBase == BaseType.Main && getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.INSTANT_UPGRADE.key)) {
                         val gemCost = detectInstantBuildCost()
-                        ShowMessage("instant upgrade gem cost: $gemCost")
-                        delayWithMultiplier(10000)
+                        val costThreshold = getConfigRuntime(Schema.MAIN_BASE_SETTINGS.INSTANT_UPGRADE_THRESHOLD.key).toInt()
+                        ShowMessage("检测到的宝石消耗数量: $gemCost\n设置的宝石消耗限额: $costThreshold")
+                        if (gemCost != null && gemCost < costThreshold) {
+                            val upgradeGemIcon = findMultiColorsUntil(
+                                schemas = listOf(MyColors.UpgradeGemIcon, MyColors.UpgradeGemIcon2, MyColors.UpgradeGemIcon3),
+                                duration = 500
+                            )
+                            if (upgradeGemIcon != null) {
+                                TouchActions.tap(upgradeGemIcon.x, upgradeGemIcon.y, delayTime = 500)
+                                TouchActions.tap(638, 456, delayTime = 500)
+                            }
+                        }
                     }
                 } else {
                     // Cleanup if tick disappears
