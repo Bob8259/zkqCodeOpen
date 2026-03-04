@@ -44,4 +44,9 @@ object MyColors : IWorkerColors by WorkerColors, IUIColors by UIColors, IFeature
     val UpgradeGemIcon3: ColorSchema = ColorSchema.parse(
         189, 501, 1117, 625, "50D9A3", "5|0|77F5DA,10|0|7EF8DF,15|0|87FCE7,20|0|8FFFED,0|12|8CFADE,5|12|92FDE4,10|12|7EF7D3,15|12|87FCDD,20|12|79FCDA", 0, 0.93, "升级宝石标志8按钮"
     )
+
+    // The followings are Main Base Upgrade Colors
+    val MainBaseWallInShop: ColorSchema = ColorSchema.parse(
+        146, 404, 1238, 449, "669CC7", "3|0|5687AB,6|0|6BC0FF,9|0|5698C9,12|0|4987C4,0|12|3A5668,3|12|2F4457,6|12|36516E,9|12|3A5879,12|12|5791BC", 0, 0.9, "商店内部城墙"
+    )
 }
