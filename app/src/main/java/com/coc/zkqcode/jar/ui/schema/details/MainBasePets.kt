@@ -5,7 +5,7 @@ package com.coc.zkqcode.jar.ui.schema.details
 import com.coc.zkqcode.jar.ui.schema.SettingDef
 
 object MainBasePets {
-    //以下是战宠设置
+    // Pet settings below
     val LASSI = SettingDef("lassi", "莱希", 1, "MAIN_BASE_PETS")
     val ELECTRO_OWL = SettingDef("electro_owl", "闪枭", 1, "MAIN_BASE_PETS")
     val MIGHTY_YAK = SettingDef("mighty_yak", "大牦", 1, "MAIN_BASE_PETS")

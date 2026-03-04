@@ -41,8 +41,8 @@ fun AccountConfig(
             options = listOf("游戏存档", "直接启动", "上号器")
         )
         when (GlobalVars.configStates["${ACCOUNT_SETTINGS.START_METHOD.key}${index}"]!!.value) {
-            "1" -> GameFiles(index)//存档上号
-            "2" -> UsePackage(index)//上号器
+            "1" -> GameFiles(index)//Game save login
+            "2" -> UsePackage(index)//Account switcher
         }
     }
     HorizontalDivider(
@@ -84,22 +84,22 @@ fun GameFiles(
             modifier = Modifier.padding(end = 10.dp),
             style = MaterialTheme.typography.labelMedium
         )
-        // 从 configStates 中获取当前游戏版本
+        // Get current game version from configStates
         val currentVersion =
             GlobalVars.configStates["${ACCOUNT_SETTINGS.GAME_VERSION.key}${index}"]!!.value
-        // 使用 remember 来保存当前选中的选项
+        // Use remember to save currently selected option
         var selectedOption by remember {
             mutableStateOf(
                 GlobalVars.configStates["${ACCOUNT_SETTINGS.GAME_VERSION.key}${index}"]!!.value
             )
         }
 
-        // 监听 currentVersion 的变化，并更新 selectedOption
+        // Listen for changes in currentVersion and update selectedOption
         LaunchedEffect(currentVersion) {
             selectedOption =
                 GlobalVars.configStates["${ACCOUNT_SETTINGS.GAME_VERSION.key}${index}"]!!.value
         }
-        if (selectedOption == "0") {//0表示国服
+        if (selectedOption == "0") {//0 means CN server
             SettingInputRow(key = "${ACCOUNT_SETTINGS.CN_PATH.key}${index}")
         } else {
             SettingInputRow(key = "${ACCOUNT_SETTINGS.GLOBAL_PATH.key}${index}")

@@ -12,7 +12,7 @@ import timber.log.Timber
 
 object PermissionManager {
     /**
-     * 核心检测逻辑
+     * Core permission check and grant logic
      */
     suspend fun checkAndGrantPermissions(
         context: Context,
@@ -20,11 +20,11 @@ object PermissionManager {
     ): RootStatus =
         withContext(Dispatchers.IO) {
             val shell = Shell.getShell()
-            // 1. 先检测 Root 权限
+            // 1. Check Root permission first
             if (!shell.isRoot) {
                 return@withContext RootStatus.ROOT_DENIED
             }
-            // 2. 如果有 Root，尝试静默授权
+            // 2. If Root is available, try to grant permissions silently
             val pkg = context.packageName
             Shell.cmd(
                 "pm grant $pkg android.permission.SYSTEM_ALERT_WINDOW",
@@ -32,16 +32,16 @@ object PermissionManager {
                 "pm grant $pkg android.permission.POST_NOTIFICATIONS",
                 "pm grant $pkg android.permission.FOREGROUND_SERVICE",
             ).exec()
-            // 2.5 增加电池优化白名单检测
+            // 2.5 Add battery optimization whitelist check
             BatteryOptimizationHelper.requestIgnoreBatteryOptimizations(context)
 
-            // 2.6 开启无障碍服务
+            // 2.6 Enable accessibility service
             AccessibilityPermissionHelper.enableAccessibilityWithRoot(
                 context.packageName,
                 "com.coc.zkqcode.utils.accessibility.MyAccessibilityService"
             )
 
-            // 3. 再次检测权限是否真的拿到了（因为部分系统 pm grant 对悬浮窗无效）
+            // 3. Check if permissions are actually granted (pm grant may not work for overlay on some systems)
             val hasOverlay = Settings.canDrawOverlays(context)
             val hasNotification = NotificationManagerCompat.from(context).areNotificationsEnabled()
             if (hasOverlay && hasNotification) {
@@ -50,7 +50,7 @@ object PermissionManager {
                     return@withContext RootStatus.SERVER_ERROR
                 }
 
-                // 等待服务器响应
+                // Wait for server response
                 withContext(Dispatchers.Main) {
                     onStatusChange(RootStatus.WAITING_FOR_SERVER)
                 }
@@ -72,8 +72,8 @@ object PermissionManager {
                 }
             }
 
-            // 启动守护进程
-            //DaemonManager.setupAndRunDaemon(context)//暂时考虑关闭
+            // Start daemon process
+            //DaemonManager.setupAndRunDaemon(context)//Temporarily disabled
 
             return@withContext RootStatus.GRANTED
         }

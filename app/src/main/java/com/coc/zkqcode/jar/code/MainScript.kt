@@ -21,52 +21,52 @@ import kotlinx.coroutines.isActive
 
 object MainScript {
 
-    // 辅助函数：快速获取配置值，若为空则触发 logAndStop
+    // Helper function: quickly get config value, trigger logAndStop if empty
     private fun getConfigOrStop(key: String): String {
         return GlobalVars.configStates[key]?.value ?: logAndStop("Failed to get config: $key")
     }
 
     suspend fun runMainScript() {
         while (currentCoroutineContext().isActive) {
-            // 1. 初始化/更新本地内存状态
+            // 1. Initialize/update local memory state
             val startAccount = readMemory("accountNumber").toIntOrNull() ?: 1
             val accountTotal = getConfigOrStop(Schema.GLOBAL_SETTINGS.ACCOUNT_COUNT.key).toInt()
 
-            // 2. 查找第一个开启的账号
+            // 2. Find the first enabled account
             val activeAccount = (startAccount..accountTotal).firstOrNull { id ->
                 getConfigOrStop("${Schema.ACCOUNT_SETTINGS.ISOPEN.key}$id") == "1"
             }
 
-            // 3. 处理未找到账号的情况
+            // 3. Handle case when no account is found
             if (activeAccount == null) {
                 while (currentCoroutineContext().isActive) {
                     ShowMessage("当前未开启任何账号\n请勾选要开启的账号。")
                     delay(2500)
                 }
-                return // 理论上由协程控制退出
+                return // Exit is theoretically controlled by coroutine
             }
 
-            // 4. 执行主逻辑循环
+            // 4. Execute main logic loop
             InGamesVars.currentAccountNumber = activeAccount
             while (currentCoroutineContext().isActive) {
                 InGamesVars.currentGamePackage = getConfigOrStop("game_version${InGamesVars.currentAccountNumber}").toInt()
 
-                //测试代码
+                // Test code
                 runTestCode()
                 if (!enterMainScreen()) {
                     ShowMessage("进入游戏失败")
                     delay(500)
-                    break // 跳出内层循环，重新检查账号状态
+                    break // Break inner loop and recheck account status
                 }
                 if (!playBuilderBase()) {
                     ShowMessage("夜世界操作失败")
                     delay(500)
-                    break // 跳出内层循环，重新检查账号状态
+                    break // Break inner loop and recheck account status
                 }
 //                if (!playMainBase()) {
 //                    ShowMessage("主世界操作失败")
 //                    delay(500)
-//                    break // 跳出内层循环，重新检查账号状态
+//                    break // Break inner loop and recheck account status
 //                }
             }
             delay(2000)
