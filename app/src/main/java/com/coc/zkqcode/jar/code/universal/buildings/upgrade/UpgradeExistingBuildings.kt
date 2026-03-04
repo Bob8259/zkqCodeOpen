@@ -4,17 +4,17 @@ import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndStop
 import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.MyColors
+import com.coc.zkqcode.jar.code.universal.buildings.iterateBuilderBaseBuildingUpgradeList
 import com.coc.zkqcode.jar.code.universal.clickRightBottom
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.smalltools.getBooleanConfigRuntime
-import com.coc.zkqcode.jar.code.universal.buildings.iterateBuilderBaseBuildingUpgradeList
 import com.coc.zkqcode.jar.code.universal.smalltools.getConfigRuntime
 import com.coc.zkqcode.jar.ui.schema.details.BuilderBaseBuildings
 import com.coc.zkqcode.jar.ui.schema.details.BuilderBaseBuildingsPriority
-import com.coc.zkqcode.jar.ui.schema.details.MainBaseBuildings
 import com.coc.zkqcode.jar.ui.schema.details.MainBaseBuildingPriorities
+import com.coc.zkqcode.jar.ui.schema.details.MainBaseBuildings
 
 
 suspend fun upgradeAllExistingBuildings(buildings: List<String>, currentBase: BaseType): Boolean {
@@ -45,7 +45,7 @@ suspend fun upgradeAllExistingBuildings(buildings: List<String>, currentBase: Ba
             TouchActions.tap(worker.x, worker.y, delayTime = 500)
 
             // Locate the specific building in the UI
-            if (!findSpecificBuilding(building, currentBase)) {
+            if (!findSpecificBuilding(building)) {
                 TouchActions.tap(1233, 37)// tap gold to close worker list
                 break // Not found this building anymore, go to next building type
             }
@@ -76,7 +76,7 @@ suspend fun upgradeAllExistingBuildings(buildings: List<String>, currentBase: Ba
     return enterMainScreen()
 }
 
-private suspend fun findSpecificBuilding(buildingName: String, currentBase: BaseType): Boolean {
+private suspend fun findSpecificBuilding(buildingName: String): Boolean {
     var found = false
     ShowMessage("准备寻找$buildingName")
     iterateBuilderBaseBuildingUpgradeList(onDetect = { result ->
@@ -94,25 +94,28 @@ private suspend fun findSpecificBuilding(buildingName: String, currentBase: Base
 
 
 private fun getOrderedList(buildings: List<String>, baseType: BaseType): List<String> {
-    val buildingsList = when (baseType) {
-        BaseType.Main -> MainBaseBuildings.all
-        BaseType.Builder -> BuilderBaseBuildings.all
+    val enabledBuildingNames = when (baseType) {
+        BaseType.Main -> MainBaseBuildings.all.filter {
+            getBooleanConfigRuntime(it.key)
+        }.map { it.displayName }.toSet()
+        BaseType.Builder -> BuilderBaseBuildings.all.filter {
+            getBooleanConfigRuntime(it.key)
+        }.map { it.displayName }.toSet()
     }
 
-    val priorityList = when (baseType) {
-        BaseType.Main -> MainBaseBuildingPriorities.all
-        BaseType.Builder -> BuilderBaseBuildingsPriority.all
-    }
-
-    val enabledBuildingNames = buildingsList.filter {
-        getBooleanConfigRuntime(it.key)
-    }.map { it.displayName }.toSet()
-
-    val priorityMap = priorityList.associate { settingDef ->
-        val priorityStr = getConfigRuntime(settingDef.key)
-        val priority = priorityStr.toIntOrNull()
-            ?: logAndStop("Invalid priority configuration for ${settingDef.displayName}, value: $priorityStr")
-        settingDef.displayName to priority
+    val priorityMap = when (baseType) {
+        BaseType.Main -> MainBaseBuildingPriorities.all.associate { settingDef ->
+            val priorityStr = getConfigRuntime(settingDef.key)
+            val priority = priorityStr.toIntOrNull()
+                ?: logAndStop("Invalid priority configuration for ${settingDef.displayName}, value: $priorityStr")
+            settingDef.displayName to priority
+        }
+        BaseType.Builder -> BuilderBaseBuildingsPriority.all.associate { settingDef ->
+            val priorityStr = getConfigRuntime(settingDef.key)
+            val priority = priorityStr.toIntOrNull()
+                ?: logAndStop("Invalid priority configuration for ${settingDef.displayName}, value: $priorityStr")
+            settingDef.displayName to priority
+        }
     }
 
     return buildings

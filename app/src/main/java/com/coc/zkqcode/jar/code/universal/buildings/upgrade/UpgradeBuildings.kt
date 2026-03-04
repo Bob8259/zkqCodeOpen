@@ -186,6 +186,9 @@ private suspend fun buildOneNewBuildings(currentBase: BaseType): Boolean {
                     builderBaseFindBuildButton(type = "Cross")?.let { cross ->
                         TouchActions.tap(cross.x, cross.y)
                     }
+                    mainBaseFindBuildButton(type = "Cross")?.let { cross ->
+                        TouchActions.tap(cross.x, cross.y)
+                    }
                     break // Exit loop if button is no longer found
                 }
             }
