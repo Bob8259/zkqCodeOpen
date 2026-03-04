@@ -157,7 +157,7 @@ private suspend fun buildOneNewBuildings(currentBase: BaseType): Boolean {
         if (isWall) {
             // Handle wall batch building
             TouchActions.tap(targetTick.x, targetTick.y, delayTime = 100)
-            tryToBatchBuildWalls(targetTick.x, targetTick.y)
+            tryToBatchBuildWalls(targetTick.x, targetTick.y, currentBase)
             zoomOrNot = true// after building walls, zoom the map for the next build.
 
         } else {
@@ -198,11 +198,13 @@ private suspend fun buildOneNewBuildings(currentBase: BaseType): Boolean {
     return false
 }
 
-private suspend fun tryToBatchBuildWalls(x: Int, y: Int) {
-    val centerX = x - 20
-    val centerY = y + 45
+private suspend fun tryToBatchBuildWalls(x: Int, y: Int, currentBase: BaseType) {
+
+    val centerX = if (currentBase == BaseType.Builder) x - 20 else x - 15
+    val centerY = if (currentBase == BaseType.Builder) y + 45 else y + 30
+
     // Initial interaction to trigger wall building UI
-    TouchActions.tap(centerX, centerY)
+    clickRightBottom(1)
     delayWithMultiplier(500)
 
     // Zoom out to reveal more of the map/UI
