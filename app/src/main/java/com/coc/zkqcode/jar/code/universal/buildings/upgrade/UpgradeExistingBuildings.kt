@@ -19,13 +19,25 @@ import com.coc.zkqcode.jar.ui.schema.details.MainBaseBuildings
 
 suspend fun upgradeAllExistingBuildings(buildings: List<String>, currentBase: BaseType): Boolean {
     val uniqueBuildings = setOf(
-        "建筑大师大本营", "宝石矿井", "时光钟楼", "星空实验室", "奥仔哨站",
-        "建筑大师训练营", "治疗小屋",
-        "战争机器", "战斗直升机",
-        "守卫岗哨", "空中炸弹发射器", "熔岩火炮", "巨型加农炮", "超级特斯拉电磁塔", "熔岩发射器", "十字连弩"
+        "建筑大师大本营",
+        "宝石矿井",
+        "时光钟楼",
+        "星空实验室",
+        "奥仔哨站",
+        "建筑大师训练营",
+        "治疗小屋",
+        "战争机器",
+        "战斗直升机",
+        "守卫岗哨",
+        "空中炸弹发射器",
+        "熔岩火炮",
+        "巨型加农炮",
+        "超级特斯拉电磁塔",
+        "熔岩发射器",
+        "十字连弩",
+        "实验室"
     )
     val orderedList = getOrderedList(buildings, currentBase)
-    ShowMessage("")
     for (building in orderedList) {
         val maxAttempts = if (building in uniqueBuildings) 1 else 4
 
@@ -34,8 +46,9 @@ suspend fun upgradeAllExistingBuildings(buildings: List<String>, currentBase: Ba
             clickRightBottom(1)
 
             // Locate the worker icon
-            val worker =
-                findMultiColorsUntil(schemas = listOf(MyColors.BuilderBaseWorker), duration = 1000)
+            val worker = if (currentBase == BaseType.Builder) findMultiColorsUntil(
+                schemas = listOf(MyColors.BuilderBaseWorker), duration = 1000
+            ) else findMultiColorsUntil(schemas = listOf(MyColors.MainBaseWorker), duration = 1000)
 
             // Pre-condition check: If cannot continue building or worker not found, skip to next
             if (!checkContinueBuild(currentBase) || worker == null) {
@@ -53,8 +66,7 @@ suspend fun upgradeAllExistingBuildings(buildings: List<String>, currentBase: Ba
             TouchActions.tap(1233, 37)// tap gold to close worker list
 
             // Check for the upgrade action (Hammer icon)
-            val hammer =
-                findMultiColorsUntil(schemas = listOf(MyColors.UpgradeHammer), duration = 1000) ?: continue // Should not happen if build was found, but be safe
+            val hammer = findMultiColorsUntil(schemas = listOf(MyColors.UpgradeHammer), duration = 1000) ?: continue // Should not happen if build was found, but be safe
 
             TouchActions.tap(hammer.x, hammer.y, delayTime = 500)
 
@@ -98,6 +110,7 @@ private fun getOrderedList(buildings: List<String>, baseType: BaseType): List<St
         BaseType.Main -> MainBaseBuildings.all.filter {
             getBooleanConfigRuntime(it.key)
         }.map { it.displayName }.toSet()
+
         BaseType.Builder -> BuilderBaseBuildings.all.filter {
             getBooleanConfigRuntime(it.key)
         }.map { it.displayName }.toSet()
@@ -106,22 +119,19 @@ private fun getOrderedList(buildings: List<String>, baseType: BaseType): List<St
     val priorityMap = when (baseType) {
         BaseType.Main -> MainBaseBuildingPriorities.all.associate { settingDef ->
             val priorityStr = getConfigRuntime(settingDef.key)
-            val priority = priorityStr.toIntOrNull()
-                ?: logAndStop("Invalid priority configuration for ${settingDef.displayName}, value: $priorityStr")
+            val priority = priorityStr.toIntOrNull() ?: logAndStop("Invalid priority configuration for ${settingDef.displayName}, value: $priorityStr")
             settingDef.displayName to priority
         }
+
         BaseType.Builder -> BuilderBaseBuildingsPriority.all.associate { settingDef ->
             val priorityStr = getConfigRuntime(settingDef.key)
-            val priority = priorityStr.toIntOrNull()
-                ?: logAndStop("Invalid priority configuration for ${settingDef.displayName}, value: $priorityStr")
+            val priority = priorityStr.toIntOrNull() ?: logAndStop("Invalid priority configuration for ${settingDef.displayName}, value: $priorityStr")
             settingDef.displayName to priority
         }
     }
 
-    return buildings
-        .filter { it in priorityMap && it in enabledBuildingNames }
-        .sortedBy {
-            priorityMap[it]!!
-        }
+    return buildings.filter { it in priorityMap && it in enabledBuildingNames }.sortedBy {
+        priorityMap[it]!!
+    }
 }
 
