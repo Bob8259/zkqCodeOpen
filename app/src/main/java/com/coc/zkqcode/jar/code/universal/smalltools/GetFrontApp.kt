@@ -5,13 +5,13 @@ import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.jar.code.universal.InGamesVars
 
 suspend fun isGameAtFront(): Boolean {
-    // 使用 | 分隔多个 grep 目标，减少进程开启次数
+    // Use | to separate multiple grep targets, reducing process creation count
     val combinedCmd =
         "dumpsys activity activities | grep -E 'mResumedActivity|mCurrentFocus|mFocusedApp'"
     val gamePackage = InGamesVars.currentGamePackage.toString()
     val rawResult = RunShell.runAndGetFirst(combinedCmd)
 
-    // 提取包名/类名的正则
+    // Regex to extract package name/class name
     val frontApp =
         """([a-zA-Z0-9._]+/[a-zA-Z0-9._$ ]+)""".toRegex().find(rawResult)?.value?.trim() ?: "None"
     if ((frontApp.contains("com.supercell.clashofclans") && gamePackage == "1") ||

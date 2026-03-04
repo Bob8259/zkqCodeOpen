@@ -5,7 +5,7 @@ package com.coc.zkqcode.jar.ui.schema.details
 import com.coc.zkqcode.jar.ui.schema.SettingDef
 
 object MainBaseBuildings {
-    //以下是建造设置
+    // Building settings below
     val TOWN_HALL = SettingDef("town_hall", "大本营", 1, "MAIN_BASE_BUILDINGS")
     val HERO_ALTAR = SettingDef("hero_altar", "英雄殿堂", 1, "MAIN_BASE_BUILDINGS")
     val LABORATORY = SettingDef("laboratory", "实验室", 1, "MAIN_BASE_BUILDINGS")
@@ -116,7 +116,7 @@ object MainBaseBuildings {
 }
 
 object MainBaseBuildingPriorities {
-    //以下是建造设置
+    // Building settings below
     val TOWN_HALL_PRIORITY = SettingDef("town_hall_priority", "大本营", 1, "MAIN_BASE_BUILDING_PRIORITIES")
     val HERO_ALTAR_PRIORITY = SettingDef("hero_altar_priority", "英雄殿堂", 2, "MAIN_BASE_BUILDING_PRIORITIES")
     val LABORATORY_PRIORITY = SettingDef("laboratory_priority", "实验室", 3, "MAIN_BASE_BUILDING_PRIORITIES")

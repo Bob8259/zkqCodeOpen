@@ -79,7 +79,7 @@ suspend fun upgradeBuildings(currentBase: BaseType): Boolean {
 
 suspend fun buildAllNewBuildings(currentBase: BaseType): Boolean {
     val startTime = System.currentTimeMillis()
-    // 15分钟对应的毫秒数是 900,000
+    // 15 minutes in milliseconds is 900,000
     val timeoutMillis = 900_000L
     while (true) {
         val elapsedTime = System.currentTimeMillis() - startTime
@@ -112,7 +112,7 @@ suspend fun checkContinueBuild(currentBase: BaseType): Boolean {
         Schema.MAIN_BASE_SETTINGS.SAVE_WORKER.key
     }
     val baseName = if (isBuilder) "夜世界" else "主世界"
-    // 2. Log the worker status (Keep original Chinese strings)
+    // 2. Log the worker status (Keep original Chinese strings for display)
     ShowMessage("${baseName}工人数量：${workerNumber.available}/${workerNumber.total}")
     // 3. Evaluate the exit condition:
     // No workers available OR exactly one worker available while "Save Worker" config is enabled.
@@ -168,7 +168,7 @@ private suspend fun buildOneNewBuildings(currentBase: BaseType): Boolean {
                         val gemCost = detectInstantBuildCost()
                         val costThreshold = getConfigRuntime(Schema.MAIN_BASE_SETTINGS.INSTANT_UPGRADE_THRESHOLD.key).toInt()
                         ShowMessage("检测到的宝石消耗数量: $gemCost\n设置的宝石消耗限额: $costThreshold")
-                        if (gemCost != null && gemCost < costThreshold) {
+                        if (gemCost != null && gemCost <= costThreshold) {
                             val upgradeGemIcon = findMultiColorsUntil(
                                 schemas = listOf(MyColors.UpgradeGemIcon, MyColors.UpgradeGemIcon2, MyColors.UpgradeGemIcon3),
                                 duration = 500

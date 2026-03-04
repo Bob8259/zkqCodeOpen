@@ -221,7 +221,7 @@ fun SettingInputRow(key: String, afterChange: ((String) -> Unit)? = null) {
         BasicTextField(
             value = state.value,
             onValueChange = { newValue ->
-                // 自动处理副作用和状态更新
+                // Automatically handle side effects and state updates
                 GlobalVars.isAutoRunEnabled = false
                 state.value = newValue
                 afterChange?.invoke(newValue)
@@ -402,15 +402,15 @@ fun SettingDropdown(
     key: String,
     options: List<String>
 ) {
-    // 1. 获取配置状态和显示名称
+    // 1. Get config state and display name
     val state = GlobalVars.configStates[key]
         ?: logAndStop("Config: $key Not Found")
     val label = Schema.getDisplayName(key)
 
-    // 2. 内部 UI 状态
+    // 2. Internal UI state
     var expanded by remember { mutableStateOf(false) }
 
-    // 3. 数据转换逻辑
+    // 3. Data conversion logic
     val selectedIndex = state.value.toIntOrNull() ?: 0
     val selectedOption = options.getOrElse(selectedIndex) { options.getOrNull(0) ?: "" }
 
@@ -426,7 +426,7 @@ fun SettingDropdown(
         )
 
         Box(modifier = Modifier.wrapContentSize(Alignment.TopStart)) {
-            // 下拉触发按钮
+            // Dropdown trigger button
             Button(
                 onClick = {
                     GlobalVars.isAutoRunEnabled = false
@@ -441,7 +441,7 @@ fun SettingDropdown(
                 Icon(Icons.Default.ArrowDropDown, contentDescription = null)
             }
 
-            // 下拉菜单
+            // Dropdown menu
             DropdownMenu(
                 expanded = expanded,
                 onDismissRequest = { expanded = false }
@@ -453,10 +453,10 @@ fun SettingDropdown(
                         },
                         onClick = {
                             GlobalVars.isAutoRunEnabled = false
-                            state.value = idx.toString() // 更新全局状态
+                            state.value = idx.toString() // Update global state
                             expanded = false
                         },
-                        modifier = Modifier.height(35.dp) // 稍微增加一点高度方便点击
+                        modifier = Modifier.height(35.dp) // Slightly increase height for easier clicking
                     )
                 }
             }

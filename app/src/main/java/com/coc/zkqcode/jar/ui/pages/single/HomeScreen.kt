@@ -136,7 +136,7 @@ fun HomeScreen(
             .fillMaxSize()
             .background(Color.White)
     ) {
-        // 1. 顶部的 Tab 栏
+        // 1. Top Tab bar
         PrimaryScrollableTabRow(
             selectedTabIndex = selectedTabIndex,
             edgePadding = 0.dp,
@@ -163,7 +163,7 @@ fun HomeScreen(
             }
         }
 
-        // 2. 中间的内容区域 (使用 weight 占据剩余空间)
+        // 2. Middle content area (use weight to occupy remaining space)
         LazyColumn(
             state = lazyListState,
             modifier = Modifier
@@ -276,7 +276,7 @@ fun HomeScreen(
             }
         }
 
-        // 3. 底部的固定按钮区
+        // 3. Bottom fixed button area
         val context = LocalContext.current
         Column(
             modifier = Modifier

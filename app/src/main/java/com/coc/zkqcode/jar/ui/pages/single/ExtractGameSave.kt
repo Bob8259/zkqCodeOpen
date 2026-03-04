@@ -23,8 +23,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 /**
- * 游戏版本枚举
- * 集中管理不同版本（国服/国际服）的配置Key、包名、文件夹名称和需要提取的子目录
+ * Game version enum
+ * Centralized management of config keys, package names, folder names and subdirectories to extract for different versions (CN/Global)
  */
 private enum class GameVariant(
     val settingKey: String,
@@ -54,31 +54,31 @@ fun LazyListScope.ExtractGameSave() {
 
 @Composable
 private fun ExtractGameSaveContent() {
-    // 状态管理
+    // State management
     var showDialog by remember { mutableStateOf(false) }
     var dialogMessage by remember { mutableStateOf("") }
     val coroutineScope = rememberCoroutineScope()
 
-    // 通用显示弹窗函数
+    // Generic function to show dialog
     fun showMsg(msg: String) {
         dialogMessage = msg
         showDialog = true
     }
 
-    // 提取逻辑
+    // Extract logic
     fun performExtract(variant: GameVariant) {
         coroutineScope.launch(Dispatchers.IO) {
             val suffix = GlobalVars.configStates[variant.settingKey]!!.value
             val sdPath = Environment.getExternalStorageDirectory().path
 
-            // 【修改点】基础目录增加了一层 zkqFiles
-            // 路径变为: /sdcard/zkqFiles/zkqCNGameSave
+            // [Modification] Base directory added a layer of zkqFiles
+            // Path becomes: /sdcard/zkqFiles/zkqCNGameSave
             val gameRootDir = "$sdPath/zkqFiles/${variant.folderName}"
 
-            // 本次存档的具体路径 (e.g., /sdcard/zkqFiles/zkqCNGameSave/001)
+            // Specific path for this save (e.g., /sdcard/zkqFiles/zkqCNGameSave/001)
             val targetSaveDir = "$gameRootDir/$suffix"
 
-            // 1. 检查存档是否已存在 (使用 Shell 检查 shared_prefs 文件夹)
+            // 1. Check if save already exists (use Shell to check shared_prefs folder)
             val checkExistCmd = "[ -d \"$targetSaveDir/shared_prefs\" ]"
             if (Shell.cmd(checkExistCmd).exec().isSuccess) {
                 showMsg("提取失败，存档已存在")
@@ -87,17 +87,17 @@ private fun ExtractGameSaveContent() {
 
             showMsg("提取中...")
 
-            // 2. 确保目录结构存在
-            // mkdir -p 会递归创建目录：如果 zkqFiles 不存在会创建，如果 zkqCNGameSave 不存在也会创建
+            // 2. Ensure directory structure exists
+            // mkdir -p will recursively create directories: if zkqFiles doesn't exist it will be created, if zkqCNGameSave doesn't exist it will also be created
             Shell.cmd("mkdir -p \"$gameRootDir\"").exec()
 
-            // 创建本次存档的目录
+            // Create directory for this save
             Shell.cmd("mkdir -p \"$targetSaveDir\"").exec()
 
-            // 3. 遍历并复制目录
+            // 3. Iterate and copy directories
             variant.targetSubDirs.forEach { dir ->
                 val destPath = "$targetSaveDir/$dir"
-                // 创建目标子目录
+                // Create target subdirectory
                 Shell.cmd("mkdir -p \"$destPath\"").exec()
 
                 // 使用 Root 权限复制文件
@@ -165,7 +165,7 @@ private fun ExtractGameSaveContent() {
 }
 
 /**
- * 提取出的复用 UI 组件
+ * Extracted reusable UI component
  */
 @Composable
 private fun GameConfigSection(

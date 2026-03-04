@@ -3,7 +3,7 @@ package com.coc.zkqcode.jar.ui.schema.details
 import com.coc.zkqcode.jar.ui.schema.SettingDef
 
 object BuilderBaseBuildings {
-    // 资源与核心建筑
+    // Resources and core buildings
     val BUILDER_HALL = SettingDef("builder_hall", "建筑大师大本营", 1, "BUILDER_BASE_SETTINGS")
     val GEM_MINE = SettingDef("gem_mine", "宝石矿井", 1, "BUILDER_BASE_SETTINGS")
     val CLOCK_TOWER = SettingDef("clock_tower", "时光钟楼", 1, "BUILDER_BASE_SETTINGS")
@@ -15,18 +15,18 @@ object BuilderBaseBuildings {
     val NIGHT_ELIXIR_COLLECTOR = SettingDef("night_elixir_collector", "圣水收集器", 1, "BUILDER_BASE_SETTINGS")
 
  
-    // 军队建筑
+    // Army buildings
     val BUILDER_BARRACKS = SettingDef("builder_barracks", "建筑大师训练营", 1, "BUILDER_BASE_SETTINGS")
     val NIGHT_ARMY_CAMP = SettingDef("night_army_camp", "兵营", 1, "BUILDER_BASE_SETTINGS")
     val REINFORCEMENT_CAMP = SettingDef("reinforcement_camp", "预备营", 1, "BUILDER_BASE_SETTINGS")
     val HEALING_HUT = SettingDef("healing_hut", "治疗小屋", 1, "BUILDER_BASE_SETTINGS")
 
  
-    // 英雄/机器
+    // Heroes/Machines
     val BATTLE_MACHINE = SettingDef("battle_machine", "战争机器", 1, "BUILDER_BASE_SETTINGS")
     val BATTLE_COPTER = SettingDef("battle_copter", "战斗直升机", 1, "BUILDER_BASE_SETTINGS")
  
-    // 防御建筑
+    // Defense buildings
     val MULTI_MORTAR = SettingDef("multi_mortar", "多管迫击炮", 1, "BUILDER_BASE_SETTINGS")
     val NIGHT_ARCHER_TOWER = SettingDef("night_archer_tower", "箭塔", 1, "BUILDER_BASE_SETTINGS")
     val DOUBLE_CANNON = SettingDef("double_cannon", "双管加农炮", 1, "BUILDER_BASE_SETTINGS")
@@ -42,7 +42,7 @@ object BuilderBaseBuildings {
     val LAVA_LAUNCHER = SettingDef("lava_launcher", "熔岩发射器", 1, "BUILDER_BASE_SETTINGS")
     val NIGHT_X_BOW = SettingDef("night_x_bow", "十字连弩", 1, "BUILDER_BASE_SETTINGS")
 
-    // 陷阱
+    // Traps
     val PUSH_TRAP = SettingDef("push_trap", "弹射陷阱", 1, "BUILDER_BASE_SETTINGS")
     val NIGHT_SPRING_TRAP = SettingDef("night_spring_trap", "隐形弹簧", 1, "BUILDER_BASE_SETTINGS")
     val NIGHT_MINE = SettingDef("night_mine", "地雷", 1, "BUILDER_BASE_SETTINGS")
@@ -87,14 +87,14 @@ object BuilderBaseBuildings {
 }
 
 object BuilderBaseBuildingsPriority {
-    // 资源与核心建筑
+    // Resources and core buildings
     val BUILDER_HALL_PRIORITY = SettingDef("builder_hall_priority", "建筑大师大本营", 1, "BUILDER_BASE_SETTINGS_PRIORITY")
     val GEM_MINE_PRIORITY = SettingDef("gem_mine_priority", "宝石矿井", 2, "BUILDER_BASE_SETTINGS_PRIORITY")
     val CLOCK_TOWER_PRIORITY = SettingDef("clock_tower_priority", "时光钟楼", 3, "BUILDER_BASE_SETTINGS_PRIORITY")
     val STAR_LABORATORY_PRIORITY =
         SettingDef("star_laboratory_priority", "星空实验室", 4, "BUILDER_BASE_SETTINGS_PRIORITY")
  
-    // 【修改项】添加了前缀
+    // [Modification] Added prefix
     val NIGHT_GOLD_STORAGE_PRIORITY =
         SettingDef("night_gold_storage_priority", "储金罐", 5, "BUILDER_BASE_SETTINGS_PRIORITY")
     val NIGHT_ELIXIR_STORAGE_PRIORITY =
@@ -106,7 +106,7 @@ object BuilderBaseBuildingsPriority {
         SettingDef("night_elixir_collector_priority", "圣水收集器", 15, "BUILDER_BASE_SETTINGS_PRIORITY")
 
  
-    // 军队建筑
+    // Army buildings
     val BUILDER_BARRACKS_PRIORITY =
         SettingDef("builder_barracks_priority", "建筑大师训练营", 7, "BUILDER_BASE_SETTINGS_PRIORITY")
     val NIGHT_ARMY_CAMP_PRIORITY = SettingDef("night_army_camp_priority", "兵营", 16, "BUILDER_BASE_SETTINGS_PRIORITY")
@@ -115,17 +115,17 @@ object BuilderBaseBuildingsPriority {
     val HEALING_HUT_PRIORITY = SettingDef("healing_hut_priority", "治疗小屋", 18, "BUILDER_BASE_SETTINGS_PRIORITY")
 
  
-    // 英雄/机器
+    // Heroes/Machines
     val BATTLE_MACHINE_PRIORITY =
         SettingDef("battle_machine_priority", "战争机器", 8, "BUILDER_BASE_SETTINGS_PRIORITY")
     val BATTLE_COPTER_PRIORITY =
         SettingDef("battle_copter_priority", "战斗直升机", 9, "BUILDER_BASE_SETTINGS_PRIORITY")
  
-    // 防御建筑
+    // Defense buildings
     val MULTI_MORTAR_PRIORITY =
         SettingDef("multi_mortar_priority", "多管迫击炮", 10, "BUILDER_BASE_SETTINGS_PRIORITY")
  
-    // 【修改项】添加了前缀
+    // [Modification] Added prefix
     val NIGHT_ARCHER_TOWER_PRIORITY =
         SettingDef("night_archer_tower_priority", "箭塔", 11, "BUILDER_BASE_SETTINGS_PRIORITY")
  
@@ -146,7 +146,7 @@ object BuilderBaseBuildingsPriority {
     val LAVA_LAUNCHER_PRIORITY = SettingDef("lava_launcher_priority", "熔岩发射器", 28, "BUILDER_BASE_SETTINGS_PRIORITY")
     val NIGHT_X_BOW_PRIORITY = SettingDef("night_x_bow_priority", "十字连弩", 29, "BUILDER_BASE_SETTINGS_PRIORITY")
 
-    // 陷阱
+    // Traps
     val PUSH_TRAP_PRIORITY = SettingDef("push_trap_priority", "弹射陷阱", 30, "BUILDER_BASE_SETTINGS_PRIORITY")
     val NIGHT_SPRING_TRAP_PRIORITY =
         SettingDef("night_spring_trap_priority", "隐形弹簧", 31, "BUILDER_BASE_SETTINGS_PRIORITY")

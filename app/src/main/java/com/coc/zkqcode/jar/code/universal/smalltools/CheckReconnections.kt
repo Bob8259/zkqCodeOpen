@@ -73,30 +73,30 @@ private suspend fun checkPrivacy() {
 }
 
 suspend fun reExtractGameSavings() {
-    // 1. 配置项
+    // 1. Configuration items
     val packageName = "com.supercell.clashofclans"
     val folderName = "zkqGlobalGameSave"
     val targetSubDirs = listOf("shared_prefs")
 
-    // 2. 环境路径准备
+    // 2. Environment path preparation
     val suffix = InGamesVars.currentAccountNumber
     val sdPath = Environment.getExternalStorageDirectory().path
 
     val gameRootDir = "$sdPath/zkqFiles/$folderName"
     val targetSaveDir = "$gameRootDir/$suffix"
 
-    // 3. 核心修改：如果文件夹存在，直接删除以便重新覆盖
-    // 使用 [ -d ] 判断目录是否存在，若存在则执行 rm -rf
+    // 3. Core modification: if folder exists, delete it directly for re-extraction
+    // Use [ -d ] to check if directory exists, if yes execute rm -rf
     val cleanCmd = "[ -d \"$targetSaveDir\" ] && rm -rf \"$targetSaveDir\""
     RunShell.run(cleanCmd)
 
-    // 4. 创建目录结构（rm 之后需要重新创建）
+    // 4. Create directory structure (need to recreate after rm)
     RunShell.run("mkdir -p \"$targetSaveDir\"")
 
-    // 5. 执行数据拷贝
+    // 5. Execute data copy
     targetSubDirs.forEach { dir ->
         val destPath = "$targetSaveDir/$dir"
-        // 创建目标子目录
+        // Create target subdirectory
         RunShell.run("mkdir -p \"$destPath\"")
 
         // 使用 Root 权限从 /data/data/ 复制到 SD 卡
