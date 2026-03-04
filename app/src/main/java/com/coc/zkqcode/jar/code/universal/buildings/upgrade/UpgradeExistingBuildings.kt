@@ -13,6 +13,8 @@ import com.coc.zkqcode.jar.code.universal.buildings.iterateBuilderBaseBuildingUp
 import com.coc.zkqcode.jar.code.universal.smalltools.getConfigRuntime
 import com.coc.zkqcode.jar.ui.schema.details.BuilderBaseBuildings
 import com.coc.zkqcode.jar.ui.schema.details.BuilderBaseBuildingsPriority
+import com.coc.zkqcode.jar.ui.schema.details.MainBaseBuildings
+import com.coc.zkqcode.jar.ui.schema.details.MainBaseBuildingPriorities
 
 
 suspend fun upgradeAllExistingBuildings(buildings: List<String>, currentBase: BaseType): Boolean {
@@ -22,7 +24,7 @@ suspend fun upgradeAllExistingBuildings(buildings: List<String>, currentBase: Ba
         "战争机器", "战斗直升机",
         "守卫岗哨", "空中炸弹发射器", "熔岩火炮", "巨型加农炮", "超级特斯拉电磁塔", "熔岩发射器", "十字连弩"
     )
-    val orderedList = getOrderedList(buildings)
+    val orderedList = getOrderedList(buildings, currentBase)
     ShowMessage("")
     for (building in orderedList) {
         val maxAttempts = if (building in uniqueBuildings) 1 else 4
@@ -91,13 +93,22 @@ private suspend fun findSpecificBuilding(buildingName: String, currentBase: Base
 }
 
 
-private fun getOrderedList(buildings: List<String>): List<String> {
-    // Filter buildings that are enabled in settings
-    val enabledBuildingNames = BuilderBaseBuildings.all.filter {
+private fun getOrderedList(buildings: List<String>, baseType: BaseType): List<String> {
+    val buildingsList = when (baseType) {
+        BaseType.Main -> MainBaseBuildings.all
+        BaseType.Builder -> BuilderBaseBuildings.all
+    }
+
+    val priorityList = when (baseType) {
+        BaseType.Main -> MainBaseBuildingPriorities.all
+        BaseType.Builder -> BuilderBaseBuildingsPriority.all
+    }
+
+    val enabledBuildingNames = buildingsList.filter {
         getBooleanConfigRuntime(it.key)
     }.map { it.displayName }.toSet()
 
-    val priorityMap = BuilderBaseBuildingsPriority.all.associate { settingDef ->
+    val priorityMap = priorityList.associate { settingDef ->
         val priorityStr = getConfigRuntime(settingDef.key)
         val priority = priorityStr.toIntOrNull()
             ?: logAndStop("Invalid priority configuration for ${settingDef.displayName}, value: $priorityStr")
