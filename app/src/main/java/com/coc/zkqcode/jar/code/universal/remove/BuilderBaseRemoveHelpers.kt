@@ -11,7 +11,6 @@ import com.coc.zkqcode.core.yolo.YoloDetector
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.InGamesVars
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
-import kotlin.math.sqrt
 
 suspend fun enterEditMode() {
     // Select the initial schema based on the game package version
@@ -127,31 +126,6 @@ suspend fun detectObstacles(): List<DetectionResult> {
     // Filter detections outside [100, 1180] x-range
     val initialFiltered = detections.filter { it.boundingBox.centerX() in 100f..1180f }
 
-    // Filter close detections: if distance < 5 pixels, keep only the one with higher score
-    val filteredDetections = mutableListOf<DetectionResult>()
-    for (detection in initialFiltered) {
-        var isTooClose = false
-        val iterator = filteredDetections.listIterator()
-        while (iterator.hasNext()) {
-            val existing = iterator.next()
-
-            val dx = detection.boundingBox.centerX() - existing.boundingBox.centerX()
-            val dy = detection.boundingBox.centerY() - existing.boundingBox.centerY()
-            val distance = sqrt((dx * dx + dy * dy).toDouble())
-
-            if (distance < 5.0) {
-                isTooClose = true
-                if (detection.score > existing.score) {
-                    iterator.remove()
-                    iterator.add(detection)
-                }
-                break
-            }
-        }
-        if (!isTooClose) {
-            filteredDetections.add(detection)
-        }
-    }
-
-    return filteredDetections
+    // Filter out duplicate detections that are too close to each other
+    return YoloDetector.filterCloseDetections(initialFiltered)
 }

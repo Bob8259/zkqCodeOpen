@@ -33,5 +33,15 @@ object MyColors : IWorkerColors by WorkerColors, IUIColors by UIColors, IFeature
     val BuilderBaseBarbarian: ColorSchema = ColorSchema.parse(
         193, 585, 1261, 623, "FF763A", "7|0|FF763A,15|0|FF773B,23|0|FF783C,30|0|FF793C,0|6|FF773A,7|6|FF793C,15|6|FF7B3E,23|6|FF7D40,30|6|FF7E41", 0, 0.9, "夜世界野蛮人"
     )
-    //The followings are Main Base Upgrade Colors
+
+    //The followings are Universal Upgrade Colors
+    val UpgradeGemIcon: ColorSchema = ColorSchema.parse(
+        189, 501, 1117, 625, "7AF5D9", "6|0|81F9DE,12|0|8AFCE4,17|0|92FFEB,23|0|9CFFF1,0|13|8FFBDC,6|13|81F8D2,12|13|78F8CF,17|13|78FBD5,23|13|67E3BF", 0, 0.93, "升级宝石标志"
+    )
+    val UpgradeGemIcon2: ColorSchema = ColorSchema.parse(
+        189, 501, 1117, 625, "50D9A3", "5|0|77F5DA,10|0|7EF8DF,15|0|87FCE7,20|0|8FFFED,0|12|8CFADE,5|12|92FDE4,10|12|7EF7D3,15|12|87FCDD,20|12|79FCDA", 0, 0.93, "升级宝石标志2"
+    )
+    val UpgradeGemIcon3: ColorSchema = ColorSchema.parse(
+        189, 501, 1117, 625, "50D9A3", "5|0|77F5DA,10|0|7EF8DF,15|0|87FCE7,20|0|8FFFED,0|12|8CFADE,5|12|92FDE4,10|12|7EF7D3,15|12|87FCDD,20|12|79FCDA", 0, 0.93, "升级宝石标志8按钮"
+    )
 }

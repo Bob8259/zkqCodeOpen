@@ -159,7 +159,12 @@ private suspend fun buildOneNewBuildings(currentBase: BaseType): Boolean {
                 val currentTick = if (currentBase == BaseType.Main) mainBaseFindBuildButton(type = "Tick", duration = 500) else builderBaseFindBuildButton(type = "Tick", duration = 500)
                 if (currentTick != null) {
                     ShowMessage("点击第 $i 次绿色按钮：${currentTick.x}, ${currentTick.y}")
-                    TouchActions.tap(currentTick.x, currentTick.y)
+                    TouchActions.tap(currentTick.x, currentTick.y, delayTime = 500)
+                    if (currentBase == BaseType.Main && getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.INSTANT_UPGRADE.key)) {
+                        val gemCost = detectInstantBuildCost()
+                        ShowMessage("instant upgrade gem cost: $gemCost")
+                        delayWithMultiplier(10000)
+                    }
                 } else {
                     // Cleanup if tick disappears
                     builderBaseFindBuildButton(type = "Cross")?.let { cross ->

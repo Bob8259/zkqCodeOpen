@@ -1,12 +1,21 @@
 package com.coc.zkqcode.jar.code
 
 import com.coc.zkqcode.core.data.database.GlobalVars
+import android.graphics.Bitmap
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
+import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
+import java.io.File
+import java.io.FileOutputStream
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndStop
 import com.coc.zkqcode.jar.code.builderbase.playBuilderBase
+import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.mainbase.others.mainBaseRemoveObstacles
 import com.coc.zkqcode.jar.code.universal.InGamesVars
+import com.coc.zkqcode.jar.code.universal.buildings.upgrade.BaseType
+import com.coc.zkqcode.jar.code.universal.buildings.upgrade.detectInstantBuildCost
+import com.coc.zkqcode.jar.code.universal.buildings.upgrade.upgradeBuildings
+import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.smalltools.readMemory
 import com.coc.zkqcode.jar.code.universal.smalltools.runApp
@@ -72,12 +81,54 @@ object MainScript {
     private suspend fun runTestCode() {
         while (true) {
             ShowMessage("测试代码开始")
-            runApp("com.supercell.clashofclans2")
-            enterMainScreen()
+//            enterMainScreen()
             delayWithMultiplier(1000)
-            mainBaseRemoveObstacles()
-            delayWithMultiplier(10000)
+            ShowMessage("detect result ${detectInstantBuildCost()}")
+            delayWithMultiplier(1000)
         }
+    }
+
+    private suspend fun testScreenShot() {
+        val upgradeGemIcon = findMultiColorsUntil(schemas = listOf(MyColors.UpgradeGemIcon, MyColors.UpgradeGemIcon2, MyColors.UpgradeGemIcon3), duration = 500)
+        if (upgradeGemIcon != null) {
+            val startX = upgradeGemIcon.x - 80
+            val startY = upgradeGemIcon.y - 45
+            val endX = upgradeGemIcon.x + 72
+            val endY = upgradeGemIcon.y
+            val width = endX - startX
+            val height = endY - startY
+
+            if (width > 0 && height > 0) {
+                val screenBitmap = ScreenCaptureManager.capture(asBitmap = true) as? Bitmap
+                if (screenBitmap != null) {
+                    if (startX + width <= screenBitmap.width && startY + height <= screenBitmap.height) {
+                        val croppedBitmap = Bitmap.createBitmap(screenBitmap, startX, startY, width, height)
+
+                        ScreenCaptureManager.getContext()?.let { context ->
+                            try {
+                                val folderName = "ScreenShots"
+                                val folder = File(context.filesDir, folderName)
+                                if (!folder.exists()) {
+                                    folder.mkdirs()
+                                }
+                                val fileName = "upgrade_gem_${System.currentTimeMillis()}.png"
+                                val file = File(folder, fileName)
+                                FileOutputStream(file).use { out ->
+                                    croppedBitmap.compress(Bitmap.CompressFormat.PNG, 100, out)
+                                }
+                            } catch (e: Exception) {
+                                e.printStackTrace()
+                            } finally {
+                                croppedBitmap.recycle()
+                            }
+                        }
+                    }
+                    screenBitmap.recycle()
+                    delayWithMultiplier(10000)
+                }
+            }
+        }
+
     }
 }
 
