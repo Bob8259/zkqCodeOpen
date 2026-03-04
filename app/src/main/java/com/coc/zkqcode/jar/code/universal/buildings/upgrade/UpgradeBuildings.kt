@@ -17,7 +17,6 @@ import com.coc.zkqcode.jar.code.mainbase.upgrade.mainBaseFindBuildButton
 import com.coc.zkqcode.jar.code.universal.buildings.ALL_BUILDINGS
 import com.coc.zkqcode.jar.code.universal.buildings.iterateBuilderBaseBuildingUpgradeList
 import com.coc.zkqcode.jar.code.universal.clickRightBottom
-import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.smalltools.getBooleanConfigRuntime
@@ -27,6 +26,7 @@ import kotlin.math.sqrt
 
 
 private val upgradableBuildingsMap = ALL_BUILDINGS.associateWith { false }.toMutableMap()
+private var zoomOrNot: Boolean = true
 
 enum class BaseType {
     Builder, Main
@@ -127,8 +127,12 @@ suspend fun checkContinueBuild(currentBase: BaseType): Boolean {
 //But for this function, false means no new buildings.
 private suspend fun buildOneNewBuildings(currentBase: BaseType): Boolean {
     ShowMessage("准备建造新建筑")
-    if (currentBase == BaseType.Builder) zoomSmallBuilderBase(isForBuild = true)
-    else if (currentBase == BaseType.Main) zoomSmallMainBase(isForBuild = true)
+    if (zoomOrNot) {
+        clickRightBottom(1)
+        if (currentBase == BaseType.Builder) zoomSmallBuilderBase(isForBuild = true)
+        else if (currentBase == BaseType.Main) zoomSmallMainBase(isForBuild = true)
+        zoomOrNot = false
+    }
     // 1. Identify the position of new buildings; return early if not found
     if (!builderBaseFindNewBuildings(currentBase)) return false
 
@@ -136,7 +140,7 @@ private suspend fun buildOneNewBuildings(currentBase: BaseType): Boolean {
     val shopArrow = findMultiColorsUntil(schemas = listOf(MyColors.InnerShopArrow), duration = 5000) ?: return false
 
     // 3. Determine building type (Wall vs. Others) before UI state changes
-    val isWall = findMultiColors(schema = MyColors.WallInShop) != null
+    val isWall = findMultiColorsUntil(schemas = listOf(MyColors.BuilderBaseWallInShop, MyColors.MainBaseWallInShop), duration = 100) != null
     TouchActions.tap(shopArrow.x - 50, shopArrow.y + 50, delayTime = 1500)
 
     // 4. Locate the confirmation button (Green Tick)
@@ -154,6 +158,8 @@ private suspend fun buildOneNewBuildings(currentBase: BaseType): Boolean {
             // Handle wall batch building
             TouchActions.tap(targetTick.x, targetTick.y, delayTime = 100)
             tryToBatchBuildWalls(targetTick.x, targetTick.y)
+            zoomOrNot = true// after building walls, zoom the map for the next build.
+
         } else {
             // Handle standard building with retry logic
             for (i in 1..5) {
