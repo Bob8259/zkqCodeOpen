@@ -21,7 +21,7 @@ suspend fun detectBuildingList(): BuildingDetectionResult {
     val endY = 560
 
     // Recognize text in the specified area
-    val results = TextRecognizer.recognize(startX, startY, endX, endY, useChinese = true, threshold = 130, saveImage = true)
+    val results = TextRecognizer.recognize(startX, startY, endX, endY, useChinese = true, threshold = 160)
 
     if (results.isEmpty()) return BuildingDetectionResult(emptyList())
 
@@ -37,13 +37,28 @@ suspend fun detectBuildingList(): BuildingDetectionResult {
         }
     }
     ShowMessage("Building raw list $rawSummary")
-    delayWithMultiplier(100000)
-    // Take a screenshot for color checking
+
+    // Take a screenshot for color checking (needed for post-process and later filtering)
     val screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult
-        ?: logAndStop("failed to take screenshot at night base upgrade")
+        ?: logAndStop("failed to take screenshot at building detection")
+
+    // Post-process: Check for green indicator (new building marker)
+    // If green pixels > 40 in area (x-15, y-3, x, y+20), add "新" prefix
+    val processedResults = results.map { item ->
+        val pos = item.position ?: return@map item
+        val x = pos.left + startX
+        val y = pos.top + startY
+
+        val greenCount = countGreenPixelsInArea(screenBuffer, x - 15, y - 3, x, y + 20)
+        if (greenCount > 30 && !item.text.startsWith("新")) {
+            item.copy(text = "新${item.text}")
+        } else {
+            item
+        }
+    }
 
     // If "建议升级" is detected, only keep results below it (greater y)
-    val upgradeY = results.mapNotNull { item ->
+    val upgradeY = processedResults.mapNotNull { item ->
         val pos = item.position ?: return@mapNotNull null
         val cleaned = cleanBuildingName(item.text)
         if (cleaned == "建议升级") {
@@ -54,7 +69,7 @@ suspend fun detectBuildingList(): BuildingDetectionResult {
     // Filter, clean, and return building names with positions
     // For each detected text, exclude it if more than 10 pixels of FF887F (RGB) are found in the specified area
     // Map results to DetectedBuilding and a flag indicating if it was marked as "New"
-    val allBuildings = results.mapNotNull { item ->
+    val allBuildings = processedResults.mapNotNull { item ->
         val pos = item.position ?: return@mapNotNull null
         if (!chineseRegex.containsMatchIn(item.text)) return@mapNotNull null
 

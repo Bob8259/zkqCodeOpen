@@ -25,7 +25,7 @@ suspend fun builderBaseFindNewBuildings(currentBase: BaseType): Boolean {
                 val newBuilding = buildings.find { it.name.startsWith("新") }
                 if (newBuilding != null) {
                     if (newBuilding.y > 530) return@iterateBuilderBaseBuildingUpgradeList false
-                    ShowMessage("检测到新建筑: ${newBuilding.name}")
+                    ShowMessage("检测到新建筑: ${newBuilding.name}, x: ${newBuilding.x}, y: ${newBuilding.y}")
                     TouchActions.tap(newBuilding.x + 20, newBuilding.y + 20, delayTime = 1500)
                     found = true
                     return@iterateBuilderBaseBuildingUpgradeList true
