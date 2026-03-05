@@ -21,7 +21,7 @@ suspend fun detectBuildingList(): BuildingDetectionResult {
     val endY = 560
 
     // Recognize text in the specified area
-    val results = TextRecognizer.recognize(startX, startY, endX, endY, useChinese = true, threshold = 130)
+    val results = TextRecognizer.recognize(startX, startY, endX, endY, useChinese = true, threshold = 130, saveImage = true)
 
     if (results.isEmpty()) return BuildingDetectionResult(emptyList())
 
@@ -37,7 +37,7 @@ suspend fun detectBuildingList(): BuildingDetectionResult {
         }
     }
     ShowMessage("Building raw list $rawSummary")
-
+    delayWithMultiplier(100000)
     // Take a screenshot for color checking
     val screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult
         ?: logAndStop("failed to take screenshot at night base upgrade")

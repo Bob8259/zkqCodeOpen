@@ -203,6 +203,8 @@ fun cleanBuildingName(raw: String): String {
         "乒营" to "兵营",
         "箭增" to "箭塔",
         "據地" to "撼地",
+        "英雄剧穀堂" to "英雄殿堂",
+        "暗黑油檯" to "暗黑重油罐"
     )
 
     // Apply all string replacements
