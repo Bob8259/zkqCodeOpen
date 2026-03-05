@@ -97,7 +97,7 @@ tasks.configureEach {
 }
 
 // Define a standalone task for deployment
-tasks.register<Exec>("deployPatch") {
+tasks.register<Exec>("buildJar") {
     group = "custom"
     description = "Compile and package UI plugin into the Assets directory"
 
@@ -213,7 +213,7 @@ tasks.register<Exec>("deployPatch") {
 tasks.register("deployAndReload") {
     group = "custom"
     description = "Build JAR, push to device, and trigger debug reload"
-    dependsOn("deployPatch")
+    dependsOn("buildJar")
 
     val outputJar = "${project.projectDir.absolutePath}/src/main/assets/code.jar"
     val devicePath = "/data/data/com.coc.zkqcode/files/assets/code.jar"

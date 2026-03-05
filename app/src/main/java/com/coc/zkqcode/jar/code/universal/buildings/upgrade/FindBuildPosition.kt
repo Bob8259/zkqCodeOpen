@@ -24,8 +24,9 @@ object FindBuildPosition {
         val dy = y - lastY
         val distance = sqrt(dx * dx + dy * dy)
         if (distance > 15) {
-            val duration = Random.nextInt(100, 201)
+            val duration = Random.nextInt(200, 301)
             TouchActions.moveSmoothly(lastX, lastY, x, y, duration, id = 1, isJitter = false)
+            delayWithMultiplier(200)
         } else {
             TouchActions.touchMove(x, y, id = 1, isJitter = false)
         }
@@ -35,7 +36,7 @@ object FindBuildPosition {
 
     suspend fun tryToFindBuildPosition(baseType: BaseType): Point? {
 
-        val redCross = if (baseType == BaseType.Main) mainBaseFindBuildButton(type = "Cross") else builderBaseFindBuildButton(type = "Cross")
+        val redCross = if (baseType == BaseType.Main) mainBaseFindBuildButton(type = BuildButtonType.Cross) else builderBaseFindBuildButton(type = BuildButtonType.Cross)
 
         if (redCross != null) {
             val centerX = redCross.x + 20
@@ -129,12 +130,12 @@ object FindBuildPosition {
     private suspend fun checkArea(startX: Int, endX: Int, y: Int, step: Int, baseType: BaseType): Point? {
         for (x in startX..endX step step) {
             moveWithDelay(x.toFloat(), y.toFloat())
-            var greenTick = if (baseType == BaseType.Main) mainBaseFindBuildButton(type = "Tick", duration = 120) else builderBaseFindBuildButton(type = "Tick", duration = 120)
+            var greenTick = if (baseType == BaseType.Main) mainBaseFindBuildButton(type = BuildButtonType.Tick, duration = 120) else builderBaseFindBuildButton(type = BuildButtonType.Tick, duration = 120)
 
             if (greenTick != null) {
                 delayWithMultiplier(200)
                 TouchActions.touchUp(1)
-                greenTick = if (baseType == BaseType.Main) mainBaseFindBuildButton(type = "Tick", duration = 80) else builderBaseFindBuildButton(type = "Tick", duration = 80)
+                greenTick = if (baseType == BaseType.Main) mainBaseFindBuildButton(type = BuildButtonType.Tick, duration = 80) else builderBaseFindBuildButton(type = BuildButtonType.Tick, duration = 80)
                 
                 if (greenTick != null) {
                     delayWithMultiplier(100)//Do not click the green tick here

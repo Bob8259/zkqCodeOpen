@@ -5,6 +5,7 @@ import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndStop
 import com.coc.zkqcode.jar.code.colorschema.ColorSchema
+import com.coc.zkqcode.jar.code.universal.buildings.upgrade.BuildButtonType
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 
 private val builderBaseBuildTickSchemas = listOf(
@@ -73,12 +74,11 @@ private val builderBaseBuildCrossSchemas = listOf(
     ),
 )
 
-suspend fun builderBaseFindBuildButton(duration: Int = 500, type: String): Point? {
+suspend fun builderBaseFindBuildButton(duration: Int = 500, type: BuildButtonType): Point? {
     val startTime = System.currentTimeMillis()
     val targetSchemas = when (type) {
-        "Tick" -> builderBaseBuildTickSchemas
-        "Cross" -> builderBaseBuildCrossSchemas
-        else -> return null
+        BuildButtonType.Tick -> builderBaseBuildTickSchemas
+        BuildButtonType.Cross -> builderBaseBuildCrossSchemas
     }
 
     while (System.currentTimeMillis() - startTime < duration) {
