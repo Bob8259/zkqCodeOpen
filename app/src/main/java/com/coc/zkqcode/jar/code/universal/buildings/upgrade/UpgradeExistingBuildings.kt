@@ -55,7 +55,7 @@ suspend fun upgradeAllExistingBuildings(buildings: List<String>, currentBase: Ba
     )
     val orderedList = getOrderedList(buildings, currentBase)
     for (building in orderedList) {
-        val maxAttempts = if (building in uniqueBuildings) 1 else 4
+        val maxAttempts = if (building in uniqueBuildings) 1 else 6
 
         for (attempt in 1..maxAttempts) {
             // Ensure UI state is clean at the start of each iteration
@@ -110,6 +110,7 @@ private suspend fun findSpecificBuilding(buildingName: String): Boolean {
     iterateBuilderBaseBuildingUpgradeList(onDetect = { result ->
         val building = result.buildings.find { it.name == buildingName }
         if (building != null) {
+            ShowMessage("已找到$buildingName")
             TouchActions.tap(building.x + 20, building.y + 20, delayTime = 1500)
             found = true
             true
