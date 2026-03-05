@@ -4,9 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.util.Log
 import com.coc.zkqcode.BuildConfig
-import com.coc.zkqcode.core.util.basic.RunShell
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.runBlocking
+import com.topjohnwu.superuser.Shell
 import timber.log.Timber
 import java.io.File
 import java.io.FileOutputStream
@@ -25,9 +23,9 @@ object LogHelper {
 
     fun logAndStop(message: String): Nothing {
         Timber.tag("zkq_debug").e("CRITICAL_ERROR: $message")
-        runBlocking(Dispatchers.IO) {
-            RunShell.runNoOutput("am force-stop com.coc.zkqcode")
-        }
+        // Directly execute shell command without checking isPlaying state,
+        // since this is a critical error that requires immediate app termination
+        Shell.cmd("am force-stop com.coc.zkqcode").exec()
         error(message) // 抛出 IllegalStateException
     }
 
