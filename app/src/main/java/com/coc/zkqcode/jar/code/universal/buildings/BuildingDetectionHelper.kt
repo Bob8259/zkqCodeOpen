@@ -243,7 +243,11 @@ fun cleanBuildingName(raw: String): String {
         "箭增" to "箭塔",
         "據地" to "撼地",
         "英雄剧穀堂" to "英雄殿堂",
-        "暗黑油檯" to "暗黑重油罐"
+        "暗黑油檯" to "暗黑重油罐",
+        "建设升级" to "建议升级",
+        "建议升級" to "建议升级",
+        ":" to "",
+        "：" to ""
     )
 
     // Apply all string replacements

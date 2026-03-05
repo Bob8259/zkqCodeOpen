@@ -19,3 +19,6 @@ Server Address: ws://localhost:6839/zkq
 When adding debug information, you should use showDebugInfo, which can be imported from com.coc.zkqcode.core.util.fileactions.
 
 When modify the code, you should add appropriate comments. Write all comments in English, but for other content (e.g. debug information, variable names or display information) can be written in Chinese.
+
+When importing a class/object/function or others, you should import the full package name, and only use the last name inside the code.
+For example, instead of using com.coc.zkqcode.jar.code.colorschema.ColorSchema in the code, you should import it as import com.coc.zkqcode.jar.code.colorschema.ColorSchema. Then, you can use ColorSchema in the code as ColorSchema.
