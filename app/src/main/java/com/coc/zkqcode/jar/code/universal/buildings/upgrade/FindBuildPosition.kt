@@ -73,12 +73,22 @@ object FindBuildPosition {
             val result = when (index) {
                 1 -> {
                     // 1. Trapezoid area (y: 130 to 300)
+                    // Randomly reverse Y and X axes to add randomness while maintaining the same area
+                    val reverseY = Random.nextBoolean()
+                    val reverseX = Random.nextBoolean()
+                    val yStart = if (reverseY) 300 else 130
+                    val yEnd = if (reverseY) 130 else 300
+                    
                     var found: Point? = null
-                    for (y in 130..300 step stepY) {
+                    val yRange = if (yStart <= yEnd) (yStart..yEnd step stepY) else (yStart downTo yEnd step stepY)
+                    for (y in yRange) {
                         val ratio = (y - 130).toFloat() / (300 - 130)
-                        val startX = (440 + (170 - 440) * ratio).toInt()
-                        val endX = (790 + (1080 - 790) * ratio).toInt()
-                        val checkResult = checkArea(startX, endX, y, stepX, baseType)
+                        val leftX = (440 + (170 - 440) * ratio).toInt()
+                        val rightX = (790 + (1080 - 790) * ratio).toInt()
+                        val xStart = if (reverseX) rightX else leftX
+                        val xEnd = if (reverseX) leftX else rightX
+                        
+                        val checkResult = checkArea(xStart, xEnd, y, stepX, baseType)
                         if (checkResult != null) {
                             found = checkResult
                             break
@@ -102,12 +112,22 @@ object FindBuildPosition {
 
                 3 -> {
                     // 3. Triangle area (y: 381 to 690)
+                    // Randomly reverse Y and X axes to add randomness while maintaining the same area
+                    val reverseY = Random.nextBoolean()
+                    val reverseX = Random.nextBoolean()
+                    val yStart = if (reverseY) 690 else 381
+                    val yEnd = if (reverseY) 381 else 690
+                    
                     var found: Point? = null
-                    for (y in 381..690 step stepY) {
+                    val yRange = if (yStart <= yEnd) (yStart..yEnd step stepY) else (yStart downTo yEnd step stepY)
+                    for (y in yRange) {
                         val ratio = (y - 381).toFloat() / (690 - 381)
-                        val startX = (170 + (625 - 170) * ratio).toInt()
-                        val endX = (1080 + (625 - 1080) * ratio).toInt()
-                        val checkResult = checkArea(startX, endX, y, stepX, baseType)
+                        val leftX = (170 + (625 - 170) * ratio).toInt()
+                        val rightX = (1080 + (625 - 1080) * ratio).toInt()
+                        val xStart = if (reverseX) rightX else leftX
+                        val xEnd = if (reverseX) leftX else rightX
+                        
+                        val checkResult = checkArea(xStart, xEnd, y, stepX, baseType)
                         if (checkResult != null) {
                             found = checkResult
                             break
@@ -128,7 +148,9 @@ object FindBuildPosition {
     }
 
     private suspend fun checkArea(startX: Int, endX: Int, y: Int, step: Int, baseType: BaseType): Point? {
-        for (x in startX..endX step step) {
+        // Support both ascending and descending X ranges
+        val xRange = if (startX <= endX) (startX..endX step step) else (startX downTo endX step step)
+        for (x in xRange) {
             moveWithDelay(x.toFloat(), y.toFloat())
             var greenTick = if (baseType == BaseType.Main) mainBaseFindBuildButton(type = BuildButtonType.Tick, duration = 120) else builderBaseFindBuildButton(type = BuildButtonType.Tick, duration = 120)
 
