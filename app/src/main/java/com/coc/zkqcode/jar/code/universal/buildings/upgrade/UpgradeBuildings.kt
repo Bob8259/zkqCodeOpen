@@ -32,6 +32,10 @@ enum class BaseType {
     Builder, Main
 }
 
+enum class BuildButtonType {
+    Tick, Cross
+}
+
 suspend fun upgradeBuildings(currentBase: BaseType): Boolean {
     upgradableBuildingsMap.keys.forEach { upgradableBuildingsMap[it] = false }
     var isNewBuildingDetected = false
@@ -142,7 +146,7 @@ private suspend fun buildOneNewBuildings(currentBase: BaseType): Boolean {
     TouchActions.tap(shopArrow.x - 50, shopArrow.y + 50, delayTime = 1500)
 
     // 4. Locate the confirmation button (Green Tick)
-    var targetTick = if (currentBase == BaseType.Main) mainBaseFindBuildButton(type = "Tick") else builderBaseFindBuildButton(type = "Tick")
+    var targetTick = if (currentBase == BaseType.Main) mainBaseFindBuildButton(type = BuildButtonType.Tick) else builderBaseFindBuildButton(type = BuildButtonType.Tick)
 
     // 5. If initial tick is missing, attempt to find a new position via the Red Cross
     if (targetTick == null) {
@@ -160,9 +164,11 @@ private suspend fun buildOneNewBuildings(currentBase: BaseType): Boolean {
         } else {
             // Handle standard building with retry logic
             for (i in 1..5) {
-                val currentTick = if (currentBase == BaseType.Main) mainBaseFindBuildButton(type = "Tick", duration = 500) else builderBaseFindBuildButton(type = "Tick", duration = 500)
+                val currentTick =
+                    if (currentBase == BaseType.Main) mainBaseFindBuildButton(type = BuildButtonType.Tick, duration = 500) else builderBaseFindBuildButton(type = BuildButtonType.Tick, duration = 500)
                 if (currentTick != null) {
                     ShowMessage("点击第 $i 次绿色按钮：${currentTick.x}, ${currentTick.y}")
+                    if (i > 1) zoomOrNot = true
                     TouchActions.tap(currentTick.x, currentTick.y, delayTime = 500)
                     if (currentBase == BaseType.Main && getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.INSTANT_UPGRADE.key)) {
                         val gemCost = detectInstantBuildCost()
@@ -183,10 +189,10 @@ private suspend fun buildOneNewBuildings(currentBase: BaseType): Boolean {
                     clickRightBottom(1)
                     delayWithMultiplier(500)
                     // Cleanup if tick disappears
-                    builderBaseFindBuildButton(type = "Cross")?.let { cross ->
+                    builderBaseFindBuildButton(type = BuildButtonType.Cross)?.let { cross ->
                         TouchActions.tap(cross.x, cross.y)
                     }
-                    mainBaseFindBuildButton(type = "Cross")?.let { cross ->
+                    mainBaseFindBuildButton(type = BuildButtonType.Cross)?.let { cross ->
                         TouchActions.tap(cross.x, cross.y)
                     }
                     break // Exit loop if button is no longer found
