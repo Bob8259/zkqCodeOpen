@@ -153,6 +153,45 @@ fun countPixelsInArea(
 }
 
 /**
+ * Counts green pixels within a specified rectangle in a capture result.
+ * Green color range: R in [10, 14], G in [245, 255], B in [10, 14]
+ */
+fun countGreenPixelsInArea(
+    result: ScreenCaptureManager.CaptureResult, x1: Int, y1: Int, x2: Int, y2: Int
+): Int {
+    val buf = result.buffer
+    val width = result.width
+    val height = result.height
+    val pixelStride = result.pixelStride
+    val rowStride = result.rowStride
+
+    val left = max(0, min(x1, x2))
+    val right = min(width - 1, max(x1, x2))
+    val top = max(0, min(y1, y2))
+    val bottom = min(height - 1, max(y1, y2))
+
+    var count = 0
+    for (y in top..bottom) {
+        val rowStart = y * rowStride
+        for (x in left..right) {
+            val offset = rowStart + x * pixelStride
+            if (offset + 2 >= buf.capacity()) continue
+
+            // RGBA_8888 format
+            val r = buf.get(offset).toInt() and 0xFF
+            val g = buf.get(offset + 1).toInt() and 0xFF
+            val b = buf.get(offset + 2).toInt() and 0xFF
+
+            // Check if pixel is green: R in [10, 14], G in [245, 255], B in [10, 14]
+            if (r in 10..14 && g in 245..255 && b in 10..14) {
+                count++
+            }
+        }
+    }
+    return count
+}
+
+/**
  * Cleans a raw building name:
  * - Removes all spaces
  * - Replaces OCR-misread prefixes ("斬", "靳", "鼾") with "新"
