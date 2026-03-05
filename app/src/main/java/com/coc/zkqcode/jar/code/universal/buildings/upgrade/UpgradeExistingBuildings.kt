@@ -1,6 +1,7 @@
 package com.coc.zkqcode.jar.code.universal.buildings.upgrade
 
 import com.coc.zkqcode.core.util.basic.ShowMessage
+import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndStop
 import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.ColorSchema
@@ -104,20 +105,32 @@ suspend fun upgradeAllExistingBuildings(buildings: List<String>, currentBase: Ba
 
                     // Create a ColorSchema with the same color pattern but different search area
                     val heroInsufficientResources = ColorSchema.parse(
-                        x1, 500, x2, 530,
-                        "7F88FF",
-                        "1|0|7F88FF,2|0|7F88FF,3|0|7F88FF,3|1|7F88FF,2|1|7F88FF,0|1|7F88FF,0|1|7F88FF,0|2|7F88FF,1|2|7F88FF",
-                        0, 0.97,
-                        "${building}资源不足"
+                        x1, 500, x2, 530, "7F88FF", "1|0|7F88FF,2|0|7F88FF,3|0|7F88FF,3|1|7F88FF,2|1|7F88FF,0|1|7F88FF,0|1|7F88FF,0|2|7F88FF,1|2|7F88FF", 0, 0.97, "${building}资源不足"
                     )
 
                     if (findMultiColors(schema = heroInsufficientResources) != null) {
                         ShowMessage("${building}资源不足，跳过")
                         break
                     }
+                    TouchActions.tap(x1 + 100, 500, delayTime = 500)//Upgrade Hero
+                    TouchActions.tap(902, 626, delayTime = 500)
+                    clickRightBottom(times = 3, delayTime = 200)
+                } else {
+                    // The unique logic for Dragon Duke
+                    TouchActions.swipe(1189, 354, 120, 345, delayTime = 300)
+                    delayWithMultiplier(200)
+                    val heroInsufficientResources = ColorSchema.parse(
+                        1020, 480, 1230, 530, "7F88FF", "1|0|7F88FF,2|0|7F88FF,3|0|7F88FF,3|1|7F88FF,2|1|7F88FF,0|1|7F88FF,0|1|7F88FF,0|2|7F88FF,1|2|7F88FF", 0, 0.97, "${building}资源不足"
+                    )
+                    if (findMultiColors(schema = heroInsufficientResources) != null) {
+                        ShowMessage("${building}资源不足，跳过")
+                        break
+                    }
+                    TouchActions.tap(1020 + 100, 480, delayTime = 500)//Upgrade Hero
+                    TouchActions.tap(902, 626, delayTime = 500)
+                    clickRightBottom(times = 3, delayTime = 200)
                 }
 
-                // TODO: Implement hero-specific upgrade logic for 飞龙公爵
 
             } else {
 
