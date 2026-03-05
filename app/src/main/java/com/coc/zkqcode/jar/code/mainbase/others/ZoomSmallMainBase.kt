@@ -10,6 +10,6 @@ suspend fun zoomSmallMainBase(isForBuild: Boolean = false) {
     swipe(218, 523, 939, 162)
     if (isForBuild) {
         delayWithMultiplier(200)
-        swipe(690, 550, 690, 710, delayTime = 600)
+        swipe(690, 550, 590, 710, delayTime = 600)
     }
 }

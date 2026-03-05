@@ -151,7 +151,7 @@ private suspend fun buildOneNewBuildings(currentBase: BaseType): Boolean {
     // 5. If initial tick is missing, attempt to find a new position via the Red Cross
     if (targetTick == null) {
         ShowMessage("建造失败，尝试寻找空位")
-        targetTick = FindBuildPosition.tryToFindBuildPosition(currentBase)
+        targetTick = tryToFindBuildPosition(currentBase)
     }
 
     // 6. Execute the building logic if a valid tick position is identified
