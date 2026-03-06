@@ -4,7 +4,6 @@ import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 
-object BuilderBaseTutorial {
     suspend fun builderBaseTutorial(): Boolean {
         // 1. Upgrade Night TH
         listOf(
@@ -51,4 +50,3 @@ object BuilderBaseTutorial {
 
         return false
     }
-}

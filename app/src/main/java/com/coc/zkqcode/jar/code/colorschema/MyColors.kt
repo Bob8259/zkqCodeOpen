@@ -36,4 +36,15 @@ object MyColors : IWorkerColors by WorkerColors, IUIColors by UIColors, IFeature
     IBuilderBaseTrainingColors by BuilderBaseTrainingColors, IBuilderBaseUpgradeColors by BuilderBaseUpgradeColors, IBuilderBaseResearchColors by BuilderBaseResearchColors,
     IBuilderBaseAttackColors by BuilderBaseAttackColors, IUniversalUpgradeColors by UniversalUpgradeColors, IMainBaseUpgradeColors by MainBaseUpgradeColors,
     IMainBaseResearchColors by MainBaseResearchColors {
+
+    //Main Base Research Colors
+    //TODO
+    //Clan Capital Tutorial Colors
+    val CapitalOldMan: ColorSchema = ColorSchema.parse(
+        110, 397, 256, 692, "17406F", "29|0|887D7D,58|0|858289,87|0|8F8E95,116|0|323D61,0|147|7C7F83,29|147|9DA3AE,58|147|9FA6B1,87|147|A7B0BE,116|147|0F2749", 0, 0.9, "都城老头"
+    )
+
+    val ArrowPointingDown: ColorSchema = ColorSchema.parse(
+        201, 56, 1146, 611, "24ABFE", "11|0|20B5FD,22|0|20BAFD,33|0|20B5FE,44|0|24A9FE,0|32|4ADDF4,11|32|41D9F4,22|32|3DD6F4,33|32|3BD4F4,44|32|38CFF5", 0, 0.95, "向下箭头"
+    )
 }

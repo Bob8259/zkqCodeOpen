@@ -5,14 +5,10 @@ import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndStop
 import com.coc.zkqcode.jar.code.builderbase.playBuilderBase
-import com.coc.zkqcode.jar.code.colorschema.MyColors
-import com.coc.zkqcode.jar.code.mainbase.others.mainBaseRemoveObstacles
-import com.coc.zkqcode.jar.code.mainbase.upgrade.mainBaseFindBuildButton
 import com.coc.zkqcode.jar.code.universal.InGamesVars
 import com.coc.zkqcode.jar.code.universal.buildings.upgrade.BaseType
+import com.coc.zkqcode.jar.code.universal.buildings.upgrade.detectInstantBuildCost
 import com.coc.zkqcode.jar.code.universal.buildings.upgrade.upgradeBuildings
-import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
-import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.smalltools.readMemory
 import com.coc.zkqcode.jar.ui.schema.Schema
@@ -77,10 +73,10 @@ object MainScript {
     private suspend fun runTestCode() {
         while (true) {
             ShowMessage("测试代码开始")
-//            enterMainScreen()
+            enterMainScreen()
             delayWithMultiplier(1000)
-//            upgradeBuildings(BaseType.Main)
-            ShowMessage(findMultiColors(schema = MyColors.TestLevel).toString())
+            upgradeBuildings(BaseType.Main)
+//            ShowMessage(detectInstantBuildCost().toString())
             delayWithMultiplier(100)
         }
     }
