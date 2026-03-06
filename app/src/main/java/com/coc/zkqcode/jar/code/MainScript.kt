@@ -77,10 +77,11 @@ object MainScript {
     private suspend fun runTestCode() {
         while (true) {
             ShowMessage("测试代码开始")
-            enterMainScreen()
+//            enterMainScreen()
             delayWithMultiplier(1000)
-            upgradeBuildings(BaseType.Main)
-            delayWithMultiplier(1000)
+//            upgradeBuildings(BaseType.Main)
+            ShowMessage(findMultiColors(schema = MyColors.TestLevel).toString())
+            delayWithMultiplier(100)
         }
     }
 

@@ -52,4 +52,9 @@ object MyColors : IWorkerColors by WorkerColors, IUIColors by UIColors, IFeature
     val MainBaseInsufficientResources: ColorSchema = ColorSchema.parse(
         798, 594, 994, 668, "7F88FF", "1|0|7F88FF,2|0|7F88FF,3|0|7F88FF,3|1|7F88FF,2|1|7F88FF,0|1|7F88FF,0|1|7F88FF,0|2|7F88FF,1|2|7F88FF", 0, 0.97, "夜世界升级资源不足"
     )
+
+    // Main Base Research colors
+    val TestLevel: ColorSchema = ColorSchema.parse(
+        196, 578, 250, 624, "3F3F3F", "3|0|3F3F3F,7|0|FFFFFF,11|0|3F3F3F,14|0|3F3F3F,0|8|333233,3|8|323232,7|8|FFFFFF,11|8|303232,14|8|323232", 0, 0.9, "1级"
+    )
 }
