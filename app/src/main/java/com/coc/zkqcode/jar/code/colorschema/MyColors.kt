@@ -24,37 +24,16 @@ import com.coc.zkqcode.jar.code.colorschema.colorpackage.builderbase.BuilderBase
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.builderbase.BuilderBaseUpgradeColors
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.UIColors
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.WorkerColors
+import com.coc.zkqcode.jar.code.colorschema.colorpackage.IUniversalUpgradeColors
+import com.coc.zkqcode.jar.code.colorschema.colorpackage.UniversalUpgradeColors
+import com.coc.zkqcode.jar.code.colorschema.colorpackage.mainbase.IMainBaseUpgradeColors
+import com.coc.zkqcode.jar.code.colorschema.colorpackage.mainbase.MainBaseUpgradeColors
+import com.coc.zkqcode.jar.code.colorschema.colorpackage.mainbase.IMainBaseResearchColors
+import com.coc.zkqcode.jar.code.colorschema.colorpackage.mainbase.MainBaseResearchColors
 
 object MyColors : IWorkerColors by WorkerColors, IUIColors by UIColors, IFeatureColors by FeatureColors, IMainBaseTutorial by MainBaseTutorial, IBuilderBaseTutorial by BuilderBaseTutorial,
     IMainBaseTraining by MainBaseTraining, IBuilderBaseResourcesColors by BuilderBaseResourcesColors, IBuilderBaseObstaclesRemovalColors by BuilderBaseObstaclesRemovalColors,
     IBuilderBaseTrainingColors by BuilderBaseTrainingColors, IBuilderBaseUpgradeColors by BuilderBaseUpgradeColors, IBuilderBaseResearchColors by BuilderBaseResearchColors,
-    IBuilderBaseAttackColors by BuilderBaseAttackColors {
-    //The followings are Builder Base Attack colors
-    val BuilderBaseBarbarian: ColorSchema = ColorSchema.parse(
-        193, 585, 1261, 623, "FF763A", "7|0|FF763A,15|0|FF773B,23|0|FF783C,30|0|FF793C,0|6|FF773A,7|6|FF793C,15|6|FF7B3E,23|6|FF7D40,30|6|FF7E41", 0, 0.9, "夜世界野蛮人"
-    )
-
-    //The followings are Universal Upgrade Colors
-    val UpgradeGemIcon: ColorSchema = ColorSchema.parse(
-        189, 501, 1117, 625, "7AF5D9", "6|0|81F9DE,12|0|8AFCE4,17|0|92FFEB,23|0|9CFFF1,0|13|8FFBDC,6|13|81F8D2,12|13|78F8CF,17|13|78FBD5,23|13|67E3BF", 0, 0.93, "升级宝石标志"
-    )
-    val UpgradeGemIcon2: ColorSchema = ColorSchema.parse(
-        189, 501, 1117, 625, "50D9A3", "5|0|77F5DA,10|0|7EF8DF,15|0|87FCE7,20|0|8FFFED,0|12|8CFADE,5|12|92FDE4,10|12|7EF7D3,15|12|87FCDD,20|12|79FCDA", 0, 0.93, "升级宝石标志2"
-    )
-    val UpgradeGemIcon3: ColorSchema = ColorSchema.parse(
-        189, 501, 1117, 625, "50D9A3", "5|0|77F5DA,10|0|7EF8DF,15|0|87FCE7,20|0|8FFFED,0|12|8CFADE,5|12|92FDE4,10|12|7EF7D3,15|12|87FCDD,20|12|79FCDA", 0, 0.93, "升级宝石标志8按钮"
-    )
-
-    // The followings are Main Base Upgrade Colors
-    val MainBaseWallInShop: ColorSchema = ColorSchema.parse(
-        146, 404, 1238, 449, "669CC7", "3|0|5687AB,6|0|6BC0FF,9|0|5698C9,12|0|4987C4,0|12|3A5668,3|12|2F4457,6|12|36516E,9|12|3A5879,12|12|5791BC", 0, 0.9, "商店内部城墙"
-    )
-    val MainBaseInsufficientResources: ColorSchema = ColorSchema.parse(
-        798, 594, 994, 668, "7F88FF", "1|0|7F88FF,2|0|7F88FF,3|0|7F88FF,3|1|7F88FF,2|1|7F88FF,0|1|7F88FF,0|1|7F88FF,0|2|7F88FF,1|2|7F88FF", 0, 0.97, "夜世界升级资源不足"
-    )
-
-    // Main Base Research colors
-    val TestLevel: ColorSchema = ColorSchema.parse(
-        196, 578, 250, 624, "3F3F3F", "3|0|3F3F3F,7|0|FFFFFF,11|0|3F3F3F,14|0|3F3F3F,0|8|333233,3|8|323232,7|8|FFFFFF,11|8|303232,14|8|323232", 0, 0.9, "1级"
-    )
+    IBuilderBaseAttackColors by BuilderBaseAttackColors, IUniversalUpgradeColors by UniversalUpgradeColors, IMainBaseUpgradeColors by MainBaseUpgradeColors,
+    IMainBaseResearchColors by MainBaseResearchColors {
 }
