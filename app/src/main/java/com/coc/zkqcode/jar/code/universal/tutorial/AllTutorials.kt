@@ -27,8 +27,9 @@ object AllTutorials {
             val remainingSeconds = ((durationMillis - elapsed) / 1000).toInt()
             ShowMessage("账户${InGamesVars.currentAccountNumber}\n教程中，还剩${remainingSeconds}秒")
 
-            if(MainBaseTutorial.mainBaseTutorial()) break
-            if(BuilderBaseTutorial.builderBaseTutorial()) break
+            if (mainBaseTutorial()) break
+            if (builderBaseTutorial()) break
+
             // Maintenance checks
             checkReconnections()
             delayWithMultiplier(200)
@@ -44,7 +45,8 @@ object AllTutorials {
             MyColors.SpeakingVillager,
             MyColors.SpeakingVillager2,
             MyColors.EnterAge,
-            MyColors.BuilderMaster
+            MyColors.BuilderMaster,
+            MyColors.CapitalOldMan
         )
 
         val screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult
