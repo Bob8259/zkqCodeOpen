@@ -15,7 +15,7 @@ object MainBaseTroopsAndSpells {
     val TROOP_WIZARD = SettingDef("troop_wizard", "法师", 1, "MAIN_BASE_TROOPS_AND_SPELLS")
     val TROOP_HEALER = SettingDef("troop_healer", "天使", 1, "MAIN_BASE_TROOPS_AND_SPELLS")
     val TROOP_DRAGON = SettingDef("troop_dragon", "飞龙", 1, "MAIN_BASE_TROOPS_AND_SPELLS")
-    val TROOP_PEKKA = SettingDef("troop_pekka", "皮卡", 1, "MAIN_BASE_TROOPS_AND_SPELLS")
+    val TROOP_PEKKA = SettingDef("troop_pekka", "皮卡超人", 1, "MAIN_BASE_TROOPS_AND_SPELLS")
     val TROOP_BABY_DRAGON = SettingDef("troop_baby_dragon", "飞龙宝宝", 1, "MAIN_BASE_TROOPS_AND_SPELLS")
     val TROOP_MINER = SettingDef("troop_miner", "矿工", 1, "MAIN_BASE_TROOPS_AND_SPELLS")
     val TROOP_ELECTRO_DRAGON = SettingDef("troop_electro_dragon", "雷电飞龙", 1, "MAIN_BASE_TROOPS_AND_SPELLS")
@@ -48,7 +48,7 @@ object MainBaseTroopsAndSpells {
     // Dark Elixir Troops
     val TROOP_MINION = SettingDef("troop_minion", "亡灵", 1, "MAIN_BASE_TROOPS_AND_SPELLS")
     val TROOP_HOG_RIDER = SettingDef("troop_hog_rider", "野猪骑士", 1, "MAIN_BASE_TROOPS_AND_SPELLS")
-    val TROOP_VALKYRIE = SettingDef("troop_valkyrie", "瓦基里", 1, "MAIN_BASE_TROOPS_AND_SPELLS")
+    val TROOP_VALKYRIE = SettingDef("troop_valkyrie", "瓦基里武神", 1, "MAIN_BASE_TROOPS_AND_SPELLS")
     val TROOP_GOLEM = SettingDef("troop_golem", "戈仑石人", 1, "MAIN_BASE_TROOPS_AND_SPELLS")
     val TROOP_WITCH = SettingDef("troop_witch", "女巫", 1, "MAIN_BASE_TROOPS_AND_SPELLS")
     val TROOP_LAVA_HOUND = SettingDef("troop_lava_hound", "熔岩猎犬", 1, "MAIN_BASE_TROOPS_AND_SPELLS")
@@ -56,7 +56,7 @@ object MainBaseTroopsAndSpells {
     val TROOP_ICE_GOLEM = SettingDef("troop_ice_golem", "戈仑冰人", 1, "MAIN_BASE_TROOPS_AND_SPELLS")
     val TROOP_HEADHUNTER = SettingDef("troop_headhunter", "英雄猎手", 1, "MAIN_BASE_TROOPS_AND_SPELLS")
     val TROOP_APPRENTICE_WARDEN =
-        SettingDef("troop_apprentice_warden", "小守护者", 1, "MAIN_BASE_TROOPS_AND_SPELLS")
+        SettingDef("troop_apprentice_warden", "守护者学徒", 1, "MAIN_BASE_TROOPS_AND_SPELLS")
     val TROOP_DRUID = SettingDef("troop_druid", "德鲁伊", 1, "MAIN_BASE_TROOPS_AND_SPELLS")
     val TROOP_FURNACE = SettingDef("troop_furnace", "烈焰熔炉", 1, "MAIN_BASE_TROOPS_AND_SPELLS")
 

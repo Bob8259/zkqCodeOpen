@@ -44,7 +44,13 @@ object MyColors : IUIColors by UIColors, IFeatureColors by FeatureColors, IMainB
         110, 397, 256, 692, "17406F", "29|0|887D7D,58|0|858289,87|0|8F8E95,116|0|323D61,0|147|7C7F83,29|147|9DA3AE,58|147|9FA6B1,87|147|A7B0BE,116|147|0F2749", 0, 0.9, "都城老头"
     )
 
+    // UI Colors
     val ArrowPointingDown: ColorSchema = ColorSchema.parse(
         116, 92, 1124, 620, "26ACFF", "7|0|24B9FF,14|0|24BCFE,21|0|25B6FE,28|0|26A7FE,0|21|0FADFD,7|21|0AB0FC,14|21|0AB2FC,21|21|0AAEFB,28|21|10ADFE", 0, 0.92, "向下箭头"
+    )
+
+    //Test colors
+    val test2: ColorSchema = ColorSchema.parse(
+        198, 430, 1023, 620, "FBFBFB", "2|-2|F9F9F9,3|-2|E5E5E5,6|-1|F5F5F5,7|0|FEFEFE,6|2|FDFDFD,1|6|FAFAFA,1|8|F6F6F6,3|8|F6F6F6,5|8|F6F6F6", 0, 0.9, "22222"
     )
 }
