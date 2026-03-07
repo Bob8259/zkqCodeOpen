@@ -26,4 +26,35 @@ object MainBaseWorkerAndResearch {
         BugReporter.takeScreenshot("Main_Base_Worker_Not_Detected")
         return WorkerInfo(0, 0)
     }
+
+    /**
+     * Detects if research is available in the Main Base.
+     * @return true if research is available, false otherwise (including when Goblin Researcher is detected).
+     */
+    suspend fun detectResearch(): Boolean {
+        // First check for Goblin Researcher - if detected, return false
+        if (findMultiColors(schema = MyColors.GoblinResearcher) != null) {
+            ShowMessage("检测到哥布林研究人员，无法进行研究")
+            return false
+        }
+
+        // Then detect research icon and count researchers
+        val research = findMultiColors(schema = MyColors.ResearchIcon)
+        if (research != null) {
+            // Define the crop region for the researcher number text
+            val startX = research.x - 500
+            val startY = 0
+            val endX = research.x + 120
+            val endY = 70
+
+            val results = TextRecognizer.recognize(startX, startY, endX, endY, useChinese = false, applyPreprocess = false)
+            val combinedText = results.joinToString("") { it.text }
+            val researcherInfo = parseWorkerInfo(combinedText)
+            ShowMessage("主世界研究数量：${researcherInfo.available}/${researcherInfo.total}")
+            return researcherInfo.available > 0
+        }
+        ShowMessage("未检测到主世界研究，已将错误截图保存到/sdcard/zkqFiles/bugReporter\n请反馈给作者")
+        BugReporter.takeScreenshot("Main_Base_Research_Not_Detected")
+        return false
+    }
 }
