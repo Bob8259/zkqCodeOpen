@@ -7,14 +7,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.coc.zkqcode.core.data.websocket.ServerActions
 import com.coc.zkqcode.interfaces.MainCode
+import java.util.concurrent.ConcurrentHashMap
 
 object GlobalVars {
     // Basic components
     var serverActions by mutableStateOf<ServerActions?>(null)
-    var pluginUI: MainCode? = null
-    var serverPath: String = ""
+    @Volatile var pluginUI: MainCode? = null
+    @Volatile var serverPath: String = ""
 
-    var isConfigLoaded: Boolean = false
+    @Volatile var isConfigLoaded: Boolean = false
 
     // Auto-run features
     var isAutoRunEnabled by mutableStateOf(true)
@@ -26,13 +27,13 @@ object GlobalVars {
     var absorbYPercentage by mutableIntStateOf(50) // Percentage of Y axis
     var updateWindowPosition by mutableStateOf(false)
 
-    // Configuration States
-    val configStates = mutableMapOf<String, MutableState<String>>()
+    // Configuration States - Thread-safe map for concurrent access from UI and background threads
+    val configStates = ConcurrentHashMap<String, MutableState<String>>()
 
     // IME management
-    var defaultInputMethod: String? = null
+    @Volatile var defaultInputMethod: String? = null
 
     //Running state management
     var isPlaying = mutableStateOf(true)
-    var isSwitchingAccount = false
+    @Volatile var isSwitchingAccount = false
 }
