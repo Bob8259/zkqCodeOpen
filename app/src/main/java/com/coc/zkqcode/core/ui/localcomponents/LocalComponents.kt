@@ -31,13 +31,14 @@ import kotlinx.coroutines.delay
 
 @Composable
 fun LocalCustomAlertDialog(
+    popupPositionProvider: PopupPositionProvider = WindowCenterPositionProvider(),
     onDismissRequest: () -> Unit,
     title: @Composable (() -> Unit)? = null,
     text: @Composable (() -> Unit)? = null,
     confirmButton: @Composable () -> Unit
 ) {
     Popup(
-        popupPositionProvider = WindowCenterPositionProvider(),
+        popupPositionProvider = popupPositionProvider,
         onDismissRequest = onDismissRequest,
         properties = PopupProperties(focusable = true)
     ) {

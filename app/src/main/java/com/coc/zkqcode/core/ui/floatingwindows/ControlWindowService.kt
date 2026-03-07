@@ -120,25 +120,27 @@ class ControlWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner 
 
             setContent {
                 var currentX by remember { mutableIntStateOf(params.x) }
+                var currentY by remember { mutableIntStateOf(params.y) }
                 ControlWindowContainer(
                     currentX = currentX,
+                    currentY = currentY,
                     onPositionUpdate = { dx, dy ->
                         params.x += dx
                         params.y += dy
-                        currentX =
-                            params.x //do not remove this. The floating window won't move without this line
+                        currentX = params.x
+                        currentY = params.y
                         windowManager.updateViewLayout(this, params)
                     },
                     onSnapToEdge = { finalX ->
                         params.x = finalX
-                        currentX =
-                            params.x //do not remove this. The floating window won't move without this line
+                        currentX = params.x
                         windowManager.updateViewLayout(this, params)
                     },
                     onAutoPosition = { newX, newY ->
                         params.x = newX
                         params.y = newY
                         currentX = params.x
+                        currentY = params.y
                         windowManager.updateViewLayout(this, params)
                     }
                 )
@@ -151,8 +153,8 @@ class ControlWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner 
     @Composable
     private fun ControlWindowContainer(
         currentX: Int,
+        currentY: Int,
         onPositionUpdate: (Int, Int) -> Unit,
-
         onSnapToEdge: (Int) -> Unit,
         onAutoPosition: (Int, Int) -> Unit
     ) {
@@ -201,6 +203,10 @@ class ControlWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner 
             ControlWindow(
                 externalInteractionCount = interactionCount,
                 isAtRightSide = isAtRightSide,
+                currentX = currentX,
+                currentY = currentY,
+                screenWidth = screenWidth,
+                screenHeight = screenHeight,
                 onOpenMainUI = {
                     val intent =
                         Intent(this@ControlWindowService, UIWindowService::class.java).apply {

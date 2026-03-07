@@ -27,7 +27,12 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.IntRect
+import androidx.compose.ui.unit.IntSize
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.PopupPositionProvider
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.ui.localcomponents.LocalCustomAlertDialog
 import com.coc.zkqcode.core.util.basic.ShowMessage
@@ -66,6 +71,10 @@ enum class ControlState {
 fun ControlWindow(
     externalInteractionCount: Int = 0,
     isAtRightSide: Boolean = false,
+    currentX: Int = 0,
+    currentY: Int = 0,
+    screenWidth: Int = 0,
+    screenHeight: Int = 0,
     onOpenMainUI: () -> Unit = {},
     onSwitchAccount: () -> Unit = {},
     onDragStart: () -> Unit = {},
@@ -296,6 +305,29 @@ fun ControlWindow(
 
     if (showExitConfirmation) {
         LocalCustomAlertDialog(
+            popupPositionProvider = object : PopupPositionProvider {
+                override fun calculatePosition(
+                    anchorBounds: IntRect,
+                    windowSize: IntSize,
+                    layoutDirection: LayoutDirection,
+                    popupContentSize: IntSize
+                ): IntOffset {
+                    // anchorBounds is the position of the ControlWindow icons relative to the floating window
+                    // windowSize is the size of the floating window (which is WRAP_CONTENT, so it fits the icons)
+                    
+                    // We want to center the popup on the SCREEN
+                    // Popup is relative to the anchor (the top-left of the Row in ControlWindow)
+                    // The anchor's screen position is (currentX, currentY)
+                    
+                    val screenCenterX = screenWidth / 2
+                    val screenCenterY = screenHeight / 2
+                    
+                    val targetX = screenCenterX - currentX - popupContentSize.width / 2
+                    val targetY = screenCenterY - currentY - popupContentSize.height / 2
+                    
+                    return IntOffset(targetX, targetY)
+                }
+            },
             onDismissRequest = { showExitConfirmation = false },
             title = {
                 Text(
