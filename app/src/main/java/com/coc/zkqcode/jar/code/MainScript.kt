@@ -6,6 +6,7 @@ import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndStop
 import com.coc.zkqcode.jar.code.builderbase.playBuilderBase
 import com.coc.zkqcode.jar.code.colorschema.MyColors
+import com.coc.zkqcode.jar.code.findAllResearchColors
 import com.coc.zkqcode.jar.code.mainbase.others.checkNewBuildingArrows
 import com.coc.zkqcode.jar.code.universal.InGamesVars
 import com.coc.zkqcode.jar.code.universal.buildings.upgrade.BaseType
@@ -75,9 +76,9 @@ object MainScript {
 
     private suspend fun runTestCode() {
         while (true) {
-            enterMainScreen()
+//            enterMainScreen()
             delayWithMultiplier(1000)
-//            delayWithMultiplier(1000000)
+            findAllResearchColors()
         }
     }
 

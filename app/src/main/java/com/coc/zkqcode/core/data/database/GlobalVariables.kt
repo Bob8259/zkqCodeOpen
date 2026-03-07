@@ -28,7 +28,7 @@ object GlobalVars {
     var updateWindowPosition by mutableStateOf(false)
 
     // Configuration States - Thread-safe map for concurrent access from UI and background threads
-    val configStates = ConcurrentHashMap<String, MutableState<String>>()
+    val configStates: MutableMap<String, MutableState<String>> = ConcurrentHashMap()
 
     // IME management
     @Volatile var defaultInputMethod: String? = null
