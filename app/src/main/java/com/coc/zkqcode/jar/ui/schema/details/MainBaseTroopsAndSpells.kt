@@ -61,7 +61,7 @@ object MainBaseTroopsAndSpells {
     val TROOP_FURNACE = SettingDef("troop_furnace", "烈焰熔炉", 1, "MAIN_BASE_TROOPS_AND_SPELLS")
 
     // Siege Machines
-    val SIEGE_WALL_WRECKER = SettingDef("siege_wall_wrecker", "攻城攻城车", 1, "MAIN_BASE_TROOPS_AND_SPELLS")
+    val SIEGE_WALL_WRECKER = SettingDef("siege_wall_wrecker", "攻城战车", 1, "MAIN_BASE_TROOPS_AND_SPELLS")
     val SIEGE_BATTLE_BLIMP = SettingDef("siege_battle_blimp", "攻城飞艇", 1, "MAIN_BASE_TROOPS_AND_SPELLS")
     val SIEGE_STONE_SLAMMER = SettingDef("siege_stone_slammer", "攻城气球", 1, "MAIN_BASE_TROOPS_AND_SPELLS")
     val SIEGE_BARRACKS = SettingDef("siege_barracks", "攻城训练营", 1, "MAIN_BASE_TROOPS_AND_SPELLS")
