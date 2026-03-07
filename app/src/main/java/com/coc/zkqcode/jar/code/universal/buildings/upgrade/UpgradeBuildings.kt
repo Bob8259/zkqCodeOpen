@@ -224,9 +224,10 @@ private suspend fun tryToBatchBuildWalls(x: Int, y: Int, currentBase: BaseType) 
     val shouldSwipe = centerY >= 335
     if (shouldSwipe) {
         // Swipe up to avoid overlapping.
-        TouchActions.swipe(280, 480, 280, 320, delayTime = 600)//Swiped for 200 pixels here, so in the trajectory calculate, the offset for y should be 150
+        TouchActions.swipe(280, 480, 280, 320, delayTime = 600)//Swiped for 160 pixels here, so in the trajectory calculate, the offset for y should be 150
     }
     // Locate the arrow element using YOLO detector
+    delayWithMultiplier(200)
     val screenBuffer = ScreenCaptureManager.capture(asBitmap = true) as? Bitmap ?: logAndStop("in BuilderBaseUpgradeBuildings, screen capture failed.")
     val detections = YoloDetector.detect(screenBuffer, modelType = "walls-detect")
     val batchBuildWallsArrow = detections.maxByOrNull { it.score }
