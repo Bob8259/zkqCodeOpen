@@ -13,6 +13,7 @@ import com.coc.zkqcode.jar.code.universal.clickRightBottom
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
+import com.coc.zkqcode.jar.code.universal.smalltools.StorageKeys
 import com.coc.zkqcode.jar.code.universal.smalltools.checkReconnections
 import com.coc.zkqcode.jar.code.universal.smalltools.getBooleanConfigRuntime
 import com.coc.zkqcode.jar.code.universal.smalltools.getConfigRuntime
@@ -264,7 +265,7 @@ private suspend fun builderBaseTrainTroops() {
 }
 
 suspend fun builderBaseTrainWithConditions(): Boolean {
-    val storageKey = "BuilderBaseTrainTroops${InGamesVars.currentAccountNumber}"
+    val storageKey = StorageKeys.withAccountNumber(StorageKeys.BUILDER_BASE_TRAIN_TROOPS, InGamesVars.currentAccountNumber)
     val lastTrainingTime = readMemory(storageKey).toIntOrNull()
 
     // Use Calendar only once to retrieve the current day of the month

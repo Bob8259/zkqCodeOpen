@@ -10,12 +10,13 @@ import com.coc.zkqcode.jar.code.universal.InGamesVars
 import com.coc.zkqcode.jar.code.universal.clickRightBottom
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
+import com.coc.zkqcode.jar.code.universal.smalltools.StorageKeys
 import com.coc.zkqcode.jar.code.universal.smalltools.readMemory
 import com.coc.zkqcode.jar.code.universal.smalltools.writeMemory
 import java.util.Calendar
 
 suspend fun clickOttosOutPost(): Boolean {
-    val storageKey = "ClickOttosPost${InGamesVars.currentAccountNumber}"
+    val storageKey = StorageKeys.withAccountNumber(StorageKeys.CLICK_OTTOS_POST, InGamesVars.currentAccountNumber)
     val lastClickDay = readMemory(storageKey).toIntOrNull()
     val currentDay = Calendar.getInstance().get(Calendar.DAY_OF_YEAR)
 

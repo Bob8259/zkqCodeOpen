@@ -5,11 +5,12 @@ import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndStop
 import com.coc.zkqcode.jar.code.builderbase.playBuilderBase
+import com.coc.zkqcode.jar.code.mainbase.others.checkNewBuildingArrows
 import com.coc.zkqcode.jar.code.universal.InGamesVars
 import com.coc.zkqcode.jar.code.universal.buildings.upgrade.BaseType
-import com.coc.zkqcode.jar.code.universal.buildings.upgrade.detectInstantBuildCost
 import com.coc.zkqcode.jar.code.universal.buildings.upgrade.upgradeBuildings
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
+import com.coc.zkqcode.jar.code.universal.smalltools.StorageKeys
 import com.coc.zkqcode.jar.code.universal.smalltools.readMemory
 import com.coc.zkqcode.jar.ui.schema.Schema
 import kotlinx.coroutines.currentCoroutineContext
@@ -26,7 +27,7 @@ object MainScript {
     suspend fun runMainScript() {
         while (currentCoroutineContext().isActive) {
             // 1. Initialize/update local memory state
-            val startAccount = readMemory("accountNumber").toIntOrNull() ?: 1
+            val startAccount = readMemory(StorageKeys.ACCOUNT_NUMBER).toIntOrNull() ?: 1
             val accountTotal = getConfigOrStop(Schema.GLOBAL_SETTINGS.ACCOUNT_COUNT.key).toInt()
 
             // 2. Find the first enabled account
@@ -50,7 +51,7 @@ object MainScript {
 
                 // Test code
                 runTestCode()
-                if (!enterMainScreen()) {
+                if (!enterMainScreen(true)) {
                     ShowMessage("进入游戏失败")
                     delay(500)
                     break // Break inner loop and recheck account status
@@ -76,7 +77,7 @@ object MainScript {
             enterMainScreen()
             delayWithMultiplier(1000)
             upgradeBuildings(BaseType.Main)
-//            ShowMessage(detectInstantBuildCost().toString())
+
             delayWithMultiplier(100)
         }
     }

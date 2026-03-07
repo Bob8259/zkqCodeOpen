@@ -9,6 +9,7 @@ import com.coc.zkqcode.jar.code.universal.recognizer.recognizeMyResources
 import com.coc.zkqcode.jar.code.universal.remove.enterEditMode
 import com.coc.zkqcode.jar.code.universal.remove.removeAllBuildings
 import com.coc.zkqcode.jar.code.universal.remove.removeObstacles
+import com.coc.zkqcode.jar.code.universal.smalltools.StorageKeys
 import com.coc.zkqcode.jar.code.universal.smalltools.readMemory
 import com.coc.zkqcode.jar.code.universal.smalltools.writeMemory
 import java.util.Calendar
@@ -16,7 +17,7 @@ import java.util.Calendar
 suspend fun builderBaseRemoveObstacles(): Boolean {
     val worker = BuilderBaseWorkerAndResearch.detectWorkerNumber()
     val resources = recognizeMyResources()
-    val storageKey = "BuilderBaseRemoveObstacles${InGamesVars.currentAccountNumber}"
+    val storageKey = StorageKeys.withAccountNumber(StorageKeys.BUILDER_BASE_REMOVE_OBSTACLES, InGamesVars.currentAccountNumber)
     val lastCleaningTime = readMemory(storageKey).toIntOrNull()
     val currentDay = Calendar.getInstance().get(Calendar.DAY_OF_YEAR)
 
