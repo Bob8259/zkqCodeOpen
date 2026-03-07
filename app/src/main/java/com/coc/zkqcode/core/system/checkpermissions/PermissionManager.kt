@@ -38,7 +38,7 @@ object PermissionManager {
             // 2.6 Enable accessibility service
             AccessibilityPermissionHelper.enableAccessibilityWithRoot(
                 context.packageName,
-                "com.coc.zkqcode.utils.accessibility.MyAccessibilityService"
+                "com.coc.zkqcode.core.system.accessibility.MyAccessibilityService"
             )
 
             // 3. Check if permissions are actually granted (pm grant may not work for overlay on some systems)

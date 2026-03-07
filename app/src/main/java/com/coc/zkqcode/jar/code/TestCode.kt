@@ -2,14 +2,19 @@ package com.coc.zkqcode.jar.code
 
 import android.graphics.Bitmap
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
+import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
+import com.coc.zkqcode.jar.code.colorschema.ColorSchema
 import com.coc.zkqcode.jar.code.colorschema.MyColors
+import com.coc.zkqcode.jar.code.colorschema.colorpackage.mainbase.MainBaseResearchColors
+import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import java.io.File
 import java.io.FileOutputStream
+import kotlin.reflect.full.memberProperties
 
 //These code are for test only.
-suspend fun testScreenShot() {
+suspend fun takeScreenShotForUpgradeCost() {
     val upgradeGemIcon = findMultiColorsUntil(schemas = listOf(MyColors.UpgradeGemIcon, MyColors.UpgradeGemIcon2, MyColors.UpgradeGemIcon3), duration = 500)
     if (upgradeGemIcon != null) {
         val startX = upgradeGemIcon.x - 80
@@ -49,5 +54,37 @@ suspend fun testScreenShot() {
             }
         }
     }
+}
 
+suspend fun findAllResearchColors() {
+    val foundColors = mutableListOf<String>()
+    val notFoundColors = mutableListOf<String>()
+    
+    val properties = MainBaseResearchColors::class.memberProperties
+        .filter { it.returnType.classifier == ColorSchema::class }
+    
+    ShowMessage("开始查找所有研究颜色，共 ${properties.size} 个")
+    delayWithMultiplier(500)
+    
+    for (property in properties) {
+        val schema = property.get(MainBaseResearchColors) as ColorSchema
+        val result = findMultiColors(schema = schema)
+        
+        if (result != null) {
+            foundColors.add(schema.name ?: property.name)
+        } else {
+            notFoundColors.add(schema.name ?: property.name)
+        }
+        
+        delayWithMultiplier(100)
+    }
+    
+    val message = buildString {
+        append("已找到 (${foundColors.size}):\n")
+        foundColors.forEach { append("  $it\n") }
+        append("\n未找到 (${notFoundColors.size}):\n")
+        notFoundColors.forEach { append("  $it\n") }
+    }
+    
+    ShowMessage(message)
 }

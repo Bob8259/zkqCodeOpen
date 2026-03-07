@@ -98,7 +98,7 @@ tasks.configureEach {
 
 // Define a standalone task for deployment
 tasks.register<Exec>("buildJar") {
-    group = "custom"
+    group = "build"
     description = "Compile and package UI plugin into the Assets directory"
 
     // Ensure the latest class files are compiled before running this task
