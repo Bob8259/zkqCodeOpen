@@ -18,4 +18,5 @@ object UniversalUpgradeColors : IUniversalUpgradeColors {
     override val UpgradeGemIcon3: ColorSchema = ColorSchema.parse(
         189, 501, 1117, 625, "50D9A3", "5|0|77F5DA,10|0|7EF8DF,15|0|87FCE7,20|0|8FFFED,0|12|8CFADE,5|12|92FDE4,10|12|7EF7D3,15|12|87FCDD,20|12|79FCDA", 0, 0.93, "升级宝石标志8按钮"
     )
+
 }

@@ -14,7 +14,6 @@ import com.coc.zkqcode.jar.code.colorschema.colorpackage.builderbase.IBuilderBas
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.builderbase.IBuilderBaseTutorial
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.builderbase.IBuilderBaseUpgradeColors
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.IUIColors
-import com.coc.zkqcode.jar.code.colorschema.colorpackage.IWorkerColors
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.mainbase.MainBaseTraining
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.mainbase.MainBaseTutorial
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.builderbase.BuilderBaseObstaclesRemovalColors
@@ -23,7 +22,6 @@ import com.coc.zkqcode.jar.code.colorschema.colorpackage.builderbase.BuilderBase
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.builderbase.BuilderBaseTutorial
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.builderbase.BuilderBaseUpgradeColors
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.UIColors
-import com.coc.zkqcode.jar.code.colorschema.colorpackage.WorkerColors
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.IUniversalUpgradeColors
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.UniversalUpgradeColors
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.mainbase.IMainBaseUpgradeColors
@@ -31,7 +29,7 @@ import com.coc.zkqcode.jar.code.colorschema.colorpackage.mainbase.MainBaseUpgrad
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.mainbase.IMainBaseResearchColors
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.mainbase.MainBaseResearchColors
 
-object MyColors : IWorkerColors by WorkerColors, IUIColors by UIColors, IFeatureColors by FeatureColors, IMainBaseTutorial by MainBaseTutorial, IBuilderBaseTutorial by BuilderBaseTutorial,
+object MyColors : IUIColors by UIColors, IFeatureColors by FeatureColors, IMainBaseTutorial by MainBaseTutorial, IBuilderBaseTutorial by BuilderBaseTutorial,
     IMainBaseTraining by MainBaseTraining, IBuilderBaseResourcesColors by BuilderBaseResourcesColors, IBuilderBaseObstaclesRemovalColors by BuilderBaseObstaclesRemovalColors,
     IBuilderBaseTrainingColors by BuilderBaseTrainingColors, IBuilderBaseUpgradeColors by BuilderBaseUpgradeColors, IBuilderBaseResearchColors by BuilderBaseResearchColors,
     IBuilderBaseAttackColors by BuilderBaseAttackColors, IUniversalUpgradeColors by UniversalUpgradeColors, IMainBaseUpgradeColors by MainBaseUpgradeColors,
