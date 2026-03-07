@@ -35,7 +35,10 @@ object MyColors : IUIColors by UIColors, IFeatureColors by FeatureColors, IMainB
     IUniversalUpgradeColors by UniversalUpgradeColors, IMainBaseUpgradeColors by MainBaseUpgradeColors, IMainBaseResearchColors by MainBaseResearchColors {
 
     //Main Base Research Colors
-    //TODO
+    val GoblinResearcher: ColorSchema = ColorSchema.parse(
+        395, 10, 643, 81, "16686C", "2|2|6E9EA4,-6|2|1A2432,-13|-5|207783,-7|-6|34AEAA,2|-11|49E7D2,3|-11|48E8D3,11|-11|42C4A9,14|-10|3EAE9D,11|-2|48DFD5", 0, 0.9, "哥布林工头2"
+    )
+
     //Clan Capital Tutorial Colors
     val CapitalOldMan: ColorSchema = ColorSchema.parse(
         110, 397, 256, 692, "17406F", "29|0|887D7D,58|0|858289,87|0|8F8E95,116|0|323D61,0|147|7C7F83,29|147|9DA3AE,58|147|9FA6B1,87|147|A7B0BE,116|147|0F2749", 0, 0.9, "都城老头"

@@ -136,7 +136,7 @@ private suspend fun isInHomePage(): Boolean {
     val workerSchemas = listOf(
         MyColors.MainBaseWorker,
         MyColors.GoblinWorker,
-        MyColors.GoblinWorker2,
+        MyColors.GoblinResearcher,
         MyColors.BuilderBaseWorker
     )
 

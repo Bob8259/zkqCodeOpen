@@ -1,7 +1,6 @@
 package com.coc.zkqcode.jar.code.builderbase.research
 
 import com.coc.zkqcode.core.util.basic.ShowMessage
-import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.jar.code.builderbase.others.BuilderBaseWorkerAndResearch
 import com.coc.zkqcode.jar.code.colorschema.ColorSchema
@@ -16,7 +15,7 @@ import com.coc.zkqcode.jar.ui.schema.details.BuilderBaseTroops
 
 
 suspend fun builderBaseResearch(): Boolean {
-    if (BuilderBaseWorkerAndResearch.detectResearch() && getBooleanConfigRuntime(Schema.BUILDER_BASE_SETTINGS.BUILDER_BASE_RESEARCH.key)) {
+    if (getBooleanConfigRuntime(Schema.BUILDER_BASE_SETTINGS.BUILDER_BASE_RESEARCH.key) && BuilderBaseWorkerAndResearch.detectResearch()) {
         val research = findMultiColors(schema = MyColors.ResearchIcon)
         if (research != null) {
             TouchActions.tap(research.x, research.y, delayTime = 600)
@@ -24,14 +23,14 @@ suspend fun builderBaseResearch(): Boolean {
             val backArrow = findMultiColorsUntil(schemas = listOf(MyColors.BuilderResearchBackArrow), duration = 1000)
             if (backArrow != null) {
                 TouchActions.tap(backArrow.x, backArrow.y, delayTime = 600)
-                builderBasecheckAllResearch()
+                builderBaseCheckAllResearch()
             }
         }
     }
     return enterMainScreen()
 }
 
-suspend fun builderBasecheckAllResearch() {
+suspend fun builderBaseCheckAllResearch() {
     for (i in BuilderBaseTroops.all.indices) {
         val troop = BuilderBaseTroops.all[i]
         if (getBooleanConfigRuntime(troop.key)) {
