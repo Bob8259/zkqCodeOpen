@@ -75,10 +75,8 @@ object MainScript {
 
     private suspend fun runTestCode() {
         while (true) {
-//            enterMainScreen()
+            enterMainScreen()
             delayWithMultiplier(1000)
-            ShowMessage(findMultiColors(schema = MyColors.test2).toString())
-
 //            delayWithMultiplier(1000000)
         }
     }
