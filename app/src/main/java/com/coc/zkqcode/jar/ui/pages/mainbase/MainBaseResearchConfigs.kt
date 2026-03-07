@@ -15,7 +15,7 @@ import com.coc.zkqcode.jar.ui.schema.Schema.MAIN_BASE_TROOPS_AND_SPELLS
 import com.coc.zkqcode.jar.ui.schema.Schema.MAIN_BASE_SETTINGS
 
 @Composable
-fun ResearchConfigs(index: Int) {
+fun MainBaseResearchConfigs(index: Int) {
     val items = MAIN_BASE_TROOPS_AND_SPELLS.all
     val isExpanded = remember { mutableStateOf(true) }
 

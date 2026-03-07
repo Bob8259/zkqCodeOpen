@@ -18,7 +18,7 @@ import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.jar.ui.schema.Schema.MAIN_BASE_PETS
 
 @Composable
-fun PetConfigs(index: Int) {
+fun MainBasePetConfigs(index: Int) {
     val items = MAIN_BASE_PETS.all
     val isExpanded = remember { mutableStateOf(true) }
 
