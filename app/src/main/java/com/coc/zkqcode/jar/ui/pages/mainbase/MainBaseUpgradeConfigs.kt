@@ -20,7 +20,7 @@ import com.coc.zkqcode.jar.ui.components.InputRowWithCheckBox
 import com.coc.zkqcode.jar.ui.schema.Schema.MAIN_BASE_SETTINGS
 
 @Composable
-fun UpgradeConfigs(index: Int, onNavigatePriority: (Int) -> Unit = {}) {
+fun MainBaseUpgradeConfigs(index: Int, onNavigatePriority: (Int) -> Unit = {}) {
     val items = MAIN_BASE_BUILDINGS.all
 
     val isExpanded = rememberSaveable { mutableStateOf(true) }

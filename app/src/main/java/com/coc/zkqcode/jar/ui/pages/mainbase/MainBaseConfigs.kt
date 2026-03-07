@@ -15,11 +15,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.jar.ui.components.CustomButton
 import com.coc.zkqcode.jar.ui.components.SettingCheckBox
 import com.coc.zkqcode.jar.ui.components.SettingDropdown
-import com.coc.zkqcode.core.data.database.GlobalVars
-import com.coc.zkqcode.jar.ui.components.InputRowWithCheckBox
 import com.coc.zkqcode.jar.ui.components.SettingInputRow
 import com.coc.zkqcode.jar.ui.schema.Schema.MAIN_BASE_SETTINGS
 
@@ -167,7 +166,7 @@ fun LazyListScope.MainBaseConfig(
         AnimatedVisibility(visible = isExpanded) {
             Column {
                 AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.RESEARCH_SETTING.key}_c$index"]?.value == "1") {
-                    ResearchConfigs(index)
+                    MainBaseResearchConfigs(index)
                 }
 
                 HorizontalDivider(
@@ -209,7 +208,7 @@ fun LazyListScope.MainBaseConfig(
         AnimatedVisibility(visible = isExpanded) {
             Column {
                 AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.BUILD_SETTING.key}_c$index"]?.value == "1") {
-                    UpgradeConfigs(index, onNavigatePriority)
+                    MainBaseUpgradeConfigs(index, onNavigatePriority)
                 }
              }
         }
@@ -222,7 +221,7 @@ fun LazyListScope.MainBaseConfig(
                 SettingCheckBox(key = "${MAIN_BASE_SETTINGS.UPGRADE_PETS.key}_c$index")
 
                 AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.UPGRADE_PETS.key}_c$index"]?.value == "1") {
-                    PetConfigs(index)
+                    MainBasePetConfigs(index)
                 }
             }
         }
