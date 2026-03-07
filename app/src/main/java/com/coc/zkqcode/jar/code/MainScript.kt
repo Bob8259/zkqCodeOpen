@@ -78,7 +78,7 @@ object MainScript {
             delayWithMultiplier(1000)
             upgradeBuildings(BaseType.Main)
 
-            delayWithMultiplier(100)
+            delayWithMultiplier(1000000)
         }
     }
 

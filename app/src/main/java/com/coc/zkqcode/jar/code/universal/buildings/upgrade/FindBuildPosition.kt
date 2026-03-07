@@ -66,22 +66,22 @@ private suspend fun iterateThroughAllPossiblePositions(baseType: BaseType): Poin
     val stepX = 10
     val stepY = 20
 
-    val areaIndices = listOf(1, 2, 3).shuffled()
+    val areaIndices = listOf(1, 2, 3).shuffled(Random(System.nanoTime()))
 
     for (index in areaIndices) {
         val result = when (index) {
             1 -> {
-                // 1. Trapezoid area (y: 130 to 300)
+                // 1. Trapezoid area (y: 140 to 300)
                 // Randomly reverse Y and X axes to add randomness while maintaining the same area
                 val reverseY = Random.nextBoolean()
                 val reverseX = Random.nextBoolean()
-                val yStart = if (reverseY) 300 else 130
-                val yEnd = if (reverseY) 130 else 300
+                val yStart = if (reverseY) 300 else 140
+                val yEnd = if (reverseY) 140 else 300
 
                 var found: Point? = null
                 val yRange = if (yStart <= yEnd) (yStart..yEnd step stepY) else (yStart downTo yEnd step stepY)
                 for (y in yRange) {
-                    val ratio = (y - 130).toFloat() / (300 - 130)
+                    val ratio = (y - 140).toFloat() / (300 - 140)
                     val leftX = (435 + (165 - 435) * ratio).toInt()
                     val rightX = (795 + (1085 - 795) * ratio).toInt()
                     val xStart = if (reverseX) rightX else leftX

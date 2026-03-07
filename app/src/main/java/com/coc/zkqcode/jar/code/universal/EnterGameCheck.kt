@@ -62,7 +62,7 @@ suspend fun enterMainScreen(isDoubleCheck: Boolean = false): Boolean {
 
 suspend fun clickRightBottom(times: Int, delayTime: Int = 50) {
     repeat(times) {
-        TouchActions.tap(1277, 557, delayTime = delayTime)
+        TouchActions.tap(1279, 500, false, delayTime)
     }
 }
 
