@@ -33,7 +33,13 @@ suspend fun enterMainScreen(): Boolean {
         if (!isGameAtFront()) {
             runGame()
         } else {
-            if (checkUIVisibility()) return true
+            if (isInHomePage()) {
+                delay(800)
+                if (isInHomePage()) {
+                    ShowMessage("已进入主界面")
+                    return true
+                }
+            }
             if (!checkReconnections()) return false
             ShowMessage("账号${InGamesVars.currentAccountNumber}，倒计时${((timeoutMillis - System.currentTimeMillis() + startTime) / 1000).toInt()}秒\n请手动给主世界和夜世界切换默认场景")
             closeAdvertisements()
@@ -58,16 +64,6 @@ suspend fun clickRightBottom(times: Int, delayTime: Int = 50) {
     }
 }
 
-private suspend fun checkUIVisibility(): Boolean {
-    if (isInHomePage()) {
-        delay(800)
-        if (isInHomePage()) {
-            ShowMessage("已进入主界面")
-            return true
-        }
-    }
-    return false
-}
 
 
 private suspend fun closeAdvertisements() {
@@ -103,6 +99,10 @@ private suspend fun closeAdvertisements() {
             screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult ?: return@forEach // Use return@forEach to skip to next if capture fails
         }
     }
+    findMultiColors(schema = MyColors.UpgradeTHArrow)?.let {
+        TouchActions.tap(it.x + 50, it.y + 100, delayTime = 500)
+        TouchActions.tap(703, 570, delayTime = 500)
+    }
     findMultiColors(schema = MyColors.ReturnAwards)?.let {
         // Define the coordinate pairs in order of execution
         val tapPoints = listOf(
@@ -128,13 +128,17 @@ private suspend fun isInHomePage(): Boolean {
     // 1. Capture the screen and cast safely
     val screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult ?: logAndStop("in isInHomePage, screen capture failed.")
 
-    // 2. Define the schemas to check against
-    val homeSchemas = listOf(
-        MyColors.TrainTroops
-    )
+    // 2. Check for the training button presence
+    val hasTrainButton = findMultiColors(byteBuffer = screenBuffer, schema = MyColors.TrainTroops) != null
+    if (!hasTrainButton) return false
 
-    // 3. Use 'any' for a clean, declarative exit
-    return homeSchemas.any { schema ->
-        findMultiColors(byteBuffer = screenBuffer, schema = schema) != null
-    }
+    // 3. Check for any of the worker icons (Main base, Goblin workers, or Builder base)
+    val workerSchemas = listOf(
+        MyColors.MainBaseWorker,
+        MyColors.GoblinWorker,
+        MyColors.GoblinWorker2,
+        MyColors.BuilderBaseWorker
+    )
+    
+    return workerSchemas.any { findMultiColors(byteBuffer = screenBuffer, schema = it) != null }
 }
