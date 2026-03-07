@@ -9,13 +9,14 @@ import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.InGamesVars
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
+import com.coc.zkqcode.jar.code.universal.smalltools.StorageKeys
 import com.coc.zkqcode.jar.code.universal.smalltools.readMemory
 import com.coc.zkqcode.jar.code.universal.smalltools.writeMemory
 import java.util.Calendar
 import kotlin.math.abs
 
 suspend fun mainBaseTrainTroops(): Boolean {
-    val storageKey = "MainBaseTrainTroops${InGamesVars.currentAccountNumber}"
+    val storageKey = StorageKeys.withAccountNumber(StorageKeys.MAIN_BASE_TRAIN_TROOPS, InGamesVars.currentAccountNumber)
     val lastTrainingTime = readMemory(storageKey).toIntOrNull()
 
     val calendar = Calendar.getInstance()

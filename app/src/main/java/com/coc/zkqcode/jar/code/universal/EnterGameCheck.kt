@@ -3,7 +3,6 @@ package com.coc.zkqcode.jar.code.universal
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.core.util.basic.ShowMessage
-import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndStop
 import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.MyColors
@@ -20,7 +19,7 @@ import kotlin.random.Random
  * Waits for the game to enter the main screen within a specified timeout.
  * Returns true if successful, false if it times out.
  */
-suspend fun enterMainScreen(): Boolean {
+suspend fun enterMainScreen(isDoubleCheck: Boolean = false): Boolean {
     // 1. Initialize the start time
     val startTime = System.currentTimeMillis()
     // 2. Get the timeout duration from GlobalVars (assumed to be in seconds)
@@ -34,9 +33,12 @@ suspend fun enterMainScreen(): Boolean {
             runGame()
         } else {
             if (isInHomePage()) {
+                if (!isDoubleCheck) {
+                    ShowMessage("已进入主界面")
+                    return true
+                }
                 delay(800)
                 if (isInHomePage()) {
-                    ShowMessage("已进入主界面")
                     return true
                 }
             }
@@ -63,7 +65,6 @@ suspend fun clickRightBottom(times: Int, delayTime: Int = 50) {
         TouchActions.tap(1277, 557, delayTime = delayTime)
     }
 }
-
 
 
 private suspend fun closeAdvertisements() {
@@ -101,7 +102,6 @@ private suspend fun closeAdvertisements() {
     }
     findMultiColors(schema = MyColors.UpgradeTHArrow)?.let {
         TouchActions.tap(it.x + 50, it.y + 100, delayTime = 500)
-        TouchActions.tap(703, 570, delayTime = 500)
     }
     findMultiColors(schema = MyColors.ReturnAwards)?.let {
         // Define the coordinate pairs in order of execution
@@ -139,6 +139,6 @@ private suspend fun isInHomePage(): Boolean {
         MyColors.GoblinWorker2,
         MyColors.BuilderBaseWorker
     )
-    
+
     return workerSchemas.any { findMultiColors(byteBuffer = screenBuffer, schema = it) != null }
 }
