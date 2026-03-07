@@ -21,6 +21,7 @@ object MainBaseSettings {
         SettingDef("request_reinforcement_setting", "请求增援", 1, "MAIN_BASE_SETTINGS")
     val DONATION_TIMES = SettingDef("donation_times", "捐兵轮数", 1, "MAIN_BASE_SETTINGS")
     val RESEARCH_SETTING = SettingDef("research_setting", "自动研究", 1, "MAIN_BASE_SETTINGS")
+    val RESEARCH_LEVEL = SettingDef("research_level", "研究等级至", "0", "MAIN_BASE_SETTINGS")
     val COLLECT_CLAN_CASTLE = SettingDef("collect_clan_castle", "领宝库", 1, "MAIN_BASE_SETTINGS")
     val LIGHTING_ON_AIR_SWEEPER = SettingDef("lighting_on_air_sweeper", "闪空气炮次数", "2", "MAIN_BASE_SETTINGS")
     val LIGHTING_ON_AIR_DEFENCE = SettingDef("lighting_on_air_defence", "闪火箭次数", "3", "MAIN_BASE_SETTINGS")
@@ -138,6 +139,7 @@ object MainBaseSettings {
         REQUEST_REINFORCEMENT_SETTING,
         DONATION_TIMES,
         RESEARCH_SETTING,
+        RESEARCH_LEVEL,
         COLLECT_CLAN_CASTLE,
         LIGHTING_ON_AIR_SWEEPER,
         LIGHTING_ON_AIR_DEFENCE,
