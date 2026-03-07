@@ -6,6 +6,8 @@ import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndStop
 import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.ColorSchema
 import com.coc.zkqcode.jar.code.colorschema.MyColors
+import com.coc.zkqcode.jar.code.mainbase.others.zoomSmallMainBase
+import com.coc.zkqcode.jar.code.mainbase.upgrade.mainBaseFindBuildButton
 import com.coc.zkqcode.jar.code.universal.buildings.iterateBuilderBaseBuildingUpgradeList
 import com.coc.zkqcode.jar.code.universal.clickRightBottom
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
@@ -149,6 +151,25 @@ suspend fun upgradeAllExistingBuildings(buildings: List<String>, currentBase: Ba
                 // Successful upgrade flow
                 TouchActions.tap(633, 631) // normal upgrade or unlock new buildings
                 TouchActions.tap(982, 634, delayTime = 500)// machines
+                if (building == "大本营") {
+                    TouchActions.tap(748, 621, delayTime = 500)//before upgrade
+                    zoomSmallMainBase()
+                    var greenTick = mainBaseFindBuildButton(type = BuildButtonType.Tick, duration = 800)
+                    if (greenTick != null) {
+                        ShowMessage("合并天鹰火炮")
+                        TouchActions.tap(greenTick.x, greenTick.y, delayTime = 500)
+                        break
+                    }
+                    TouchActions.swipe(922, 202, 298, 505)
+                    delayWithMultiplier(300)
+                    greenTick = mainBaseFindBuildButton(type = BuildButtonType.Tick, duration = 800)
+                    if (greenTick != null) {
+                        ShowMessage("合并天鹰火炮")
+                        TouchActions.tap(greenTick.x, greenTick.y, delayTime = 500)
+                        break
+                    }
+                }
+                clickRightBottom(2)
                 ShowMessage("升级成功: $building (第 $attempt 个)")
             }
         }

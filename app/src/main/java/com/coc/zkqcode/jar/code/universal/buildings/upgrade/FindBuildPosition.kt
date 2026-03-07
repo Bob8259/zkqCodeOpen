@@ -63,7 +63,7 @@ suspend fun tryToFindBuildPosition(baseType: BaseType): Point? {
 }
 
 private suspend fun iterateThroughAllPossiblePositions(baseType: BaseType): Point? {
-    val stepX = 10
+    val stepX = 15
     val stepY = 20
 
     val areaIndices = listOf(1, 2, 3).shuffled(Random(System.nanoTime()))
@@ -121,8 +121,9 @@ private suspend fun iterateThroughAllPossiblePositions(baseType: BaseType): Poin
                 val yRange = if (yStart <= yEnd) (yStart..yEnd step stepY) else (yStart downTo yEnd step stepY)
                 for (y in yRange) {
                     val ratio = (y - 381).toFloat() / (690 - 381)
-                    val leftX = (165 + (620 - 165) * ratio).toInt()
-                    val rightX = (1085 + (630 - 1085) * ratio).toInt()
+                    // Move left x boundary 5 pixels left, and move right x boundary 5 pixels right
+                    val leftX = (160 + (615 - 160) * ratio).toInt()
+                    val rightX = (1090 + (635 - 1090) * ratio).toInt()
                     val xStart = if (reverseX) rightX else leftX
                     val xEnd = if (reverseX) leftX else rightX
 
