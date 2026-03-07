@@ -217,20 +217,21 @@ tasks.register("deployAndReload") {
 
     val outputJar = "${project.projectDir.absolutePath}/src/main/assets/code.jar"
     val devicePath = "/data/data/com.coc.zkqcode/files/assets/code.jar"
+    val adbDeviceSerial = "emulator-5554"
 
     doLast {
         // 1. Push JAR to sdcard first (adb push can't write to /data/data directly)
-        ProcessBuilder("adb", "push", outputJar, "/sdcard/code.jar")
+        ProcessBuilder("adb", "-s", adbDeviceSerial, "push", outputJar, "/sdcard/code.jar")
             .inheritIO().start().waitFor()
 
         // 2. Copy to private app dir with root
-        ProcessBuilder("adb", "shell", "su", "-c",
+        ProcessBuilder("adb", "-s", adbDeviceSerial, "shell", "su", "-c",
             "'cp /sdcard/code.jar $devicePath && chmod 644 $devicePath'")
             .inheritIO().start().waitFor()
         println("--- Pushed code.jar to device ---")
 
         // 3. Send reload broadcast
-        ProcessBuilder("adb", "shell", "am", "broadcast",
+        ProcessBuilder("adb", "-s", adbDeviceSerial, "shell", "am", "broadcast",
             "-a", "com.coc.zkqcode.DEBUG_RELOAD",
             "-n", "com.coc.zkqcode/.core.system.daemon.DebugReloadReceiver")
             .inheritIO().start().waitFor()
