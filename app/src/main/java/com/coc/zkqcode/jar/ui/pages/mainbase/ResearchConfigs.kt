@@ -9,8 +9,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import com.coc.zkqcode.jar.ui.components.CustomButton
 import com.coc.zkqcode.jar.ui.components.SettingCheckBox
+import com.coc.zkqcode.jar.ui.components.SettingDropdown
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.jar.ui.schema.Schema.MAIN_BASE_TROOPS_AND_SPELLS
+import com.coc.zkqcode.jar.ui.schema.Schema.MAIN_BASE_SETTINGS
 
 @Composable
 fun ResearchConfigs(index: Int) {
@@ -48,6 +50,12 @@ fun ResearchConfigs(index: Int) {
             CustomButton(text = "一键反选", onClick = invertSelection)
             CustomButton(text = if (isExpanded.value) "缩起" else "展开", onClick = { isExpanded.value = !isExpanded.value })
         }
+
+        // Research level dropdown
+        SettingDropdown(
+            key = "${MAIN_BASE_SETTINGS.RESEARCH_LEVEL.key}_c${index}",
+            options = listOf("满级", "满级减一", "满级减二")
+        )
 
         AnimatedVisibility(visible = isExpanded.value) {
             FlowRow {
