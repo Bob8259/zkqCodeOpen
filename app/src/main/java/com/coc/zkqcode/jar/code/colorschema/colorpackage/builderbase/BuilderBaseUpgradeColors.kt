@@ -7,6 +7,7 @@ interface IBuilderBaseUpgradeColors {
     val BuilderBaseWallInShop: ColorSchema
     val UpgradeHammer: ColorSchema
     val BuilderBaseInsufficientResources: ColorSchema
+    val BuilderBaseWorker: ColorSchema
 }
 
 object BuilderBaseUpgradeColors : IBuilderBaseUpgradeColors {
@@ -21,5 +22,8 @@ object BuilderBaseUpgradeColors : IBuilderBaseUpgradeColors {
     )
     override val BuilderBaseInsufficientResources: ColorSchema = ColorSchema.parse(
         560, 520, 1083, 676, "7F88FF", "1|0|7F88FF,2|0|7F88FF,3|0|7F88FF,3|1|7F88FF,2|1|7F88FF,0|1|7F88FF,0|1|7F88FF,0|2|7F88FF,1|2|7F88FF", 0, 0.97, "夜世界升级资源不足"
+    )
+    override val BuilderBaseWorker: ColorSchema = ColorSchema.parse(
+        518, 5, 1009, 78, "4375DB", "6|-15|A7D0FE,11|-19|3C6BC9,16|-10|8CAAE2,16|-9|403427,18|0|467CD6,7|12|3C69CD,4|12|416FD0,2|12|3E6BCB", 0, 0.9, "夜世界建筑工人"
     )
 }
