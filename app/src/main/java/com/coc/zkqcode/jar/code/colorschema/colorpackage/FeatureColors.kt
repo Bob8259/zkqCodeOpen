@@ -24,6 +24,6 @@ object FeatureColors : IFeatureColors {
         513, 415, 843, 668, "22ADFD", "6|0|20B5FC,12|0|20BAFD,17|0|20B9FD,23|0|1FAFFD,0|23|58EAF1,6|23|51E7F2,12|23|4FE4F1,17|23|4DE3F2,23|23|4CE0F0", 0, 0.9, "教程橙色箭头"
     )
     override val ResearchIcon: ColorSchema = ColorSchema.parse(
-        320, 12, 959, 73, "F727C7", "5|0|F300B1,10|0|F006A4,14|0|ED0898,19|0|E00786,0|8|F21DAE,5|8|A1E6EE,10|8|657FAE,14|8|FFFFFF,19|8|FFFFFF", 0, 0.9, "研究标志"
+        374, 18, 900, 62, "F900D1", "3|0|F004A4,7|0|ED0599,10|0|E80691,13|0|E00587,0|8|F001AD,3|8|4BBFD1,7|8|59E2F2,10|8|FFFFFF,13|8|FFFFFF", 0, 0.9, "研究标志"
     )
 }
