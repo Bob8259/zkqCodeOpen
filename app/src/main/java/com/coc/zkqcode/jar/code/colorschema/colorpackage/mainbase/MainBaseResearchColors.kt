@@ -76,6 +76,9 @@ interface IMainBaseResearchColors {
     val RESEARCH_FLAME_FLINGER: ColorSchema
     val RESEARCH_BATTLE_DRILL: ColorSchema
     val RESEARCH_TROOP_LAUNCHER: ColorSchema
+
+    // Special Research Colors
+    val GoblinResearcher: ColorSchema
 }
 
 object MainBaseResearchColors : IMainBaseResearchColors {
@@ -145,7 +148,8 @@ object MainBaseResearchColors : IMainBaseResearchColors {
             RESEARCH_LOG_LAUNCHER,
             RESEARCH_FLAME_FLINGER,
             RESEARCH_BATTLE_DRILL,
-            RESEARCH_TROOP_LAUNCHER
+            RESEARCH_TROOP_LAUNCHER,
+            GoblinResearcher
         )
     }
 
@@ -299,4 +303,9 @@ object MainBaseResearchColors : IMainBaseResearchColors {
         ColorSchema.parse(195, 350, 1090, 650, "4143CC", "79|19|5B5B5B,12|15|2B2B2B,1|-24|DEB788,29|14|575757,52|-18|9D9982,49|4|181818,25|17|B2B2B2,41|-12|626262,12|1|585858", 0, 0.92, "攻城钻机")
     override val RESEARCH_TROOP_LAUNCHER: ColorSchema =
         ColorSchema.parse(195, 350, 1090, 650, "201E2F", "-2|17|978473,65|-1|697EFF,67|-12|7980FF,19|-11|5B64C7,-2|-33|DEB98C,13|7|FEF2D9,60|-8|7980FF,2|3|0D0D1F,90|-32|DEB88B", 0, 0.92, "部队发射器")
+
+    // Special Research Colors
+    override val GoblinResearcher: ColorSchema = ColorSchema.parse(
+        395, 10, 643, 81, "16686C", "2|2|6E9EA4,-6|2|1A2432,-13|-5|207783,-7|-6|34AEAA,2|-11|49E7D2,3|-11|48E8D3,11|-11|42C4A9,14|-10|3EAE9D,11|-2|48DFD5", 0, 0.9, "哥布林工头2"
+    )
 }
