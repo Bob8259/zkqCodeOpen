@@ -10,6 +10,9 @@ import com.coc.zkqcode.jar.code.universal.recognizer.TextRecognizer
 
 object MainBaseWorkerAndResearch {
     suspend fun detectWorkerNumber(): WorkerInfo {
+        if (findMultiColors(schema = MyColors.GoblinWorker) != null) {
+            return WorkerInfo(0, 6)
+        }
         val worker = findMultiColors(schema = MyColors.MainBaseWorker)
         if (worker != null) {
             // Define the crop region for the worker number text
@@ -42,7 +45,7 @@ object MainBaseWorkerAndResearch {
         val research = findMultiColors(schema = MyColors.ResearchIcon)
         if (research != null) {
             // Define the crop region for the researcher number text
-            val startX = research.x - 500
+            val startX = research.x - 350
             val startY = 0
             val endX = research.x + 120
             val endY = 70

@@ -48,4 +48,16 @@ object MyColors : IUIColors by UIColors, IFeatureColors by FeatureColors, IMainB
     val ArrowPointingDown: ColorSchema = ColorSchema.parse(
         116, 92, 1124, 620, "26ACFF", "7|0|24B9FF,14|0|24BCFE,21|0|25B6FE,28|0|26A7FE,0|21|0FADFD,7|21|0AB0FC,14|21|0AB2FC,21|21|0AAEFB,28|21|10ADFE", 0, 0.92, "向下箭头"
     )
+
+    //Feature Colors
+    val WhiteNumberColor: ColorSchema = ColorSchema.parse(
+        338,
+        102,
+        966,
+        560,
+        "FFFFFF",
+        "-1|1|FFFFFF,-1|2|FFFFFF,-1|3|FFFFFF,-1|4|FFFFFF,7|5|FFFFFF,7|4|FFFFFF,7|3|FFFFFF,7|2|FFFFFF,7|1|FFFFFF",
+        0,
+        0.9,
+    )
 }
