@@ -7,6 +7,7 @@ import com.coc.zkqcode.jar.code.colorschema.ColorSchema
 interface IMainBaseResearchColors {
     // Troops
     val RESEARCH_BARBARIAN: ColorSchema
+    val RESEARCH_BARBARIAN_2: ColorSchema
     val RESEARCH_ARCHER: ColorSchema
     val RESEARCH_GIANT: ColorSchema
     val RESEARCH_GOBLIN: ColorSchema
@@ -86,6 +87,7 @@ object MainBaseResearchColors : IMainBaseResearchColors {
     val allResearchColors: List<ColorSchema> by lazy {
         listOf(
             RESEARCH_BARBARIAN,
+            RESEARCH_BARBARIAN_2,
             RESEARCH_ARCHER,
             RESEARCH_GIANT,
             RESEARCH_GOBLIN,
@@ -149,7 +151,6 @@ object MainBaseResearchColors : IMainBaseResearchColors {
             RESEARCH_FLAME_FLINGER,
             RESEARCH_BATTLE_DRILL,
             RESEARCH_TROOP_LAUNCHER,
-            GoblinResearcher
         )
     }
 
@@ -157,6 +158,8 @@ object MainBaseResearchColors : IMainBaseResearchColors {
     // Troops
     override val RESEARCH_BARBARIAN: ColorSchema =
         ColorSchema.parse(195, 350, 1090, 650, "A8C8E3", "43|-17|3BBDFC,59|-27|40CDFF,66|-15|5DEEFF,-1|5|C2A7B2,13|15|738DB4,1|-16|ABD7C6,10|-4|8491A0,89|-3|48E1FF,3|-28|8FF9FF", 0, 0.92, "野蛮人")
+    override val RESEARCH_BARBARIAN_2: ColorSchema =
+        ColorSchema.parse(195, 350, 1090, 650, "B09AB7", "23|-27|3EB4E9,39|-28|40BDFB,54|-26|3EC8FF,63|-12|45D2FF,46|-2|3076B5,37|4|6A94FC,34|15|5C68B0,54|21|5FEAFF,61|26|44D5FF", 0, 0.92, "野蛮人")
     override val RESEARCH_ARCHER: ColorSchema =
         ColorSchema.parse(195, 350, 1090, 650, "DA76FA", "73|0|7738D6,20|-24|964DD7,59|1|542B9D,43|-21|7639CB,9|24|8F47B9,93|-4|DEB27A,76|-26|8540EE,37|7|7338C0,18|14|3C4A78", 0, 0.92, "弓箭手")
     override val RESEARCH_GIANT: ColorSchema =

@@ -4,16 +4,9 @@ import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndStop
-import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.jar.code.builderbase.playBuilderBase
-import com.coc.zkqcode.jar.code.colorschema.MyColors
-import com.coc.zkqcode.jar.code.findAllResearchColors
-import com.coc.zkqcode.jar.code.mainbase.others.checkNewBuildingArrows
 import com.coc.zkqcode.jar.code.mainbase.research.mainBaseResearch
 import com.coc.zkqcode.jar.code.universal.InGamesVars
-import com.coc.zkqcode.jar.code.universal.buildings.upgrade.BaseType
-import com.coc.zkqcode.jar.code.universal.buildings.upgrade.upgradeBuildings
-import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.smalltools.StorageKeys
 import com.coc.zkqcode.jar.code.universal.smalltools.readMemory
@@ -81,7 +74,6 @@ object MainScript {
             enterMainScreen()
             delayWithMultiplier(1000)
             mainBaseResearch()
-
             delayWithMultiplier(10000)
         }
     }

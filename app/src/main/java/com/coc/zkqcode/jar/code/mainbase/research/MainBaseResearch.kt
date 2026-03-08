@@ -1,10 +1,8 @@
 package com.coc.zkqcode.jar.code.mainbase.research
 
-import android.graphics.Bitmap
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
+import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
-import java.io.File
-import java.io.FileOutputStream
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndStop
 import com.coc.zkqcode.core.util.fileactions.LogHelper.showDebugInfo
 import com.coc.zkqcode.core.util.touchactions.TouchActions
@@ -16,7 +14,6 @@ import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.smalltools.getBooleanConfigRuntime
-import com.coc.zkqcode.jar.code.universal.smalltools.getConfigRuntime
 import com.coc.zkqcode.jar.ui.schema.Schema
 import com.coc.zkqcode.jar.ui.schema.details.MainBaseTroopsAndSpells
 
@@ -41,7 +38,7 @@ suspend fun mainBaseResearch(): Boolean {
                 TouchActions.tap(whiteNumber.x, whiteNumber.y, delayTime = 800)
                 TouchActions.tap(1130, 55, delayTime = 500)
                 TouchActions.swipe(240, 500, 4000, 500)
-                delayWithMultiplier(200)
+                delayWithMultiplier(300)
                 findAllResearchItems()
             }
         }
@@ -49,7 +46,7 @@ suspend fun mainBaseResearch(): Boolean {
     return enterMainScreen()
 }
 
-suspend fun findAllResearchItems() {
+private suspend fun findAllResearchItems() {
     // Build a map from display name to setting key for filtering enabled items
     val displayNameToKey = MainBaseTroopsAndSpells.all.associate { it.displayName to it.key }
 
@@ -66,7 +63,6 @@ suspend fun findAllResearchItems() {
     }
 
     showDebugInfo("已启用 ${enabledResearchColors.size} 个研究项目")
-
     repeat(8) {
         // Capture screenshot for searching
         val screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult
@@ -76,40 +72,30 @@ suspend fun findAllResearchItems() {
         for (schema in enabledResearchColors) {
             val result = findMultiColors(schema = schema, byteBuffer = screenBuffer)
             if (result != null) {
-                // Found an enabled research item — crop and save the region around it for debugging
-                val debugBitmap = ScreenCaptureManager.capture(asBitmap = true) as? Bitmap
-                if (debugBitmap != null) {
-                    val cropLeft = (result.x - 25).coerceAtLeast(0)
-                    val cropTop = (result.y + 20).coerceAtLeast(0)
-                    val cropWidth = minOf(40, debugBitmap.width - cropLeft)
-                    val cropHeight = minOf(40, debugBitmap.height - cropTop)
-                    if (cropWidth > 0 && cropHeight > 0) {
-                        val croppedBitmap = Bitmap.createBitmap(debugBitmap, cropLeft, cropTop, cropWidth, cropHeight)
-                        ScreenCaptureManager.getContext()?.let { context ->
-                            try {
-                                val file = File(context.filesDir, "test.png")
-                                FileOutputStream(file).use { out ->
-                                    croppedBitmap.compress(Bitmap.CompressFormat.PNG, 100, out)
-                                }
-                                showDebugInfo("已保存截图至: ${context.filesDir}/test.png")
-                            } catch (e: Exception) {
-                                showDebugInfo("保存截图失败: ${e.message}")
-                            } finally {
-                                croppedBitmap.recycle()
-                            }
-                        }
+                // Compute the crop region around the found item (full-screen coordinates)
+                val cropLeft = (result.x - 25).coerceAtLeast(0)
+                val cropTop = (result.y + 20).coerceAtLeast(0)
+                val cropWidth = minOf(40, screenBuffer.width - cropLeft)
+                val cropHeight = minOf(40, screenBuffer.height - cropTop)
+                if (cropWidth > 0 && cropHeight > 0) {
+                    // Rescope ResearchLevelOne to the crop area and search on existing screenBuffer
+                    val levelSchema = ColorSchema.rescope(
+                        ResearchLevelOne[0],
+                        cropLeft, cropTop, cropLeft + cropWidth - 1, cropTop + cropHeight - 1
+                    )
+                    val levelResult = findMultiColors(byteBuffer = screenBuffer, schema = levelSchema)
+                    if (levelResult != null) {
+                        ShowMessage("找到研究项目: ${schema.name}, 坐标: (${result.x}, ${result.y}，等级1)")
                     }
-                    debugBitmap.recycle()
                 }
-                showDebugInfo("找到研究项目: ${schema.name}, 坐标: (${result.x}, ${result.y})")
 //                TouchActions.tap(result.x, result.y, delayTime = 500)
-                return
+//                return
             }
         }
 
         // No enabled item found on current screen, swipe to see more items
         TouchActions.swipe(860, 500, 400, 500, delayTime = 500)
-        delayWithMultiplier(100)
+        delayWithMultiplier(300)
     }
 
     showDebugInfo("未找到任何已启用的研究项目")
