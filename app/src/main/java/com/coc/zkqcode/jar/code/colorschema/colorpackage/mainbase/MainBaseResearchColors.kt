@@ -1,3 +1,5 @@
+@file:Suppress("PropertyName")
+
 package com.coc.zkqcode.jar.code.colorschema.colorpackage.mainbase
 
 import com.coc.zkqcode.jar.code.colorschema.ColorSchema
