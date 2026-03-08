@@ -28,36 +28,11 @@ import com.coc.zkqcode.jar.code.colorschema.colorpackage.mainbase.IMainBaseUpgra
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.mainbase.MainBaseUpgradeColors
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.mainbase.IMainBaseResearchColors
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.mainbase.MainBaseResearchColors
+import com.coc.zkqcode.jar.code.colorschema.colorpackage.clancapital.ClanCapitalTutorialColors
+import com.coc.zkqcode.jar.code.colorschema.colorpackage.clancapital.IClanCapitalTutorialColors
 
 object MyColors : IUIColors by UIColors, IFeatureColors by FeatureColors, IMainBaseTutorial by MainBaseTutorial, IBuilderBaseTutorial by BuilderBaseTutorial, IMainBaseTraining by MainBaseTraining,
     IBuilderBaseResourcesColors by BuilderBaseResourcesColors, IBuilderBaseObstaclesRemovalColors by BuilderBaseObstaclesRemovalColors, IBuilderBaseTrainingColors by BuilderBaseTrainingColors,
     IBuilderBaseUpgradeColors by BuilderBaseUpgradeColors, IBuilderBaseResearchColors by BuilderBaseResearchColors, IBuilderBaseAttackColors by BuilderBaseAttackColors,
-    IUniversalUpgradeColors by UniversalUpgradeColors, IMainBaseUpgradeColors by MainBaseUpgradeColors, IMainBaseResearchColors by MainBaseResearchColors {
-
-    //Main Base Research Colors
-    val GoblinResearcher: ColorSchema = ColorSchema.parse(
-        395, 10, 643, 81, "16686C", "2|2|6E9EA4,-6|2|1A2432,-13|-5|207783,-7|-6|34AEAA,2|-11|49E7D2,3|-11|48E8D3,11|-11|42C4A9,14|-10|3EAE9D,11|-2|48DFD5", 0, 0.9, "哥布林工头2"
-    )
-
-    //Clan Capital Tutorial Colors
-    val CapitalOldMan: ColorSchema = ColorSchema.parse(
-        110, 397, 256, 692, "17406F", "29|0|887D7D,58|0|858289,87|0|8F8E95,116|0|323D61,0|147|7C7F83,29|147|9DA3AE,58|147|9FA6B1,87|147|A7B0BE,116|147|0F2749", 0, 0.9, "都城老头"
-    )
-
-    // UI Colors
-    val ArrowPointingDown: ColorSchema = ColorSchema.parse(
-        116, 92, 1124, 620, "26ACFF", "7|0|24B9FF,14|0|24BCFE,21|0|25B6FE,28|0|26A7FE,0|21|0FADFD,7|21|0AB0FC,14|21|0AB2FC,21|21|0AAEFB,28|21|10ADFE", 0, 0.92, "向下箭头"
-    )
-
-    //Feature Colors
-    val WhiteNumberColor: ColorSchema = ColorSchema.parse(
-        338,
-        102,
-        966,
-        560,
-        "FFFFFF",
-        "-1|1|FFFFFF,-1|2|FFFFFF,-1|3|FFFFFF,-1|4|FFFFFF,7|5|FFFFFF,7|4|FFFFFF,7|3|FFFFFF,7|2|FFFFFF,7|1|FFFFFF",
-        0,
-        0.9,
-    )
-}
+    IUniversalUpgradeColors by UniversalUpgradeColors, IMainBaseUpgradeColors by MainBaseUpgradeColors, IMainBaseResearchColors by MainBaseResearchColors,
+    IClanCapitalTutorialColors by ClanCapitalTutorialColors

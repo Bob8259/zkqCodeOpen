@@ -24,6 +24,7 @@ interface IUIColors {
     val OldShopButton: ColorSchema
     val NewShopButton: ColorSchema
     val MagicalItem: ColorSchema
+    val ArrowPointingDown: ColorSchema
 }
 
 object UIColors : IUIColors {
@@ -88,5 +89,8 @@ object UIColors : IUIColors {
     )
     override val MagicalItem: ColorSchema = ColorSchema.parse(
         960, 57, 1016, 110, "FBFBFB", "-14|-4|716FFE,-6|-14|8785FF,13|10|221EF2,12|-13|8785FF,13|-10|8583FF,13|-3|7A78FF,13|5|221EF7,10|17|1B18AA,3|14|221EF7", 0, 0.9, "魔法物品"
+    )
+    override val ArrowPointingDown: ColorSchema = ColorSchema.parse(
+        116, 92, 1124, 620, "26ACFF", "7|0|24B9FF,14|0|24BCFE,21|0|25B6FE,28|0|26A7FE,0|21|0FADFD,7|21|0AB0FC,14|21|0AB2FC,21|21|0AAEFB,28|21|10ADFE", 0, 0.92, "向下箭头"
     )
 }
