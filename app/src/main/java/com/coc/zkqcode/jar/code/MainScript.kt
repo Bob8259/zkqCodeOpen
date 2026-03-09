@@ -78,13 +78,7 @@ object MainScript {
             enterMainScreen()
             delayWithMultiplier(1000)
             mainBaseResearch()
-            delayWithMultiplier(1000000)
-//            val insufficientSchema = ColorSchema.rescope(
-//                MyColors.MainBaseResearchInsufficientColors, 507, 613, 632, 616
-//            )
-//
-//            val insufficientResult = findMultiColors(schema = insufficientSchema)
-//            ShowMessage(insufficientResult.toString())
+            delayWithMultiplier(1000)
         }
     }
 

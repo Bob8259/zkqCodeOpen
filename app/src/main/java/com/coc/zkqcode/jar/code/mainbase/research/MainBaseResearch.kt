@@ -1,5 +1,6 @@
 package com.coc.zkqcode.jar.code.mainbase.research
 
+import android.text.method.Touch
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
@@ -10,6 +11,7 @@ import com.coc.zkqcode.jar.code.colorschema.ColorSchema
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.mainbase.MainBaseResearchColors
 import com.coc.zkqcode.jar.code.mainbase.others.MainBaseWorkerAndResearch
+import com.coc.zkqcode.jar.code.universal.clickRightBottom
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
@@ -98,7 +100,7 @@ private suspend fun findAllResearchItems() {
                     showDebugInfo("跳过 ${schema.name}: 资源不足")
                     continue
                 }
-                
+
                 // Compute the crop region around the found item (full-screen coordinates)
                 val cropLeft = (result.x - 25).coerceAtLeast(0)
                 val cropTop = (result.y + 20).coerceAtLeast(0)
@@ -143,6 +145,8 @@ private suspend fun findAllResearchItems() {
 
                     ShowMessage("找到研究项目: ${schema.name}, 等级$detectedLevel, 目标等级$targetLevel")
                     TouchActions.tap(result.x, result.y, delayTime = 500)
+                    TouchActions.tap(894, 617, delayTime = 500)
+                    clickRightBottom(3)
                     return
                 }
             }
@@ -154,4 +158,5 @@ private suspend fun findAllResearchItems() {
     }
 
     showDebugInfo("未找到任何已启用的研究项目")
+    clickRightBottom(3)
 }
