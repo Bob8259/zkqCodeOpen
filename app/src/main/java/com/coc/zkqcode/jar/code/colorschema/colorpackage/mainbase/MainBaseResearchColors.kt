@@ -50,6 +50,7 @@ interface IMainBaseResearchColors {
     val RESEARCH_EARTHQUAKE_2: ColorSchema
     val RESEARCH_SKELETON: ColorSchema
     val RESEARCH_SKELETON_2: ColorSchema
+    val RESEARCH_SKELETON_3: ColorSchema
     val RESEARCH_BAT: ColorSchema
     val RESEARCH_BAT_2: ColorSchema
     val RESEARCH_OVERGROWTH: ColorSchema
@@ -133,6 +134,7 @@ object MainBaseResearchColors : IMainBaseResearchColors {
             RESEARCH_EARTHQUAKE_2,
             RESEARCH_SKELETON,
             RESEARCH_SKELETON_2,
+            RESEARCH_SKELETON_3,
             RESEARCH_BAT,
             RESEARCH_BAT_2,
             RESEARCH_OVERGROWTH,
@@ -259,6 +261,8 @@ object MainBaseResearchColors : IMainBaseResearchColors {
     override val RESEARCH_SKELETON_2: ColorSchema = ColorSchema.parse(
         195, 350, 1090, 650, "D9FBD9", "16|3|7DDF94,29|12|74E47A,43|22|279619,48|35|0D9612,66|36|1C8715,76|24|12AF38,78|11|22A238,39|-23|2ACABF,45|-25|25B19E", 0, 0.92, "骷髅法术"
     )
+    override val RESEARCH_SKELETON_3: ColorSchema =
+        ColorSchema.parse(195, 350, 1090, 650, "BCFAB9", "16|5|3FC544,40|17|A1F3A2,43|34|0DDD0E,76|34|15B334,82|15|36891B,62|11|279613,43|-2|50CB66,39|-17|319571,39|-22|28C2B5", 0, 0.92, "骷髅法术")
     override val RESEARCH_BAT: ColorSchema =
         ColorSchema.parse(195, 350, 1090, 650, "845656", "22|-9|FFFFFF,45|-2|6777BB,36|-5|58608A,76|-33|7E586E,31|2|796992,94|-20|A98175,26|8|9A81AF,4|3|AC7776,54|24|B78DAE", 0, 0.92, "蝙蝠法术")
     override val RESEARCH_BAT_2: ColorSchema =
