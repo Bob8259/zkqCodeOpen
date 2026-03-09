@@ -31,6 +31,12 @@ import com.coc.zkqcode.jar.ui.schema.details.MainBaseTroopsAndSpells
  */
 val ResearchLevelColors: List<Pair<Int, List<ColorSchema>>> = listOf(
     8 to listOf(MyColors.RESEARCH_LEVEL_8),
+    // Levels 10 and 11 are placed before level 9 and 1 because their base color is also white (FFFFFF),
+    // so they must be checked first to avoid false matches against the other white-base levels.
+    10 to listOf(MyColors.RESEARCH_LEVEL_10),
+    11 to listOf(MyColors.RESEARCH_LEVEL_11),
+    12 to listOf(MyColors.RESEARCH_LEVEL_12),
+    13 to listOf(MyColors.RESEARCH_LEVEL_13),
     9 to listOf(MyColors.RESEARCH_LEVEL_9),
     3 to listOf(MyColors.RESEARCH_LEVEL_3),
     4 to listOf(MyColors.RESEARCH_LEVEL_4),
@@ -145,8 +151,8 @@ private suspend fun findAllResearchItems() {
 
                     ShowMessage("找到研究项目: ${schema.name}, 等级$detectedLevel, 目标等级$targetLevel")
                     TouchActions.tap(result.x, result.y, delayTime = 500)
-                    TouchActions.tap(894, 617, delayTime = 500)
-                    clickRightBottom(3)
+//                    TouchActions.tap(894, 617, delayTime = 500)
+//                    clickRightBottom(3)
                     return
                 }
             }
