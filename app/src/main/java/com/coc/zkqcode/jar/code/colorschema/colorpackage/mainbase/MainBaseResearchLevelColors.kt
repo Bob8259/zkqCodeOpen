@@ -16,6 +16,10 @@ interface IMainBaseResearchLevelColors {
     val RESEARCH_LEVEL_7: ColorSchema
     val RESEARCH_LEVEL_8: ColorSchema
     val RESEARCH_LEVEL_9: ColorSchema
+    val RESEARCH_LEVEL_10: ColorSchema
+    val RESEARCH_LEVEL_11: ColorSchema
+    val RESEARCH_LEVEL_12: ColorSchema
+    val RESEARCH_LEVEL_13: ColorSchema
 }
 
 object MainBaseResearchLevelColors : IMainBaseResearchLevelColors {
@@ -62,5 +66,25 @@ object MainBaseResearchLevelColors : IMainBaseResearchLevelColors {
     // Detects a level-9 badge: white base with off-white surrounding pixels
     override val RESEARCH_LEVEL_9: ColorSchema = ColorSchema.parse(
         195, 350, 1090, 650, "FFFFFF", "-2|0|E9E9E9,-7|-2|FFFFFF,-6|4|F0F0F0,-3|5|D3D3D3,0|4|F8F8F8,0|2|FDFDFD,1|1|F4F4F4,1|-1|FEFEFE,0|-3|FEFEFE", 0, 0.93
+    )
+
+    // Detects a level-10 badge: white base with cream and near-white surrounding pixels
+    override val RESEARCH_LEVEL_10: ColorSchema = ColorSchema.parse(
+        195, 350, 1090, 650, "FFFFFF", "0|3|FFFFFF,0|5|FFFFFF,7|9|F3F0E9,11|7|FFFFFF,12|3|FFFFFF,11|-1|FFFFFF,4|0|FFFFFD,4|2|FFFFFF,4|4|FFFFFF", 0, 0.93
+    )
+
+    // Detects a level-11 badge: white base with uniform white surrounding pixels in a grid pattern
+    override val RESEARCH_LEVEL_11: ColorSchema = ColorSchema.parse(
+        195, 350, 1090, 650, "FFFFFF", "0|1|FFFFFF,0|3|FFFFFF,0|5|FFFFFF,0|7|FFFFFF,5|7|FFFFFF,5|6|FFFFFF,5|4|FFFFFF,5|2|FFFFFF,5|0|FFFFFF", 0, 0.93
+    )
+
+    // Detects a level-12 badge: white base with light gray accents and near-white surrounding pixels
+    override val RESEARCH_LEVEL_12: ColorSchema = ColorSchema.parse(
+        195, 350, 1090, 650, "FFFFFF", "0|1|FFFFFF,0|3|FFFFFF,0|5|FFFFFF,10|7|F4F4F4,6|7|F4F4F4,5|5|FCFCFC,11|0|FCFCFC,9|-4|D9D9D9,7|-4|DCDCDC", 0, 0.93
+    )
+
+    // Detects a level-13 badge: white base with medium gray and near-white surrounding pixels
+    override val RESEARCH_LEVEL_13: ColorSchema = ColorSchema.parse(
+        195, 350, 1090, 650, "FFFFFF", "0|2|FFFFFF,0|4|FFFFFF,0|5|FFFFFF,0|6|FFFFFF,4|-1|DFDFDF,11|-2|FCFCFC,11|4|FBFBFB,10|7|EEEEEE,6|7|F2F2F2", 0, 0.93
     )
 }

@@ -78,7 +78,7 @@ object MainScript {
             enterMainScreen()
             delayWithMultiplier(1000)
             mainBaseResearch()
-            delayWithMultiplier(1000)
+            delayWithMultiplier(10000000)
         }
     }
 
