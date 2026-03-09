@@ -8,6 +8,7 @@ import com.coc.zkqcode.core.util.fileactions.LogHelper.showDebugInfo
 import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.ColorSchema
 import com.coc.zkqcode.jar.code.colorschema.MyColors
+import com.coc.zkqcode.jar.code.colorschema.colorpackage.mainbase.MainBaseResearchColors
 import com.coc.zkqcode.jar.code.mainbase.others.MainBaseWorkerAndResearch
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
@@ -23,7 +24,15 @@ import com.coc.zkqcode.jar.ui.schema.details.MainBaseTroopsAndSpells
  * Add new entries here, and add matching properties in MainBaseResearchLevelColors.
  */
 val ResearchLevelColors: List<Pair<Int, List<ColorSchema>>> = listOf(
-    1 to listOf(MyColors.RESEARCH_LEVEL_1)
+    1 to listOf(MyColors.RESEARCH_LEVEL_1),
+    2 to listOf(MyColors.RESEARCH_LEVEL_2),
+    3 to listOf(MyColors.RESEARCH_LEVEL_3),
+    4 to listOf(MyColors.RESEARCH_LEVEL_4),
+    5 to listOf(MyColors.RESEARCH_LEVEL_5),
+    6 to listOf(MyColors.RESEARCH_LEVEL_6),
+    7 to listOf(MyColors.RESEARCH_LEVEL_7),
+    8 to listOf(MyColors.RESEARCH_LEVEL_8),
+    9 to listOf(MyColors.RESEARCH_LEVEL_9)
 )
 
 suspend fun mainBaseResearch(): Boolean {
