@@ -21,9 +21,13 @@ import com.coc.zkqcode.jar.ui.schema.details.MainBaseTroopsAndSpells
  * Maps research level numbers to their corresponding color schemas via MyColors.
  * Each entry is a Pair of (levelNumber, list of colorSchemas).
  * A level is considered detected if ANY of its schemas matches.
+ * Level 8 is placed before level 3 because level 8's color is a subset of level 3's,
+ * so level 8 must be checked first to avoid a false level-3 match.
  * Add new entries here, and add matching properties in MainBaseResearchLevelColors.
  */
 val ResearchLevelColors: List<Pair<Int, List<ColorSchema>>> = listOf(
+    8 to listOf(MyColors.RESEARCH_LEVEL_8),
+    9 to listOf(MyColors.RESEARCH_LEVEL_9),
     1 to listOf(MyColors.RESEARCH_LEVEL_1),
     2 to listOf(MyColors.RESEARCH_LEVEL_2),
     3 to listOf(MyColors.RESEARCH_LEVEL_3),
@@ -31,8 +35,6 @@ val ResearchLevelColors: List<Pair<Int, List<ColorSchema>>> = listOf(
     5 to listOf(MyColors.RESEARCH_LEVEL_5),
     6 to listOf(MyColors.RESEARCH_LEVEL_6),
     7 to listOf(MyColors.RESEARCH_LEVEL_7),
-    8 to listOf(MyColors.RESEARCH_LEVEL_8),
-    9 to listOf(MyColors.RESEARCH_LEVEL_9)
 )
 
 suspend fun mainBaseResearch(): Boolean {
