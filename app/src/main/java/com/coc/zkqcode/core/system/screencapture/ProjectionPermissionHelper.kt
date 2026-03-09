@@ -7,6 +7,11 @@ import androidx.activity.ComponentActivity
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import com.coc.zkqcode.core.ui.floatingwindows.UIWindowService
+import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndStop
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeoutOrNull
 
 class ProjectionPermissionHelper(private val activity: ComponentActivity) {
 
@@ -14,8 +19,8 @@ class ProjectionPermissionHelper(private val activity: ComponentActivity) {
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
         if (result.resultCode == Activity.RESULT_OK && result.data != null) {
-            // Android 14+ 要求在调用 getMediaProjection 前必须有运行中的前台服务
-            // 延迟一点点或者确保服务已经 startForeground 了
+            // Android 14+ requires a running foreground service with
+            // FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION before calling getMediaProjection()
             val serviceIntent = Intent(activity, UIWindowService::class.java)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 activity.startForegroundService(serviceIntent)
@@ -23,10 +28,20 @@ class ProjectionPermissionHelper(private val activity: ComponentActivity) {
                 activity.startService(serviceIntent)
             }
 
-            ScreenCaptureManager.onPermissionGranted(
-                result.resultCode,
-                result.data!!
-            )
+            // Wait for the foreground service to finish startForeground() before
+            // calling getMediaProjection(), avoiding the race condition on cold start
+            CoroutineScope(Dispatchers.Main).launch {
+                val ready = withTimeoutOrNull(5000) {
+                    UIWindowService.foregroundReady.await()
+                }
+                if (ready == null) {
+                    logAndStop("前台服务未能在5秒内启动，无法获取MediaProjection权限")
+                }
+                ScreenCaptureManager.onPermissionGranted(
+                    result.resultCode,
+                    result.data!!
+                )
+            }
         }
     }
 
