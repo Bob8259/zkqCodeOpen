@@ -32,6 +32,7 @@ interface IMainBaseResearchColors {
     // Spells
     val RESEARCH_LIGHTNING: ColorSchema
     val RESEARCH_LIGHTNING_2: ColorSchema
+    val RESEARCH_LIGHTNING_3: ColorSchema
     val RESEARCH_HEALING: ColorSchema
     val RESEARCH_RAGE: ColorSchema
     val RESEARCH_JUMP: ColorSchema
@@ -48,7 +49,9 @@ interface IMainBaseResearchColors {
     val RESEARCH_SKELETON: ColorSchema
     val RESEARCH_SKELETON_2: ColorSchema
     val RESEARCH_BAT: ColorSchema
+    val RESEARCH_BAT_2: ColorSchema
     val RESEARCH_OVERGROWTH: ColorSchema
+    val RESEARCH_OVERGROWTH_2: ColorSchema
     val RESEARCH_IEC_BLOCK: ColorSchema
 
     // Dark Elixir Troops
@@ -110,6 +113,7 @@ object MainBaseResearchColors : IMainBaseResearchColors {
             RESEARCH_METOR_GOLEM,
             RESEARCH_LIGHTNING,
             RESEARCH_LIGHTNING_2,
+            RESEARCH_LIGHTNING_3,
             RESEARCH_HEALING,
             RESEARCH_RAGE,
             RESEARCH_JUMP,
@@ -126,7 +130,9 @@ object MainBaseResearchColors : IMainBaseResearchColors {
             RESEARCH_SKELETON,
             RESEARCH_SKELETON_2,
             RESEARCH_BAT,
+            RESEARCH_BAT_2,
             RESEARCH_OVERGROWTH,
+            RESEARCH_OVERGROWTH_2,
             RESEARCH_IEC_BLOCK,
             RESEARCH_MINION,
             RESEARCH_HOG_RIDER,
@@ -209,6 +215,8 @@ object MainBaseResearchColors : IMainBaseResearchColors {
         ColorSchema.parse(195, 350, 1090, 650, "FFCE0D", "82|-1|FFDD35,53|2|FFFFE0,71|-33|FFFFFF,45|-32|F0E8F4,20|7|FFFFDB,24|1|FFF9DF,69|13|FFFFFF,83|-25|FFFF0F,34|-12|B48531", 0, 0.92, "雷电法术")
     override val RESEARCH_LIGHTNING_2: ColorSchema =
         ColorSchema.parse(195, 350, 1090, 650, "FFCC0E", "24|12|FFFFFF,40|2|FFD22D,46|31|FFDB0D,68|38|FFE00F,77|26|FFE722,83|8|FFD91D,47|-24|9FA8DB,38|-22|A88F62,30|-22|AF9471", 0, 0.92, "雷电法术")
+    override val RESEARCH_LIGHTNING_3: ColorSchema =
+        ColorSchema.parse(195, 350, 1090, 650, "FFC012", "24|-5|FFFFFF,31|4|FFF09E,53|12|FFFFDD,75|20|FFF052,64|35|FFF252,55|37|FFDC33,49|23|FFD62D,45|0|FFE150,48|-15|818A7C", 0, 0.92, "雷电法术")
     override val RESEARCH_HEALING: ColorSchema =
         ColorSchema.parse(195, 350, 1090, 650, "B2F1FB", "36|-8|97C6D7,87|-23|A3BEBF,31|-31|88C7F9,25|-21|7CCBF2,83|-4|A7E8F1,9|1|81818F,74|10|D6E3E3,67|-20|C0F5FB,2|-16|A3CED1", 0, 0.92, "治疗法术")
     override val RESEARCH_RAGE: ColorSchema =
@@ -244,9 +252,13 @@ object MainBaseResearchColors : IMainBaseResearchColors {
     )
     override val RESEARCH_BAT: ColorSchema =
         ColorSchema.parse(195, 350, 1090, 650, "845656", "22|-9|FFFFFF,45|-2|6777BB,36|-5|58608A,76|-33|7E586E,31|2|796992,94|-20|A98175,26|8|9A81AF,4|3|AC7776,54|24|B78DAE", 0, 0.92, "蝙蝠法术")
+    override val RESEARCH_BAT_2: ColorSchema =
+        ColorSchema.parse(195, 350, 1090, 650, "A8716C", "19|0|F3D5F5,31|32|8E4E63,38|36|772F48,38|7|7E5B8D,34|-19|5079B6,47|-24|67B0FE,57|-17|FFF8FD,67|-4|AE929D,75|10|A173A7", 0, 0.92, "蝙蝠法术")
     override val RESEARCH_OVERGROWTH: ColorSchema = ColorSchema.parse(
         195, 350, 1090, 650, "28D7D3", "91|-29|DEB78A,20|15|70CFE3,47|14|CCDED4,-1|-18|77D5C4,13|-35|CCC19D,35|-32|CCCCAD,23|12|123383,28|-6|AECFB2,83|-23|BEC2A0", 0, 0.92, "蔓生法术"
     )
+    override val RESEARCH_OVERGROWTH_2: ColorSchema =
+        ColorSchema.parse(195, 350, 1090, 650, "7299D9", "15|5|71C2B0,30|2|A7FFFF,57|0|DED0A9,53|16|84FFF7,40|21|A7FFFF,47|33|54EAAA,65|42|1645A1,78|29|17B0B6,39|32|33B783", 0, 0.92, "蔓生法术")
     override val RESEARCH_IEC_BLOCK: ColorSchema =
         ColorSchema.parse(195, 350, 1090, 650, "FF8B70", "2|16|FF9273,-1|-14|FFC697,84|-29|EED8B0,87|-9|FFF9C9,88|-20|F9EAC0,85|13|FFD0A7,23|4|FFFFFF,73|-17|FDF2C4,43|-15|64B4FF", 0, 0.92, "冰障法术")
 
