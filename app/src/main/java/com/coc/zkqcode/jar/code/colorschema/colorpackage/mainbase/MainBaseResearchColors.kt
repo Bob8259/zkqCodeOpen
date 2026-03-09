@@ -45,7 +45,9 @@ interface IMainBaseResearchColors {
     val RESEARCH_TOTEM: ColorSchema
     val RESEARCH_HASTE: ColorSchema
     val RESEARCH_POISON: ColorSchema
+    val RESEARCH_POISON_2: ColorSchema
     val RESEARCH_EARTHQUAKE: ColorSchema
+    val RESEARCH_EARTHQUAKE_2: ColorSchema
     val RESEARCH_SKELETON: ColorSchema
     val RESEARCH_SKELETON_2: ColorSchema
     val RESEARCH_BAT: ColorSchema
@@ -126,7 +128,9 @@ object MainBaseResearchColors : IMainBaseResearchColors {
             RESEARCH_TOTEM,
             RESEARCH_HASTE,
             RESEARCH_POISON,
+            RESEARCH_POISON_2,
             RESEARCH_EARTHQUAKE,
+            RESEARCH_EARTHQUAKE_2,
             RESEARCH_SKELETON,
             RESEARCH_SKELETON_2,
             RESEARCH_BAT,
@@ -242,8 +246,12 @@ object MainBaseResearchColors : IMainBaseResearchColors {
         ColorSchema.parse(195, 350, 1090, 650, "B76AD0", "45|-8|808DD6,21|-4|FFFEFF,5|12|E5BBFE,67|2|F4DEFE,3|9|F5E7FE,52|23|C989FF,88|21|F0E0FC,18|-3|FFE9FF,77|11|AE5BDC", 0, 0.92, "急速法术")
     override val RESEARCH_POISON: ColorSchema =
         ColorSchema.parse(195, 350, 1090, 650, "538BC6", "75|-16|AEAF9C,74|-2|63D3FF,62|-4|6AC9E6,39|24|BCC8F4,8|7|2B90E7,34|4|9DB7F0,27|20|6FE6FF,18|17|1CB7FE,76|-19|BDB094", 0, 0.92, "毒药法术")
+    override val RESEARCH_POISON_2: ColorSchema =
+        ColorSchema.parse(195, 350, 1090, 650, "4482CD", "18|7|24BAFA,28|17|EAFAFF,56|7|BDCEF3,66|19|4FEAFF,76|31|0E6DF0,68|31|0E6BF0,56|27|125EF8,48|0|E2ECFE,45|-13|91BAF3", 0, 0.92, "毒药法术")
     override val RESEARCH_EARTHQUAKE: ColorSchema =
         ColorSchema.parse(195, 350, 1090, 650, "5F5A52", "18|2|5B80B5,18|-13|8F99AB,94|-12|DDB480,7|-16|CCAF8C,30|-31|3B9DD6,20|12|334356,-3|6|37424B,46|2|3D5D7F,0|14|354049", 0, 0.92, "地震法术")
+    override val RESEARCH_EARTHQUAKE_2: ColorSchema =
+        ColorSchema.parse(195, 350, 1090, 650, "343F47", "21|9|356E94,35|32|6190C5,55|24|3C9CD7,81|24|38414A,92|5|3F4750,72|2|40597A,35|4|4C698A,29|1|6B86A4,34|-27|45679B", 0, 0.92, "地震法术")
     override val RESEARCH_SKELETON: ColorSchema = ColorSchema.parse(
         195, 350, 1090, 650, "24377E", "23|-9|1C377F,39|-1|7176E4,43|23|1026B0,53|19|0F25DC,61|4|6A67DB,73|2|1B2F85,80|12|1A1E99,87|23|1B1D8C,79|23|1B2380", 0, 0.92, "骷髅法术"
     )
