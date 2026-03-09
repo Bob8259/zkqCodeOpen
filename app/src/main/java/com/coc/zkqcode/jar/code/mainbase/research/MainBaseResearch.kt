@@ -14,7 +14,9 @@ import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.smalltools.getBooleanConfigRuntime
+import com.coc.zkqcode.jar.code.universal.smalltools.getConfigRuntime
 import com.coc.zkqcode.jar.ui.schema.Schema
+import com.coc.zkqcode.jar.ui.schema.details.MainBaseSettings
 import com.coc.zkqcode.jar.ui.schema.details.MainBaseTroopsAndSpells
 
 /**
@@ -82,6 +84,8 @@ private suspend fun findAllResearchItems() {
         for (schema in enabledResearchColors) {
             val result = findMultiColors(schema = schema, byteBuffer = screenBuffer)
             if (result != null) {
+               //TODO: detect  MyColors.MainBaseInsufficientResources
+                
                 // Compute the crop region around the found item (full-screen coordinates)
                 val cropLeft = (result.x - 25).coerceAtLeast(0)
                 val cropTop = (result.y + 20).coerceAtLeast(0)
@@ -104,11 +108,30 @@ private suspend fun findAllResearchItems() {
                             }
                         }
                     }
-                    val levelText = if (detectedLevel != null) "等级$detectedLevel" else "未知等级"
-                    ShowMessage("找到研究项目: ${schema.name}, 坐标: (${result.x}, ${result.y}，$levelText)")
+                    // Read target level offset from config and compute the target level
+                    val researchLevelStr = getConfigRuntime(MainBaseSettings.RESEARCH_LEVEL.key)
+                    val researchLevelOffset = researchLevelStr.toIntOrNull()
+                        ?: logAndStop("研究等级至 配置值无效: $researchLevelStr")
+                    val maxLevel = MainBaseResearchMaxLevel.getMaxLevel(schema.name ?: "")
+                        ?: logAndStop("未找到 ${schema.name} 的最大等级")
+                    val targetLevel = maxLevel - researchLevelOffset
+
+                    // Skip items with unknown level (cannot determine if upgrade is needed)
+                    if (detectedLevel == null) {
+                        showDebugInfo("跳过 ${schema.name}: 未知等级，无法判断是否需要升级")
+                        continue
+                    }
+
+                    // Skip items already at or above the target level
+                    if (detectedLevel >= targetLevel) {
+                        showDebugInfo("跳过 ${schema.name}: 当前等级$detectedLevel >= 目标等级$targetLevel (最大等级$maxLevel - $researchLevelOffset)")
+                        continue
+                    }
+
+                    ShowMessage("找到研究项目: ${schema.name}, 等级$detectedLevel, 目标等级$targetLevel")
+                    TouchActions.tap(result.x, result.y, delayTime = 500)
+                    return
                 }
-                TouchActions.tap(result.x, result.y, delayTime = 500)
-                return
             }
         }
 
