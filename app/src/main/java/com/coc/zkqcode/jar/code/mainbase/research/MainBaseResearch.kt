@@ -5,7 +5,6 @@ import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndStop
-import com.coc.zkqcode.core.util.fileactions.LogHelper.showDebugInfo
 import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.ColorSchema
 import com.coc.zkqcode.jar.code.colorschema.MyColors
@@ -78,11 +77,11 @@ private suspend fun findAllResearchItems() {
     }
 
     if (enabledResearchColors.isEmpty()) {
-        showDebugInfo("没有启用的研究项目")
+        ShowMessage("没有启用的研究项目")
         return
     }
 
-    showDebugInfo("已启用 ${enabledResearchColors.size} 个研究项目")
+    ShowMessage("已启用 ${enabledResearchColors.size} 个研究项目")
     repeat(8) {
         // Capture screenshot for searching
         val screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult
@@ -103,7 +102,7 @@ private suspend fun findAllResearchItems() {
                 )
 
                 if (findMultiColors(byteBuffer = screenBuffer, schema = insufficientSchema) != null) {
-                    showDebugInfo("跳过 ${schema.name}: 资源不足")
+                    ShowMessage("跳过 ${schema.name}: 资源不足")
                     continue
                 }
 
@@ -139,20 +138,20 @@ private suspend fun findAllResearchItems() {
 
                     // Skip items with unknown level (cannot determine if upgrade is needed)
                     if (detectedLevel == null) {
-                        showDebugInfo("跳过 ${schema.name}: 未知等级，无法判断是否需要升级")
+                        ShowMessage("跳过 ${schema.name}: 未知等级，无法判断是否需要升级")
                         continue
                     }
 
                     // Skip items already at or above the target level
                     if (detectedLevel >= targetLevel) {
-                        showDebugInfo("跳过 ${schema.name}: 当前等级$detectedLevel >= 目标等级$targetLevel (最大等级$maxLevel - $researchLevelOffset)")
+                        ShowMessage("跳过 ${schema.name}: 当前等级$detectedLevel >= 目标等级$targetLevel (最大等级$maxLevel - $researchLevelOffset)")
                         continue
                     }
 
                     ShowMessage("找到研究项目: ${schema.name}, 等级$detectedLevel, 目标等级$targetLevel")
                     TouchActions.tap(result.x, result.y, delayTime = 500)
-//                    TouchActions.tap(894, 617, delayTime = 500)
-//                    clickRightBottom(3)
+                    TouchActions.tap(894, 617, delayTime = 500)
+                    clickRightBottom(3)
                     return
                 }
             }
@@ -163,6 +162,6 @@ private suspend fun findAllResearchItems() {
         delayWithMultiplier(300)
     }
 
-    showDebugInfo("未找到任何已启用的研究项目")
+    ShowMessage("未找到任何已启用的研究项目")
     clickRightBottom(3)
 }
