@@ -37,5 +37,9 @@ object MyColors : IUIColors by UIColors, IFeatureColors by FeatureColors, IMainB
     IBuilderBaseResourcesColors by BuilderBaseResourcesColors, IBuilderBaseObstaclesRemovalColors by BuilderBaseObstaclesRemovalColors, IBuilderBaseTrainingColors by BuilderBaseTrainingColors,
     IBuilderBaseUpgradeColors by BuilderBaseUpgradeColors, IBuilderBaseResearchColors by BuilderBaseResearchColors, IBuilderBaseAttackColors by BuilderBaseAttackColors,
     IUniversalUpgradeColors by UniversalUpgradeColors, IMainBaseUpgradeColors by MainBaseUpgradeColors, IMainBaseResearchColors by MainBaseResearchColors,
-    IMainBaseResearchLevelColors by MainBaseResearchLevelColors,
-    IClanCapitalTutorialColors by ClanCapitalTutorialColors
+    IMainBaseResearchLevelColors by MainBaseResearchLevelColors, IClanCapitalTutorialColors by ClanCapitalTutorialColors {
+
+    val MainBaseResearchInsufficientColors = ColorSchema.parse(
+        628, 410, 1160, 598, "7F88FF", "0|-1|7F88FF,0|-2|7F88FF,0|-3|7F88FF,0|-4|7F88FF", 0, 0.97
+    )
+}

@@ -84,7 +84,20 @@ private suspend fun findAllResearchItems() {
         for (schema in enabledResearchColors) {
             val result = findMultiColors(schema = schema, byteBuffer = screenBuffer)
             if (result != null) {
-               //TODO: detect  MyColors.MainBaseInsufficientResources
+                val insufficientLeft = (result.x - 25).coerceAtLeast(0)
+                val insufficientTop = (result.y + 60).coerceAtLeast(0)
+                val insufficientRight = minOf(result.x + 100, screenBuffer.width - 1)
+                val insufficientBottom = minOf(result.y + 100, screenBuffer.height - 1)
+
+                val insufficientSchema = ColorSchema.rescope(
+                    MyColors.MainBaseResearchInsufficientColors,
+                    insufficientLeft, insufficientTop, insufficientRight, insufficientBottom
+                )
+
+                if (findMultiColors(byteBuffer = screenBuffer, schema = insufficientSchema) != null) {
+                    showDebugInfo("跳过 ${schema.name}: 资源不足")
+                    continue
+                }
                 
                 // Compute the crop region around the found item (full-screen coordinates)
                 val cropLeft = (result.x - 25).coerceAtLeast(0)
