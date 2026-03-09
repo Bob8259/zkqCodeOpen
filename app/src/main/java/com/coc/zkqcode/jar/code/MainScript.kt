@@ -7,6 +7,7 @@ import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndStop
 import com.coc.zkqcode.jar.code.builderbase.playBuilderBase
 import com.coc.zkqcode.jar.code.colorschema.ColorSchema
 import com.coc.zkqcode.jar.code.colorschema.MyColors
+import com.coc.zkqcode.jar.code.mainbase.attack.mainBaseAttack
 import com.coc.zkqcode.jar.code.mainbase.others.MainBaseWorkerAndResearch
 import com.coc.zkqcode.jar.code.mainbase.research.mainBaseResearch
 import com.coc.zkqcode.jar.code.universal.InGamesVars
@@ -77,7 +78,7 @@ object MainScript {
         while (true) {
             enterMainScreen()
             delayWithMultiplier(1000)
-            mainBaseResearch()
+            mainBaseAttack()
             delayWithMultiplier(10000000)
         }
     }
