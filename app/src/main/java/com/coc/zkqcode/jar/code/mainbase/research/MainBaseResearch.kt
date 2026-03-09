@@ -28,13 +28,13 @@ import com.coc.zkqcode.jar.ui.schema.details.MainBaseTroopsAndSpells
 val ResearchLevelColors: List<Pair<Int, List<ColorSchema>>> = listOf(
     8 to listOf(MyColors.RESEARCH_LEVEL_8),
     9 to listOf(MyColors.RESEARCH_LEVEL_9),
-    1 to listOf(MyColors.RESEARCH_LEVEL_1),
-    2 to listOf(MyColors.RESEARCH_LEVEL_2),
     3 to listOf(MyColors.RESEARCH_LEVEL_3),
     4 to listOf(MyColors.RESEARCH_LEVEL_4),
+    2 to listOf(MyColors.RESEARCH_LEVEL_2),
     5 to listOf(MyColors.RESEARCH_LEVEL_5),
     6 to listOf(MyColors.RESEARCH_LEVEL_6),
     7 to listOf(MyColors.RESEARCH_LEVEL_7),
+    1 to listOf(MyColors.RESEARCH_LEVEL_1),
 )
 
 suspend fun mainBaseResearch(): Boolean {
