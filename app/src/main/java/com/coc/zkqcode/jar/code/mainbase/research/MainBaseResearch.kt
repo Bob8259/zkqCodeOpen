@@ -107,8 +107,8 @@ private suspend fun findAllResearchItems() {
                     val levelText = if (detectedLevel != null) "等级$detectedLevel" else "未知等级"
                     ShowMessage("找到研究项目: ${schema.name}, 坐标: (${result.x}, ${result.y}，$levelText)")
                 }
-//                TouchActions.tap(result.x, result.y, delayTime = 500)
-//                return
+                TouchActions.tap(result.x, result.y, delayTime = 500)
+                return
             }
         }
 
