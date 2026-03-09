@@ -35,6 +35,6 @@ object FeatureColors : IFeatureColors {
         "FFFFFF",
         "-1|1|FFFFFF,-1|2|FFFFFF,-1|3|FFFFFF,-1|4|FFFFFF,7|5|FFFFFF,7|4|FFFFFF,7|3|FFFFFF,7|2|FFFFFF,7|1|FFFFFF",
         0,
-        0.9,
+        0.99,
     )
 }
