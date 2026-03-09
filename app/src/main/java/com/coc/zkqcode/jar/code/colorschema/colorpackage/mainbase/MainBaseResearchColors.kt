@@ -199,7 +199,7 @@ object MainBaseResearchColors : IMainBaseResearchColors {
     override val RESEARCH_BABY_DRAGON: ColorSchema =
         ColorSchema.parse(195, 350, 1090, 650, "7AE985", "7|-22|1B3064,47|-16|283259,13|20|E1B368,26|6|84E59B,15|-6|73EE8C,39|-14|3FC181,28|4|86E99E,49|13|14162A,54|-23|54DD9A", 0, 0.92, "飞龙宝宝")
     override val RESEARCH_MINER: ColorSchema =
-        ColorSchema.parse(195, 350, 1090, 650, "2C315E", "93|1|DEB277,-4|-18|DDB583,10|9|3D4C7D,40|-27|75716D,40|17|7192EC,15|9|3A4779,82|-7|DEB37C,83|-11|DDB37E,84|15|38393C", 0, 0.92, "矿工")
+        ColorSchema.parse(195, 350, 1090, 650, "2C315E", "93|1|DEB277,-4|-18|DDB583,10|9|3D4C7D,40|-27|75716D,40|17|7192EC,15|9|3A4779,82|-7|DEB37C,83|-11|DDB37E,84|15|38393C", 0, 0.92, "掘地矿工")
     override val RESEARCH_ELECTRO_DRAGON: ColorSchema =
         ColorSchema.parse(195, 350, 1090, 650, "CB7C42", "-3|18|FFB36F,26|7|9C673F,61|-4|FFED94,-5|7|FFD8AD,28|-30|FFBF54,51|15|A26F4F,54|-34|BD7237,84|-19|86502E,12|9|843B1E", 0, 0.92, "雷电飞龙")
     override val RESEARCH_YETI: ColorSchema =
@@ -224,7 +224,7 @@ object MainBaseResearchColors : IMainBaseResearchColors {
     override val RESEARCH_LIGHTNING_3: ColorSchema =
         ColorSchema.parse(195, 350, 1090, 650, "FFC012", "24|-5|FFFFFF,31|4|FFF09E,53|12|FFFFDD,75|20|FFF052,64|35|FFF252,55|37|FFDC33,49|23|FFD62D,45|0|FFE150,48|-15|818A7C", 0, 0.92, "雷电法术")
     override val RESEARCH_HEALING: ColorSchema =
-        ColorSchema.parse(195, 350, 1090, 650, "B2F1FB", "36|-8|97C6D7,87|-23|A3BEBF,31|-31|88C7F9,25|-21|7CCBF2,83|-4|A7E8F1,9|1|81818F,74|10|D6E3E3,67|-20|C0F5FB,2|-16|A3CED1", 0, 0.92, "治疗法术")
+        ColorSchema.parse(195, 350, 1090, 650, "B2F1FB", "36|-8|97C6D7,87|-23|A3BEBF,31|-31|88C7F9,25|-21|7CCBF2,83|-4|A7E8F1,9|1|81818F,74|10|D6E3E3,67|-20|C0F5FB,2|-16|A3CED1", 0, 0.92, "疗伤法术")
     override val RESEARCH_RAGE: ColorSchema =
         ColorSchema.parse(195, 350, 1090, 650, "FAD0EB", "51|22|B42870,84|10|FFFEFF,74|-20|DF9CB8,10|15|D9B8BE,55|-28|96A6F4,90|10|FFE6FD,87|-7|F3B6DB,30|-12|F4DCEA,47|15|BC4F76", 0, 0.92, "狂暴法术")
     override val RESEARCH_JUMP: ColorSchema =
@@ -281,7 +281,7 @@ object MainBaseResearchColors : IMainBaseResearchColors {
     override val RESEARCH_HOG_RIDER: ColorSchema =
         ColorSchema.parse(195, 350, 1090, 650, "5B4F55", "29|23|151921,16|-25|F2CDA5,11|-34|DFBB8E,9|12|9E8678,51|-5|415488,54|6|6072B1,-2|-1|5D535B,13|-30|DEB78A,33|-6|C78F72", 0, 0.92, "野猪骑士")
     override val RESEARCH_VALKYRIE: ColorSchema =
-        ColorSchema.parse(195, 350, 1090, 650, "6686F9", "91|-27|DEB789,24|-12|386DF2,91|-7|1359FC,8|22|253267,55|2|516BAA,93|3|133BBD,64|-4|3C4873,50|-14|647EC2,58|1|485D94", 0, 0.92, "瓦基里武神")
+        ColorSchema.parse(195, 350, 1090, 650, "6686F9", "91|-27|DEB789,24|-12|386DF2,91|-7|1359FC,8|22|253267,55|2|516BAA,93|3|133BBD,64|-4|3C4873,50|-14|647EC2,58|1|485D94", 0, 0.92, "瓦基丽武神")
     override val RESEARCH_GOLEM: ColorSchema =
         ColorSchema.parse(195, 350, 1090, 650, "A6967C", "30|-3|8EA3B6,-3|-16|61707D,-1|-35|6C6458,91|-23|6F6C66,6|-4|B39E84,14|-5|7E7B74,82|11|EA72F7,22|-18|A4ABB0,91|9|B3D0E8", 0, 0.92, "戈仑石人")
     override val RESEARCH_WITCH: ColorSchema =

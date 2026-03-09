@@ -17,7 +17,7 @@ object MainBaseTroopsAndSpells {
     val TROOP_DRAGON = SettingDef("troop_dragon", "飞龙", 1, "MAIN_BASE_TROOPS_AND_SPELLS")
     val TROOP_PEKKA = SettingDef("troop_pekka", "皮卡超人", 1, "MAIN_BASE_TROOPS_AND_SPELLS")
     val TROOP_BABY_DRAGON = SettingDef("troop_baby_dragon", "飞龙宝宝", 1, "MAIN_BASE_TROOPS_AND_SPELLS")
-    val TROOP_MINER = SettingDef("troop_miner", "矿工", 1, "MAIN_BASE_TROOPS_AND_SPELLS")
+    val TROOP_MINER = SettingDef("troop_miner", "掘地矿工", 1, "MAIN_BASE_TROOPS_AND_SPELLS")
     val TROOP_ELECTRO_DRAGON = SettingDef("troop_electro_dragon", "雷电飞龙", 1, "MAIN_BASE_TROOPS_AND_SPELLS")
     val TROOP_YETI = SettingDef("troop_yeti", "大雪怪", 1, "MAIN_BASE_TROOPS_AND_SPELLS")
     val TROOP_DRAGON_RIDER = SettingDef("troop_dragon_rider", "龙骑士", 1, "MAIN_BASE_TROOPS_AND_SPELLS")
@@ -28,7 +28,7 @@ object MainBaseTroopsAndSpells {
 
     // Spells
     val SPELL_LIGHTNING = SettingDef("spell_lightning", "雷电法术", 1, "MAIN_BASE_TROOPS_AND_SPELLS")
-    val SPELL_HEALING = SettingDef("spell_healing", "治疗法术", 1, "MAIN_BASE_TROOPS_AND_SPELLS")
+    val SPELL_HEALING = SettingDef("spell_healing", "疗伤法术", 1, "MAIN_BASE_TROOPS_AND_SPELLS")
     val SPELL_RAGE = SettingDef("spell_rage", "狂暴法术", 1, "MAIN_BASE_TROOPS_AND_SPELLS")
     val SPELL_JUMP = SettingDef("spell_jump", "弹跳法术", 1, "MAIN_BASE_TROOPS_AND_SPELLS")
     val SPELL_FREEZE = SettingDef("spell_freeze", "冰冻法术", 1, "MAIN_BASE_TROOPS_AND_SPELLS")
@@ -48,7 +48,7 @@ object MainBaseTroopsAndSpells {
     // Dark Elixir Troops
     val TROOP_MINION = SettingDef("troop_minion", "亡灵", 1, "MAIN_BASE_TROOPS_AND_SPELLS")
     val TROOP_HOG_RIDER = SettingDef("troop_hog_rider", "野猪骑士", 1, "MAIN_BASE_TROOPS_AND_SPELLS")
-    val TROOP_VALKYRIE = SettingDef("troop_valkyrie", "瓦基里武神", 1, "MAIN_BASE_TROOPS_AND_SPELLS")
+    val TROOP_VALKYRIE = SettingDef("troop_valkyrie", "瓦基丽武神", 1, "MAIN_BASE_TROOPS_AND_SPELLS")
     val TROOP_GOLEM = SettingDef("troop_golem", "戈仑石人", 1, "MAIN_BASE_TROOPS_AND_SPELLS")
     val TROOP_WITCH = SettingDef("troop_witch", "女巫", 1, "MAIN_BASE_TROOPS_AND_SPELLS")
     val TROOP_LAVA_HOUND = SettingDef("troop_lava_hound", "熔岩猎犬", 1, "MAIN_BASE_TROOPS_AND_SPELLS")
