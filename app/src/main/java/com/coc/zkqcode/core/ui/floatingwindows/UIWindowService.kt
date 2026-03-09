@@ -35,6 +35,7 @@ import com.coc.zkqcode.loadjar.Loadjar
 import com.coc.zkqcode.statehelper.AppMode
 import com.coc.zkqcode.statehelper.AppStateManager
 import com.topjohnwu.superuser.Shell
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -51,6 +52,11 @@ class UIWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner, View
         private const val HEIGHT_RATIO_DEFAULT = 0.7f
         private const val TARGET_DPI = 300f
         private const val DEFAULT_LOAD_STATUS = "加载中..."
+
+        // Signal that startForeground() has been called, used to synchronize
+        // with ProjectionPermissionHelper before calling getMediaProjection()
+        var foregroundReady = CompletableDeferred<Unit>()
+            private set
     }
 
     private lateinit var windowManager: WindowManager
@@ -213,6 +219,8 @@ class UIWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner, View
 
     override fun onDestroy() {
         super.onDestroy()
+        // Reset the signal so it can be re-awaited on next service start
+        foregroundReady = CompletableDeferred()
         serviceScope.cancel()
         lifecycleRegistry.currentState = Lifecycle.State.DESTROYED
         customViewModelStore.clear()
@@ -243,5 +251,7 @@ class UIWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner, View
         } else {
             startForeground(NOTIFICATION_ID, notification)
         }
+        // Signal that the foreground service is now running
+        foregroundReady.complete(Unit)
     }
 }
