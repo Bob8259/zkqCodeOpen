@@ -8,7 +8,6 @@ import com.coc.zkqcode.core.util.fileactions.LogHelper.showDebugInfo
 import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.ColorSchema
 import com.coc.zkqcode.jar.code.colorschema.MyColors
-import com.coc.zkqcode.jar.code.colorschema.colorpackage.mainbase.MainBaseResearchColors
 import com.coc.zkqcode.jar.code.mainbase.others.MainBaseWorkerAndResearch
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
@@ -17,14 +16,14 @@ import com.coc.zkqcode.jar.code.universal.smalltools.getBooleanConfigRuntime
 import com.coc.zkqcode.jar.ui.schema.Schema
 import com.coc.zkqcode.jar.ui.schema.details.MainBaseTroopsAndSpells
 
-// White color list for detecting available research items
-val ResearchLevelOne = listOf(
-    ColorSchema.parse(
-        195, 350, 1090, 650,
-        "FFFFFF",
-        "0|1|FFFFFF,0|2|FFFFFF,0|3|FFFFFF,0|4|FFFFFF,0|5|FFFFFF,0|6|FFFFFF,0|7|FFFFFF,0|8|FFFFFF,0|9|F4F4F4",
-        0, 0.92
-    )
+/**
+ * Maps research level numbers to their corresponding color schemas via MyColors.
+ * Each entry is a Pair of (levelNumber, list of colorSchemas).
+ * A level is considered detected if ANY of its schemas matches.
+ * Add new entries here, and add matching properties in MainBaseResearchLevelColors.
+ */
+val ResearchLevelColors: List<Pair<Int, List<ColorSchema>>> = listOf(
+    1 to listOf(MyColors.RESEARCH_LEVEL_1)
 )
 
 suspend fun mainBaseResearch(): Boolean {
@@ -78,15 +77,24 @@ private suspend fun findAllResearchItems() {
                 val cropWidth = minOf(40, screenBuffer.width - cropLeft)
                 val cropHeight = minOf(40, screenBuffer.height - cropTop)
                 if (cropWidth > 0 && cropHeight > 0) {
-                    // Rescope ResearchLevelOne to the crop area and search on existing screenBuffer
-                    val levelSchema = ColorSchema.rescope(
-                        ResearchLevelOne[0],
-                        cropLeft, cropTop, cropLeft + cropWidth - 1, cropTop + cropHeight - 1
-                    )
-                    val levelResult = findMultiColors(byteBuffer = screenBuffer, schema = levelSchema)
-                    if (levelResult != null) {
-                        ShowMessage("找到研究项目: ${schema.name}, 坐标: (${result.x}, ${result.y}，等级1)")
+                    // Iterate through all level entries; each level may have multiple schemas.
+                    // A level is matched if ANY of its schemas is found in the crop area.
+                    var detectedLevel: Int? = null
+                    outer@ for ((level, levelSchemas) in ResearchLevelColors) {
+                        for (levelColorSchema in levelSchemas) {
+                            val levelSchema = ColorSchema.rescope(
+                                levelColorSchema,
+                                cropLeft, cropTop, cropLeft + cropWidth - 1, cropTop + cropHeight - 1
+                            )
+                            val levelResult = findMultiColors(byteBuffer = screenBuffer, schema = levelSchema)
+                            if (levelResult != null) {
+                                detectedLevel = level
+                                break@outer
+                            }
+                        }
                     }
+                    val levelText = if (detectedLevel != null) "等级$detectedLevel" else "未知等级"
+                    ShowMessage("找到研究项目: ${schema.name}, 坐标: (${result.x}, ${result.y}，$levelText)")
                 }
 //                TouchActions.tap(result.x, result.y, delayTime = 500)
 //                return
