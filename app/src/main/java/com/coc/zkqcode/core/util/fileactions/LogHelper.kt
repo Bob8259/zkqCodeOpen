@@ -21,12 +21,20 @@ object LogHelper {
         }
     }
 
-    fun logAndStop(message: String): Nothing {
+    fun logAndStop(message: String, restart: Boolean = true): Nothing {
         Timber.tag("zkq_debug").e("CRITICAL_ERROR: $message")
-        // Directly execute shell command without checking isPlaying state,
-        // since this is a critical error that requires immediate app termination
-        Shell.cmd("am force-stop com.coc.zkqcode").exec()
-        error(message) // 抛出 IllegalStateException
+        if (restart) {
+            // Spawn a detached process via setsid to restart the app after killing it.
+            // The new session ensures this child survives the parent process termination.
+            Shell.cmd(
+                "setsid sh -c 'sleep 2; am force-stop com.coc.zkqcode; sleep 1; am start -n com.coc.zkqcode/.MainActivity' > /dev/null 2>&1 &"
+            ).exec()
+        } else {
+            // Directly execute shell command without checking isPlaying state,
+            // since this is a critical error that requires immediate app termination
+            Shell.cmd("am force-stop com.coc.zkqcode").exec()
+        }
+        error(message)
     }
 
     fun showDebugInfo(message: String) {
