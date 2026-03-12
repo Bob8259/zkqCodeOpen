@@ -43,11 +43,17 @@ object MyColors : IUIColors by UIColors, IFeatureColors by FeatureColors, IMainB
         628, 410, 1160, 598, "7F88FF", "0|-1|7F88FF,0|-2|7F88FF,0|-3|7F88FF,0|-4|7F88FF", 0, 0.97
     )
 
-    // Main Base Attack Tutorial Colors
+    // Main Base Attack Colors
     val SetBaseIcon = ColorSchema.parse(
         546, 78, 573, 118, "1AABFE", "5|0|1AB4FE,11|0|1AB8FE,16|0|1AB5FE,21|0|1AAEFE,0|20|16B4FA,5|20|12B6FA,11|20|11B7FB,16|20|11B6FB,21|20|10B3FA", 0, 0.9, "布阵按钮"
     )
     val InnerSetBase = ColorSchema.parse(
         341, 46, 504, 146, "4B5261", "33|0|4B5261,66|0|4B5261,98|0|4B5261,131|0|4B5261,0|50|C6D2D9,33|50|C6D2D9,66|50|C6D2D9,98|50|C6D2D9,131|50|C6D2D9", 0, 0.97
+    )
+    val SearchOpponents = ColorSchema.parse(
+        89, 501, 350, 570, "2DADF9", "26|-9|3CB7FC,14|13|2CADF9,4|32|2CADF9,202|-5|2FB0FA,226|0|2DADF9,236|13|2CADF9,237|20|2CADF9,227|32|2CADF9,211|45|2CADF9", 0, 0.95, "搜索对手"
+    )
+    val AttackButton = ColorSchema.parse(
+        1045, 624, 1245, 662, "9BFDCF", "13|-5|A1FED2,24|-4|A1FED2,16|1|9AFCCE,8|20|4EE79F,121|-5|A1FED2,140|-3|A0FED1,146|3|97FCCC,132|20|4EE79F,137|20|4EE79F", 0, 0.9, "进攻！"
     )
 }
