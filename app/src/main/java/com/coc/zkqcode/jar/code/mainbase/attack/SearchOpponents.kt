@@ -31,6 +31,10 @@ private suspend fun mainBaseBattleTutorial() {
         if (villagerSpeaking != null) {
             TouchActions.tap(villagerSpeaking.x, villagerSpeaking.y, delayTime = 500)
         }
+        val setBaseIcon = findMultiColors(schema = MyColors.SetBaseIcon)
+        if (setBaseIcon!= null) {
+            TouchActions.tap(setBaseIcon.x, setBaseIcon.y, delayTime = 500)
+        }
         delayWithMultiplier(100)
     }
 }
