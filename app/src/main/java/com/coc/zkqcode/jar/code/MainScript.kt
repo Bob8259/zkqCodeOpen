@@ -80,6 +80,7 @@ object MainScript {
             delayWithMultiplier(1000)
             mainBaseAttack()
             delayWithMultiplier(10000000)
+
         }
     }
 
