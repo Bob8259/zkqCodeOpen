@@ -20,6 +20,14 @@ suspend fun searchOpponents(): Boolean {
         if (villagerSpeaking != null || setBaseIcon != null) {
             if (!mainBaseBattleTutorial()) return false
         }
+        val searchOpponents = findMultiColors(schema = MyColors.SearchOpponents)
+        if (searchOpponents != null) {
+            TouchActions.tap(searchOpponents.x, searchOpponents.y, delayTime = 500)
+        }
+        val attackButton = findMultiColors(schema = MyColors.AttackButton)
+        if (attackButton != null) {
+            TouchActions.tap(attackButton.x, attackButton.y, delayTime = 500)
+        }
         delayWithMultiplier(100)
     }
     return true
