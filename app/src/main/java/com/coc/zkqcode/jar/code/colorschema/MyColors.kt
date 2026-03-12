@@ -38,8 +38,13 @@ object MyColors : IUIColors by UIColors, IFeatureColors by FeatureColors, IMainB
     IBuilderBaseUpgradeColors by BuilderBaseUpgradeColors, IBuilderBaseResearchColors by BuilderBaseResearchColors, IBuilderBaseAttackColors by BuilderBaseAttackColors,
     IUniversalUpgradeColors by UniversalUpgradeColors, IMainBaseUpgradeColors by MainBaseUpgradeColors, IMainBaseResearchColors by MainBaseResearchColors,
     IMainBaseResearchLevelColors by MainBaseResearchLevelColors, IClanCapitalTutorialColors by ClanCapitalTutorialColors {
-
+    // Main Base Research Colors
     val MainBaseResearchInsufficientColors = ColorSchema.parse(
         628, 410, 1160, 598, "7F88FF", "0|-1|7F88FF,0|-2|7F88FF,0|-3|7F88FF,0|-4|7F88FF", 0, 0.97
+    )
+
+    // Main Base Attack Tutorial Colors
+    val SetBaseIcon = ColorSchema.parse(
+        546, 78, 573, 118, "1AABFE", "5|0|1AB4FE,11|0|1AB8FE,16|0|1AB5FE,21|0|1AAEFE,0|20|16B4FA,5|20|12B6FA,11|20|11B7FB,16|20|11B6FB,21|20|10B3FA", 0, 0.9, "布阵按钮"
     )
 }
