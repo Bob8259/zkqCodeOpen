@@ -8,6 +8,7 @@ import com.coc.zkqcode.jar.code.builderbase.playBuilderBase
 import com.coc.zkqcode.jar.code.colorschema.ColorSchema
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.mainbase.attack.mainBaseAttack
+import com.coc.zkqcode.jar.code.mainbase.attack.mainBaseDeployTroops
 import com.coc.zkqcode.jar.code.mainbase.others.MainBaseWorkerAndResearch
 import com.coc.zkqcode.jar.code.mainbase.research.mainBaseResearch
 import com.coc.zkqcode.jar.code.universal.InGamesVars
@@ -77,9 +78,8 @@ object MainScript {
 
     private suspend fun runTestCode() {
         while (true) {
-            enterMainScreen()
             delayWithMultiplier(1000)
-            mainBaseAttack()
+            mainBaseDeployTroops()
             delayWithMultiplier(10000000)
 
         }
