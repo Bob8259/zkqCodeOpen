@@ -81,8 +81,9 @@ object MainScript {
         while (true) {
 //            enterMainScreen()
             delayWithMultiplier(1000)
-//            mainBaseDeployTroops()
-            mainBaseTrainTroops()
+            mainBaseDeployTroops()
+//            findMultiColors(schema = MyColors.GiantAtDeployBar)
+//            mainBaseTrainTroops()
             delayWithMultiplier(10000000)
 
         }

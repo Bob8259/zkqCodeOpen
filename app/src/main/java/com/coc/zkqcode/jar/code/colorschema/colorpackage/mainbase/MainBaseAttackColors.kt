@@ -52,4 +52,5 @@ object MainBaseAttackColors : IMainBaseAttackColors {
     override val DragonAtDeployBar = ColorSchema.parse(
         85, 589, 1189, 717, "DB5C6E", "14|6|4F2D8C,27|10|EB6B79,24|22|BF4F5E,15|30|2E268C,25|37|5537A9,27|45|5C336D,25|47|552268,2|23|7393F7,-10|19|883542", 0, 0.9, "部署飞龙"
     )
+
 }
