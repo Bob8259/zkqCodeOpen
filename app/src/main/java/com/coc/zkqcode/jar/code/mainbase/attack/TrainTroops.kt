@@ -17,7 +17,8 @@ import kotlin.math.abs
 
 suspend fun mainBaseTrainTroops(): Boolean {
     val storageKey = StorageKeys.withAccountNumber(StorageKeys.MAIN_BASE_TRAIN_TROOPS, InGamesVars.currentAccountNumber)
-    val lastTrainingTime = readMemory(storageKey).toIntOrNull()
+//    val lastTrainingTime = readMemory(storageKey).toIntOrNull()
+    val lastTrainingTime = 90
 
     val calendar = Calendar.getInstance()
     val dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH)
