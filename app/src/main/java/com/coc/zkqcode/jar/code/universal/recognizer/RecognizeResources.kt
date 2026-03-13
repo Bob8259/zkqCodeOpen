@@ -12,24 +12,26 @@ data class Resources(
 )
 
 /**
- * Object for recognizing and extracting resources from the game screen.
- */
-
-/**
- * Recognizes resources in the specified crop area (1050, 26, 1245, 201).
+ * Recognizes resources from the game screen.
+ *
+ * - When [isOpponent] is false (default), reads from the own-base area (1050, 26, 1245, 201).
+ * - When [isOpponent] is true, reads from the opponent's area (50, 98, 293, 209).
  *
  * Resource identification logic:
  * - Smallest Y axis position is Gold.
  * - Next smallest is Elixir.
  * - Largest is Dark Elixir.
  *
+ * @param isOpponent Whether to recognize the opponent's resources instead of own.
  * @return A [Resources] object containing the detected values.
  */
-suspend fun recognizeMyResources(): Resources {
-    val startX = 1050
-    val startY = 26
-    val endX = 1245
-    val endY = 201
+suspend fun recognizeResources(isOpponent: Boolean = false): Resources {
+    // Select crop area based on target
+    val (startX, startY, endX, endY) = if (isOpponent) {
+        listOf(50, 98, 293, 209)
+    } else {
+        listOf(1050, 26, 1245, 201)
+    }
 
     val results = TextRecognizer.recognize(startX, startY, endX, endY, useChinese = false, applyPreprocess = false)
 
@@ -42,8 +44,6 @@ suspend fun recognizeMyResources(): Resources {
 
     sortedResults.forEachIndexed { index, recognizedText ->
         val cleanValue = extractValue(recognizedText.text)
-        showDebugInfo("Resource Index $index: Raw='${recognizedText.text}', Clean='$cleanValue', Top=${recognizedText.position?.top}")
-
         when (index) {
             0 -> gold = cleanValue
             1 -> elixir = cleanValue
