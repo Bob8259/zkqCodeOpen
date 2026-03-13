@@ -116,7 +116,7 @@ fun LazyListScope.MainBaseConfig(
                 AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.AI_DEPLOY_TROOPS.key}_c$index"]?.value == "0") {
                     SettingDropdown(
                         key = "${MAIN_BASE_SETTINGS.TACTICS_MODE.key}_c$index",
-                        options = listOf("单面一字划", "双面一字划", "四面长按")
+                        options = listOf("一马当先", "两面夹击", "四面楚歌")
                     )
                 }
 
@@ -210,7 +210,7 @@ fun LazyListScope.MainBaseConfig(
                 AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.BUILD_SETTING.key}_c$index"]?.value == "1") {
                     MainBaseUpgradeConfigs(index, onNavigatePriority)
                 }
-             }
+            }
         }
     }
 
