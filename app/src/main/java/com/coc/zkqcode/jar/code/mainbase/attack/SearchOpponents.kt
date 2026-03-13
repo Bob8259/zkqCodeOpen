@@ -1,5 +1,6 @@
 package com.coc.zkqcode.jar.code.mainbase.attack
 
+import android.util.Log
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.MyColors
@@ -71,21 +72,42 @@ suspend fun searchOpponents(): Boolean {
         val nextOpponent = findMultiColors(schema = MyColors.NextOpponent)
         if (nextOpponent != null) {
             searchTimes++
-            val recognizedOpponentResources = recognizeResources(true)
+            val res = recognizeResources(true)
+
+            // 1. Update target resources dynamically if enabled
             if (isDynamicAdjust) {
-                targetGold = if (targetGold > 0) (targetGold * searchTimes + recognizedOpponentResources.gold) / (searchTimes + 1) else 0
-                targetElixir = if (targetElixir > 0) (targetElixir * searchTimes + recognizedOpponentResources.elixir) / (searchTimes + 1) else 0
-                targetDarkElixir = if (targetDarkElixir > 0) (targetDarkElixir * searchTimes + recognizedOpponentResources.darkElixir) / (searchTimes + 1) else 0
+                // Use local variable to maintain precision and clarity during calculation
+                val weight = searchTimes
+                if (targetGold > 0) {
+                    targetGold = (targetGold * (weight - 1) + res.gold) / weight
+                }
+                if (targetElixir > 0) {
+                    targetElixir = (targetElixir * (weight - 1) + res.elixir) / weight
+                }
+                if (targetDarkElixir > 0) {
+                    targetDarkElixir = (targetDarkElixir * (weight - 1) + res.darkElixir) / weight
+                }
             }
-            ShowMessage("搜索次数：$searchTimes\n对手资源：\n${recognizedOpponentResources.gold}金, ${recognizedOpponentResources.elixir}水, ${recognizedOpponentResources.darkElixir}黑\n目标资源：\n${targetGold}金, ${targetElixir}水, ${targetDarkElixir}黑")
-            if (isDynamicAdjust && searchTimes > 1) {
-                if (recognizedOpponentResources.gold > targetGold && recognizedOpponentResources.elixir > targetElixir && recognizedOpponentResources.darkElixir > targetDarkElixir) {
+
+            // 2. Display status message (Maintaining original Chinese formatting)
+            ShowMessage("搜索次数：$searchTimes\n对手资源：\n${res.gold}金, ${res.elixir}水, ${res.darkElixir}黑\n目标资源：\n${targetGold}金, ${targetElixir}水, ${targetDarkElixir}黑")
+
+            // 3. Consolidated Deployment Logic
+            // Combined the redundant 'isDynamicAdjust' branches to reduce code duplication
+            val canProceed = !isDynamicAdjust || searchTimes > 1
+            if (canProceed) {
+                val meetsCriteria = res.gold > targetGold && res.elixir > targetElixir && res.darkElixir > targetDarkElixir
+
+                if (meetsCriteria) {
                     mainBaseDeployTroops()
+                    break
+                } else {
+                    // No changes to original interaction logic or delay
+                    TouchActions.tap(nextOpponent.x, nextOpponent.y, delayTime = 1000)
                 }
-            } else if (!isDynamicAdjust) {
-                if (recognizedOpponentResources.gold > targetGold && recognizedOpponentResources.elixir > targetElixir && recognizedOpponentResources.darkElixir > targetDarkElixir) {
-                    mainBaseDeployTroops()
-                }
+            } else {
+                // No changes to original interaction logic or delay
+                TouchActions.tap(nextOpponent.x, nextOpponent.y, delayTime = 1000)
             }
         }
         // Calculate remaining time in minutes with 2 decimal places

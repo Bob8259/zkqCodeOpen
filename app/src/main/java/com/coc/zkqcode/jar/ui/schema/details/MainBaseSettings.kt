@@ -7,9 +7,9 @@ import com.coc.zkqcode.jar.ui.schema.SettingDef
 object MainBaseSettings {
     // Common settings
     val AUTO_ATTACK = SettingDef("auto_attack", "自动进攻", 1, "MAIN_BASE_SETTINGS")
-    val GOLD_REQUIREMENT = SettingDef("gold_requirement", "金币要求", "0", "MAIN_BASE_SETTINGS")
-    val ELIXIR_REQUIREMENT = SettingDef("elixir_requirement", "圣水要求", "0", "MAIN_BASE_SETTINGS")
-    val DARK_ELIXIR_REQUIREMENT = SettingDef("dark_elixir_requirement", "黑油要求", "0", "MAIN_BASE_SETTINGS")
+    val GOLD_REQUIREMENT = SettingDef("gold_requirement", "金币要求", "100", "MAIN_BASE_SETTINGS")
+    val ELIXIR_REQUIREMENT = SettingDef("elixir_requirement", "圣水要求", "100", "MAIN_BASE_SETTINGS")
+    val DARK_ELIXIR_REQUIREMENT = SettingDef("dark_elixir_requirement", "黑油要求", "10", "MAIN_BASE_SETTINGS")
     val DYNAMIC_ADJUSTMENT = SettingDef("dynamic_adjustment", "动态调节", 1, "MAIN_BASE_SETTINGS")
     val STOP_BATTLE_AFTER_FULL_RESOURCES = SettingDef(
         "stop_battle_after_full_resources", "资源满后停止对战", 1, "MAIN_BASE_SETTINGS"
