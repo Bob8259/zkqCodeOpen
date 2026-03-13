@@ -4,7 +4,7 @@ import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.jar.code.universal.InGamesVars
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
-import com.coc.zkqcode.jar.code.universal.recognizer.recognizeMyResources
+import com.coc.zkqcode.jar.code.universal.recognizer.recognizeResources
 import com.coc.zkqcode.jar.code.universal.remove.enterEditMode
 import com.coc.zkqcode.jar.code.universal.remove.removeObstacles
 import com.coc.zkqcode.jar.code.universal.smalltools.StorageKeys
@@ -15,7 +15,7 @@ import com.coc.zkqcode.jar.ui.schema.Schema
 import java.util.Calendar
 
 suspend fun mainBaseRemoveObstacles(): Boolean {
-    val resources = recognizeMyResources()
+    val resources = recognizeResources()
     val storageKey = StorageKeys.withAccountNumber(StorageKeys.MAIN_BASE_REMOVE_OBSTACLES, InGamesVars.currentAccountNumber)
     val lastCleaningTime = readMemory(storageKey).toIntOrNull()
     val currentDay = Calendar.getInstance().get(Calendar.DAY_OF_YEAR)
