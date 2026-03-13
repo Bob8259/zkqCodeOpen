@@ -7,14 +7,10 @@ import com.coc.zkqcode.jar.code.universal.InGamesVars
 fun getConfigRuntime(configName: String): String {
     val configNumber = GlobalVars.configStates["account_config${
         InGamesVars.currentAccountNumber
-    }"]?.value
-        ?: logAndStop(
-            "Can not get the config number for account ${
-                InGamesVars.currentAccountNumber
-            }"
-        )
-    val result = GlobalVars.configStates["${configName}_c$configNumber"]?.value
-        ?: logAndStop("Can not get the config for ${configName}_c$configNumber")
+    }"]?.value ?: logAndStop(
+        "Can not get the config number for account ${InGamesVars.currentAccountNumber}"
+    )
+    val result = GlobalVars.configStates["${configName}_c$configNumber"]?.value ?: logAndStop("Can not get the config for ${configName}_c$configNumber")
     return result
 }
 

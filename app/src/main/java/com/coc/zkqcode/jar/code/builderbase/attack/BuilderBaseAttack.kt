@@ -60,7 +60,7 @@ suspend fun builderBaseAttack(): Boolean {
             goldPos == null || goldPos.x > 1016 -> "gold"
             else -> "exile"
         }
-        val battleTimes = getConfigRuntime(Schema.BUILDER_BASE_SETTINGS.SWITCH_ACCOUNT_AFTER_BATTLES.key).toIntOrNull() ?: 0
+        val battleTimes = getConfigRuntime(Schema.BUILDER_BASE_SETTINGS.SWITCH_ACCOUNT_AFTER_BATTLES.key).toInt()
         repeat(battleTimes) { index ->
             if (!realAttack(attackType, index + 1)) return false
         }

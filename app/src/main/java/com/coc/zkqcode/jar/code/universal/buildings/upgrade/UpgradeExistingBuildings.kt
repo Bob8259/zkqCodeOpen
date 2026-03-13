@@ -2,7 +2,6 @@ package com.coc.zkqcode.jar.code.universal.buildings.upgrade
 
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
-import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndStop
 import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.ColorSchema
 import com.coc.zkqcode.jar.code.colorschema.MyColors
@@ -212,13 +211,13 @@ private fun getOrderedList(buildings: List<String>, baseType: BaseType): List<St
     val priorityMap = when (baseType) {
         BaseType.Main -> MainBaseBuildingPriorities.all.associate { settingDef ->
             val priorityStr = getConfigRuntime(settingDef.key)
-            val priority = priorityStr.toIntOrNull() ?: logAndStop("Invalid priority configuration for ${settingDef.displayName}, value: $priorityStr")
+            val priority = priorityStr.toInt()
             settingDef.displayName to priority
         }
 
         BaseType.Builder -> BuilderBaseBuildingsPriority.all.associate { settingDef ->
             val priorityStr = getConfigRuntime(settingDef.key)
-            val priority = priorityStr.toIntOrNull() ?: logAndStop("Invalid priority configuration for ${settingDef.displayName}, value: $priorityStr")
+            val priority = priorityStr.toInt()
             settingDef.displayName to priority
         }
     }
