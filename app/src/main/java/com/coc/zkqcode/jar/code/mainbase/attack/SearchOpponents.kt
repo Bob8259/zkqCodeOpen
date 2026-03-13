@@ -15,6 +15,15 @@ import com.coc.zkqcode.jar.code.universal.smalltools.getBooleanConfigRuntime
 import com.coc.zkqcode.jar.code.universal.smalltools.getConfigRuntime
 import com.coc.zkqcode.jar.ui.schema.Schema
 
+// Timeout constants
+private const val SEARCH_TIMEOUT_MS = 8 * 60 * 1000L
+private const val TUTORIAL_TIMEOUT_MS = 3 * 60 * 1000L
+
+// X-coordinate thresholds for detecting full storage bars on screen
+private const val GOLD_FULL_X_THRESHOLD = 1078
+private const val ELIXIR_FULL_X_THRESHOLD = 1078
+private const val DARK_ELIXIR_FULL_X_THRESHOLD = 1127
+
 suspend fun searchOpponents(): Boolean {
     if (!getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.AUTO_ATTACK.key)) return true
     var targetGold = getConfigRuntime(Schema.MAIN_BASE_SETTINGS.GOLD_REQUIREMENT.key).toIntOrNull() ?: logAndStop("Gold requirement is not a number")
@@ -28,25 +37,24 @@ suspend fun searchOpponents(): Boolean {
     }
     val isDynamicAdjust = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.DYNAMIC_ADJUSTMENT.key)
     val goldPercentage = findMultiColors(schema = MyColors.GoldColor)
-    if (goldPercentage != null && goldPercentage.x < 1078) {
+    if (goldPercentage != null && goldPercentage.x < GOLD_FULL_X_THRESHOLD) {
         ShowMessage("金币已满，坐标：${goldPercentage.x}, ${goldPercentage.y}")
         targetGold = 0
     }
     val elixirPercentage = findMultiColors(schema = MyColors.ElixirColor)
-    if (elixirPercentage != null && elixirPercentage.x < 1078) {
+    if (elixirPercentage != null && elixirPercentage.x < ELIXIR_FULL_X_THRESHOLD) {
         ShowMessage("圣水已满，坐标：${elixirPercentage.x}, ${elixirPercentage.y}")
         targetElixir = 0
     }
     val darkElixirPercentage = findMultiColors(schema = MyColors.DarkElixirColor)
-    if (darkElixirPercentage != null && darkElixirPercentage.x < 1127) {
+    if (darkElixirPercentage != null && darkElixirPercentage.x < DARK_ELIXIR_FULL_X_THRESHOLD) {
         ShowMessage("黑油已满，坐标：${darkElixirPercentage.x}, ${darkElixirPercentage.y}")
         targetDarkElixir = 0
 
     }
     var searchTimes = 0
-    // Loop for up to 8 minutes to find and tap the battle icon
     val battleStartTime = System.currentTimeMillis()
-    while (System.currentTimeMillis() - battleStartTime < 8 * 60 * 1000L) {
+    while (System.currentTimeMillis() - battleStartTime < SEARCH_TIMEOUT_MS) {
         val battleIcon = findMultiColorsUntil(schemas = listOf(MyColors.TrainTroops), duration = 500)
         if (battleIcon != null) {
             TouchActions.tap(83, 631, delayTime = 500)
@@ -74,44 +82,32 @@ suspend fun searchOpponents(): Boolean {
             searchTimes++
             val res = recognizeResources(true)
 
-            // 1. Update target resources dynamically if enabled
+            // Incrementally update target resource thresholds using a running average
             if (isDynamicAdjust) {
-                // Use local variable to maintain precision and clarity during calculation
-                val weight = searchTimes
                 if (targetGold > 0) {
-                    targetGold = (targetGold * (weight - 1) + res.gold) / weight
+                    targetGold = (targetGold * (searchTimes - 1) + res.gold) / searchTimes
                 }
                 if (targetElixir > 0) {
-                    targetElixir = (targetElixir * (weight - 1) + res.elixir) / weight
+                    targetElixir = (targetElixir * (searchTimes - 1) + res.elixir) / searchTimes
                 }
                 if (targetDarkElixir > 0) {
-                    targetDarkElixir = (targetDarkElixir * (weight - 1) + res.darkElixir) / weight
+                    targetDarkElixir = (targetDarkElixir * (searchTimes - 1) + res.darkElixir) / searchTimes
                 }
             }
 
-            // 2. Display status message (Maintaining original Chinese formatting)
             ShowMessage("搜索次数：$searchTimes\n对手资源：\n${res.gold}金, ${res.elixir}水, ${res.darkElixir}黑\n目标资源：\n${targetGold}金, ${targetElixir}水, ${targetDarkElixir}黑")
 
-            // 3. Consolidated Deployment Logic
-            // Combined the redundant 'isDynamicAdjust' branches to reduce code duplication
-            val canProceed = !isDynamicAdjust || searchTimes > 1
-            if (canProceed) {
-                val meetsCriteria = res.gold > targetGold && res.elixir > targetElixir && res.darkElixir > targetDarkElixir
-
-                if (meetsCriteria) {
-                    mainBaseDeployTroops()
-                    break
-                } else {
-                    // No changes to original interaction logic or delay
-                    TouchActions.tap(nextOpponent.x, nextOpponent.y, delayTime = 1000)
-                }
+            // Skip the first search result when dynamic adjustment is enabled, so the average has at least one data point
+            val meetsCriteria = (!isDynamicAdjust || searchTimes > 2) &&
+                    res.gold > targetGold && res.elixir > targetElixir && res.darkElixir > targetDarkElixir
+            if (meetsCriteria) {
+                mainBaseDeployTroops()
+                break
             } else {
-                // No changes to original interaction logic or delay
                 TouchActions.tap(nextOpponent.x, nextOpponent.y, delayTime = 1000)
             }
         }
-        // Calculate remaining time in minutes with 2 decimal places
-        val remainingMinutes = (8 * 60 * 1000L - (System.currentTimeMillis() - battleStartTime)) / 60000.0
+        val remainingMinutes = (SEARCH_TIMEOUT_MS - (System.currentTimeMillis() - battleStartTime)) / 60000.0
         ShowMessage("搜索中... ${"%.1f".format(remainingMinutes)}分钟后强制退出")
         delayWithMultiplier(100)
     }
@@ -119,9 +115,8 @@ suspend fun searchOpponents(): Boolean {
 }
 
 private suspend fun mainBaseBattleTutorial(): Boolean {
-    // Loop for up to 3 minutes to handle the battle tutorial
     val startTime = System.currentTimeMillis()
-    while (System.currentTimeMillis() - startTime < 3 * 60 * 1000L) {
+    while (System.currentTimeMillis() - startTime < TUTORIAL_TIMEOUT_MS) {
         val villagerSpeaking = findMultiColors(schema = MyColors.SpeakingVillager)
         if (villagerSpeaking != null) {
             TouchActions.tap(villagerSpeaking.x, villagerSpeaking.y, delayTime = 500)
