@@ -41,6 +41,18 @@ object FileHelper {
         }
     }
 
+    // Delete a file at the given path via the WebSocket server
+    suspend fun deleteJson(path: String): Boolean {
+        val serverActions = GlobalVars.serverActions ?: logAndStop("Server actions not found")
+        val deleteAction = mapOf(
+            "actionType" to "file_action",
+            "subAction" to "delete",
+            "path" to path
+        )
+        val response = serverActions.sendActionSync(deleteAction)
+        return response?.has("status") == true && response.get("status").asString == "success"
+    }
+
     suspend fun checkExists(path: String): Boolean {
         val serverActions = GlobalVars.serverActions ?: logAndStop("Server actions not found")
         val checkExistsAction = mapOf(

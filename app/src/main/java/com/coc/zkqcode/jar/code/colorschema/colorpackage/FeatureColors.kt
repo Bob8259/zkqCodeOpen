@@ -1,3 +1,5 @@
+@file:Suppress("PropertyName")
+
 package com.coc.zkqcode.jar.code.colorschema.colorpackage
 
 import com.coc.zkqcode.jar.code.colorschema.ColorSchema
@@ -9,6 +11,7 @@ interface IFeatureColors {
     val OrangeTutorialArrow: ColorSchema
     val ResearchIcon: ColorSchema
     val WhiteNumberColor: ColorSchema
+    val MiddleGreenConfirm: ColorSchema
 }
 
 object FeatureColors : IFeatureColors {
@@ -28,13 +31,9 @@ object FeatureColors : IFeatureColors {
         374, 18, 900, 62, "F900D1", "3|0|F004A4,7|0|ED0599,10|0|E80691,13|0|E00587,0|8|F001AD,3|8|4BBFD1,7|8|59E2F2,10|8|FFFFFF,13|8|FFFFFF", 0, 0.9, "研究标志"
     )
     override val WhiteNumberColor = ColorSchema.parse(
-        338,
-        102,
-        966,
-        560,
-        "FFFFFF",
-        "-1|1|FFFFFF,-1|2|FFFFFF,-1|3|FFFFFF,-1|4|FFFFFF,7|5|FFFFFF,7|4|FFFFFF,7|3|FFFFFF,7|2|FFFFFF,7|1|FFFFFF",
-        0,
-        0.99,
+        338, 102, 966, 560, "FFFFFF", "-1|1|FFFFFF,-1|2|FFFFFF,-1|3|FFFFFF,-1|4|FFFFFF,7|5|FFFFFF,7|4|FFFFFF,7|3|FFFFFF,7|2|FFFFFF,7|1|FFFFFF", 0, 0.99,
+    )
+    override val MiddleGreenConfirm = ColorSchema.parse(
+        546, 427, 743, 501, "75F4D6", "39|0|75F4D6,79|0|75F4D6,118|0|74F4D6,157|0|74F4D6,0|37|20BE6F,39|37|20BE6F,79|37|20BE6F,118|37|20BE6F,157|37|1FBE6F", 0, 0.9, "中绿确认按钮"
     )
 }

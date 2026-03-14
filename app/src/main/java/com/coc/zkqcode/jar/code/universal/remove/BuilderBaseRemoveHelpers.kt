@@ -40,7 +40,7 @@ suspend fun enterEditMode() {
 }
 
 suspend fun removeAllBuildings() {
-    findMultiColorsUntil(schemas = listOf(MyColors.MiddleGreenYes), duration = 300)?.let { yesPoint ->
+    findMultiColorsUntil(schemas = listOf(MyColors.MiddleGreenYes, MyColors.MiddleGreenConfirm), duration = 300)?.let { yesPoint ->
         TouchActions.tap(yesPoint.x, yesPoint.y)
     }
     // Locate "Remove All", confirm the action, and perform final layout taps

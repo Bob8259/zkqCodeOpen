@@ -35,12 +35,16 @@ import com.coc.zkqcode.jar.ui.schema.ConfigManager
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.jar.ui.schema.Schema.GLOBAL_SETTINGS
 import com.coc.zkqcode.jar.ui.components.CustomAlertDialog
+import com.coc.zkqcode.jar.ui.components.CustomNotificationWindow
 import com.coc.zkqcode.jar.ui.components.CustomButton
 import com.coc.zkqcode.jar.ui.components.SettingCheckBox
 import com.coc.zkqcode.jar.ui.components.SettingDropdown
 import com.coc.zkqcode.jar.ui.components.SettingInputRow
 import com.coc.zkqcode.core.ui.theme.AppColors
 import com.coc.zkqcode.core.util.exit.AppExitHelper
+import android.os.Environment
+import androidx.compose.runtime.remember
+import com.coc.zkqcode.core.util.fileactions.FileHelper
 import com.coc.zkqcode.core.util.fileactions.LogHelper.showDebugInfo
 import com.coc.zkqcode.statehelper.AppMode
 import com.coc.zkqcode.statehelper.AppStateManager
@@ -109,8 +113,27 @@ fun HomeScreen(
         }
     }
 
+    // Floating notification state
+    var showNotification by remember { mutableStateOf(false) }
+    var notificationMessage by remember { mutableStateOf("") }
+
+    // Show a floating notification and auto-dismiss after 1200ms
+    val showMsg: (String) -> Unit = { msg ->
+        notificationMessage = msg
+        showNotification = true
+        scope.launch {
+            delay(1200)
+            showNotification = false
+        }
+    }
+
     val cleanMemory = {
-        // TODO: Implement logic to clean account memory
+        scope.launch {
+            val sdPath = Environment.getExternalStorageDirectory().path
+            val memoryPath = "$sdPath/zkqFiles/memory.json"
+            val success = FileHelper.deleteJson(memoryPath)
+            showMsg(if (success) "记忆文件已清除" else "清除失败，可能记忆文件不存在")
+        }
     }
 
     val cleanAllData = {
@@ -333,6 +356,14 @@ fun HomeScreen(
                         }
                     }
                 }
+            )
+        }
+
+        // Floating notification overlay, auto-dismissed after 1200ms
+        if (showNotification) {
+            CustomNotificationWindow(
+                message = notificationMessage,
+                onDismissRequest = { }
             )
         }
     }

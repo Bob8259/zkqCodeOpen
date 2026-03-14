@@ -38,17 +38,12 @@ suspend fun runMainScript() {
             if (!writeGameFiles()) break
             if (!enterMainScreen(true)) {
                 ShowMessage("进入游戏失败")
-                delay(500)
                 break // Break inner loop and recheck account status
             }
             if (!playBuilderBase()) {
-                ShowMessage("夜世界操作失败")
-                delay(500)
                 break // Break inner loop and recheck account status
             }
             if (!playMainBase()) {
-                ShowMessage("主世界操作失败")
-                delay(500)
                 break // Break inner loop and recheck account status
             }
         }
