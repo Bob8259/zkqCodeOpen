@@ -41,8 +41,8 @@ suspend fun builderBaseRemoveObstacles(): Boolean {
     }
 
     ShowMessage("第一区域准备移除障碍物")
-    enterEditMode()
     zoomSmallBuilderBase()
+    enterEditMode()
     // First Area Operations
     removeObstacles()
     swipe(1036, 78, 1100, 455, 700)

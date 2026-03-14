@@ -17,7 +17,7 @@ object MainBaseUpgradeColors : IMainBaseUpgradeColors {
         798, 594, 994, 668, "7F88FF", "1|0|7F88FF,2|0|7F88FF,3|0|7F88FF,3|1|7F88FF,2|1|7F88FF,0|1|7F88FF,0|1|7F88FF,0|2|7F88FF,1|2|7F88FF", 0, 0.97, "主世界升级资源不足"
     )
     override val MainBaseWorker = ColorSchema.parse(
-        452, 10, 853, 82, "769BE7", "-7|8|CED8E6,-15|-1|90B5ED,-8|-14|6177BB,-3|-21|99C2F0,6|-18|2458C0,9|-13|5E65A1,12|-8|7282C7,5|5|8B92A1,-9|9|CAD4E1", 0, 0.9, "家乡建筑工人"
+        452, 10, 853, 82, "90BDED", "3|0|93BFED,7|0|7095C9,11|0|0D37A3,14|0|2F6BCD,0|15|7D88D5,3|15|6271C2,7|15|707BC0,11|15|91BAEE,14|15|88B0EA", 0, 0.9, "家乡建筑工人"
     )
     override val GoblinWorker = ColorSchema.parse(
         550, 10, 853, 82, "37AB98", "-10|8|57D5CD,-20|0|3B9C8F,-20|-7|2C9098,-8|-12|155D68,-1|-17|48EED9,5|-18|4DFADA,7|-6|2C5A4E,13|-2|49DFC6,3|4|3CAA97", 0, 0.9, "哥布林工头"

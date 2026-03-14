@@ -31,6 +31,11 @@ suspend fun checkReconnections(): Boolean {
     return homeSchemas.any { schema ->
         val match = findMultiColors(byteBuffer = screenBuffer, schema = schema)
         if (match != null) {
+            // Count white pixels in the confirmation area; skip this iteration if insufficient
+            val whiteCount = countWhitePixels(screenBuffer, 270, 230, 1010, 430)
+            if (whiteCount <= 100) {
+                return@any true // Not enough white pixels, skip this time
+            }
             // Retrieve the configuration state for the specific account
             val configKey = Schema.GLOBAL_SETTINGS.AFTER_KICK_OPTION.key
             val action = GlobalVars.configStates[configKey]?.value?.toInt()
@@ -62,6 +67,30 @@ suspend fun checkReconnections(): Boolean {
     }
 
 
+}
+
+/**
+ * Counts pixels in the given region where R, G, B are all greater than 235 (white).
+ * Uses absolute ByteBuffer.get(index) so it is position-independent.
+ */
+private fun countWhitePixels(
+    screenBuffer: ScreenCaptureManager.CaptureResult,
+    x1: Int, y1: Int, x2: Int, y2: Int
+): Int {
+    val buf = screenBuffer.buffer
+    val pixelStride = screenBuffer.pixelStride
+    val rowStride = screenBuffer.rowStride
+    var count = 0
+    for (y in y1 until y2) {
+        for (x in x1 until x2) {
+            val offset = y * rowStride + x * pixelStride
+            val r = buf.get(offset).toInt() and 0xFF
+            val g = buf.get(offset + 1).toInt() and 0xFF
+            val b = buf.get(offset + 2).toInt() and 0xFF
+            if (r > 235 && g > 235 && b > 235) count++
+        }
+    }
+    return count
 }
 
 private suspend fun checkPrivacy() {

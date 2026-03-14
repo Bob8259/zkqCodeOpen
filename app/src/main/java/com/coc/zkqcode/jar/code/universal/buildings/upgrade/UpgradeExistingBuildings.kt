@@ -59,7 +59,8 @@ suspend fun upgradeAllExistingBuildings(buildings: List<String>, currentBase: Ba
         "弓箭女皇",
         "大守护者",
         "飞盾战神",
-        "飞龙公爵"
+        "飞龙公爵",
+        "多管迫击炮"
     )
     val orderedList = getOrderedList(buildings, currentBase)
     for (building in orderedList) {
