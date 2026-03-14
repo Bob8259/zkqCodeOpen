@@ -48,7 +48,8 @@ object MainScript {
             while (currentCoroutineContext().isActive) {
 
                 // Test code
-                runTestCode()
+//                runTestCode()
+                writeGameFiles()
                 if (!enterMainScreen(true)) {
                     ShowMessage("进入游戏失败")
                     delay(500)
