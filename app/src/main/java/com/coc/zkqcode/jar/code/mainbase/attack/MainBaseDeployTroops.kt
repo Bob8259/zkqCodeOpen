@@ -2,6 +2,7 @@ package com.coc.zkqcode.jar.code.mainbase.attack
 
 
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
+import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndStop
 import com.coc.zkqcode.core.util.touchactions.TouchActions
@@ -9,6 +10,7 @@ import com.coc.zkqcode.jar.code.colorschema.ColorSchema
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.mainbase.others.zoomSmallMainBase
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
+import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.withContext
 
@@ -27,8 +29,11 @@ private const val DRAG_END_Y = 430F
 private const val DRAG_SWEEP_MS = 600
 private const val DRAG_SWEEP_SLOW_MS = 3000
 
-suspend fun mainBaseDeployTroops() {
+suspend fun mainBaseDeployTroops(): Boolean {
+    // Record the start time of the battle
+    val battleStartTime = System.currentTimeMillis()
     zoomSmallMainBase(isForAttack = true)
+
     repeat(3) {
         // Deploy each troop type if detected in the deploy bar
         deployIfPresent(DRAG_SWEEP_MS, MyColors.DragonAtDeployBar, MyColors.DragonAtDeployBar2)
@@ -37,6 +42,21 @@ suspend fun mainBaseDeployTroops() {
         deployIfPresent(DRAG_SWEEP_SLOW_MS, MyColors.ArcherAtDeployBar, MyColors.ArcherAtDeployBar2)
     }
 
+    // Keep checking if the battle has ended for at most 3.5 minutes
+    while (true) {
+        val endBattleButton = findMultiColors(schema = MyColors.EndBattle)
+        if (endBattleButton == null) break
+
+        val elapsedMs = System.currentTimeMillis() - battleStartTime
+        if (elapsedMs > 210_000) break // 3.5 minutes timeout
+
+        val elapsedMinutes = "%.1f".format(elapsedMs / 60000.0)
+        ShowMessage("对战中, 已对战${elapsedMinutes}分钟")
+
+        // Wait before the next check to avoid CPU spin
+        delayWithMultiplier(1000)
+    }
+    return enterMainScreen()
 }
 
 /**

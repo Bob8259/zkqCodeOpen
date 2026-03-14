@@ -40,4 +40,8 @@ object MyColors : IUIColors by UIColors, IFeatureColors by FeatureColors, IMainB
     IBuilderBaseUpgradeColors by BuilderBaseUpgradeColors, IBuilderBaseResearchColors by BuilderBaseResearchColors, IBuilderBaseAttackColors by BuilderBaseAttackColors, IUniversalUpgradeColors by UniversalUpgradeColors,
     IMainBaseUpgradeColors by MainBaseUpgradeColors, IMainBaseResearchColors by MainBaseResearchColors, IMainBaseResearchLevelColors by MainBaseResearchLevelColors,
     IClanCapitalTutorialColors by ClanCapitalTutorialColors, IMainBaseAttackColors by MainBaseAttackColors {
+    // Main Base Attack Color
+    val EndBattle = ColorSchema.parse(
+        29, 524, 156, 556, "605DF7", "87|6|5F5DEF,51|0|5E5BF2,76|0|B2B1F2,101|0|605DF7,0|16|0E0DCE,25|16|0E0DCE,51|16|0E0DCD,76|16|0E0DA2,101|16|0E0DCE", 0, 0.9,
+    )
 }

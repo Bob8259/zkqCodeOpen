@@ -5,17 +5,9 @@ import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndStop
 import com.coc.zkqcode.jar.code.builderbase.playBuilderBase
-import com.coc.zkqcode.jar.code.colorschema.ColorSchema
-import com.coc.zkqcode.jar.code.colorschema.MyColors
-import com.coc.zkqcode.jar.code.mainbase.attack.mainBaseAttack
-import com.coc.zkqcode.jar.code.mainbase.attack.mainBaseDeployTroops
-import com.coc.zkqcode.jar.code.mainbase.attack.mainBaseTrainTroops
-import com.coc.zkqcode.jar.code.mainbase.others.MainBaseWorkerAndResearch
-import com.coc.zkqcode.jar.code.mainbase.research.mainBaseResearch
+import com.coc.zkqcode.jar.code.mainbase.playMainBase
 import com.coc.zkqcode.jar.code.universal.InGamesVars
-import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
-import com.coc.zkqcode.jar.code.universal.recognizer.recognizeResources
 import com.coc.zkqcode.jar.code.universal.smalltools.StorageKeys
 import com.coc.zkqcode.jar.code.universal.smalltools.readMemory
 import com.coc.zkqcode.jar.ui.schema.Schema
@@ -56,7 +48,7 @@ object MainScript {
                 InGamesVars.currentGamePackage = getConfigOrStop("game_version${InGamesVars.currentAccountNumber}").toInt()
 
                 // Test code
-                runTestCode()
+//                runTestCode()
                 if (!enterMainScreen(true)) {
                     ShowMessage("进入游戏失败")
                     delay(500)
@@ -67,11 +59,11 @@ object MainScript {
                     delay(500)
                     break // Break inner loop and recheck account status
                 }
-//                if (!playMainBase()) {
-//                    ShowMessage("主世界操作失败")
-//                    delay(500)
-//                    break // Break inner loop and recheck account status
-//                }
+                if (!playMainBase()) {
+                    ShowMessage("主世界操作失败")
+                    delay(500)
+                    break // Break inner loop and recheck account status
+                }
             }
             delay(2000)
         }
@@ -81,9 +73,7 @@ object MainScript {
         while (true) {
 //            enterMainScreen()
             delayWithMultiplier(1000)
-            mainBaseDeployTroops()
-//            findMultiColors(schema = MyColors.GiantAtDeployBar)
-//            mainBaseTrainTroops()
+//            mainBaseDeployTroops()
             delayWithMultiplier(10000000)
 
         }
