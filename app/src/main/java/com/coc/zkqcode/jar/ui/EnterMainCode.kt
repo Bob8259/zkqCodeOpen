@@ -19,7 +19,7 @@ import androidx.navigation.compose.rememberNavController
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.util.basic.RunShell
 import com.coc.zkqcode.interfaces.MainCode
-import com.coc.zkqcode.jar.code.MainScript
+import com.coc.zkqcode.jar.code.runMainScript
 import com.coc.zkqcode.jar.ui.components.CustomButton
 import com.coc.zkqcode.jar.ui.pages.mainbase.MainBaseUpgradePriority
 import com.coc.zkqcode.jar.ui.pages.builderbase.BuilderBaseUpgradePriority
@@ -104,7 +104,7 @@ class EnterMainCode : MainCode {
     }
 
     override suspend fun runBot() {
-        MainScript.runMainScript()
+        runMainScript()
     }
 }
 
@@ -121,7 +121,7 @@ private fun ConfigLoadingScreen() {
     }
 
     Column {
-        Text("正在初始化配置文件...\n若长时间卡在此界面，将在 ${countdown} 秒后自动重启。")
+        Text("正在初始化配置文件...\n若长时间卡在此界面，将在 $countdown 秒后自动重启。")
         CustomButton(
             text = "点击此处手动关闭辅助",
             onClick = {

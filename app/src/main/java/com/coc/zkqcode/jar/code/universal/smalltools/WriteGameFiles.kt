@@ -37,35 +37,33 @@ fun getGameFilePath(): String {
  * @param subDirs      Subdirectories to copy (e.g. ["shared_prefs", "databases"])
  */
 @SuppressLint("SdCardPath")
-fun writeGameFilesCore(
-    packageName: String,
-    savePathName: String,
-    folderName: String,
-    subDirs: List<String>
-) {
+suspend fun writeGameFilesCore(
+    packageName: String, savePathName: String, folderName: String, subDirs: List<String>
+): Boolean {
     val sdPath = Environment.getExternalStorageDirectory().path
     val sourceDir = "$sdPath/zkqFiles/$folderName/$savePathName"
 
     // Verify that the archive directory exists before attempting to write
     if (!Shell.cmd("[ -d \"$sourceDir\" ]").exec().isSuccess) {
         ShowMessage("存档文件不存在：$sourceDir\n即将跳过当前账号")
-        return
+        return false
     }
-
+    ShowMessage("写入存档文件中，路径：$sourceDir")
+    killGame()
     subDirs.forEach { subDir ->
         val destPath = "/data/data/$packageName/$subDir"
         Shell.cmd("rm -rf \"$destPath\"/*").exec()
         Shell.cmd("cp -r \"$sourceDir/$subDir/\"* \"$destPath/\"").exec()
         Shell.cmd("chmod -R 777 \"$destPath\"").exec()
     }
-
+    return true
 }
 
 /**
  * Writes the game save files for the current account (as tracked by [InGamesVars]) back
  * to the game's data directory, then sets permissions to 777.
  */
-fun writeGameFiles() {
+suspend fun writeGameFiles(): Boolean {
     val savePathName = getGameFilePath()
     val version = InGamesVars.currentGameVersion
 
@@ -73,8 +71,8 @@ fun writeGameFiles() {
         GameVersion.CN -> "zkqCNGameSave" to listOf("shared_prefs", "databases")
         GameVersion.GLOBAL -> "zkqGlobalGameSave" to listOf("shared_prefs")
         // nothing to write
-        else -> return
+        else -> return true
     }
 
-    writeGameFilesCore(version.packageName, savePathName, folderName, subDirs)
+    return writeGameFilesCore(version.packageName, savePathName, folderName, subDirs)
 }
