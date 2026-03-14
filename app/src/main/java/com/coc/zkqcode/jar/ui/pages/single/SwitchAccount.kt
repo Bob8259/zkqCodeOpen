@@ -37,6 +37,7 @@ import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.statehelper.AppMode
 import com.coc.zkqcode.statehelper.AppStateManager
 import com.coc.zkqcode.jar.ui.schema.Schema.ACCOUNT_SETTINGS
+import com.coc.zkqcode.jar.code.universal.smalltools.writeGameFilesCore
 import com.topjohnwu.superuser.Shell
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -202,19 +203,16 @@ fun SwitchAccount(onClose: () -> Unit) {
                                         return@launch
                                     }
 
-                                    val commands = listOf(
-                                        "am force-stop com.tencent.tmgp.supercell.clashofclans",
-                                        "rm -rf /data/data/com.tencent.tmgp.supercell.clashofclans/shared_prefs/*",
-                                        "rm -rf /data/data/com.tencent.tmgp.supercell.clashofclans/databases/*",
-                                        "cp -r \"$sourceDir/shared_prefs/\"* /data/data/com.tencent.tmgp.supercell.clashofclans/shared_prefs/",
-                                        "cp -r \"$sourceDir/databases/\"* /data/data/com.tencent.tmgp.supercell.clashofclans/databases/",
-                                        "chmod 777 /data/data/com.tencent.tmgp.supercell.clashofclans/shared_prefs/*",
-                                        "chmod 777 /data/data/com.tencent.tmgp.supercell.clashofclans/databases/*",
-                                        "monkey -p com.tencent.tmgp.supercell.clashofclans -c android.intent.category.LAUNCHER 1"
+                                    // Force-stop before writing to avoid file-in-use conflicts
+                                    Shell.cmd("am force-stop com.tencent.tmgp.supercell.clashofclans").exec()
+                                    writeGameFilesCore(
+                                        packageName = "com.tencent.tmgp.supercell.clashofclans",
+                                        savePathName = savePathName,
+                                        folderName = "zkqCNGameSave",
+                                        subDirs = listOf("shared_prefs", "databases")
                                     )
-                                    commands.forEach { cmd ->
-                                        Shell.cmd(cmd).exec()
-                                    }
+                                    // Launch the game after write completes
+                                    Shell.cmd("monkey -p com.tencent.tmgp.supercell.clashofclans -c android.intent.category.LAUNCHER 1").exec()
                                 } else {
                                     // Global Version
                                     val pathKey = "${ACCOUNT_SETTINGS.GLOBAL_PATH.key}$accNum"
@@ -234,17 +232,16 @@ fun SwitchAccount(onClose: () -> Unit) {
                                         return@launch
                                     }
 
-                                    val commands = listOf(
-                                        "am force-stop com.supercell.clashofclans",
-                                        "rm -rf /data/data/com.supercell.clashofclans/shared_prefs/*",
-                                        "cp -r \"$sourceDir/shared_prefs/\"* /data/data/com.supercell.clashofclans/shared_prefs/",
-                                        "chmod 777 /data/data/com.supercell.clashofclans/shared_prefs/*",
-                                        "monkey -p com.supercell.clashofclans -c android.intent.category.LAUNCHER 1"
+                                    // Force-stop before writing to avoid file-in-use conflicts
+                                    Shell.cmd("am force-stop com.supercell.clashofclans").exec()
+                                    writeGameFilesCore(
+                                        packageName = "com.supercell.clashofclans",
+                                        savePathName = savePathName,
+                                        folderName = "zkqGlobalGameSave",
+                                        subDirs = listOf("shared_prefs")
                                     )
-
-                                    commands.forEach { cmd ->
-                                        Shell.cmd(cmd).exec()
-                                    }
+                                    // Launch the game after write completes
+                                    Shell.cmd("monkey -p com.supercell.clashofclans -c android.intent.category.LAUNCHER 1").exec()
                                 }
                                 GlobalVars.isSwitchingAccount = false
                                 withContext(Dispatchers.Main) {
