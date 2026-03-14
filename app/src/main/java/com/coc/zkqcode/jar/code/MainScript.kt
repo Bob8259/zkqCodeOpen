@@ -6,10 +6,13 @@ import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndStop
 import com.coc.zkqcode.jar.code.builderbase.playBuilderBase
 import com.coc.zkqcode.jar.code.mainbase.playMainBase
+import com.coc.zkqcode.jar.code.universal.GameVersion
 import com.coc.zkqcode.jar.code.universal.InGamesVars
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.smalltools.StorageKeys
+import com.coc.zkqcode.jar.code.universal.smalltools.getConfigOrStop
 import com.coc.zkqcode.jar.code.universal.smalltools.readMemory
+import com.coc.zkqcode.jar.code.universal.smalltools.writeGameFiles
 import com.coc.zkqcode.jar.ui.schema.Schema
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
@@ -17,10 +20,6 @@ import kotlinx.coroutines.isActive
 
 object MainScript {
 
-    // Helper function: quickly get config value, trigger logAndStop if empty
-    private fun getConfigOrStop(key: String): String {
-        return GlobalVars.configStates[key]?.value ?: logAndStop("Failed to get config: $key")
-    }
 
     suspend fun runMainScript() {
         while (currentCoroutineContext().isActive) {
@@ -44,11 +43,12 @@ object MainScript {
 
             // 4. Execute main logic loop
             InGamesVars.currentAccountNumber = activeAccount
+            InGamesVars.currentGameVersion = GameVersion.fromId(getConfigOrStop("${Schema.ACCOUNT_SETTINGS.GAME_VERSION.key}${InGamesVars.currentAccountNumber}").toInt())
+
             while (currentCoroutineContext().isActive) {
-                InGamesVars.currentGamePackage = getConfigOrStop("game_version${InGamesVars.currentAccountNumber}").toInt()
 
                 // Test code
-//                runTestCode()
+                runTestCode()
                 if (!enterMainScreen(true)) {
                     ShowMessage("进入游戏失败")
                     delay(500)
@@ -72,6 +72,7 @@ object MainScript {
     private suspend fun runTestCode() {
         while (true) {
 //            enterMainScreen()
+            writeGameFiles()
             delayWithMultiplier(1000)
 //            mainBaseDeployTroops()
             delayWithMultiplier(10000000)

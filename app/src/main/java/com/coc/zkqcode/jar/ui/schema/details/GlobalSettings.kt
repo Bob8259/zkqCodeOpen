@@ -61,7 +61,7 @@ object AccountSettings {
     val REMARK = SettingDef("remark", "备注", "", "ACCOUNT_SETTINGS")
     val GAME_VERSION = SettingDef("game_version", "游戏版本", "0", "ACCOUNT_SETTINGS")
     val ACCOUNT_CONFIG = SettingDef("account_config", "配置文件序号", "1", "ACCOUNT_SETTINGS")
-    val START_METHOD = SettingDef("start_method", "启动游戏方式", "1", "ACCOUNT_SETTINGS")
+    val START_METHOD = SettingDef("start_method", "启动游戏方式", "0", "ACCOUNT_SETTINGS")
     val CN_PATH = SettingDef("cn_path", "国服存档序号", "", "ACCOUNT_SETTINGS")
     val GLOBAL_PATH = SettingDef("global_path", "国际服存档序号", "", "ACCOUNT_SETTINGS")
     val DATA_CONTENT = SettingDef("data_content", "数据号内容", "", "ACCOUNT_SETTINGS")

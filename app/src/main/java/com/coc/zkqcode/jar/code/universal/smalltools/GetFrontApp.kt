@@ -8,21 +8,17 @@ suspend fun isGameAtFront(): Boolean {
     // Use | to separate multiple grep targets, reducing process creation count
     val combinedCmd =
         "dumpsys activity activities | grep -E 'mResumedActivity|mCurrentFocus|mFocusedApp'"
-    val gamePackage = InGamesVars.currentGamePackage.toString()
     val rawResult = RunShell.runAndGetFirst(combinedCmd)
 
     // Regex to extract package name/class name
     val frontApp =
         """([a-zA-Z0-9._]+/[a-zA-Z0-9._$ ]+)""".toRegex().find(rawResult)?.value?.trim() ?: "None"
-    if ((frontApp.contains("com.supercell.clashofclans") && gamePackage == "1") ||
-        (frontApp.contains("com.tencent.tmgp.supercell.clashofclans") && gamePackage == "0") ||
-        (frontApp.contains("com.atrasis.original") && gamePackage == "2")
-    ) {
+
+    // Check if the front app matches the expected package for the current game version
+    if (frontApp.contains(InGamesVars.currentGameVersion.packageName)) {
         return true
     } else {
-        ShowMessage(
-            "当前前台应用${frontApp}"
-        )
+        ShowMessage("当前前台应用${frontApp}")
         return false
     }
 }
