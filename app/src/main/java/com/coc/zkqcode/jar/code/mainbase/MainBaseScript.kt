@@ -6,8 +6,10 @@ import com.coc.zkqcode.jar.code.mainbase.attack.mainBaseTrainTroops
 import com.coc.zkqcode.jar.code.mainbase.others.mainBaseRemoveObstacles
 import com.coc.zkqcode.jar.code.mainbase.research.mainBaseResearch
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
+import com.coc.zkqcode.jar.code.universal.smalltools.enterMainBase
 
 suspend fun playMainBase(): Boolean {
+    if (!enterMainBase()) return false
     if (!enterMainScreen()) return false
     if (!mainBaseTrainTroops()) return false
     if (!mainBaseAttack()) return false

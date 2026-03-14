@@ -6,6 +6,7 @@ import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.jar.code.builderbase.others.zoomSmallBuilderBase
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.mainbase.others.zoomSmallMainBase
+import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.tutorial.AllTutorials
 import kotlinx.coroutines.delay
 
@@ -13,7 +14,7 @@ import kotlinx.coroutines.delay
 /**
  * Attempts to enter the Main Base, timing out after 30 seconds.
  */
-suspend fun enterMainBase() {
+suspend fun enterMainBase(): Boolean {
     val loopStart = System.currentTimeMillis()
     while (System.currentTimeMillis() - loopStart < 30_000L) {
         val remaining = (30_000L - (System.currentTimeMillis() - loopStart)) / 1000.0
@@ -23,10 +24,13 @@ suspend fun enterMainBase() {
         // Tap all grid points in the area (960,35)~(1000,110) to trigger the main base portal
         for (x in 960..1000 step 15) {
             for (y in 35..110 step 15) {
-                TouchActions.tap(x, y)
+                TouchActions.tap(x, y, isJitter = false, delayTime = 50)
             }
         }
+        val workers = findMultiColorsUntil(schemas = listOf(MyColors.MainBaseWorker, MyColors.GoblinWorker, MyColors.GoblinResearcher), duration = 200)
+        if (workers != null) return true
     }
+    return false
 }
 
 /**
@@ -43,9 +47,7 @@ suspend fun enterBuilderBase(isCheck: Boolean): Boolean {
 
         // List of potential boat locations to handle perspective shifts
         val boatLocations = listOf(
-            317 to 474,
-            336 to 512,
-            313 to 568
+            317 to 474, 336 to 512, 313 to 568
         )
 
         for ((x, y) in boatLocations) {
