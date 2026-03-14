@@ -32,7 +32,7 @@ suspend fun mainBaseDeployTroops() {
     deployIfPresent(MyColors.DragonAtDeployBar)
     deployIfPresent(MyColors.GiantAtDeployBar)
     deployIfPresent(MyColors.BarbarianAtDeployBar)
-    deployIfPresent(MyColors.ArcherDeployBar)
+    deployIfPresent(MyColors.ArcherAtDeployBar)
 }
 
 /**
