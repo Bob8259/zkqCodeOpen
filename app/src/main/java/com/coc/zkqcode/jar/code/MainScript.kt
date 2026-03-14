@@ -10,6 +10,7 @@ import com.coc.zkqcode.jar.code.universal.GameVersion
 import com.coc.zkqcode.jar.code.universal.InGamesVars
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.smalltools.StorageKeys
+import com.coc.zkqcode.jar.code.universal.smalltools.enterMainBase
 import com.coc.zkqcode.jar.code.universal.smalltools.getConfigOrStop
 import com.coc.zkqcode.jar.code.universal.smalltools.readMemory
 import com.coc.zkqcode.jar.code.universal.smalltools.writeGameFiles
@@ -34,7 +35,7 @@ suspend fun runMainScript() {
         while (currentCoroutineContext().isActive) {
 
             // Test code
-//                runTestCode()
+                runTestCode()
             if (!writeGameFiles()) break
             if (!enterMainScreen(true)) {
                 ShowMessage("进入游戏失败")
@@ -79,7 +80,7 @@ private suspend fun findAndActivateAccount(searchOrder: Iterable<Int>): Int? {
 private suspend fun runTestCode() {
     while (true) {
 //            enterMainScreen()
-        writeGameFiles()
+        enterMainBase()
         delayWithMultiplier(1000)
 //            mainBaseDeployTroops()
         delayWithMultiplier(10000000)
