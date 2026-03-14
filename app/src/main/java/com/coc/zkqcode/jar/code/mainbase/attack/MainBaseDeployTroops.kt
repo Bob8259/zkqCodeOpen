@@ -25,16 +25,18 @@ private const val DRAG_END_Y = 430F
 
 // Duration (ms) for each individual smooth drag sweep
 private const val DRAG_SWEEP_MS = 600
-private const val DRAG_SWEEP_SLOW_MS = 2000
+private const val DRAG_SWEEP_SLOW_MS = 3000
 
 suspend fun mainBaseDeployTroops() {
     zoomSmallMainBase(isForAttack = true)
+    repeat(3) {
+        // Deploy each troop type if detected in the deploy bar
+        deployIfPresent(DRAG_SWEEP_MS, MyColors.DragonAtDeployBar, MyColors.DragonAtDeployBar2)
+        deployIfPresent(DRAG_SWEEP_MS, MyColors.GiantAtDeployBar, MyColors.GiantAtDeployBar2)
+        deployIfPresent(DRAG_SWEEP_SLOW_MS, MyColors.BarbarianAtDeployBar, MyColors.BarbarianAtDeployBar2)
+        deployIfPresent(DRAG_SWEEP_SLOW_MS, MyColors.ArcherAtDeployBar, MyColors.ArcherAtDeployBar2)
+    }
 
-    // Deploy each troop type if detected in the deploy bar
-    deployIfPresent(DRAG_SWEEP_MS, MyColors.DragonAtDeployBar, MyColors.DragonAtDeployBar2)
-    deployIfPresent(DRAG_SWEEP_MS, MyColors.GiantAtDeployBar, MyColors.GiantAtDeployBar2)
-    deployIfPresent(DRAG_SWEEP_SLOW_MS, MyColors.BarbarianAtDeployBar, MyColors.BarbarianAtDeployBar2)
-    deployIfPresent(DRAG_SWEEP_SLOW_MS, MyColors.ArcherAtDeployBar, MyColors.ArcherAtDeployBar2)
 }
 
 /**
@@ -81,7 +83,6 @@ private suspend fun dragUntilDeployed(x: Int, y: Int, dragSweepMs: Int, schemas:
 
             // Drag back: ready for another forward sweep
             TouchActions.moveSmoothly(DRAG_END_X, DRAG_END_Y, DRAG_START_X, DRAG_START_Y, currentDragSweepMs, 1)
-            delayWithMultiplier(300)
 
             // Check timeout again after the return sweep before the next forward drag
             if (System.currentTimeMillis() - startTime >= DEPLOY_TIMEOUT_MS) break
