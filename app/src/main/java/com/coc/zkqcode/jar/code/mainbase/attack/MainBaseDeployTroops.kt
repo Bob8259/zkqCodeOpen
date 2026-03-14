@@ -29,30 +29,33 @@ suspend fun mainBaseDeployTroops() {
     zoomSmallMainBase(isForAttack = true)
 
     // Deploy each troop type if detected in the deploy bar
-    deployIfPresent(MyColors.DragonAtDeployBar)
-    deployIfPresent(MyColors.GiantAtDeployBar)
-    deployIfPresent(MyColors.BarbarianAtDeployBar)
-    deployIfPresent(MyColors.ArcherAtDeployBar)
+    deployIfPresent(MyColors.DragonAtDeployBar, MyColors.DragonAtDeployBar2)
+    deployIfPresent(MyColors.GiantAtDeployBar, MyColors.GiantAtDeployBar2)
+    deployIfPresent(MyColors.BarbarianAtDeployBar, MyColors.BarbarianAtDeployBar2)
+    deployIfPresent(MyColors.ArcherAtDeployBar, MyColors.ArcherAtDeployBar2)
 }
 
 /**
- * Detects whether [schema] is visible in the deploy bar and, if so,
+ * Detects whether [schemas] are visible in the deploy bar and, if so,
  * deploys all units of that type via continuous back-and-forth dragging.
  */
-private suspend fun deployIfPresent(schema: ColorSchema) {
-    val troop = findMultiColors(schema = schema)
-    if (troop != null) {
-        dragUntilDeployed(troop.x, troop.y, schema)
+private suspend fun deployIfPresent(vararg schemas: ColorSchema) {
+    for (schema in schemas) {
+        val troop = findMultiColors(schema = schema)
+        if (troop != null) {
+            dragUntilDeployed(troop.x, troop.y, schemas)
+            return
+        }
     }
 }
 
 /**
  * Selects the troop at ([x], [y]) in the deploy bar, then holds one finger down
  * and alternates between [DRAG_START_X],[DRAG_START_Y] and [DRAG_END_X],[DRAG_END_Y]
- * until [schema] is no longer detected (all units deployed) or [DEPLOY_TIMEOUT_MS]
+ * until [schemas] are no longer detected (all units deployed) or [DEPLOY_TIMEOUT_MS]
  * has elapsed for this troop.
  */
-private suspend fun dragUntilDeployed(x: Int, y: Int, schema: ColorSchema) {
+private suspend fun dragUntilDeployed(x: Int, y: Int, schemas: Array<out ColorSchema>) {
     // Select the troop in the deploy bar
     TouchActions.tap(x, y)
     delayWithMultiplier(300)
@@ -69,7 +72,7 @@ private suspend fun dragUntilDeployed(x: Int, y: Int, schema: ColorSchema) {
 
             // Check whether the troop is still present in the deploy bar
             val elapsed = System.currentTimeMillis() - startTime
-            val stillPresent = findMultiColors(schema = schema) != null
+            val stillPresent = schemas.any { findMultiColors(schema = it) != null }
             if (!stillPresent || elapsed >= DEPLOY_TIMEOUT_MS) break
 
             // Drag back: ready for another forward sweep
