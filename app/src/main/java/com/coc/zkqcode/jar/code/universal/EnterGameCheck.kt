@@ -46,7 +46,7 @@ suspend fun enterMainScreen(isDoubleCheck: Boolean = false): Boolean {
             ShowMessage("账号${InGamesVars.currentAccountNumber}，倒计时${((timeoutMillis - System.currentTimeMillis() + startTime) / 1000).toInt()}秒\n请手动给主世界和夜世界切换默认场景")
             closeAdvertisements()
 
-            if (Random.nextDouble() > 0.7) {
+            if (Random.nextDouble() > 0.65) {
                 clickRightBottom(3)
             }
             if (AllTutorials.checkIsInTutorial(mainBaseTutorialElements)) mainBaseTutorialElements++
