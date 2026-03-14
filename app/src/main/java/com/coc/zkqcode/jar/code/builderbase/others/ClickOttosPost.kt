@@ -24,7 +24,7 @@ suspend fun clickOttosOutPost(): Boolean {
         ShowMessage("今日已检测奥仔哨站，暂不点击")
         return true
     }
-
+    ShowMessage("准备检测奥仔哨站")
     val worker = BuilderBaseWorkerAndResearch.detectWorkerNumber()
     if (worker.total < 2) {
         writeMemory(storageKey, currentDay.toString())

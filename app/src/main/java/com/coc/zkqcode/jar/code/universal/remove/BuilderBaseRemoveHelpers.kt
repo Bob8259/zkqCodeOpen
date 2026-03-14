@@ -40,8 +40,11 @@ suspend fun enterEditMode() {
 }
 
 suspend fun removeAllBuildings() {
-    // 3. Locate "Remove All", confirm the action, and perform final layout taps
-    findMultiColorsUntil(schemas = listOf(MyColors.EditModeRemoveAll), duration = 1000)?.let {
+    findMultiColorsUntil(schemas = listOf(MyColors.MiddleGreenYes), duration = 300)?.let { yesPoint ->
+        TouchActions.tap(yesPoint.x, yesPoint.y)
+    }
+    // Locate "Remove All", confirm the action, and perform final layout taps
+    findMultiColorsUntil(schemas = listOf(MyColors.EditModeRemoveAll, MyColors.EditModeRemoveAll2), duration = 1000)?.let {
         TouchActions.tap(it.x, it.y)
 
         // Re-confirm deletion
@@ -53,6 +56,7 @@ suspend fun removeAllBuildings() {
         delayWithMultiplier(500)
         TouchActions.tap(1005, 265, delayTime = 500)
     }
+
 }
 
 suspend fun removeObstacles() {

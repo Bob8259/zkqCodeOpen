@@ -16,16 +16,13 @@ import com.coc.zkqcode.jar.ui.schema.Schema
 
 suspend fun playBuilderBase(): Boolean {
     if (!claimAchievement()) return false
-    val noBuilderBase = getBooleanConfigRuntime(
-        Schema.BUILDER_BASE_SETTINGS.NO_BUILDER_BASE.key
-    )
+    val noBuilderBase = getBooleanConfigRuntime(Schema.BUILDER_BASE_SETTINGS.NO_BUILDER_BASE.key)
     if (noBuilderBase) return true//if no builder base, then directly return.
 
     if (!enterBuilderBase(true)) {
         ShowMessage("未解锁夜世界")
         return true
-    } //check if builder base is unlocked or not.
-    else {
+    } else {//check if builder base is unlocked or not.
         ShowMessage("进入夜世界成功")
     }
     if (!collectBuilderBaseResources()) return false

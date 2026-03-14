@@ -18,68 +18,77 @@ import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 
-object MainScript {
 
+suspend fun runMainScript() {
+    // 1. Initialize/update local memory state
+    val startAccount = readMemory(StorageKeys.ACCOUNT_NUMBER).toIntOrNull() ?: 1
+    val accountTotal = getConfigOrStop(Schema.GLOBAL_SETTINGS.ACCOUNT_COUNT.key).toInt()
 
-    suspend fun runMainScript() {
+    // 2. Find the first enabled account starting from the saved position
+    val activeAccount = findAndActivateAccount(startAccount..accountTotal) ?: return
+    // 3. Execute main logic loop
+    InGamesVars.currentAccountNumber = activeAccount
+    InGamesVars.currentGameVersion = GameVersion.fromId(getConfigOrStop("${Schema.ACCOUNT_SETTINGS.GAME_VERSION.key}${InGamesVars.currentAccountNumber}").toInt())
+
+    while (currentCoroutineContext().isActive) {
         while (currentCoroutineContext().isActive) {
-            // 1. Initialize/update local memory state
-            val startAccount = readMemory(StorageKeys.ACCOUNT_NUMBER).toIntOrNull() ?: 1
-            val accountTotal = getConfigOrStop(Schema.GLOBAL_SETTINGS.ACCOUNT_COUNT.key).toInt()
 
-            // 2. Find the first enabled account
-            val activeAccount = (startAccount..accountTotal).firstOrNull { id ->
-                getConfigOrStop("${Schema.ACCOUNT_SETTINGS.ISOPEN.key}$id") == "1"
-            }
-
-            // 3. Handle case when no account is found
-            if (activeAccount == null) {
-                while (currentCoroutineContext().isActive) {
-                    ShowMessage("当前未开启任何账号\n请勾选要开启的账号。")
-                    delay(2500)
-                }
-                return // Exit is theoretically controlled by coroutine
-            }
-
-            // 4. Execute main logic loop
-            InGamesVars.currentAccountNumber = activeAccount
-            InGamesVars.currentGameVersion = GameVersion.fromId(getConfigOrStop("${Schema.ACCOUNT_SETTINGS.GAME_VERSION.key}${InGamesVars.currentAccountNumber}").toInt())
-
-            while (currentCoroutineContext().isActive) {
-
-                // Test code
+            // Test code
 //                runTestCode()
-                writeGameFiles()
-                if (!enterMainScreen(true)) {
-                    ShowMessage("进入游戏失败")
-                    delay(500)
-                    break // Break inner loop and recheck account status
-                }
-                if (!playBuilderBase()) {
-                    ShowMessage("夜世界操作失败")
-                    delay(500)
-                    break // Break inner loop and recheck account status
-                }
-                if (!playMainBase()) {
-                    ShowMessage("主世界操作失败")
-                    delay(500)
-                    break // Break inner loop and recheck account status
-                }
+            if (!writeGameFiles()) break
+            if (!enterMainScreen(true)) {
+                ShowMessage("进入游戏失败")
+                delay(500)
+                break // Break inner loop and recheck account status
             }
-            delay(2000)
+            if (!playBuilderBase()) {
+                ShowMessage("夜世界操作失败")
+                delay(500)
+                break // Break inner loop and recheck account status
+            }
+            if (!playMainBase()) {
+                ShowMessage("主世界操作失败")
+                delay(500)
+                break // Break inner loop and recheck account status
+            }
+        }
+        // Circularly search for the next enabled account, wrapping back to currentAccountNumber (inclusive)
+        val searchOrder = ((InGamesVars.currentAccountNumber + 1)..accountTotal) +
+                (1..InGamesVars.currentAccountNumber)
+        val nextAccount = findAndActivateAccount(searchOrder) ?: return
+        InGamesVars.currentAccountNumber = nextAccount
+        InGamesVars.currentGameVersion = GameVersion.fromId(getConfigOrStop("${Schema.ACCOUNT_SETTINGS.GAME_VERSION.key}${InGamesVars.currentAccountNumber}").toInt())
+
+        delay(2000)
+    }
+}
+
+/**
+ * Searches [searchOrder] for the first enabled account.
+ * If none is found, loops showing a message until the coroutine is cancelled,
+ * then returns null — the caller should return immediately on null.
+ */
+private suspend fun findAndActivateAccount(searchOrder: Iterable<Int>): Int? {
+    val found = searchOrder.firstOrNull { id ->
+        getConfigOrStop("${Schema.ACCOUNT_SETTINGS.ISOPEN.key}$id") == "1"
+    }
+    if (found == null) {
+        while (currentCoroutineContext().isActive) {
+            ShowMessage("当前未开启任何账号\n请勾选要开启的账号。")
+            delay(2500)
         }
     }
+    return found
+}
 
-    private suspend fun runTestCode() {
-        while (true) {
+private suspend fun runTestCode() {
+    while (true) {
 //            enterMainScreen()
-            writeGameFiles()
-            delayWithMultiplier(1000)
+        writeGameFiles()
+        delayWithMultiplier(1000)
 //            mainBaseDeployTroops()
-            delayWithMultiplier(10000000)
+        delayWithMultiplier(10000000)
 
-        }
     }
-
 }
 
