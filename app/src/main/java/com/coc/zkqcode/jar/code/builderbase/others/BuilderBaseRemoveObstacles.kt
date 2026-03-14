@@ -16,7 +16,6 @@ import com.coc.zkqcode.jar.code.universal.smalltools.writeMemory
 import java.util.Calendar
 
 suspend fun builderBaseRemoveObstacles(): Boolean {
-    if (!enterMainBase()) return false//Double-check, to make sure the code slows down. Otherwise, may fail to detect workers
     val worker = BuilderBaseWorkerAndResearch.detectWorkerNumber()
     val resources = recognizeResources()
     val storageKey = StorageKeys.withAccountNumber(StorageKeys.BUILDER_BASE_REMOVE_OBSTACLES, InGamesVars.currentAccountNumber)

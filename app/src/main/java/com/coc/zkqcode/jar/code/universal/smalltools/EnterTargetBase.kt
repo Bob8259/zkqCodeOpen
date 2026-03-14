@@ -23,7 +23,7 @@ suspend fun enterMainBase(): Boolean {
         TouchActions.swipe(750, 150, 750, 550)
         // Tap all grid points in the area (960,35)~(1000,110) to trigger the main base portal
         for (x in 960..1000 step 15) {
-            for (y in 35..110 step 15) {
+            for (y in 35..210 step 30) {
                 TouchActions.tap(x, y, isJitter = false, delayTime = 50)
             }
         }
