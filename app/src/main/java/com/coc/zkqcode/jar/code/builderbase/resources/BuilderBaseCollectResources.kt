@@ -33,14 +33,15 @@ suspend fun collectBuilderBaseResources(): Boolean {
     }
     swipe(587, 420, 587, 700)
     delayWithMultiplier(100)
-    // Tap all grid points in the cart area and check for resource carts
-    for (tx in 805..920 step 10) {
-        for (ty in 325..415 step 10) {
+    // Use a label so we can break out of both loops when a cart is found
+    outerLoop@ for (tx in 805..920 step 20) {
+        for (ty in 325..415 step 20) {
             TouchActions.tap(tx, ty, isJitter = false)
             val collectButton = findMultiColorsUntil(schemas = listOf(MyColors.CannotCollectExilerCart, MyColors.CollectExilerCart), duration = 200)
             if (collectButton != null) {
                 TouchActions.tap(collectButton.x, collectButton.y)
                 clickRightBottom(1)
+                break@outerLoop
             }
         }
     }

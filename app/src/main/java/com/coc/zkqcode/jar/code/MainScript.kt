@@ -4,6 +4,7 @@ import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndStop
+import com.coc.zkqcode.jar.code.builderbase.others.BuilderBaseWorkerAndResearch
 import com.coc.zkqcode.jar.code.builderbase.playBuilderBase
 import com.coc.zkqcode.jar.code.mainbase.playMainBase
 import com.coc.zkqcode.jar.code.universal.GameVersion
@@ -35,16 +36,18 @@ suspend fun runMainScript() {
         while (currentCoroutineContext().isActive) {
 
             // Test code
-//                runTestCode()
+//            runTestCode()
             if (!writeGameFiles()) break
             if (!enterMainScreen(true)) {
                 ShowMessage("进入游戏失败")
                 break // Break inner loop and recheck account status
             }
             if (!playBuilderBase()) {
+                ShowMessage("夜世界对战完成，准备进入主世界")
                 break // Break inner loop and recheck account status
             }
             if (!playMainBase()) {
+                ShowMessage("主世界对战完成，准备切换账号")
                 break // Break inner loop and recheck account status
             }
         }
@@ -79,10 +82,10 @@ private suspend fun findAndActivateAccount(searchOrder: Iterable<Int>): Int? {
 
 private suspend fun runTestCode() {
     while (true) {
-//            enterMainScreen()
-        enterMainBase()
+        enterMainScreen()
+
         delayWithMultiplier(1000)
-//            mainBaseDeployTroops()
+        ShowMessage(BuilderBaseWorkerAndResearch.detectWorkerNumber().toString())
         delayWithMultiplier(10000000)
 
     }

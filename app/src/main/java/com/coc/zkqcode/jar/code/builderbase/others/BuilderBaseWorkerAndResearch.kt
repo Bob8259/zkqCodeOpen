@@ -2,6 +2,7 @@ package com.coc.zkqcode.jar.code.builderbase.others
 
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.bugreporter.BugReporter
+import com.coc.zkqcode.core.util.fileactions.LogHelper
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.recognizer.TextRecognizer

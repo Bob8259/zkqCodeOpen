@@ -19,6 +19,7 @@ import com.coc.zkqcode.jar.code.universal.buildings.iterateBuilderBaseBuildingUp
 import com.coc.zkqcode.jar.code.universal.clickRightBottom
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
+import com.coc.zkqcode.jar.code.universal.smalltools.enterMainBase
 import com.coc.zkqcode.jar.code.universal.smalltools.getBooleanConfigRuntime
 import com.coc.zkqcode.jar.code.universal.smalltools.getConfigRuntime
 import com.coc.zkqcode.jar.ui.schema.Schema
@@ -37,6 +38,7 @@ enum class BuildButtonType {
 }
 
 suspend fun upgradeBuildings(currentBase: BaseType): Boolean {
+    if (!enterMainScreen()) return false//Double-check, to make sure the code slows down. Otherwise, may fail to detect workers
     upgradableBuildingsMap.keys.forEach { upgradableBuildingsMap[it] = false }
     var isNewBuildingDetected = false
     clickRightBottom(1)
