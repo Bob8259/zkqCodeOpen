@@ -10,11 +10,13 @@ import com.coc.zkqcode.jar.code.universal.remove.enterEditMode
 import com.coc.zkqcode.jar.code.universal.remove.removeAllBuildings
 import com.coc.zkqcode.jar.code.universal.remove.removeObstacles
 import com.coc.zkqcode.jar.code.universal.smalltools.StorageKeys
+import com.coc.zkqcode.jar.code.universal.smalltools.enterMainBase
 import com.coc.zkqcode.jar.code.universal.smalltools.readMemory
 import com.coc.zkqcode.jar.code.universal.smalltools.writeMemory
 import java.util.Calendar
 
 suspend fun builderBaseRemoveObstacles(): Boolean {
+    if (!enterMainBase()) return false//Double-check, to make sure the code slows down. Otherwise, may fail to detect workers
     val worker = BuilderBaseWorkerAndResearch.detectWorkerNumber()
     val resources = recognizeResources()
     val storageKey = StorageKeys.withAccountNumber(StorageKeys.BUILDER_BASE_REMOVE_OBSTACLES, InGamesVars.currentAccountNumber)

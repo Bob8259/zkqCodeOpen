@@ -6,6 +6,8 @@ import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.core.util.touchactions.TouchActions.swipe
 import com.coc.zkqcode.jar.code.builderbase.others.zoomSmallBuilderBase
 import com.coc.zkqcode.jar.code.colorschema.MyColors
+import com.coc.zkqcode.jar.code.universal.clickRightBottom
+import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
 
 suspend fun collectBuilderBaseResources(): Boolean {
@@ -31,28 +33,14 @@ suspend fun collectBuilderBaseResources(): Boolean {
     }
     swipe(587, 420, 587, 700)
     delayWithMultiplier(100)
-    // List of coordinates to tap and check for resource carts
-    val targets = listOf(
-        Pair(816, 300),
-        Pair(862, 334),
-        Pair(826, 358)
-    )
-
-    targets.forEach { (tx, ty) ->
-        TouchActions.tap(tx, ty)
-
-        val startTime = System.currentTimeMillis()
-        // Loop for 1000ms (1 second) as requested
-        while (System.currentTimeMillis() - startTime < 1000) {
-            // Check if the cart is already collected or empty
-            val cannotCollect = findMultiColors(schema = MyColors.CannotCollectExilerCart)
-            if (cannotCollect != null) break
-
-            // Check if the cart is available for collection
-            val collectPoint = findMultiColors(schema = MyColors.CollectExilerCart)
-            if (collectPoint != null) {
-                TouchActions.tap(collectPoint.x, collectPoint.y)
-                break
+    // Tap all grid points in the cart area and check for resource carts
+    for (tx in 805..920 step 10) {
+        for (ty in 325..415 step 10) {
+            TouchActions.tap(tx, ty, isJitter = false)
+            val collectButton = findMultiColorsUntil(schemas = listOf(MyColors.CannotCollectExilerCart, MyColors.CollectExilerCart), duration = 200)
+            if (collectButton != null) {
+                TouchActions.tap(collectButton.x, collectButton.y)
+                clickRightBottom(1)
             }
         }
     }

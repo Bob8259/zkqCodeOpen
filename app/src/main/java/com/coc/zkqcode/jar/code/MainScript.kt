@@ -35,7 +35,7 @@ suspend fun runMainScript() {
         while (currentCoroutineContext().isActive) {
 
             // Test code
-                runTestCode()
+//                runTestCode()
             if (!writeGameFiles()) break
             if (!enterMainScreen(true)) {
                 ShowMessage("进入游戏失败")
@@ -61,7 +61,7 @@ suspend fun runMainScript() {
 
 /**
  * Searches [searchOrder] for the first enabled account.
- * If none is found, loops showing a message until the coroutine is cancelled,
+ * If none is found, loops showing a message until the coroutine is canceled,
  * then returns null — the caller should return immediately on null.
  */
 private suspend fun findAndActivateAccount(searchOrder: Iterable<Int>): Int? {
