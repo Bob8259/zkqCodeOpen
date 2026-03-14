@@ -86,6 +86,9 @@ interface IMainBaseResearchColors {
 
     // Special Research Colors
     val GoblinResearcher: ColorSchema
+
+    // Insufficient resources color for research screen
+    val MainBaseResearchInsufficientColors: ColorSchema
 }
 
 object MainBaseResearchColors : IMainBaseResearchColors {
@@ -278,5 +281,10 @@ object MainBaseResearchColors : IMainBaseResearchColors {
     // Special Research Colors
     override val GoblinResearcher = ColorSchema.parse(
         395, 10, 643, 81, "16686C", "2|2|6E9EA4,-6|2|1A2432,-13|-5|207783,-7|-6|34AEAA,2|-11|49E7D2,3|-11|48E8D3,11|-11|42C4A9,14|-10|3EAE9D,11|-2|48DFD5", 0, 0.9, "哥布林工头2"
+    )
+
+    // Insufficient resources indicator color on research screen
+    override val MainBaseResearchInsufficientColors = ColorSchema.parse(
+        628, 410, 1160, 598, "7F88FF", "0|-1|7F88FF,0|-2|7F88FF,0|-3|7F88FF,0|-4|7F88FF", 0, 0.97
     )
 }
