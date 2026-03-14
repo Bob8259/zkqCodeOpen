@@ -132,7 +132,7 @@ fun HomeScreen(
             val sdPath = Environment.getExternalStorageDirectory().path
             val memoryPath = "$sdPath/zkqFiles/memory.json"
             val success = FileHelper.deleteJson(memoryPath)
-            showMsg(if (success) "记忆文件已清除" else "清除失败，可能记忆文件不存在")
+            showMsg(if (success) "记忆文件清除成功" else "清除失败，可能记忆文件不存在")
         }
     }
 

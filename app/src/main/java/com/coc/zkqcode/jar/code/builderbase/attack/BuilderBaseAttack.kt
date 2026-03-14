@@ -62,14 +62,14 @@ suspend fun builderBaseAttack(): Boolean {
         }
         val battleTimes = getConfigRuntime(Schema.BUILDER_BASE_SETTINGS.SWITCH_ACCOUNT_AFTER_BATTLES.key).toInt()
         repeat(battleTimes) { index ->
-            if (!realAttack(attackType, index + 1)) return false
+            if (!realAttack(attackType, index + 1, battleTimes)) return false
         }
     }
     // 4. Return to main screen
     return enterMainScreen()
 }
 
-private suspend fun realAttack(mode: String, battleNumber: Int = 1): Boolean {
+private suspend fun realAttack(mode: String, battleNumber: Int = 1, battleTimes: Int): Boolean {
     val startTime = System.currentTimeMillis()
     while (true) {
         val elapsed = System.currentTimeMillis() - startTime
@@ -78,7 +78,7 @@ private suspend fun realAttack(mode: String, battleNumber: Int = 1): Boolean {
             break
         }
         val remainingMin = (8 * 60 * 1000L - elapsed) / 60000.0
-        ShowMessage("对战中，第${battleNumber}局\n剩余${"%.1f".format(remainingMin)}分钟")
+        ShowMessage("对战中，第${battleNumber}/${battleTimes}局\n剩余${"%.1f".format(remainingMin)}分钟")
         val trainTroopButton = findMultiColors(schema = MyColors.TrainTroops)
         if (trainTroopButton != null) {
 

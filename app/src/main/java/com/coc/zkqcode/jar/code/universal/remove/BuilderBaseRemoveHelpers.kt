@@ -48,7 +48,7 @@ suspend fun removeAllBuildings() {
         TouchActions.tap(it.x, it.y)
 
         // Re-confirm deletion
-        findMultiColorsUntil(schemas = listOf(MyColors.MiddleGreenYes), duration = 1000)?.let { yesPoint ->
+        findMultiColorsUntil(schemas = listOf(MyColors.MiddleGreenYes), duration = 200)?.let { yesPoint ->
             TouchActions.tap(yesPoint.x, yesPoint.y)
         }
 

@@ -24,6 +24,6 @@ object BuilderBaseUpgradeColors : IBuilderBaseUpgradeColors {
         560, 520, 1083, 676, "7F88FF", "1|0|7F88FF,2|0|7F88FF,3|0|7F88FF,3|1|7F88FF,2|1|7F88FF,0|1|7F88FF,0|1|7F88FF,0|2|7F88FF,1|2|7F88FF", 0, 0.97, "夜世界升级资源不足"
     )
     override val BuilderBaseWorker = ColorSchema.parse(
-        518, 5, 1009, 78, "4375DB", "6|-15|A7D0FE,11|-19|3C6BC9,16|-10|8CAAE2,16|-9|403427,18|0|467CD6,7|12|3C69CD,4|12|416FD0,2|12|3E6BCB", 0, 0.9, "夜世界建筑工人"
+        518, 5, 1009, 78, "84A8EA", "3|0|ABD9FD,7|0|3F71CE,11|0|477DDC,14|0|4C81DD,0|17|455199,3|17|4D5BAF,7|17|3F4D87,11|17|7DA7EC,14|17|6493EA", 0, 0.9, "夜世界建筑工人"
     )
 }
