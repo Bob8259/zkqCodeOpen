@@ -9,12 +9,13 @@ import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.core.yolo.DetectionResult
 import com.coc.zkqcode.core.yolo.YoloDetector
 import com.coc.zkqcode.jar.code.colorschema.MyColors
+import com.coc.zkqcode.jar.code.universal.GameVersion
 import com.coc.zkqcode.jar.code.universal.InGamesVars
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 
 suspend fun enterEditMode() {
     // Select the initial schema based on the game package version
-    val initialSchema = if (InGamesVars.currentGamePackage == 0) {
+    val initialSchema = if (InGamesVars.currentGameVersion == GameVersion.CN) {
         MyColors.CNEditBaseButton
     } else {
         MyColors.GlobalEditBaseButton

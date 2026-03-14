@@ -1,3 +1,5 @@
+@file:Suppress("FunctionName")
+
 package com.coc.zkqcode.jar.ui.pages.single
 
 import android.os.Environment
@@ -20,6 +22,7 @@ import com.coc.zkqcode.jar.ui.components.SettingInputRow
 import com.coc.zkqcode.jar.ui.schema.Schema.GLOBAL_SETTINGS
 import com.topjohnwu.superuser.Shell
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 /**
@@ -59,10 +62,14 @@ private fun ExtractGameSaveContent() {
     var dialogMessage by remember { mutableStateOf("") }
     val coroutineScope = rememberCoroutineScope()
 
-    // Generic function to show dialog
+    // Generic function to show dialog, auto-dismiss after 2 seconds
     fun showMsg(msg: String) {
         dialogMessage = msg
         showDialog = true
+        coroutineScope.launch {
+            delay(1200)
+            showDialog = false
+        }
     }
 
     // Extract logic
@@ -173,11 +180,7 @@ private fun GameConfigSection(
     onExtract: () -> Unit,
     onDelete: () -> Unit
 ) {
-    val settingSchema = GLOBAL_SETTINGS.all.firstOrNull { it.key == variant.settingKey }
-    val displayName = settingSchema?.displayName ?: variant.settingKey
-
     SettingInputRow(key = variant.settingKey)
-
     Row {
         val regionName = if (variant == GameVariant.CN) "国服" else "国际服"
         CustomButton(text = "提取${regionName}数据", onClick = onExtract)

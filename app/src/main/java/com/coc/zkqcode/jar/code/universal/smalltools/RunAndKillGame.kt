@@ -5,31 +5,13 @@ import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.jar.code.universal.InGamesVars
 
 suspend fun runGame() {
-    when (InGamesVars.currentGamePackage) {
-        0 -> {//国服
-            RunShell.runNoOutput("am start -n com.tencent.tmgp.supercell.clashofclans/com.supercell.titan.tencent.GameAppTencent")
-        }
-        1 -> {//国际服
-            RunShell.runNoOutput("am start -n com.supercell.clashofclans/com.supercell.titan.GameApp")
-        }
-        2 -> {//私服
-            RunShell.runNoOutput("am start -n com.atrasis.original/com.atrasis.main.AtrasisGameApp")
-        }
-    }
+    // Launch component string is defined in GameVersion enum, keeping version-specific details centralised
+    RunShell.runNoOutput("am start -n ${InGamesVars.currentGameVersion.launchComponent}")
     delayWithMultiplier(3000)
 }
 
 suspend fun killGame() {
-    when (InGamesVars.currentGamePackage) {
-        0 -> {//国服
-            killApp("com.tencent.tmgp.supercell.clashofclans")
-        }
-        1 -> {//国际服
-            killApp("com.supercell.clashofclans")
-        }
-        2 -> {//私服
-            killApp("com.atrasis.original")
-        }
-    }
+    // Package name is defined in GameVersion enum, keeping version-specific details centralised
+    killApp(InGamesVars.currentGameVersion.packageName)
     delayWithMultiplier(1000)
 }

@@ -41,8 +41,8 @@ fun AccountConfig(
             options = listOf("游戏存档", "直接启动", "上号器")
         )
         when (GlobalVars.configStates["${ACCOUNT_SETTINGS.START_METHOD.key}${index}"]!!.value) {
-            "1" -> GameFiles(index)//Game save login
-            "2" -> UsePackage(index)//Account switcher
+            "0" -> GameFiles(index)//Game save login
+            "2" -> UseDataPackage(index)//Account switcher
         }
     }
     HorizontalDivider(
@@ -51,7 +51,7 @@ fun AccountConfig(
 }
 
 @Composable
-fun UsePackage(
+fun UseDataPackage(
     index: Int
 ) {
     if (GlobalVars.configStates["${ACCOUNT_SETTINGS.GAME_VERSION.key}${index}"]!!.value == "0") {
