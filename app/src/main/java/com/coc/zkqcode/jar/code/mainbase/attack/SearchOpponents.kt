@@ -42,13 +42,30 @@ suspend fun searchOpponentsAndDeployTroops() {
     val elixirKey = StorageKeys.withAccountNumber(StorageKeys.DYNAMIC_ELIXIR, InGamesVars.currentAccountNumber)
     val darkElixirKey = StorageKeys.withAccountNumber(StorageKeys.DYNAMIC_DARK_ELIXIR, InGamesVars.currentAccountNumber)
 
+    // Track whether each target was restored from memory (affects running average formula)
+    var goldFromMemory = false
+    var elixirFromMemory = false
+    var darkElixirFromMemory = false
+
     // If dynamic adjustment is on, try to restore previously saved thresholds from memory.
     // This lets the bot resume from the last session's average instead of restarting from config values.
     if (isDynamicAdjust) {
         // Only overwrite if the storage is not already marked as full (target > 0)
-        readMemory(goldKey).toIntOrNull()?.let { if (targetGold > 0) targetGold = it }
-        readMemory(elixirKey).toIntOrNull()?.let { if (targetElixir > 0) targetElixir = it }
-        readMemory(darkElixirKey).toIntOrNull()?.let { if (targetDarkElixir > 0) targetDarkElixir = it }
+        readMemory(goldKey).toIntOrNull()?.let {
+            if (targetGold > 0) {
+                targetGold = it; goldFromMemory = true
+            }
+        }
+        readMemory(elixirKey).toIntOrNull()?.let {
+            if (targetElixir > 0) {
+                targetElixir = it; elixirFromMemory = true
+            }
+        }
+        readMemory(darkElixirKey).toIntOrNull()?.let {
+            if (targetDarkElixir > 0) {
+                targetDarkElixir = it; darkElixirFromMemory = true
+            }
+        }
     }
     val goldPercentage = findMultiColors(schema = MyColors.GoldColor)
     if (goldPercentage != null && goldPercentage.x < GOLD_FULL_X_THRESHOLD) {
@@ -96,16 +113,30 @@ suspend fun searchOpponentsAndDeployTroops() {
             searchTimes++
             val res = recognizeResources(true)
 
-            // Incrementally update target resource thresholds using a running average
+            // Incrementally update target resource thresholds using a running average.
+            // When restored from memory, the value already encodes past sessions,
+            // so weight it as an existing data point (searchTimes) instead of (searchTimes - 1).
             if (isDynamicAdjust) {
                 if (targetGold > 0) {
-                    targetGold = (targetGold * (searchTimes - 1) + res.gold) / searchTimes
+                    targetGold = if (goldFromMemory) {
+                        (targetGold * searchTimes + res.gold) / (searchTimes + 1)
+                    } else {
+                        (targetGold * (searchTimes - 1) + res.gold) / searchTimes
+                    }
                 }
                 if (targetElixir > 0) {
-                    targetElixir = (targetElixir * (searchTimes - 1) + res.elixir) / searchTimes
+                    targetElixir = if (elixirFromMemory) {
+                        (targetElixir * searchTimes + res.elixir) / (searchTimes + 1)
+                    } else {
+                        (targetElixir * (searchTimes - 1) + res.elixir) / searchTimes
+                    }
                 }
                 if (targetDarkElixir > 0) {
-                    targetDarkElixir = (targetDarkElixir * (searchTimes - 1) + res.darkElixir) / searchTimes
+                    targetDarkElixir = if (darkElixirFromMemory) {
+                        (targetDarkElixir * searchTimes + res.darkElixir) / (searchTimes + 1)
+                    } else {
+                        (targetDarkElixir * (searchTimes - 1) + res.darkElixir) / searchTimes
+                    }
                 }
             }
 
