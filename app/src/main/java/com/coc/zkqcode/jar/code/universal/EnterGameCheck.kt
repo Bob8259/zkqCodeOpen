@@ -8,9 +8,11 @@ import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.smalltools.checkReconnections
+import com.coc.zkqcode.jar.code.universal.smalltools.getBooleanConfigRuntime
 import com.coc.zkqcode.jar.code.universal.smalltools.isGameAtFront
 import com.coc.zkqcode.jar.code.universal.smalltools.runGame
 import com.coc.zkqcode.jar.code.universal.tutorial.AllTutorials
+import com.coc.zkqcode.jar.ui.schema.Schema
 import kotlinx.coroutines.delay
 import kotlin.random.Random
 
@@ -103,6 +105,13 @@ private suspend fun closeAdvertisements() {
     findMultiColors(schema = MyColors.UpgradeTHArrow)?.let {
         TouchActions.tap(it.x + 50, it.y + 100, delayTime = 500)
     }
+    findMultiColors(schema = MyColors.DailyLoginReward)?.let {
+        if (getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.CLAIM_DAILY_REWARD.key)) {
+            TouchActions.tap(622, 492)
+        } else {
+            TouchActions.tap(it.x, it.y, delayTime = 1500)
+        }
+    }
     findMultiColors(schema = MyColors.ReturnAwards)?.let {
         // Define the coordinate pairs in order of execution
         val tapPoints = listOf(
@@ -134,10 +143,7 @@ private suspend fun isInHomePage(): Boolean {
 
     // 3. Check for any of the worker icons (Main base, Goblin workers, or Builder base)
     val workerSchemas = listOf(
-        MyColors.MainBaseWorker,
-        MyColors.GoblinWorker,
-        MyColors.GoblinResearcher,
-        MyColors.BuilderBaseWorker
+        MyColors.MainBaseWorker, MyColors.GoblinWorker, MyColors.GoblinResearcher, MyColors.BuilderBaseWorker
     )
 
     return workerSchemas.any { findMultiColors(byteBuffer = screenBuffer, schema = it) != null }
