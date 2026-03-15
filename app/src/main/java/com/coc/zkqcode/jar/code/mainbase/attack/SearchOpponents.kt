@@ -1,14 +1,12 @@
 package com.coc.zkqcode.jar.code.mainbase.attack
 
-import android.util.Log
 import com.coc.zkqcode.core.util.basic.ShowMessage
+import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
-import com.coc.zkqcode.core.util.basic.delayWithMultiplier
-import com.coc.zkqcode.core.util.fileactions.LogHelper
 import com.coc.zkqcode.jar.code.universal.recognizer.recognizeResources
 import com.coc.zkqcode.jar.code.universal.smalltools.getBooleanConfigRuntime
 import com.coc.zkqcode.jar.code.universal.smalltools.getConfigRuntime
@@ -23,8 +21,8 @@ private const val GOLD_FULL_X_THRESHOLD = 1078
 private const val ELIXIR_FULL_X_THRESHOLD = 1078
 private const val DARK_ELIXIR_FULL_X_THRESHOLD = 1127
 
-suspend fun searchOpponents(): Boolean {
-    if (!getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.AUTO_ATTACK.key)) return true
+suspend fun searchOpponentsAndDeployTroops() {
+
     var targetGold = getConfigRuntime(Schema.MAIN_BASE_SETTINGS.GOLD_REQUIREMENT.key).toInt()
     var targetElixir = getConfigRuntime(Schema.MAIN_BASE_SETTINGS.ELIXIR_REQUIREMENT.key).toInt()
     var targetDarkElixir = getConfigRuntime(Schema.MAIN_BASE_SETTINGS.DARK_ELIXIR_REQUIREMENT.key).toInt()
@@ -61,7 +59,7 @@ suspend fun searchOpponents(): Boolean {
         val villagerSpeaking = findMultiColors(schema = MyColors.SpeakingVillager)
         val setBaseIcon = findMultiColors(schema = MyColors.SetBaseIcon)
         if (villagerSpeaking != null || setBaseIcon != null) {
-            if (!mainBaseBattleTutorial()) return false
+            if (!mainBaseBattleTutorial()) return
         }
         val searchOpponents = findMultiColors(schema = MyColors.SearchOpponents)
         if (searchOpponents != null) {
@@ -110,7 +108,6 @@ suspend fun searchOpponents(): Boolean {
         ShowMessage("搜索中... ${"%.1f".format(remainingMinutes)}分钟后强制退出")
         delayWithMultiplier(100)
     }
-    return enterMainScreen()
 }
 
 private suspend fun mainBaseBattleTutorial(): Boolean {
