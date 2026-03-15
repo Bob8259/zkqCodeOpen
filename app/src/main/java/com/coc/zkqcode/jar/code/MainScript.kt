@@ -11,6 +11,7 @@ import com.coc.zkqcode.jar.code.mainbase.playMainBase
 import com.coc.zkqcode.jar.code.universal.GameVersion
 import com.coc.zkqcode.jar.code.universal.InGamesVars
 import com.coc.zkqcode.jar.code.universal.buildings.upgrade.BaseType
+import com.coc.zkqcode.jar.code.universal.buildings.upgrade.upgradeAllExistingBuildings
 import com.coc.zkqcode.jar.code.universal.buildings.upgrade.upgradeBuildings
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.smalltools.StorageKeys
@@ -39,7 +40,7 @@ suspend fun runMainScript() {
         while (currentCoroutineContext().isActive) {
 
             // Test code
-            runTestCode()
+//            runTestCode()
             if (!writeGameFiles()) break
             if (!enterMainScreen(true)) {
                 ShowMessage("进入游戏失败")
@@ -55,8 +56,7 @@ suspend fun runMainScript() {
             }
         }
         // Circularly search for the next enabled account, wrapping back to currentAccountNumber (inclusive)
-        val searchOrder = ((InGamesVars.currentAccountNumber + 1)..accountTotal) +
-                (1..InGamesVars.currentAccountNumber)
+        val searchOrder = ((InGamesVars.currentAccountNumber + 1)..accountTotal) + (1..InGamesVars.currentAccountNumber)
         val nextAccount = findAndActivateAccount(searchOrder) ?: return
         InGamesVars.currentAccountNumber = nextAccount
         InGamesVars.currentGameVersion = GameVersion.fromId(getConfigOrStop("${Schema.ACCOUNT_SETTINGS.GAME_VERSION.key}${InGamesVars.currentAccountNumber}").toInt())
@@ -86,7 +86,7 @@ private suspend fun findAndActivateAccount(searchOrder: Iterable<Int>): Int? {
 private suspend fun runTestCode() {
     while (true) {
         enterMainScreen()
-        upgradeBuildings(BaseType.Main)
+        upgradeAllExistingBuildings(listOf("野蛮人之王"), BaseType.Main)
         delayWithMultiplier(10000000)
 
     }

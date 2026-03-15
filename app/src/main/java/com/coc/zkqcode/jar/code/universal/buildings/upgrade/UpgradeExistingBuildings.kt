@@ -75,27 +75,24 @@ suspend fun upgradeAllExistingBuildings(buildings: List<String>, currentBase: Ba
                 schemas = listOf(MyColors.BuilderBaseWorker), duration = 1000
             ) else findMultiColorsUntil(schemas = listOf(MyColors.MainBaseWorker), duration = 1000)
 
-            // Pre-condition check: If cannot continue building or worker not found, skip to next
+            // Pre-condition check: if it cannot continue building or worker not found, skip to next
             if (!checkContinueBuild(currentBase) || worker == null) {
                 return enterMainScreen() // If we can't build anymore, might as well stop everything
             }
 
             TouchActions.tap(worker.x, worker.y, delayTime = 500)
 
+            //测试代码
             // Locate the specific building in the UI
             if (!findSpecificBuilding(building)) {
                 clickRightBottom(1)
                 break // Not found this building anymore, go to next building type
             }
-
-
             // Hero upgrade uses different logic
             val heroes = setOf(
                 "野蛮人之王", "弓箭女皇", "大守护者", "飞盾战神", "飞龙公爵"
             )
             if (building in heroes) {
-                clickRightBottom(1)
-
                 // Check for insufficient resources for heroes (except 飞龙公爵)
                 if (building != "飞龙公爵") {
                     // Calculate the search area based on hero position
@@ -115,8 +112,7 @@ suspend fun upgradeAllExistingBuildings(buildings: List<String>, currentBase: Ba
                         ShowMessage("${building}资源不足，跳过")
                         break
                     }
-                    ShowMessage("点击坐标${x1 + 100}, 500")
-                    TouchActions.tap(x1 + 100, 500, delayTime = 5000)//Upgrade Hero
+                    TouchActions.tap(x1 + 100, 500, delayTime = 500)//Upgrade Hero
                     ShowMessage("等待结束")
                     TouchActions.tap(902, 626, delayTime = 500)
                     clickRightBottom(times = 3, delayTime = 200)

@@ -303,7 +303,7 @@ object TouchActions {
         waitForPlay()
         val delayMultiplier = getDelayMultiplier()
 
-        touchDown(x.toFloat(), y.toFloat(), 1)
+        touchDown(x.toFloat(), y.toFloat(), 5)
         try {
             // Random delay
             val randomDelay = Random.nextLong(20, 31)
@@ -312,11 +312,11 @@ object TouchActions {
             if (isJitter) {
                 val offsetX = Random.nextInt(-3, 4)
                 val offsetY = Random.nextInt(-3, 4)
-                touchMove((x + offsetX).toFloat(), (y + offsetY).toFloat(), 1, isJitter = false)
+                touchMove((x + offsetX).toFloat(), (y + offsetY).toFloat(), 5, isJitter = false)
             }
         } finally {
             withContext(NonCancellable) {
-                touchUp(1)
+                touchUp(5)
                 delayWithMultiplier(delayTime)
             }
         }
