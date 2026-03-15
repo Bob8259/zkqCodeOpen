@@ -165,44 +165,47 @@ private suspend fun normalBattle(isNormal: Boolean = true) {
     TouchActions.tap(126, 638, delayTime = 200) // Battle Machine
     TouchActions.tap(deployPos.first, deployPos.second, delayTime = 200) // Deploy the Machine
     if (!isNormal) return
-    TouchActions.tap(246, 646, delayTime = 200) // Troops
-    val nightWitch = findMultiColors(schema = MyColors.NightWitch)
-    if (nightWitch != null) {
-        TouchActions.touchDown((deployPos.first + Random.nextInt(1, 4)).toFloat(), (deployPos.second + Random.nextInt(1, 4)).toFloat(), 1)
-        delayWithMultiplier(4000)
-        TouchActions.touchUp(1)
-        ShowMessage("等女巫走一会")
-        delayWithMultiplier(Random.nextInt(5000, 10000))
-        repeat(6) {
-            val skillsPos = findMultiColors(
-                schema = ColorSchema.rescope(
-                    MyColors.TroopSkills, MyColors.TroopSkills.x1, MyColors.TroopSkills.y1, MyColors.TroopSkills.x2, MyColors.TroopSkills.y2, direction = Random.nextInt(0, 2)
+    val generalTroops = findMultiColorsUntil(schemas = listOf(MyColors.TroopsWithSkills, MyColors.TroopsWithSkills), duration = 200)
+    if (generalTroops != null) {
+        TouchActions.tap(generalTroops.x + 15, 646, delayTime = 200) // Troops
+        val nightWitch = findMultiColors(schema = MyColors.NightWitch)
+        if (nightWitch != null) {
+            TouchActions.touchDown((deployPos.first + Random.nextInt(1, 4)).toFloat(), (deployPos.second + Random.nextInt(1, 4)).toFloat(), 1)
+            delayWithMultiplier(4000)
+            TouchActions.touchUp(1)
+            ShowMessage("等女巫走一会")
+            delayWithMultiplier(Random.nextInt(5000, 10000))
+            repeat(6) {
+                val skillsPos = findMultiColors(
+                    schema = ColorSchema.rescope(
+                        MyColors.TroopSkills, MyColors.TroopSkills.x1, MyColors.TroopSkills.y1, MyColors.TroopSkills.x2, MyColors.TroopSkills.y2, direction = Random.nextInt(0, 2)
+                    )
                 )
-            )
-            if (skillsPos != null) {
-                TouchActions.tap(skillsPos.x, skillsPos.y + 100)
-                delayWithMultiplier(Random.nextInt(500, 4000))
+                if (skillsPos != null) {
+                    TouchActions.tap(skillsPos.x, skillsPos.y + 100)
+                    delayWithMultiplier(Random.nextInt(500, 4000))
+                }
             }
-        }
-    } else {
-        attemptLoop@ for (attempt in 0 until 5) {
-            // Step 1: Touch down at a random position
-            var currentPos = deployPositions.random()
-            TouchActions.touchDown(currentPos.first.toFloat(), currentPos.second.toFloat(), 1)
-            delayWithMultiplier(700)
+        } else {
+            attemptLoop@ for (attempt in 0 until 5) {
+                // Step 1: Touch down at a random position
+                var currentPos = deployPositions.random()
+                TouchActions.touchDown(currentPos.first.toFloat(), currentPos.second.toFloat(), 1)
+                delayWithMultiplier(700)
 
-            // Steps 2-3: Move smoothly to random positions until barbarian is gone
-            while (true) {
-                val nextPos = deployPositions.random()
-                TouchActions.moveSmoothly(
-                    fromX = currentPos.first.toFloat(), fromY = currentPos.second.toFloat(), toX = nextPos.first.toFloat(), toY = nextPos.second.toFloat(), duration = Random.nextInt(200, 500)
-                )
-                currentPos = nextPos
-                val barbarian = findMultiColors(schema = MyColors.BuilderBaseBarbarian)
-                if (barbarian == null) {
-                    // Step 4: Release finger and exit outer loop — barbarian is gone
-                    TouchActions.touchUp(1)
-                    break@attemptLoop
+                // Steps 2-3: Move smoothly to random positions until barbarian is gone
+                while (true) {
+                    val nextPos = deployPositions.random()
+                    TouchActions.moveSmoothly(
+                        fromX = currentPos.first.toFloat(), fromY = currentPos.second.toFloat(), toX = nextPos.first.toFloat(), toY = nextPos.second.toFloat(), duration = Random.nextInt(200, 500)
+                    )
+                    currentPos = nextPos
+                    val barbarian = findMultiColors(schema = MyColors.BuilderBaseBarbarian)
+                    if (barbarian == null) {
+                        // Step 4: Release finger and exit outer loop — barbarian is gone
+                        TouchActions.touchUp(1)
+                        break@attemptLoop
+                    }
                 }
             }
         }
