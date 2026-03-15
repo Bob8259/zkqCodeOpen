@@ -116,7 +116,8 @@ suspend fun upgradeAllExistingBuildings(buildings: List<String>, currentBase: Ba
                         break
                     }
                     ShowMessage("点击坐标${x1 + 100}, 500")
-                    TouchActions.tap(x1 + 100, 500, delayTime = 500)//Upgrade Hero
+                    TouchActions.tap(x1 + 100, 500, delayTime = 5000)//Upgrade Hero
+                    ShowMessage("等待结束")
                     TouchActions.tap(902, 626, delayTime = 500)
                     clickRightBottom(times = 3, delayTime = 200)
                 } else {
