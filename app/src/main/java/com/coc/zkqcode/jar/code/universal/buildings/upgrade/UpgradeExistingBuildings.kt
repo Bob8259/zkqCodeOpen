@@ -84,11 +84,11 @@ suspend fun upgradeAllExistingBuildings(buildings: List<String>, currentBase: Ba
 
             // Locate the specific building in the UI
             if (!findSpecificBuilding(building)) {
-                TouchActions.tap(1233, 37)// tap gold to close worker list
+                clickRightBottom(1)
                 break // Not found this building anymore, go to next building type
             }
 
-            TouchActions.tap(1233, 37)// tap gold to close worker list
+
             // Hero upgrade uses different logic
             val heroes = setOf(
                 "野蛮人之王", "弓箭女皇", "大守护者", "飞盾战神", "飞龙公爵"
@@ -102,6 +102,7 @@ suspend fun upgradeAllExistingBuildings(buildings: List<String>, currentBase: Ba
                     // Base area for 野蛮人之王: x1=55, y1=500, x2=240, y2=530
                     // Each subsequent hero shifts by 228 on x-axis
                     val heroIndex = listOf("野蛮人之王", "弓箭女皇", "大守护者", "飞盾战神").indexOf(building)
+                    ShowMessage("升级英雄：$building，序号$heroIndex")
                     val x1 = 55 + heroIndex * 228
                     val x2 = 240 + heroIndex * 228
 
@@ -114,11 +115,13 @@ suspend fun upgradeAllExistingBuildings(buildings: List<String>, currentBase: Ba
                         ShowMessage("${building}资源不足，跳过")
                         break
                     }
+                    ShowMessage("点击坐标${x1 + 100}, 500")
                     TouchActions.tap(x1 + 100, 500, delayTime = 500)//Upgrade Hero
                     TouchActions.tap(902, 626, delayTime = 500)
                     clickRightBottom(times = 3, delayTime = 200)
                 } else {
                     // The unique logic for Dragon Duke
+                    ShowMessage("升级英雄：飞龙公爵")
                     TouchActions.swipe(1189, 354, 120, 345, delayTime = 300)
                     delayWithMultiplier(200)
                     val heroInsufficientResources = ColorSchema.parse(
@@ -135,7 +138,7 @@ suspend fun upgradeAllExistingBuildings(buildings: List<String>, currentBase: Ba
 
 
             } else {
-
+                TouchActions.tap(1233, 37)// tap gold to close worker list
                 // Check for the upgrade action (Hammer icon)
                 val hammer = findMultiColorsUntil(schemas = listOf(MyColors.UpgradeHammer), duration = 1000) ?: continue // Should not happen if build was found, but be safe
 
@@ -174,7 +177,7 @@ suspend fun upgradeAllExistingBuildings(buildings: List<String>, currentBase: Ba
             }
         }
     }
-
+    ShowMessage("升级完成，ordered list:$orderedList")
     // Final UI reset before returning to main screen
     clickRightBottom(1)
     return enterMainScreen()

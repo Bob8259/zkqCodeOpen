@@ -95,13 +95,12 @@ suspend fun searchOpponentsAndDeployTroops() {
             ShowMessage("搜索次数：$searchTimes\n对手资源：\n${res.gold}金, ${res.elixir}水, ${res.darkElixir}黑\n目标资源：\n${targetGold}金, ${targetElixir}水, ${targetDarkElixir}黑")
 
             // Skip the first search result when dynamic adjustment is enabled, so the average has at least one data point
-            val meetsCriteria = (!isDynamicAdjust || searchTimes > 2) &&
-                    res.gold > targetGold && res.elixir > targetElixir && res.darkElixir > targetDarkElixir
+            val meetsCriteria = (!isDynamicAdjust || searchTimes > 2) && res.gold > targetGold && res.elixir > targetElixir && res.darkElixir > targetDarkElixir
             if (meetsCriteria) {
                 mainBaseDeployTroops()
                 break
             } else {
-                TouchActions.tap(nextOpponent.x, nextOpponent.y, delayTime = 1000)
+                TouchActions.tap(nextOpponent.x, nextOpponent.y, delayTime = 2500)
             }
         }
         val remainingMinutes = (SEARCH_TIMEOUT_MS - (System.currentTimeMillis() - battleStartTime)) / 60000.0

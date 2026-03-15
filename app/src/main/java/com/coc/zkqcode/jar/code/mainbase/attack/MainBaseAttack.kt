@@ -25,10 +25,10 @@ suspend fun mainBaseAttack(): Boolean {
             break
         }
 
-        // Show remaining minutes message when the minute value changes
-        val remainingMinutes = ((maxDurationMs - elapsed) / 60000).toInt()
+        // Show remaining minutes with 1 decimal place
+        val remainingMinutes = (maxDurationMs - elapsed) / 60000.0
 
-        ShowMessage("对战中，${remainingMinutes}分钟后强制退出对战")
+        ShowMessage("对战中，${"%.1f".format(remainingMinutes)}分钟后强制退出对战")
         val endBattleButton = findMultiColors(schema = MyColors.EndBattle)
         if (endBattleButton == null) {
             ShowMessage("未找到放弃按钮，对战结束")

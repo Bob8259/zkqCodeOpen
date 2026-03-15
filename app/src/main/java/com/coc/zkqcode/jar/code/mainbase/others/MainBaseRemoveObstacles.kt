@@ -46,7 +46,7 @@ private suspend fun enhanceRemoveObstacles() {
         repeat(10) {
             val randomX = (100..1180).random()
             val randomY = (1..560).random()
-            TouchActions.tap(randomX, randomY, delayTime = 400)
+            TouchActions.tap(randomX, randomY, delayTime = 300)
             performRemoveSequence()
         }
     }
@@ -54,8 +54,8 @@ private suspend fun enhanceRemoveObstacles() {
 
 private suspend fun removeLowerObstacles() {
     val step = 25
-    val yStart = 530
-    val yEnd = 565
+    val yStart = 525
+    val yEnd = 575
 
     // Loop through Y coordinates
     for (y in yStart..yEnd step step) {
@@ -72,7 +72,7 @@ private suspend fun removeLowerObstacles() {
         // Loop through X coordinates for this specific "row"
         for (x in currentXStart..currentXEnd step step) {
             // 1. Tap the target area inside the trapezoid
-            TouchActions.tap(x, y, delayTime = 400)
+            TouchActions.tap(x, y, delayTime = 300)
 
             // 2. Perform the "Remove" operation sequence
             performRemoveSequence()
