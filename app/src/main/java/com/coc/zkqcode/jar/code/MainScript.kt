@@ -88,7 +88,6 @@ private suspend fun runTestCode() {
         enterMainScreen()
         upgradeAllExistingBuildings(listOf("野蛮人之王"), BaseType.Main)
         delayWithMultiplier(10000000)
-
     }
 }
 
