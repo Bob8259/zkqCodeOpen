@@ -20,12 +20,10 @@ suspend fun playBuilderBase(): Boolean {
     if (noBuilderBase) return true//if no builder base, then directly return.
 
     if (!enterBuilderBase(true)) {
-        ShowMessage("未解锁夜世界")
         return true
-    } else {//check if builder base is unlocked or not.
-        ShowMessage("进入夜世界成功")
     }
     if (!collectBuilderBaseResources()) return false
+    if (!enterBuilderBase(false)) return true
     if (!clickOttosOutPost()) return false
     if (!builderBaseRemoveObstacles()) return false
     if (!upgradeBuildings(BaseType.Builder)) return false

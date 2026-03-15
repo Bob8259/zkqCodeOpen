@@ -34,7 +34,7 @@ suspend fun builderBaseAttack(): Boolean {
     // 2. Locate resource indicators
     val goldPos = findMultiColors(schema = MyColors.BuilderBaseGold)
     val exilePos = findMultiColors(schema = MyColors.BuilderBaseExiler)
-    ShowMessage("goldPos: $goldPos, exilePos: $exilePos")
+    ShowMessage("金币坐标: $goldPos, 圣水坐标: $exilePos")
     // Define resource fullness (threshold: < 1016 indicates full/near full based on original logic)
     val isGoldFull = goldPos != null && goldPos.x < 1016
 

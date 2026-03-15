@@ -17,6 +17,11 @@ import kotlinx.coroutines.delay
 suspend fun enterMainBase(): Boolean {
     val loopStart = System.currentTimeMillis()
     while (System.currentTimeMillis() - loopStart < 30_000L) {
+        val workers = findMultiColorsUntil(schemas = listOf(MyColors.MainBaseWorker, MyColors.GoblinWorker, MyColors.GoblinResearcher), duration = 200)
+        if (workers != null) {
+            ShowMessage("已进入主世界")
+            return true
+        }
         val remaining = (30_000L - (System.currentTimeMillis() - loopStart)) / 1000.0
         ShowMessage("尝试进入主世界中，剩余${"%.1f".format(remaining)}秒后退出")
         zoomSmallBuilderBase()
@@ -27,8 +32,7 @@ suspend fun enterMainBase(): Boolean {
                 TouchActions.tap(x, y, isJitter = false, delayTime = 50)
             }
         }
-        val workers = findMultiColorsUntil(schemas = listOf(MyColors.MainBaseWorker, MyColors.GoblinWorker, MyColors.GoblinResearcher), duration = 200)
-        if (workers != null) return true
+
     }
     return false
 }
@@ -41,6 +45,11 @@ suspend fun enterBuilderBase(isCheck: Boolean): Boolean {
     val loopStart = System.currentTimeMillis()
     while (System.currentTimeMillis() - loopStart < 30_000L) {
         val remaining = (30_000L - (System.currentTimeMillis() - loopStart)) / 1000.0
+        // 1. Check for Builder Base success indicator
+        if (findMultiColors(schema = MyColors.BuilderBaseWorker) != null) {
+            ShowMessage("已进入夜世界")
+            return true
+        }
         ShowMessage("尝试进入夜世界中，剩余${"%.1f".format(remaining)}秒后退出")
         // Ensure consistent view before attempting interaction
         zoomSmallMainBase()
@@ -59,10 +68,9 @@ suspend fun enterBuilderBase(isCheck: Boolean): Boolean {
 
                 // Polling loop for state transition (0.5s window)
                 while (System.currentTimeMillis() - loopStartTime < checkDuration) {
-
                     // 1. Check for Builder Base success indicator
-                    // Checked early to ensure fast return on successful transition
                     if (findMultiColors(schema = MyColors.BuilderBaseWorker) != null) {
+                        ShowMessage("已进入夜世界")
                         return true
                     }
 
@@ -88,7 +96,6 @@ suspend fun enterBuilderBase(isCheck: Boolean): Boolean {
                             delay(20) // Tight polling for tutorial interaction
                         }
                     }
-
                     // Standard delay to maintain performance and avoid high CPU usage
                     delay(100)
                 }
