@@ -78,7 +78,7 @@ private suspend fun solvePoW(nonce: String): String = withContext(Dispatchers.De
 }
 
 @Composable
-fun LoginScreen() {
+fun LoginScreen(onAdFreeClick: () -> Unit = {}) {
     val scope = rememberCoroutineScope()
     var isLoginButtonEnabled by remember { mutableStateOf(true) }
     var gemInfo by remember { mutableStateOf(GlobalVars.configStates[GLOBAL_SETTINGS.GEM_COUNT.key]!!.value) }
@@ -332,12 +332,13 @@ fun LoginScreen() {
             val context = LocalContext.current
             CustomButton(
                 text = "免广告", marginTop = 0.dp, onClick = {
-                    gemInfo = "前往官网即可注册，赞助后免广告，官网链接https://zkqcoc.store。\n如有疑问请加群咨询。"
-                    val url = "https://zkqcoc.store/signup"
+                    gemInfo = "前往官网即可注册，赞助后免广告，官网链接https://zkqcoc.store\n如有疑问请加群咨询。"
+                    val url = "https://zkqcoc.store/"
                     val intent = Intent(Intent.ACTION_VIEW, url.toUri())
                     // Required when startActivity is called from a non-Activity context
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                     context.startActivity(intent)
+                    onAdFreeClick()
                 }, enable = isLoginButtonEnabled
             )
             CustomButton(
