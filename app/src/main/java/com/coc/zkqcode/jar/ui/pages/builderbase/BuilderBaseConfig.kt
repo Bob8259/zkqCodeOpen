@@ -68,13 +68,13 @@ fun LazyListScope.BuilderBaseConfig(
                     SettingCheckBox(key = "${BUILDER_BASE_SETTINGS.STOP_WHEN_RESOURCE_FULL.key}_c${index}")
                 }
                 SettingInputRow(key = "${BUILDER_BASE_SETTINGS.SWITCH_ACCOUNT_AFTER_BATTLES.key}_c${index}")
-                SettingInputRow(key = "${BUILDER_BASE_SETTINGS.SWITCH_ACCOUNT_AFTER_BATTLES_WITH_TASKS.key}_c${index}")
+                /* SettingInputRow(key = "${BUILDER_BASE_SETTINGS.SWITCH_ACCOUNT_AFTER_BATTLES_WITH_TASKS.key}_c${index}") */
             }
         }
     }
 
     // Trophy & Elixir cart
-    item {
+    /* item {
         val noBuilderBase = GlobalVars.configStates["${BUILDER_BASE_SETTINGS.NO_BUILDER_BASE.key}_c${index}"]?.value == "0"
         AnimatedVisibility(visible = isExpanded && noBuilderBase) {
             Row {
@@ -88,7 +88,7 @@ fun LazyListScope.BuilderBaseConfig(
                 )
             }
         }
-    }
+    } */
 
     // Research
     item {
@@ -111,9 +111,9 @@ fun LazyListScope.BuilderBaseConfig(
             Column {
                 FlowRow {
                     SettingCheckBox(key = "${BUILDER_BASE_SETTINGS.NIGHT_BUILD_SETTING.key}_c${index}")
-                    SettingCheckBox(key = "${BUILDER_BASE_SETTINGS.NIGHT_WALL_UPGRADE_SETTINGS.key}_c${index}")
-                    SettingCheckBox(key = "${BUILDER_BASE_SETTINGS.NIGHT_REMOVE_OBSTACLES.key}_c${index}")
-                    SettingCheckBox(key = "${BUILDER_BASE_SETTINGS.NIGHT_SAVE_WORKER.key}_c${index}")
+                    /* SettingCheckBox(key = "${BUILDER_BASE_SETTINGS.NIGHT_WALL_UPGRADE_SETTINGS.key}_c${index}") */
+                    SettingCheckBox(key = "${BUILDER_BASE_SETTINGS.NIGHT_REMOVE_OBSTACLES.key}_c${index}", explain = "该功能会移除野蛮人雕像，请谨慎使用。")
+                    /* SettingCheckBox(key = "${BUILDER_BASE_SETTINGS.NIGHT_SAVE_WORKER.key}_c${index}") */
                 }
 
                 val nightBuildVisible = GlobalVars.configStates["${BUILDER_BASE_SETTINGS.NIGHT_BUILD_SETTING.key}_c${index}"]?.value == "1"

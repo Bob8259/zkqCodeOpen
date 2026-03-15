@@ -71,20 +71,20 @@ fun LazyListScope.MainBaseConfig(
                         key = "${MAIN_BASE_SETTINGS.DYNAMIC_ADJUSTMENT.key}_c$index",
                         explain = "勾选后，辅助会跳过前两个搜到的目标，并且会根据所有搜索到的目标的可获得资源的平均值来搜鱼要求。"
                     )
-                    SettingCheckBox(key = "${MAIN_BASE_SETTINGS.STOP_BATTLE_AFTER_FULL_RESOURCES.key}_c$index")
+                    /* SettingCheckBox(key = "${MAIN_BASE_SETTINGS.STOP_BATTLE_AFTER_FULL_RESOURCES.key}_c$index")
 
                     SettingCheckBox(key = "${MAIN_BASE_SETTINGS.STOP_BATTLE_WHEN_NO_STAR.key}_c$index")
                     SettingCheckBox(key = "${MAIN_BASE_SETTINGS.PLAY_LADDER.key}_c$index")
                     AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.PLAY_LADDER.key}_c$index"]?.value == "1") {
                         SettingCheckBox(key = "${MAIN_BASE_SETTINGS.CHANGE_BASE.key}_c$index")
-                    }
+                    } */
                 }
             }
         }
     }
 
     // Battle behavior options
-    item {
+    /* item {
         AnimatedVisibility(visible = isExpanded) {
             FlowRow {
                 SettingCheckBox(
@@ -105,10 +105,10 @@ fun LazyListScope.MainBaseConfig(
                 )
             }
         }
-    }
+    } */
 
     // AI deploy & Tactics
-    item {
+    /* item {
         AnimatedVisibility(visible = isExpanded) {
             Column {
                 AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.AI_DEPLOY_TROOPS.key}_c$index"]?.value == "0") {
@@ -139,22 +139,22 @@ fun LazyListScope.MainBaseConfig(
                 )
             }
         }
-    }
+    } */
 
     // Donation & Clan Castle
     item {
         AnimatedVisibility(visible = isExpanded) {
             Column {
                 FlowRow {
-                    SettingCheckBox(key = "${MAIN_BASE_SETTINGS.DONATION_SETTING.key}_c$index")
-                    SettingCheckBox(key = "${MAIN_BASE_SETTINGS.REQUEST_REINFORCEMENT_SETTING.key}_c$index")
+                    /* SettingCheckBox(key = "${MAIN_BASE_SETTINGS.DONATION_SETTING.key}_c$index") */
+                    /* SettingCheckBox(key = "${MAIN_BASE_SETTINGS.REQUEST_REINFORCEMENT_SETTING.key}_c$index") */
                     SettingCheckBox(key = "${MAIN_BASE_SETTINGS.RESEARCH_SETTING.key}_c$index")
-                    SettingCheckBox(key = "${MAIN_BASE_SETTINGS.COLLECT_CLAN_CASTLE.key}_c$index")
+                    /* SettingCheckBox(key = "${MAIN_BASE_SETTINGS.COLLECT_CLAN_CASTLE.key}_c$index") */
                 }
 
-                AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.DONATION_SETTING.key}_c$index"]?.value == "1") {
+                /* AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.DONATION_SETTING.key}_c$index"]?.value == "1") {
                     SettingInputRow(key = "${MAIN_BASE_SETTINGS.DONATION_TIMES.key}_c$index")
-                }
+                } */
             }
         }
     }
@@ -182,21 +182,21 @@ fun LazyListScope.MainBaseConfig(
             Column {
                 FlowRow {
                     SettingCheckBox(key = "${MAIN_BASE_SETTINGS.BUILD_SETTING.key}_c$index")
-                    SettingCheckBox(key = "${MAIN_BASE_SETTINGS.WALL_UPGRADE_SETTINGS.key}_c$index")
+                    /* SettingCheckBox(key = "${MAIN_BASE_SETTINGS.WALL_UPGRADE_SETTINGS.key}_c$index")
                     SettingCheckBox(key = "${MAIN_BASE_SETTINGS.SAVE_WORKER.key}_c$index")
                     SettingCheckBox(key = "${MAIN_BASE_SETTINGS.BUILDING_CONVERSION_SETTINGS.key}_c$index")
                     SettingCheckBox(
                         key = "${MAIN_BASE_SETTINGS.UPGRADE_AFTER_FAIL_WALL_UPGRADE.key}_c$index",
                         explain = "勾选后，若主世界无城墙可升级，则会将所有工人用于建造。"
-                    )
+                    ) */
                 }
 
-                AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.WALL_UPGRADE_SETTINGS.key}_c$index"]?.value == "1") {
+                /* AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.WALL_UPGRADE_SETTINGS.key}_c$index"]?.value == "1") {
                     FlowRow {
                         SettingCheckBox(key = "${MAIN_BASE_SETTINGS.BATCH_WALL_UPGRADE_SETTINGS.key}_c$index")
                         SettingInputRow(key = "${MAIN_BASE_SETTINGS.UPGRADE_WALL_THRESHOLD.key}_c$index")
                     }
-                }
+                } */
             }
         }
     }
@@ -213,7 +213,7 @@ fun LazyListScope.MainBaseConfig(
     }
 
     // Pet upgrades
-    item {
+    /* item {
         AnimatedVisibility(visible = isExpanded) {
             Column {
                 SettingCheckBox(key = "${MAIN_BASE_SETTINGS.UPGRADE_PETS.key}_c$index")
@@ -389,5 +389,5 @@ fun LazyListScope.MainBaseConfig(
                 }
             }
         }
-    }
+    } */
 }

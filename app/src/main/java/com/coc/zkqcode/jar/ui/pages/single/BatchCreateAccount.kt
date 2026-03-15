@@ -13,7 +13,7 @@ import com.coc.zkqcode.jar.ui.schema.Schema.GLOBAL_SETTINGS
 
 @Composable
 fun BatchCreateAccount() {
-    Text(
+    /* Text(
         text = "以下是特殊设置，使用前请仔细看教程。",
         modifier = Modifier.padding(top = 4.dp, bottom = 2.dp),
         style = MaterialTheme.typography.labelMedium,
@@ -33,5 +33,5 @@ fun BatchCreateAccount() {
         SettingCheckBox(
             key = GLOBAL_SETTINGS.ADD_SUFFIX_SETTING.key,
         )
-    }
+    } */
 }
