@@ -1,3 +1,9 @@
+This part is about repo links
+```
+git remote -v //view current repo
+git push open main --force //push to repo
+```
+
 This documentation of the server. 
 URL:localhost:6839
 Connect to the server via websocket.
