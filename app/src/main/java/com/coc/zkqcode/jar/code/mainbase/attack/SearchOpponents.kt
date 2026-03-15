@@ -111,6 +111,7 @@ suspend fun searchOpponentsAndDeployTroops() {
         val nextOpponent = findMultiColors(schema = MyColors.NextOpponent)
         if (nextOpponent != null) {
             searchTimes++
+            delayWithMultiplier(200)
             val res = recognizeResources(true)
 
             // Incrementally update target resource thresholds using a running average.
