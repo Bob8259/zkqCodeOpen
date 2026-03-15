@@ -29,8 +29,8 @@ suspend fun enterMainScreen(isDoubleCheck: Boolean = false): Boolean {
     val timeoutSeconds = GlobalVars.configStates["enter_game_timer"]?.value?.toIntOrNull() ?: logAndRestart("enter main game error, can not get game timer")
     val timeoutMillis = timeoutSeconds * 1000L
     var mainBaseTutorialElements = 0
-    // Counter to throttle clickRightBottom to roughly every 5 seconds (loop runs ~every 150ms, so ~33 ticks per 5s)
-    var clickRightBottomCounter = 0
+    // Counter to throttle clickRightBottom to roughly every 5 seconds
+    var clickRightBottomCounter = 20
     while (System.currentTimeMillis() - startTime < timeoutMillis) {
         // 3. Insert your logic to check if the main screen is actually visible
         if (!isGameAtFront()) {
@@ -50,8 +50,8 @@ suspend fun enterMainScreen(isDoubleCheck: Boolean = false): Boolean {
             ShowMessage("账号${InGamesVars.currentAccountNumber}，倒计时${((timeoutMillis - System.currentTimeMillis() + startTime) / 1000).toInt()}秒\n请手动给主世界和夜世界切换默认场景")
             closeAdvertisements()
 
-            // Click right bottom roughly every 5 seconds (20 ticks * 150ms ≈ 5s)
-            if (clickRightBottomCounter++ >= 20) {
+            // Click right bottom roughly every 5 seconds
+            if (clickRightBottomCounter++ >= 15) {
                 clickRightBottom(3)
                 clickRightBottomCounter = 0
             }

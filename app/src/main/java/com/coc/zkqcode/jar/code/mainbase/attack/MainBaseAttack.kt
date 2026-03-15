@@ -1,7 +1,9 @@
 package com.coc.zkqcode.jar.code.mainbase.attack
 
 import com.coc.zkqcode.core.util.basic.ShowMessage
+import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.fileactions.LogHelper
+import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
@@ -32,6 +34,8 @@ suspend fun mainBaseAttack(): Boolean {
         val endBattleButton = findMultiColors(schema = MyColors.EndBattle)
         if (endBattleButton == null) {
             ShowMessage("未找到放弃按钮，对战结束")
+            delayWithMultiplier(1000)
+            TouchActions.tap(640, 610, delayTime = 1500)
             break
         }
 
