@@ -100,7 +100,6 @@ fun HomeScreen(
     val scrollToBottom: () -> Unit = {
         scope.launch {
             // Small delay to let AnimatedVisibility content measure
-            showDebugInfo("scrollToBottom")
             delay(300L)
             lazyListState.animateScrollToItem(lazyListState.layoutInfo.totalItemsCount - 1)
         }
