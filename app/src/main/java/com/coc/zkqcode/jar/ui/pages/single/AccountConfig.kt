@@ -38,7 +38,8 @@ fun AccountConfig(
         SettingInputRow(key = "${ACCOUNT_SETTINGS.ACCOUNT_CONFIG.key}${index}")
         SettingDropdown(
             key = "${ACCOUNT_SETTINGS.START_METHOD.key}${index}",
-            options = listOf("游戏存档", "直接启动", "上号器")
+//            options = listOf("游戏存档", "直接启动", "上号器")
+            options = listOf("游戏存档", "直接启动")
         )
         when (GlobalVars.configStates["${ACCOUNT_SETTINGS.START_METHOD.key}${index}"]!!.value) {
             "0" -> GameFiles(index)//Game save login
