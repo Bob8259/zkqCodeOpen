@@ -3,7 +3,6 @@ package com.coc.zkqcode.jar.code.builderbase.resources
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.core.util.touchactions.TouchActions
-import com.coc.zkqcode.core.util.touchactions.TouchActions.swipe
 import com.coc.zkqcode.jar.code.builderbase.others.zoomSmallBuilderBase
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.clickRightBottom
@@ -12,7 +11,7 @@ import com.coc.zkqcode.jar.code.universal.enterMainScreen
 
 suspend fun collectBuilderBaseResources(): Boolean {
     zoomSmallBuilderBase()
-    swipe(587, 420, 587, 700, delayTime = 100)
+    TouchActions.swipe(587, 420, 587, 700, delayTime = 100)
 
     repeat(3) {
         // Define the resource schemas to iterate through in each cycle
@@ -31,11 +30,12 @@ suspend fun collectBuilderBaseResources(): Boolean {
             }
         }
     }
-    swipe(587, 420, 587, 700)
+    TouchActions.swipe(587, 420, 587, 700)
     delayWithMultiplier(100)
+
     // Use a label so we can break out of both loops when a cart is found
-    outerLoop@ for (tx in 805..920 step 20) {
-        for (ty in 325..415 step 20) {
+    outerLoop@ for (tx in 745..920 step 40) {
+        for (ty in 260..415 step 40) {
             TouchActions.tap(tx, ty, isJitter = false)
             val collectButton = findMultiColorsUntil(schemas = listOf(MyColors.CannotCollectExilerCart, MyColors.CollectExilerCart), duration = 200)
             if (collectButton != null) {
