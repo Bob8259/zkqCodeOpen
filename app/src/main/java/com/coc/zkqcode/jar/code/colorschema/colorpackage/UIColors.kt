@@ -25,6 +25,7 @@ interface IUIColors {
     val NewShopButton: ColorSchema
     val MagicalItem: ColorSchema
     val ArrowPointingDown: ColorSchema
+    val DailyLoginReward: ColorSchema
 }
 
 object UIColors : IUIColors {
@@ -92,5 +93,8 @@ object UIColors : IUIColors {
     )
     override val ArrowPointingDown = ColorSchema.parse(
         116, 92, 1124, 620, "26ACFF", "7|0|24B9FF,14|0|24BCFE,21|0|25B6FE,28|0|26A7FE,0|21|0FADFD,7|21|0AB0FC,14|21|0AB2FC,21|21|0AAEFB,28|21|10ADFE", 0, 0.92, "向下箭头"
+    )
+    override val DailyLoginReward = ColorSchema.parse(
+        1032, 153, 1050, 172, "FBFCFD", "3|0|F3F5FA,16|6|E8E9ED,11|0|FFFFFF,14|0|B9C8DD,0|9|F2F1EF,3|9|ECF1F6,0|4|F5F6F7,11|9|FAFBFD,14|9|E9EDF1", 0, 0.9, "疼讯签到奖励"
     )
 }
