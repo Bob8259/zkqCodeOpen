@@ -9,6 +9,7 @@ import com.coc.zkqcode.jar.code.builderbase.research.builderBaseResearch
 import com.coc.zkqcode.jar.code.universal.smalltools.getBooleanConfigRuntime
 import com.coc.zkqcode.jar.code.builderbase.resources.collectBuilderBaseResources
 import com.coc.zkqcode.jar.code.builderbase.others.builderBaseRemoveObstacles
+import com.coc.zkqcode.jar.code.builderbase.others.zoomSmallBuilderBase
 import com.coc.zkqcode.jar.code.universal.buildings.upgrade.BaseType
 import com.coc.zkqcode.jar.code.universal.buildings.upgrade.upgradeBuildings
 import com.coc.zkqcode.jar.code.universal.smalltools.enterBuilderBase
@@ -18,10 +19,8 @@ suspend fun playBuilderBase(): Boolean {
     if (!claimAchievement()) return false
     val noBuilderBase = getBooleanConfigRuntime(Schema.BUILDER_BASE_SETTINGS.NO_BUILDER_BASE.key)
     if (noBuilderBase) return true//if no builder base, then directly return.
-
-    if (!enterBuilderBase(true)) {
-        return true
-    }
+    if (!enterBuilderBase(true)) return true
+    zoomSmallBuilderBase()
     if (!collectBuilderBaseResources()) return false
     if (!enterBuilderBase(false)) return true
     if (!clickOttosOutPost()) return false

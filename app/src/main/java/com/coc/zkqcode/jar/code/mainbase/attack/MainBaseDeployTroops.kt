@@ -116,7 +116,7 @@ private suspend fun dragUntilDeployed(x: Int, y: Int, dragSweepMs: Int, schemas:
     try {
         delayWithMultiplier(600)
         while (true) {
-            val currentDragSweepMs = dragSweepMs + Random.nextInt(-500, 500)
+            var currentDragSweepMs = dragSweepMs + Random.nextInt(-500, 500)
             // Drag forward: deploy position
             TouchActions.moveSmoothly(DRAG_START_X, DRAG_START_Y, DRAG_END_X, DRAG_END_Y, currentDragSweepMs, 1)
             delayWithMultiplier(300)
@@ -125,7 +125,7 @@ private suspend fun dragUntilDeployed(x: Int, y: Int, dragSweepMs: Int, schemas:
             val elapsed = System.currentTimeMillis() - startTime
             val stillPresent = schemas.any { findMultiColors(schema = it) != null }
             if (!stillPresent || elapsed >= DEPLOY_TIMEOUT_MS) break
-
+            currentDragSweepMs = dragSweepMs + Random.nextInt(-500, 500)
             // Drag back: ready for another forward sweep
             TouchActions.moveSmoothly(DRAG_END_X, DRAG_END_Y, DRAG_START_X, DRAG_START_Y, currentDragSweepMs, 1)
 

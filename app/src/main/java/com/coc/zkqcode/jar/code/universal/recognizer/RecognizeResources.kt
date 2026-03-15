@@ -33,7 +33,7 @@ suspend fun recognizeResources(isOpponent: Boolean = false): Resources {
         listOf(1050, 26, 1245, 201)
     }
 
-    val results = TextRecognizer.recognize(startX, startY, endX, endY, useChinese = false, applyPreprocess = true, threshold = 160)
+    val results = TextRecognizer.recognize(startX, startY, endX, endY, useChinese = false, applyPreprocess = true, threshold = 180)
 
     // Sort by the top coordinate of the bounding box
     val sortedResults = results.sortedBy { it.position?.top ?: Int.MAX_VALUE }
