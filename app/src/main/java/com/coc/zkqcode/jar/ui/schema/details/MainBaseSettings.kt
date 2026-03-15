@@ -43,9 +43,9 @@ object MainBaseSettings {
     val BUILDING_CONVERSION_SETTINGS =
         SettingDef("building_conversion_settings", "改装建筑", 0, "MAIN_BASE_SETTINGS")
     val UPGRADE_AFTER_FAIL_WALL_UPGRADE =
-        SettingDef("upgrade_after_fail_wall_upgrade", "刷墙失败后建造", 0, "MAIN_BASE_SETTINGS")
+        SettingDef("upgrade_after_fail_wall_upgrade", "升级城墙失败后建造", 0, "MAIN_BASE_SETTINGS")
     val UPGRADE_WALL_THRESHOLD = SettingDef(
-        "upgrade_wall_threshold", "金水高于以下百分比后刷墙", "85", "MAIN_BASE_SETTINGS"
+        "upgrade_wall_threshold", "金水高于以下百分比后升级城墙", "85", "MAIN_BASE_SETTINGS"
     )
     val UPGRADE_PETS = SettingDef("upgrade_pets", "升级战宠", 1, "MAIN_BASE_SETTINGS")
     val STOP_BATTLE_WHEN_NO_STAR =
