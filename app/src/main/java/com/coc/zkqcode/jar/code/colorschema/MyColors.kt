@@ -42,6 +42,24 @@ object MyColors : IUIColors by UIColors, IFeatureColors by FeatureColors, IMainB
     IClanCapitalTutorialColors by ClanCapitalTutorialColors, IMainBaseAttackColors by MainBaseAttackColors {
     // Main Base Attack Color
     val EndBattle = ColorSchema.parse(
-        29, 524, 156, 556, "605DF7", "87|6|5F5DEF,51|0|5E5BF2,76|0|B2B1F2,101|0|605DF7,0|16|0E0DCE,25|16|0E0DCE,51|16|0E0DCD,76|16|0E0DA2,101|16|0E0DCE", 0, 0.9,
+        114, 526, 152, 556, "5F5DF4", "7|0|5F5DF4,15|0|5F5DF4,23|0|5F5DF4,30|0|5F5DF4,0|15|0E0DCE,7|15|0E0DCE,15|15|0E0DCE,23|15|0E0DCE,30|15|0E0DCE", 0, 0.9,
+    )
+    val KingBarbarian = ColorSchema.parse(
+        80, 590, 1200, 720, "24388B", "8|0|5272BF,16|0|6284D8,23|0|729AEF,31|0|44A7EA,0|14|283A6C,8|14|213365,16|14|1D2E5C,23|14|1A2954,31|14|1F2D65", 0, 0.9, "野蛮人之王"
+    )
+    val QueenArcher = ColorSchema.parse(
+        80, 590, 1200, 720, "DAB9DA", "9|0|83AAF6,19|0|883044,28|0|AC3F66,37|0|B34169,0|15|1C0814,9|15|253B6F,19|15|8A2E4E,28|15|37111F,37|15|872D4E", 0, 0.9, "弓箭女皇"
+    )
+    val MinionPrince = ColorSchema.parse(
+        80, 590, 1200, 720, "1C1B1B", "8|0|82B2DE,17|0|FFF77C,25|0|E2B22D,33|0|CE9C0E,0|11|221201,8|11|3F3322,17|11|311D05,25|11|965A00,33|11|8B5810", 0, 0.9, "亡灵王子"
+    )
+    val GrandWarden = ColorSchema.parse(
+        80, 590, 1200, 720, "57054A", "11|0|742377,23|0|831B79,35|0|A264C8,46|0|D14DC9,0|11|922A82,11|11|A0419C,23|11|69125F,35|11|AF29A4,46|11|410E3C", 0, 0.9, "大守护者"
+    )
+    val RoyalChampion = ColorSchema.parse(
+        80, 590, 1200, 720, "467BDC", "7|0|133070,15|0|0F2D62,22|0|23280B,29|0|4B5D71,0|14|3871D3,7|14|112A5B,15|14|386BCB,22|14|3D63C2,29|14|2D3C74", 0, 0.9, "飞盾战神"
+    )
+    val DragonDuke = ColorSchema.parse(
+        80, 590, 1200, 720, "000023", "7|0|1A134C,15|0|120E53,23|0|070828,30|0|000021,0|15|58506E,7|15|F2F8FF,15|15|303B7F,23|15|A5A3DB,30|15|E9ECFF", 0, 0.9, "飞龙公爵"
     )
 }

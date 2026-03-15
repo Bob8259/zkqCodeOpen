@@ -2,7 +2,6 @@ package com.coc.zkqcode.jar.code.mainbase.attack
 
 
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
-import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
 import com.coc.zkqcode.core.util.touchactions.TouchActions
@@ -31,36 +30,48 @@ private const val DRAG_SWEEP_SLOW_MS = 3000
 
 suspend fun mainBaseDeployTroops(): Boolean {
     // Record the start time of the battle
-    val battleStartTime = System.currentTimeMillis()
     zoomSmallMainBase(isForAttack = true)
 
     repeat(3) {
-        // Deploy each troop type if detected in the deploy bar
+        // Deploy each troop type if detected in the deployment bar
         deployIfPresent(DRAG_SWEEP_MS, MyColors.DragonAtDeployBar, MyColors.DragonAtDeployBar2)
         deployIfPresent(DRAG_SWEEP_MS, MyColors.GiantAtDeployBar, MyColors.GiantAtDeployBar2)
         deployIfPresent(DRAG_SWEEP_SLOW_MS, MyColors.BarbarianAtDeployBar, MyColors.BarbarianAtDeployBar2)
         deployIfPresent(DRAG_SWEEP_SLOW_MS, MyColors.ArcherAtDeployBar, MyColors.ArcherAtDeployBar2)
+        deployHeroes()
     }
 
-    // Keep checking if the battle has ended for at most 3.5 minutes
-    while (true) {
-        val endBattleButton = findMultiColors(schema = MyColors.EndBattle)
-        if (endBattleButton == null) break
-
-        val elapsedMs = System.currentTimeMillis() - battleStartTime
-        if (elapsedMs > 210_000) break // 3.5 minutes timeout
-
-        val elapsedMinutes = "%.1f".format(elapsedMs / 60000.0)
-        ShowMessage("对战中, 已对战${elapsedMinutes}分钟")
-
-        // Wait before the next check to avoid CPU spin
-        delayWithMultiplier(1000)
-    }
     return enterMainScreen()
 }
 
+private suspend fun deployHeroes() {
+    // All 6 hero color schemas to check in the deployment bar
+    val heroes = listOf(
+        MyColors.KingBarbarian,
+        MyColors.QueenArcher,
+        MyColors.MinionPrince,
+        MyColors.GrandWarden,
+        MyColors.RoyalChampion,
+        MyColors.DragonDuke
+    )
+    for (hero in heroes) {
+        // Take a fresh screenshot for each hero to get the latest state of the bar
+        val screenBuffer = ScreenCaptureManager.capture(asBitmap = false)
+            as? ScreenCaptureManager.CaptureResult ?: continue
+        val found = findMultiColors(schema = hero, byteBuffer = screenBuffer)
+        if (found != null) {
+            // Tap the hero icon in the deployment bar to select it
+            TouchActions.tap(found.x, found.y)
+            delayWithMultiplier(300)
+            // Tap the deploy zone to place the hero on the battlefield
+            TouchActions.tap(DRAG_START_X.toInt(), DRAG_START_Y.toInt())
+            delayWithMultiplier(300)
+        }
+    }
+}
+
 /**
- * Detects whether [schemas] are visible in the deploy bar and, if so,
+ * Detects whether [schemas] are visible in the deployment bar and, if so,
  * deploys all units of that type via continuous back-and-forth dragging.
  */
 private suspend fun deployIfPresent(dragSweepMs: Int, vararg schemas: ColorSchema) {
@@ -75,13 +86,13 @@ private suspend fun deployIfPresent(dragSweepMs: Int, vararg schemas: ColorSchem
 }
 
 /**
- * Selects the troop at ([x], [y]) in the deploy bar, then holds one finger down
+ * Selects the troop at ([x], [y]) in the deployment bar, then holds one finger down
  * and alternates between [DRAG_START_X],[DRAG_START_Y] and [DRAG_END_X],[DRAG_END_Y]
  * until [schemas] are no longer detected (all units deployed) or [DEPLOY_TIMEOUT_MS]
  * has elapsed for this troop.
  */
 private suspend fun dragUntilDeployed(x: Int, y: Int, dragSweepMs: Int, schemas: Array<out ColorSchema>) {
-    // Select the troop in the deploy bar
+    // Select the troop in the deployment bar
     TouchActions.tap(x, y)
     delayWithMultiplier(300)
 
@@ -96,7 +107,7 @@ private suspend fun dragUntilDeployed(x: Int, y: Int, dragSweepMs: Int, schemas:
             TouchActions.moveSmoothly(DRAG_START_X, DRAG_START_Y, DRAG_END_X, DRAG_END_Y, currentDragSweepMs, 1)
             delayWithMultiplier(300)
 
-            // Check whether the troop is still present in the deploy bar
+            // Check whether the troop is still present in the deployment bar
             val elapsed = System.currentTimeMillis() - startTime
             val stillPresent = schemas.any { findMultiColors(schema = it) != null }
             if (!stillPresent || elapsed >= DEPLOY_TIMEOUT_MS) break
@@ -113,7 +124,7 @@ private suspend fun dragUntilDeployed(x: Int, y: Int, dragSweepMs: Int, schemas:
             }
         }
     } finally {
-        // Always release the finger, even if cancelled
+        // Always release the finger, even if canceled
         withContext(NonCancellable) {
             TouchActions.touchUp(1)
         }
