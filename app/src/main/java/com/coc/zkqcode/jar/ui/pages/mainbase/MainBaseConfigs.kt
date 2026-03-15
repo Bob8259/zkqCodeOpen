@@ -47,7 +47,6 @@ fun LazyListScope.MainBaseConfig(
 
     // Attack & Resource requirements
     item {
-        SettingCheckBox(key = "${MAIN_BASE_SETTINGS.QQQQQ.key}_c$index")
         SettingCheckBox(key = "${MAIN_BASE_SETTINGS.CLAIM_DAILY_REWARD.key}_c$index")
         AnimatedVisibility(visible = isExpanded) {
             Column {
