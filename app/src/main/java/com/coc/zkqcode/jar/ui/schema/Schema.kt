@@ -16,6 +16,10 @@ object Schema {
         SchemaRegistry.ALL_MODULES.flatMap { it.settings }.associateBy({ it.key }, { it.displayName })
     }
 
+    private val keyToDefaultValue by lazy {
+        SchemaRegistry.ALL_MODULES.flatMap { it.settings }.associateBy({ it.key }, { it.defaultValue.toString() })
+    }
+
     fun getDisplayName(fullKey: String): String {
         // Strip profile suffix (_c1, _c2, ...)
         var baseKey = fullKey.replace(Regex("_c\\d+$"), "")
@@ -24,6 +28,18 @@ object Schema {
             baseKey = fullKey.replace(Regex("\\d+$"), "")
         }
         return keyToDisplayName[baseKey] ?: fullKey
+    }
+
+    // Returns the Schema-defined default value for a key, falling back to "0" if not found.
+    // Applies the same suffix-stripping logic as getDisplayName.
+    fun getDefaultValue(fullKey: String): String {
+        // Strip profile suffix (_c1, _c2, ...)
+        var baseKey = fullKey.replace(Regex("_c\\d+$"), "")
+        // Strip account suffix (trailing digits if no _c)
+        if (baseKey == fullKey) {
+            baseKey = fullKey.replace(Regex("\\d+$"), "")
+        }
+        return keyToDefaultValue[baseKey] ?: "0"
     }
 
     // --- 1. Global Settings Definitions (Formerly basicConfigs) ---

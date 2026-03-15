@@ -4,7 +4,7 @@ import android.text.method.Touch
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
-import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndStop
+import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
 import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.ColorSchema
 import com.coc.zkqcode.jar.code.colorschema.MyColors
@@ -85,7 +85,7 @@ private suspend fun findAllResearchItems() {
     repeat(8) {
         // Capture screenshot for searching
         val screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult
-            ?: logAndStop("findAllResearchItems: Screen Capture Failed.")
+            ?: logAndRestart("findAllResearchItems: Screen Capture Failed.")
 
         // Search for enabled research items on current screen
         for (schema in enabledResearchColors) {
@@ -131,9 +131,9 @@ private suspend fun findAllResearchItems() {
                     // Read target level offset from config and compute the target level
                     val researchLevelStr = getConfigRuntime(MainBaseSettings.RESEARCH_LEVEL.key)
                     val researchLevelOffset = researchLevelStr.toIntOrNull()
-                        ?: logAndStop("研究等级至 配置值无效: $researchLevelStr")
+                        ?: logAndRestart("研究等级至 配置值无效: $researchLevelStr")
                     val maxLevel = MainBaseResearchMaxLevel.getMaxLevel(schema.name ?: "")
-                        ?: logAndStop("未找到 ${schema.name} 的最大等级")
+                        ?: logAndRestart("未找到 ${schema.name} 的最大等级")
                     val targetLevel = maxLevel - researchLevelOffset
 
                     // Skip items with unknown level (cannot determine if upgrade is needed)

@@ -6,6 +6,8 @@ import com.coc.zkqcode.jar.ui.schema.SettingDef
 
 object MainBaseSettings {
     // Common settings
+    val QQQQQ = SettingDef("QQQQQ", "QQQQQ", 1, "MAIN_BASE_SETTINGS")
+    val CLAIM_DAILY_REWARD = SettingDef("claim_daily_reward", "领取国服每日奖励", 1, "MAIN_BASE_SETTINGS")
     val AUTO_ATTACK = SettingDef("auto_attack", "自动进攻", 1, "MAIN_BASE_SETTINGS")
     val GOLD_REQUIREMENT = SettingDef("gold_requirement", "金币要求", "100", "MAIN_BASE_SETTINGS")
     val ELIXIR_REQUIREMENT = SettingDef("elixir_requirement", "圣水要求", "100", "MAIN_BASE_SETTINGS")
@@ -127,6 +129,8 @@ object MainBaseSettings {
     val CONSECUTIVE_COUNT = SettingDef("consecutive_count", "连号数量:", 3, "MAIN_BASE_SETTINGS")
 
     val all = listOf(
+        QQQQQ,
+        CLAIM_DAILY_REWARD,
         AUTO_ATTACK,
         GOLD_REQUIREMENT,
         ELIXIR_REQUIREMENT,

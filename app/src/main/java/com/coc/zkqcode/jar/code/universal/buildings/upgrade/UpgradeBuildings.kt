@@ -4,7 +4,7 @@ import android.graphics.Bitmap
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
-import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndStop
+import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
 import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.core.yolo.YoloDetector
 import com.coc.zkqcode.jar.code.builderbase.others.BuilderBaseWorkerAndResearch
@@ -230,7 +230,7 @@ private suspend fun tryToBatchBuildWalls(x: Int, y: Int, currentBase: BaseType) 
     }
     // Locate the arrow element using YOLO detector
     delayWithMultiplier(200)
-    val screenBuffer = ScreenCaptureManager.capture(asBitmap = true) as? Bitmap ?: logAndStop("in BuilderBaseUpgradeBuildings, screen capture failed.")
+    val screenBuffer = ScreenCaptureManager.capture(asBitmap = true) as? Bitmap ?: logAndRestart("in BuilderBaseUpgradeBuildings, screen capture failed.")
     val detections = YoloDetector.detect(screenBuffer, modelType = "walls-detect")
     val batchBuildWallsArrow = detections.maxByOrNull { it.score }
 

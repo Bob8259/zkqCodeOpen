@@ -4,7 +4,7 @@ import android.graphics.Bitmap
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
-import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndStop
+import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
 import com.coc.zkqcode.jar.code.colorschema.ColorSchema
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.mainbase.MainBaseResearchColors
@@ -65,7 +65,7 @@ suspend fun findAllResearchColors() {
 
     ShowMessage("开始查找所有研究颜色，共 ${allColors.size} 个")
     delayWithMultiplier(500)
-    val screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult ?: logAndStop("failed to take screenshot at close advertisement")
+    val screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult ?: logAndRestart("failed to take screenshot at close advertisement")
     for (schema in allColors) {
         val result = findMultiColors(schema = schema, byteBuffer = screenBuffer)
 

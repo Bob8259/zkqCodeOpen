@@ -3,7 +3,7 @@ package com.coc.zkqcode.jar.code.universal.buildings
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
-import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndStop
+import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
 import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.jar.code.universal.recognizer.TextRecognizer
 
@@ -40,7 +40,7 @@ suspend fun detectBuildingList(): BuildingDetectionResult {
 
     // Take a screenshot for color checking (needed for post-process and later filtering)
     val screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult
-        ?: logAndStop("failed to take screenshot at building detection")
+        ?: logAndRestart("failed to take screenshot at building detection")
 
     // Post-process: Check for green indicator (new building marker)
     // If green pixels > 40 in area (x-15, y-3, x, y+20), add "新" prefix

@@ -3,7 +3,7 @@ package com.coc.zkqcode.jar.code.universal
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.core.util.basic.ShowMessage
-import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndStop
+import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
 import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
@@ -24,7 +24,7 @@ suspend fun enterMainScreen(isDoubleCheck: Boolean = false): Boolean {
     val startTime = System.currentTimeMillis()
     // 2. Get the timeout duration from GlobalVars (assumed to be in seconds)
     // We multiply by 1000 to compare milliseconds to milliseconds
-    val timeoutSeconds = GlobalVars.configStates["enter_game_timer"]?.value?.toIntOrNull() ?: logAndStop("enter main game error, can not get game timer")
+    val timeoutSeconds = GlobalVars.configStates["enter_game_timer"]?.value?.toIntOrNull() ?: logAndRestart("enter main game error, can not get game timer")
     val timeoutMillis = timeoutSeconds * 1000L
     var mainBaseTutorialElements = 0
     while (System.currentTimeMillis() - startTime < timeoutMillis) {
@@ -69,7 +69,7 @@ suspend fun clickRightBottom(times: Int, delayTime: Int = 50) {
 
 private suspend fun closeAdvertisements() {
     // 1. Capture the screen and cast safely (Use 'var' so we can update it)
-    var screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult ?: logAndStop("failed to take screenshot at close advertisement")
+    var screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult ?: logAndRestart("failed to take screenshot at close advertisement")
 
     // 2. Define the schemas to check against
     val homeSchemas = listOf(
@@ -126,7 +126,7 @@ private suspend fun closeAdvertisements() {
 
 private suspend fun isInHomePage(): Boolean {
     // 1. Capture the screen and cast safely
-    val screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult ?: logAndStop("in isInHomePage, screen capture failed.")
+    val screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult ?: logAndRestart("in isInHomePage, screen capture failed.")
 
     // 2. Check for the training button presence
     val hasTrainButton = findMultiColors(byteBuffer = screenBuffer, schema = MyColors.TrainTroops) != null
