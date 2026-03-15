@@ -30,7 +30,6 @@ suspend fun takeScreenShotForUpgradeCost() {
             if (screenBitmap != null) {
                 if (startX + width <= screenBitmap.width && startY + height <= screenBitmap.height) {
                     val croppedBitmap = Bitmap.createBitmap(screenBitmap, startX, startY, width, height)
-
                     ScreenCaptureManager.getContext()?.let { context ->
                         try {
                             val folderName = "ScreenShots"
@@ -57,23 +56,3 @@ suspend fun takeScreenShotForUpgradeCost() {
     }
 }
 
-suspend fun findAllResearchColors() {
-    val foundColors = mutableListOf<String>()
-    val notFoundColors = mutableListOf<String>()
-
-    val allColors = MainBaseResearchColors.allResearchColors
-
-    ShowMessage("开始查找所有研究颜色，共 ${allColors.size} 个")
-    delayWithMultiplier(500)
-    val screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult ?: logAndRestart("failed to take screenshot at close advertisement")
-    for (schema in allColors) {
-        val result = findMultiColors(schema = schema, byteBuffer = screenBuffer)
-
-        if (result != null) {
-            foundColors.add(schema.name ?: "Unknown")
-        } else {
-            notFoundColors.add(schema.name ?: "Unknown")
-        }
-        delayWithMultiplier(50)
-    }
-}

@@ -17,7 +17,7 @@ import kotlinx.coroutines.delay
 suspend fun enterMainBase(): Boolean {
     val loopStart = System.currentTimeMillis()
     while (System.currentTimeMillis() - loopStart < 30_000L) {
-        val workers = findMultiColorsUntil(schemas = listOf(MyColors.MainBaseWorker, MyColors.GoblinWorker, MyColors.GoblinResearcher), duration = 200)
+        val workers = findMultiColorsUntil(schemas = listOf(MyColors.MainBaseWorker, MyColors.MainBaseWorker2, MyColors.GoblinWorker, MyColors.GoblinResearcher), duration = 200)
         if (workers != null) {
             ShowMessage("已进入主世界")
             return true
@@ -26,8 +26,8 @@ suspend fun enterMainBase(): Boolean {
         ShowMessage("尝试进入主世界中，剩余${"%.1f".format(remaining)}秒后退出")
         zoomSmallBuilderBase()
         TouchActions.swipe(750, 150, 750, 550)
-        // Tap all grid points in the area (960,35)~(1000,110) to trigger the main base portal
-        for (x in 960..1000 step 15) {
+        // Tap all grid points in the area to trigger the main base portal
+        for (x in 960..1000 step 30) {
             for (y in 35..210 step 30) {
                 TouchActions.tap(x, y, isJitter = false, delayTime = 50)
             }

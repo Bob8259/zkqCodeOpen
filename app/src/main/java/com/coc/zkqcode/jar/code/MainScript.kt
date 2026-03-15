@@ -1,21 +1,14 @@
 package com.coc.zkqcode.jar.code
 
-import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.util.basic.ShowMessage
-import com.coc.zkqcode.core.util.basic.delayWithMultiplier
-import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
-import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.jar.code.builderbase.others.BuilderBaseWorkerAndResearch
 import com.coc.zkqcode.jar.code.builderbase.playBuilderBase
 import com.coc.zkqcode.jar.code.mainbase.playMainBase
 import com.coc.zkqcode.jar.code.universal.GameVersion
 import com.coc.zkqcode.jar.code.universal.InGamesVars
-import com.coc.zkqcode.jar.code.universal.buildings.upgrade.BaseType
-import com.coc.zkqcode.jar.code.universal.buildings.upgrade.upgradeAllExistingBuildings
-import com.coc.zkqcode.jar.code.universal.buildings.upgrade.upgradeBuildings
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
+import com.coc.zkqcode.jar.code.universal.recognizer.recognizeResources
 import com.coc.zkqcode.jar.code.universal.smalltools.StorageKeys
-import com.coc.zkqcode.jar.code.universal.smalltools.enterMainBase
 import com.coc.zkqcode.jar.code.universal.smalltools.getConfigOrStop
 import com.coc.zkqcode.jar.code.universal.smalltools.readMemory
 import com.coc.zkqcode.jar.code.universal.smalltools.writeGameFiles
@@ -41,7 +34,10 @@ suspend fun runMainScript() {
 
             // Test code
 //            runTestCode()
-            if (!writeGameFiles()) break
+            if (!writeGameFiles()) {
+                ShowMessage("写入文件失败")
+                break
+            }
             if (!enterMainScreen(true)) {
                 ShowMessage("进入游戏失败")
                 break // Break inner loop and recheck account status
@@ -85,9 +81,11 @@ private suspend fun findAndActivateAccount(searchOrder: Iterable<Int>): Int? {
 
 private suspend fun runTestCode() {
     while (true) {
-        enterMainScreen()
-        upgradeAllExistingBuildings(listOf("野蛮人之王"), BaseType.Main)
-        delayWithMultiplier(10000000)
+//        enterMainScreen()
+        ShowMessage(recognizeResources(true).toString())
+        delay(1000)
+//        upgradeAllExistingBuildings(listOf("野蛮人之王"), BaseType.Main)
+//        delayWithMultiplier(10000000)
     }
 }
 

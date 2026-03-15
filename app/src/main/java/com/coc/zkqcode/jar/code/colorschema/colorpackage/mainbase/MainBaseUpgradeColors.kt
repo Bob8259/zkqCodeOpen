@@ -1,3 +1,5 @@
+@file:Suppress("PropertyName")
+
 package com.coc.zkqcode.jar.code.colorschema.colorpackage.mainbase
 
 import com.coc.zkqcode.jar.code.colorschema.ColorSchema
@@ -6,6 +8,7 @@ interface IMainBaseUpgradeColors {
     val MainBaseWallInShop: ColorSchema
     val MainBaseInsufficientResources: ColorSchema
     val MainBaseWorker: ColorSchema
+    val MainBaseWorker2: ColorSchema
     val GoblinWorker: ColorSchema
 }
 
@@ -18,6 +21,9 @@ object MainBaseUpgradeColors : IMainBaseUpgradeColors {
     )
     override val MainBaseWorker = ColorSchema.parse(
         452, 10, 853, 82, "90BDED", "3|0|93BFED,7|0|7095C9,11|0|0D37A3,14|0|2F6BCD,0|15|7D88D5,3|15|6271C2,7|15|707BC0,11|15|91BAEE,14|15|88B0EA", 0, 0.9, "家乡建筑工人"
+    )
+    override val MainBaseWorker2 = ColorSchema.parse(
+        452, 10, 853, 82, "DEEDF1", "5|0|7194E0,11|0|97AFF5,17|0|DDECFB,22|0|B2BFCF,0|9|727381,5|9|898B96,11|9|828492,17|9|676875,22|9|46464B", 0, 0.9, "家乡建筑工人2"
     )
     override val GoblinWorker = ColorSchema.parse(
         550, 10, 853, 82, "37AB98", "-10|8|57D5CD,-20|0|3B9C8F,-20|-7|2C9098,-8|-12|155D68,-1|-17|48EED9,5|-18|4DFADA,7|-6|2C5A4E,13|-2|49DFC6,3|4|3CAA97", 0, 0.9, "哥布林工头"
