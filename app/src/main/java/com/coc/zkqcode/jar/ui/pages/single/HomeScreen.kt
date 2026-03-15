@@ -48,8 +48,11 @@ import com.coc.zkqcode.core.util.fileactions.FileHelper
 import com.coc.zkqcode.core.util.fileactions.LogHelper.showDebugInfo
 import com.coc.zkqcode.statehelper.AppMode
 import com.coc.zkqcode.statehelper.AppStateManager
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import com.coc.zkqcode.core.util.basic.RunShell
 
 @Composable
 fun HomeScreen(
@@ -135,12 +138,14 @@ fun HomeScreen(
         }
     }
 
-    val cleanAllData = {
-        // TODO: Implement logic to clean all data
-    }
-
     // Exit Confirmation Dialog State
     var showExitConfirmation by rememberSaveable { mutableStateOf(false) }
+    // Clean All Data Confirmation Dialog State
+    var showCleanAllConfirmation by rememberSaveable { mutableStateOf(false) }
+
+    val cleanAllData = {
+        showCleanAllConfirmation = true
+    }
 
     // Auto-Run Timer Logic
     LaunchedEffect(GlobalVars.isAutoRunEnabled, GlobalVars.autoRunTimer) {
@@ -247,11 +252,11 @@ fun HomeScreen(
                                 onClick = { cleanMemory() },
                                 explain = "本辅助会记住账号信息，例如记住当前账号是否已完成突袭，是否已完成部落竞赛等等。如果换号后不清空记忆，那么本辅助就会保留先前账号错误的记忆，进而可能发生某些异常操作。"
                             )
-                            /* CustomButton(
-                                text = "清空全部数据",
+                            CustomButton(
+                                text = "清除全部数据",
                                 onClick = { cleanAllData() },
                                 explain = "点击后将删除所有数据，包括辅助设置，保存的账号信息，数据号信息等等，用于保护用户隐私。"
-                            ) */
+                            )
                         }
                         Text(
                             text = "换机或设备到期前必须清空全部数据！部分云机在设备到期后不会清空用户数据，严重威胁隐私安全！",
@@ -354,6 +359,47 @@ fun HomeScreen(
                                 ConfigManager.saveAndRun {
                                     AppExitHelper.exitApplication(context)
                                 }
+                            }
+                        }) {
+                            Text("确认")
+                        }
+                    }
+                }
+            )
+        }
+
+        // Confirmation dialog for clearing all data
+        if (showCleanAllConfirmation) {
+            CustomAlertDialog(
+                onDismissRequest = { showCleanAllConfirmation = false },
+                title = {
+                    Text(
+                        text = "清除全部数据",
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                },
+                text = {
+                    Text(
+                        text = "确认要删除所有数据吗？此操作不可撤销，将删除辅助设置、账号信息等全部数据。",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                },
+                confirmButton = {
+                    Row {
+                        TextButton(onClick = { showCleanAllConfirmation = false }) {
+                            Text("取消")
+                        }
+                        TextButton(onClick = {
+                            showCleanAllConfirmation = false
+                            scope.launch {
+                                val sdPath = Environment.getExternalStorageDirectory().path
+                                withContext(Dispatchers.IO) {
+                                    RunShell.runNoOutput(
+                                        "rm -rf $sdPath/zkqFiles",
+                                        isCheckIsPlaying = false
+                                    )
+                                }
+                                showMsg("全部数据清除成功")
                             }
                         }) {
                             Text("确认")
