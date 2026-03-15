@@ -9,6 +9,7 @@ import com.coc.zkqcode.jar.code.colorschema.ColorSchema
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.mainbase.others.zoomSmallMainBase
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
+import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.withContext
@@ -28,20 +29,31 @@ private const val DRAG_END_Y = 430F
 private const val DRAG_SWEEP_MS = 600
 private const val DRAG_SWEEP_SLOW_MS = 3000
 
-suspend fun mainBaseDeployTroops(): Boolean {
+suspend fun mainBaseDeployTroops() {
     // Record the start time of the battle
     zoomSmallMainBase(isForAttack = true)
-
     repeat(3) {
         // Deploy each troop type if detected in the deployment bar
-        deployIfPresent(DRAG_SWEEP_MS, MyColors.DragonAtDeployBar, MyColors.DragonAtDeployBar2)
-        deployIfPresent(DRAG_SWEEP_MS, MyColors.GiantAtDeployBar, MyColors.GiantAtDeployBar2)
-        deployIfPresent(DRAG_SWEEP_SLOW_MS, MyColors.BarbarianAtDeployBar, MyColors.BarbarianAtDeployBar2)
-        deployIfPresent(DRAG_SWEEP_SLOW_MS, MyColors.ArcherAtDeployBar, MyColors.ArcherAtDeployBar2)
+        deployIfPresent(DRAG_SWEEP_MS, MyColors.DragonAtDeploymentBar, MyColors.DragonAtDeploymentBar2)
+        deployIfPresent(DRAG_SWEEP_MS, MyColors.GiantAtDeploymentBar, MyColors.GiantAtDeploymentBar2)
+        deployIfPresent(DRAG_SWEEP_SLOW_MS, MyColors.BarbarianAtDeploymentBar, MyColors.BarbarianAtDeploymentBar2)
+        deployIfPresent(DRAG_SWEEP_SLOW_MS, MyColors.ArcherAtDeploymentBar, MyColors.ArcherAtDeploymentBar2)
         deployHeroes()
+        deployOthers()
     }
+}
 
-    return enterMainScreen()
+private suspend fun deployOthers() {
+    //Deploy other troops and spells
+    repeat(10) {
+        val troopsOrSpells = findMultiColorsUntil(schemas = listOf(MyColors.TroopColorAtDeploymentBar, MyColors.SpellColorAtDeploymentBar), duration = 100)
+        if (troopsOrSpells != null) {
+            TouchActions.tap(troopsOrSpells.x, troopsOrSpells.y, delayTime = 300)
+            repeat(3) {
+                TouchActions.tap(310, 247, delayTime = 300)
+            }
+        }
+    }
 }
 
 private suspend fun deployHeroes() {
@@ -57,7 +69,7 @@ private suspend fun deployHeroes() {
     for (hero in heroes) {
         // Take a fresh screenshot for each hero to get the latest state of the bar
         val screenBuffer = ScreenCaptureManager.capture(asBitmap = false)
-            as? ScreenCaptureManager.CaptureResult ?: continue
+                as? ScreenCaptureManager.CaptureResult ?: continue
         val found = findMultiColors(schema = hero, byteBuffer = screenBuffer)
         if (found != null) {
             // Tap the hero icon in the deployment bar to select it
