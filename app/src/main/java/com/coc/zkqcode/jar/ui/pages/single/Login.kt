@@ -331,10 +331,12 @@ fun LoginScreen() {
             )
             val context = LocalContext.current
             CustomButton(
-                text = "注册", marginTop = 0.dp, onClick = {
-                    gemInfo = "前往官网即可注册，官网链接zkq.netlify.app。\n如有疑问请加群咨询。"
-                    val url = "https://zkq.netlify.app/signup"
+                text = "免广告", marginTop = 0.dp, onClick = {
+                    gemInfo = "前往官网即可注册，赞助后免广告，官网链接https://zkqcoc.store。\n如有疑问请加群咨询。"
+                    val url = "https://zkqcoc.store/signup"
                     val intent = Intent(Intent.ACTION_VIEW, url.toUri())
+                    // Required when startActivity is called from a non-Activity context
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                     context.startActivity(intent)
                 }, enable = isLoginButtonEnabled
             )
