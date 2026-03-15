@@ -17,9 +17,9 @@ private const val SEARCH_TIMEOUT_MS = 8 * 60 * 1000L
 private const val TUTORIAL_TIMEOUT_MS = 3 * 60 * 1000L
 
 // X-coordinate thresholds for detecting full storage bars on screen
-private const val GOLD_FULL_X_THRESHOLD = 1078
-private const val ELIXIR_FULL_X_THRESHOLD = 1078
-private const val DARK_ELIXIR_FULL_X_THRESHOLD = 1127
+private const val GOLD_FULL_X_THRESHOLD = 1017
+private const val ELIXIR_FULL_X_THRESHOLD = 1017
+private const val DARK_ELIXIR_FULL_X_THRESHOLD = 1080
 
 suspend fun searchOpponentsAndDeployTroops() {
 
