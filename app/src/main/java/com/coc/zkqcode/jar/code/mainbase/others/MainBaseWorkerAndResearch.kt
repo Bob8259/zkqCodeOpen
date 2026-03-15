@@ -6,10 +6,12 @@ import com.coc.zkqcode.jar.code.builderbase.others.BuilderBaseWorkerAndResearch.
 import com.coc.zkqcode.jar.code.builderbase.others.WorkerInfo
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
+import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.recognizer.TextRecognizer
 
 object MainBaseWorkerAndResearch {
     suspend fun detectWorkerNumber(): WorkerInfo {
+        if (!enterMainScreen()) return WorkerInfo(0, 0)
         if (findMultiColors(schema = MyColors.GoblinWorker) != null) {
             return WorkerInfo(0, 6)
         }
@@ -35,6 +37,7 @@ object MainBaseWorkerAndResearch {
      * @return true if research is available, false otherwise (including when Goblin Researcher is detected).
      */
     suspend fun detectResearch(): Boolean {
+        if (!enterMainScreen()) return false
         // First check for Goblin Researcher - if detected, return false
         if (findMultiColors(schema = MyColors.GoblinResearcher) != null) {
             ShowMessage("检测到哥布林研究人员，无法进行研究")

@@ -5,6 +5,7 @@ import com.coc.zkqcode.core.util.bugreporter.BugReporter
 import com.coc.zkqcode.core.util.fileactions.LogHelper
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
+import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.recognizer.TextRecognizer
 
 /**
@@ -19,6 +20,7 @@ object BuilderBaseWorkerAndResearch {
      * @return A [WorkerInfo] object. If detection fails, returns (0, 0).
      */
     suspend fun detectWorkerNumber(): WorkerInfo {
+        if (!enterMainScreen()) return WorkerInfo(0, 0)
         val worker = findMultiColors(schema = MyColors.BuilderBaseWorker)
         if (worker != null) {
             // Define the crop region for the worker number text
@@ -64,6 +66,7 @@ object BuilderBaseWorkerAndResearch {
     }
 
     suspend fun detectResearch(): Boolean {
+        if (!enterMainScreen()) return false
         val research = findMultiColors(schema = MyColors.ResearchIcon)
         if (research != null) {
             // Define the crop region for the worker number text

@@ -237,6 +237,7 @@ fun cleanBuildingName(raw: String): String {
         "據地巨石" to "撼地巨石",
         "想地巨石" to "撼地巨石",
         "远装者" to "远袭者",
+        "红迫炮" to "迫击炮",
         "建议升级:" to "建议升级",
         "建议升级：" to "建议升级",
         "建议升级及:" to "建议升级",

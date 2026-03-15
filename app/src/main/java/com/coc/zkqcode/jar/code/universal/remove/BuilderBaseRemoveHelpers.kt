@@ -67,7 +67,7 @@ suspend fun removeObstacles() {
         val centerX = box.centerX().toInt()
         val centerY = box.centerY().toInt()
         ShowMessage("x: $centerX, y: $centerY")
-        TouchActions.tap(centerX, centerY, delayTime = 500)
+        TouchActions.tap(centerX, centerY, delayTime = 300)
         // Tap confirmation/action button
         TouchActions.tap(616, 488, delayTime = 100)
         repeat(2) {
