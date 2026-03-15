@@ -124,7 +124,7 @@ suspend fun searchOpponentsAndDeployTroops() {
                 mainBaseDeployTroops()
                 break
             } else {
-                TouchActions.tap(nextOpponent.x, nextOpponent.y, delayTime = 2500)
+                TouchActions.tap(nextOpponent.x, nextOpponent.y, delayTime = 2000)
             }
         }
         val remainingMinutes = (SEARCH_TIMEOUT_MS - (System.currentTimeMillis() - battleStartTime)) / 60000.0

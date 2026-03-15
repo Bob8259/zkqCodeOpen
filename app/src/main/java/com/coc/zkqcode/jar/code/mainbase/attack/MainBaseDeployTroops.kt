@@ -10,9 +10,9 @@ import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.mainbase.others.zoomSmallMainBase
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
-import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.withContext
+import kotlin.random.Random
 
 // Per-troop deployment drag timeout in milliseconds
 private const val DEPLOY_TIMEOUT_MS = 10_000L
@@ -115,8 +115,8 @@ private suspend fun dragUntilDeployed(x: Int, y: Int, dragSweepMs: Int, schemas:
     TouchActions.touchDown(DRAG_START_X, DRAG_START_Y, 1)
     try {
         delayWithMultiplier(600)
-        var currentDragSweepMs = dragSweepMs
         while (true) {
+            val currentDragSweepMs = dragSweepMs + Random.nextInt(-500, 500)
             // Drag forward: deploy position
             TouchActions.moveSmoothly(DRAG_START_X, DRAG_START_Y, DRAG_END_X, DRAG_END_Y, currentDragSweepMs, 1)
             delayWithMultiplier(300)
@@ -132,10 +132,6 @@ private suspend fun dragUntilDeployed(x: Int, y: Int, dragSweepMs: Int, schemas:
             // Check timeout again after the return sweep before the next forward drag
             if (System.currentTimeMillis() - startTime >= DEPLOY_TIMEOUT_MS) break
 
-            // Progressively increase the drag duration if this is a slower troop
-            if (dragSweepMs > 600) {
-                currentDragSweepMs += 200
-            }
         }
     } finally {
         // Always release the finger, even if canceled

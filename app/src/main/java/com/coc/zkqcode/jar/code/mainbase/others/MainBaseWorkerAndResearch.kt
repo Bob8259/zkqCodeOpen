@@ -6,6 +6,7 @@ import com.coc.zkqcode.jar.code.builderbase.others.BuilderBaseWorkerAndResearch.
 import com.coc.zkqcode.jar.code.builderbase.others.WorkerInfo
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
+import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.recognizer.TextRecognizer
 
@@ -15,7 +16,7 @@ object MainBaseWorkerAndResearch {
         if (findMultiColors(schema = MyColors.GoblinWorker) != null) {
             return WorkerInfo(0, 6)
         }
-        val worker = findMultiColors(schema = MyColors.MainBaseWorker)
+        val worker = findMultiColorsUntil(schemas = listOf(MyColors.MainBaseWorker, MyColors.MainBaseWorker2), duration = 200)
         if (worker != null) {
             // Define the crop region for the worker number text
             val startX = worker.x - 50
@@ -23,7 +24,7 @@ object MainBaseWorkerAndResearch {
             val endX = worker.x + 500
             val endY = 70
 
-            val results = TextRecognizer.recognize(startX, startY, endX, endY, useChinese = false, applyPreprocess = false)
+            val results = TextRecognizer.recognize(startX, startY, endX, endY, useChinese = false, applyPreprocess = true, threshold = 200)
             val combinedText = results.joinToString("") { it.text }
             return parseWorkerInfo(combinedText)
         }
@@ -53,7 +54,7 @@ object MainBaseWorkerAndResearch {
             val endX = research.x + 120
             val endY = 70
 
-            val results = TextRecognizer.recognize(startX, startY, endX, endY, useChinese = false, applyPreprocess = false)
+            val results = TextRecognizer.recognize(startX, startY, endX, endY, useChinese = false, applyPreprocess = true, threshold = 200)
             val combinedText = results.joinToString("") { it.text }
             val researcherInfo = parseWorkerInfo(combinedText)
             ShowMessage("主世界研究数量：${researcherInfo.available}/${researcherInfo.total}")

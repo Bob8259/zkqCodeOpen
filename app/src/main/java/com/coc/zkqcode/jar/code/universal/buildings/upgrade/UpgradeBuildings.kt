@@ -45,7 +45,7 @@ suspend fun upgradeBuildings(currentBase: BaseType): Boolean {
     if (checkContinueBuild(currentBase)) {
         val worker = when (currentBase) {
             BaseType.Builder -> findMultiColorsUntil(schemas = listOf(MyColors.BuilderBaseWorker), duration = 1000)
-            BaseType.Main -> findMultiColorsUntil(schemas = listOf(MyColors.MainBaseWorker), duration = 1000)
+            BaseType.Main -> findMultiColorsUntil(schemas = listOf(MyColors.MainBaseWorker, MyColors.MainBaseWorker2), duration = 1000)
         }
         if (worker != null) {
             TouchActions.tap(worker.x, worker.y, delayTime = 500)

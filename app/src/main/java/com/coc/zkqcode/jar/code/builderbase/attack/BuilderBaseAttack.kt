@@ -71,6 +71,8 @@ suspend fun builderBaseAttack(): Boolean {
 
 private suspend fun realAttack(mode: String, battleNumber: Int = 1, battleTimes: Int): Boolean {
     val startTime = System.currentTimeMillis()
+    // Track first detection of SwitchTroopButton for shorter initial delay
+    var isFirstSwitchTroop = true
     while (true) {
         val elapsed = System.currentTimeMillis() - startTime
         if (elapsed > 8 * 60 * 1000L) {
@@ -100,7 +102,14 @@ private suspend fun realAttack(mode: String, battleNumber: Int = 1, battleTimes:
         }
         val switchTroopButton = findMultiColors(schema = MyColors.SwitchTroopButton)
         if (switchTroopButton != null) {
-            delayWithMultiplier(1500)
+            // Use shorter delay on first detection, normal delay afterwards
+            if (isFirstSwitchTroop) {
+                delayWithMultiplier(500)
+                isFirstSwitchTroop = false
+            } else {
+                ShowMessage("已进入第二区域")
+                delayWithMultiplier(2000)
+            }
             if (mode == "gold") {
                 normalBattle()
             } else if (mode == "exile") {
