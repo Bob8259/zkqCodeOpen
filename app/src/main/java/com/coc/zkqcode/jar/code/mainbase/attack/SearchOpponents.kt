@@ -4,12 +4,16 @@ import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.MyColors
+import com.coc.zkqcode.jar.code.universal.InGamesVars
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.recognizer.recognizeResources
+import com.coc.zkqcode.jar.code.universal.smalltools.StorageKeys
 import com.coc.zkqcode.jar.code.universal.smalltools.getBooleanConfigRuntime
 import com.coc.zkqcode.jar.code.universal.smalltools.getConfigRuntime
+import com.coc.zkqcode.jar.code.universal.smalltools.readMemory
+import com.coc.zkqcode.jar.code.universal.smalltools.writeMemory
 import com.coc.zkqcode.jar.ui.schema.Schema
 
 // Timeout constants
@@ -33,6 +37,19 @@ suspend fun searchOpponentsAndDeployTroops() {
         targetDarkElixir = 0
     }
     val isDynamicAdjust = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.DYNAMIC_ADJUSTMENT.key)
+    // Pre-compute per-account memory keys for dynamic adjustment
+    val goldKey = StorageKeys.withAccountNumber(StorageKeys.DYNAMIC_GOLD, InGamesVars.currentAccountNumber)
+    val elixirKey = StorageKeys.withAccountNumber(StorageKeys.DYNAMIC_ELIXIR, InGamesVars.currentAccountNumber)
+    val darkElixirKey = StorageKeys.withAccountNumber(StorageKeys.DYNAMIC_DARK_ELIXIR, InGamesVars.currentAccountNumber)
+
+    // If dynamic adjustment is on, try to restore previously saved thresholds from memory.
+    // This lets the bot resume from the last session's average instead of restarting from config values.
+    if (isDynamicAdjust) {
+        // Only overwrite if the storage is not already marked as full (target > 0)
+        readMemory(goldKey).toIntOrNull()?.let { if (targetGold > 0) targetGold = it }
+        readMemory(elixirKey).toIntOrNull()?.let { if (targetElixir > 0) targetElixir = it }
+        readMemory(darkElixirKey).toIntOrNull()?.let { if (targetDarkElixir > 0) targetDarkElixir = it }
+    }
     val goldPercentage = findMultiColors(schema = MyColors.GoldColor)
     if (goldPercentage != null && goldPercentage.x < GOLD_FULL_X_THRESHOLD) {
         ShowMessage("金币已满，坐标：${goldPercentage.x}, ${goldPercentage.y}")
@@ -97,6 +114,13 @@ suspend fun searchOpponentsAndDeployTroops() {
             // Skip the first search result when dynamic adjustment is enabled, so the average has at least one data point
             val meetsCriteria = (!isDynamicAdjust || searchTimes > 2) && res.gold > targetGold && res.elixir > targetElixir && res.darkElixir > targetDarkElixir
             if (meetsCriteria) {
+                // Persist the final averaged thresholds so the next session can start from this value.
+                if (isDynamicAdjust) {
+                    writeMemory(goldKey, targetGold.toString())
+                    writeMemory(elixirKey, targetElixir.toString())
+                    writeMemory(darkElixirKey, targetDarkElixir.toString())
+                }
+
                 mainBaseDeployTroops()
                 break
             } else {

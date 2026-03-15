@@ -16,6 +16,11 @@ object StorageKeys {
     const val BUILDER_BASE_TRAIN_TROOPS = "BuilderBaseTrainTroops"
     const val CLICK_OTTOS_POST = "ClickOttosPost"
 
+    // Per-account keys for dynamic adjustment resource thresholds
+    const val DYNAMIC_GOLD = "DynamicGold"
+    const val DYNAMIC_ELIXIR = "DynamicElixir"
+    const val DYNAMIC_DARK_ELIXIR = "DynamicDarkElixir"
+
     /**
      * Generate a storage key with account number suffix.
      * Used for per-account data that needs to be tracked separately.
