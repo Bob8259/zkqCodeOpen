@@ -310,14 +310,14 @@ fun LazyListScope.MainBaseConfig(
                 )
             }
         }
-    }
+    } */
 
     // Gear & Rewards
     item {
         AnimatedVisibility(visible = isExpanded) {
             FlowRow {
-                SettingCheckBox(key = "${MAIN_BASE_SETTINGS.UPGRADE_WEARABLE_GEAR.key}_c$index")
-                SettingCheckBox(key = "${MAIN_BASE_SETTINGS.UPGRADE_ALL_GEAR.key}_c$index")
+                /* SettingCheckBox(key = "${MAIN_BASE_SETTINGS.UPGRADE_WEARABLE_GEAR.key}_c$index")
+                SettingCheckBox(key = "${MAIN_BASE_SETTINGS.UPGRADE_ALL_GEAR.key}_c$index") */
                 SettingCheckBox(
                     key = "${MAIN_BASE_SETTINGS.REMOVE_OBSTACLES.key}_c$index",
                     explain = "勾选后，当主世界奖杯大于500时生效。有小概率（约5%）移除稀有物品"
@@ -328,7 +328,7 @@ fun LazyListScope.MainBaseConfig(
                         explain = "勾选后，移除障碍物时增加随机点击，增大移除稀有物品的概率。\n适合批量挂小号时开启，防止地图建造空间不足。"
                     )
                 }
-                SettingCheckBox(key = "${MAIN_BASE_SETTINGS.CLAIM_TIMED_REWARDS.key}_c$index")
+                /* SettingCheckBox(key = "${MAIN_BASE_SETTINGS.CLAIM_TIMED_REWARDS.key}_c$index")
                 SettingCheckBox(
                     key = "${MAIN_BASE_SETTINGS.CLAIM_TOKEN_REWARDS.key}_c$index",
                     explain = "仅在资源全满后才会领取"
@@ -342,12 +342,12 @@ fun LazyListScope.MainBaseConfig(
                 SettingCheckBox(
                     key = "${MAIN_BASE_SETTINGS.USE_TEMP_ITEMS.key}_c$index",
                     explain = "勾选此选项后，紫孔雀会使用研究浓汤和建筑工人大餐。并且为了防止重复使用导致道具失效，每次只会使用一个道具。"
-                )
+                ) */
             }
         }
     }
 
-    // Clan join
+    /* // Clan join
     item {
         AnimatedVisibility(visible = isExpanded) {
             Column {
