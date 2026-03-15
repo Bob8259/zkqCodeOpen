@@ -33,7 +33,7 @@ fun LazyListScope.MainBaseConfig(
         FlowRow {
             Text(
                 text = "以下是主世界设置",
-                fontSize = 20.sp,
+                fontSize = 15.sp,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(10.dp),
                 textAlign = TextAlign.Start
@@ -72,14 +72,12 @@ fun LazyListScope.MainBaseConfig(
                         explain = "勾选后，辅助会跳过前两个搜到的目标，并且会根据所有搜索到的目标的可获得资源的平均值来搜鱼要求。"
                     )
                     SettingCheckBox(key = "${MAIN_BASE_SETTINGS.STOP_BATTLE_AFTER_FULL_RESOURCES.key}_c$index")
-                }
-                FlowRow {
+
                     SettingCheckBox(key = "${MAIN_BASE_SETTINGS.STOP_BATTLE_WHEN_NO_STAR.key}_c$index")
                     SettingCheckBox(key = "${MAIN_BASE_SETTINGS.PLAY_LADDER.key}_c$index")
-                }
-
-                AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.PLAY_LADDER.key}_c$index"]?.value == "1") {
-                    SettingCheckBox(key = "${MAIN_BASE_SETTINGS.CHANGE_BASE.key}_c$index")
+                    AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.PLAY_LADDER.key}_c$index"]?.value == "1") {
+                        SettingCheckBox(key = "${MAIN_BASE_SETTINGS.CHANGE_BASE.key}_c$index")
+                    }
                 }
             }
         }

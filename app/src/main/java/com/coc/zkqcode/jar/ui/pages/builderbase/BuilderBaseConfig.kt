@@ -29,7 +29,7 @@ fun LazyListScope.BuilderBaseConfig(
     item {
         FlowRow {
             Text(
-                text = "以下是夜世界设置", fontSize = 20.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(10.dp), textAlign = TextAlign.Start
+                text = "以下是夜世界设置", fontSize = 15.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(10.dp), textAlign = TextAlign.Start
             )
             CustomButton(
                 onClick = onToggleExpanded, text = if (isExpanded) "▼ 缩起夜世界设置" else "▶ 展开夜世界设置"
