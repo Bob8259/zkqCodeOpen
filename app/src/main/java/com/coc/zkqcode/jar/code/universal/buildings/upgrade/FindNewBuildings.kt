@@ -9,7 +9,7 @@ import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 suspend fun builderBaseFindNewBuildings(currentBase: BaseType): Boolean {
     val worker = when (currentBase) {
         BaseType.Builder ->
-            findMultiColorsUntil(schemas = listOf(MyColors.BuilderBaseWorker), duration = 1000)
+            findMultiColorsUntil(schemas = listOf(MyColors.BuilderBaseWorker, MyColors.BuilderBaseWorker2), duration = 1000)
 
         BaseType.Main ->
             findMultiColorsUntil(schemas = listOf(MyColors.MainBaseWorker, MyColors.MainBaseWorker2), duration = 1000)

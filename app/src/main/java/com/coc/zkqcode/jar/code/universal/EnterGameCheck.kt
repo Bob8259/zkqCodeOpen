@@ -148,7 +148,7 @@ private suspend fun isInHomePage(): Boolean {
 
     // 3. Check for any of the worker icons (Main base, Goblin workers, or Builder base)
     val workerSchemas = listOf(
-        MyColors.MainBaseWorker, MyColors.MainBaseWorker2, MyColors.GoblinWorker, MyColors.GoblinResearcher, MyColors.BuilderBaseWorker
+        MyColors.MainBaseWorker, MyColors.MainBaseWorker2, MyColors.GoblinWorker, MyColors.GoblinResearcher, MyColors.BuilderBaseWorker, MyColors.BuilderBaseWorker2
     )
 
     return workerSchemas.any { findMultiColors(byteBuffer = screenBuffer, schema = it) != null }

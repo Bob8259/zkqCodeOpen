@@ -1,7 +1,8 @@
 This part is about repo links
 ```
 git remote -v //view current repo
-git push open main --force //push to repo
+//push to repo
+git push open main --force 
 ```
 
 This documentation of the server. 

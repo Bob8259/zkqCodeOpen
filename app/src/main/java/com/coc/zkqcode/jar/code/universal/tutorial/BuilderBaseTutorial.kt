@@ -3,6 +3,7 @@ package com.coc.zkqcode.jar.code.universal.tutorial
 import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
+import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 
     suspend fun builderBaseTutorial(): Boolean {
         // 1. Upgrade Night TH
@@ -20,7 +21,7 @@ import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
             TouchActions.tap(it.x - 80, it.y + 100, delayTime = 500)
             TouchActions.tap(707, 558, delayTime = 500)
         }
-        findMultiColors(schema = MyColors.BuilderBaseWorker)?.let {
+        findMultiColorsUntil(schemas = listOf(MyColors.BuilderBaseWorker, MyColors.BuilderBaseWorker2), duration = 200)?.let {
             TouchActions.tap(it.x, it.y, delayTime = 500)
         }
         // 3. Tutorial Night Barb
