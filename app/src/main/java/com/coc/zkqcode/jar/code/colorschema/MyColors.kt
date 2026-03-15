@@ -1,5 +1,6 @@
 package com.coc.zkqcode.jar.code.colorschema
 
+import androidx.compose.ui.graphics.Color
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.builderbase.BuilderBaseAttackColors
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.FeatureColors
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.builderbase.IBuilderBaseAttackColors
@@ -61,5 +62,11 @@ object MyColors : IUIColors by UIColors, IFeatureColors by FeatureColors, IMainB
     )
     val DragonDuke = ColorSchema.parse(
         80, 590, 1200, 720, "000023", "7|0|1A134C,15|0|120E53,23|0|070828,30|0|000021,0|15|58506E,7|15|F2F8FF,15|15|303B7F,23|15|A5A3DB,30|15|E9ECFF", 0, 0.9, "飞龙公爵"
+    )
+    val TroopColorAtDeploymentBar = ColorSchema.parse(
+        80, 590, 1200, 720, "D08E4C", "5|0|D18F4D,11|0|D1904E,16|0|D19150,21|0|D29250,0|5|BE8444,5|5|BF8544,11|5|C08646,16|5|C18848,21|5|C1894A", 0, 0.9, "部队颜色"
+    )
+    val SpellColorAtDeploymentBar = ColorSchema.parse(
+        80, 590, 1200, 720, "D95371", "8|0|DA5372,17|0|DA5372,25|0|DA5372,33|0|DA5372,0|5|C64A61,8|5|C64A61,17|5|C64B62,25|5|C74B63,33|5|C74B63", 0, 0.9, "法术颜色"
     )
 }

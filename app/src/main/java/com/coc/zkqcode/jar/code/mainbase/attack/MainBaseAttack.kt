@@ -13,7 +13,6 @@ import kotlinx.coroutines.delay
 suspend fun mainBaseAttack(): Boolean {
     if (!getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.AUTO_ATTACK.key)) return true
     searchOpponentsAndDeployTroops()
-
     val maxDurationMs = 3 * 60 * 1000L // Maximum battle wait time: 3 minutes
     val startTime = System.currentTimeMillis()
 
@@ -33,6 +32,7 @@ suspend fun mainBaseAttack(): Boolean {
         val endBattleButton = findMultiColors(schema = MyColors.EndBattle)
         if (endBattleButton == null) {
             ShowMessage("未找到放弃按钮，对战结束")
+            break
         }
 
         delay(1000) // Poll every second to avoid busy-waiting
