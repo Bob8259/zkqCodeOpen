@@ -30,8 +30,7 @@ suspend fun mainBaseAttack(): Boolean {
             lastShownMinute = remainingMinutes
         }
 
-        val endBattleButton = findMultiColors(schema = MyColors.EndBattle)
-        if (endBattleButton == null) break
+        findMultiColors(schema = MyColors.EndBattle) ?: break
 
         delay(1000) // Poll every second to avoid busy-waiting
     }

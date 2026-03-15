@@ -107,9 +107,9 @@ private suspend fun closeAdvertisements() {
     }
     findMultiColors(schema = MyColors.DailyLoginReward)?.let {
         if (getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.CLAIM_DAILY_REWARD.key)) {
-            TouchActions.tap(622, 492)
+            TouchActions.tap(622, 492, delayTime = 2000)
         } else {
-            TouchActions.tap(it.x, it.y, delayTime = 1500)
+            TouchActions.tap(it.x, it.y)
         }
     }
     findMultiColors(schema = MyColors.ReturnAwards)?.let {
