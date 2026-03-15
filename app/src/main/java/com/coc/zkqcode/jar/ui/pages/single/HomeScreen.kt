@@ -215,7 +215,12 @@ fun HomeScreen(
                                 onClick = { GlobalVars.isAutoRunEnabled = false }
                             )
                         }
-                        LoginScreen()
+                        LoginScreen(
+                            onAdFreeClick = {
+                                GlobalVars.isPlaying.value = false
+                                saveAndRun()
+                            }
+                        )
                         CustomButton(text = "启动手动切号模式", onClick = {
                             AppStateManager.setMode(AppMode.SwitchAccount)
                             onSaveSuccess()
