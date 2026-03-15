@@ -85,7 +85,6 @@ private suspend fun findAndActivateAccount(searchOrder: Iterable<Int>): Int? {
 
 private suspend fun runTestCode() {
     while (true) {
-//        TouchActions.tap(155, 500, delayTime = 500)
         enterMainScreen()
         upgradeBuildings(BaseType.Main)
         delayWithMultiplier(10000000)
