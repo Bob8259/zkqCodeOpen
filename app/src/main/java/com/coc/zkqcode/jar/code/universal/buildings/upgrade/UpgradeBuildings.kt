@@ -44,7 +44,7 @@ suspend fun upgradeBuildings(currentBase: BaseType): Boolean {
     clickRightBottom(1)
     if (checkContinueBuild(currentBase)) {
         val worker = when (currentBase) {
-            BaseType.Builder -> findMultiColorsUntil(schemas = listOf(MyColors.BuilderBaseWorker), duration = 1000)
+            BaseType.Builder -> findMultiColorsUntil(schemas = listOf(MyColors.BuilderBaseWorker, MyColors.BuilderBaseWorker2), duration = 1000)
             BaseType.Main -> findMultiColorsUntil(schemas = listOf(MyColors.MainBaseWorker, MyColors.MainBaseWorker2), duration = 1000)
         }
         if (worker != null) {

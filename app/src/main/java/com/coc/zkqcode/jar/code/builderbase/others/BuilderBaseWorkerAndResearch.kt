@@ -5,6 +5,7 @@ import com.coc.zkqcode.core.util.bugreporter.BugReporter
 import com.coc.zkqcode.core.util.fileactions.LogHelper
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
+import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.recognizer.TextRecognizer
 
@@ -21,7 +22,7 @@ object BuilderBaseWorkerAndResearch {
      */
     suspend fun detectWorkerNumber(): WorkerInfo {
         if (!enterMainScreen()) return WorkerInfo(0, 0)
-        val worker = findMultiColors(schema = MyColors.BuilderBaseWorker)
+        val worker = findMultiColorsUntil(schemas = listOf(MyColors.BuilderBaseWorker, MyColors.BuilderBaseWorker2), duration = 200)
         if (worker != null) {
             // Define the crop region for the worker number text
             val startX = worker.x - 50

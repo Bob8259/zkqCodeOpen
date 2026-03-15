@@ -26,6 +26,7 @@ interface IUIColors {
     val MagicalItem: ColorSchema
     val ArrowPointingDown: ColorSchema
     val DailyLoginReward: ColorSchema
+    val BuilderBaseStarBonus: ColorSchema
 }
 
 object UIColors : IUIColors {
@@ -96,5 +97,8 @@ object UIColors : IUIColors {
     )
     override val DailyLoginReward = ColorSchema.parse(
         1032, 153, 1050, 172, "FBFCFD", "3|0|F3F5FA,16|6|E8E9ED,11|0|FFFFFF,14|0|B9C8DD,0|9|F2F1EF,3|9|ECF1F6,0|4|F5F6F7,11|9|FAFBFD,14|9|E9EDF1", 0, 0.9, "疼讯签到奖励"
+    )
+    override val BuilderBaseStarBonus = ColorSchema.parse(
+        541, 522, 739, 606, "82E8B8", "39|0|82E8B8,79|0|82E8B8,119|0|82E8B8,158|0|82E8B8,0|42|3AD38A,39|42|3AD38A,79|42|3AD38A,119|42|3AD38A,158|42|3AD38A", 0, 0.9, "夜世界胜利之星"
     )
 }

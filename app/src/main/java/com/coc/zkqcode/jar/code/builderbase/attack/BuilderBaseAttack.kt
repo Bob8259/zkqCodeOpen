@@ -83,10 +83,13 @@ private suspend fun realAttack(mode: String, battleNumber: Int = 1, battleTimes:
         ShowMessage("对战中，第${battleNumber}/${battleTimes}局\n若${"%.1f".format(remainingMin)}分钟内未完成对战，则强制重启")
         val trainTroopButton = findMultiColors(schema = MyColors.TrainTroops)
         if (trainTroopButton != null) {
-
-            TouchActions.tap(86, 638, delayTime = 500)
+            TouchActions.tap(86, 638, delayTime = 500)//Attack
         }
         checkReconnections()
+        val builderBaseStarBonus = findMultiColors(schema = MyColors.BuilderBaseStarBonus)
+        if (builderBaseStarBonus != null) {
+            TouchActions.tap(builderBaseStarBonus.x, builderBaseStarBonus.y, delayTime = 200)
+        }
         val attackNow = findMultiColors(schema = MyColors.AttackNow)
         if (attackNow != null) {
             TouchActions.tap(attackNow.x, attackNow.y, delayTime = 200)
@@ -102,7 +105,7 @@ private suspend fun realAttack(mode: String, battleNumber: Int = 1, battleTimes:
         }
         val switchTroopButton = findMultiColors(schema = MyColors.SwitchTroopButton)
         if (switchTroopButton != null) {
-            // Use shorter delay on first detection, normal delay afterwards
+            // Use shorter delay on first detection, normal delay afterward
             if (isFirstSwitchTroop) {
                 delayWithMultiplier(500)
                 isFirstSwitchTroop = false
