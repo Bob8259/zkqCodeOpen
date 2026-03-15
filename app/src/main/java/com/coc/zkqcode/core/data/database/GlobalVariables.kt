@@ -10,30 +10,22 @@ import com.coc.zkqcode.interfaces.MainCode
 import java.util.concurrent.ConcurrentHashMap
 
 object GlobalVars {
-    // Basic components
-    var serverActions by mutableStateOf<ServerActions?>(null)
+    // --- Volatile fields (no Compose reactivity, thread-safe reads/writes) ---
     @Volatile var pluginUI: MainCode? = null
     @Volatile var serverPath: String = ""
-
     @Volatile var isConfigLoaded: Boolean = false
-
-    // Auto-run features
-    var isAutoRunEnabled by mutableStateOf(true)
-    var autoRunTimer by mutableIntStateOf(60)//测试专用，记得改回60
-
-
-    // Window positioning
-    var absorbEdge by mutableIntStateOf(0) // 1: Left, 0: Right
-    var absorbYPercentage by mutableIntStateOf(50) // Percentage of Y axis
-    var updateWindowPosition by mutableStateOf(false)
-
-    // Configuration States - Thread-safe map for concurrent access from UI and background threads
-    val configStates: MutableMap<String, MutableState<String>> = ConcurrentHashMap()
-
-    // IME management
     @Volatile var defaultInputMethod: String? = null
+    @Volatile var isSwitchingAccount: Boolean = false
+    @Volatile var absorbEdge: Int = 0 // 1: Left, 0: Right
+    @Volatile var absorbYPercentage: Int = 50 // Percentage of Y axis
+    @Volatile var updateWindowPosition: Boolean = false
 
-    //Running state management
+    // --- Compose-reactive fields (observed by UI for recomposition) ---
+    var serverActions by mutableStateOf<ServerActions?>(null)
+    var isAutoRunEnabled by mutableStateOf(true)
+    var autoRunTimer by mutableIntStateOf(60)
     var isPlaying = mutableStateOf(true)
-    @Volatile var isSwitchingAccount = false
+
+    // --- Thread-safe map for concurrent access from UI and background threads ---
+    val configStates: MutableMap<String, MutableState<String>> = ConcurrentHashMap()
 }
