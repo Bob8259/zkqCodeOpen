@@ -225,17 +225,17 @@ fun HomeScreen(
                             AppStateManager.setMode(AppMode.SwitchAccount)
                             onSaveSuccess()
                         })
-                        SettingInputRow(key = GLOBAL_SETTINGS.DELAY_MULTIPLIER.key)
+                        /* SettingInputRow(key = GLOBAL_SETTINGS.DELAY_MULTIPLIER.key) */
                         SettingInputRow(key = GLOBAL_SETTINGS.ENTER_GAME_TIMER.key)
                         FlowRow {
-                            SettingCheckBox(key = GLOBAL_SETTINGS.DEBUG_MODE.key)
+                            /* SettingCheckBox(key = GLOBAL_SETTINGS.DEBUG_MODE.key) */
                             SettingCheckBox(key = GLOBAL_SETTINGS.RECORD_PROGRESS.key)
                         }
 
-                        SettingDropdown(
+                        /* SettingDropdown(
                             key = GLOBAL_SETTINGS.AUTO_UPDATE.key,
                             options = listOf("关闭", "仅更新稳定版", "更新测试版")
-                        )
+                        ) */
                         SettingCheckBox(key = GLOBAL_SETTINGS.AUTO_START.key)
                         SettingDropdown(
                             key = GLOBAL_SETTINGS.AFTER_KICK_OPTION.key,
@@ -248,11 +248,11 @@ fun HomeScreen(
                                 onClick = { cleanMemory() },
                                 explain = "本辅助会记住账号信息，例如记住当前账号是否已完成突袭，是否已完成部落竞赛等等。如果换号后不清空记忆，那么本辅助就会保留先前账号错误的记忆，进而可能发生某些异常操作。"
                             )
-                            CustomButton(
+                            /* CustomButton(
                                 text = "清空全部数据",
                                 onClick = { cleanAllData() },
                                 explain = "点击后将删除所有数据，包括辅助设置，保存的账号信息，数据号信息等等，用于保护用户隐私。"
-                            )
+                            ) */
                         }
                         Text(
                             text = "换机或设备到期前必须清空全部数据！部分云机在设备到期后不会清空用户数据，严重威胁隐私安全！",
@@ -264,9 +264,9 @@ fun HomeScreen(
                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 1f)
                         )
                     }
-                    item {
+                    /* item {
                         BatchCreateAccount()
-                    }
+                    } */
                 }
 
                 1 -> {

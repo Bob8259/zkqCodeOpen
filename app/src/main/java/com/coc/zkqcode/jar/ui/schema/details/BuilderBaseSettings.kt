@@ -19,7 +19,7 @@ object BuilderBaseSettings {
     val BUILDER_BASE_RESEARCH = SettingDef("builder_base_research", "夜世界研究", 1, "BUILDER_BASE_SETTINGS")
     val NIGHT_BUILD_SETTING = SettingDef("night_build_setting", "自动建造", 1, "BUILDER_BASE_SETTINGS")
     val NIGHT_WALL_UPGRADE_SETTINGS = SettingDef("night_wall_upgrade_settings", "升级城墙", 1, "BUILDER_BASE_SETTINGS")
-    val NIGHT_REMOVE_OBSTACLES = SettingDef("night_remove_obstacles", "随缘移除障碍物", 1, "BUILDER_BASE_SETTINGS")
+    val NIGHT_REMOVE_OBSTACLES = SettingDef("night_remove_obstacles", "移除障碍物", 1, "BUILDER_BASE_SETTINGS")
     val NIGHT_SAVE_WORKER = SettingDef("night_save_worker", "留1工人升级城墙", 0, "BUILDER_BASE_SETTINGS")
 
     val all = listOf(
