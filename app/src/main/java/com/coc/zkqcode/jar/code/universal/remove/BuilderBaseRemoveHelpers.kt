@@ -4,7 +4,7 @@ import android.graphics.Bitmap
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
-import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndStop
+import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
 import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.core.yolo.DetectionResult
 import com.coc.zkqcode.core.yolo.YoloDetector
@@ -78,7 +78,7 @@ suspend fun removeObstacles() {
 
 suspend fun detectObstacles(): List<DetectionResult> {
     val screenBuffer = ScreenCaptureManager.capture(asBitmap = true) as? Bitmap
-        ?: logAndStop("in BuilderBaseRemoveObstacles, screen capture failed.")
+        ?: logAndRestart("in BuilderBaseRemoveObstacles, screen capture failed.")
 
     if (screenBuffer.width != 1280 || screenBuffer.height != 720) {
         return emptyList()

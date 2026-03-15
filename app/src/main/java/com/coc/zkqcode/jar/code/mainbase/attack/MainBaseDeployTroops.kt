@@ -4,7 +4,7 @@ package com.coc.zkqcode.jar.code.mainbase.attack
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
-import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndStop
+import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
 import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.ColorSchema
 import com.coc.zkqcode.jar.code.colorschema.MyColors
@@ -64,7 +64,7 @@ suspend fun mainBaseDeployTroops(): Boolean {
  * deploys all units of that type via continuous back-and-forth dragging.
  */
 private suspend fun deployIfPresent(dragSweepMs: Int, vararg schemas: ColorSchema) {
-    val screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult ?: logAndStop("failed to take screenshot at close advertisement")
+    val screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult ?: logAndRestart("failed to take screenshot at close advertisement")
     for (schema in schemas) {
         val troop = findMultiColors(schema = schema, byteBuffer = screenBuffer)
         if (troop != null) {

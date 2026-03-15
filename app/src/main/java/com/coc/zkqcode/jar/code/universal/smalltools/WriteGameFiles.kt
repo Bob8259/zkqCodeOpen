@@ -4,15 +4,15 @@ import android.annotation.SuppressLint
 import android.os.Environment
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.util.basic.ShowMessage
-import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndStop
+import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
 import com.coc.zkqcode.jar.code.universal.GameVersion
 import com.coc.zkqcode.jar.code.universal.InGamesVars
 import com.coc.zkqcode.jar.ui.schema.Schema.ACCOUNT_SETTINGS
 import com.topjohnwu.superuser.Shell
 
-// Helper function: quickly get config value, trigger logAndStop if empty
+// Helper function: quickly get config value, trigger logAndRestart if empty
 fun getConfigOrStop(key: String): String {
-    return GlobalVars.configStates[key]?.value ?: logAndStop("Failed to get config: $key")
+    return GlobalVars.configStates[key]?.value ?: logAndRestart("Failed to get config: $key")
 }
 
 // Returns the save path name (archive folder suffix) for the current account based on its game version

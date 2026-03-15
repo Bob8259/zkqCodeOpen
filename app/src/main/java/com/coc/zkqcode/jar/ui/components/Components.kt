@@ -51,7 +51,7 @@ import androidx.compose.ui.window.PopupProperties
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.jar.ui.schema.Schema
 import com.coc.zkqcode.core.ui.theme.AppColors
-import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndStop
+import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
 import kotlinx.coroutines.delay
 
 
@@ -61,9 +61,9 @@ fun InputRowWithCheckBox(
     inputKey: String
 ) {
     val checkBoxState = GlobalVars.configStates[checkBoxKey]
-        ?: logAndStop("Config: $checkBoxKey Not Found")
+        ?: logAndRestart("Config: $checkBoxKey Not Found")
     val inputState = GlobalVars.configStates[inputKey]
-        ?: logAndStop("Config: $inputKey Not Found")
+        ?: logAndRestart("Config: $inputKey Not Found")
 
     val checkBoxLabel = Schema.getDisplayName(checkBoxKey)
     val inputLabel = Schema.getDisplayName(inputKey)
@@ -202,7 +202,7 @@ class WindowCenterPositionProvider : PopupPositionProvider {
 fun SettingInputRow(key: String, afterChange: ((String) -> Unit)? = null) {
     // Get state and label (display name)
     val state = GlobalVars.configStates[key]
-        ?: logAndStop("Config: $key Not Found")
+        ?: logAndRestart("Config: $key Not Found")
     val label = Schema.getDisplayName(key)
 
     Row(
@@ -310,8 +310,11 @@ fun SettingCheckBox(
     key: String,
     explain: String? = null
 ) {
-    val state = GlobalVars.configStates[key]
-        ?: logAndStop("Config: $key Not Found")
+    // If key is absent from configStates, create a new state using the Schema default value
+    // and register it so subsequent reads are consistent.
+    val state = GlobalVars.configStates.getOrPut(key) {
+        mutableStateOf(Schema.getDefaultValue(key))
+    }
 
     CustomCheckBox(
         text = Schema.getDisplayName(key),
@@ -404,7 +407,7 @@ fun SettingDropdown(
 ) {
     // 1. Get config state and display name
     val state = GlobalVars.configStates[key]
-        ?: logAndStop("Config: $key Not Found")
+        ?: logAndRestart("Config: $key Not Found")
     val label = Schema.getDisplayName(key)
 
     // 2. Internal UI state

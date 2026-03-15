@@ -1,7 +1,7 @@
 package com.coc.zkqcode.core.util.fileactions
 
 import com.coc.zkqcode.core.data.database.GlobalVars
-import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndStop
+import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 
@@ -10,7 +10,7 @@ object FileHelper {
     private val gson = Gson()
 
     suspend fun writeJson(path: String, content: String): Boolean {
-        val serverActions = GlobalVars.serverActions ?: logAndStop("Server actions not found")
+        val serverActions = GlobalVars.serverActions ?: logAndRestart("Server actions not found")
         val writeAction = mapOf(
             "actionType" to "file_action",
             "subAction" to "write",
@@ -22,7 +22,7 @@ object FileHelper {
     }
 
     suspend fun readJson(path: String): JsonObject? {
-        val serverActions = GlobalVars.serverActions ?: logAndStop("Server actions not found")
+        val serverActions = GlobalVars.serverActions ?: logAndRestart("Server actions not found")
         val readAction = mapOf(
             "actionType" to "file_action",
             "subAction" to "read",
@@ -43,7 +43,7 @@ object FileHelper {
 
     // Delete a file at the given path via the WebSocket server
     suspend fun deleteJson(path: String): Boolean {
-        val serverActions = GlobalVars.serverActions ?: logAndStop("Server actions not found")
+        val serverActions = GlobalVars.serverActions ?: logAndRestart("Server actions not found")
         val deleteAction = mapOf(
             "actionType" to "file_action",
             "subAction" to "delete",
@@ -54,7 +54,7 @@ object FileHelper {
     }
 
     suspend fun checkExists(path: String): Boolean {
-        val serverActions = GlobalVars.serverActions ?: logAndStop("Server actions not found")
+        val serverActions = GlobalVars.serverActions ?: logAndRestart("Server actions not found")
         val checkExistsAction = mapOf(
             "actionType" to "file_action",
             "subAction" to "check_exists",

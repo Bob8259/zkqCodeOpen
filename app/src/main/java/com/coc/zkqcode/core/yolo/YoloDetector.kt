@@ -50,7 +50,7 @@ object YoloDetector {
 
         clearWeights() // Load new model if type changed or not loaded
 
-        val context = appContext ?: LogHelper.logAndStop("YoloDetector must be initialized with context before loading weights")
+        val context = appContext ?: LogHelper.logAndRestart("YoloDetector must be initialized with context before loading weights")
 
         try {
             val model = loadModelFile(context, modelType)
@@ -76,7 +76,7 @@ object YoloDetector {
 
         } catch (e: Exception) {
             clearWeights()
-            LogHelper.logAndStop("Failed to load model: ${e.message}")
+            LogHelper.logAndRestart("Failed to load model: ${e.message}")
         }
     }
 

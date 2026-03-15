@@ -5,7 +5,7 @@ import android.graphics.Point
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.util.basic.ShowMessage
-import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndStop
+import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
 import com.coc.zkqcode.jar.code.colorschema.ColorSchema
 import com.coc.zkqcode.nativehelper.RustTools
 import kotlinx.coroutines.delay
@@ -101,7 +101,7 @@ suspend fun findMultiColorsUntil(
 ): Point? {
     val startTime = System.currentTimeMillis()
     val multiplier = GlobalVars.configStates["delay_multiplier"]?.value?.toFloat()
-        ?: logAndStop("Failed to get delayMultiplier")
+        ?: logAndRestart("Failed to get delayMultiplier")
 
     while (true) {
         val captured = if (bitmap == null && byteBuffer == null) ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult else null

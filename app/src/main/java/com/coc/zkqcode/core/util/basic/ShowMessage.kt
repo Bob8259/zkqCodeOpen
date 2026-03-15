@@ -3,7 +3,7 @@ package com.coc.zkqcode.core.util.basic
 import android.content.Context
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.ui.floatingwindows.MessageBoxHelper.showFloatingMessage
-import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndStop
+import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
 import timber.log.Timber
 import java.lang.ref.WeakReference
 
@@ -32,7 +32,7 @@ object ShowMessage {
         contextRef?.get()?.let { context ->
             showFloatingMessage(context = context, text = text)
             Timber.tag("zkq_debug").v("Verbose: $text")
-        } ?: logAndStop("ShowMessage: Context not initialized or released!")
+        } ?: logAndRestart("ShowMessage: Context not initialized or released!")
     }
 
 }

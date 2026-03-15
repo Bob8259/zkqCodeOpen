@@ -47,14 +47,15 @@ fun LazyListScope.MainBaseConfig(
 
     // Attack & Resource requirements
     item {
+        SettingCheckBox(key = "${MAIN_BASE_SETTINGS.QQQQQ.key}_c$index")
+        SettingCheckBox(key = "${MAIN_BASE_SETTINGS.CLAIM_DAILY_REWARD.key}_c$index")
         AnimatedVisibility(visible = isExpanded) {
             Column {
+                SettingCheckBox(key = "${MAIN_BASE_SETTINGS.AUTO_ATTACK.key}_c$index")
                 Text(
                     text = "紫孔雀会自动配兵，暂不支持手动配兵。",
                     style = MaterialTheme.typography.labelMedium,
-                    modifier = Modifier.padding(horizontal = 10.dp)
                 )
-                SettingCheckBox(key = "${MAIN_BASE_SETTINGS.AUTO_ATTACK.key}_c$index")
                 SettingInputRow(key = "${MAIN_BASE_SETTINGS.GOLD_REQUIREMENT.key}_c$index")
                 SettingInputRow(key = "${MAIN_BASE_SETTINGS.ELIXIR_REQUIREMENT.key}_c$index")
                 SettingInputRow(key = "${MAIN_BASE_SETTINGS.DARK_ELIXIR_REQUIREMENT.key}_c$index")

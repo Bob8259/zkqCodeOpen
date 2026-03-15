@@ -50,7 +50,7 @@ object AllTutorials {
         )
 
         val screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult
-            ?: LogHelper.logAndStop("failed to take screenshot at close checkIsInTutorial")
+            ?: LogHelper.logAndRestart("failed to take screenshot at close checkIsInTutorial")
         // Iterate through schemas and find the first match to retrieve its coordinates
         val point = targetSchemas.firstNotNullOfOrNull { schema ->
             findMultiColors(byteBuffer = screenBuffer, schema = schema)

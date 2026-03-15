@@ -4,7 +4,7 @@ import android.graphics.Bitmap
 import android.graphics.Rect
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
-import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndStop
+import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
 import com.coc.zkqcode.core.util.fileactions.LogHelper.showDebugInfo
 import com.google.android.gms.tasks.Tasks
 import com.google.mlkit.vision.common.InputImage
@@ -37,13 +37,13 @@ object TextRecognizer {
         applyPreprocess: Boolean = true
     ): List<RecognizedText> {
         val screenBuffer = ScreenCaptureManager.capture(asBitmap = true) as? Bitmap
-            ?: logAndStop("in TextRecognizer, screen capture failed.")
+            ?: logAndRestart("in TextRecognizer, screen capture failed.")
 
         val width = endX - startX
         val height = endY - startY
 
         if (width <= 0 || height <= 0) {
-            logAndStop("Invalid crop area: width=$width, height=$height")
+            logAndRestart("Invalid crop area: width=$width, height=$height")
         }
 
         while (!GlobalVars.isPlaying.value) {
@@ -87,7 +87,7 @@ object TextRecognizer {
             throw e
         } catch (e: Exception) {
             // Handle actual business errors here (e.g., out of memory, Bitmap creation failure, etc.)
-            logAndStop("Error during cropping or recognition: ${e.message}")
+            logAndRestart("Error during cropping or recognition: ${e.message}")
         }
     }
 

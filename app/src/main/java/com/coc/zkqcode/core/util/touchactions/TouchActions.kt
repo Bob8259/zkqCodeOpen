@@ -2,7 +2,7 @@ package com.coc.zkqcode.core.util.touchactions
 
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
-import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndStop
+import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
@@ -15,10 +15,10 @@ object TouchActions {
 
     private fun getDelayMultiplier(): Float {
         return GlobalVars.configStates["delay_multiplier"]?.value?.toFloat()
-            ?: logAndStop("Failed to get delayMultiplier")
+            ?: logAndRestart("Failed to get delayMultiplier")
     }
 
-    private fun getServerActions() = GlobalVars.serverActions ?: logAndStop("Server actions not found")
+    private fun getServerActions() = GlobalVars.serverActions ?: logAndRestart("Server actions not found")
 
     suspend fun touchDown(x: Float, y: Float, id: Int) {
         activePointers.add(id)
@@ -206,9 +206,9 @@ object TouchActions {
         isJitter: Boolean,
         vararg pointers: PointerMove
     ) {
-        GlobalVars.serverActions ?: logAndStop("Server actions not found at performMove")
+        GlobalVars.serverActions ?: logAndRestart("Server actions not found at performMove")
         val delayMultiplier = GlobalVars.configStates["delay_multiplier"]?.value?.toFloat()
-            ?: logAndStop("Failed to get delayMultiplier at performMove")
+            ?: logAndRestart("Failed to get delayMultiplier at performMove")
 
         if (!isJitter) {
             val stepInterval = 10L

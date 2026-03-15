@@ -5,7 +5,7 @@ import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
-import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndStop
+import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
 import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.InGamesVars
@@ -29,7 +29,7 @@ suspend fun mainBaseTutorial(): Boolean {
     )
 
     val screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult
-        ?: logAndStop("in isInHomePage, screen capture failed.")
+        ?: logAndRestart("in isInHomePage, screen capture failed.")
 
     // 1. Process standard priority schemas (Find -> Tap)
     prioritySchemas.forEach { schema ->
@@ -140,7 +140,7 @@ suspend fun mainBaseTutorial(): Boolean {
             gameName += InGamesVars.currentAccountNumber
         }
 
-        ZKQInputMethodService.instance?.commitGameName(gameName) ?: logAndStop("获取输入法失败")
+        ZKQInputMethodService.instance?.commitGameName(gameName) ?: logAndRestart("获取输入法失败")
         TouchActions.tap(641, 368, delayTime = 300)
     }
 

@@ -6,7 +6,7 @@ import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.core.util.basic.RunShell
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
-import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndStop
+import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
 import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.InGamesVars
@@ -39,7 +39,7 @@ suspend fun checkReconnections(): Boolean {
             // Retrieve the configuration state for the specific account
             val configKey = Schema.GLOBAL_SETTINGS.AFTER_KICK_OPTION.key
             val action = GlobalVars.configStates[configKey]?.value?.toInt()
-                ?: logAndStop("Can not get $configKey")
+                ?: logAndRestart("Can not get $configKey")
             // 4. Implement logic based on the action value
             when (action) {
                 0 -> {

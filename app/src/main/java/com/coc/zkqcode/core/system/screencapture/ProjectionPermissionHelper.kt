@@ -7,7 +7,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import com.coc.zkqcode.core.ui.floatingwindows.UIWindowService
-import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndStop
+import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -35,7 +35,7 @@ class ProjectionPermissionHelper(private val activity: ComponentActivity) {
                     UIWindowService.foregroundReady.await()
                 }
                 if (ready == null) {
-                    logAndStop("前台服务未能在5秒内启动，无法获取MediaProjection权限")
+                    logAndRestart("前台服务未能在5秒内启动，无法获取MediaProjection权限")
                 }
                 ScreenCaptureManager.onPermissionGranted(
                     result.resultCode,
