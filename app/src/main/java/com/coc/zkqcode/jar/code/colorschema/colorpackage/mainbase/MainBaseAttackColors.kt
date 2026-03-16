@@ -32,6 +32,7 @@ interface IMainBaseAttackColors {
     val EndBattle: ColorSchema
     val KingBarbarian: ColorSchema
     val QueenArcher: ColorSchema
+    val QueenArcher2: ColorSchema
     val MinionPrince: ColorSchema
     val GrandWarden: ColorSchema
     val GrandWarden2: ColorSchema
@@ -128,6 +129,10 @@ object MainBaseAttackColors : IMainBaseAttackColors {
     )
     override val QueenArcher = ColorSchema.parse(
         80, 590, 1200, 720, "DAB9DA", "9|0|83AAF6,19|0|883044,28|0|AC3F66,37|0|B34169,0|15|1C0814,9|15|253B6F,19|15|8A2E4E,28|15|37111F,37|15|872D4E", 0, 0.9, "弓箭女皇"
+    )
+    // Second queen archer deploy bar color variant
+    override val QueenArcher2 = ColorSchema.parse(
+        80, 590, 1200, 720, "576EB9", "11|0|8898F2,22|0|5F87E0,32|0|AB3C64,43|0|B24169,0|11|6E82B3,11|11|304986,22|11|913457,32|11|A23B60,43|11|6D253E", 0, 0.9, "弓箭女皇2"
     )
     override val MinionPrince = ColorSchema.parse(
         80, 590, 1200, 720, "1C1B1B", "8|0|82B2DE,17|0|FFF77C,25|0|E2B22D,33|0|CE9C0E,0|11|221201,8|11|3F3322,17|11|311D05,25|11|965A00,33|11|8B5810", 0, 0.9, "亡灵王子"

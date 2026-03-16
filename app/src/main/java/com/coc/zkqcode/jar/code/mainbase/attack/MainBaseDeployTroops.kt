@@ -62,6 +62,7 @@ private suspend fun deployHeroes() {
     val heroes = listOf(
         MyColors.KingBarbarian,
         MyColors.QueenArcher,
+        MyColors.QueenArcher2,
         MyColors.MinionPrince,
         MyColors.GrandWarden,
         MyColors.GrandWarden2,
