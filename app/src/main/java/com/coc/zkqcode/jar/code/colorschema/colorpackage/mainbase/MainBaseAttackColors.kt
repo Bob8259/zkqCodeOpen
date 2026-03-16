@@ -46,7 +46,7 @@ interface IMainBaseAttackColors {
 
 object MainBaseAttackColors : IMainBaseAttackColors {
     override val SetBaseIcon = ColorSchema.parse(
-        546, 78, 573, 118, "1AABFE", "5|0|1AB4FE,11|0|1AB8FE,16|0|1AB5FE,21|0|1AAEFE,0|20|16B4FA,5|20|12B6FA,11|20|11B7FB,16|20|11B6FB,21|20|10B3FA", 0, 0.9, "布阵按钮"
+        546, 78, 573, 118, "1AABFE", "5|0|1AB4FE,11|0|1AB8FE,16|0|1AB5FE,21|0|1AAEFE,0|20|16B4FA,5|20|12B6FA,11|20|11B7FB,16|20|11B6FB,21|20|10B3FA", 0, 0.93, "布阵按钮"
     )
     override val InnerSetBase = ColorSchema.parse(
         341, 46, 504, 146, "4B5261", "33|0|4B5261,66|0|4B5261,98|0|4B5261,131|0|4B5261,0|50|C6D2D9,33|50|C6D2D9,66|50|C6D2D9,98|50|C6D2D9,131|50|C6D2D9", 0, 0.97

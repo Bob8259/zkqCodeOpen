@@ -23,6 +23,7 @@ import com.coc.zkqcode.jar.code.universal.smalltools.enterMainBase
 import com.coc.zkqcode.jar.code.universal.smalltools.getBooleanConfigRuntime
 import com.coc.zkqcode.jar.code.universal.smalltools.getConfigRuntime
 import com.coc.zkqcode.jar.ui.schema.Schema
+import kotlinx.coroutines.delay
 import kotlin.math.sqrt
 
 
@@ -38,7 +39,7 @@ enum class BuildButtonType {
 }
 
 suspend fun upgradeBuildings(currentBase: BaseType): Boolean {
-    if (!enterMainScreen()) return false//Double-check, to make sure the code slows down. Otherwise, may fail to detect workers
+
     upgradableBuildingsMap.keys.forEach { upgradableBuildingsMap[it] = false }
     var isNewBuildingDetected = false
     clickRightBottom(1)
@@ -106,7 +107,6 @@ suspend fun buildAllNewBuildings(currentBase: BaseType): Boolean {
 suspend fun checkContinueBuild(currentBase: BaseType): Boolean {
     // 1. Determine base-specific data sources and config keys
     val isBuilder = currentBase == BaseType.Builder
-
     val workerNumber = if (isBuilder) {
         BuilderBaseWorkerAndResearch.detectWorkerNumber()
     } else {

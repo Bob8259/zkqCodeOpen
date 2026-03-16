@@ -7,7 +7,6 @@ import com.coc.zkqcode.jar.code.universal.InGamesVars
 
 suspend fun runGame() {
     // Launch component string is defined in GameVersion enum, keeping version-specific details centralized
-    ShowMessage("尝试启动游戏，启动组件\n：${InGamesVars.currentGameVersion.launchComponent}")
     RunShell.runNoOutput("am start -n ${InGamesVars.currentGameVersion.launchComponent}")
     delayWithMultiplier(3000)
 }
@@ -16,5 +15,5 @@ suspend fun killGame() {
     // Package name is defined in GameVersion enum, keeping version-specific details centralized
     ShowMessage("准备关闭游戏")
     killApp(InGamesVars.currentGameVersion.packageName)
-    delayWithMultiplier(1500)
+    delayWithMultiplier(500)
 }

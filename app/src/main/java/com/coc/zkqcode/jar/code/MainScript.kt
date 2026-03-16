@@ -7,6 +7,7 @@ import com.coc.zkqcode.jar.code.builderbase.attack.builderBaseAttack
 import com.coc.zkqcode.jar.code.builderbase.others.BuilderBaseWorkerAndResearch
 import com.coc.zkqcode.jar.code.builderbase.playBuilderBase
 import com.coc.zkqcode.jar.code.colorschema.MyColors
+import com.coc.zkqcode.jar.code.mainbase.others.MainBaseWorkerAndResearch
 import com.coc.zkqcode.jar.code.mainbase.others.mainBaseRemoveObstacles
 import com.coc.zkqcode.jar.code.mainbase.playMainBase
 import com.coc.zkqcode.jar.code.universal.GameVersion
@@ -37,34 +38,33 @@ suspend fun runMainScript() {
     InGamesVars.currentGameVersion = GameVersion.fromId(getConfigOrStop("${Schema.ACCOUNT_SETTINGS.GAME_VERSION.key}${InGamesVars.currentAccountNumber}").toInt())
 
     while (currentCoroutineContext().isActive) {
-        while (currentCoroutineContext().isActive) {
-
-            // Test code
-//            runTestCode()
-            if (!writeGameFiles()) {
-                delayWithMultiplier(2000)
-                break
-            }
-            if (!enterMainScreen(true)) {
-                ShowMessage("进入游戏失败")
-                break // Break inner loop and recheck account status
-            }
-            if (!playBuilderBase()) {
-                ShowMessage("夜世界对战完成，准备进入主世界")
-                break // Break inner loop and recheck account status
-            }
-            if (!playMainBase()) {
-                ShowMessage("主世界对战完成，准备切换账号")
-                break // Break inner loop and recheck account status
-            }
+        // Test code
+//      runTestCode()
+        if (!writeGameFiles()) {
+            delayWithMultiplier(2000)
+            break
         }
+        if (!enterMainScreen(true)) {
+            ShowMessage("进入游戏失败")
+            break // Break inner loop and recheck account status
+        }
+        if (!playBuilderBase()) {
+            ShowMessage("夜世界对战完成，准备进入主世界")
+            break // Break inner loop and recheck account status
+        }
+        if (!playMainBase()) {
+            ShowMessage("主世界对战完成，准备切换账号")
+            break // Break inner loop and recheck account status
+        }
+
         // Circularly search for the next enabled account, wrapping back to currentAccountNumber (inclusive)
         val searchOrder = ((InGamesVars.currentAccountNumber + 1)..accountTotal) + (1..InGamesVars.currentAccountNumber)
         val nextAccount = findAndActivateAccount(searchOrder) ?: return
+
         InGamesVars.currentAccountNumber = nextAccount
         InGamesVars.currentGameVersion = GameVersion.fromId(getConfigOrStop("${Schema.ACCOUNT_SETTINGS.GAME_VERSION.key}${InGamesVars.currentAccountNumber}").toInt())
-
-        delay(2000)
+        ShowMessage("切换账号到${InGamesVars.currentAccountNumber}")
+        delay(3000)
     }
 }
 
@@ -90,9 +90,7 @@ private suspend fun runTestCode() {
     while (true) {
 //        enterMainScreen()
         delay(1000)
-        val startMethod = getConfigOrStop("${Schema.ACCOUNT_SETTINGS.START_METHOD.key}${InGamesVars.currentAccountNumber}")
-        ShowMessage(startMethod)
-//        ShowMessage(BuilderBaseWorkerAndResearch.detectWorkerNumber().toString())
+        ShowMessage(MainBaseWorkerAndResearch.detectWorkerNumber().toString())
         delay(2000)
     }
 }
