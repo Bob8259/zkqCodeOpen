@@ -8,6 +8,7 @@ import com.coc.zkqcode.jar.code.universal.buildings.WorkerAndResearch
 import com.coc.zkqcode.jar.code.mainbase.playMainBase
 import com.coc.zkqcode.jar.code.universal.GameVersion
 import com.coc.zkqcode.jar.code.universal.InGamesVars
+import com.coc.zkqcode.jar.code.universal.buildings.upgrade.upgradeBuildings
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.smalltools.StorageKeys
 import com.coc.zkqcode.jar.code.universal.smalltools.getConfigOrStop
@@ -83,10 +84,10 @@ private suspend fun findAndActivateAccount(searchOrder: Iterable<Int>): Int? {
 
 private suspend fun runTestCode() {
     while (true) {
-//        enterMainScreen()
+        enterMainScreen()
         delay(1000)
-        ShowMessage(WorkerAndResearch.detectWorkerNumber(BaseType.Builder).toString())
-        delay(2000)
+        upgradeBuildings(BaseType.Main)
+        delay(20000000000)
     }
 }
 
