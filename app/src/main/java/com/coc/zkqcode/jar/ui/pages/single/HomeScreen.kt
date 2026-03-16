@@ -58,7 +58,7 @@ import com.coc.zkqcode.core.util.basic.RunShell
 fun HomeScreen(
     onSaveSuccess: () -> Unit = {},
     onNavigatePriority: (Int) -> Unit = {},
-    onNavigateNightPriority: (Int) -> Unit = {}
+    onNavigateBuilderBasePriority: (Int) -> Unit = {}
 ) {
 
     // Ensure all keys are initialized if not already (safeguard)
@@ -288,20 +288,20 @@ fun HomeScreen(
 
                     // State hoisting for expansion
                     val currentMainExpanded = mainBaseExpandedStates[selectedTabIndex] ?: true
-                    val currentNightExpanded = builderBaseExpandedStates[selectedTabIndex] ?: true
+                    val currentBuilderBaseExpanded = builderBaseExpandedStates[selectedTabIndex] ?: true
 
                     GameConfig(
                         index = selectedTabIndex - 2,
                         isMainExpanded = currentMainExpanded,
                         onToggleMainExpanded = { mainBaseExpandedStates[selectedTabIndex] = !currentMainExpanded },
-                        isNightExpanded = currentNightExpanded,
-                        onToggleNightExpanded = {
-                            val newExpanded = !currentNightExpanded
+                        isBuilderBaseExpanded = currentBuilderBaseExpanded,
+                        onToggleBuilderBaseExpanded = {
+                            val newExpanded = !currentBuilderBaseExpanded
                             builderBaseExpandedStates[selectedTabIndex] = newExpanded
                             if (newExpanded) scrollToBottom()
                         },
                         onNavigatePriority = onNavigatePriority,
-                        onNavigateNightPriority = onNavigateNightPriority,
+                        onNavigateBuilderBasePriority = onNavigateBuilderBasePriority,
                         onScrollToBottom = scrollToBottom
                     )
                 }

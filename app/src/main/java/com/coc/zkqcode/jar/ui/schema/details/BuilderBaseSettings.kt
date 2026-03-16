@@ -17,10 +17,10 @@ object BuilderBaseSettings {
     val TROPHY_PUSHING_MODE = SettingDef("trophy_pushing_mode", "上分模式", 0, "BUILDER_BASE_SETTINGS")
     val ELIXIR_CART_FARMING = SettingDef("elixir_cart_farming", "刷圣水车", 0, "BUILDER_BASE_SETTINGS")
     val BUILDER_BASE_RESEARCH = SettingDef("builder_base_research", "夜世界研究", 1, "BUILDER_BASE_SETTINGS")
-    val NIGHT_BUILD_SETTING = SettingDef("night_build_setting", "自动建造", 1, "BUILDER_BASE_SETTINGS")
-    val NIGHT_WALL_UPGRADE_SETTINGS = SettingDef("night_wall_upgrade_settings", "升级城墙", 1, "BUILDER_BASE_SETTINGS")
-    val NIGHT_REMOVE_OBSTACLES = SettingDef("night_remove_obstacles", "移除障碍物", 1, "BUILDER_BASE_SETTINGS")
-    val NIGHT_SAVE_WORKER = SettingDef("night_save_worker", "留1工人升级城墙", 0, "BUILDER_BASE_SETTINGS")
+    val BUILDER_BASE_BUILD_SETTING = SettingDef("builder_base_build_setting", "自动建造", 1, "BUILDER_BASE_SETTINGS")
+    val BUILDER_BASE_WALL_UPGRADE_SETTINGS = SettingDef("builder_base_wall_upgrade_settings", "升级城墙", 1, "BUILDER_BASE_SETTINGS")
+    val BUILDER_BASE_REMOVE_OBSTACLES = SettingDef("builder_base_remove_obstacles", "移除障碍物", 1, "BUILDER_BASE_SETTINGS")
+    val BUILDER_BASE_SAVE_WORKER = SettingDef("builder_base_save_worker", "留1工人升级城墙", 0, "BUILDER_BASE_SETTINGS")
 
     val all = listOf(
         NO_BUILDER_BASE,
@@ -30,10 +30,10 @@ object BuilderBaseSettings {
         TROPHY_PUSHING_MODE,
         ELIXIR_CART_FARMING,
         BUILDER_BASE_RESEARCH,
-        NIGHT_BUILD_SETTING,
-        NIGHT_WALL_UPGRADE_SETTINGS,
-        NIGHT_REMOVE_OBSTACLES,
-        NIGHT_SAVE_WORKER,
+        BUILDER_BASE_BUILD_SETTING,
+        BUILDER_BASE_WALL_UPGRADE_SETTINGS,
+        BUILDER_BASE_REMOVE_OBSTACLES,
+        BUILDER_BASE_SAVE_WORKER,
         SWITCH_ACCOUNT_AFTER_BATTLES_WITH_TASKS
     )
 }
