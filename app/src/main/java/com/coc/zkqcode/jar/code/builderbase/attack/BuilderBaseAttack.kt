@@ -168,7 +168,7 @@ private suspend fun normalBattle(isNormal: Boolean = true) {
     TouchActions.tap(126, 638, delayTime = 200) // Battle Machine
     TouchActions.tap(deployPos.first, deployPos.second, delayTime = 200) // Deploy the Machine
     if (!isNormal) return
-    val generalTroops = findMultiColorsUntil(schemas = listOf(MyColors.TroopsWithSkills, MyColors.TroopsWithSkills), duration = 200)
+    val generalTroops = findMultiColorsUntil(schemas = listOf(MyColors.TroopsWithSkills, MyColors.TroopsWithOutSkills), duration = 200)
     if (generalTroops != null) {
         TouchActions.tap(generalTroops.x + 15, 646, delayTime = 200) // Troops
         val nightWitch = findMultiColors(schema = MyColors.NightWitch)
@@ -194,7 +194,7 @@ private suspend fun normalBattle(isNormal: Boolean = true) {
                 // Step 1: Touch down at a random position
                 var currentPos = deployPositions.random()
                 TouchActions.touchDown(currentPos.first.toFloat(), currentPos.second.toFloat(), 1)
-                delayWithMultiplier(700)
+                delayWithMultiplier(600)
 
                 // Steps 2-3: Move smoothly to random positions until barbarian is gone
                 while (true) {
