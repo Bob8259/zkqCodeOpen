@@ -12,11 +12,14 @@ import com.coc.zkqcode.jar.code.universal.remove.enterEditMode
 import com.coc.zkqcode.jar.code.universal.remove.removeAllBuildings
 import com.coc.zkqcode.jar.code.universal.remove.removeObstacles
 import com.coc.zkqcode.jar.code.universal.smalltools.StorageKeys
+import com.coc.zkqcode.jar.code.universal.smalltools.getBooleanConfigRuntime
 import com.coc.zkqcode.jar.code.universal.smalltools.readMemory
 import com.coc.zkqcode.jar.code.universal.smalltools.writeMemory
+import com.coc.zkqcode.jar.ui.schema.Schema
 import java.util.Calendar
 
 suspend fun builderBaseRemoveObstacles(): Boolean {
+    if (!getBooleanConfigRuntime(Schema.BUILDER_BASE_SETTINGS.BUILDER_BASE_REMOVE_OBSTACLES.key)) return true
     val worker = WorkerAndResearch.detectWorkerNumber(BaseType.Builder)
     val resources = recognizeResources()
     val storageKey = StorageKeys.withAccountNumber(StorageKeys.BUILDER_BASE_REMOVE_OBSTACLES, InGamesVars.currentAccountNumber)

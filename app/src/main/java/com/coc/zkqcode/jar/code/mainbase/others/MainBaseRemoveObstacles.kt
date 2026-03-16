@@ -15,7 +15,7 @@ import com.coc.zkqcode.jar.ui.schema.Schema
 import java.util.Calendar
 
 suspend fun mainBaseRemoveObstacles(): Boolean {
-
+    if (!getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.REMOVE_OBSTACLES.key)) return true
     val storageKey = StorageKeys.withAccountNumber(StorageKeys.MAIN_BASE_REMOVE_OBSTACLES, InGamesVars.currentAccountNumber)
     val lastCleaningTime = readMemory(storageKey).toIntOrNull()
     val currentDay = Calendar.getInstance().get(Calendar.DAY_OF_YEAR)
