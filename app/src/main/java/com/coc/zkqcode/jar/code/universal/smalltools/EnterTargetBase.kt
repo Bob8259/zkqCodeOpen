@@ -28,6 +28,7 @@ suspend fun enterMainBase(): Boolean {
         if (builderBaseStarBonus != null) {
             TouchActions.tap(builderBaseStarBonus.x, builderBaseStarBonus.y, delayTime = 200)
         }
+        if(!checkReconnections()) return false
         zoomSmallBuilderBase()
         TouchActions.swipe(750, 150, 750, 550)
         // Tap all grid points in the area to trigger the main base portal
@@ -57,7 +58,7 @@ suspend fun enterBuilderBase(isCheck: Boolean): Boolean {
         ShowMessage("尝试进入夜世界中，剩余${"%.1f".format(remaining)}秒后退出\n请手动给主世界和夜世界切换默认场景")
         // Ensure consistent view before attempting interaction
         zoomSmallMainBase()
-
+        if(!checkReconnections()) return false
         // List of potential boat locations to handle perspective shifts
         val boatLocations = listOf(
             317 to 474, 336 to 512, 313 to 568
