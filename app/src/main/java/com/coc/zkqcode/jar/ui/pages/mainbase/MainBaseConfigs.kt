@@ -320,7 +320,7 @@ fun LazyListScope.MainBaseConfig(
                 SettingCheckBox(key = "${MAIN_BASE_SETTINGS.UPGRADE_ALL_GEAR.key}_c$index") */
                 SettingCheckBox(
                     key = "${MAIN_BASE_SETTINGS.REMOVE_OBSTACLES.key}_c$index",
-                    explain = "勾选后，当主世界奖杯大于500时生效。有小概率（约5%）移除稀有物品"
+                    explain = "勾选后，当主世界资源金水大于30万时生效。有小概率（约5%）移除稀有物品"
                 )
                 AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.REMOVE_OBSTACLES.key}_c$index"]?.value == "1") {
                     SettingCheckBox(

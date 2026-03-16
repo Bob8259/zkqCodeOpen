@@ -4,9 +4,11 @@ import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.jar.code.builderbase.attack.builderBaseAttack
 import com.coc.zkqcode.jar.code.builderbase.others.BuilderBaseWorkerAndResearch
 import com.coc.zkqcode.jar.code.builderbase.playBuilderBase
+import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.mainbase.playMainBase
 import com.coc.zkqcode.jar.code.universal.GameVersion
 import com.coc.zkqcode.jar.code.universal.InGamesVars
+import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.recognizer.recognizeResources
 import com.coc.zkqcode.jar.code.universal.smalltools.StorageKeys
@@ -34,7 +36,7 @@ suspend fun runMainScript() {
         while (currentCoroutineContext().isActive) {
 
             // Test code
-            runTestCode()
+//            runTestCode()
             if (!writeGameFiles()) {
                 ShowMessage("写入文件失败")
                 break
