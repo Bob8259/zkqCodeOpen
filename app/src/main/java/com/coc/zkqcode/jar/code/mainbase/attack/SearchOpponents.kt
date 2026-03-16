@@ -34,7 +34,7 @@ suspend fun searchOpponentsAndDeployTroops() {
 
     val darkElixirIcon = findMultiColors(schema = MyColors.DarkElixirIcon)
     if (darkElixirIcon == null) {
-        ShowMessage("暂未解锁暗黑重油")
+        ShowMessage("账号${InGamesVars.currentAccountNumber}，暂未解锁暗黑重油")
         targetDarkElixir = 0
     }
     val isDynamicAdjust = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.DYNAMIC_ADJUSTMENT.key)
@@ -70,17 +70,17 @@ suspend fun searchOpponentsAndDeployTroops() {
     }
     val goldPercentage = findMultiColors(schema = MyColors.GoldColor)
     if (goldPercentage != null && goldPercentage.x < GOLD_FULL_X_THRESHOLD) {
-        ShowMessage("金币已满，坐标：${goldPercentage.x}, ${goldPercentage.y}")
+        ShowMessage("账号${InGamesVars.currentAccountNumber}，金币已满，坐标：${goldPercentage.x}, ${goldPercentage.y}")
         targetGold = 0
     }
     val elixirPercentage = findMultiColors(schema = MyColors.ElixirColor)
     if (elixirPercentage != null && elixirPercentage.x < ELIXIR_FULL_X_THRESHOLD) {
-        ShowMessage("圣水已满，坐标：${elixirPercentage.x}, ${elixirPercentage.y}")
+        ShowMessage("账号${InGamesVars.currentAccountNumber}，圣水已满，坐标：${elixirPercentage.x}, ${elixirPercentage.y}")
         targetElixir = 0
     }
     val darkElixirPercentage = findMultiColors(schema = MyColors.DarkElixirColor)
     if (darkElixirPercentage != null && darkElixirPercentage.x < DARK_ELIXIR_FULL_X_THRESHOLD) {
-        ShowMessage("黑油已满，坐标：${darkElixirPercentage.x}, ${darkElixirPercentage.y}")
+        ShowMessage("账号${InGamesVars.currentAccountNumber}，黑油已满，坐标：${darkElixirPercentage.x}, ${darkElixirPercentage.y}")
         targetDarkElixir = 0
 
     }
@@ -142,7 +142,7 @@ suspend fun searchOpponentsAndDeployTroops() {
                 }
             }
 
-            ShowMessage("搜索次数：$searchTimes\n对手资源：\n${res.gold}金, ${res.elixir}水, ${res.darkElixir}黑\n目标资源：\n${targetGold}金, ${targetElixir}水, ${targetDarkElixir}黑")
+            ShowMessage("账号${InGamesVars.currentAccountNumber}，搜索次数：$searchTimes\n对手资源：\n${res.gold}金, ${res.elixir}水, ${res.darkElixir}黑\n目标资源：\n${targetGold}金, ${targetElixir}水, ${targetDarkElixir}黑")
 
             // Skip the first search result when dynamic adjustment is enabled, so the average has at least one data point
             val meetsCriteria = (!isDynamicAdjust || searchTimes > 2) && res.gold > targetGold && res.elixir > targetElixir && res.darkElixir > targetDarkElixir
@@ -161,7 +161,7 @@ suspend fun searchOpponentsAndDeployTroops() {
             }
         }
         val remainingMinutes = (SEARCH_TIMEOUT_MS - (System.currentTimeMillis() - battleStartTime)) / 60000.0
-        ShowMessage("搜索中... ${"%.1f".format(remainingMinutes)}分钟后强制退出")
+        ShowMessage("账号${InGamesVars.currentAccountNumber}，搜索中... ${"%.1f".format(remainingMinutes)}分钟后强制退出")
         delayWithMultiplier(100)
     }
 }

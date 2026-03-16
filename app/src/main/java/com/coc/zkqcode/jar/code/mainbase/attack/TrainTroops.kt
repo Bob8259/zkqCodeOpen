@@ -23,7 +23,7 @@ suspend fun mainBaseTrainTroops(): Boolean {
     val dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH)
 
     if (lastTrainingTime == null || abs(lastTrainingTime - dayOfMonth) > 0) {
-        ShowMessage("准备训练部队")
+        ShowMessage("账号${InGamesVars.currentAccountNumber}，准备训练部队")
         GlobalVars.absorbEdge = 1
 
         // Open training menu
@@ -31,7 +31,7 @@ suspend fun mainBaseTrainTroops(): Boolean {
         if (point != null) {
             TouchActions.tap(point.x, point.y, delayTime = 500)
         } else {
-            ShowMessage("训练部队失败")
+            ShowMessage("账号${InGamesVars.currentAccountNumber}，训练部队失败")
             GlobalVars.absorbEdge = 0
             return enterMainScreen()
         }
@@ -39,7 +39,7 @@ suspend fun mainBaseTrainTroops(): Boolean {
         // Verify training page
         point = findMultiColorsUntil(schemas = listOf(MyColors.AttackInTrainingPage), duration = 1500)
         if (point == null) {
-            ShowMessage("训练部队失败")
+            ShowMessage("账号${InGamesVars.currentAccountNumber}，训练部队失败")
             GlobalVars.absorbEdge = 0
             return enterMainScreen()
         }
@@ -129,7 +129,7 @@ suspend fun mainBaseTrainTroops(): Boolean {
         GlobalVars.absorbEdge = 0
         return enterMainScreen()
     } else {
-        ShowMessage("该账号今日已练兵")
+        ShowMessage("账号${InGamesVars.currentAccountNumber}，该账号今日已练兵")
         return true
     }
 }

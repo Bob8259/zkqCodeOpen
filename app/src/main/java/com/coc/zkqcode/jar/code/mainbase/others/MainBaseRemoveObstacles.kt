@@ -21,15 +21,15 @@ suspend fun mainBaseRemoveObstacles(): Boolean {
     val currentDay = Calendar.getInstance().get(Calendar.DAY_OF_YEAR)
     // Check if weed removal was done today
     if (lastCleaningTime != null && lastCleaningTime == currentDay) {
-        ShowMessage("今天已移除障碍物，暂不移除")
+        ShowMessage("账号${InGamesVars.currentAccountNumber}，今天已移除障碍物，暂不移除")
         return true
     }
     val resources = recognizeResources()
     if (resources.gold < 300000 || resources.elixir < 300000) {
-        ShowMessage("检测金：${resources.gold}，检测水：${resources.elixir}\n不足30万，暂不移除")
+        ShowMessage("账号${InGamesVars.currentAccountNumber}，检测金：${resources.gold}，检测水：${resources.elixir}\n不足30万，暂不移除")
         return true
     }
-    ShowMessage("准备移除主世界障碍物")
+    ShowMessage("账号${InGamesVars.currentAccountNumber}，准备移除主世界障碍物")
     enterEditMode()
     zoomSmallMainBase()
     removeObstacles()

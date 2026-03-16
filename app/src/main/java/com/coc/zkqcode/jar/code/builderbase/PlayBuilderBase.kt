@@ -1,6 +1,5 @@
 package com.coc.zkqcode.jar.code.builderbase
 
-import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.jar.code.builderbase.attack.builderBaseAttack
 import com.coc.zkqcode.jar.code.builderbase.attack.builderBaseTrainWithConditions
 import com.coc.zkqcode.jar.code.builderbase.others.clickOttosOutPost

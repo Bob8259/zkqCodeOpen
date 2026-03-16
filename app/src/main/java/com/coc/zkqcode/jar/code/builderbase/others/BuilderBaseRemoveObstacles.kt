@@ -25,24 +25,24 @@ suspend fun builderBaseRemoveObstacles(): Boolean {
 
     // Check if obstacle removal was done today
     if (lastCleaningTime != null && lastCleaningTime == currentDay) {
-        ShowMessage("今天已移除障碍物，暂不移除")
+        ShowMessage("账号${InGamesVars.currentAccountNumber}，今天已移除障碍物，暂不移除")
         return true
     }
 
     // Resource threshold check
     if (worker.total == 2) {
         if (resources.gold < 600000 || resources.elixir < 600000) {
-            ShowMessage("检测金：${resources.gold}，检测水：${resources.elixir}\n不足60万，暂不移除")
+            ShowMessage("账号${InGamesVars.currentAccountNumber}，检测金：${resources.gold}，检测水：${resources.elixir}\n不足60万，暂不移除")
             return true
         }
     } else {
         if (resources.gold < 300000 || resources.elixir < 300000) {
-            ShowMessage("检测金：${resources.gold}，检测水：${resources.elixir}\n不足30万，暂不移除")
+            ShowMessage("账号${InGamesVars.currentAccountNumber}，检测金：${resources.gold}，检测水：${resources.elixir}\n不足30万，暂不移除")
             return true
         }
     }
 
-    ShowMessage("第一区域准备移除障碍物")
+    ShowMessage("账号${InGamesVars.currentAccountNumber}，第一区域准备移除障碍物")
     zoomSmallBuilderBase()
     enterEditMode()
     // First Area Operations
@@ -52,7 +52,7 @@ suspend fun builderBaseRemoveObstacles(): Boolean {
 
     // Second Area Operations (conditional on worker count)
     if (worker.total == 2) {
-        ShowMessage("当前已解锁第二区域")
+        ShowMessage("账号${InGamesVars.currentAccountNumber}，当前已解锁第二区域")
         swipe(672, 160, 1206, 430, 700)
         TouchActions.tap(1228, 316, delayTime = 500)
         removeAllBuildings()
