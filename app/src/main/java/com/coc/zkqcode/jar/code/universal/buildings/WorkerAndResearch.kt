@@ -16,6 +16,7 @@ data class WorkerInfo(val available: Int, val total: Int)
 enum class BaseType {
     Builder, Main
 }
+
 /**
  * Unified worker and research detection logic for both Main Base and Builder Base.
  * Dispatches on [BaseType] to handle base-specific differences (color schemas, goblin checks, messages).
@@ -38,19 +39,24 @@ object WorkerAndResearch {
             BaseType.Builder -> listOf(MyColors.BuilderBaseWorker, MyColors.BuilderBaseWorker2)
             BaseType.Main -> listOf(MyColors.MainBaseWorker, MyColors.MainBaseWorker2)
         }
-        val baseName = when (baseType) { BaseType.Builder -> "夜世界"; BaseType.Main -> "主世界" }
-        val bugTag = when (baseType) { BaseType.Builder -> "Builder_Base_Worker"; BaseType.Main -> "Main_Base_Worker" }
+        val baseName = when (baseType) {
+            BaseType.Builder -> "夜世界"; BaseType.Main -> "主世界"
+        }
+        val bugTag = when (baseType) {
+            BaseType.Builder -> "Builder_Base_Worker"; BaseType.Main -> "Main_Base_Worker"
+        }
 
         val worker = findMultiColorsUntil(schemas = workerSchemas, duration = 200)
         if (worker != null) {
             // Define the crop region for the worker number text
             val startX = worker.x - 50
             val startY = 0
-            val endX = worker.x + 200
+            val endX = worker.x + 250
             val endY = 70
 
-            val results = TextRecognizer.recognize(startX, startY, endX, endY, useChinese = false, applyPreprocess = true, threshold = 230)
-            val combinedText = results.joinToString("") { it.text }
+            val results = TextRecognizer.recognize(startX, startY, endX, endY, useChinese = false, applyPreprocess = true, threshold = 254)
+            // Sort by x-axis position to ensure left-to-right reading order
+            val combinedText = results.sortedBy { it.position?.left ?: 0 }.joinToString("") { it.text }
             return parseWorkerInfo(combinedText)
         }
         ShowMessage("未检测到${baseName}工人，已将错误截图保存到/sdcard/zkqFiles/bugReporter\n请反馈给作者")
@@ -66,8 +72,12 @@ object WorkerAndResearch {
         // Must double-check to wait for a little bit, otherwise the detection will fail.
         if (!enterMainScreen(true)) return false
 
-        val baseName = when (baseType) { BaseType.Builder -> "夜世界"; BaseType.Main -> "主世界" }
-        val bugTag = when (baseType) { BaseType.Builder -> "Builder_Base_Research"; BaseType.Main -> "Main_Base_Research" }
+        val baseName = when (baseType) {
+            BaseType.Builder -> "夜世界"; BaseType.Main -> "主世界"
+        }
+        val bugTag = when (baseType) {
+            BaseType.Builder -> "Builder_Base_Research"; BaseType.Main -> "Main_Base_Research"
+        }
 
         // MainBase-only: goblin researcher pre-check
         if (baseType == BaseType.Main && findMultiColors(schema = MyColors.GoblinResearcher) != null) {
@@ -79,13 +89,14 @@ object WorkerAndResearch {
         val research = findMultiColors(schema = MyColors.ResearchIcon)
         if (research != null) {
             // Define the crop region for the researcher number text
-            val startX = research.x - 50
+            val startX = research.x - 100
             val startY = 0
             val endX = research.x + 200
             val endY = 70
 
-            val results = TextRecognizer.recognize(startX, startY, endX, endY, useChinese = false, applyPreprocess = true, threshold = 230)
-            val combinedText = results.joinToString("") { it.text }
+            val results = TextRecognizer.recognize(startX, startY, endX, endY, useChinese = false, applyPreprocess = true, threshold = 250)
+            // Sort by x-axis position to ensure left-to-right reading order
+            val combinedText = results.sortedBy { it.position?.left ?: 0 }.joinToString("") { it.text }
             val researcherInfo = parseWorkerInfo(combinedText)
             ShowMessage("${baseName}研究数量：${researcherInfo.available}/${researcherInfo.total}")
             return researcherInfo.available > 0

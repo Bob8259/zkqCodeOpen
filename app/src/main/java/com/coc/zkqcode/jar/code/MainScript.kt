@@ -13,6 +13,7 @@ import com.coc.zkqcode.jar.code.universal.smalltools.StorageKeys
 import com.coc.zkqcode.jar.code.universal.smalltools.getConfigOrStop
 import com.coc.zkqcode.jar.code.universal.smalltools.readMemory
 import com.coc.zkqcode.jar.code.universal.smalltools.writeGameFiles
+import com.coc.zkqcode.jar.code.universal.smalltools.writeMemory
 import com.coc.zkqcode.jar.ui.schema.Schema
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
@@ -32,7 +33,7 @@ suspend fun runMainScript() {
 
     while (currentCoroutineContext().isActive) {
         // Test code
-//      runTestCode()
+//        runTestCode()
         if (!writeGameFiles()) {
             delayWithMultiplier(2000)
             break
@@ -55,9 +56,8 @@ suspend fun runMainScript() {
         val nextAccount = findAndActivateAccount(searchOrder) ?: return
 
         InGamesVars.currentAccountNumber = nextAccount
+        writeMemory(StorageKeys.ACCOUNT_NUMBER, nextAccount.toString())
         InGamesVars.currentGameVersion = GameVersion.fromId(getConfigOrStop("${Schema.ACCOUNT_SETTINGS.GAME_VERSION.key}${InGamesVars.currentAccountNumber}").toInt())
-        ShowMessage("切换账号到${InGamesVars.currentAccountNumber}")
-        delay(3000)
     }
 }
 
@@ -83,7 +83,7 @@ private suspend fun runTestCode() {
     while (true) {
 //        enterMainScreen()
         delay(1000)
-        ShowMessage(WorkerAndResearch.detectWorkerNumber(BaseType.Main).toString())
+        ShowMessage(WorkerAndResearch.detectWorkerNumber(BaseType.Builder).toString())
         delay(2000)
     }
 }

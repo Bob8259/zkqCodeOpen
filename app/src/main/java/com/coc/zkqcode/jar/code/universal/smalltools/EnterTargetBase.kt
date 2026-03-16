@@ -24,6 +24,10 @@ suspend fun enterMainBase(): Boolean {
         }
         val remaining = (30_000L - (System.currentTimeMillis() - loopStart)) / 1000.0
         ShowMessage("尝试进入主世界中，剩余${"%.1f".format(remaining)}秒后退出\n请手动给主世界和夜世界切换默认场景")
+        val builderBaseStarBonus = findMultiColors(schema = MyColors.BuilderBaseStarBonus)
+        if (builderBaseStarBonus != null) {
+            TouchActions.tap(builderBaseStarBonus.x, builderBaseStarBonus.y, delayTime = 200)
+        }
         zoomSmallBuilderBase()
         TouchActions.swipe(750, 150, 750, 550)
         // Tap all grid points in the area to trigger the main base portal
