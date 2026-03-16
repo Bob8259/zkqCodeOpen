@@ -13,5 +13,5 @@ suspend fun runGame() {
 suspend fun killGame() {
     // Package name is defined in GameVersion enum, keeping version-specific details centralised
     killApp(InGamesVars.currentGameVersion.packageName)
-    delayWithMultiplier(1000)
+    delayWithMultiplier(2000)
 }
