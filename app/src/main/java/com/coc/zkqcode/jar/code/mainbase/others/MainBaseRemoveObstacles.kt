@@ -15,7 +15,7 @@ import com.coc.zkqcode.jar.ui.schema.Schema
 import java.util.Calendar
 
 suspend fun mainBaseRemoveObstacles(): Boolean {
-    val resources = recognizeResources()
+
     val storageKey = StorageKeys.withAccountNumber(StorageKeys.MAIN_BASE_REMOVE_OBSTACLES, InGamesVars.currentAccountNumber)
     val lastCleaningTime = readMemory(storageKey).toIntOrNull()
     val currentDay = Calendar.getInstance().get(Calendar.DAY_OF_YEAR)
@@ -24,6 +24,7 @@ suspend fun mainBaseRemoveObstacles(): Boolean {
         ShowMessage("今天已移除障碍物，暂不移除")
         return true
     }
+    val resources = recognizeResources()
     if (resources.gold < 300000 || resources.elixir < 300000) {
         ShowMessage("检测金：${resources.gold}，检测水：${resources.elixir}\n不足30万，暂不移除")
         return true
@@ -43,10 +44,10 @@ suspend fun mainBaseRemoveObstacles(): Boolean {
 
 private suspend fun enhanceRemoveObstacles() {
     if (getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.REMOVE_OBSTACLES_ENHANCEMENT.key)) {
-        repeat(10) {
+        repeat(25) {
             val randomX = (100..1180).random()
             val randomY = (1..560).random()
-            TouchActions.tap(randomX, randomY, delayTime = 300)
+            TouchActions.tap(randomX, randomY, delayTime = 120)
             performRemoveSequence()
         }
     }
@@ -72,7 +73,7 @@ private suspend fun removeLowerObstacles() {
         // Loop through X coordinates for this specific "row"
         for (x in currentXStart..currentXEnd step step) {
             // 1. Tap the target area inside the trapezoid
-            TouchActions.tap(x, y, delayTime = 300)
+            TouchActions.tap(x, y, delayTime = 120)
 
             // 2. Perform the "Remove" operation sequence
             performRemoveSequence()
@@ -82,8 +83,8 @@ private suspend fun removeLowerObstacles() {
 
 // Helper function to keep the loop clean
 private suspend fun performRemoveSequence() {
-    TouchActions.tap(616, 488, delayTime = 100)
+    TouchActions.tap(616, 488, delayTime = 50)
     repeat(2) {
-        TouchActions.tap(14, 558, delayTime = 100)
+        TouchActions.tap(14, 558)
     }
 }

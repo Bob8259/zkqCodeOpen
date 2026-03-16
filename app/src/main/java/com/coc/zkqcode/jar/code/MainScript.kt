@@ -1,10 +1,13 @@
 package com.coc.zkqcode.jar.code
 
 import com.coc.zkqcode.core.util.basic.ShowMessage
+import com.coc.zkqcode.core.util.basic.delayWithMultiplier
+import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.jar.code.builderbase.attack.builderBaseAttack
 import com.coc.zkqcode.jar.code.builderbase.others.BuilderBaseWorkerAndResearch
 import com.coc.zkqcode.jar.code.builderbase.playBuilderBase
 import com.coc.zkqcode.jar.code.colorschema.MyColors
+import com.coc.zkqcode.jar.code.mainbase.others.mainBaseRemoveObstacles
 import com.coc.zkqcode.jar.code.mainbase.playMainBase
 import com.coc.zkqcode.jar.code.universal.GameVersion
 import com.coc.zkqcode.jar.code.universal.InGamesVars
@@ -36,7 +39,7 @@ suspend fun runMainScript() {
         while (currentCoroutineContext().isActive) {
 
             // Test code
-//            runTestCode()
+            runTestCode()
             if (!writeGameFiles()) {
                 ShowMessage("写入文件失败")
                 break
@@ -85,10 +88,11 @@ private suspend fun findAndActivateAccount(searchOrder: Iterable<Int>): Int? {
 private suspend fun runTestCode() {
     while (true) {
         enterMainScreen()
-        builderBaseAttack()
+        delay(1000)
+        mainBaseRemoveObstacles()
         delay(1000)
 //        upgradeAllExistingBuildings(listOf("野蛮人之王"), BaseType.Main)
-//        delayWithMultiplier(10000000)
+        delayWithMultiplier(10000000)
     }
 }
 
