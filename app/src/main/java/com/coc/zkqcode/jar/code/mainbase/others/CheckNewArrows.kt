@@ -31,7 +31,7 @@ suspend fun checkNewBuildingArrows(): Boolean {
 
     // Check if arrow check was done today
     if (lastCheckTime != null && lastCheckTime == currentDay) {
-        ShowMessage("今天已检查新建筑箭头，暂不检查")
+        ShowMessage("账号${InGamesVars.currentAccountNumber}，今天已检查新建筑箭头，暂不检查")
         return true
     }
 

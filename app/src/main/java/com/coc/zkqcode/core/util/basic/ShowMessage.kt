@@ -4,7 +4,6 @@ import android.content.Context
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.ui.floatingwindows.MessageBoxHelper.showFloatingMessage
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
-import com.coc.zkqcode.jar.code.universal.InGamesVars
 import timber.log.Timber
 import java.lang.ref.WeakReference
 
@@ -26,14 +25,12 @@ object ShowMessage {
         if (text == lastMessage && (now - lastShowTime) < 500) {
             return
         }
-        // Prepend account number prefix if available
-        val displayText = "账号${InGamesVars.currentAccountNumber}" + text
-        lastMessage = displayText
-        lastShowTime = now
 
+        lastMessage = text
+        lastShowTime = now
         contextRef?.get()?.let { context ->
-            showFloatingMessage(context = context, text = displayText)
-            Timber.tag("zkq_debug").v("Verbose: $displayText")
+            showFloatingMessage(context = context, text = text)
+            Timber.tag("zkq_debug").v("Verbose: $text")
         } ?: logAndRestart("ShowMessage: Context not initialized or released!")
     }
 

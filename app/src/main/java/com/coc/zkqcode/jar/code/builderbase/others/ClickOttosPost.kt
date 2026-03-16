@@ -23,10 +23,10 @@ suspend fun clickOttosOutPost(): Boolean {
     val currentDay = Calendar.getInstance().get(Calendar.DAY_OF_YEAR)
 
     if (lastClickDay != null && lastClickDay == currentDay) {
-        ShowMessage("今日已检测奥仔哨站，暂不点击")
+        ShowMessage("账号${InGamesVars.currentAccountNumber}，今日已检测奥仔哨站，暂不点击")
         return true
     }
-    ShowMessage("准备检测奥仔哨站")
+    ShowMessage("账号${InGamesVars.currentAccountNumber}，准备检测奥仔哨站")
     val worker = WorkerAndResearch.detectWorkerNumber(BaseType.Builder)
     if (worker.total < 2) {
         writeMemory(storageKey, currentDay.toString())

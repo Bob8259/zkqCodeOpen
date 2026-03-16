@@ -2,6 +2,7 @@ package com.coc.zkqcode.jar.code.builderbase.research
 
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.touchactions.TouchActions
+import com.coc.zkqcode.jar.code.universal.InGamesVars
 import com.coc.zkqcode.jar.code.colorschema.ColorSchema
 import com.coc.zkqcode.jar.code.universal.buildings.BaseType
 import com.coc.zkqcode.jar.code.universal.buildings.WorkerAndResearch
@@ -48,13 +49,13 @@ suspend fun builderBaseCheckAllResearch() {
                 val resX1 = x1 - 100
                 val insufficient = findMultiColors(schema = ColorSchema.rescope(MyColors.BuilderResearchInsufficientResources, resX1, y1, x1, y2))
                 if (insufficient == null) {
-                    ShowMessage("开始研究 ${troop.displayName}")
+                    ShowMessage("账号${InGamesVars.currentAccountNumber}，开始研究 ${troop.displayName}")
                     TouchActions.tap(elixirIcon.x, elixirIcon.y, delayTime = 500)
                     TouchActions.tap(955, 610, delayTime = 200)
                     clickRightBottom(2)
                     return
                 } else {
-                    ShowMessage("${troop.displayName} 资源不足")
+                    ShowMessage("账号${InGamesVars.currentAccountNumber}，${troop.displayName} 资源不足")
                 }
             }
         }
