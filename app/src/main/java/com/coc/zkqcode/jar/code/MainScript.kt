@@ -34,23 +34,25 @@ suspend fun runMainScript() {
     while (currentCoroutineContext().isActive) {
         // Test code
 //        runTestCode()
-        if (!writeGameFiles()) {
-            delayWithMultiplier(2000)
-            break
+        // Use labeled block to skip remaining steps on failure
+        run stepBlock@{
+            if (!writeGameFiles()) {
+                delayWithMultiplier(2000)
+                return@stepBlock
+            }
+            if (!enterMainScreen(true)) {
+                ShowMessage("进入游戏失败")
+                return@stepBlock
+            }
+            if (!playBuilderBase()) {
+                ShowMessage("夜世界对战完成，准备进入主世界")
+                return@stepBlock
+            }
+            if (!playMainBase()) {
+                ShowMessage("主世界对战完成，准备切换账号")
+                return@stepBlock
+            }
         }
-        if (!enterMainScreen(true)) {
-            ShowMessage("进入游戏失败")
-            break // Break inner loop and recheck account status
-        }
-        if (!playBuilderBase()) {
-            ShowMessage("夜世界对战完成，准备进入主世界")
-            break // Break inner loop and recheck account status
-        }
-        if (!playMainBase()) {
-            ShowMessage("主世界对战完成，准备切换账号")
-            break // Break inner loop and recheck account status
-        }
-
         // Circularly search for the next enabled account, wrapping back to currentAccountNumber (inclusive)
         val searchOrder = ((InGamesVars.currentAccountNumber + 1)..accountTotal) + (1..InGamesVars.currentAccountNumber)
         val nextAccount = findAndActivateAccount(searchOrder) ?: return
