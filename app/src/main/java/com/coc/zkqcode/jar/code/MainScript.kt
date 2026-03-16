@@ -16,6 +16,7 @@ import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.recognizer.recognizeResources
 import com.coc.zkqcode.jar.code.universal.smalltools.StorageKeys
 import com.coc.zkqcode.jar.code.universal.smalltools.getConfigOrStop
+import com.coc.zkqcode.jar.code.universal.smalltools.getConfigRuntime
 import com.coc.zkqcode.jar.code.universal.smalltools.readMemory
 import com.coc.zkqcode.jar.code.universal.smalltools.writeGameFiles
 import com.coc.zkqcode.jar.ui.schema.Schema
@@ -41,7 +42,7 @@ suspend fun runMainScript() {
             // Test code
 //            runTestCode()
             if (!writeGameFiles()) {
-                ShowMessage("写入文件失败")
+                delayWithMultiplier(2000)
                 break
             }
             if (!enterMainScreen(true)) {
@@ -87,9 +88,11 @@ private suspend fun findAndActivateAccount(searchOrder: Iterable<Int>): Int? {
 
 private suspend fun runTestCode() {
     while (true) {
-        enterMainScreen()
+//        enterMainScreen()
         delay(1000)
-        ShowMessage(BuilderBaseWorkerAndResearch.detectWorkerNumber().toString())
+        val startMethod = getConfigOrStop("${Schema.ACCOUNT_SETTINGS.START_METHOD.key}${InGamesVars.currentAccountNumber}")
+        ShowMessage(startMethod)
+//        ShowMessage(BuilderBaseWorkerAndResearch.detectWorkerNumber().toString())
         delay(2000)
     }
 }

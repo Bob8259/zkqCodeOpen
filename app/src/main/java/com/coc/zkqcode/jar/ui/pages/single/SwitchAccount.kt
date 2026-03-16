@@ -44,6 +44,7 @@ import kotlinx.coroutines.launch
 import androidx.core.content.edit
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
+import com.coc.zkqcode.jar.code.universal.smalltools.killGame
 import kotlinx.coroutines.withContext
 
 @Composable
@@ -175,6 +176,7 @@ fun SwitchAccount(onClose: () -> Unit) {
                                 GlobalVars.updateWindowPosition = true
                                 val accNum = accountNumber.ifEmpty { "1" }
                                 ShowMessage("正在切换账号$accNum")
+                                killGame()
                                 // 1. Get Game Version
                                 val versionKey = "${ACCOUNT_SETTINGS.GAME_VERSION.key}$accNum"
                                 val versionStr = GlobalVars.configStates[versionKey]?.value
