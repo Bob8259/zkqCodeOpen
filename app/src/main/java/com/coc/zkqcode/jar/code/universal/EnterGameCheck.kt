@@ -47,7 +47,7 @@ suspend fun enterMainScreen(isDoubleCheck: Boolean = false): Boolean {
                 }
             }
             if (!checkReconnections()) return false
-            ShowMessage("账号${InGamesVars.currentAccountNumber}，倒计时${((timeoutMillis - System.currentTimeMillis() + startTime) / 1000).toInt()}秒")
+            ShowMessage("倒计时${((timeoutMillis - System.currentTimeMillis() + startTime) / 1000).toInt()}秒")
             closeAdvertisements()
 
             // Click right bottom roughly every 5 seconds

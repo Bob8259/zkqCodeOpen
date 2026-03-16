@@ -1,7 +1,5 @@
 package com.coc.zkqcode.jar.code.universal.recognizer
 
-import com.coc.zkqcode.core.util.fileactions.LogHelper.showDebugInfo
-
 /**
  * Data class representing the game's core resources.
  */
@@ -32,8 +30,8 @@ suspend fun recognizeResources(isOpponent: Boolean = false): Resources {
     } else {
         listOf(990, 20, 1270, 175)
     }
-    val threshold = if (isOpponent) 180 else 240
-    val results = TextRecognizer.recognize(startX, startY, endX, endY, useChinese = false, applyPreprocess = true, threshold = threshold)
+    val preProcess = !isOpponent
+    val results = TextRecognizer.recognize(startX, startY, endX, endY, useChinese = false, applyPreprocess = preProcess, threshold = 240)
 
     // Sort by the top coordinate of the bounding box
     val sortedResults = results.sortedBy { it.position?.top ?: Int.MAX_VALUE }

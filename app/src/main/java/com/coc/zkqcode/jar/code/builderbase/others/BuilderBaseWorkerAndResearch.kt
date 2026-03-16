@@ -27,10 +27,10 @@ object BuilderBaseWorkerAndResearch {
             // Define the crop region for the worker number text
             val startX = worker.x - 50
             val startY = 0
-            val endX = worker.x + 500
+            val endX = worker.x + 200
             val endY = 70
 
-            val results = TextRecognizer.recognize(startX, startY, endX, endY, useChinese = false, applyPreprocess = true, threshold = 200)
+            val results = TextRecognizer.recognize(startX, startY, endX, endY, useChinese = false, applyPreprocess = true, threshold = 230)
             val combinedText = results.joinToString("") { it.text }
             return parseWorkerInfo(combinedText)
         }
@@ -71,12 +71,12 @@ object BuilderBaseWorkerAndResearch {
         val research = findMultiColors(schema = MyColors.ResearchIcon)
         if (research != null) {
             // Define the crop region for the worker number text
-            val startX = research.x - 100
+            val startX = research.x - 50
             val startY = 0
-            val endX = research.x + 150
+            val endX = research.x + 200
             val endY = 70
 
-            val results = TextRecognizer.recognize(startX, startY, endX, endY, useChinese = false, applyPreprocess = true, threshold = 200)
+            val results = TextRecognizer.recognize(startX, startY, endX, endY, useChinese = false, applyPreprocess = true, threshold = 230)
             val combinedText = results.joinToString("") { it.text }
             val researcherInfo = parseWorkerInfo(combinedText)
             ShowMessage("夜世界研究数量：${researcherInfo.available}/${researcherInfo.total}")
