@@ -6,7 +6,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
@@ -105,6 +104,12 @@ fun ControlWindow(
             BitmapFactory.decodeStream(it).asImageBitmap()
         }
     }
+    // Narrower icon (30% width) used in HIDDEN state to reduce touch area
+    val mainIconHidden = remember {
+        context.assets.open("main_icon_hidden.png").use {
+            BitmapFactory.decodeStream(it).asImageBitmap()
+        }
+    }
     val playIcon = remember {
         context.assets.open("play.png").use {
             BitmapFactory.decodeStream(it).asImageBitmap()
@@ -149,14 +154,13 @@ fun ControlWindow(
         horizontalArrangement = Arrangement.End
     ) {
         if (!isAtRightSide) {
-            // Left side: Main icon first
+            // Left side: Main icon first, use narrower hidden icon when HIDDEN
             Image(
-                bitmap = mainIcon,
+                bitmap = if (controlState == ControlState.HIDDEN) mainIconHidden else mainIcon,
                 contentDescription = "Main Icon",
                 modifier = Modifier
                     .size(iconSize)
                     .padding(4.dp)
-                    .offset(x = if (controlState == ControlState.HIDDEN) (-30).dp else 0.dp)
                     .then(dragModifier)
                     .clickable {
                         controlState = when (controlState) {
@@ -283,13 +287,13 @@ fun ControlWindow(
                 )
             }
 
+            // Right side: use narrower hidden icon when HIDDEN
             Image(
-                bitmap = mainIcon,
+                bitmap = if (controlState == ControlState.HIDDEN) mainIconHidden else mainIcon,
                 contentDescription = "Main Icon",
                 modifier = Modifier
                     .size(iconSize)
                     .padding(4.dp)
-                    .offset(x = if (controlState == ControlState.HIDDEN) (30).dp else 0.dp)
                     .then(dragModifier)
                     .clickable {
                         controlState = when (controlState) {
@@ -314,17 +318,17 @@ fun ControlWindow(
                 ): IntOffset {
                     // anchorBounds is the position of the ControlWindow icons relative to the floating window
                     // windowSize is the size of the floating window (which is WRAP_CONTENT, so it fits the icons)
-                    
+
                     // We want to center the popup on the SCREEN
                     // Popup is relative to the anchor (the top-left of the Row in ControlWindow)
                     // The anchor's screen position is (currentX, currentY)
-                    
+
                     val screenCenterX = screenWidth / 2
                     val screenCenterY = screenHeight / 2
-                    
+
                     val targetX = screenCenterX - currentX - popupContentSize.width / 2
                     val targetY = screenCenterY - currentY - popupContentSize.height / 2
-                    
+
                     return IntOffset(targetX, targetY)
                 }
             },
