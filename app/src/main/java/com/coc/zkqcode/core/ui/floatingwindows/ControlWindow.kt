@@ -6,8 +6,10 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -153,14 +155,21 @@ fun ControlWindow(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.End
     ) {
+        // Use narrower size in HIDDEN state so the window shrinks and stops blocking touches
+        val hiddenIconModifier = Modifier
+            .width(iconSize * 0.3f)
+            .height(iconSize)
+            .padding(vertical = 4.dp)
+        val normalIconModifier = Modifier
+            .size(iconSize)
+            .padding(4.dp)
+
         if (!isAtRightSide) {
             // Left side: Main icon first, use narrower hidden icon when HIDDEN
             Image(
                 bitmap = if (controlState == ControlState.HIDDEN) mainIconHidden else mainIcon,
                 contentDescription = "Main Icon",
-                modifier = Modifier
-                    .size(iconSize)
-                    .padding(4.dp)
+                modifier = (if (controlState == ControlState.HIDDEN) hiddenIconModifier else normalIconModifier)
                     .then(dragModifier)
                     .clickable {
                         controlState = when (controlState) {
@@ -291,9 +300,7 @@ fun ControlWindow(
             Image(
                 bitmap = if (controlState == ControlState.HIDDEN) mainIconHidden else mainIcon,
                 contentDescription = "Main Icon",
-                modifier = Modifier
-                    .size(iconSize)
-                    .padding(4.dp)
+                modifier = (if (controlState == ControlState.HIDDEN) hiddenIconModifier else normalIconModifier)
                     .then(dragModifier)
                     .clickable {
                         controlState = when (controlState) {
