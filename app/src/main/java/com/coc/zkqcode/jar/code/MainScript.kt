@@ -89,7 +89,7 @@ private suspend fun runTestCode() {
     while (true) {
         enterMainScreen()
         delay(1000)
-        mainBaseRemoveObstacles()
+//        mainBaseRemoveObstacles()
         delay(1000)
 //        upgradeAllExistingBuildings(listOf("野蛮人之王"), BaseType.Main)
         delayWithMultiplier(10000000)
