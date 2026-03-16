@@ -12,9 +12,10 @@ import com.coc.zkqcode.jar.code.universal.recognizer.TextRecognizer
  *
  * Scans the area (480, 100) to (900, 530) for Chinese text (building names).
  *
+ * @param excludeNewBuildings If true, new buildings (新-prefixed) are excluded from the result.
  * @return A list of [DetectedBuilding] objects.
  */
-suspend fun detectBuildingList(): BuildingDetectionResult {
+suspend fun detectBuildingList(excludeNewBuildings: Boolean = false): BuildingDetectionResult {
     val startX = 400
     val startY = 100
     val endX = 900
@@ -91,6 +92,12 @@ suspend fun detectBuildingList(): BuildingDetectionResult {
         }
     }
 
+    // When excludeNewBuildings is true, filter out new buildings and return only existing ones
+    if (excludeNewBuildings) {
+        val existingBuildings = allBuildings.filter { !it.second }.map { it.first }
+        return BuildingDetectionResult(existingBuildings)
+    }
+
     // Filter to get only the buildings marked as "New"
     val newBuildings = allBuildings.filter { it.second }.map { it.first }
 
@@ -107,10 +114,13 @@ suspend fun detectBuildingList(): BuildingDetectionResult {
  * Performs swipes and calls [onDetect] for each detection result.
  * If [onDetect] returns true, the iteration stops immediately.
  */
-suspend fun iterateBuilderBaseBuildingUpgradeList(onDetect: suspend (BuildingDetectionResult) -> Boolean) {
+suspend fun iterateBuilderBaseBuildingUpgradeList(
+    excludeNewBuildings: Boolean = false,
+    onDetect: suspend (BuildingDetectionResult) -> Boolean
+) {
     var previousBuildingNames: List<String>? = null
     loop@ for (i in 1..12) {
-        val result = detectBuildingList()
+        val result = detectBuildingList(excludeNewBuildings)
         if (onDetect(result)) return
 
         val currentBuildingNames = result.buildings.map { it.name }.sorted()
@@ -118,7 +128,7 @@ suspend fun iterateBuilderBaseBuildingUpgradeList(onDetect: suspend (BuildingDet
             repeat(2) {
                 TouchActions.swipe(666, 170, 666, 300, delayTime = 600)
                 delayWithMultiplier(200)
-                val extraResult = detectBuildingList()
+                val extraResult = detectBuildingList(excludeNewBuildings)
                 if (onDetect(extraResult)) return
             }
             break@loop

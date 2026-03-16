@@ -248,6 +248,7 @@ fun cleanBuildingName(raw: String): String {
         "暗黑油檯" to "暗黑重油罐",
         "建设升级" to "建议升级",
         "建议升級" to "建议升级",
+        "时光钟控类" to "时光钟楼",
         ":" to "",
         "：" to ""
     )
