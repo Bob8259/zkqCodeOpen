@@ -24,6 +24,8 @@ interface IMainBaseAttackColors {
     val GiantAtDeploymentBar2: ColorSchema
     val ArcherAtDeploymentBar: ColorSchema
     val ArcherAtDeploymentBar2: ColorSchema
+    val ArcherAtDeploymentBar3: ColorSchema
+    val ArcherAtDeploymentBar4: ColorSchema
     val DragonAtDeploymentBar2: ColorSchema
 
     // Battle and hero colors
@@ -33,7 +35,9 @@ interface IMainBaseAttackColors {
     val MinionPrince: ColorSchema
     val GrandWarden: ColorSchema
     val GrandWarden2: ColorSchema
+    val GrandWarden3: ColorSchema
     val RoyalChampion: ColorSchema
+    val RoyalChampion2: ColorSchema
     val DragonDuke: ColorSchema
     val TroopColorAtDeploymentBar: ColorSchema
     val SpellColorAtDeploymentBar: ColorSchema
@@ -81,7 +85,7 @@ object MainBaseAttackColors : IMainBaseAttackColors {
 
     // Additional barbarian deploy bar color variant
     override val BarbarianAtDeploymentBar2 = ColorSchema.parse(
-        85, 589, 1189, 717, "36B6F1", "8|0|3FCCFB,16|0|48C5F8,18|44|689BF1,37|47|5877C1,0|16|868FDA,8|16|5A89F3,16|16|619DFB,24|16|689DF1,32|16|73B2FB", 0, 0.9, "部署野蛮人"
+        85, 589, 1189, 717, "36B6F1", "8|0|3FCCFB,16|0|48C5F8,18|44|689BF1,37|47|5877C1,0|16|868FDA,8|16|5A89F3,16|16|619DFB,24|16|689DF1,32|16|73B2FB", 0, 0.9, "部署野蛮人2"
     )
     override val GiantAtDeploymentBar = ColorSchema.parse(
         85, 589, 1189, 717, "82B5FC", "13|15|6A9FF3,24|8|77AAF8,24|-12|4A71B3,8|-21|56A1FC,-15|-21|3C91FC,-23|-2|465B92,-12|3|5983D1,-3|12|3E5497,22|31|6CACF8", 0, 0.9, "部署巨人"
@@ -89,7 +93,7 @@ object MainBaseAttackColors : IMainBaseAttackColors {
 
     // Additional giant deploy bar color variant
     override val GiantAtDeploymentBar2 = ColorSchema.parse(
-        85, 589, 1189, 717, "154AA2", "10|0|0944A8,21|0|3454A8,29|40|7AAFF9,42|31|669AF0,0|16|608EE0,10|16|5463A2,21|16|A3C8FD,31|16|6EA0F3,41|16|76ACF6", 0, 0.9, "部署巨人"
+        85, 589, 1189, 717, "154AA2", "10|0|0944A8,21|0|3454A8,29|40|7AAFF9,42|31|669AF0,0|16|608EE0,10|16|5463A2,21|16|A3C8FD,31|16|6EA0F3,41|16|76ACF6", 0, 0.9, "部署巨人2"
     )
     override val ArcherAtDeploymentBar = ColorSchema.parse(
         85, 589, 1189, 717, "662DBC", "5|12|91A8FB,4|24|5368AD,-8|21|6070B9,-22|5|210E4D,-18|-14|7D3BBC,-8|-18|6F30C0,4|-19|672CC1,7|-14|431A8A,6|-6|331270", 0, 0.9, "部署弓箭手"
@@ -97,12 +101,22 @@ object MainBaseAttackColors : IMainBaseAttackColors {
 
     // Additional archer deploy bar color variant
     override val ArcherAtDeploymentBar2 = ColorSchema.parse(
-        85, 589, 1189, 717, "8E43C3", "9|0|6D2DB9,17|0|662BBA,25|0|662DBB,20|37|431D87,24|58|199D7D,9|15|535A84,17|15|481A75,25|15|652BBD,34|15|672BC2", 0, 0.9, "部署弓箭手"
+        85, 589, 1189, 717, "8E43C3", "9|0|6D2DB9,17|0|662BBA,25|0|662DBB,20|37|431D87,24|58|199D7D,9|15|535A84,17|15|481A75,25|15|652BBD,34|15|672BC2", 0, 0.9, "部署弓箭手2"
+    )
+
+    // Third archer deploy bar color variant
+    override val ArcherAtDeploymentBar3 = ColorSchema.parse(
+        85, 589, 1189, 717, "8A40B3", "9|0|7633BA,18|0|6329BD,26|0|652CBD,35|0|692BC3,0|17|3F1A81,9|17|6B71AD,18|17|2B3665,26|17|5D65AF,35|17|566AB7", 0, 0.9, "部署弓箭手3"
+    )
+
+    // Fourth archer deploy bar color variant
+    override val ArcherAtDeploymentBar4 = ColorSchema.parse(
+        85, 589, 1189, 717, "34125E", "9|0|8E44C4,18|0|632CBD,26|0|652CBD,35|0|682CC6,0|17|29105A,9|17|6069A2,18|17|34426E,26|17|717BCB,35|17|7A93E9", 0, 0.9, "部署弓箭手4"
     )
 
     // Dragon deploy bar color variant
     override val DragonAtDeploymentBar2 = ColorSchema.parse(
-        85, 589, 1189, 717, "C75161", "9|0|B86A75,18|0|562D87,27|26|6035E8,30|44|C0505B,0|12|2A0578,9|12|6A243A,18|12|712C4E,27|12|D35868,36|12|AE4857", 0, 0.9, "部署飞龙"
+        85, 589, 1189, 717, "C75161", "9|0|B86A75,18|0|562D87,27|26|6035E8,30|44|C0505B,0|12|2A0578,9|12|6A243A,18|12|712C4E,27|12|D35868,36|12|AE4857", 0, 0.9, "部署飞龙2"
     )
 
     // Battle and hero colors
@@ -124,8 +138,16 @@ object MainBaseAttackColors : IMainBaseAttackColors {
     override val GrandWarden2 = ColorSchema.parse(
         80, 590, 1200, 720, "882673", "11|0|902086,23|0|6D1162,35|0|BC10AC,46|0|C234B7,0|11|881E71,11|11|8F2D88,23|11|9F2494,35|11|C843C0,46|11|CD47C5", 0, 0.9, "大守护者2"
     )
+    // Third grand warden deploy bar color variant
+    override val GrandWarden3 = ColorSchema.parse(
+        80, 590, 1200, 720, "771262", "11|0|9439A1,23|0|651360,35|0|81BAFB,46|0|CB43C0,0|14|942C84,11|14|993E99,23|14|1E030F,35|14|C941C1,46|14|CE45C6", 0, 0.9, "大守护者3"
+    )
     override val RoyalChampion = ColorSchema.parse(
         80, 590, 1200, 720, "467BDC", "7|0|133070,15|0|0F2D62,22|0|23280B,29|0|4B5D71,0|14|3871D3,7|14|112A5B,15|14|386BCB,22|14|3D63C2,29|14|2D3C74", 0, 0.9, "飞盾战神"
+    )
+    // Second royal champion deploy bar color variant
+    override val RoyalChampion2 = ColorSchema.parse(
+        80, 590, 1200, 720, "497DDE", "8|0|628BF1,16|0|2F65C4,24|0|2B65C3,32|0|2B58A9,0|11|366ED0,8|11|123069,16|11|3368C8,24|11|395FBA,32|11|394173", 0, 0.9, "飞盾战神2"
     )
     override val DragonDuke = ColorSchema.parse(
         80, 590, 1200, 720, "000023", "7|0|1A134C,15|0|120E53,23|0|070828,30|0|000021,0|15|58506E,7|15|F2F8FF,15|15|303B7F,23|15|A5A3DB,30|15|E9ECFF", 0, 0.9, "飞龙公爵"

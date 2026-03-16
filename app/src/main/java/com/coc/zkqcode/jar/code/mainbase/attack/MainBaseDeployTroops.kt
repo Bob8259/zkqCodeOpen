@@ -37,7 +37,7 @@ suspend fun mainBaseDeployTroops() {
         deployIfPresent(DRAG_SWEEP_MS, MyColors.DragonAtDeploymentBar, MyColors.DragonAtDeploymentBar2)
         deployIfPresent(DRAG_SWEEP_MS, MyColors.GiantAtDeploymentBar, MyColors.GiantAtDeploymentBar2)
         deployIfPresent(DRAG_SWEEP_SLOW_MS, MyColors.BarbarianAtDeploymentBar, MyColors.BarbarianAtDeploymentBar2)
-        deployIfPresent(DRAG_SWEEP_SLOW_MS, MyColors.ArcherAtDeploymentBar, MyColors.ArcherAtDeploymentBar2)
+        deployIfPresent(DRAG_SWEEP_SLOW_MS, MyColors.ArcherAtDeploymentBar, MyColors.ArcherAtDeploymentBar2, MyColors.ArcherAtDeploymentBar3, MyColors.ArcherAtDeploymentBar4)
         deployHeroes()
         deployOthers()
     }
@@ -65,7 +65,9 @@ private suspend fun deployHeroes() {
         MyColors.MinionPrince,
         MyColors.GrandWarden,
         MyColors.GrandWarden2,
+        MyColors.GrandWarden3,
         MyColors.RoyalChampion,
+        MyColors.RoyalChampion2,
         MyColors.DragonDuke
     )
     for (hero in heroes) {

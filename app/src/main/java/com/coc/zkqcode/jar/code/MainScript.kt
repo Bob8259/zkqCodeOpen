@@ -39,7 +39,7 @@ suspend fun runMainScript() {
         while (currentCoroutineContext().isActive) {
 
             // Test code
-            runTestCode()
+//            runTestCode()
             if (!writeGameFiles()) {
                 ShowMessage("写入文件失败")
                 break
@@ -89,10 +89,8 @@ private suspend fun runTestCode() {
     while (true) {
         enterMainScreen()
         delay(1000)
-//        mainBaseRemoveObstacles()
-        delay(1000)
-//        upgradeAllExistingBuildings(listOf("野蛮人之王"), BaseType.Main)
-        delayWithMultiplier(10000000)
+        ShowMessage(BuilderBaseWorkerAndResearch.detectWorkerNumber().toString())
+        delay(2000)
     }
 }
 
