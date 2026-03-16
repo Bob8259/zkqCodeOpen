@@ -47,7 +47,7 @@ suspend fun enterMainScreen(isDoubleCheck: Boolean = false): Boolean {
                 }
             }
             if (!checkReconnections()) return false
-            ShowMessage("账号${InGamesVars.currentAccountNumber}，倒计时${((timeoutMillis - System.currentTimeMillis() + startTime) / 1000).toInt()}秒\n请手动给主世界和夜世界切换默认场景")
+            ShowMessage("账号${InGamesVars.currentAccountNumber}，倒计时${((timeoutMillis - System.currentTimeMillis() + startTime) / 1000).toInt()}秒")
             closeAdvertisements()
 
             // Click right bottom roughly every 5 seconds
