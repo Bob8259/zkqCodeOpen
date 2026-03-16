@@ -10,7 +10,7 @@ import com.coc.zkqcode.jar.code.universal.smalltools.getBooleanConfigRuntime
 import com.coc.zkqcode.jar.code.builderbase.resources.collectBuilderBaseResources
 import com.coc.zkqcode.jar.code.builderbase.others.builderBaseRemoveObstacles
 import com.coc.zkqcode.jar.code.builderbase.others.zoomSmallBuilderBase
-import com.coc.zkqcode.jar.code.universal.buildings.upgrade.BaseType
+import com.coc.zkqcode.jar.code.universal.buildings.BaseType
 import com.coc.zkqcode.jar.code.universal.buildings.upgrade.upgradeBuildings
 import com.coc.zkqcode.jar.code.universal.smalltools.enterBuilderBase
 import com.coc.zkqcode.jar.ui.schema.Schema

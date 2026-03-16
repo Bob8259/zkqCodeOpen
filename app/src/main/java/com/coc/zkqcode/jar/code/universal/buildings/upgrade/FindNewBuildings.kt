@@ -3,6 +3,7 @@ package com.coc.zkqcode.jar.code.universal.buildings.upgrade
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.MyColors
+import com.coc.zkqcode.jar.code.universal.buildings.BaseType
 import com.coc.zkqcode.jar.code.universal.buildings.iterateBuilderBaseBuildingUpgradeList
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 

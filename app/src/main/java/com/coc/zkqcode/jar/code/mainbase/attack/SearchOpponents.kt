@@ -10,6 +10,7 @@ import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.recognizer.recognizeResources
 import com.coc.zkqcode.jar.code.universal.smalltools.StorageKeys
+import com.coc.zkqcode.jar.code.universal.smalltools.checkReconnections
 import com.coc.zkqcode.jar.code.universal.smalltools.getBooleanConfigRuntime
 import com.coc.zkqcode.jar.code.universal.smalltools.getConfigRuntime
 import com.coc.zkqcode.jar.code.universal.smalltools.readMemory
@@ -107,7 +108,7 @@ suspend fun searchOpponentsAndDeployTroops() {
         if (insufficientGold != null) {
             break
         }
-        delayWithMultiplier(100)
+        checkReconnections()
         val nextOpponent = findMultiColors(schema = MyColors.NextOpponent)
         if (nextOpponent != null) {
             searchTimes++

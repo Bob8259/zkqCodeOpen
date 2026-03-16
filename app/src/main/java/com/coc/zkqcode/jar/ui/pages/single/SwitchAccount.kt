@@ -32,20 +32,19 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import com.coc.zkqcode.jar.ui.components.CustomButton
-import com.coc.zkqcode.core.data.database.GlobalVars
-import com.coc.zkqcode.statehelper.AppMode
-import com.coc.zkqcode.statehelper.AppStateManager
-import com.coc.zkqcode.jar.ui.schema.Schema.ACCOUNT_SETTINGS
-import com.coc.zkqcode.jar.code.universal.smalltools.writeGameFilesCore
-import com.topjohnwu.superuser.Shell
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import androidx.core.content.edit
+import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.util.basic.RunShell
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
-import com.coc.zkqcode.jar.code.universal.smalltools.killGame
+import com.coc.zkqcode.jar.code.universal.smalltools.writeGameFilesCore
+import com.coc.zkqcode.jar.ui.components.CustomButton
+import com.coc.zkqcode.jar.ui.schema.Schema.ACCOUNT_SETTINGS
+import com.coc.zkqcode.statehelper.AppMode
+import com.coc.zkqcode.statehelper.AppStateManager
+import com.topjohnwu.superuser.Shell
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 @Composable

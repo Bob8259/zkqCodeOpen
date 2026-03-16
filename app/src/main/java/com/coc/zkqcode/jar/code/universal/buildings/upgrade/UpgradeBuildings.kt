@@ -7,32 +7,26 @@ import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
 import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.core.yolo.YoloDetector
-import com.coc.zkqcode.jar.code.builderbase.others.BuilderBaseWorkerAndResearch
 import com.coc.zkqcode.jar.code.builderbase.others.zoomSmallBuilderBase
 import com.coc.zkqcode.jar.code.builderbase.upgrade.builderBaseFindBuildButton
 import com.coc.zkqcode.jar.code.colorschema.MyColors
-import com.coc.zkqcode.jar.code.mainbase.others.MainBaseWorkerAndResearch
 import com.coc.zkqcode.jar.code.mainbase.others.zoomSmallMainBase
 import com.coc.zkqcode.jar.code.mainbase.upgrade.mainBaseFindBuildButton
+import com.coc.zkqcode.jar.code.universal.buildings.BaseType
+import com.coc.zkqcode.jar.code.universal.buildings.WorkerAndResearch
 import com.coc.zkqcode.jar.code.universal.buildings.ALL_BUILDINGS
 import com.coc.zkqcode.jar.code.universal.buildings.iterateBuilderBaseBuildingUpgradeList
 import com.coc.zkqcode.jar.code.universal.clickRightBottom
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
-import com.coc.zkqcode.jar.code.universal.smalltools.enterMainBase
 import com.coc.zkqcode.jar.code.universal.smalltools.getBooleanConfigRuntime
 import com.coc.zkqcode.jar.code.universal.smalltools.getConfigRuntime
 import com.coc.zkqcode.jar.ui.schema.Schema
-import kotlinx.coroutines.delay
 import kotlin.math.sqrt
 
 
 private val upgradableBuildingsMap = ALL_BUILDINGS.associateWith { false }.toMutableMap()
 private var zoomOrNot: Boolean = true
-
-enum class BaseType {
-    Builder, Main
-}
 
 enum class BuildButtonType {
     Tick, Cross
@@ -107,11 +101,7 @@ suspend fun buildAllNewBuildings(currentBase: BaseType): Boolean {
 suspend fun checkContinueBuild(currentBase: BaseType): Boolean {
     // 1. Determine base-specific data sources and config keys
     val isBuilder = currentBase == BaseType.Builder
-    val workerNumber = if (isBuilder) {
-        BuilderBaseWorkerAndResearch.detectWorkerNumber()
-    } else {
-        MainBaseWorkerAndResearch.detectWorkerNumber()
-    }
+    val workerNumber = WorkerAndResearch.detectWorkerNumber(currentBase)
     val configKey = if (isBuilder) {
         Schema.BUILDER_BASE_SETTINGS.BUILDER_BASE_SAVE_WORKER.key
     } else {
