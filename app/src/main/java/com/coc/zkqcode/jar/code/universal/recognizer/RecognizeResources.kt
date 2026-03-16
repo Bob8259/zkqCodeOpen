@@ -30,10 +30,10 @@ suspend fun recognizeResources(isOpponent: Boolean = false): Resources {
     val (startX, startY, endX, endY) = if (isOpponent) {
         listOf(50, 98, 293, 209)
     } else {
-        listOf(1050, 26, 1245, 201)
+        listOf(990, 20, 1270, 175)
     }
-
-    val results = TextRecognizer.recognize(startX, startY, endX, endY, useChinese = false, applyPreprocess = true, threshold = 180)
+    val threshold = if (isOpponent) 180 else 240
+    val results = TextRecognizer.recognize(startX, startY, endX, endY, useChinese = false, applyPreprocess = true, threshold = threshold, saveImage = true)
 
     // Sort by the top coordinate of the bounding box
     val sortedResults = results.sortedBy { it.position?.top ?: Int.MAX_VALUE }

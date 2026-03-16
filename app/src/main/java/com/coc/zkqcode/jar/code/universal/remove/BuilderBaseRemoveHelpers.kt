@@ -32,10 +32,6 @@ suspend fun enterEditMode() {
         TouchActions.tap(it.x, it.y)
     }
 
-    // 2. Locate and click the confirmation (Yes) button
-    findMultiColorsUntil(schemas = listOf(MyColors.MiddleGreenYes), duration = 1000)?.let {
-        TouchActions.tap(it.x, it.y)
-    }
     removeAllBuildings()
 }
 
@@ -67,7 +63,7 @@ suspend fun removeObstacles() {
         val centerX = box.centerX().toInt()
         val centerY = box.centerY().toInt()
         ShowMessage("x: $centerX, y: $centerY")
-        TouchActions.tap(centerX, centerY, delayTime = 300)
+        TouchActions.tap(centerX, centerY, delayTime = 120)
         // Tap confirmation/action button
         TouchActions.tap(616, 488, delayTime = 100)
         repeat(2) {
