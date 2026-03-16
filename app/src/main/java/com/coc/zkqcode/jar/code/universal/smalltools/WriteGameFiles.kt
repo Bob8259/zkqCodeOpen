@@ -39,7 +39,7 @@ fun getGameFilePath(): String {
  */
 @SuppressLint("SdCardPath")
 suspend fun writeGameFilesCore(
-    packageName: String, savePathName: String, folderName: String, subDirs: List<String>
+    packageName: String, savePathName: String, folderName: String, subDirs: List<String>, killGame: Boolean = true
 ): Boolean {
     val sdPath = Environment.getExternalStorageDirectory().path
     val sourceDir = "$sdPath/zkqFiles/$folderName/$savePathName"
@@ -50,7 +50,7 @@ suspend fun writeGameFilesCore(
         return false
     }
     ShowMessage("写入存档文件中，路径：$sourceDir")
-    killGame()
+    if (killGame) killGame()
     subDirs.forEach { subDir ->
         val destPath = "/data/data/$packageName/$subDir"
         Shell.cmd("rm -rf \"$destPath\"/*").exec()

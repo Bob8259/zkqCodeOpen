@@ -211,7 +211,8 @@ fun SwitchAccount(onClose: () -> Unit) {
                                         packageName = "com.tencent.tmgp.supercell.clashofclans",
                                         savePathName = savePathName,
                                         folderName = "zkqCNGameSave",
-                                        subDirs = listOf("shared_prefs", "databases")
+                                        subDirs = listOf("shared_prefs", "databases"),
+                                        killGame = false
                                     )
                                     // Launch the game after write completes
                                     RunShell.runNoOutput("monkey -p com.tencent.tmgp.supercell.clashofclans -c android.intent.category.LAUNCHER 1", false)
@@ -241,7 +242,8 @@ fun SwitchAccount(onClose: () -> Unit) {
                                         packageName = "com.supercell.clashofclans",
                                         savePathName = savePathName,
                                         folderName = "zkqGlobalGameSave",
-                                        subDirs = listOf("shared_prefs")
+                                        subDirs = listOf("shared_prefs"),
+                                        killGame = false
                                     )
                                     // Launch the game after write completes
                                     RunShell.runNoOutput("monkey -p com.supercell.clashofclans -c android.intent.category.LAUNCHER 1", false)
