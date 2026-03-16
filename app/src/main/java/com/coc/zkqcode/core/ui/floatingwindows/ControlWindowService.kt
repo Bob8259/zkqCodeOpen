@@ -160,7 +160,7 @@ class ControlWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner 
     ) {
         var interactionCount by remember { mutableIntStateOf(0) }
         var componentSize by remember { mutableStateOf(Size.Zero) }
-        var isAtRightSide by remember { mutableStateOf(false) }
+        var isAtRightSide by remember { mutableStateOf(true) }
 
         val windowInfo = LocalWindowInfo.current
         val screenWidth = windowInfo.containerSize.width
