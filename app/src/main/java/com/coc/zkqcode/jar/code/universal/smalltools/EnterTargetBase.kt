@@ -23,7 +23,7 @@ suspend fun enterMainBase(): Boolean {
             return true
         }
         val remaining = (30_000L - (System.currentTimeMillis() - loopStart)) / 1000.0
-        ShowMessage("尝试进入主世界中，剩余${"%.1f".format(remaining)}秒后退出")
+        ShowMessage("尝试进入主世界中，剩余${"%.1f".format(remaining)}秒后退出\n请手动给主世界和夜世界切换默认场景")
         zoomSmallBuilderBase()
         TouchActions.swipe(750, 150, 750, 550)
         // Tap all grid points in the area to trigger the main base portal
@@ -50,7 +50,7 @@ suspend fun enterBuilderBase(isCheck: Boolean): Boolean {
             ShowMessage("已进入夜世界")
             return true
         }
-        ShowMessage("尝试进入夜世界中，剩余${"%.1f".format(remaining)}秒后退出")
+        ShowMessage("尝试进入夜世界中，剩余${"%.1f".format(remaining)}秒后退出\n请手动给主世界和夜世界切换默认场景")
         // Ensure consistent view before attempting interaction
         zoomSmallMainBase()
 
