@@ -1,6 +1,7 @@
 package com.coc.zkqcode.jar.code.universal.buildings.upgrade
 
 import android.graphics.Point
+import com.coc.zkqcode.jar.code.universal.buildings.BaseType
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.bugreporter.BugReporter

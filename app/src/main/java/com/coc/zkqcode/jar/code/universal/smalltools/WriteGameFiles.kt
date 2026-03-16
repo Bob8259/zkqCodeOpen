@@ -7,7 +7,6 @@ import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
 import com.coc.zkqcode.jar.code.universal.GameVersion
 import com.coc.zkqcode.jar.code.universal.InGamesVars
-import com.coc.zkqcode.jar.ui.schema.Schema
 import com.coc.zkqcode.jar.ui.schema.Schema.ACCOUNT_SETTINGS
 import com.topjohnwu.superuser.Shell
 

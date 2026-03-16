@@ -3,20 +3,21 @@ package com.coc.zkqcode.jar.code.builderbase.others
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.core.util.touchactions.TouchActions.swipe
+import com.coc.zkqcode.jar.code.universal.buildings.BaseType
 import com.coc.zkqcode.jar.code.universal.InGamesVars
+import com.coc.zkqcode.jar.code.universal.buildings.WorkerAndResearch
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.recognizer.recognizeResources
 import com.coc.zkqcode.jar.code.universal.remove.enterEditMode
 import com.coc.zkqcode.jar.code.universal.remove.removeAllBuildings
 import com.coc.zkqcode.jar.code.universal.remove.removeObstacles
 import com.coc.zkqcode.jar.code.universal.smalltools.StorageKeys
-import com.coc.zkqcode.jar.code.universal.smalltools.enterMainBase
 import com.coc.zkqcode.jar.code.universal.smalltools.readMemory
 import com.coc.zkqcode.jar.code.universal.smalltools.writeMemory
 import java.util.Calendar
 
 suspend fun builderBaseRemoveObstacles(): Boolean {
-    val worker = BuilderBaseWorkerAndResearch.detectWorkerNumber()
+    val worker = WorkerAndResearch.detectWorkerNumber(BaseType.Builder)
     val resources = recognizeResources()
     val storageKey = StorageKeys.withAccountNumber(StorageKeys.BUILDER_BASE_REMOVE_OBSTACLES, InGamesVars.currentAccountNumber)
     val lastCleaningTime = readMemory(storageKey).toIntOrNull()

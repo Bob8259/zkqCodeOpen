@@ -2,8 +2,9 @@ package com.coc.zkqcode.jar.code.builderbase.research
 
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.touchactions.TouchActions
-import com.coc.zkqcode.jar.code.builderbase.others.BuilderBaseWorkerAndResearch
 import com.coc.zkqcode.jar.code.colorschema.ColorSchema
+import com.coc.zkqcode.jar.code.universal.buildings.BaseType
+import com.coc.zkqcode.jar.code.universal.buildings.WorkerAndResearch
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.clickRightBottom
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
@@ -15,7 +16,7 @@ import com.coc.zkqcode.jar.ui.schema.details.BuilderBaseTroops
 
 
 suspend fun builderBaseResearch(): Boolean {
-    if (getBooleanConfigRuntime(Schema.BUILDER_BASE_SETTINGS.BUILDER_BASE_RESEARCH.key) && BuilderBaseWorkerAndResearch.detectResearch()) {
+    if (getBooleanConfigRuntime(Schema.BUILDER_BASE_SETTINGS.BUILDER_BASE_RESEARCH.key) && WorkerAndResearch.detectResearch(BaseType.Builder)) {
         val research = findMultiColors(schema = MyColors.ResearchIcon)
         if (research != null) {
             TouchActions.tap(research.x, research.y, delayTime = 600)

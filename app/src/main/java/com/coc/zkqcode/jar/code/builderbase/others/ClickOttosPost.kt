@@ -6,7 +6,9 @@ import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.core.util.touchactions.TouchActions.pinchIn
 import com.coc.zkqcode.core.util.touchactions.TouchActions.swipe
 import com.coc.zkqcode.jar.code.colorschema.MyColors
+import com.coc.zkqcode.jar.code.universal.buildings.BaseType
 import com.coc.zkqcode.jar.code.universal.InGamesVars
+import com.coc.zkqcode.jar.code.universal.buildings.WorkerAndResearch
 import com.coc.zkqcode.jar.code.universal.clickRightBottom
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
@@ -25,7 +27,7 @@ suspend fun clickOttosOutPost(): Boolean {
         return true
     }
     ShowMessage("准备检测奥仔哨站")
-    val worker = BuilderBaseWorkerAndResearch.detectWorkerNumber()
+    val worker = WorkerAndResearch.detectWorkerNumber(BaseType.Builder)
     if (worker.total < 2) {
         writeMemory(storageKey, currentDay.toString())
         return true

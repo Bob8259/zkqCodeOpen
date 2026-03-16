@@ -2,22 +2,15 @@ package com.coc.zkqcode.jar.code
 
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
-import com.coc.zkqcode.core.util.touchactions.TouchActions
-import com.coc.zkqcode.jar.code.builderbase.attack.builderBaseAttack
-import com.coc.zkqcode.jar.code.builderbase.others.BuilderBaseWorkerAndResearch
 import com.coc.zkqcode.jar.code.builderbase.playBuilderBase
-import com.coc.zkqcode.jar.code.colorschema.MyColors
-import com.coc.zkqcode.jar.code.mainbase.others.MainBaseWorkerAndResearch
-import com.coc.zkqcode.jar.code.mainbase.others.mainBaseRemoveObstacles
+import com.coc.zkqcode.jar.code.universal.buildings.BaseType
+import com.coc.zkqcode.jar.code.universal.buildings.WorkerAndResearch
 import com.coc.zkqcode.jar.code.mainbase.playMainBase
 import com.coc.zkqcode.jar.code.universal.GameVersion
 import com.coc.zkqcode.jar.code.universal.InGamesVars
-import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
-import com.coc.zkqcode.jar.code.universal.recognizer.recognizeResources
 import com.coc.zkqcode.jar.code.universal.smalltools.StorageKeys
 import com.coc.zkqcode.jar.code.universal.smalltools.getConfigOrStop
-import com.coc.zkqcode.jar.code.universal.smalltools.getConfigRuntime
 import com.coc.zkqcode.jar.code.universal.smalltools.readMemory
 import com.coc.zkqcode.jar.code.universal.smalltools.writeGameFiles
 import com.coc.zkqcode.jar.ui.schema.Schema
@@ -90,7 +83,7 @@ private suspend fun runTestCode() {
     while (true) {
 //        enterMainScreen()
         delay(1000)
-        ShowMessage(MainBaseWorkerAndResearch.detectWorkerNumber().toString())
+        ShowMessage(WorkerAndResearch.detectWorkerNumber(BaseType.Main).toString())
         delay(2000)
     }
 }

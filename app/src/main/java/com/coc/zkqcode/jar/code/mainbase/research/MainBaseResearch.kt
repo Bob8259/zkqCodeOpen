@@ -1,6 +1,5 @@
 package com.coc.zkqcode.jar.code.mainbase.research
 
-import android.text.method.Touch
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
@@ -9,7 +8,8 @@ import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.ColorSchema
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.mainbase.MainBaseResearchColors
-import com.coc.zkqcode.jar.code.mainbase.others.MainBaseWorkerAndResearch
+import com.coc.zkqcode.jar.code.universal.buildings.BaseType
+import com.coc.zkqcode.jar.code.universal.buildings.WorkerAndResearch
 import com.coc.zkqcode.jar.code.universal.clickRightBottom
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
@@ -47,7 +47,7 @@ val ResearchLevelColors: List<Pair<Int, List<ColorSchema>>> = listOf(
 )
 
 suspend fun mainBaseResearch(): Boolean {
-    if (getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.RESEARCH_SETTING.key) && MainBaseWorkerAndResearch.detectResearch()) {
+    if (getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.RESEARCH_SETTING.key) && WorkerAndResearch.detectResearch(BaseType.Main)) {
         val researchIcon = findMultiColorsUntil(schemas = listOf(MyColors.ResearchIcon), duration = 1000)
         if (researchIcon != null) {
             TouchActions.tap(researchIcon.x + 20, researchIcon.y, delayTime = 500)
