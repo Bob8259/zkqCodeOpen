@@ -6,7 +6,7 @@ import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 
     suspend fun builderBaseTutorial(): Boolean {
-        // 1. Upgrade Night TH
+        // 1. Upgrade Builder Base TH
         listOf(
             MyColors.UpgradeBuilderBaseTH,
             MyColors.UpgradeBarbarian,
@@ -24,20 +24,20 @@ import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
         findMultiColorsUntil(schemas = listOf(MyColors.BuilderBaseWorker, MyColors.BuilderBaseWorker2), duration = 200)?.let {
             TouchActions.tap(it.x, it.y, delayTime = 500)
         }
-        // 3. Tutorial Night Barb
+        // 3. Tutorial Builder Base Barb
         findMultiColors(schema = MyColors.TutorialBuilderBaseBarb)?.let {
             TouchActions.tap(it.x, it.y, delayTime = 500)
             TouchActions.tap(952, 618, delayTime = 500)
             TouchActions.tap(979, 196, delayTime = 500)//use gem to speed up
         }
 
-        // 4. Night Attack
+        // 4. Builder Base Attack
         findMultiColors(schema = MyColors.BuilderBaseAttack)?.let {
             TouchActions.tap(it.x, it.y, delayTime = 500)
             TouchActions.tap(938, 465, delayTime = 500)
         }
 
-        // 5. Night Deploy Barbs - Multiple taps at the same location
+        // 5. Builder Base Deploy Barbs - Multiple taps at the same location
         if (findMultiColors(schema = MyColors.BuilderBaseDeployBarbs) != null) {
             repeat(3) {
                 TouchActions.tap(436, 464, delayTime = 500)

@@ -113,7 +113,7 @@ suspend fun checkContinueBuild(currentBase: BaseType): Boolean {
         MainBaseWorkerAndResearch.detectWorkerNumber()
     }
     val configKey = if (isBuilder) {
-        Schema.BUILDER_BASE_SETTINGS.NIGHT_SAVE_WORKER.key
+        Schema.BUILDER_BASE_SETTINGS.BUILDER_BASE_SAVE_WORKER.key
     } else {
         Schema.MAIN_BASE_SETTINGS.SAVE_WORKER.key
     }

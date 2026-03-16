@@ -76,8 +76,8 @@ class EnterMainCode : MainCode {
                         onNavigatePriority = { index ->
                             navController.navigate("priority/$index")
                         },
-                        onNavigateNightPriority = { index ->
-                            navController.navigate("night_priority/$index")
+                        onNavigateBuilderBasePriority = { index ->
+                            navController.navigate("builder_base_priority/$index")
                         }
                     )
                 }
@@ -90,7 +90,7 @@ class EnterMainCode : MainCode {
                         }
                     )
                 }
-                composable("night_priority/{index}") { backStackEntry ->
+                composable("builder_base_priority/{index}") { backStackEntry ->
                     val index = backStackEntry.arguments?.getString("index")?.toIntOrNull() ?: 1
                     BuilderBaseUpgradePriority(
                         index = index,

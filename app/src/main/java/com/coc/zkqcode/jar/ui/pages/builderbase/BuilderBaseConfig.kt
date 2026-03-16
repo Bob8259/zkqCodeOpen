@@ -22,7 +22,7 @@ import com.coc.zkqcode.jar.ui.components.SettingInputRow
 import com.coc.zkqcode.jar.ui.schema.Schema.BUILDER_BASE_SETTINGS
 
 fun LazyListScope.BuilderBaseConfig(
-    index: Int, isExpanded: Boolean, onToggleExpanded: () -> Unit, onNavigateNightPriority: (Int) -> Unit = {},
+    index: Int, isExpanded: Boolean, onToggleExpanded: () -> Unit, onNavigateBuilderBasePriority: (Int) -> Unit = {},
     onScrollToBottom: () -> Unit = {}
 ) {
     // Header
@@ -110,20 +110,20 @@ fun LazyListScope.BuilderBaseConfig(
         AnimatedVisibility(visible = isExpanded && noBuilderBase) {
             Column {
                 FlowRow {
-                    SettingCheckBox(key = "${BUILDER_BASE_SETTINGS.NIGHT_BUILD_SETTING.key}_c${index}")
-                    /* SettingCheckBox(key = "${BUILDER_BASE_SETTINGS.NIGHT_WALL_UPGRADE_SETTINGS.key}_c${index}") */
-                    SettingCheckBox(key = "${BUILDER_BASE_SETTINGS.NIGHT_REMOVE_OBSTACLES.key}_c${index}", explain = "该功能会移除野蛮人雕像，请谨慎使用。")
-                    /* SettingCheckBox(key = "${BUILDER_BASE_SETTINGS.NIGHT_SAVE_WORKER.key}_c${index}") */
+                    SettingCheckBox(key = "${BUILDER_BASE_SETTINGS.BUILDER_BASE_BUILD_SETTING.key}_c${index}")
+                    /* SettingCheckBox(key = "${BUILDER_BASE_SETTINGS.BUILDER_BASE_WALL_UPGRADE_SETTINGS.key}_c${index}") */
+                    SettingCheckBox(key = "${BUILDER_BASE_SETTINGS.BUILDER_BASE_REMOVE_OBSTACLES.key}_c${index}", explain = "该功能会移除野蛮人雕像，请谨慎使用。")
+                    /* SettingCheckBox(key = "${BUILDER_BASE_SETTINGS.BUILDER_BASE_SAVE_WORKER.key}_c${index}") */
                 }
 
-                val nightBuildVisible = GlobalVars.configStates["${BUILDER_BASE_SETTINGS.NIGHT_BUILD_SETTING.key}_c${index}"]?.value == "1"
-                val prevNightBuildVisible = remember { mutableStateOf(nightBuildVisible) }
-                LaunchedEffect(nightBuildVisible) {
-                    if (nightBuildVisible && !prevNightBuildVisible.value) onScrollToBottom()
-                    prevNightBuildVisible.value = nightBuildVisible
+                val builderBaseBuildVisible = GlobalVars.configStates["${BUILDER_BASE_SETTINGS.BUILDER_BASE_BUILD_SETTING.key}_c${index}"]?.value == "1"
+                val prevBuilderBaseBuildVisible = remember { mutableStateOf(builderBaseBuildVisible) }
+                LaunchedEffect(builderBaseBuildVisible) {
+                    if (builderBaseBuildVisible && !prevBuilderBaseBuildVisible.value) onScrollToBottom()
+                    prevBuilderBaseBuildVisible.value = builderBaseBuildVisible
                 }
-                AnimatedVisibility(visible = nightBuildVisible) {
-                    BuilderBaseUpgradeConfigs(index = index, onNavigatePriority = onNavigateNightPriority)
+                AnimatedVisibility(visible = builderBaseBuildVisible) {
+                    BuilderBaseUpgradeConfigs(index = index, onNavigatePriority = onNavigateBuilderBasePriority)
                 }
             }
         }
