@@ -42,6 +42,7 @@ import com.topjohnwu.superuser.Shell
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import androidx.core.content.edit
+import com.coc.zkqcode.core.util.basic.RunShell
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.jar.code.universal.smalltools.killGame
@@ -176,7 +177,6 @@ fun SwitchAccount(onClose: () -> Unit) {
                                 GlobalVars.updateWindowPosition = true
                                 val accNum = accountNumber.ifEmpty { "1" }
                                 ShowMessage("正在切换账号$accNum")
-                                killGame()
                                 // 1. Get Game Version
                                 val versionKey = "${ACCOUNT_SETTINGS.GAME_VERSION.key}$accNum"
                                 val versionStr = GlobalVars.configStates[versionKey]?.value
@@ -206,7 +206,7 @@ fun SwitchAccount(onClose: () -> Unit) {
                                     }
 
                                     // Force-stop before writing to avoid file-in-use conflicts
-                                    Shell.cmd("am force-stop com.tencent.tmgp.supercell.clashofclans").exec()
+                                    RunShell.runNoOutput("am force-stop com.tencent.tmgp.supercell.clashofclans", false)
                                     writeGameFilesCore(
                                         packageName = "com.tencent.tmgp.supercell.clashofclans",
                                         savePathName = savePathName,
@@ -214,7 +214,8 @@ fun SwitchAccount(onClose: () -> Unit) {
                                         subDirs = listOf("shared_prefs", "databases")
                                     )
                                     // Launch the game after write completes
-                                    Shell.cmd("monkey -p com.tencent.tmgp.supercell.clashofclans -c android.intent.category.LAUNCHER 1").exec()
+                                    RunShell.runNoOutput("monkey -p com.tencent.tmgp.supercell.clashofclans -c android.intent.category.LAUNCHER 1", false)
+                                    RunShell.runNoOutput("am start -n com.tencent.tmgp.supercell.clashofclans/com.supercell.titan.tencent.GameAppTencent", false)
                                 } else {
                                     // Global Version
                                     val pathKey = "${ACCOUNT_SETTINGS.GLOBAL_PATH.key}$accNum"
@@ -235,7 +236,7 @@ fun SwitchAccount(onClose: () -> Unit) {
                                     }
 
                                     // Force-stop before writing to avoid file-in-use conflicts
-                                    Shell.cmd("am force-stop com.supercell.clashofclans").exec()
+                                    RunShell.runNoOutput("am force-stop com.supercell.clashofclans", false)
                                     writeGameFilesCore(
                                         packageName = "com.supercell.clashofclans",
                                         savePathName = savePathName,
@@ -243,7 +244,8 @@ fun SwitchAccount(onClose: () -> Unit) {
                                         subDirs = listOf("shared_prefs")
                                     )
                                     // Launch the game after write completes
-                                    Shell.cmd("monkey -p com.supercell.clashofclans -c android.intent.category.LAUNCHER 1").exec()
+                                    RunShell.runNoOutput("monkey -p com.supercell.clashofclans -c android.intent.category.LAUNCHER 1", false)
+                                    RunShell.runNoOutput("am start -n com.supercell.clashofclans/com.supercell.titan.GameApp", false)
                                 }
                                 GlobalVars.isSwitchingAccount = false
                                 withContext(Dispatchers.Main) {
