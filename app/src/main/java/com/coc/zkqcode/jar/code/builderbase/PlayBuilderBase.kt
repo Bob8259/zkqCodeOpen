@@ -19,7 +19,6 @@ suspend fun playBuilderBase(): Boolean {
     val noBuilderBase = getBooleanConfigRuntime(Schema.BUILDER_BASE_SETTINGS.NO_BUILDER_BASE.key)
     if (noBuilderBase) return true//if no builder base, then directly return.
     if (!enterBuilderBase(true)) return true
-    zoomSmallBuilderBase()
     if (!collectBuilderBaseResources()) return false
     if (!enterBuilderBase(false)) return true
     if (!clickOttosOutPost()) return false
