@@ -134,6 +134,7 @@ suspend fun upgradeAllExistingBuildings(buildings: List<String>, currentBase: Ba
 }
 
 private suspend fun upgradeWalls(currentBase: BaseType, wallType: WallType): LoopAction {
+    ShowMessage("刷墙类型：${wallType.name}")
     TouchActions.tap(1230, 40, delayTime = 500)//Tap gold bar
     TouchActions.tap(1230, 40, delayTime = 500)//Close distractions
     val isBatchUpgrade = if (currentBase == BaseType.Main) {
@@ -142,6 +143,7 @@ private suspend fun upgradeWalls(currentBase: BaseType, wallType: WallType): Loo
         getBooleanConfigRuntime(Schema.BUILDER_BASE_SETTINGS.BUILDER_BASE_BATCH_WALL_UPGRADE_SETTINGS.key)
     }
     val searchDirection = if (wallType == WallType.Gold) 0 else 1
+
     if (isBatchUpgrade) {
         val resources = recognizeResources()
         val currentResourcePercentage = calculateResourcesPercentage()
@@ -151,6 +153,20 @@ private suspend fun upgradeWalls(currentBase: BaseType, wallType: WallType): Loo
             MyColors.UpgradeHammer, MyColors.UpgradeHammer.x1, MyColors.UpgradeHammer.y1, MyColors.UpgradeHammer.x2, MyColors.UpgradeHammer.y2, searchDirection
         )
         val hammer = findMultiColorsUntil(schemas = listOf(hammerSchema), duration = 1000) ?: return LoopAction.Continue // Should not happen if build was found, but be safe
+        if (wallType == WallType.Elixir) {
+            // Rescope search area for elixir upgrade icon relative to hammer position
+            val elixirIconSchema = ColorSchema.rescope(
+                MyColors.smallElixirUpgradeIcon,
+                hammer.x + 45, hammer.y - 60,
+                hammer.x + 80, hammer.y - 10
+            )
+            val smallElixirUpgradeIcon = findMultiColors(schema = elixirIconSchema)
+            if (smallElixirUpgradeIcon == null) {
+                ShowMessage("圣水刷墙失败，未找到圣水升级标志")
+                delayWithMultiplier(500)
+                return LoopAction.Break
+            }
+        }
         TouchActions.tap(hammer.x, hammer.y, delayTime = 500)
 
         // Check for resource availability immediately after clicking upgrade

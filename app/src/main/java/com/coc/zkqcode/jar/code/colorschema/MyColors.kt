@@ -48,5 +48,10 @@ object MyColors : IUIColors by UIColors, IFeatureColors by FeatureColors, IMainB
     val TroopsWithOutSkills = ColorSchema.parse(
         195, 570, 1210, 630, "FF763A", "7|0|FF763A,17|1|FF763A,22|2|FF773B,26|2|FF773B,24|8|FF7C3F,16|12|FF7E41,8|13|FF7C3F,3|12|FF793C,1|9|FF773A", 0, 0.9, "无技能部队"
     )
+
+    //Main Base Upgrade Colors
+    val smallElixirUpgradeIcon = ColorSchema.parse(
+        0, 0, 0, 0, "FF60FF", "-2|1|FF2DEB,-3|2|FF41D2,-1|3|FF22D3,0|5|DF21B2,2|5|F221C2,2|4|FF22D9,3|4|FF23DD,3|3|FF26EC,3|2|FF39FF", 0, 0.9
+    )
 }
 
