@@ -70,10 +70,12 @@ fun BuilderBaseUpgradePriority(index: Int, onSaveSuccess: () -> Unit) {
     val scope = rememberCoroutineScope()
     var isSaving by remember { mutableStateOf(false) }
 
-    Column(modifier = Modifier
-        .fillMaxSize()
-        .padding(10.dp)
-        .background(Color.White)) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(10.dp)
+            .background(Color.White)
+    ) {
         Text(
             text = "拖动铅笔符号调整优先度，越靠上，越靠左表示优先度越高。",
             style = MaterialTheme.typography.labelMedium,
@@ -139,6 +141,7 @@ fun BuilderBaseUpgradePriority(index: Int, onSaveSuccess: () -> Unit) {
                     onSaveSuccess()
                 }
             },
+            marginBottom = 4.dp,
             text = if (isSaving) "保存中，请稍候" else "完成",
             enable = !isSaving
         )
