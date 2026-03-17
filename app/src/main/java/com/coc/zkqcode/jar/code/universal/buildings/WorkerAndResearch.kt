@@ -54,7 +54,8 @@ object WorkerAndResearch {
             val endX = worker.x + 250
             val endY = 70
 
-            val results = TextRecognizer.recognize(startX, startY, endX, endY, useChinese = false, applyPreprocess = true, threshold = 254)
+            val results = TextRecognizer.recognize(startX, startY, endX, endY, useChinese = false, applyPreprocess = true, threshold = 250)
+
             // Sort by x-axis position to ensure left-to-right reading order
             val combinedText = results.sortedBy { it.position?.left ?: 0 }.joinToString("") { it.text }
             return parseWorkerInfo(combinedText)
