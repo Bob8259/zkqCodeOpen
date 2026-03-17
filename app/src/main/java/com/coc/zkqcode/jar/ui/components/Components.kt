@@ -51,7 +51,6 @@ import androidx.compose.ui.window.PopupProperties
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.jar.ui.schema.Schema
 import com.coc.zkqcode.core.ui.theme.AppColors
-import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
 import kotlinx.coroutines.delay
 
 
@@ -60,10 +59,13 @@ fun InputRowWithCheckBox(
     checkBoxKey: String,
     inputKey: String
 ) {
-    val checkBoxState = GlobalVars.configStates[checkBoxKey]
-        ?: logAndRestart("Config: $checkBoxKey Not Found")
-    val inputState = GlobalVars.configStates[inputKey]
-        ?: logAndRestart("Config: $inputKey Not Found")
+    // Use getOrPut to lazily initialize missing config keys with their Schema defaults
+    val checkBoxState = GlobalVars.configStates.getOrPut(checkBoxKey) {
+        mutableStateOf(Schema.getDefaultValue(checkBoxKey))
+    }
+    val inputState = GlobalVars.configStates.getOrPut(inputKey) {
+        mutableStateOf(Schema.getDefaultValue(inputKey))
+    }
 
     val checkBoxLabel = Schema.getDisplayName(checkBoxKey)
     val inputLabel = Schema.getDisplayName(inputKey)
@@ -200,9 +202,10 @@ class WindowCenterPositionProvider : PopupPositionProvider {
 
 @Composable
 fun SettingInputRow(key: String, afterChange: ((String) -> Unit)? = null) {
-    // Get state and label (display name)
-    val state = GlobalVars.configStates[key]
-        ?: logAndRestart("Config: $key Not Found")
+    // Use getOrPut to lazily initialize missing config keys with their Schema defaults
+    val state = GlobalVars.configStates.getOrPut(key) {
+        mutableStateOf(Schema.getDefaultValue(key))
+    }
     val label = Schema.getDisplayName(key)
 
     Row(
@@ -406,9 +409,10 @@ fun SettingDropdown(
     key: String,
     options: List<String>
 ) {
-    // 1. Get config state and display name
-    val state = GlobalVars.configStates[key]
-        ?: logAndRestart("Config: $key Not Found")
+    // Use getOrPut to lazily initialize missing config keys with their Schema defaults
+    val state = GlobalVars.configStates.getOrPut(key) {
+        mutableStateOf(Schema.getDefaultValue(key))
+    }
     val label = Schema.getDisplayName(key)
 
     // 2. Internal UI state
