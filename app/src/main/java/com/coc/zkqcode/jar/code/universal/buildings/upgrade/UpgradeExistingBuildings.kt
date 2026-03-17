@@ -21,7 +21,8 @@ import com.coc.zkqcode.jar.ui.schema.details.MainBaseBuildingPriorities
 import com.coc.zkqcode.jar.ui.schema.details.MainBaseBuildings
 
 
-suspend fun upgradeAllExistingBuildings(buildings: List<String>, currentBase: BaseType): Boolean {
+// skipOrdering: when true, bypass getOrderedList filtering/sorting, used for wall-upgrade
+suspend fun upgradeAllExistingBuildings(buildings: List<String>, currentBase: BaseType, skipOrdering: Boolean = false): Boolean {
     val uniqueBuildings = setOf(
         "建筑大师大本营",
         "宝石矿井",
@@ -63,7 +64,7 @@ suspend fun upgradeAllExistingBuildings(buildings: List<String>, currentBase: Ba
         "飞龙公爵",
         "多管迫击炮"
     )
-    val orderedList = getOrderedList(buildings, currentBase)
+    val orderedList = if (skipOrdering) buildings else getOrderedList(buildings, currentBase)
     for (building in orderedList) {
         val maxAttempts = if (building in uniqueBuildings) 1 else 6
 
@@ -83,11 +84,17 @@ suspend fun upgradeAllExistingBuildings(buildings: List<String>, currentBase: Ba
 
             TouchActions.tap(worker.x, worker.y, delayTime = 500)
 
-            //测试代码
             // Locate the specific building in the UI
-            if (!findSpecificBuilding(building)) {
-                clickRightBottom(1)
-                break // Not found this building anymore, go to next building type
+            if (skipOrdering) {
+                if (!findSpecificBuilding(building, true)) {
+                    clickRightBottom(1)
+                    break // Not found this building anymore, go to next building type
+                }
+            } else {
+                if (!findSpecificBuilding(building)) {
+                    clickRightBottom(1)
+                    break // Not found this building anymore, go to next building type
+                }
             }
             // Hero upgrade uses different logic
             val heroes = setOf(
@@ -181,10 +188,10 @@ suspend fun upgradeAllExistingBuildings(buildings: List<String>, currentBase: Ba
     return enterMainScreen()
 }
 
-private suspend fun findSpecificBuilding(buildingName: String): Boolean {
+private suspend fun findSpecificBuilding(buildingName: String, excludeNewBuildings: Boolean = false): Boolean {
     var found = false
     ShowMessage("准备寻找$buildingName")
-    iterateBuilderBaseBuildingUpgradeList(onDetect = { result ->
+    iterateBuilderBaseBuildingUpgradeList(excludeNewBuildings = excludeNewBuildings, onDetect = { result ->
         val building = result.buildings.find { it.name == buildingName }
         if (building != null) {
             ShowMessage("已找到$buildingName")

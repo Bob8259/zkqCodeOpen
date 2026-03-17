@@ -9,6 +9,7 @@ import com.coc.zkqcode.jar.code.mainbase.playMainBase
 import com.coc.zkqcode.jar.code.universal.GameVersion
 import com.coc.zkqcode.jar.code.universal.InGamesVars
 import com.coc.zkqcode.jar.code.universal.buildings.upgrade.upgradeBuildings
+import com.coc.zkqcode.jar.code.universal.buildings.walls.upgradeWalls
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.smalltools.StorageKeys
 import com.coc.zkqcode.jar.code.universal.smalltools.getConfigOrStop
@@ -86,7 +87,7 @@ private suspend fun runTestCode() {
     while (true) {
         enterMainScreen()
         delay(1000)
-        upgradeBuildings(BaseType.Main)
+        upgradeWalls(BaseType.Main)
         delay(20000000000)
     }
 }
