@@ -9,20 +9,27 @@ import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.mainbase.others.zoomSmallMainBase
 import com.coc.zkqcode.jar.code.mainbase.upgrade.mainBaseFindBuildButton
 import com.coc.zkqcode.jar.code.universal.buildings.iterateBuilderBaseBuildingUpgradeList
+import com.coc.zkqcode.jar.code.universal.buildings.walls.calculateResourcesPercentage
 import com.coc.zkqcode.jar.code.universal.clickRightBottom
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
+import com.coc.zkqcode.jar.code.universal.recognizer.recognizeResources
 import com.coc.zkqcode.jar.code.universal.smalltools.getBooleanConfigRuntime
 import com.coc.zkqcode.jar.code.universal.smalltools.getConfigRuntime
+import com.coc.zkqcode.jar.ui.schema.Schema
 import com.coc.zkqcode.jar.ui.schema.details.BuilderBaseBuildings
 import com.coc.zkqcode.jar.ui.schema.details.BuilderBaseBuildingsPriority
 import com.coc.zkqcode.jar.ui.schema.details.MainBaseBuildingPriorities
 import com.coc.zkqcode.jar.ui.schema.details.MainBaseBuildings
 
+enum class WallType {
+    Gold, Elixir
+}
 
 // skipOrdering: when true, bypass getOrderedList filtering/sorting, used for wall-upgrade
-suspend fun upgradeAllExistingBuildings(buildings: List<String>, currentBase: BaseType, skipOrdering: Boolean = false): Boolean {
+//baseType and wallType are only used for wall-upgrade
+suspend fun upgradeAllExistingBuildings(buildings: List<String>, currentBase: BaseType, skipOrdering: Boolean = false, baseType: BaseType = BaseType.Main, wallType: WallType = WallType.Gold): Boolean {
     val uniqueBuildings = setOf(
         "建筑大师大本营",
         "宝石矿井",
@@ -100,10 +107,18 @@ suspend fun upgradeAllExistingBuildings(buildings: List<String>, currentBase: Ba
             val heroes = setOf(
                 "野蛮人之王", "弓箭女皇", "大守护者", "飞盾战神", "飞龙公爵"
             )
-            val action = if (building in heroes) {
-                upgradeHero(building)
-            } else {
-                upgradeBuilding(building, currentBase, attempt)
+            val action = when (building) {
+                in heroes -> {
+                    upgradeHero(building)
+                }
+
+                "城墙" -> {
+                    upgradeWalls(currentBase, wallType)
+                }
+
+                else -> {
+                    upgradeBuilding(building, currentBase, attempt)
+                }
             }
             when (action) {
                 LoopAction.Break -> break
@@ -115,6 +130,26 @@ suspend fun upgradeAllExistingBuildings(buildings: List<String>, currentBase: Ba
     // Final UI reset before returning to main screen
     clickRightBottom(1)
     return enterMainScreen()
+}
+
+private suspend fun upgradeWalls(currentBase: BaseType, wallType: WallType): LoopAction {
+    TouchActions.tap(1230, 40, delayTime = 500)//Tap gold bar
+    TouchActions.tap(1230, 40, delayTime = 500)//Close distractions
+    val isBatchUpgrade = if (currentBase == BaseType.Main) {
+        getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.BATCH_WALL_UPGRADE_SETTINGS.key)
+    } else {
+        getBooleanConfigRuntime(Schema.BUILDER_BASE_SETTINGS.BUILDER_BASE_BATCH_WALL_UPGRADE_SETTINGS.key)
+    }
+    val searchDirection = if (wallType == WallType.Gold) 0 else 1
+    if (isBatchUpgrade) {
+        val resources = recognizeResources()
+        val currentResourcePercentage = calculateResourcesPercentage()
+    } else {
+        // TODO: rescope the hammer color to use searchDirection as the new direction. 
+        val hammer = findMultiColors(schema = MyColors.UpgradeHammer)
+    }
+    delayWithMultiplier(1000000)
+    return LoopAction.Proceed
 }
 
 // Handles the hero upgrade flow; returns LoopAction to control the caller's loop
@@ -164,8 +199,7 @@ private suspend fun upgradeHero(building: String): LoopAction {
 private suspend fun upgradeBuilding(building: String, currentBase: BaseType, attempt: Int): LoopAction {
     TouchActions.tap(1233, 37)// tap gold to close worker list
     // Check for the upgrade action (Hammer icon)
-    val hammer = findMultiColorsUntil(schemas = listOf(MyColors.UpgradeHammer), duration = 1000)
-        ?: return LoopAction.Continue // Should not happen if build was found, but be safe
+    val hammer = findMultiColorsUntil(schemas = listOf(MyColors.UpgradeHammer), duration = 1000) ?: return LoopAction.Continue // Should not happen if build was found, but be safe
 
     TouchActions.tap(hammer.x, hammer.y, delayTime = 500)
 
@@ -251,8 +285,6 @@ private fun getOrderedList(buildings: List<String>, baseType: BaseType): List<St
 
 // Represents the loop control action returned by extracted upgrade functions
 private enum class LoopAction {
-    Break,
-    Continue,
-    Proceed
+    Break, Continue, Proceed
 }
 

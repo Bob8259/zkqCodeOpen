@@ -28,7 +28,7 @@ suspend fun recognizeResources(isOpponent: Boolean = false): Resources {
     val (startX, startY, endX, endY) = if (isOpponent) {
         listOf(50, 98, 293, 209)
     } else {
-        listOf(990, 20, 1270, 175)
+        listOf(990, 20, 1270, 190)
     }
     val preProcess = !isOpponent
     val results = TextRecognizer.recognize(startX, startY, endX, endY, useChinese = false, applyPreprocess = preProcess, threshold = 240)
@@ -56,7 +56,7 @@ suspend fun recognizeResources(isOpponent: Boolean = false): Resources {
  * Cleans the recognized text and extracts an Int value.
  * Removes spaces, commas, and any non-numeric characters.
  */
-private fun extractValue(text: String): Int {
+internal fun extractValue(text: String): Int {
     // Remove all non-digit characters and handle common misrecognitions
     val digitsOnly = text.replace("G", "6")
         .replace("o", "0").replace("O", "0")
