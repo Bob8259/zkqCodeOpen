@@ -182,21 +182,21 @@ fun LazyListScope.MainBaseConfig(
             Column {
                 FlowRow {
                     SettingCheckBox(key = "${MAIN_BASE_SETTINGS.BUILD_SETTING.key}_c$index")
-                    /* SettingCheckBox(key = "${MAIN_BASE_SETTINGS.WALL_UPGRADE_SETTINGS.key}_c$index")
+                    SettingCheckBox(key = "${MAIN_BASE_SETTINGS.WALL_UPGRADE_SETTINGS.key}_c$index")
                     SettingCheckBox(key = "${MAIN_BASE_SETTINGS.SAVE_WORKER.key}_c$index")
-                    SettingCheckBox(key = "${MAIN_BASE_SETTINGS.BUILDING_CONVERSION_SETTINGS.key}_c$index")
+                    /* SettingCheckBox(key = "${MAIN_BASE_SETTINGS.BUILDING_CONVERSION_SETTINGS.key}_c$index")
                     SettingCheckBox(
                         key = "${MAIN_BASE_SETTINGS.UPGRADE_AFTER_FAIL_WALL_UPGRADE.key}_c$index",
                         explain = "勾选后，若主世界无城墙可升级，则会将所有工人用于建造。"
                     ) */
                 }
 
-                /* AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.WALL_UPGRADE_SETTINGS.key}_c$index"]?.value == "1") {
+                AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.WALL_UPGRADE_SETTINGS.key}_c$index"]?.value == "1") {
                     FlowRow {
                         SettingCheckBox(key = "${MAIN_BASE_SETTINGS.BATCH_WALL_UPGRADE_SETTINGS.key}_c$index")
                         SettingInputRow(key = "${MAIN_BASE_SETTINGS.UPGRADE_WALL_THRESHOLD.key}_c$index")
                     }
-                } */
+                }
             }
         }
     }
