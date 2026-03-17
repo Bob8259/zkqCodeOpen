@@ -20,6 +20,7 @@ import com.coc.zkqcode.jar.ui.components.SettingCheckBox
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.jar.ui.components.SettingInputRow
 import com.coc.zkqcode.jar.ui.schema.Schema.BUILDER_BASE_SETTINGS
+import com.coc.zkqcode.jar.ui.schema.Schema.MAIN_BASE_SETTINGS
 
 fun LazyListScope.BuilderBaseConfig(
     index: Int, isExpanded: Boolean, onToggleExpanded: () -> Unit, onNavigateBuilderBasePriority: (Int) -> Unit = {},
@@ -112,10 +113,19 @@ fun LazyListScope.BuilderBaseConfig(
                 FlowRow {
                     SettingCheckBox(key = "${BUILDER_BASE_SETTINGS.BUILDER_BASE_BUILD_SETTING.key}_c${index}")
                     SettingCheckBox(key = "${BUILDER_BASE_SETTINGS.BUILDER_BASE_WALL_UPGRADE_SETTINGS.key}_c${index}")
-                    SettingCheckBox(key = "${BUILDER_BASE_SETTINGS.BUILDER_BASE_REMOVE_OBSTACLES.key}_c${index}", explain = "若未解锁第二区域，则金水大于30万后生效。\n若解锁了第二区域，则金水大于60万后生效。\n该功能会移除野蛮人雕像，请谨慎使用。")
+
+                    SettingCheckBox(
+                        key = "${BUILDER_BASE_SETTINGS.BUILDER_BASE_REMOVE_OBSTACLES.key}_c${index}",
+                        explain = "若未解锁第二区域，则金水大于30万后生效。\n若解锁了第二区域，则金水大于60万后生效。\n该功能会移除野蛮人雕像，请谨慎使用。"
+                    )
                     SettingCheckBox(key = "${BUILDER_BASE_SETTINGS.BUILDER_BASE_SAVE_WORKER.key}_c${index}")
                 }
-
+                AnimatedVisibility(visible = GlobalVars.configStates["${BUILDER_BASE_SETTINGS.BUILDER_BASE_WALL_UPGRADE_SETTINGS.key}_c$index"]?.value == "1") {
+                    FlowRow {
+                        SettingCheckBox(key = "${BUILDER_BASE_SETTINGS.BUILDER_BASE_BATCH_WALL_UPGRADE_SETTINGS.key}_c$index")
+                        SettingInputRow(key = "${BUILDER_BASE_SETTINGS.BUILDER_BASE_UPGRADE_WALL_THRESHOLD.key}_c$index")
+                    }
+                }
                 val builderBaseBuildVisible = GlobalVars.configStates["${BUILDER_BASE_SETTINGS.BUILDER_BASE_BUILD_SETTING.key}_c${index}"]?.value == "1"
                 val prevBuilderBaseBuildVisible = remember { mutableStateOf(builderBaseBuildVisible) }
                 LaunchedEffect(builderBaseBuildVisible) {
