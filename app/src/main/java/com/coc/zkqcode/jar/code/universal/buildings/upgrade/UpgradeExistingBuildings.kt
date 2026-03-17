@@ -28,8 +28,8 @@ enum class WallType {
 }
 
 // skipOrdering: when true, bypass getOrderedList filtering/sorting, used for wall-upgrade
-//baseType and wallType are only used for wall-upgrade
-suspend fun upgradeAllExistingBuildings(buildings: List<String>, currentBase: BaseType, skipOrdering: Boolean = false, baseType: BaseType = BaseType.Main, wallType: WallType = WallType.Gold): Boolean {
+//wallType are only used for wall-upgrade
+suspend fun upgradeAllExistingBuildings(buildings: List<String>, currentBase: BaseType, skipOrdering: Boolean = false, wallType: WallType = WallType.Gold): Boolean {
     val uniqueBuildings = setOf(
         "建筑大师大本营",
         "宝石矿井",
@@ -69,7 +69,8 @@ suspend fun upgradeAllExistingBuildings(buildings: List<String>, currentBase: Ba
         "大守护者",
         "飞盾战神",
         "飞龙公爵",
-        "多管迫击炮"
+        "多管迫击炮",
+        "城墙"
     )
     val orderedList = if (skipOrdering) buildings else getOrderedList(buildings, currentBase)
     for (building in orderedList) {
@@ -145,10 +146,20 @@ private suspend fun upgradeWalls(currentBase: BaseType, wallType: WallType): Loo
         val resources = recognizeResources()
         val currentResourcePercentage = calculateResourcesPercentage()
     } else {
-        // TODO: rescope the hammer color to use searchDirection as the new direction. 
-        val hammer = findMultiColors(schema = MyColors.UpgradeHammer)
+        // Rescope the hammer schema to use searchDirection for wall-type-specific search
+        val hammerSchema = ColorSchema.rescope(
+            MyColors.UpgradeHammer, MyColors.UpgradeHammer.x1, MyColors.UpgradeHammer.y1, MyColors.UpgradeHammer.x2, MyColors.UpgradeHammer.y2, searchDirection
+        )
+        val hammer = findMultiColorsUntil(schemas = listOf(hammerSchema), duration = 1000) ?: return LoopAction.Continue // Should not happen if build was found, but be safe
+        TouchActions.tap(hammer.x, hammer.y, delayTime = 500)
+
+        // Check for resource availability immediately after clicking upgrade
+        if (findMultiColors(schema = if (currentBase == BaseType.Main) MyColors.MainBaseInsufficientResources else MyColors.BuilderBaseInsufficientResources) != null) {
+            clickRightBottom(1)
+            return LoopAction.Break // insufficient resources for this building, skip to next building type
+        }
+        TouchActions.tap(980, 635, delayTime = 500)
     }
-    delayWithMultiplier(1000000)
     return LoopAction.Proceed
 }
 

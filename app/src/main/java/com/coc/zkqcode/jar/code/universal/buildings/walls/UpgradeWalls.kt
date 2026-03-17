@@ -2,6 +2,7 @@ package com.coc.zkqcode.jar.code.universal.buildings.walls
 
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.buildings.BaseType
+import com.coc.zkqcode.jar.code.universal.buildings.WorkerAndResearch
 import com.coc.zkqcode.jar.code.universal.buildings.upgrade.WallType
 import com.coc.zkqcode.jar.code.universal.buildings.upgrade.upgradeAllExistingBuildings
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
@@ -19,21 +20,30 @@ suspend fun upgradeWalls(currentBase: BaseType): Boolean {
     if (!getBooleanConfigRuntime(wallUpgradeKey)) {
         return true
     }
-
+    val workerNumber = WorkerAndResearch.detectWorkerNumber(currentBase)
+    if (workerNumber.available < 1 || workerNumber.total < 1) return true
     val thresholds = 25.coerceAtLeast(getConfigRuntime(Schema.MAIN_BASE_SETTINGS.UPGRADE_WALL_THRESHOLD.key).toInt())
-    val currentResourcePercentage = calculateResourcesPercentage()
-    if (currentResourcePercentage.gold >= thresholds) {
-        if (!upgradeAllExistingBuildings(listOf("城墙"), currentBase, skipOrdering = true, currentBase, WallType.Gold)) return false
-    }
-    if (currentResourcePercentage.elixir >= thresholds) {
-        if (!upgradeAllExistingBuildings(listOf("城墙"), currentBase, skipOrdering = true, currentBase, WallType.Elixir)) return false
+    val startTime = System.currentTimeMillis()
+    val timeoutMs = 10 * 60 * 1000L // 10 minutes
+
+    while (true) {
+        // Break if 10 minutes have passed
+        if (System.currentTimeMillis() - startTime >= timeoutMs) break
+        val currentResourcePercentage = calculateResourcesPercentage()
+        // Break if both resources are below threshold
+        if (currentResourcePercentage.gold < thresholds && currentResourcePercentage.elixir < thresholds) break
+        if (currentResourcePercentage.gold >= thresholds) {
+            if (!upgradeAllExistingBuildings(listOf("城墙"), currentBase, skipOrdering = true, WallType.Gold)) return false
+        }
+        if (currentResourcePercentage.elixir >= thresholds) {
+            if (!upgradeAllExistingBuildings(listOf("城墙"), currentBase, skipOrdering = true, WallType.Elixir)) return false
+        }
     }
     return true
 }
 
 data class ResourcesPercentage(
-    val gold: Int = 0,
-    val elixir: Int = 0
+    val gold: Int = 0, val elixir: Int = 0
 )
 
 // 100% resource bar position (x coordinate) and 0% position
@@ -45,9 +55,7 @@ private const val RESOURCE_EMPTY_X = 1268
  * Linear interpolation: x=1012 -> 100%, x=1268 -> 0%.
  */
 private fun calculatePercentage(x: Int): Int {
-    return ((RESOURCE_EMPTY_X - x) * 100.0 / (RESOURCE_EMPTY_X - RESOURCE_FULL_X))
-        .roundToInt()
-        .coerceIn(0, 100)
+    return ((RESOURCE_EMPTY_X - x) * 100.0 / (RESOURCE_EMPTY_X - RESOURCE_FULL_X)).roundToInt().coerceIn(0, 100)
 }
 
 suspend fun calculateResourcesPercentage(): ResourcesPercentage {

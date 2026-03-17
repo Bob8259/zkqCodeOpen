@@ -192,7 +192,7 @@ fun LazyListScope.MainBaseConfig(
                 }
 
                 AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.WALL_UPGRADE_SETTINGS.key}_c$index"]?.value == "1") {
-                    FlowRow {
+                    Column {
                         SettingCheckBox(key = "${MAIN_BASE_SETTINGS.BATCH_WALL_UPGRADE_SETTINGS.key}_c$index")
                         SettingInputRow(key = "${MAIN_BASE_SETTINGS.UPGRADE_WALL_THRESHOLD.key}_c$index")
                     }
