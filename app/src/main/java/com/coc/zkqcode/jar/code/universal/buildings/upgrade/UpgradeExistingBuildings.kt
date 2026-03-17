@@ -96,96 +96,109 @@ suspend fun upgradeAllExistingBuildings(buildings: List<String>, currentBase: Ba
                     break // Not found this building anymore, go to next building type
                 }
             }
-            // Hero upgrade uses different logic
+            // Dispatch to the appropriate upgrade handler
             val heroes = setOf(
                 "野蛮人之王", "弓箭女皇", "大守护者", "飞盾战神", "飞龙公爵"
             )
-            if (building in heroes) {
-                // Check for insufficient resources for heroes (except 飞龙公爵)
-                if (building != "飞龙公爵") {
-                    // Calculate the search area based on hero position
-                    // Base area for 野蛮人之王: x1=55, y1=500, x2=240, y2=530
-                    // Each subsequent hero shifts by 228 on x-axis
-                    val heroIndex = listOf("野蛮人之王", "弓箭女皇", "大守护者", "飞盾战神").indexOf(building)
-                    ShowMessage("升级英雄：$building，序号$heroIndex")
-                    val x1 = 55 + heroIndex * 228
-                    val x2 = 240 + heroIndex * 228
-
-                    // Create a ColorSchema with the same color pattern but different search area
-                    val heroInsufficientResources = ColorSchema.parse(
-                        x1, 500, x2, 530, "7F88FF", "1|0|7F88FF,2|0|7F88FF,3|0|7F88FF,3|1|7F88FF,2|1|7F88FF,0|1|7F88FF,0|1|7F88FF,0|2|7F88FF,1|2|7F88FF", 0, 0.97, "${building}资源不足"
-                    )
-
-                    if (findMultiColors(schema = heroInsufficientResources) != null) {
-                        ShowMessage("${building}资源不足，跳过")
-                        break
-                    }
-                    TouchActions.tap(x1 + 100, 500, delayTime = 500)//Upgrade Hero
-                    ShowMessage("等待结束")
-                    TouchActions.tap(902, 626, delayTime = 500)
-                    clickRightBottom(times = 3, delayTime = 200)
-                } else {
-                    // The unique logic for Dragon Duke
-                    ShowMessage("升级英雄：飞龙公爵")
-                    TouchActions.swipe(1189, 354, 120, 345, delayTime = 300)
-                    delayWithMultiplier(200)
-                    val heroInsufficientResources = ColorSchema.parse(
-                        1020, 480, 1230, 530, "7F88FF", "1|0|7F88FF,2|0|7F88FF,3|0|7F88FF,3|1|7F88FF,2|1|7F88FF,0|1|7F88FF,0|1|7F88FF,0|2|7F88FF,1|2|7F88FF", 0, 0.97, "${building}资源不足"
-                    )
-                    if (findMultiColors(schema = heroInsufficientResources) != null) {
-                        ShowMessage("${building}资源不足，跳过")
-                        break
-                    }
-                    TouchActions.tap(1020 + 100, 480, delayTime = 500)//Upgrade Hero
-                    TouchActions.tap(902, 626, delayTime = 500)
-                    clickRightBottom(times = 3, delayTime = 200)
-                }
-
-
+            val action = if (building in heroes) {
+                upgradeHero(building)
             } else {
-                TouchActions.tap(1233, 37)// tap gold to close worker list
-                // Check for the upgrade action (Hammer icon)
-                val hammer = findMultiColorsUntil(schemas = listOf(MyColors.UpgradeHammer), duration = 1000) ?: continue // Should not happen if build was found, but be safe
-
-                TouchActions.tap(hammer.x, hammer.y, delayTime = 500)
-
-
-                // Check for resource availability immediately after clicking upgrade
-                if (findMultiColors(schema = if (currentBase == BaseType.Main) MyColors.MainBaseInsufficientResources else MyColors.BuilderBaseInsufficientResources) != null) {
-                    clickRightBottom(1)
-                    break // insufficient resources for this building, skip to next building type
-                }
-
-                // Successful upgrade flow
-                TouchActions.tap(633, 631) // normal upgrade or unlock new buildings
-                TouchActions.tap(982, 634, delayTime = 500)// machines
-                if (building == "大本营") {
-                    TouchActions.tap(748, 621, delayTime = 500)//before upgrade
-                    zoomSmallMainBase()
-                    var greenTick = mainBaseFindBuildButton(type = BuildButtonType.Tick, duration = 800)
-                    if (greenTick != null) {
-                        ShowMessage("合并天鹰火炮")
-                        TouchActions.tap(greenTick.x, greenTick.y, delayTime = 500)
-                        break
-                    }
-                    TouchActions.swipe(922, 202, 298, 505)
-                    delayWithMultiplier(300)
-                    greenTick = mainBaseFindBuildButton(type = BuildButtonType.Tick, duration = 800)
-                    if (greenTick != null) {
-                        ShowMessage("合并天鹰火炮")
-                        TouchActions.tap(greenTick.x, greenTick.y, delayTime = 500)
-                        break
-                    }
-                }
-                clickRightBottom(2)
-                ShowMessage("升级成功: $building (第 $attempt 个)")
+                upgradeBuilding(building, currentBase, attempt)
+            }
+            when (action) {
+                LoopAction.Break -> break
+                LoopAction.Continue -> continue
+                LoopAction.Proceed -> {}
             }
         }
     }
-    ShowMessage("升级完成，ordered list:$orderedList")
     // Final UI reset before returning to main screen
     clickRightBottom(1)
     return enterMainScreen()
+}
+
+// Handles the hero upgrade flow; returns LoopAction to control the caller's loop
+private suspend fun upgradeHero(building: String): LoopAction {
+    if (building != "飞龙公爵") {
+        // Calculate the search area based on hero position
+        // Base area for 野蛮人之王: x1=55, y1=500, x2=240, y2=530
+        // Each subsequent hero shifts by 228 on x-axis
+        val heroIndex = listOf("野蛮人之王", "弓箭女皇", "大守护者", "飞盾战神").indexOf(building)
+        ShowMessage("升级英雄：$building，序号$heroIndex")
+        val x1 = 55 + heroIndex * 228
+        val x2 = 240 + heroIndex * 228
+
+        // Create a ColorSchema with the same color pattern but different search area
+        val heroInsufficientResources = ColorSchema.parse(
+            x1, 500, x2, 530, "7F88FF", "1|0|7F88FF,2|0|7F88FF,3|0|7F88FF,3|1|7F88FF,2|1|7F88FF,0|1|7F88FF,0|1|7F88FF,0|2|7F88FF,1|2|7F88FF", 0, 0.97, "${building}资源不足"
+        )
+
+        if (findMultiColors(schema = heroInsufficientResources) != null) {
+            ShowMessage("${building}资源不足，跳过")
+            return LoopAction.Break
+        }
+        TouchActions.tap(x1 + 100, 500, delayTime = 500)//Upgrade Hero
+        ShowMessage("等待结束")
+        TouchActions.tap(902, 626, delayTime = 500)
+        clickRightBottom(times = 3, delayTime = 200)
+    } else {
+        // The unique logic for Dragon Duke
+        ShowMessage("升级英雄：飞龙公爵")
+        TouchActions.swipe(1189, 354, 120, 345, delayTime = 300)
+        delayWithMultiplier(200)
+        val heroInsufficientResources = ColorSchema.parse(
+            1020, 480, 1230, 530, "7F88FF", "1|0|7F88FF,2|0|7F88FF,3|0|7F88FF,3|1|7F88FF,2|1|7F88FF,0|1|7F88FF,0|1|7F88FF,0|2|7F88FF,1|2|7F88FF", 0, 0.97, "${building}资源不足"
+        )
+        if (findMultiColors(schema = heroInsufficientResources) != null) {
+            ShowMessage("${building}资源不足，跳过")
+            return LoopAction.Break
+        }
+        TouchActions.tap(1020 + 100, 480, delayTime = 500)//Upgrade Hero
+        TouchActions.tap(902, 626, delayTime = 500)
+        clickRightBottom(times = 3, delayTime = 200)
+    }
+    return LoopAction.Proceed
+}
+
+// Handles the regular building upgrade flow; returns LoopAction to control the caller's loop
+private suspend fun upgradeBuilding(building: String, currentBase: BaseType, attempt: Int): LoopAction {
+    TouchActions.tap(1233, 37)// tap gold to close worker list
+    // Check for the upgrade action (Hammer icon)
+    val hammer = findMultiColorsUntil(schemas = listOf(MyColors.UpgradeHammer), duration = 1000)
+        ?: return LoopAction.Continue // Should not happen if build was found, but be safe
+
+    TouchActions.tap(hammer.x, hammer.y, delayTime = 500)
+
+    // Check for resource availability immediately after clicking upgrade
+    if (findMultiColors(schema = if (currentBase == BaseType.Main) MyColors.MainBaseInsufficientResources else MyColors.BuilderBaseInsufficientResources) != null) {
+        clickRightBottom(1)
+        return LoopAction.Break // insufficient resources for this building, skip to next building type
+    }
+
+    // Successful upgrade flow
+    TouchActions.tap(633, 631) // normal upgrade or unlock new buildings
+    TouchActions.tap(982, 634, delayTime = 500)// machines
+    if (building == "大本营") {
+        TouchActions.tap(748, 621, delayTime = 500)//before upgrade
+        zoomSmallMainBase()
+        var greenTick = mainBaseFindBuildButton(type = BuildButtonType.Tick, duration = 800)
+        if (greenTick != null) {
+            ShowMessage("合并天鹰火炮")
+            TouchActions.tap(greenTick.x, greenTick.y, delayTime = 500)
+            return LoopAction.Break
+        }
+        TouchActions.swipe(922, 202, 298, 505)
+        delayWithMultiplier(300)
+        greenTick = mainBaseFindBuildButton(type = BuildButtonType.Tick, duration = 800)
+        if (greenTick != null) {
+            ShowMessage("合并天鹰火炮")
+            TouchActions.tap(greenTick.x, greenTick.y, delayTime = 500)
+            return LoopAction.Break
+        }
+    }
+    clickRightBottom(2)
+    ShowMessage("升级成功: $building (第 $attempt 个)")
+    return LoopAction.Proceed
 }
 
 private suspend fun findSpecificBuilding(buildingName: String, excludeNewBuildings: Boolean = false): Boolean {
@@ -234,5 +247,12 @@ private fun getOrderedList(buildings: List<String>, baseType: BaseType): List<St
     return buildings.filter { it in priorityMap && it in enabledBuildingNames }.sortedBy {
         priorityMap[it]!!
     }
+}
+
+// Represents the loop control action returned by extracted upgrade functions
+private enum class LoopAction {
+    Break,
+    Continue,
+    Proceed
 }
 
