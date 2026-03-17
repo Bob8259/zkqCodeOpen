@@ -246,7 +246,8 @@ fun CustomButton(
     onClick: () -> Unit,
     enable: Boolean = true,
     explain: String? = null,
-    marginTop: Dp = 8.dp
+    marginTop: Dp = 8.dp,
+    marginBottom: Dp = 0.dp,
 ) {
 
     var showExplanation by remember { mutableStateOf(false) }
@@ -257,7 +258,7 @@ fun CustomButton(
                 onClick()
             },
             modifier = Modifier
-                .padding(start = 8.dp, top = marginTop)
+                .padding(start = 8.dp, top = marginTop, bottom = marginBottom)
                 .height(32.dp),
             shape = RoundedCornerShape(8.dp),
             enabled = enable,

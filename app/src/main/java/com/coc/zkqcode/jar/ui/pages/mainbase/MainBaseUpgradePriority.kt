@@ -139,6 +139,7 @@ fun MainBaseUpgradePriority(index: Int, onSaveSuccess: () -> Unit) {
                     onSaveSuccess()
                 }
             },
+            marginBottom = 4.dp,
             text = if (isSaving) "保存中，请稍候" else "完成",
             enable = !isSaving
         )

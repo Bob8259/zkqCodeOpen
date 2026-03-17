@@ -34,7 +34,7 @@ suspend fun runMainScript() {
 
     while (currentCoroutineContext().isActive) {
         // Test code
-//        runTestCode()
+        runTestCode()
         // Use labeled block to skip remaining steps on failure
         run stepBlock@{
             if (!writeGameFiles()) {
