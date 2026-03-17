@@ -18,7 +18,7 @@ local.properties
 .idea/
 .vscode/
 /release/
-*code.jar
+*.jar
 *app/release
 .kotlin
 rust_logic/target

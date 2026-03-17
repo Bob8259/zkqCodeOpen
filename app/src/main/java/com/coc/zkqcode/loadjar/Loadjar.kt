@@ -53,8 +53,14 @@ class Loadjar(private val context: Context) {
 
         val assetsDir = File(context.filesDir, "assets")
         val assetList = assetsDir.list() ?: emptyArray()
-        val success = if (assetList.contains("code.jar")) {
-            loadPluginFromAssets("code.jar")
+
+        // Find the jar with the highest timestamp number (latest build)
+        val timestampJar = assetList
+            .filter { it.endsWith(".jar") && it.removeSuffix(".jar").toLongOrNull() != null }
+            .maxByOrNull { it.removeSuffix(".jar").toLong() }
+
+        val success = if (timestampJar != null) {
+            loadPluginFromAssets(timestampJar)
         } else if (assetList.contains("encrypted_code.jar")) {
             loadEncryptedPlugin("encrypted_code.jar")
         } else {

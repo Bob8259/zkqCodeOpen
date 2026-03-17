@@ -150,8 +150,7 @@ fun ControlWindow(
 
     Row(
         modifier = Modifier
-            .wrapContentSize()
-            .padding(4.dp),
+            .wrapContentSize(),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.End
     ) {
@@ -162,7 +161,7 @@ fun ControlWindow(
             .padding(vertical = 4.dp)
         val normalIconModifier = Modifier
             .size(iconSize)
-            .padding(4.dp)
+            .padding(2.dp)
 
         if (!isAtRightSide) {
             // Left side: Main icon first, use narrower hidden icon when HIDDEN

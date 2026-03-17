@@ -106,7 +106,7 @@ tasks.register<Exec>("buildJar") {
 
     // --- Path configuration ---
     val workingDir = project.projectDir.absolutePath
-    val sdkDir = System.getenv("ANDROID_HOME") ?: "C:/Users/Azikaban/AppData/Local/Android/Sdk"
+    val sdkDir = "C:/Users/Azikaban/AppData/Local/Android/Sdk"
 
     // Auto-detect the highest installed Build-Tools version (e.g. 36.1.0)
     val buildToolsDir = file("$sdkDir/build-tools")
@@ -128,16 +128,25 @@ tasks.register<Exec>("buildJar") {
 
     // Use the android platform jar as library reference
     val sdkPlatform = "$sdkDir/platforms/android-36/android.jar"
-    val outputJar = "$workingDir/src/main/assets/code.jar"
+    // Use current timestamp (seconds since epoch minus offset) as the jar name
+    val timestamp = System.currentTimeMillis() / 1000 - 1770000000
+    val outputJar = "$workingDir/src/main/assets/$timestamp.jar"
     val flagFile = file("$workingDir/build/tmp/d8_flags.txt")
 
     // Set the executable
     executable = d8Path
 
     doFirst {
+        // Delete all old .jar files from the assets directory before building
+        val assetsPath = file("$workingDir/src/main/assets")
+        assetsPath.listFiles()?.filter { it.extension == "jar" }?.forEach {
+            it.delete()
+            println("Deleted old jar: ${it.name}")
+        }
+
         // --- Prepare files for conversion ---
         val dependencyFiles = configurations.getByName("debugRuntimeClasspath").files
-        
+
         // Search for class files in all possible output directories
         val possibleClassDirs = listOf(
             file("$workingDir/build/tmp/kotlin-classes/debug"),
@@ -215,19 +224,22 @@ tasks.register("deployAndReload") {
     description = "Build JAR, push to device, and trigger debug reload"
     dependsOn("buildJar")
 
-    val outputJar = "${project.projectDir.absolutePath}/src/main/assets/code.jar"
-    val devicePath = "/data/data/com.coc.zkqcode/files/assets/code.jar"
-
     doLast {
+        // Dynamically find the built jar in assets directory
+        val assetsPath = file("${project.projectDir.absolutePath}/src/main/assets")
+        val jarFile = assetsPath.listFiles()?.firstOrNull { it.extension == "jar" }
+            ?: throw GradleException("No jar found in assets directory")
+        val devicePath = "/data/data/com.coc.zkqcode/files/assets/${jarFile.name}"
+
         // 1. Push JAR to sdcard first (adb push can't write to /data/data directly)
-        ProcessBuilder("adb", "push", outputJar, "/sdcard/code.jar")
+        ProcessBuilder("adb", "push", jarFile.absolutePath, "/sdcard/${jarFile.name}")
             .inheritIO().start().waitFor()
 
         // 2. Copy to private app dir with root
         ProcessBuilder("adb", "shell", "su", "-c",
-            "'cp /sdcard/code.jar $devicePath && chmod 644 $devicePath'")
+            "'cp /sdcard/${jarFile.name} $devicePath && chmod 644 $devicePath'")
             .inheritIO().start().waitFor()
-        println("--- Pushed code.jar to device ---")
+        println("--- Pushed ${jarFile.name} to device ---")
 
         // 3. Send reload broadcast
         ProcessBuilder("adb", "shell", "am", "broadcast",
