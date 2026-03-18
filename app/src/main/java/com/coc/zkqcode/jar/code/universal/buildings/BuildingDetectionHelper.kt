@@ -284,7 +284,10 @@ fun cleanBuildingName(raw: String): String {
             val maxLength = max(name.length, it.length)
             val maxAllowedDistance = (maxLength * 2.0 / 3.0).toInt()
 
-            if (minDistance <= maxAllowedDistance) {
+            // "英雄殿堂" requires a stricter match (at most 1 edit out of 4 chars)
+            val effectiveMaxDistance = if (it == "英雄殿堂") 1 else maxAllowedDistance
+
+            if (minDistance <= effectiveMaxDistance) {
                 return it
             }
         }
