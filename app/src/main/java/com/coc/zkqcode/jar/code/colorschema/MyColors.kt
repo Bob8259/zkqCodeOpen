@@ -53,5 +53,13 @@ object MyColors : IUIColors by UIColors, IFeatureColors by FeatureColors, IMainB
     val smallElixirUpgradeIcon = ColorSchema.parse(
         0, 0, 0, 0, "FF60FF", "-2|1|FF2DEB,-3|2|FF41D2,-1|3|FF22D3,0|5|DF21B2,2|5|F221C2,2|4|FF22D9,3|4|FF23DD,3|3|FF26EC,3|2|FF39FF", 0, 0.9
     )
+
+    //Universal Upgrade Colors
+    val UpgradeWallCrossMark = ColorSchema.parse(
+        208, 503, 1130, 627, "FFFFFF", "16|0|0D0D0D,1|-16|0D0D0D,1|15|0D0D0D,-15|0|0D0D0D,-5|-6|0D0D0D,6|-6|0D0D0D,6|5|0D0D0D,-5|5|0D0D0D,0|9|FFFFFF", 0, 0.9,
+    )
+    val DoubleHammer = ColorSchema.parse(
+        208, 503, 1130, 627, "DFDFEC", "6|16|5581EE,12|28|5F84ED,28|0|E1E1EE,40|-9|D1D1DF,37|12|4D76DD,44|21|6085EF,-9|7|D1E0F4,6|-7|D2D1E0,8|-2|DBDEEE", 0, 0.9, "双锤子"
+    )
 }
 
