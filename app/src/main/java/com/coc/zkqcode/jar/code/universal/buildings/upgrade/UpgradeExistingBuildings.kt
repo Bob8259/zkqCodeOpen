@@ -167,6 +167,7 @@ private suspend fun upgradeWalls(currentBase: BaseType, wallType: WallType): Loo
         }
     }
     val resources = recognizeResources()
+    ShowMessage(resources.toString())
     val currentResourcePercentage = calculateResourcesPercentage()
     TouchActions.tap(hammer.x, hammer.y, delayTime = 500)
     // Check for resource availability immediately after clicking upgrade
@@ -194,10 +195,17 @@ private suspend fun upgradeWalls(currentBase: BaseType, wallType: WallType): Loo
             TouchActions.tap(1130, 54, delayTime = 500)
             val upgradeCrossMark = findMultiColorsUntil(schemas = listOf(MyColors.UpgradeWallCrossMark), duration = 1000)
             if (upgradeCrossMark != null) {
-                repeat(upgradableNumber) {
+                repeat(upgradableNumber + 1) {
                     TouchActions.tap(upgradeCrossMark.x, upgradeCrossMark.y, delayTime = 50)
                 }
-                val doubleHammer = findMultiColorsUntil(schemas = listOf(MyColors.DoubleHammer, MyColors.UpgradeHammer), duration = 300)
+                // Rescope both hammer schemas to match the elixir search direction when needed (same pattern as line 153-155)
+                val doubleHammerSchema = ColorSchema.rescope(
+                    MyColors.DoubleHammer, MyColors.DoubleHammer.x1, MyColors.DoubleHammer.y1, MyColors.DoubleHammer.x2, MyColors.DoubleHammer.y2, searchDirection
+                )
+                val upgradeHammerSchema = ColorSchema.rescope(
+                    MyColors.UpgradeHammer, MyColors.UpgradeHammer.x1, MyColors.UpgradeHammer.y1, MyColors.UpgradeHammer.x2, MyColors.UpgradeHammer.y2, searchDirection
+                )
+                val doubleHammer = findMultiColorsUntil(schemas = listOf(doubleHammerSchema, upgradeHammerSchema), duration = 300)
                 if (doubleHammer != null) {
                     TouchActions.tap(doubleHammer.x, doubleHammer.y, delayTime = 500)
                     TouchActions.tap(882, 440, delayTime = 300)
