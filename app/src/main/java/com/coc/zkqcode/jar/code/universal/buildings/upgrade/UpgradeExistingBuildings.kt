@@ -157,9 +157,7 @@ private suspend fun upgradeWalls(currentBase: BaseType, wallType: WallType): Loo
     if (wallType == WallType.Elixir) {
         // Rescope search area for elixir upgrade icon relative to hammer position
         val elixirIconSchema = ColorSchema.rescope(
-            MyColors.smallElixirUpgradeIcon,
-            hammer.x + 45, hammer.y - 60,
-            hammer.x + 80, hammer.y - 10
+            MyColors.smallElixirUpgradeIcon, hammer.x + 45, hammer.y - 60, hammer.x + 80, hammer.y - 10
         )
         val smallElixirUpgradeIcon = findMultiColors(schema = elixirIconSchema)
         if (smallElixirUpgradeIcon == null) {
@@ -169,6 +167,7 @@ private suspend fun upgradeWalls(currentBase: BaseType, wallType: WallType): Loo
         }
     }
     val resources = recognizeResources()
+    val currentResourcePercentage = calculateResourcesPercentage()
     TouchActions.tap(hammer.x, hammer.y, delayTime = 500)
     // Check for resource availability immediately after clicking upgrade
     if (findMultiColors(schema = if (currentBase == BaseType.Main) MyColors.MainBaseInsufficientResources else MyColors.BuilderBaseInsufficientResources) != null) {
@@ -176,7 +175,6 @@ private suspend fun upgradeWalls(currentBase: BaseType, wallType: WallType): Loo
         return LoopAction.Break
     }
     if (isBatchUpgrade) {
-
         if ((wallType == WallType.Gold && resources.gold < 10000) || (wallType == WallType.Elixir && resources.elixir < 10000)) {
             // Insufficient resources for batch upgrade, show detected values and fall back to normal upgrade
             ShowMessage("批量刷墙资源不足（金币: ${resources.gold}, 圣水: ${resources.elixir}），回退到普通刷墙")
@@ -184,7 +182,6 @@ private suspend fun upgradeWalls(currentBase: BaseType, wallType: WallType): Loo
             return LoopAction.Proceed
         } else {
             val wallCost = recognizeUpgradeResources(currentBase)
-            val currentResourcePercentage = calculateResourcesPercentage()
             val thresholds = 25.coerceAtLeast(getConfigRuntime(Schema.MAIN_BASE_SETTINGS.UPGRADE_WALL_THRESHOLD.key).toInt())
             // Calculate how many walls we can upgrade while keeping resources above the threshold
             val currentResource = if (wallType == WallType.Gold) resources.gold else resources.elixir
@@ -193,8 +190,22 @@ private suspend fun upgradeWalls(currentBase: BaseType, wallType: WallType): Loo
             val targetResource = fullResource * (thresholds / 100.0)
             val usableResource = currentResource - targetResource
             val upgradableNumber = if (wallCost > 0) kotlin.math.ceil(usableResource / wallCost).toInt().coerceAtLeast(0) else 0
-            ShowMessage("升级单个城墙花费：$wallCost\n可升级数量：$upgradableNumber")
-            delayWithMultiplier(1000000)
+            ShowMessage("升级单个城墙花费：$wallCost\n当前资源数量：${currentResource}，当前资源百分比：${currentPercent}\n可升级数量：$upgradableNumber")
+            TouchActions.tap(1130, 54, delayTime = 500)
+            val upgradeCrossMark = findMultiColorsUntil(schemas = listOf(MyColors.UpgradeWallCrossMark), duration = 1000)
+            if (upgradeCrossMark != null) {
+                repeat(upgradableNumber) {
+                    TouchActions.tap(upgradeCrossMark.x, upgradeCrossMark.y, delayTime = 50)
+                }
+                val doubleHammer = findMultiColorsUntil(schemas = listOf(MyColors.DoubleHammer, MyColors.UpgradeHammer), duration = 300)
+                if (doubleHammer != null) {
+                    TouchActions.tap(doubleHammer.x, doubleHammer.y, delayTime = 500)
+                    TouchActions.tap(882, 440, delayTime = 300)
+                    TouchActions.tap(980, 635, delayTime = 300)
+                    clickRightBottom(1)
+                    return LoopAction.Proceed
+                }
+            }
         }
     } else {
         TouchActions.tap(980, 635, delayTime = 500)
