@@ -94,6 +94,7 @@ private suspend fun runTestCode() {
 //        upgradeAllExistingBuildings(listOf("城墙"), BaseType.Main, skipOrdering = true, WallType.Elixir)
         upgradeWalls(BaseType.Main)
         delay(20000000000)
+//        ShowMessage(recognizeUpgradeResources(BaseType.Main).toString())
     }
 }
 

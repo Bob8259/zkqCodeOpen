@@ -231,17 +231,21 @@ tasks.register("deployAndReload") {
             ?: throw GradleException("No jar found in assets directory")
         val devicePath = "/data/data/com.coc.zkqcode/files/assets/${jarFile.name}"
 
-        // 1. Push JAR to sdcard first (adb push can't write to /data/data directly)
+        // 1. Remove stale jar files from /sdcard before pushing
+        ProcessBuilder("adb", "shell", "rm", "-f", "/sdcard/*.jar")
+            .inheritIO().start().waitFor()
+
+        // 2. Push JAR to sdcard first (adb push can't write to /data/data directly)
         ProcessBuilder("adb", "push", jarFile.absolutePath, "/sdcard/${jarFile.name}")
             .inheritIO().start().waitFor()
 
-        // 2. Copy to private app dir with root
+        // 3. Copy to private app dir with root
         ProcessBuilder("adb", "shell", "su", "-c",
             "'cp /sdcard/${jarFile.name} $devicePath && chmod 644 $devicePath'")
             .inheritIO().start().waitFor()
         println("--- Pushed ${jarFile.name} to device ---")
 
-        // 3. Send reload broadcast
+        // 4. Send reload broadcast
         ProcessBuilder("adb", "shell", "am", "broadcast",
             "-a", "com.coc.zkqcode.DEBUG_RELOAD",
             "-n", "com.coc.zkqcode/.core.system.daemon.DebugReloadReceiver")
