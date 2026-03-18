@@ -23,7 +23,7 @@ suspend fun recognizeUpgradeResources(currentBase: BaseType): Int {
         endX = endX, endY = endY,
         useChinese = false,
         applyPreprocess = true,
-        threshold = 230
+        threshold = 230,
     )
 
     // Join all recognized text lines and extract the numeric value

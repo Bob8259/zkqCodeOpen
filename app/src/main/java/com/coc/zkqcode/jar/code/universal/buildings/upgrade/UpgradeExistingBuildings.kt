@@ -15,6 +15,7 @@ import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.recognizer.recognizeResources
+import com.coc.zkqcode.jar.code.universal.recognizer.recognizeUpgradeResources
 import com.coc.zkqcode.jar.code.universal.smalltools.getBooleanConfigRuntime
 import com.coc.zkqcode.jar.code.universal.smalltools.getConfigRuntime
 import com.coc.zkqcode.jar.ui.schema.Schema
@@ -134,7 +135,12 @@ suspend fun upgradeAllExistingBuildings(buildings: List<String>, currentBase: Ba
 }
 
 private suspend fun upgradeWalls(currentBase: BaseType, wallType: WallType): LoopAction {
-    ShowMessage("刷墙类型：${wallType.name}")
+    // Map wall type to localized resource name
+    val wallTypeName = when (wallType) {
+        WallType.Gold -> "金币"
+        WallType.Elixir -> "圣水"
+    }
+    ShowMessage("刷墙类型：$wallTypeName")
     TouchActions.tap(1230, 40, delayTime = 500)//Tap gold bar
     TouchActions.tap(1230, 40, delayTime = 500)//Close distractions
     val isBatchUpgrade = if (currentBase == BaseType.Main) {
@@ -143,38 +149,56 @@ private suspend fun upgradeWalls(currentBase: BaseType, wallType: WallType): Loo
         getBooleanConfigRuntime(Schema.BUILDER_BASE_SETTINGS.BUILDER_BASE_BATCH_WALL_UPGRADE_SETTINGS.key)
     }
     val searchDirection = if (wallType == WallType.Gold) 0 else 1
-
-    if (isBatchUpgrade) {
-        val resources = recognizeResources()
-        val currentResourcePercentage = calculateResourcesPercentage()
-    } else {
-        // Rescope the hammer schema to use searchDirection for wall-type-specific search
-        val hammerSchema = ColorSchema.rescope(
-            MyColors.UpgradeHammer, MyColors.UpgradeHammer.x1, MyColors.UpgradeHammer.y1, MyColors.UpgradeHammer.x2, MyColors.UpgradeHammer.y2, searchDirection
+    // Rescope the hammer schema to use searchDirection for wall-type-specific search
+    val hammerSchema = ColorSchema.rescope(
+        MyColors.UpgradeHammer, MyColors.UpgradeHammer.x1, MyColors.UpgradeHammer.y1, MyColors.UpgradeHammer.x2, MyColors.UpgradeHammer.y2, searchDirection
+    )
+    val hammer = findMultiColorsUntil(schemas = listOf(hammerSchema), duration = 1000) ?: return LoopAction.Continue
+    if (wallType == WallType.Elixir) {
+        // Rescope search area for elixir upgrade icon relative to hammer position
+        val elixirIconSchema = ColorSchema.rescope(
+            MyColors.smallElixirUpgradeIcon,
+            hammer.x + 45, hammer.y - 60,
+            hammer.x + 80, hammer.y - 10
         )
-        val hammer = findMultiColorsUntil(schemas = listOf(hammerSchema), duration = 1000) ?: return LoopAction.Continue // Should not happen if build was found, but be safe
-        if (wallType == WallType.Elixir) {
-            // Rescope search area for elixir upgrade icon relative to hammer position
-            val elixirIconSchema = ColorSchema.rescope(
-                MyColors.smallElixirUpgradeIcon,
-                hammer.x + 45, hammer.y - 60,
-                hammer.x + 80, hammer.y - 10
-            )
-            val smallElixirUpgradeIcon = findMultiColors(schema = elixirIconSchema)
-            if (smallElixirUpgradeIcon == null) {
-                ShowMessage("圣水刷墙失败，未找到圣水升级标志")
-                delayWithMultiplier(500)
-                return LoopAction.Break
-            }
+        val smallElixirUpgradeIcon = findMultiColors(schema = elixirIconSchema)
+        if (smallElixirUpgradeIcon == null) {
+            ShowMessage("圣水刷墙失败，未找到圣水升级标志")
+            delayWithMultiplier(500)
+            return LoopAction.Break
         }
-        TouchActions.tap(hammer.x, hammer.y, delayTime = 500)
+    }
+    val resources = recognizeResources()
+    TouchActions.tap(hammer.x, hammer.y, delayTime = 500)
+    // Check for resource availability immediately after clicking upgrade
+    if (findMultiColors(schema = if (currentBase == BaseType.Main) MyColors.MainBaseInsufficientResources else MyColors.BuilderBaseInsufficientResources) != null) {
+        clickRightBottom(1)
+        return LoopAction.Break
+    }
+    if (isBatchUpgrade) {
 
-        // Check for resource availability immediately after clicking upgrade
-        if (findMultiColors(schema = if (currentBase == BaseType.Main) MyColors.MainBaseInsufficientResources else MyColors.BuilderBaseInsufficientResources) != null) {
-            clickRightBottom(1)
-            return LoopAction.Break // insufficient resources for this building, skip to next building type
+        if ((wallType == WallType.Gold && resources.gold < 10000) || (wallType == WallType.Elixir && resources.elixir < 10000)) {
+            // Insufficient resources for batch upgrade, show detected values and fall back to normal upgrade
+            ShowMessage("批量刷墙资源不足（金币: ${resources.gold}, 圣水: ${resources.elixir}），回退到普通刷墙")
+            TouchActions.tap(980, 635, delayTime = 500)
+            return LoopAction.Proceed
+        } else {
+            val wallCost = recognizeUpgradeResources(currentBase)
+            val currentResourcePercentage = calculateResourcesPercentage()
+            val thresholds = 25.coerceAtLeast(getConfigRuntime(Schema.MAIN_BASE_SETTINGS.UPGRADE_WALL_THRESHOLD.key).toInt())
+            // Calculate how many walls we can upgrade while keeping resources above the threshold
+            val currentResource = if (wallType == WallType.Gold) resources.gold else resources.elixir
+            val currentPercent = if (wallType == WallType.Gold) currentResourcePercentage.gold else currentResourcePercentage.elixir
+            val fullResource = if (currentPercent > 0) currentResource / (currentPercent / 100.0) else 0.0
+            val targetResource = fullResource * (thresholds / 100.0)
+            val usableResource = currentResource - targetResource
+            val upgradableNumber = if (wallCost > 0) kotlin.math.ceil(usableResource / wallCost).toInt().coerceAtLeast(0) else 0
+            ShowMessage("升级单个城墙花费：$wallCost\n可升级数量：$upgradableNumber")
+            delayWithMultiplier(1000000)
         }
+    } else {
         TouchActions.tap(980, 635, delayTime = 500)
+        return LoopAction.Proceed
     }
     return LoopAction.Proceed
 }

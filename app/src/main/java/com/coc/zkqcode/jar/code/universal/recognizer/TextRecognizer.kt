@@ -34,7 +34,8 @@ object TextRecognizer {
         useChinese: Boolean = true,
         threshold: Int = 140,
         saveImage: Boolean = false,
-        applyPreprocess: Boolean = true
+        applyPreprocess: Boolean = true,
+        invertBinarization: Boolean = true
     ): List<RecognizedText> {
         val screenBuffer = ScreenCaptureManager.capture(asBitmap = true) as? Bitmap
             ?: logAndRestart("in TextRecognizer, screen capture failed.")
@@ -57,7 +58,7 @@ object TextRecognizer {
 
                 // 2. [Core Optimization] Apply preprocessing (optional)
                 val bitmapToRecognize = if (applyPreprocess) {
-                    preprocess(croppedBitmap, threshold = threshold)
+                    preprocess(croppedBitmap, threshold = threshold, invertBinarization = invertBinarization)
                 } else {
                     croppedBitmap
                 }
@@ -95,7 +96,7 @@ object TextRecognizer {
      * Image preprocessing: grayscale + binarization
      * Eliminates background interference, making it easier for ML Kit to recognize text contours
      */
-    private fun preprocess(src: Bitmap, threshold: Int): Bitmap {
+    private fun preprocess(src: Bitmap, threshold: Int, invertBinarization: Boolean): Bitmap {
         val width = src.width
         val height = src.height
         val pixels = IntArray(width * height)
@@ -110,8 +111,12 @@ object TextRecognizer {
             // Grayscale conversion formula
             val gray = (r * 0.299 + g * 0.587 + b * 0.114).toInt()
 
-            // Binarization: white background 0xFFFFFFFF, black text 0xFF000000
-            pixels[i] = if (gray > threshold) -0x1 else -0x1000000
+            // Binarization: swap foreground/background when invertBinarization is true
+            pixels[i] = if (gray > threshold) {
+                if (invertBinarization) -0x1000000 else -0x1
+            } else {
+                if (invertBinarization) -0x1 else -0x1000000
+            }
         }
 
         val out = createBitmap(width, height)
