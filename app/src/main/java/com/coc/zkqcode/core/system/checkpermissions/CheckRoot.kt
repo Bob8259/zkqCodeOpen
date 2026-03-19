@@ -57,7 +57,7 @@ fun CheckRootScreen() {
 
         RootStatus.ROOT_DENIED -> {
             FullScreenMessage(
-                "请授予 Root 权限（软件名：紫孔雀）否则无法正常运行 "
+                "请授予 Root 权限后正常运行（本软件名：紫孔雀） "
             )
         }
 
