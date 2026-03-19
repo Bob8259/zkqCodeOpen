@@ -64,5 +64,11 @@ object MyColors : IUIColors by UIColors, IFeatureColors by FeatureColors, IMainB
     val DoubleHammer = ColorSchema.parse(
         208, 503, 1130, 627, "DFDFEC", "6|16|5581EE,12|28|5F84ED,28|0|E1E1EE,40|-9|D1D1DF,37|12|4D76DD,44|21|6085EF,-9|7|D1E0F4,6|-7|D2D1E0,8|-2|DBDEEE", 0, 0.9, "双锤子"
     )
+    val BinarySlash = ColorSchema.parse(//Keep this comment: threshold 240
+        0, 0, 0, 0, "000000", "-1|2|000000,-2|3|000000,-3|5|000000,-4|7|000000,-5|8|000000,-5|9|000000,-5|10|000000,-6|11|000000,-7|13|000000", 0, 0.97
+    )
+    val BinaryOne = ColorSchema.parse(//Keep this comment: threshold 240
+        0, 0, 0, 0, "000000", "5|0|000000,4|11|000000,3|11|000000,-1|12|FFFFFF,-1|0|FFFFFF,0|12|FFFFFF,3|10|000000,3|7|000000,3|5|000000", 0, 0.9
+    )
 }
 

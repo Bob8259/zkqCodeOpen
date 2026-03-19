@@ -1,7 +1,10 @@
 package com.coc.zkqcode.jar.code.universal.buildings
 
+import android.graphics.Bitmap
+import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.bugreporter.BugReporter
+import com.coc.zkqcode.jar.code.colorschema.ColorSchema
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
@@ -54,11 +57,14 @@ object WorkerAndResearch {
             val endX = worker.x + 250
             val endY = 70
 
-            val results = TextRecognizer.recognize(startX, startY, endX, endY, useChinese = false, applyPreprocess = true, threshold = 230, saveImage = true)
+            val results = TextRecognizer.recognize(startX, startY, endX, endY, useChinese = false, applyPreprocess = true, threshold = 240)
 
             // Sort by x-axis position to ensure left-to-right reading order
             val combinedText = results.sortedBy { it.position?.left ?: 0 }.joinToString("") { it.text }
-            return parseWorkerInfo(combinedText)
+            val workerInfo = parseWorkerInfo(combinedText)
+            if (workerInfo != WorkerInfo(0, 0)) return workerInfo
+            // Fallback: OCR failed, use color-based pattern matching on the preprocessed bitmap
+            return detectWorkerByColorMatch(startX, startY, endX, endY)
         }
         ShowMessage("未检测到${baseName}工人，已将错误截图保存到/sdcard/zkqFiles/bugReporter\n请反馈给作者")
         BugReporter.takeScreenshot("${bugTag}_Not_Detected")
@@ -99,12 +105,58 @@ object WorkerAndResearch {
             // Sort by x-axis position to ensure left-to-right reading order
             val combinedText = results.sortedBy { it.position?.left ?: 0 }.joinToString("") { it.text }
             val researcherInfo = parseWorkerInfo(combinedText)
-            ShowMessage("${baseName}研究数量：${researcherInfo.available}/${researcherInfo.total}")
-            return researcherInfo.available > 0
+            if (researcherInfo != WorkerInfo(0, 0)) {
+                ShowMessage("${baseName}研究数量：${researcherInfo.available}/${researcherInfo.total}")
+                return researcherInfo.available > 0
+            }
+
+            // Fallback: OCR failed, use color-based pattern matching
+            val fallback = detectWorkerByColorMatch(startX, startY, endX, endY)
+            if (fallback != WorkerInfo(0, 0)) {
+                ShowMessage("${baseName}研究数量：${fallback.available}/${fallback.total}")
+                return fallback.available > 0
+            }
+            ShowMessage("${baseName}研究数量：0/0")
+            return false
         }
         ShowMessage("未检测到${baseName}研究，已将错误截图保存到/sdcard/zkqFiles/bugReporter\n请反馈给作者")
         BugReporter.takeScreenshot("${bugTag}_Not_Detected")
         return false
+    }
+
+    /**
+     * Fallback detection: use findMultiColors on a preprocessed (binarized) bitmap
+     * to match BinarySlash and BinaryOne patterns when OCR fails.
+     */
+    private suspend fun detectWorkerByColorMatch(
+        startX: Int, startY: Int, endX: Int, endY: Int
+    ): WorkerInfo {
+        val screenBuffer = ScreenCaptureManager.capture(asBitmap = true) as? Bitmap
+            ?: return WorkerInfo(0, 0)
+
+        val cropWidth = endX - startX
+        val cropHeight = endY - startY
+        if (startX + cropWidth > screenBuffer.width || startY + cropHeight > screenBuffer.height) {
+            return WorkerInfo(0, 0)
+        }
+
+        val croppedBitmap = Bitmap.createBitmap(screenBuffer, startX, startY, cropWidth, cropHeight)
+        // Apply the same preprocess as TextRecognizer.recognize (grayscale + binarization)
+        val preprocessed = TextRecognizer.preprocess(croppedBitmap, threshold = 240, invertBinarization = true)
+
+        // Step 1: find the slash character "/" in the preprocessed bitmap
+        val slashSchema = ColorSchema.rescope(MyColors.BinarySlash, 0, 0, cropWidth, cropHeight)
+        val slashPoint = findMultiColors(bitmap = preprocessed, schema = slashSchema)
+            ?: return WorkerInfo(0, 0)
+
+        // Step 2: find the digit "1" to the left of the slash
+        val oneSchema = ColorSchema.rescope(MyColors.BinaryOne, 0, 0, slashPoint.x, cropHeight)
+        val onePoint = findMultiColors(bitmap = preprocessed, schema = oneSchema)
+        if (onePoint != null) {
+            return WorkerInfo(1, 1)
+        }
+
+        return WorkerInfo(0, 0)
     }
 
     /**
