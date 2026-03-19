@@ -91,11 +91,11 @@ private suspend fun findAndActivateAccount(searchOrder: Iterable<Int>): Int? {
 private suspend fun runTestCode() {
     while (true) {
 //        enterMainScreen()
-        ShowMessage(calculateResourcesPercentage(BaseType.Builder).toString())
+        ShowMessage(WorkerAndResearch.detectWorkerNumber(BaseType.Builder).toString())
 
-        upgradeWalls(BaseType.Builder)
+//        upgradeWalls(BaseType.Builder)
         delay(1000)
-        delay(20000000000)
+//        delay(20000000000)
 //        ShowMessage(recognizeUpgradeResources(BaseType.Main).toString())
     }
 }

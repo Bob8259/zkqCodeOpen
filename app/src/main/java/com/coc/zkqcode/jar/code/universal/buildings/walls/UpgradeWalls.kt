@@ -30,25 +30,28 @@ suspend fun upgradeWalls(currentBase: BaseType): Boolean {
     }
     val thresholds = 25.coerceAtLeast(getConfigRuntime(Schema.MAIN_BASE_SETTINGS.UPGRADE_WALL_THRESHOLD.key).toInt())
     val startTime = System.currentTimeMillis()
-    val timeoutMs = 10 * 60 * 1000L // 10 minutes
+    val timeoutMs = 5 * 60 * 1000L // 5 minutes
 
-    while (true) {
-        // Break if 10 minutes have passed
-        if (System.currentTimeMillis() - startTime >= timeoutMs) break
+    // 1. Gold Upgrade Loop
+    while (System.currentTimeMillis() - startTime < timeoutMs) {
         val currentResourcePercentage = calculateResourcesPercentage(currentBase)
-        // Break if both resources are below threshold
-        ShowMessage("当前金币百分比${currentResourcePercentage.gold}，圣水百分比${currentResourcePercentage.elixir}\n设置阈值${thresholds}")
-        if (currentResourcePercentage.gold < thresholds && currentResourcePercentage.elixir < thresholds) {
-            break
-        }
-        if (currentResourcePercentage.gold >= thresholds) {
-            if (!upgradeAllExistingBuildings(listOf("城墙"), currentBase, skipOrdering = true, WallType.Gold)) return false
-            delayWithMultiplier(300)
-        }
-        if (currentResourcePercentage.elixir >= thresholds) {
-            if (!upgradeAllExistingBuildings(listOf("城墙"), currentBase, skipOrdering = true, WallType.Elixir)) return false
-            delayWithMultiplier(300)
-        }
+        ShowMessage("当前金币百分比${currentResourcePercentage.gold}\n设置阈值${thresholds}")
+        
+        if (currentResourcePercentage.gold < thresholds) break
+        
+        if (!upgradeAllExistingBuildings(listOf("城墙"), currentBase, skipOrdering = true, WallType.Gold)) return false
+        delayWithMultiplier(300)
+    }
+
+    // 2. Elixir Upgrade Loop
+    while (System.currentTimeMillis() - startTime < timeoutMs) {
+        val currentResourcePercentage = calculateResourcesPercentage(currentBase)
+        ShowMessage("当前圣水百分比${currentResourcePercentage.elixir}\n设置阈值${thresholds}")
+        
+        if (currentResourcePercentage.elixir < thresholds) break
+        
+        if (!upgradeAllExistingBuildings(listOf("城墙"), currentBase, skipOrdering = true, WallType.Elixir)) return false
+        delayWithMultiplier(300)
     }
     return true
 }
