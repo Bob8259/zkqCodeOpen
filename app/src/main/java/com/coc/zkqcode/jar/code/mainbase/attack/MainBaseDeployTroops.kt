@@ -46,7 +46,9 @@ suspend fun mainBaseDeployTroops() {
 private suspend fun deployOthers() {
     //Deploy other troops and spells
     repeat(10) {
-        val troopsOrSpells = findMultiColorsUntil(schemas = listOf(MyColors.SpellColorAtDeploymentBar, MyColors.TroopColorAtDeploymentBar), duration = 100)
+        val troopsOrSpells = findMultiColorsUntil(
+            schemas = listOf(MyColors.SpellColorAtDeploymentBar, MyColors.TroopColorAtDeploymentBar, MyColors.SuperTroopColorAtDeploymentBar, MyColors.SpecialTroopColorAtDeploymentBar), duration = 100
+        )
         if (troopsOrSpells != null) {
             TouchActions.tap(troopsOrSpells.x, troopsOrSpells.y, delayTime = 300)
             repeat(3) {
@@ -64,6 +66,7 @@ private suspend fun deployHeroes() {
         MyColors.QueenArcher,
         MyColors.QueenArcher2,
         MyColors.MinionPrince,
+        MyColors.MinionPrince2,
         MyColors.GrandWarden,
         MyColors.GrandWarden2,
         MyColors.GrandWarden3,
@@ -73,8 +76,7 @@ private suspend fun deployHeroes() {
     )
     for (hero in heroes) {
         // Take a fresh screenshot for each hero to get the latest state of the bar
-        val screenBuffer = ScreenCaptureManager.capture(asBitmap = false)
-                as? ScreenCaptureManager.CaptureResult ?: continue
+        val screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult ?: continue
         val found = findMultiColors(schema = hero, byteBuffer = screenBuffer)
         if (found != null) {
             // Tap the hero icon in the deployment bar to select it

@@ -34,6 +34,7 @@ interface IMainBaseAttackColors {
     val QueenArcher: ColorSchema
     val QueenArcher2: ColorSchema
     val MinionPrince: ColorSchema
+    val MinionPrince2: ColorSchema
     val GrandWarden: ColorSchema
     val GrandWarden2: ColorSchema
     val GrandWarden3: ColorSchema
@@ -42,6 +43,8 @@ interface IMainBaseAttackColors {
     val DragonDuke: ColorSchema
     val TroopColorAtDeploymentBar: ColorSchema
     val SpellColorAtDeploymentBar: ColorSchema
+    val SuperTroopColorAtDeploymentBar: ColorSchema
+    val SpecialTroopColorAtDeploymentBar: ColorSchema
 }
 
 object MainBaseAttackColors : IMainBaseAttackColors {
@@ -130,6 +133,7 @@ object MainBaseAttackColors : IMainBaseAttackColors {
     override val QueenArcher = ColorSchema.parse(
         80, 590, 1200, 720, "DAB9DA", "9|0|83AAF6,19|0|883044,28|0|AC3F66,37|0|B34169,0|15|1C0814,9|15|253B6F,19|15|8A2E4E,28|15|37111F,37|15|872D4E", 0, 0.9, "弓箭女皇"
     )
+
     // Second queen archer deploy bar color variant
     override val QueenArcher2 = ColorSchema.parse(
         80, 590, 1200, 720, "576EB9", "11|0|8898F2,22|0|5F87E0,32|0|AB3C64,43|0|B24169,0|11|6E82B3,11|11|304986,22|11|913457,32|11|A23B60,43|11|6D253E", 0, 0.9, "弓箭女皇2"
@@ -137,12 +141,18 @@ object MainBaseAttackColors : IMainBaseAttackColors {
     override val MinionPrince = ColorSchema.parse(
         80, 590, 1200, 720, "1C1B1B", "8|0|82B2DE,17|0|FFF77C,25|0|E2B22D,33|0|CE9C0E,0|11|221201,8|11|3F3322,17|11|311D05,25|11|965A00,33|11|8B5810", 0, 0.9, "亡灵王子"
     )
+
+    // Second minion prince deploy bar color variant
+    override val MinionPrince2 = ColorSchema.parse(
+        80, 590, 1200, 720, "A47033", "9|0|433F40,18|0|98D5FF,27|0|FDD44B,36|0|DAA700,0|13|1E0E01,9|13|2E1B01,18|13|574712,27|13|1D0000,36|13|804D07", 0, 0.9, "亡灵王子2"
+    )
     override val GrandWarden = ColorSchema.parse(
         80, 590, 1200, 720, "57054A", "11|0|742377,23|0|831B79,35|0|A264C8,46|0|D14DC9,0|11|922A82,11|11|A0419C,23|11|69125F,35|11|AF29A4,46|11|410E3C", 0, 0.9, "大守护者"
     )
     override val GrandWarden2 = ColorSchema.parse(
         80, 590, 1200, 720, "882673", "11|0|902086,23|0|6D1162,35|0|BC10AC,46|0|C234B7,0|11|881E71,11|11|8F2D88,23|11|9F2494,35|11|C843C0,46|11|CD47C5", 0, 0.9, "大守护者2"
     )
+
     // Third grand warden deploy bar color variant
     override val GrandWarden3 = ColorSchema.parse(
         80, 590, 1200, 720, "771262", "11|0|9439A1,23|0|651360,35|0|81BAFB,46|0|CB43C0,0|14|942C84,11|14|993E99,23|14|1E030F,35|14|C941C1,46|14|CE45C6", 0, 0.9, "大守护者3"
@@ -150,6 +160,7 @@ object MainBaseAttackColors : IMainBaseAttackColors {
     override val RoyalChampion = ColorSchema.parse(
         80, 590, 1200, 720, "467BDC", "7|0|133070,15|0|0F2D62,22|0|23280B,29|0|4B5D71,0|14|3871D3,7|14|112A5B,15|14|386BCB,22|14|3D63C2,29|14|2D3C74", 0, 0.9, "飞盾战神"
     )
+
     // Second royal champion deploy bar color variant
     override val RoyalChampion2 = ColorSchema.parse(
         80, 590, 1200, 720, "497DDE", "8|0|628BF1,16|0|2F65C4,24|0|2B65C3,32|0|2B58A9,0|11|366ED0,8|11|123069,16|11|3368C8,24|11|395FBA,32|11|394173", 0, 0.9, "飞盾战神2"
@@ -161,7 +172,12 @@ object MainBaseAttackColors : IMainBaseAttackColors {
         80, 590, 1200, 720, "D08E4C", "5|0|D18F4D,11|0|D1904E,16|0|D19150,21|0|D29250,0|5|BE8444,5|5|BF8544,11|5|C08646,16|5|C18848,21|5|C1894A", 0, 0.9, "部队颜色"
     )
     override val SpellColorAtDeploymentBar = ColorSchema.parse(
-        80, 590, 1200, 720, "D95371", "8|0|DA5372,17|0|DA5372,25|0|DA5372,33|0|DA5372,0|5|C64A61,8|5|C64A61,17|5|C64B62,25|5|C74B63,33|5|C74B63", 0, 0.9, "法术颜色"
+        80, 590, 1200, 720, "AF4056", "4|0|C34762,8|0|D14E6B,11|0|D6506E,15|0|D6506E,0|6|A53C4E,4|6|B44257,8|6|BF485F,11|6|BF485F,15|6|BF475E", 0, 0.9, "法术颜色"
     )
-
+    override val SuperTroopColorAtDeploymentBar = ColorSchema.parse(
+        80, 590, 1200, 720, "3E38D1", "3|0|3E38D2,6|0|3E38D2,9|0|3E38D2,12|0|3E38D2,0|5|3832B4,3|5|3832B5,6|5|3832B5,9|5|3932B5,12|5|3832B6", 0, 0.9, "超级兵颜色"
+    )
+    override val SpecialTroopColorAtDeploymentBar = ColorSchema.parse(
+        80, 590, 1200, 720, "F7E2D1", "3|0|F7E2D1,6|0|F7E2D1,9|0|F7E2D1,12|0|F7E2D1,0|7|DDC5B2,3|7|DDC5B3,6|7|DFC6B3,9|7|DEC7B3,12|7|DEC6B3", 0, 0.96, "活动兵颜色"
+    )
 }
