@@ -51,7 +51,7 @@ suspend fun detectBuildingList(excludeNewBuildings: Boolean = false): BuildingDe
         val y = pos.top + startY
 
         val greenCount = countGreenPixelsInArea(screenBuffer, x - 15, y - 3, x, y + 20)
-        if (greenCount > 30 && !item.text.startsWith("新")) {
+        if (greenCount >20 && !item.text.startsWith("新")) {
             item.copy(text = "新${item.text}")
         } else {
             item
