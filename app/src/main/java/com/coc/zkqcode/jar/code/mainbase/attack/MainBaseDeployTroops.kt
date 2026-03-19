@@ -1,6 +1,7 @@
 package com.coc.zkqcode.jar.code.mainbase.attack
 
 
+import android.text.method.Touch
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
@@ -46,14 +47,21 @@ suspend fun mainBaseDeployTroops() {
 private suspend fun deployOthers() {
     //Deploy other troops and spells
     repeat(10) {
-        val troopsOrSpells = findMultiColorsUntil(
-            schemas = listOf(MyColors.SpellColorAtDeploymentBar, MyColors.TroopColorAtDeploymentBar, MyColors.SuperTroopColorAtDeploymentBar, MyColors.SpecialTroopColorAtDeploymentBar), duration = 100
+        val troops = findMultiColorsUntil(
+            schemas = listOf(MyColors.TroopColorAtDeploymentBar, MyColors.SuperTroopColorAtDeploymentBar, MyColors.SpecialTroopColorAtDeploymentBar), duration = 100
         )
-        if (troopsOrSpells != null) {
-            TouchActions.tap(troopsOrSpells.x, troopsOrSpells.y, delayTime = 300)
+        if (troops != null) {
+            TouchActions.tap(troops.x, troops.y, delayTime = 300)
             repeat(3) {
-                TouchActions.tap(310, 247, delayTime = 300)
-                TouchActions.tap(386, 222, delayTime = 300)
+                TouchActions.tap(310, 247, delayTime = 100)
+                TouchActions.tap(386, 222, delayTime = 100)
+            }
+        }
+        val spells = findMultiColorsUntil(schemas = listOf(MyColors.SpellColorAtDeploymentBar), duration = 100)
+        if (spells != null) {
+            TouchActions.tap(spells.x, spells.y, delayTime = 300)
+            repeat(3) {
+                TouchActions.tap(328, 366, delayTime = 300)
             }
         }
     }
