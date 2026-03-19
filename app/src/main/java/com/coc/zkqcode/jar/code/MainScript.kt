@@ -3,6 +3,7 @@ package com.coc.zkqcode.jar.code
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.jar.code.builderbase.playBuilderBase
+import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.buildings.BaseType
 import com.coc.zkqcode.jar.code.universal.buildings.WorkerAndResearch
 import com.coc.zkqcode.jar.code.mainbase.playMainBase
@@ -13,6 +14,7 @@ import com.coc.zkqcode.jar.code.universal.buildings.upgrade.upgradeAllExistingBu
 import com.coc.zkqcode.jar.code.universal.buildings.upgrade.upgradeBuildings
 import com.coc.zkqcode.jar.code.universal.buildings.walls.calculateResourcesPercentage
 import com.coc.zkqcode.jar.code.universal.buildings.walls.upgradeWalls
+import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.recognizer.recognizeResources
 import com.coc.zkqcode.jar.code.universal.recognizer.recognizeUpgradeResources
@@ -91,11 +93,11 @@ private suspend fun findAndActivateAccount(searchOrder: Iterable<Int>): Int? {
 private suspend fun runTestCode() {
     while (true) {
 //        enterMainScreen()
-        ShowMessage(WorkerAndResearch.detectWorkerNumber(BaseType.Builder).toString())
+//        ShowMessage(findMultiColorsUntil(schemas = listOf(MyColors.Upgrade10WallsGreenCrossMark), duration = 1000).toString())
 
-//        upgradeWalls(BaseType.Builder)
+        upgradeWalls(BaseType.Builder)
         delay(1000)
-//        delay(20000000000)
+        delay(20000000000)
 //        ShowMessage(recognizeUpgradeResources(BaseType.Main).toString())
     }
 }

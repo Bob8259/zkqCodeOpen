@@ -195,10 +195,22 @@ private suspend fun upgradeWalls(currentBase: BaseType, wallType: WallType): Loo
             val upgradeCrossMark = findMultiColorsUntil(schemas = listOf(MyColors.UpgradeWallCrossMark), duration = 1000)
             if (upgradeCrossMark != null) {
                 TouchActions.tap(upgradeCrossMark.x, upgradeCrossMark.y, delayTime = 500)
-                val upgradeGreenCrossMark = findMultiColorsUntil(schemas = listOf(MyColors.UpgradeWallGreenCrossMark), duration = 1000) ?: return LoopAction.Continue
-                repeat(upgradableNumber) {
-                    TouchActions.tap(upgradeGreenCrossMark.x, upgradeGreenCrossMark.y, delayTime = 50)
+                val upgrade10WallsGreenCrossMark = findMultiColorsUntil(schemas = listOf(MyColors.Upgrade10WallsGreenCrossMark), duration = 1000)
+                // Rescope to the right of the "10 walls" mark if found, otherwise use the original schema
+                val greenCrossMarkSchema = if (upgrade10WallsGreenCrossMark != null) {
+                    ColorSchema.rescope(
+                        MyColors.UpgradeWallGreenCrossMark, upgrade10WallsGreenCrossMark.x + 10, 490, 1100, 630
+                    )
+                } else {
+                    MyColors.UpgradeWallGreenCrossMark
                 }
+                val upgradeGreenCrossMark = findMultiColors(schema = greenCrossMarkSchema)
+                if (upgradeGreenCrossMark != null) {
+                    repeat(upgradableNumber) {
+                        TouchActions.tap(upgradeGreenCrossMark.x, upgradeGreenCrossMark.y, delayTime = 50)
+                    }
+                }
+
                 // Rescope both hammer schemas to match the elixir search direction when needed (same pattern as line 153-155)
                 val doubleHammerSchema = ColorSchema.rescope(
                     MyColors.DoubleHammer, MyColors.DoubleHammer.x1, MyColors.DoubleHammer.y1, MyColors.DoubleHammer.x2, MyColors.DoubleHammer.y2, searchDirection
@@ -207,7 +219,9 @@ private suspend fun upgradeWalls(currentBase: BaseType, wallType: WallType): Loo
                     MyColors.UpgradeHammer, MyColors.UpgradeHammer.x1, MyColors.UpgradeHammer.y1, MyColors.UpgradeHammer.x2, MyColors.UpgradeHammer.y2, searchDirection
                 )
                 val doubleHammer = findMultiColorsUntil(schemas = listOf(doubleHammerSchema, upgradeHammerSchema), duration = 300)
+
                 if (doubleHammer != null) {
+
                     TouchActions.tap(doubleHammer.x, doubleHammer.y, delayTime = 500)
                     TouchActions.tap(882, 440, delayTime = 300)
                     //Just in case there is only one wall can be upgraded, we need to click the normal upgrade button again
