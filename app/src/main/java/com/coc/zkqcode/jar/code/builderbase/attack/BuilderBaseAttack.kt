@@ -88,7 +88,7 @@ private suspend fun realAttack(mode: String, battleNumber: Int = 1, battleTimes:
         if(!checkReconnections()) return false
         val builderBaseStarBonus = findMultiColors(schema = MyColors.BuilderBaseStarBonus)
         if (builderBaseStarBonus != null) {
-            TouchActions.tap(builderBaseStarBonus.x, builderBaseStarBonus.y, delayTime = 200)
+            TouchActions.tap(builderBaseStarBonus.x + 10, builderBaseStarBonus.y + 10, delayTime = 200)
         }
         val attackNow = findMultiColors(schema = MyColors.AttackNow)
         if (attackNow != null) {

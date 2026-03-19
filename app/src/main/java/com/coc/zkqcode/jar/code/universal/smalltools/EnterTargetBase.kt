@@ -26,7 +26,7 @@ suspend fun enterMainBase(): Boolean {
         ShowMessage("尝试进入主世界中，剩余${"%.1f".format(remaining)}秒后退出\n请手动给主世界和夜世界切换默认场景")
         val builderBaseStarBonus = findMultiColors(schema = MyColors.BuilderBaseStarBonus)
         if (builderBaseStarBonus != null) {
-            TouchActions.tap(builderBaseStarBonus.x, builderBaseStarBonus.y, delayTime = 200)
+            TouchActions.tap(builderBaseStarBonus.x + 10, builderBaseStarBonus.y + 10, delayTime = 200)
         }
         if(!checkReconnections()) return false
         zoomSmallBuilderBase()
