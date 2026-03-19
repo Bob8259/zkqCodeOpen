@@ -7,11 +7,9 @@
 ## HomeScreen.kt（上号器 / 主页设置）
 
 - 上号器功能（用户手动注释）
-
 - 延时倍率（DELAY_MULTIPLIER）
 - 慢速调试模式（DEBUG_MODE）
 - 自动更新（AUTO_UPDATE）
-- 清空全部数据按钮
 - 批量创号入口（BatchCreateAccount 调用）
 
 ## BatchCreateAccount.kt（特殊设置）
@@ -45,12 +43,8 @@
 - 领宝库（COLLECT_CLAN_CASTLE）
 
 ### 城墙相关
-- 升级城墙（WALL_UPGRADE_SETTINGS）
-- 留1工人升级城墙（SAVE_WORKER）
 - 改装建筑（BUILDING_CONVERSION_SETTINGS）
 - 升级城墙失败后建造（UPGRADE_AFTER_FAIL_WALL_UPGRADE）
-- 批量升级城墙（BATCH_WALL_UPGRADE_SETTINGS）
-- 金水高于以下百分比后升级城墙（UPGRADE_WALL_THRESHOLD）
 
 ### 升级战宠及之后的所有主世界UI
 - 升级战宠（UPGRADE_PETS）及战宠选择列表
@@ -85,5 +79,3 @@
 - 上分模式（TROPHY_PUSHING_MODE）
 - 刷圣水车（ELIXIR_CART_FARMING）
 - 接取竞赛后，对战以下局数后切号（SWITCH_ACCOUNT_AFTER_BATTLES_WITH_TASKS）
-- 升级城墙（BUILDER_BASE_WALL_UPGRADE_SETTINGS）
-- 留1工人升级城墙（BUILDER_BASE_SAVE_WORKER）
