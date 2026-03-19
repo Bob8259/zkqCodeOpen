@@ -23,7 +23,7 @@ object GlobalSettings {
     val CREATE_START_ID = SettingDef("create_start_id", "创号开始序号", 1, "GLOBAL_SETTINGS")
     val CREATE_END_ID = SettingDef("create_end_id", "创号结束序号", 10, "GLOBAL_SETTINGS")
     val CREATE_PREFIX = SettingDef("create_prefix", "创号前缀", "紫孔雀", "GLOBAL_SETTINGS")
-    val ADD_SUFFIX_SETTING = SettingDef("add_suffix_setting", "添加后缀", 0, "GLOBAL_SETTINGS")
+    val ADD_SUFFIX_SETTING = SettingDef("add_suffix_setting", "添加数字后缀", 0, "GLOBAL_SETTINGS")
     val CREATE_GEM_BUILD = SettingDef("create_gem_build", "创号时宝石秒建筑", 0, "GLOBAL_SETTINGS")
     val GEM_COUNT = SettingDef("gem_count", "宝石数量", "", "GLOBAL_SETTINGS")
     val AFTER_KICK_OPTION = SettingDef("after_kick_option", "顶号后选项", "1", "GLOBAL_SETTINGS")

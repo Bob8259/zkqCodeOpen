@@ -268,9 +268,9 @@ fun HomeScreen(
                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 1f)
                         )
                     }
-                    /* item {
+                    item {
                         BatchCreateAccount()
-                    } */
+                    }
                 }
 
                 1 -> {

@@ -216,7 +216,7 @@ fun LoginScreen(onAdFreeClick: () -> Unit = {}) {
                                     }
                                     GlobalVars.configStates[GLOBAL_SETTINGS.GEM_COUNT.key]!!.value =
                                         gem
-                                    gemInfo = "登录成功！卡班宝石数量 $formattedGem"
+                                    gemInfo = "登录成功！卡班积分数量 $formattedGem"
                                 } else {
                                     gemInfo = "登录成功，但无法解析数据: $decrypted"
                                     showMessage = true
@@ -248,7 +248,7 @@ fun LoginScreen(onAdFreeClick: () -> Unit = {}) {
         )
         if (showMessage) {
             Text(
-                text = "登录后免广告，运行更高效！不登陆也可以运行。免广告每天花费0.2卡班宝石，用多久扣多久。",
+                text = "登录后免广告，运行更高效！不登陆也可以运行。免广告每天花费0.2卡班积分，用多久扣多久。",
                 style = MaterialTheme.typography.labelMedium
             )
             Text(
