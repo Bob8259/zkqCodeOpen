@@ -59,7 +59,10 @@ object MyColors : IUIColors by UIColors, IFeatureColors by FeatureColors, IMainB
         208, 503, 1130, 627, "FFFFFF", "16|0|0D0D0D,1|-16|0D0D0D,1|15|0D0D0D,-15|0|0D0D0D,-5|-6|0D0D0D,6|-6|0D0D0D,6|5|0D0D0D,-5|5|0D0D0D,0|9|FFFFFF", 0, 0.9,
     )
     val UpgradeWallGreenCrossMark = ColorSchema.parse(
-        208, 503, 1130, 627, "12E98F", "2|0|12E98F,2|-4|12E98F,1|3|12E98F,12|-7|12E98F,13|-5|12E98F,13|-3|12E98F,12|0|12E98F,12|2|12E98F,13|4|12E98F", 1, 0.9,
+        350, 495, 1100, 630, "12E98F", "-3|-3|12E98F,-3|-8|12E98F,-2|-11|12E98F,-2|-9|12E98F,-10|-6|12E98F,-15|-6|12E98F,-13|-3|12E98F,-13|-6|12E98F,-13|-11|12E98F", 0, 0.9,
+    )
+    val Upgrade10WallsGreenCrossMark = ColorSchema.parse(
+        350, 495, 1100, 630, "12E98F", "0|3|12E98F,0|6|12E98F,-12|4|12E98F,-23|2|12E98F,-34|1|12E98F,-34|4|12E98F,-34|5|12E98F,-22|-2|12E98F,-22|-5|12E98F", 0, 0.9,
     )
     val DoubleHammer = ColorSchema.parse(
         208, 503, 1130, 627, "DFDFEC", "6|16|5581EE,12|28|5F84ED,28|0|E1E1EE,40|-9|D1D1DF,37|12|4D76DD,44|21|6085EF,-9|7|D1E0F4,6|-7|D2D1E0,8|-2|DBDEEE", 0, 0.9, "双锤子"
