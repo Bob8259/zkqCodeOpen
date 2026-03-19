@@ -28,9 +28,16 @@ enum class WallType {
     Gold, Elixir
 }
 
+// Result type for upgradeAllExistingBuildings to signal caller loop behavior
+enum class UpgradeResult {
+    Success,   // Upgrade cycle completed normally (equivalent to old true)
+    Failure,   // Navigation/screen failure (equivalent to old false)
+    StopLoop   // Signals caller to break its loop (e.g., elixir icon not found)
+}
+
 // skipOrdering: when true, bypass getOrderedList filtering/sorting, used for wall-upgrade
 //wallType are only used for wall-upgrade
-suspend fun upgradeAllExistingBuildings(buildings: List<String>, currentBase: BaseType, skipOrdering: Boolean = false, wallType: WallType = WallType.Gold): Boolean {
+suspend fun upgradeAllExistingBuildings(buildings: List<String>, currentBase: BaseType, skipOrdering: Boolean = false, wallType: WallType = WallType.Gold): UpgradeResult {
     val uniqueBuildings = setOf(
         "建筑大师大本营",
         "宝石矿井",
@@ -88,7 +95,7 @@ suspend fun upgradeAllExistingBuildings(buildings: List<String>, currentBase: Ba
 
             // Pre-condition check: if it cannot continue building or worker not found, skip to next
             if (!checkContinueBuild(currentBase) || worker == null) {
-                return enterMainScreen() // If we can't build anymore, might as well stop everything
+                return if (enterMainScreen()) UpgradeResult.Success else UpgradeResult.Failure
             }
 
             TouchActions.tap(worker.x, worker.y, delayTime = 500)
@@ -126,12 +133,18 @@ suspend fun upgradeAllExistingBuildings(buildings: List<String>, currentBase: Ba
                 LoopAction.Break -> break
                 LoopAction.Continue -> continue
                 LoopAction.Proceed -> {}
+                LoopAction.ReturnStop -> {
+                    // Propagate stop signal to caller (e.g., elixir icon not found for wall upgrade)
+                    clickRightBottom(1)
+                    enterMainScreen()
+                    return UpgradeResult.StopLoop
+                }
             }
         }
     }
     // Final UI reset before returning to main screen
     clickRightBottom(1)
-    return enterMainScreen()
+    return if (enterMainScreen()) UpgradeResult.Success else UpgradeResult.Failure
 }
 
 private suspend fun upgradeWalls(currentBase: BaseType, wallType: WallType): LoopAction {
@@ -163,7 +176,8 @@ private suspend fun upgradeWalls(currentBase: BaseType, wallType: WallType): Loo
         if (smallElixirUpgradeIcon == null) {
             ShowMessage("圣水刷墙失败，未找到圣水升级标志")
             delayWithMultiplier(500)
-            return LoopAction.Break
+            // Signal caller to stop its wall-upgrade loop since no elixir walls are available
+            return LoopAction.ReturnStop
         }
     }
     val resources = recognizeResources()
@@ -373,6 +387,6 @@ private fun getOrderedList(buildings: List<String>, baseType: BaseType): List<St
 
 // Represents the loop control action returned by extracted upgrade functions
 private enum class LoopAction {
-    Break, Continue, Proceed
+    Break, Continue, Proceed, ReturnStop
 }
 

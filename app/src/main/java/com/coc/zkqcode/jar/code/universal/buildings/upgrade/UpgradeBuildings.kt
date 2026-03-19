@@ -71,7 +71,7 @@ suspend fun upgradeBuildings(currentBase: BaseType): Boolean {
                 if (!buildAllNewBuildings(currentBase)) return false
                 upgradeBuildings(currentBase)
             } else {
-                if (!upgradeAllExistingBuildings(upgradableList, currentBase)) return false
+                if (upgradeAllExistingBuildings(upgradableList, currentBase) == UpgradeResult.Failure) return false
             }
         }
     }

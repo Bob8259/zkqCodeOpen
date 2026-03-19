@@ -4,6 +4,7 @@ import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.buildings.BaseType
 import com.coc.zkqcode.jar.code.universal.buildings.WorkerAndResearch
+import com.coc.zkqcode.jar.code.universal.buildings.upgrade.UpgradeResult
 import com.coc.zkqcode.jar.code.universal.buildings.upgrade.WallType
 import com.coc.zkqcode.jar.code.universal.buildings.upgrade.upgradeAllExistingBuildings
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
@@ -39,7 +40,11 @@ suspend fun upgradeWalls(currentBase: BaseType): Boolean {
         
         if (currentResourcePercentage.gold < thresholds) break
         
-        if (!upgradeAllExistingBuildings(listOf("城墙"), currentBase, skipOrdering = true, WallType.Gold)) return false
+        when (upgradeAllExistingBuildings(listOf("城墙"), currentBase, skipOrdering = true, WallType.Gold)) {
+            UpgradeResult.Failure -> return false
+            UpgradeResult.StopLoop -> break
+            UpgradeResult.Success -> {}
+        }
         delayWithMultiplier(300)
     }
 
@@ -50,7 +55,11 @@ suspend fun upgradeWalls(currentBase: BaseType): Boolean {
         
         if (currentResourcePercentage.elixir < thresholds) break
         
-        if (!upgradeAllExistingBuildings(listOf("城墙"), currentBase, skipOrdering = true, WallType.Elixir)) return false
+        when (upgradeAllExistingBuildings(listOf("城墙"), currentBase, skipOrdering = true, WallType.Elixir)) {
+            UpgradeResult.Failure -> return false
+            UpgradeResult.StopLoop -> break
+            UpgradeResult.Success -> {}
+        }
         delayWithMultiplier(300)
     }
     return true
