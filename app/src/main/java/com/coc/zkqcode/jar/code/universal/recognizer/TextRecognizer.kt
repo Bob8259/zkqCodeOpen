@@ -96,7 +96,7 @@ object TextRecognizer {
      * Image preprocessing: grayscale + binarization
      * Eliminates background interference, making it easier for ML Kit to recognize text contours
      */
-    private fun preprocess(src: Bitmap, threshold: Int, invertBinarization: Boolean): Bitmap {
+    internal fun preprocess(src: Bitmap, threshold: Int, invertBinarization: Boolean): Bitmap {
         val width = src.width
         val height = src.height
         val pixels = IntArray(width * height)
