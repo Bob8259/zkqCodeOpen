@@ -98,7 +98,7 @@ suspend fun buildAllNewBuildings(currentBase: BaseType): Boolean {
     return enterMainScreen()
 }
 
-suspend fun checkContinueBuild(currentBase: BaseType): Boolean {
+suspend fun checkContinueBuild(currentBase: BaseType, isWallUpgrade: Boolean = false): Boolean {
     // 1. Determine base-specific data sources and config keys
     val isBuilder = currentBase == BaseType.Builder
     val workerNumber = WorkerAndResearch.detectWorkerNumber(currentBase)
@@ -112,8 +112,9 @@ suspend fun checkContinueBuild(currentBase: BaseType): Boolean {
     ShowMessage("${baseName}工人数量：${workerNumber.available}/${workerNumber.total}")
     // 3. Evaluate the exit condition:
     // No workers available OR exactly one worker available while "Save Worker" config is enabled.
+    // When isWallUpgrade is true, skip the save-worker check since the saved worker is reserved for walls.
     val isNoWorkerAvailable = workerNumber.available == 0
-    val isSavingLastWorker = workerNumber.available == 1 && getBooleanConfigRuntime(configKey)
+    val isSavingLastWorker = !isWallUpgrade && workerNumber.available == 1 && getBooleanConfigRuntime(configKey)
     return !(isNoWorkerAvailable || isSavingLastWorker)
 }
 

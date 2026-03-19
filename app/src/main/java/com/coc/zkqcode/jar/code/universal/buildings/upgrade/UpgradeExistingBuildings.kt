@@ -94,7 +94,8 @@ suspend fun upgradeAllExistingBuildings(buildings: List<String>, currentBase: Ba
             ) else findMultiColorsUntil(schemas = listOf(MyColors.MainBaseWorker, MyColors.MainBaseWorker2), duration = 1000)
 
             // Pre-condition check: if it cannot continue building or worker not found, skip to next
-            if (!checkContinueBuild(currentBase) || worker == null) {
+            // Pass skipOrdering as isWallUpgrade so the saved worker is available for wall upgrades
+            if (!checkContinueBuild(currentBase, isWallUpgrade = skipOrdering) || worker == null) {
                 return if (enterMainScreen()) UpgradeResult.Success else UpgradeResult.Failure
             }
 
@@ -220,7 +221,7 @@ private suspend fun upgradeWalls(currentBase: BaseType, wallType: WallType): Loo
                 }
                 val upgradeGreenCrossMark = findMultiColors(schema = greenCrossMarkSchema)
                 if (upgradeGreenCrossMark != null) {
-                    repeat(upgradableNumber) {
+                    repeat(upgradableNumber - 1) {
                         TouchActions.tap(upgradeGreenCrossMark.x, upgradeGreenCrossMark.y, delayTime = 50)
                     }
                 }

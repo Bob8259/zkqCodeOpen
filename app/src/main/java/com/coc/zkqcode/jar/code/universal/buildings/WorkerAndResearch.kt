@@ -1,6 +1,7 @@
 package com.coc.zkqcode.jar.code.universal.buildings
 
 import android.graphics.Bitmap
+import androidx.compose.ui.graphics.Color
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.bugreporter.BugReporter
@@ -78,7 +79,6 @@ object WorkerAndResearch {
     suspend fun detectResearch(baseType: BaseType): Boolean {
         // Must double-check to wait for a little bit, otherwise the detection will fail.
         if (!enterMainScreen(true)) return false
-
         val baseName = when (baseType) {
             BaseType.Builder -> "夜世界"; BaseType.Main -> "主世界"
         }
@@ -148,7 +148,9 @@ object WorkerAndResearch {
         val slashSchema = ColorSchema.rescope(MyColors.BinarySlash, 0, 0, cropWidth, cropHeight)
         val slashPoint = findMultiColors(bitmap = preprocessed, schema = slashSchema)
             ?: return WorkerInfo(0, 0)
-
+        val zeroSchema = ColorSchema.rescope(MyColors.BinaryZero, 0, 0, slashPoint.x, cropHeight)
+        val zeroPoint = findMultiColors(bitmap = preprocessed, schema = zeroSchema)
+        if (zeroPoint != null) return WorkerInfo(0, 0)
         // Step 2: find the digit "1" to the left of the slash
         val oneSchema = ColorSchema.rescope(MyColors.BinaryOne, 0, 0, slashPoint.x, cropHeight)
         val onePoint = findMultiColors(bitmap = preprocessed, schema = oneSchema)

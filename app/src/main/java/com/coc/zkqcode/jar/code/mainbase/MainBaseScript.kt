@@ -8,6 +8,7 @@ import com.coc.zkqcode.jar.code.mainbase.others.zoomSmallMainBase
 import com.coc.zkqcode.jar.code.mainbase.research.mainBaseResearch
 import com.coc.zkqcode.jar.code.universal.buildings.BaseType
 import com.coc.zkqcode.jar.code.universal.buildings.upgrade.upgradeBuildings
+import com.coc.zkqcode.jar.code.universal.buildings.walls.upgradeWalls
 import com.coc.zkqcode.jar.code.universal.smalltools.enterMainBase
 
 suspend fun playMainBase(): Boolean {
@@ -16,6 +17,7 @@ suspend fun playMainBase(): Boolean {
     if (!mainBaseTrainTroops()) return false
     if (!mainBaseAttack()) return false
     if (!mainBaseRemoveObstacles()) return false
+    if (!upgradeWalls(BaseType.Main)) return false
     if (!upgradeBuildings(BaseType.Main)) return false
     if (!mainBaseResearch()) return false
 

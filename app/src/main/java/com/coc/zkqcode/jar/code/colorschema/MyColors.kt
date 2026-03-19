@@ -56,7 +56,7 @@ object MyColors : IUIColors by UIColors, IFeatureColors by FeatureColors, IMainB
 
     //Universal Upgrade Colors
     val UpgradeWallCrossMark = ColorSchema.parse(
-        208, 503, 1130, 627, "FFFFFF", "16|0|0D0D0D,1|-16|0D0D0D,1|15|0D0D0D,-15|0|0D0D0D,-5|-6|0D0D0D,6|-6|0D0D0D,6|5|0D0D0D,-5|5|0D0D0D,0|9|FFFFFF", 0, 0.9,
+        208, 503, 1130, 627, "FFFFFF", "-8|-5|0D0D0D,11|-5|0D0D0D,11|6|0D0D0D,-10|6|0D0D0D,-7|0|FFFFFF,-1|12|FFFFFF,10|0|FFFFFF,-1|-11|FFFFFF,2|-11|FFFFFF", 0, 0.9,
     )
     val UpgradeWallGreenCrossMark = ColorSchema.parse(
         350, 495, 1100, 630, "12E98F", "-3|-3|12E98F,-3|-8|12E98F,-2|-11|12E98F,-2|-9|12E98F,-10|-6|12E98F,-15|-6|12E98F,-13|-3|12E98F,-13|-6|12E98F,-13|-11|12E98F", 0, 0.9,
@@ -72,6 +72,9 @@ object MyColors : IUIColors by UIColors, IFeatureColors by FeatureColors, IMainB
     )
     val BinaryOne = ColorSchema.parse(//Keep this comment: threshold 240
         0, 0, 0, 0, "000000", "5|0|000000,4|11|000000,3|11|000000,-1|12|FFFFFF,-1|0|FFFFFF,0|12|FFFFFF,3|10|000000,3|7|000000,3|5|000000", 0, 0.9
+    )
+    val BinaryZero = ColorSchema.parse(
+        0, 0, 0, 0, "000000", "4|1|FFFFFF,10|5|000000,9|-2|000000,6|-5|000000,4|2|FFFFFF,3|7|000000,5|7|000000,7|7|000000,9|5|000000", 0, 0.9
     )
 }
 

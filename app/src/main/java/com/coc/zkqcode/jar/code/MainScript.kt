@@ -14,6 +14,7 @@ import com.coc.zkqcode.jar.code.universal.buildings.upgrade.upgradeAllExistingBu
 import com.coc.zkqcode.jar.code.universal.buildings.upgrade.upgradeBuildings
 import com.coc.zkqcode.jar.code.universal.buildings.walls.calculateResourcesPercentage
 import com.coc.zkqcode.jar.code.universal.buildings.walls.upgradeWalls
+import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.recognizer.recognizeResources
@@ -93,9 +94,9 @@ private suspend fun findAndActivateAccount(searchOrder: Iterable<Int>): Int? {
 private suspend fun runTestCode() {
     while (true) {
 //        enterMainScreen()
-//        ShowMessage(findMultiColorsUntil(schemas = listOf(MyColors.Upgrade10WallsGreenCrossMark), duration = 1000).toString())
+//        ShowMessage(findMultiColors(schema = MyColors.UpgradeWallCrossMark).toString())
 
-        upgradeWalls(BaseType.Builder)
+        upgradeWalls(BaseType.Main)
         delay(1000)
         delay(20000000000)
 //        ShowMessage(recognizeUpgradeResources(BaseType.Main).toString())

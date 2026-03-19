@@ -3,6 +3,8 @@ This part is about repo links
 git remote -v //view current repo
 //push to repo
 git push open main --force 
+//see logs
+adb -s emulator-5562 logcat zkq_debug:V *:S
 ```
 
 This documentation of the server. 
