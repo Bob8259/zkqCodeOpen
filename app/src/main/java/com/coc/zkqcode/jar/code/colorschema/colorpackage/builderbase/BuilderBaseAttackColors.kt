@@ -1,3 +1,5 @@
+@file:Suppress("PropertyName")
+
 package com.coc.zkqcode.jar.code.colorschema.colorpackage.builderbase
 
 import com.coc.zkqcode.jar.code.colorschema.ColorSchema
@@ -18,10 +20,10 @@ interface IBuilderBaseAttackColors {
 
 object BuilderBaseAttackColors : IBuilderBaseAttackColors {
     override val BuilderBaseGold = ColorSchema.parse(
-        1004, 26, 1026, 60, "0DC0E7", "0|1|0DC0E7,0|2|0DC0E7,0|3|0DC0E7,0|4|0DC0E7,0|5|0DC0E7,0|6|0DC0E7,0|7|0DC0E7,0|8|0DC0E7,0|9|0DC0E7", 0, 0.98
+        1000, 20, 1270, 80, "72DCF4", "0|1|72DCF4,0|2|72DCF4,0|3|72DCF4,0|4|72DCF4,0|5|72DCF4", 0, 0.95
     )
     override val BuilderBaseExiler = ColorSchema.parse(
-        1008, 93, 1025, 128, "C54579", "0|1|C54579,0|2|C54579,0|3|C54579,0|4|C54579,0|5|C54579,0|6|C54579,0|7|C54579,0|8|C54579,0|9|C54579", 0, 0.98
+        1000, 50, 1270, 140, "DF93B2", "-1|1|DF93B2,-1|2|DF93B2,-1|3|DF93B2,-1|4|DF93B2,-1|5|DF93B2", 0, 0.95
     )
     override val AttackNow = ColorSchema.parse(
         825, 431, 1075, 518, "86E9BA", "29|1|85E8B9,64|0|86E9BA,120|-2|89E9BC,158|-5|8CEABE,14|51|3AD48B,54|46|3AD48B,91|51|3AD48B,158|53|3AD38B,188|46|3AD48B", 0, 0.9, "夜世界立即进攻"

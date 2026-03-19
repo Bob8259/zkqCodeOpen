@@ -167,8 +167,7 @@ private suspend fun upgradeWalls(currentBase: BaseType, wallType: WallType): Loo
         }
     }
     val resources = recognizeResources()
-    ShowMessage(resources.toString())
-    val currentResourcePercentage = calculateResourcesPercentage()
+    val currentResourcePercentage = calculateResourcesPercentage(currentBase)
     TouchActions.tap(hammer.x, hammer.y, delayTime = 500)
     // Check for resource availability immediately after clicking upgrade
     if (findMultiColors(schema = if (currentBase == BaseType.Main) MyColors.MainBaseInsufficientResources else MyColors.BuilderBaseInsufficientResources) != null) {
@@ -195,8 +194,10 @@ private suspend fun upgradeWalls(currentBase: BaseType, wallType: WallType): Loo
             TouchActions.tap(1130, 54, delayTime = 500)
             val upgradeCrossMark = findMultiColorsUntil(schemas = listOf(MyColors.UpgradeWallCrossMark), duration = 1000)
             if (upgradeCrossMark != null) {
-                repeat(upgradableNumber + 1) {
-                    TouchActions.tap(upgradeCrossMark.x, upgradeCrossMark.y, delayTime = 50)
+                TouchActions.tap(upgradeCrossMark.x, upgradeCrossMark.y, delayTime = 500)
+                val upgradeGreenCrossMark = findMultiColorsUntil(schemas = listOf(MyColors.UpgradeWallGreenCrossMark), duration = 1000) ?: return LoopAction.Continue
+                repeat(upgradableNumber) {
+                    TouchActions.tap(upgradeGreenCrossMark.x, upgradeGreenCrossMark.y, delayTime = 50)
                 }
                 // Rescope both hammer schemas to match the elixir search direction when needed (same pattern as line 153-155)
                 val doubleHammerSchema = ColorSchema.rescope(
@@ -209,14 +210,17 @@ private suspend fun upgradeWalls(currentBase: BaseType, wallType: WallType): Loo
                 if (doubleHammer != null) {
                     TouchActions.tap(doubleHammer.x, doubleHammer.y, delayTime = 500)
                     TouchActions.tap(882, 440, delayTime = 300)
-                    TouchActions.tap(980, 635, delayTime = 300)
+                    //Just in case there is only one wall can be upgraded, we need to click the normal upgrade button again
+                    if (currentBase == BaseType.Main) TouchActions.tap(980, 635, delayTime = 500)
+                    else if (currentBase == BaseType.Builder) TouchActions.tap(640, 640, delayTime = 500)
                     clickRightBottom(1)
                     return LoopAction.Proceed
                 }
             }
         }
     } else {
-        TouchActions.tap(980, 635, delayTime = 500)
+        if (currentBase == BaseType.Main) TouchActions.tap(980, 635, delayTime = 500)
+        else if (currentBase == BaseType.Builder) TouchActions.tap(640, 640, delayTime = 500)
         return LoopAction.Proceed
     }
     return LoopAction.Proceed

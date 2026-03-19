@@ -11,6 +11,7 @@ import com.coc.zkqcode.jar.code.universal.InGamesVars
 import com.coc.zkqcode.jar.code.universal.buildings.upgrade.WallType
 import com.coc.zkqcode.jar.code.universal.buildings.upgrade.upgradeAllExistingBuildings
 import com.coc.zkqcode.jar.code.universal.buildings.upgrade.upgradeBuildings
+import com.coc.zkqcode.jar.code.universal.buildings.walls.calculateResourcesPercentage
 import com.coc.zkqcode.jar.code.universal.buildings.walls.upgradeWalls
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.recognizer.recognizeResources
@@ -90,9 +91,10 @@ private suspend fun findAndActivateAccount(searchOrder: Iterable<Int>): Int? {
 private suspend fun runTestCode() {
     while (true) {
 //        enterMainScreen()
+        ShowMessage(calculateResourcesPercentage(BaseType.Builder).toString())
+
+        upgradeWalls(BaseType.Builder)
         delay(1000)
-//        ShowMessage(recognizeResources().toString())
-        upgradeWalls(BaseType.Main)
         delay(20000000000)
 //        ShowMessage(recognizeUpgradeResources(BaseType.Main).toString())
     }
