@@ -71,7 +71,7 @@ data class ResourcesPercentage(
 
 // 100% resource bar position (x coordinate) and 0% position
 private const val RESOURCE_FULL_X = 1012
-private const val RESOURCE_EMPTY_X = 1260
+private const val RESOURCE_EMPTY_X = 1261
 
 /**
  * Calculate the resource percentage based on the x coordinate of the resource bar.

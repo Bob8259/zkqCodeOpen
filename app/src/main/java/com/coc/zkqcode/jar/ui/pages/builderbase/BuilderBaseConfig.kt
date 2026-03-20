@@ -74,22 +74,34 @@ fun LazyListScope.BuilderBaseConfig(
         }
     }
 
-    // Trophy & Elixir cart
-    /* item {
+    // Trophy & Elixir cart (mutually exclusive)
+    item {
         val noBuilderBase = GlobalVars.configStates["${BUILDER_BASE_SETTINGS.NO_BUILDER_BASE.key}_c${index}"]?.value == "0"
+        val trophyKey = "${BUILDER_BASE_SETTINGS.TROPHY_PUSHING_MODE.key}_c${index}"
+        val elixirCartKey = "${BUILDER_BASE_SETTINGS.ELIXIR_CART_FARMING.key}_c${index}"
         AnimatedVisibility(visible = isExpanded && noBuilderBase) {
             Row {
                 SettingCheckBox(
-                    key = "${BUILDER_BASE_SETTINGS.TROPHY_PUSHING_MODE.key}_c${index}",
-                    explain = "勾选后，辅助会使用暗夜女巫进行上分，刷圣水效率会显著降低，请谨慎勾选。不可与\u201C刷圣水车\u201D同时勾选。"
+                    key = trophyKey,
+                    explain = "勾选后，辅助会使用暗夜女巫进行上分，刷圣水效率会显著降低，请谨慎勾选。不可与\u201C刷圣水车\u201D同时勾选。",
+                    afterChange = { checked ->
+                        if (checked) {
+                            GlobalVars.configStates[elixirCartKey]?.value = "0"
+                        }
+                    }
                 )
                 SettingCheckBox(
-                    key = "${BUILDER_BASE_SETTINGS.ELIXIR_CART_FARMING.key}_c${index}",
-                    explain = "勾选后，夜世界对战时下兵后会立刻投降，因此几乎无法刷金币，请谨慎勾选。不可与\u201C上分模式\u201D同时勾选。"
+                    key = elixirCartKey,
+                    explain = "勾选后，夜世界对战时下兵后会立刻投降，因此几乎无法刷金币，请谨慎勾选。不可与\u201C上分模式\u201D同时勾选。",
+                    afterChange = { checked ->
+                        if (checked) {
+                            GlobalVars.configStates[trophyKey]?.value = "0"
+                        }
+                    }
                 )
             }
         }
-    } */
+    }
 
     // Research
     item {
