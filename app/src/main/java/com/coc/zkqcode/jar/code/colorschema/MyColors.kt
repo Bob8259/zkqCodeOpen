@@ -39,6 +39,9 @@ object MyColors : IUIColors by UIColors, IFeatureColors by FeatureColors, IMainB
     IBuilderBaseResourcesColors by BuilderBaseResourcesColors, IBuilderBaseObstaclesRemovalColors by BuilderBaseObstaclesRemovalColors, IBuilderBaseTrainingColors by BuilderBaseTrainingColors,
     IBuilderBaseUpgradeColors by BuilderBaseUpgradeColors, IBuilderBaseResearchColors by BuilderBaseResearchColors, IBuilderBaseAttackColors by BuilderBaseAttackColors, IUniversalUpgradeColors by UniversalUpgradeColors,
     IMainBaseUpgradeColors by MainBaseUpgradeColors, IMainBaseResearchColors by MainBaseResearchColors, IMainBaseResearchLevelColors by MainBaseResearchLevelColors,
-    IClanCapitalTutorialColors by ClanCapitalTutorialColors, IMainBaseAttackColors by MainBaseAttackColors{
-
+    IClanCapitalTutorialColors by ClanCapitalTutorialColors, IMainBaseAttackColors by MainBaseAttackColors {
+    // Main Base Tutorial Color
+    val TutorialTrainBarbarian = ColorSchema.parse(
+        70, 468, 128, 504, "B8B0A6", "11|0|3DA2D9,23|0|359AD2,35|0|5B4F3A,46|0|355495,0|18|7AEDFF,11|18|6177A4,23|18|395ABF,35|18|60EFFF,46|18|72ACFC", 0, 0.9, "教程训练野蛮人"
+    )
 }
