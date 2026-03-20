@@ -16,6 +16,8 @@ interface IBuilderBaseAttackColors {
     val TroopSkills: ColorSchema
     val MachineSkills: ColorSchema
     val BuilderBaseBarbarian: ColorSchema
+    val TroopsWithSkills: ColorSchema
+    val TroopsWithOutSkills: ColorSchema
 }
 
 object BuilderBaseAttackColors : IBuilderBaseAttackColors {
@@ -51,5 +53,12 @@ object BuilderBaseAttackColors : IBuilderBaseAttackColors {
     )
     override val BuilderBaseBarbarian = ColorSchema.parse(
         193, 585, 1261, 623, "FF763A", "7|0|FF763A,15|0|FF773B,23|0|FF783C,30|0|FF793C,0|6|FF773A,7|6|FF793C,15|6|FF7B3E,23|6|FF7D40,30|6|FF7E41", 0, 0.9, "夜世界野蛮人"
+    )
+    // Troops with/without skills indicators
+    override val TroopsWithSkills = ColorSchema.parse(
+        195, 570, 1210, 630, "FE41C8", "7|0|FE41C8,14|0|FE41C8,21|0|FE41C8,28|0|FE41C8,0|9|FF74D4,7|9|FF74D4,14|9|FF74D4,21|9|FF74D4,28|9|FF74D4", 0, 0.9, "带技能部队"
+    )
+    override val TroopsWithOutSkills = ColorSchema.parse(
+        195, 570, 1210, 630, "FF763A", "7|0|FF763A,17|1|FF763A,22|2|FF773B,26|2|FF773B,24|8|FF7C3F,16|12|FF7E41,8|13|FF7C3F,3|12|FF793C,1|9|FF773A", 0, 0.9, "无技能部队"
     )
 }

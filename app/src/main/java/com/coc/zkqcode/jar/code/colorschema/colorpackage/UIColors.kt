@@ -27,6 +27,7 @@ interface IUIColors {
     val ArrowPointingDown: ColorSchema
     val DailyLoginReward: ColorSchema
     val BuilderBaseStarBonus: ColorSchema
+    val MiddleGreenButton: ColorSchema
 }
 
 object UIColors : IUIColors {
@@ -100,5 +101,9 @@ object UIColors : IUIColors {
     )
     override val BuilderBaseStarBonus = ColorSchema.parse(
         541, 522, 739, 606, "82E8B8", "39|0|82E8B8,79|0|82E8B8,119|0|82E8B8,158|0|82E8B8,0|42|3AD38A,39|42|3AD38A,79|42|3AD38A,119|42|3AD38A,158|42|3AD38A", 0, 0.9, "夜世界胜利之星"
+    )
+    // Middle green confirmation button (e.g. events and helper tutorials)
+    override val MiddleGreenButton = ColorSchema.parse(
+        577, 526, 704, 567, "86E8BA", "25|0|86E8BA,51|0|86E8BA,76|0|86E8BA,101|0|86E8BA,0|21|3AD48B,25|21|3AD48B,51|21|3AD48B,76|21|3AD48B,101|21|3AD48B", 0, 0.9, "中心绿色确认（类似活动和帮手教程）"
     )
 }

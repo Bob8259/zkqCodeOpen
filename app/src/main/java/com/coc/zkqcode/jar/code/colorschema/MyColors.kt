@@ -39,47 +39,6 @@ object MyColors : IUIColors by UIColors, IFeatureColors by FeatureColors, IMainB
     IBuilderBaseResourcesColors by BuilderBaseResourcesColors, IBuilderBaseObstaclesRemovalColors by BuilderBaseObstaclesRemovalColors, IBuilderBaseTrainingColors by BuilderBaseTrainingColors,
     IBuilderBaseUpgradeColors by BuilderBaseUpgradeColors, IBuilderBaseResearchColors by BuilderBaseResearchColors, IBuilderBaseAttackColors by BuilderBaseAttackColors, IUniversalUpgradeColors by UniversalUpgradeColors,
     IMainBaseUpgradeColors by MainBaseUpgradeColors, IMainBaseResearchColors by MainBaseResearchColors, IMainBaseResearchLevelColors by MainBaseResearchLevelColors,
-    IClanCapitalTutorialColors by ClanCapitalTutorialColors, IMainBaseAttackColors by MainBaseAttackColors {
+    IClanCapitalTutorialColors by ClanCapitalTutorialColors, IMainBaseAttackColors by MainBaseAttackColors{
 
-    // Builder Base Attack Color
-    val TroopsWithSkills = ColorSchema.parse(
-        195, 570, 1210, 630, "FE41C8", "7|0|FE41C8,14|0|FE41C8,21|0|FE41C8,28|0|FE41C8,0|9|FF74D4,7|9|FF74D4,14|9|FF74D4,21|9|FF74D4,28|9|FF74D4", 0, 0.9, "带技能部队"
-    )
-    val TroopsWithOutSkills = ColorSchema.parse(
-        195, 570, 1210, 630, "FF763A", "7|0|FF763A,17|1|FF763A,22|2|FF773B,26|2|FF773B,24|8|FF7C3F,16|12|FF7E41,8|13|FF7C3F,3|12|FF793C,1|9|FF773A", 0, 0.9, "无技能部队"
-    )
-
-    //Main Base Upgrade Colors
-    val smallElixirUpgradeIcon = ColorSchema.parse(
-        0, 0, 0, 0, "FF60FF", "-2|1|FF2DEB,-3|2|FF41D2,-1|3|FF22D3,0|5|DF21B2,2|5|F221C2,2|4|FF22D9,3|4|FF23DD,3|3|FF26EC,3|2|FF39FF", 0, 0.9
-    )
-
-    //Universal Upgrade Colors
-    val UpgradeWallCrossMark = ColorSchema.parse(
-        208, 503, 1130, 627, "FFFFFF", "-8|-5|0D0D0D,11|-5|0D0D0D,11|6|0D0D0D,-10|6|0D0D0D,-7|0|FFFFFF,-1|12|FFFFFF,10|0|FFFFFF,-1|-11|FFFFFF,2|-11|FFFFFF", 0, 0.9,
-    )
-    val UpgradeWallGreenCrossMark = ColorSchema.parse(
-        350, 495, 1100, 630, "12E98F", "-3|-3|12E98F,-3|-8|12E98F,-2|-11|12E98F,-2|-9|12E98F,-10|-6|12E98F,-15|-6|12E98F,-13|-3|12E98F,-13|-6|12E98F,-13|-11|12E98F", 0, 0.9,
-    )
-    val Upgrade10WallsGreenCrossMark = ColorSchema.parse(
-        350, 495, 1100, 630, "12E98F", "0|3|12E98F,0|6|12E98F,-12|4|12E98F,-23|2|12E98F,-34|1|12E98F,-34|4|12E98F,-34|5|12E98F,-22|-2|12E98F,-22|-5|12E98F", 0, 0.9,
-    )
-    val DoubleHammer = ColorSchema.parse(
-        208, 503, 1130, 627, "DFDFEC", "6|16|5581EE,12|28|5F84ED,28|0|E1E1EE,40|-9|D1D1DF,37|12|4D76DD,44|21|6085EF,-9|7|D1E0F4,6|-7|D2D1E0,8|-2|DBDEEE", 0, 0.9, "双锤子"
-    )
-    val BinarySlash = ColorSchema.parse(//Keep this comment: threshold 240
-        0, 0, 0, 0, "000000", "-1|2|000000,-2|3|000000,-3|5|000000,-4|7|000000,-5|8|000000,-5|9|000000,-5|10|000000,-6|11|000000,-7|13|000000", 0, 0.97
-    )
-    val BinaryOne = ColorSchema.parse(//Keep this comment: threshold 240
-        0, 0, 0, 0, "000000", "5|0|000000,4|11|000000,3|11|000000,-1|12|FFFFFF,-1|0|FFFFFF,0|12|FFFFFF,3|10|000000,3|7|000000,3|5|000000", 0, 0.9
-    )
-    val BinaryZero = ColorSchema.parse(
-        0, 0, 0, 0, "000000", "4|1|FFFFFF,10|5|000000,9|-2|000000,6|-5|000000,4|2|FFFFFF,3|7|000000,5|7|000000,7|7|000000,9|5|000000", 0, 0.9
-    )
-
-    //UI Colors
-    val MiddleGreenButton = ColorSchema.parse(
-        577, 526, 704, 567, "86E8BA", "25|0|86E8BA,51|0|86E8BA,76|0|86E8BA,101|0|86E8BA,0|21|3AD48B,25|21|3AD48B,51|21|3AD48B,76|21|3AD48B,101|21|3AD48B", 0, 0.9, "中心绿色确认（类似活动和帮手教程）"
-    )
 }
-
