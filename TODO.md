@@ -77,7 +77,4 @@
 - 邀请玩家（INVITE_PLAYERS）
 
 ## BuilderBaseConfig.kt（夜世界设置）
-
-- 上分模式（TROPHY_PUSHING_MODE）
-- 刷圣水车（ELIXIR_CART_FARMING）
 - 接取竞赛后，对战以下局数后切号（SWITCH_ACCOUNT_AFTER_BATTLES_WITH_TASKS）

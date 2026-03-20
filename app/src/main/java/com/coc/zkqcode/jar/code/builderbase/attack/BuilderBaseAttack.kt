@@ -8,6 +8,8 @@ import com.coc.zkqcode.core.util.touchactions.TouchActions.pinchIn
 import com.coc.zkqcode.core.util.touchactions.TouchActions.swipe
 import com.coc.zkqcode.jar.code.colorschema.ColorSchema
 import com.coc.zkqcode.jar.code.colorschema.MyColors
+import com.coc.zkqcode.jar.code.universal.buildings.BaseType
+import com.coc.zkqcode.jar.code.universal.buildings.walls.calculateResourcesPercentage
 import com.coc.zkqcode.jar.code.universal.InGamesVars
 import com.coc.zkqcode.jar.code.universal.clickRightBottom
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
@@ -31,14 +33,12 @@ suspend fun builderBaseAttack(): Boolean {
         return true
     }
 
-    // 2. Locate resource indicators
-    val goldPos = findMultiColors(schema = MyColors.BuilderBaseGold)
-    val exilePos = findMultiColors(schema = MyColors.BuilderBaseExiler)
-    ShowMessage("账号${InGamesVars.currentAccountNumber}，金币坐标: $goldPos, 圣水坐标: $exilePos")
-    // Define resource fullness (threshold: < 1016 indicates full/near full based on original logic)
-    val isGoldFull = goldPos != null && goldPos.x < 1016
-
-    val isExileFull = exilePos != null && exilePos.x < 1016
+    // 2. Calculate resource percentages using shared utility
+    val resourcePercentage = calculateResourcesPercentage(BaseType.Builder)
+    ShowMessage("账号${InGamesVars.currentAccountNumber}，金币百分比: ${resourcePercentage.gold}%, 圣水百分比: ${resourcePercentage.elixir}%")
+    // Consider resource full if percentage >= 96%
+    val isGoldFull = resourcePercentage.gold >= 96
+    val isExileFull = resourcePercentage.elixir >= 96
     val stopIfFull = getBooleanConfigRuntime(Schema.BUILDER_BASE_SETTINGS.STOP_WHEN_RESOURCE_FULL.key)
 
     // 3. Determine action based on resource state and settings
@@ -56,8 +56,8 @@ suspend fun builderBaseAttack(): Boolean {
                 ShowMessage("账号${InGamesVars.currentAccountNumber}，已勾选刷圣水车模式")
                 "exile"
             }
-            // If gold is not full (x > 1016), prioritize gold; otherwise, default to exile
-            goldPos == null || goldPos.x > 1016 -> "gold"
+            // If gold is not full (< 96%), prioritize gold; otherwise, default to exile
+            resourcePercentage.gold < 96 -> "gold"
             else -> "exile"
         }
         val battleTimes = getConfigRuntime(Schema.BUILDER_BASE_SETTINGS.SWITCH_ACCOUNT_AFTER_BATTLES.key).toInt()

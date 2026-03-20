@@ -34,9 +34,12 @@ suspend fun runMainScript() {
     // 1. Initialize/update local memory state
     val startAccount = readMemory(StorageKeys.ACCOUNT_NUMBER).toIntOrNull() ?: 1
     val accountTotal = getConfigOrStop(Schema.GLOBAL_SETTINGS.ACCOUNT_COUNT.key).toInt()
+    // Reset startAccount to 1 if it exceeds accountTotal (e.g. account count was reduced)
+    val safeStartAccount = if (startAccount > accountTotal) 1 else startAccount
 
-    // 2. Find the first enabled account starting from the saved position
-    val activeAccount = findAndActivateAccount(startAccount..accountTotal) ?: return
+    // 2. Find the first enabled account starting from the saved position, wrapping around
+    val initialSearchOrder = (safeStartAccount..accountTotal) + (1 until safeStartAccount)
+    val activeAccount = findAndActivateAccount(initialSearchOrder) ?: return
     // 3. Execute main logic loop
     InGamesVars.currentAccountNumber = activeAccount
     InGamesVars.currentGameVersion = GameVersion.fromId(getConfigOrStop("${Schema.ACCOUNT_SETTINGS.GAME_VERSION.key}${InGamesVars.currentAccountNumber}").toInt())
@@ -94,11 +97,8 @@ private suspend fun findAndActivateAccount(searchOrder: Iterable<Int>): Int? {
 private suspend fun runTestCode() {
     while (true) {
 //        enterMainScreen()
-//        ShowMessage(findMultiColors(schema = MyColors.UpgradeWallCrossMark).toString())
-
-        upgradeWalls(BaseType.Main)
-        delay(1000)
-        delay(20000000000)
+        ShowMessage(calculateResourcesPercentage(BaseType.Builder).toString())
+        delay(2000)
 //        ShowMessage(recognizeUpgradeResources(BaseType.Main).toString())
     }
 }

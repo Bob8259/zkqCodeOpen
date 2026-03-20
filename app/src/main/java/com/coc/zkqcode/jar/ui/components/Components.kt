@@ -312,7 +312,8 @@ fun CustomButton(
 @Composable
 fun SettingCheckBox(
     key: String,
-    explain: String? = null
+    explain: String? = null,
+    afterChange: ((Boolean) -> Unit)? = null
 ) {
     // If key is absent from configStates, create a new state using the Schema default value
     // and register it so subsequent reads are consistent.
@@ -325,6 +326,7 @@ fun SettingCheckBox(
         checkedState = state.value,
         onCheckStateChange = { checked ->
             state.value = if (checked) "1" else "0"
+            afterChange?.invoke(checked)
         },
         explain = explain
     )
