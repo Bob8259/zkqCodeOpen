@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.coc.zkqcode.jar.ui.components.CustomButton
 import com.coc.zkqcode.jar.ui.components.CustomNotificationWindow
+import com.coc.zkqcode.jar.ui.components.SettingSection
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.jar.ui.components.SettingInputRow
 import com.coc.zkqcode.jar.ui.schema.Schema.GLOBAL_SETTINGS
@@ -154,11 +155,13 @@ private fun ExtractGameSaveContent() {
     Column(modifier = Modifier.padding(6.dp)) {
         // 遍历枚举生成 UI
         GameVariant.entries.forEach { variant ->
-            GameConfigSection(
-                variant = variant,
-                onExtract = { performExtract(variant) },
-                onDelete = { performDelete(variant) }
-            )
+            SettingSection {
+                GameConfigSection(
+                    variant = variant,
+                    onExtract = { performExtract(variant) },
+                    onDelete = { performDelete(variant) }
+                )
+            }
         }
     }
 

@@ -5,6 +5,7 @@ import android.graphics.BitmapFactory
 import android.os.Environment
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -137,9 +138,10 @@ fun SwitchAccount(onClose: () -> Unit) {
                     modifier = Modifier
                         .width(60.dp)
                         .background(
-                            color = Color.LightGray,
+                            color = Color.White,
                             shape = RoundedCornerShape(4.dp)
                         )
+                        .border(1.dp, Color.Gray, RoundedCornerShape(4.dp))
                         .padding(4.dp)
                         .height(24.dp), // Adjust height to match typical text field
                     singleLine = true

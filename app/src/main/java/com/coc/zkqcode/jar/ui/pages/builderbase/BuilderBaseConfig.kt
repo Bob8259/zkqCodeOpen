@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.coc.zkqcode.jar.ui.components.CustomButton
 import com.coc.zkqcode.jar.ui.components.SettingCheckBox
+import com.coc.zkqcode.jar.ui.components.SettingSection
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.jar.ui.components.SettingInputRow
 import com.coc.zkqcode.jar.ui.schema.Schema.BUILDER_BASE_SETTINGS
@@ -41,7 +42,7 @@ fun LazyListScope.BuilderBaseConfig(
     // NO_BUILDER_BASE toggle
     item {
         AnimatedVisibility(visible = isExpanded) {
-            Column {
+            SettingSection {
                 val noBuilderBase = GlobalVars.configStates["${BUILDER_BASE_SETTINGS.NO_BUILDER_BASE.key}_c${index}"]?.value == "0"
                 val prevNoBuilderBase = remember { mutableStateOf(noBuilderBase) }
                 LaunchedEffect(noBuilderBase) {
@@ -60,7 +61,7 @@ fun LazyListScope.BuilderBaseConfig(
     item {
         val noBuilderBase = GlobalVars.configStates["${BUILDER_BASE_SETTINGS.NO_BUILDER_BASE.key}_c${index}"]?.value == "0"
         AnimatedVisibility(visible = isExpanded && noBuilderBase) {
-            Column {
+            SettingSection {
                 Row {
                     SettingCheckBox(
                         key = "${BUILDER_BASE_SETTINGS.BUILDER_BASE_FARMING.key}_c${index}",
@@ -80,6 +81,7 @@ fun LazyListScope.BuilderBaseConfig(
         val trophyKey = "${BUILDER_BASE_SETTINGS.TROPHY_PUSHING_MODE.key}_c${index}"
         val elixirCartKey = "${BUILDER_BASE_SETTINGS.ELIXIR_CART_FARMING.key}_c${index}"
         AnimatedVisibility(visible = isExpanded && noBuilderBase) {
+            SettingSection {
             Row {
                 SettingCheckBox(
                     key = trophyKey,
@@ -100,6 +102,7 @@ fun LazyListScope.BuilderBaseConfig(
                     }
                 )
             }
+            }
         }
     }
 
@@ -107,7 +110,7 @@ fun LazyListScope.BuilderBaseConfig(
     item {
         val noBuilderBase = GlobalVars.configStates["${BUILDER_BASE_SETTINGS.NO_BUILDER_BASE.key}_c${index}"]?.value == "0"
         AnimatedVisibility(visible = isExpanded && noBuilderBase) {
-            Column {
+            SettingSection {
                 SettingCheckBox(key = "${BUILDER_BASE_SETTINGS.BUILDER_BASE_RESEARCH.key}_c${index}")
 
                 AnimatedVisibility(visible = GlobalVars.configStates["${BUILDER_BASE_SETTINGS.BUILDER_BASE_RESEARCH.key}_c${index}"]?.value == "1") {
@@ -121,7 +124,7 @@ fun LazyListScope.BuilderBaseConfig(
     item {
         val noBuilderBase = GlobalVars.configStates["${BUILDER_BASE_SETTINGS.NO_BUILDER_BASE.key}_c${index}"]?.value == "0"
         AnimatedVisibility(visible = isExpanded && noBuilderBase) {
-            Column {
+            SettingSection {
                 FlowRow {
                     SettingCheckBox(key = "${BUILDER_BASE_SETTINGS.BUILDER_BASE_BUILD_SETTING.key}_c${index}")
                     SettingCheckBox(key = "${BUILDER_BASE_SETTINGS.BUILDER_BASE_WALL_UPGRADE_SETTINGS.key}_c${index}")
