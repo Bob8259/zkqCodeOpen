@@ -44,6 +44,7 @@ suspend fun mainBaseTutorial(): Boolean {
         TouchActions.tap(it.x, it.y, delayTime = 500)
     }
     findMultiColors(schema = MyColors.UpgradeTHArrow)?.let {
+        
         TouchActions.tap(it.x + 50, it.y + 100, delayTime = 500)
         TouchActions.tap(703, 570, delayTime = 500)
     }

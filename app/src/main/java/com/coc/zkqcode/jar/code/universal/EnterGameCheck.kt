@@ -91,8 +91,8 @@ private suspend fun closeAdvertisements() {
         MyColors.CNBackFromAwards,
         MyColors.CollectChest,
         MyColors.EditModeWrench,
-
-        )
+        MyColors.MiddleGreenButton
+    )
 
     // 3. Iterate through schemas
     homeSchemas.forEach { schema ->
@@ -102,7 +102,6 @@ private suspend fun closeAdvertisements() {
         if (point != null) {
             // If found, perform the tap
             TouchActions.tap(point.x, point.y, delayTime = 1000)
-
             // 4. Retake the screenBuffer so the next schema check uses the updated screen
             screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult ?: return@forEach // Use return@forEach to skip to next if capture fails
         }

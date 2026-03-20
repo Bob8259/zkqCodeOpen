@@ -14,7 +14,7 @@ import kotlinx.coroutines.isActive
 
 object AllTutorials {
 
-    suspend fun allBaseTutorial() {
+    suspend fun allBaseTutorial(): Boolean {
         val durationMillis = 300_000L
         val startTime = System.currentTimeMillis()
 
@@ -22,18 +22,19 @@ object AllTutorials {
             val currentTime = System.currentTimeMillis()
             val elapsed = currentTime - startTime
 
-            if (elapsed >= durationMillis) break
+            if (elapsed >= durationMillis) return false
 
             val remainingSeconds = ((durationMillis - elapsed) / 1000).toInt()
             ShowMessage("账户${InGamesVars.currentAccountNumber}\n教程中，还剩${remainingSeconds}秒")
 
-            if (mainBaseTutorial()) break
-            if (builderBaseTutorial()) break
+            if (mainBaseTutorial()) return true
+            if (builderBaseTutorial()) return true
 
             // Maintenance checks
-            if (!checkReconnections()) return
+            if (!checkReconnections()) return false
             delayWithMultiplier(200)
         }
+        return false
     }
 
     /**

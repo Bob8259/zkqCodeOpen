@@ -3,22 +3,13 @@ package com.coc.zkqcode.jar.code
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.jar.code.builderbase.playBuilderBase
-import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.buildings.BaseType
-import com.coc.zkqcode.jar.code.universal.buildings.WorkerAndResearch
 import com.coc.zkqcode.jar.code.mainbase.playMainBase
 import com.coc.zkqcode.jar.code.universal.GameVersion
 import com.coc.zkqcode.jar.code.universal.InGamesVars
-import com.coc.zkqcode.jar.code.universal.buildings.upgrade.WallType
-import com.coc.zkqcode.jar.code.universal.buildings.upgrade.upgradeAllExistingBuildings
-import com.coc.zkqcode.jar.code.universal.buildings.upgrade.upgradeBuildings
 import com.coc.zkqcode.jar.code.universal.buildings.walls.calculateResourcesPercentage
-import com.coc.zkqcode.jar.code.universal.buildings.walls.upgradeWalls
-import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
-import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
+import com.coc.zkqcode.jar.code.universal.create.batchCreateAccounts
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
-import com.coc.zkqcode.jar.code.universal.recognizer.recognizeResources
-import com.coc.zkqcode.jar.code.universal.recognizer.recognizeUpgradeResources
 import com.coc.zkqcode.jar.code.universal.smalltools.StorageKeys
 import com.coc.zkqcode.jar.code.universal.smalltools.getConfigOrStop
 import com.coc.zkqcode.jar.code.universal.smalltools.readMemory
@@ -31,6 +22,7 @@ import kotlinx.coroutines.isActive
 
 
 suspend fun runMainScript() {
+    batchCreateAccounts()//Create all needed accounts first.
     // 1. Initialize/update local memory state
     val startAccount = readMemory(StorageKeys.ACCOUNT_NUMBER).toIntOrNull() ?: 1
     val accountTotal = getConfigOrStop(Schema.GLOBAL_SETTINGS.ACCOUNT_COUNT.key).toInt()
@@ -46,7 +38,7 @@ suspend fun runMainScript() {
 
     while (currentCoroutineContext().isActive) {
         // Test code
-//        runTestCode()
+        runTestCode()
         // Use labeled block to skip remaining steps on failure
         run stepBlock@{
             if (!writeGameFiles()) {
@@ -98,7 +90,7 @@ private suspend fun runTestCode() {
     while (true) {
 //        enterMainScreen()
         ShowMessage(calculateResourcesPercentage(BaseType.Builder).toString())
-        delay(2000)
+        delay(2000000)
 //        ShowMessage(recognizeUpgradeResources(BaseType.Main).toString())
     }
 }

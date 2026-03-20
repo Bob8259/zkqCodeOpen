@@ -13,7 +13,7 @@ I/O & Networking Constraints
 Required I/O Method: All file reading and writing that are not in private path must be routed through the WebSocket server.
 Server Address: ws://localhost:6839/zkq
 
-When adding debug information, you should use showDebugInfo, which can be imported from com.coc.zkqcode.core.util.fileactions.
+When adding debug information, you should use ShowMessage, which can be imported from com.coc.zkqcode.core.util.basic.ShowMessage.
 
 When modify the code, you should add appropriate comments. Write all comments in English, but for other content (e.g. debug information, variable names or display information) can be written in Chinese.
 
