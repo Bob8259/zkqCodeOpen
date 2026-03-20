@@ -44,4 +44,14 @@ object MyColors : IUIColors by UIColors, IFeatureColors by FeatureColors, IMainB
     val TutorialTrainBarbarian = ColorSchema.parse(
         70, 468, 128, 504, "B8B0A6", "11|0|3DA2D9,23|0|359AD2,35|0|5B4F3A,46|0|355495,0|18|7AEDFF,11|18|6177A4,23|18|395ABF,35|18|60EFFF,46|18|72ACFC", 0, 0.9, "教程训练野蛮人"
     )
+    val BattlePageColor = ColorSchema.parse(
+        180,
+        249,
+        389,
+        402,
+        "79ADB4",
+        "42|0|394D72,84|0|213F78,125|0|283228,167|0|2E3733,0|77|5F7D8A,42|77|253E4A,84|77|499DD4,125|77|5E67A5,167|77|394970",
+        0,
+        0.9,
+    )
 }
