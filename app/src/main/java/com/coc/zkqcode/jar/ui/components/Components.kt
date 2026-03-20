@@ -7,10 +7,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -52,8 +52,8 @@ import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupPositionProvider
 import androidx.compose.ui.window.PopupProperties
 import com.coc.zkqcode.core.data.database.GlobalVars
-import com.coc.zkqcode.jar.ui.schema.Schema
 import com.coc.zkqcode.core.ui.theme.AppColors
+import com.coc.zkqcode.jar.ui.schema.Schema
 import kotlinx.coroutines.delay
 
 
@@ -336,6 +336,9 @@ fun SettingCheckBox(
     )
 }
 
+// Lighter blue for research/building toggle buttons to distinguish from action buttons
+private val ToggleButtonBlue = Color(0xFF0BD8F4)
+
 // Single toggle text button for research/building item lists
 @Composable
 fun SettingToggleButton(key: String) {
@@ -357,7 +360,7 @@ fun SettingToggleButton(key: String) {
             shape = RoundedCornerShape(8.dp),
             contentPadding = PaddingValues(horizontal = 10.dp, vertical = 0.dp),
             colors = ButtonDefaults.buttonColors(
-                containerColor = AppColors.Azure,
+                containerColor = ToggleButtonBlue,
                 contentColor = Color.White
             )
         ) {
@@ -465,6 +468,27 @@ private fun CustomCheckBox(
                 checkedThumbColor = Color.White
             )
         )
+    }
+}
+
+// Rounded-corner white card for grouping related settings
+@Composable
+fun SettingSection(
+    modifier: Modifier = Modifier,
+    content: @Composable () -> Unit
+) {
+    Surface(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp),
+        shape = RoundedCornerShape(12.dp),
+        color = Color.White,
+        shadowElevation = 8.dp,
+        tonalElevation = 5.dp
+    ) {
+        Column(modifier = Modifier.padding(horizontal = 10.dp, vertical = 8.dp)) {
+            content()
+        }
     }
 }
 

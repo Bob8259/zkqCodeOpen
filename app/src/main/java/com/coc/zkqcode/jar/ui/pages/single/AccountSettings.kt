@@ -1,6 +1,7 @@
 package com.coc.zkqcode.jar.ui.pages.single
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
@@ -18,7 +19,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -34,6 +34,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.coc.zkqcode.jar.ui.components.CustomButton
+import com.coc.zkqcode.jar.ui.components.SettingSection
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.ui.theme.AppColors
 import com.coc.zkqcode.jar.ui.components.SettingInputRow
@@ -83,13 +84,15 @@ private fun SmallTextField(
         },
         modifier = modifier
             .width(width)
-            .background(Color.LightGray, RoundedCornerShape(4.dp))
+            .background(Color.White, RoundedCornerShape(4.dp))
+            .border(1.dp, Color.Gray, RoundedCornerShape(4.dp))
             .padding(4.dp)
     )
 }
 
 fun LazyListScope.AccountSettings() {
     item {
+        SettingSection {
         SettingInputRow(
             key = GLOBAL_SETTINGS.CONFIG_COUNT.key,
             afterChange = { newValue ->
@@ -107,10 +110,6 @@ fun LazyListScope.AccountSettings() {
                     ConfigManager.expandAccountConfigs(newCount)
                 }
             }
-        )
-        HorizontalDivider(
-            thickness = 1.dp,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 1f)
         )
         Row {
             CustomButton(
@@ -248,11 +247,7 @@ fun LazyListScope.AccountSettings() {
                 marginTop = 0.dp
             )
         }
-        HorizontalDivider(
-            thickness = 1.dp,
-            modifier = Modifier.padding(top = 6.dp),
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 1f)
-        )
+        }
     }
 
     // Display account configurations based on account_count

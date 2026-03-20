@@ -3,7 +3,6 @@ package com.coc.zkqcode.jar.ui.pages.single
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -18,6 +17,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.coc.zkqcode.jar.ui.components.SettingCheckBox
 import com.coc.zkqcode.jar.ui.components.SettingDropdown
+import com.coc.zkqcode.jar.ui.components.SettingSection
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.jar.ui.components.SettingInputRow
 import com.coc.zkqcode.jar.ui.schema.Schema.ACCOUNT_SETTINGS
@@ -26,7 +26,7 @@ import com.coc.zkqcode.jar.ui.schema.Schema.ACCOUNT_SETTINGS
 fun AccountConfig(
     index: Int
 ) {
-    Column(modifier = Modifier.padding(horizontal = 2.dp)) {
+    SettingSection {
         Row {
             SettingCheckBox(key = "${ACCOUNT_SETTINGS.ISOPEN.key}${index}")
             SettingInputRow(key = "${ACCOUNT_SETTINGS.REMARK.key}${index}")
@@ -46,9 +46,6 @@ fun AccountConfig(
             "2" -> UseDataPackage(index)//Account switcher
         }
     }
-    HorizontalDivider(
-        thickness = 1.dp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 1f)
-    )
 }
 
 @Composable

@@ -74,7 +74,7 @@ fun BuilderBaseUpgradePriority(index: Int, onSaveSuccess: () -> Unit) {
         modifier = Modifier
             .fillMaxSize()
             .padding(10.dp)
-            .background(Color.White)
+            .background(Color(0xFFF2F3F5))
     ) {
         Text(
             text = "拖动铅笔符号调整优先度，越靠上，越靠左表示优先度越高。",

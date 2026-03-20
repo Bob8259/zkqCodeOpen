@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListScope
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.ui.Modifier
@@ -20,6 +19,7 @@ import com.coc.zkqcode.jar.ui.components.CustomButton
 import com.coc.zkqcode.jar.ui.components.SettingCheckBox
 import com.coc.zkqcode.jar.ui.components.SettingDropdown
 import com.coc.zkqcode.jar.ui.components.SettingInputRow
+import com.coc.zkqcode.jar.ui.components.SettingSection
 import com.coc.zkqcode.jar.ui.schema.Schema.MAIN_BASE_SETTINGS
 
 fun LazyListScope.MainBaseConfig(
@@ -48,7 +48,7 @@ fun LazyListScope.MainBaseConfig(
     // Attack & Resource requirements
     item {
         AnimatedVisibility(visible = isExpanded) {
-            Column {
+            SettingSection {
                 SettingCheckBox(key = "${MAIN_BASE_SETTINGS.CLAIM_DAILY_REWARD.key}_c$index")
                 SettingCheckBox(key = "${MAIN_BASE_SETTINGS.AUTO_ATTACK.key}_c$index")
                 Text(
@@ -65,7 +65,7 @@ fun LazyListScope.MainBaseConfig(
     // Battle adjustments
     item {
         AnimatedVisibility(visible = isExpanded) {
-            Column {
+            SettingSection {
                 FlowRow {
                     SettingCheckBox(
                         key = "${MAIN_BASE_SETTINGS.DYNAMIC_ADJUSTMENT.key}_c$index",
@@ -141,10 +141,10 @@ fun LazyListScope.MainBaseConfig(
         }
     } */
 
-    // Donation & Clan Castle
+    // Donation & Research toggle
     item {
         AnimatedVisibility(visible = isExpanded) {
-            Column {
+            SettingSection {
                 FlowRow {
                     /* SettingCheckBox(key = "${MAIN_BASE_SETTINGS.DONATION_SETTING.key}_c$index") */
                     /* SettingCheckBox(key = "${MAIN_BASE_SETTINGS.REQUEST_REINFORCEMENT_SETTING.key}_c$index") */
@@ -155,23 +155,10 @@ fun LazyListScope.MainBaseConfig(
                 /* AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.DONATION_SETTING.key}_c$index"]?.value == "1") {
                     SettingInputRow(key = "${MAIN_BASE_SETTINGS.DONATION_TIMES.key}_c$index")
                 } */
-            }
-        }
-    }
 
-    // Research configs
-    item {
-        AnimatedVisibility(visible = isExpanded) {
-            Column {
                 AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.RESEARCH_SETTING.key}_c$index"]?.value == "1") {
                     MainBaseResearchConfigs(index)
                 }
-
-                HorizontalDivider(
-                    modifier = Modifier.padding(top = 10.dp, bottom = 10.dp),
-                    thickness = 1.dp,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
             }
         }
     }
@@ -179,7 +166,7 @@ fun LazyListScope.MainBaseConfig(
     // Building & Wall settings
     item {
         AnimatedVisibility(visible = isExpanded) {
-            Column {
+            SettingSection {
                 FlowRow {
                     SettingCheckBox(key = "${MAIN_BASE_SETTINGS.BUILD_SETTING.key}_c$index")
                     SettingCheckBox(key = "${MAIN_BASE_SETTINGS.WALL_UPGRADE_SETTINGS.key}_c$index")
@@ -197,14 +184,7 @@ fun LazyListScope.MainBaseConfig(
                         SettingInputRow(key = "${MAIN_BASE_SETTINGS.UPGRADE_WALL_THRESHOLD.key}_c$index")
                     }
                 }
-            }
-        }
-    }
 
-    // Upgrade configs
-    item {
-        AnimatedVisibility(visible = isExpanded) {
-            Column {
                 AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.BUILD_SETTING.key}_c$index"]?.value == "1") {
                     MainBaseUpgradeConfigs(index, onNavigatePriority)
                 }
@@ -315,6 +295,7 @@ fun LazyListScope.MainBaseConfig(
     // Gear & Rewards
     item {
         AnimatedVisibility(visible = isExpanded) {
+            SettingSection {
             FlowRow {
                 /* SettingCheckBox(key = "${MAIN_BASE_SETTINGS.UPGRADE_WEARABLE_GEAR.key}_c$index")
                 SettingCheckBox(key = "${MAIN_BASE_SETTINGS.UPGRADE_ALL_GEAR.key}_c$index") */
@@ -343,6 +324,7 @@ fun LazyListScope.MainBaseConfig(
                     key = "${MAIN_BASE_SETTINGS.USE_TEMP_ITEMS.key}_c$index",
                     explain = "勾选此选项后，紫孔雀会使用研究浓汤和建筑工人大餐。并且为了防止重复使用导致道具失效，每次只会使用一个道具。"
                 ) */
+            }
             }
         }
     }

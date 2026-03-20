@@ -3,6 +3,7 @@ package com.coc.zkqcode.jar.ui.pages.single
 import android.content.Intent
 import com.coc.zkqcode.BuildConfig
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,7 +14,6 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -296,9 +296,10 @@ fun LoginScreen(onAdFreeClick: () -> Unit = {}) {
                 value = GlobalVars.configStates[GLOBAL_SETTINGS.PASSWORD.key]!!.value,
                 modifier = Modifier
                     .background(
-                        color = Color.LightGray,
+                        color = Color.White,
                         shape = RoundedCornerShape(4.dp)
                     )
+                    .border(1.dp, Color.Gray, RoundedCornerShape(4.dp))
                     .padding(4.dp)
                     .align(Alignment.CenterVertically)
                     .heightIn(max = 120.dp),
@@ -357,9 +358,5 @@ fun LoginScreen(onAdFreeClick: () -> Unit = {}) {
 //                }, enable = isLoginButtonEnabled
 //            )
         }
-        HorizontalDivider(
-            thickness = 1.dp,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 1f)
-        )
     }
 }
