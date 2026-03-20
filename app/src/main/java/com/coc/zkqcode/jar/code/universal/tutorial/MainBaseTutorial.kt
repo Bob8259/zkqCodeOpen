@@ -9,6 +9,7 @@ import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
 import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.InGamesVars
+import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.smalltools.getStaticConfig
 import com.coc.zkqcode.jar.code.universal.smalltools.reExtractGameSavings
 import com.coc.zkqcode.jar.code.universal.smalltools.setZKQInputMethod
@@ -28,8 +29,7 @@ suspend fun mainBaseTutorial(): Boolean {
         MyColors.MainBackToCamp
     )
 
-    val screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult
-        ?: logAndRestart("in isInHomePage, screen capture failed.")
+    val screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult ?: logAndRestart("in isInHomePage, screen capture failed.")
 
     // 1. Process standard priority schemas (Find -> Tap)
     prioritySchemas.forEach { schema ->
@@ -44,18 +44,30 @@ suspend fun mainBaseTutorial(): Boolean {
         TouchActions.tap(it.x, it.y, delayTime = 500)
     }
     findMultiColors(schema = MyColors.UpgradeTHArrow)?.let {
-        
         TouchActions.tap(it.x + 50, it.y + 100, delayTime = 500)
-        TouchActions.tap(703, 570, delayTime = 500)
+        val upgradeHammer = findMultiColorsUntil(schemas = listOf(MyColors.UpgradeHammer), duration = 500)
+        if (upgradeHammer != null) {
+            TouchActions.tap(720, 570, delayTime = 500)
+        } else {
+            val isSpeedUp = getStaticConfig(Schema.GLOBAL_SETTINGS.CREATE_GEM_BUILD.key) == "1"
+            if (isSpeedUp) {
+                TouchActions.tap(643, 556) // Use gem to speed up
+            }
+        }
+    }
+    findMultiColors(schema = MyColors.TutorialTrainBarbarian)?.let { value ->
+        repeat(20) {
+            TouchActions.tap(value.x, value.y, delayTime = 50)
+        }
     }
     // Important Notice tap
     findMultiColors(schema = MyColors.ImportantNotice)?.let {
         TouchActions.tap(344, 510, delayTime = 500)
     }
     findMultiColors(schema = MyColors.AttackMap)?.let {
-        if (findMultiColors(schema = MyColors.TrainTroops) == null && findMultiColors(schema = MyColors.ShopAfterTutorial) == null) {
-            TouchActions.tap(it.x, it.y, delayTime = 500)
-        }
+
+        TouchActions.tap(it.x, it.y, delayTime = 500)
+
     }
     // Building logic with Gem speed-up check
     findMultiColors(schema = MyColors.TutorialBuildClick)?.let { point ->

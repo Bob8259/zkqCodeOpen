@@ -1,3 +1,5 @@
+@file:Suppress("PropertyName")
+
 package com.coc.zkqcode.jar.code.colorschema.colorpackage.mainbase
 
 import com.coc.zkqcode.jar.code.colorschema.ColorSchema
@@ -67,7 +69,7 @@ object MainBaseTutorial : IMainBaseTutorial {
         92, 206, 341, 566, "485A7E", "20|17|405174,34|58|425275,-2|99|B9BFC2,-1|115|C2CBD3,14|125|38435B,39|124|364564,51|122|354464,70|115|334260,90|104|30405F", 0, 0.9, "训练部队内部"
     )
     override val AttackMap = ColorSchema.parse(
-        22, 580, 144, 674, "D5F0FF", "-14|2|C2E5F8,-20|-14|D6F1FF,0|-26|DAEDF9,15|-23|9EA8F5,21|-18|A9C9DE,23|-13|B5CFDD,18|-5|B6D0FC,-3|7|486BE2,3|15|E0F5FF", 0, 0.9, "进攻地图"
+        62, 614, 98, 636, "5474EB", "7|0|D9F2FF,14|0|DBF2FF,21|0|DBF5FF,28|0|DDF5FF,0|11|BFE5FB,7|11|88BBD9,14|11|D8F2FF,21|11|D5F0FE,28|11|68A2C6", 0, 0.9, "进攻地图"
     )
     override val AttackGoblin = ColorSchema.parse(
         349, 470, 520, 538, "53C7FF", "20|-4|54CAFF,44|-8|56CBFF,65|-7|55CBFF,77|-1|53C7FF,87|9|4ABDFF,87|22|145EF1,74|27|1256EE,37|36|1250EC,10|33|1251ED", 0, 0.9, "哥布林森林"
@@ -88,6 +90,6 @@ object MainBaseTutorial : IMainBaseTutorial {
         1133, 568, 1263, 702, "2F4C70", "-16|15|2E587E,-40|36|1EADEA,-46|19|2EC1EA,-42|0|36C7EA,-40|-19|CDFAFF,50|38|1BA9EA,56|15|30C4EA,60|2|35C5E9,57|-9|C3F6FF", 0, 0.9, "教程后的商店"
     )
     override val UpgradeTHArrow = ColorSchema.parse(
-        208, 38, 1053, 521, "1EAAFF", "28|26|07AEFF,41|29|07ACFF,61|14|0BAFFF,71|7|1CB6FF,56|1|029EFF,50|-18|11AAFF,45|-32|29B9FF,30|-27|22BAFF,27|-10|05A0FF", 0, 0.9, "升级大本营"
+        200, 35, 1050, 430, "1EAAFF", "28|26|07AEFF,41|29|07ACFF,61|14|0BAFFF,71|7|1CB6FF,56|1|029EFF,50|-18|11AAFF,45|-32|29B9FF,30|-27|22BAFF,27|-10|05A0FF", 0, 0.9, "升级大本营"
     )
 }
