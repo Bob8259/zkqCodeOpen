@@ -70,19 +70,26 @@ suspend fun searchOpponentsAndDeployTroops() {
     }
     val goldPercentage = findMultiColors(schema = MyColors.GoldColor)
     if (goldPercentage != null && goldPercentage.x < GOLD_FULL_X_THRESHOLD) {
-        ShowMessage("账号${InGamesVars.currentAccountNumber}，金币已满，坐标：${goldPercentage.x}, ${goldPercentage.y}")
         targetGold = 0
     }
     val elixirPercentage = findMultiColors(schema = MyColors.ElixirColor)
     if (elixirPercentage != null && elixirPercentage.x < ELIXIR_FULL_X_THRESHOLD) {
-        ShowMessage("账号${InGamesVars.currentAccountNumber}，圣水已满，坐标：${elixirPercentage.x}, ${elixirPercentage.y}")
         targetElixir = 0
     }
     val darkElixirPercentage = findMultiColors(schema = MyColors.DarkElixirColor)
     if (darkElixirPercentage != null && darkElixirPercentage.x < DARK_ELIXIR_FULL_X_THRESHOLD) {
-        ShowMessage("账号${InGamesVars.currentAccountNumber}，黑油已满，坐标：${darkElixirPercentage.x}, ${darkElixirPercentage.y}")
         targetDarkElixir = 0
-
+    }
+    // Combine resource-full status into a single message
+    val fullResources = mutableListOf<String>()
+    if (targetGold == 0) fullResources.add("金币")
+    if (targetElixir == 0) fullResources.add("圣水")
+    if (targetDarkElixir == 0) fullResources.add("黑油")
+    if (fullResources.isNotEmpty()) {
+        ShowMessage("账号${InGamesVars.currentAccountNumber}，${fullResources.joinToString("、")}已满")
+    }
+    if (getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.STOP_BATTLE_AFTER_FULL_RESOURCES.key)) {
+        if (targetGold == 0 && targetElixir == 0 && targetDarkElixir == 0) return
     }
     var searchTimes = 0
     val battleStartTime = System.currentTimeMillis()
@@ -108,7 +115,7 @@ suspend fun searchOpponentsAndDeployTroops() {
         if (insufficientGold != null) {
             break
         }
-        if(!checkReconnections()) return
+        if (!checkReconnections()) return
         val nextOpponent = findMultiColors(schema = MyColors.NextOpponent)
         if (nextOpponent != null) {
             searchTimes++

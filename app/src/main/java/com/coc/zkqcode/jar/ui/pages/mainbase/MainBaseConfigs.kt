@@ -71,13 +71,13 @@ fun LazyListScope.MainBaseConfig(
                         key = "${MAIN_BASE_SETTINGS.DYNAMIC_ADJUSTMENT.key}_c$index",
                         explain = "勾选后，辅助会跳过前两个搜到的目标，并且会根据所有搜索到的目标的可获得资源的平均值来搜鱼要求。"
                     )
-                    /* SettingCheckBox(key = "${MAIN_BASE_SETTINGS.STOP_BATTLE_AFTER_FULL_RESOURCES.key}_c$index")
+                    SettingCheckBox(key = "${MAIN_BASE_SETTINGS.STOP_BATTLE_AFTER_FULL_RESOURCES.key}_c$index")
 
-                    SettingCheckBox(key = "${MAIN_BASE_SETTINGS.STOP_BATTLE_WHEN_NO_STAR.key}_c$index")
-                    SettingCheckBox(key = "${MAIN_BASE_SETTINGS.PLAY_LADDER.key}_c$index")
-                    AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.PLAY_LADDER.key}_c$index"]?.value == "1") {
-                        SettingCheckBox(key = "${MAIN_BASE_SETTINGS.CHANGE_BASE.key}_c$index")
-                    } */
+                    /*SettingCheckBox(key = "${MAIN_BASE_SETTINGS.STOP_BATTLE_WHEN_NO_STAR.key}_c$index")
+                     SettingCheckBox(key = "${MAIN_BASE_SETTINGS.PLAY_LADDER.key}_c$index")
+                     AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.PLAY_LADDER.key}_c$index"]?.value == "1") {
+                         SettingCheckBox(key = "${MAIN_BASE_SETTINGS.CHANGE_BASE.key}_c$index")
+                     } */
                 }
             }
         }

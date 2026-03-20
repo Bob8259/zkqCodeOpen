@@ -28,7 +28,7 @@ suspend fun runMainScript() {
     val startAccount: Int
     val accountTotal: Int
     if (isBatchCreate) {
-        // When batch-create is enabled, use the create ID range
+        // When batch-create is enabled, use the creation ID range
         startAccount = getConfigOrStop(Schema.GLOBAL_SETTINGS.CREATE_START_ID.key).toInt()
         accountTotal = getConfigOrStop(Schema.GLOBAL_SETTINGS.CREATE_END_ID.key).toInt()
     } else {
@@ -47,7 +47,7 @@ suspend fun runMainScript() {
 
     while (currentCoroutineContext().isActive) {
         // Test code
-        runTestCode()
+//        runTestCode()
         // Use labeled block to skip remaining steps on failure
         run stepBlock@{
             if (!writeGameFiles()) {
