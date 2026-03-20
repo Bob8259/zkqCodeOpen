@@ -12,7 +12,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.coc.zkqcode.jar.ui.components.CustomButton
-import com.coc.zkqcode.jar.ui.components.SettingCheckBox
+import com.coc.zkqcode.jar.ui.components.SettingToggleButton
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.jar.ui.schema.Schema.MAIN_BASE_BUILDINGS
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -65,7 +65,7 @@ fun MainBaseUpgradeConfigs(index: Int, onNavigatePriority: (Int) -> Unit = {}) {
                 )
                 FlowRow {
                     items.forEach { item ->
-                        SettingCheckBox(key = "${item.key}_c${index}")
+                        SettingToggleButton(key = "${item.key}_c${index}")
                     }
                 }
             }

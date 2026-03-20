@@ -1,6 +1,7 @@
 package com.coc.zkqcode.jar.ui.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,13 +21,14 @@ import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -37,6 +39,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
@@ -90,9 +93,10 @@ fun InputRowWithCheckBox(
             modifier = Modifier
                 .padding(end = 6.dp, top = 6.dp, start = 6.dp)
                 .background(
-                    color = Color.LightGray,
+                    color = Color.White,
                     shape = RoundedCornerShape(4.dp)
                 )
+                .border(1.dp, Color.Gray, RoundedCornerShape(4.dp))
                 .padding(4.dp)
                 .align(Alignment.CenterVertically)
                 .heightIn(max = 120.dp)
@@ -224,7 +228,6 @@ fun SettingInputRow(key: String, afterChange: ((String) -> Unit)? = null) {
         BasicTextField(
             value = state.value,
             onValueChange = { newValue ->
-                // Automatically handle side effects and state updates
                 GlobalVars.isAutoRunEnabled = false
                 state.value = newValue
                 afterChange?.invoke(newValue)
@@ -232,9 +235,10 @@ fun SettingInputRow(key: String, afterChange: ((String) -> Unit)? = null) {
             modifier = Modifier
                 .padding(end = 16.dp)
                 .background(
-                    color = Color.LightGray,
+                    color = Color.White,
                     shape = RoundedCornerShape(4.dp)
                 )
+                .border(1.dp, Color.Gray, RoundedCornerShape(4.dp))
                 .padding(4.dp)
                 .align(Alignment.CenterVertically)
                 .heightIn(max = 120.dp)
@@ -332,6 +336,54 @@ fun SettingCheckBox(
     )
 }
 
+// Single toggle text button for research/building item lists
+@Composable
+fun SettingToggleButton(key: String) {
+    val state = GlobalVars.configStates.getOrPut(key) {
+        mutableStateOf(Schema.getDefaultValue(key))
+    }
+    val label = Schema.getDisplayName(key)
+    val isEnabled = state.value == "1"
+
+    if (isEnabled) {
+        Button(
+            onClick = {
+                GlobalVars.isAutoRunEnabled = false
+                state.value = "0"
+            },
+            modifier = Modifier
+                .padding(2.dp)
+                .height(32.dp),
+            shape = RoundedCornerShape(8.dp),
+            contentPadding = PaddingValues(horizontal = 10.dp, vertical = 0.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = AppColors.Azure,
+                contentColor = Color.White
+            )
+        ) {
+            Text(label, style = MaterialTheme.typography.labelMedium)
+        }
+    } else {
+        OutlinedButton(
+            onClick = {
+                GlobalVars.isAutoRunEnabled = false
+                state.value = "1"
+            },
+            modifier = Modifier
+                .padding(2.dp)
+                .height(32.dp),
+            shape = RoundedCornerShape(8.dp),
+            contentPadding = PaddingValues(horizontal = 10.dp, vertical = 0.dp),
+            colors = ButtonDefaults.outlinedButtonColors(
+                contentColor = Color.Gray
+            )
+        ) {
+            Text(label, style = MaterialTheme.typography.labelMedium)
+        }
+    }
+}
+
+// Reordered layout: [Text] [Info Icon] [Toggle Switch]
 @Composable
 private fun CustomCheckBox(
     text: String,
@@ -339,30 +391,20 @@ private fun CustomCheckBox(
     onCheckStateChange: (Boolean) -> Unit,
     explain: String? = null
 ) {
-
     var showExplanation by remember { mutableStateOf(false) }
+    val isChecked = checkedState == "1"
 
-    Row(modifier = Modifier.padding(top = 4.dp)) {
-        Checkbox(
-            checked = checkedState == "1", onCheckedChange = { isChecked ->
-                GlobalVars.isAutoRunEnabled = false
-                onCheckStateChange(isChecked)
-            }, modifier = Modifier
-                .height(20.dp)
-                .width(25.dp),
-            colors = CheckboxDefaults.colors(
-                checkedColor = AppColors.Azure,
-                checkmarkColor = Color.White
-            )
-        )
-
+    Row(
+        modifier = Modifier.padding(top = 4.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
         Row(
-            verticalAlignment = Alignment.CenterVertically, modifier = Modifier.clickable {
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.clickable {
                 GlobalVars.isAutoRunEnabled = false
-                val newCheckedState = checkedState != "1"
-                onCheckStateChange(newCheckedState)
-
-            }) {
+                onCheckStateChange(!isChecked)
+            }
+        ) {
             Text(
                 text = text,
                 modifier = Modifier.padding(top = 2.dp),
@@ -377,7 +419,8 @@ private fun CustomCheckBox(
                         .height(18.dp)
                         .clickable { showExplanation = true }
                         .padding(end = 2.dp),
-                    tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
+                    tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                )
 
                 if (showExplanation) {
                     CustomAlertDialog(
@@ -396,13 +439,32 @@ private fun CustomCheckBox(
                         },
                         confirmButton = {
                             TextButton(
-                                onClick = { showExplanation = false }) {
+                                onClick = { showExplanation = false }
+                            ) {
                                 Text("明白了")
                             }
-                        })
+                        }
+                    )
                 }
             }
         }
+
+        // Scaled-down toggle switch to keep similar row height
+        Switch(
+            checked = isChecked,
+            onCheckedChange = { checked ->
+                GlobalVars.isAutoRunEnabled = false
+                onCheckStateChange(checked)
+            },
+            modifier = Modifier
+                .height(20.dp)
+                .padding(start = 4.dp)
+                .scale(0.7f),
+            colors = SwitchDefaults.colors(
+                checkedTrackColor = AppColors.Azure,
+                checkedThumbColor = Color.White
+            )
+        )
     }
 }
 
