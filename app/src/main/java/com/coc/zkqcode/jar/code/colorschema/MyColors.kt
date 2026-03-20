@@ -76,5 +76,10 @@ object MyColors : IUIColors by UIColors, IFeatureColors by FeatureColors, IMainB
     val BinaryZero = ColorSchema.parse(
         0, 0, 0, 0, "000000", "4|1|FFFFFF,10|5|000000,9|-2|000000,6|-5|000000,4|2|FFFFFF,3|7|000000,5|7|000000,7|7|000000,9|5|000000", 0, 0.9
     )
+
+    //UI Colors
+    val MiddleGreenButton = ColorSchema.parse(
+        577, 526, 704, 567, "86E8BA", "25|0|86E8BA,51|0|86E8BA,76|0|86E8BA,101|0|86E8BA,0|21|3AD48B,25|21|3AD48B,51|21|3AD48B,76|21|3AD48B,101|21|3AD48B", 0, 0.9, "中心绿色确认（类似活动和帮手教程）"
+    )
 }
 
