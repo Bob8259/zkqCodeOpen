@@ -6,6 +6,7 @@ import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.core.util.touchactions.TouchActions.pinchIn
 import com.coc.zkqcode.core.util.touchactions.TouchActions.swipe
+import com.coc.zkqcode.jar.code.builderbase.resources.collectBuilderBaseResources
 import com.coc.zkqcode.jar.code.colorschema.ColorSchema
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.buildings.BaseType
@@ -63,6 +64,10 @@ suspend fun builderBaseAttack(): Boolean {
         val battleTimes = getConfigRuntime(Schema.BUILDER_BASE_SETTINGS.SWITCH_ACCOUNT_AFTER_BATTLES.key).toInt()
         repeat(battleTimes) { index ->
             if (!realAttack(attackType, index + 1, battleTimes)) return false
+            if (index % 5 == 0) {
+                if (!enterMainScreen()) return false
+                collectBuilderBaseResources()
+            }
         }
     }
     // 4. Return to main screen
@@ -85,7 +90,7 @@ private suspend fun realAttack(mode: String, battleNumber: Int = 1, battleTimes:
         if (trainTroopButton != null) {
             TouchActions.tap(86, 638, delayTime = 500)//Attack
         }
-        if(!checkReconnections()) return false
+        if (!checkReconnections()) return false
         val builderBaseStarBonus = findMultiColors(schema = MyColors.BuilderBaseStarBonus)
         if (builderBaseStarBonus != null) {
             TouchActions.tap(builderBaseStarBonus.x + 10, builderBaseStarBonus.y + 10, delayTime = 200)
