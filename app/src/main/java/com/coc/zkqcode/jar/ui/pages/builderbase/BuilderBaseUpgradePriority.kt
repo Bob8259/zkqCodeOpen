@@ -79,14 +79,14 @@ fun BuilderBaseUpgradePriority(index: Int, onSaveSuccess: () -> Unit) {
         Text(
             text = "拖动铅笔符号调整优先度，越靠上，越靠左表示优先度越高。",
             style = MaterialTheme.typography.labelMedium,
-            modifier = Modifier.padding(bottom = 8.dp)
+            modifier = Modifier.padding(8.dp)
         )
 
         LazyVerticalGrid(
             columns = GridCells.Adaptive(minSize = 90.dp),
             modifier = Modifier.weight(1f),
             state = lazyGridState,
-            contentPadding = PaddingValues(bottom = 8.dp),
+            contentPadding = PaddingValues(start = 8.dp, end = 8.dp, bottom = 8.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
