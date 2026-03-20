@@ -13,7 +13,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.coc.zkqcode.jar.ui.components.CustomButton
-import com.coc.zkqcode.jar.ui.components.SettingCheckBox
+import com.coc.zkqcode.jar.ui.components.SettingToggleButton
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.jar.ui.schema.Schema.BUILDER_BASE_TROOPS
 import kotlin.collections.set
@@ -60,7 +60,7 @@ fun BuilderBaseResearchConfigs(index: Int) {
         AnimatedVisibility(visible = isExpanded.value) {
             FlowRow {
                 items.forEach { item ->
-                    SettingCheckBox(key = "${item.key}_c${index}")
+                    SettingToggleButton(key = "${item.key}_c${index}")
                 }
             }
         }

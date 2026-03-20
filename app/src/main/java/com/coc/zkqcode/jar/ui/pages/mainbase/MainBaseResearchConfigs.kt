@@ -8,8 +8,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import com.coc.zkqcode.jar.ui.components.CustomButton
-import com.coc.zkqcode.jar.ui.components.SettingCheckBox
 import com.coc.zkqcode.jar.ui.components.SettingDropdown
+import com.coc.zkqcode.jar.ui.components.SettingToggleButton
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.jar.ui.schema.Schema.MAIN_BASE_TROOPS_AND_SPELLS
 import com.coc.zkqcode.jar.ui.schema.Schema.MAIN_BASE_SETTINGS
@@ -60,7 +60,7 @@ fun MainBaseResearchConfigs(index: Int) {
         AnimatedVisibility(visible = isExpanded.value) {
             FlowRow {
                 items.forEach { item ->
-                    SettingCheckBox(key = "${item.key}_c${index}")
+                    SettingToggleButton(key = "${item.key}_c${index}")
                 }
             }
         }
