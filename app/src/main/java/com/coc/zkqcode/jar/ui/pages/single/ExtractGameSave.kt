@@ -17,9 +17,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.coc.zkqcode.jar.ui.components.CustomButton
 import com.coc.zkqcode.jar.ui.components.CustomNotificationWindow
+import com.coc.zkqcode.jar.ui.components.SettingDropdown
 import com.coc.zkqcode.jar.ui.components.SettingSection
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.jar.ui.components.SettingInputRow
+import com.coc.zkqcode.jar.ui.schema.Schema
 import com.coc.zkqcode.jar.ui.schema.Schema.GLOBAL_SETTINGS
 import com.topjohnwu.superuser.Shell
 import kotlinx.coroutines.Dispatchers
@@ -57,7 +59,7 @@ fun LazyListScope.ExtractGameSave() {
 }
 
 @Composable
-private fun ExtractGameSaveContent() {
+fun ExtractGameSaveContent() {
     // State management
     var showDialog by remember { mutableStateOf(false) }
     var dialogMessage by remember { mutableStateOf("") }
@@ -152,16 +154,27 @@ private fun ExtractGameSaveContent() {
         }
     }
 
+    // Initialize and subscribe to version selector state so parent recomposes on change
+    val versionState = GlobalVars.configStates.getOrPut(GLOBAL_SETTINGS.EXTRACT_VERSION.key) {
+        mutableStateOf(Schema.getDefaultValue(GLOBAL_SETTINGS.EXTRACT_VERSION.key))
+    }
+    val selectedIndex = versionState.value.toIntOrNull() ?: 0
+    val selectedVariant = GameVariant.entries.getOrElse(selectedIndex) { GameVariant.CN }
+
     Column(modifier = Modifier.padding(6.dp)) {
-        // 遍历枚举生成 UI
-        GameVariant.entries.forEach { variant ->
-            SettingSection {
-                GameConfigSection(
-                    variant = variant,
-                    onExtract = { performExtract(variant) },
-                    onDelete = { performDelete(variant) }
-                )
-            }
+        // Dropdown to switch between CN and Global versions
+        SettingDropdown(
+            key = GLOBAL_SETTINGS.EXTRACT_VERSION.key,
+            options = listOf("国服", "国际服")
+        )
+
+        // Only show the section for the currently selected variant
+        SettingSection {
+            GameConfigSection(
+                variant = selectedVariant,
+                onExtract = { performExtract(selectedVariant) },
+                onDelete = { performDelete(selectedVariant) }
+            )
         }
     }
 
