@@ -15,10 +15,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -40,6 +41,7 @@ import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.jar.code.universal.smalltools.writeGameFilesCore
 import com.coc.zkqcode.jar.ui.components.CustomButton
+import com.coc.zkqcode.jar.ui.components.SettingInputRow
 import com.coc.zkqcode.jar.ui.schema.Schema.ACCOUNT_SETTINGS
 import com.coc.zkqcode.statehelper.AppMode
 import com.coc.zkqcode.statehelper.AppStateManager
@@ -80,11 +82,10 @@ fun SwitchAccount(onClose: () -> Unit) {
             .padding(16.dp),
 
         ) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
             // Top Text aligned to start
             Text(
-                text = "小提示：在悬浮窗点击此按钮，即可回到切号工具。\n注意：每次关闭切号工具时，辅助会从新开始运行。",
-                style = MaterialTheme.typography.titleMedium,
+                text = "小提示：在悬浮窗点击此按钮，即可回到切号工具。每次关闭切号工具时，辅助会从头开始运行。",
                 color = Color.Black,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -114,48 +115,7 @@ fun SwitchAccount(onClose: () -> Unit) {
                 thickness = 1.dp,
                 color = Color.Gray
             )
-
-            // Account Selection Row
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(vertical = 8.dp),
-                horizontalArrangement = Arrangement.Center
-            ) {
-                Text(
-                    text = "切换到第",
-                    modifier = Modifier.padding(horizontal = 8.dp),
-                    color = Color.Black
-                )
-
-                BasicTextField(
-                    value = accountNumber,
-                    onValueChange = { newValue ->
-                        // Only allow numeric input
-                        if (newValue.isEmpty() || newValue.all { it.isDigit() }) {
-                            accountNumber = newValue.filter { it.isDigit() }
-                        }
-                    },
-                    modifier = Modifier
-                        .width(60.dp)
-                        .background(
-                            color = Color.White,
-                            shape = RoundedCornerShape(4.dp)
-                        )
-                        .border(1.dp, Color.Gray, RoundedCornerShape(4.dp))
-                        .padding(4.dp)
-                        .height(24.dp), // Adjust height to match typical text field
-                    singleLine = true
-                )
-
-                Text(
-                    text = "个账号",
-                    modifier = Modifier.padding(horizontal = 8.dp),
-                    color = Color.Black
-                )
-
-
-            }
-            FlowRow(horizontalArrangement = Arrangement.Center) {
+            FlowRow {
                 Row {
                     CustomButton(text = "▼", onClick = {
                         val current = accountNumber.toIntOrNull() ?: 1
@@ -168,6 +128,55 @@ fun SwitchAccount(onClose: () -> Unit) {
                         accountNumber = (current + 1).toString()
                     })
                 }
+                // Account Selection Row
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.padding(vertical = 8.dp),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = "切换到第",
+                        modifier = Modifier.padding(horizontal = 8.dp),
+                        color = Color.Black
+                    )
+
+                    BasicTextField(
+                        value = accountNumber,
+                        onValueChange = { newValue ->
+                            // Only allow numeric input
+                            if (newValue.isEmpty() || newValue.all { it.isDigit() }) {
+                                accountNumber = newValue.filter { it.isDigit() }
+                            }
+                        },
+                        modifier = Modifier
+                            .width(60.dp)
+                            .background(
+                                color = Color.White,
+                                shape = RoundedCornerShape(4.dp)
+                            )
+                            .border(1.dp, Color.Gray, RoundedCornerShape(4.dp))
+                            .padding(4.dp)
+                            .height(24.dp), // Adjust height to match typical text field
+                        singleLine = true
+                    )
+
+                    Text(
+                        text = "个账号",
+                        modifier = Modifier.padding(horizontal = 8.dp),
+                        color = Color.Black
+                    )
+                }
+                // Display the remark for the currently selected account
+                val remarkValue = GlobalVars.configStates["${ACCOUNT_SETTINGS.REMARK.key}${accountNumber}"]?.value
+                if (remarkValue != null) {
+                    Column(modifier = Modifier.padding(top = 8.dp)) {
+                        SettingInputRow(key = "${ACCOUNT_SETTINGS.REMARK.key}${accountNumber}")
+                    }
+                }
+            }
+            FlowRow(horizontalArrangement = Arrangement.Center) {
+
+                ExtractGameSaveContent()
                 Row {
                     // Confirm Button aligned to start
                     CustomButton(
