@@ -80,20 +80,21 @@ suspend fun detectObstacles(): List<DetectionResult> {
         return emptyList()
     }
 
-    YoloDetector.loadWeights("remove-obstacle")
+    // Early return if model weights fail to load
+    if (!YoloDetector.loadWeights("remove-obstacle")) return emptyList()
 
     val detections = mutableListOf<DetectionResult>()
+    val parts = listOf(0, 320, 640)
 
     try {
-        val parts = listOf(0, 320, 640)
-
         for (i in parts.indices) {
             val startX = parts[i]
             val crop = Bitmap.createBitmap(screenBuffer, startX, 0, 640, 640)
 
-            // Don't clear weights for the first two parts
-            val clearWeights = (i == parts.size - 1)
-            val partDetections = YoloDetector.detect(crop, clearWeightsAfter = clearWeights)
+            val partDetections = YoloDetector.detect(
+                crop,
+                clearWeightsAfter = false
+            )
 
             for (detection in partDetections) {
                 val box = detection.boundingBox
@@ -119,14 +120,11 @@ suspend fun detectObstacles(): List<DetectionResult> {
                 }
             }
         }
-    } catch (e: Exception) {
+
+        // Filter detections outside [100, 1180] x-range
+        return detections.filter { it.boundingBox.centerX() in 100f..1180f }
+    } finally {
+        // Always clear model weights after detection to free memory
         YoloDetector.clearWeights()
-        throw e
     }
-
-    // Filter detections outside [100, 1180] x-range
-    val initialFiltered = detections.filter { it.boundingBox.centerX() in 100f..1180f }
-
-    // Filter out duplicate detections that are too close to each other
-    return YoloDetector.filterCloseDetections(initialFiltered)
 }

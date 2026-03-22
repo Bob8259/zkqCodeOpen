@@ -7,6 +7,7 @@ import com.coc.zkqcode.jar.code.universal.buildings.BaseType
 import com.coc.zkqcode.jar.code.mainbase.playMainBase
 import com.coc.zkqcode.jar.code.universal.GameVersion
 import com.coc.zkqcode.jar.code.universal.InGamesVars
+import com.coc.zkqcode.jar.code.universal.buildings.upgrade.detectInstantBuildCost
 import com.coc.zkqcode.jar.code.universal.buildings.walls.calculateResourcesPercentage
 import com.coc.zkqcode.jar.code.universal.create.batchCreateAccounts
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
@@ -47,7 +48,7 @@ suspend fun runMainScript() {
 
     while (currentCoroutineContext().isActive) {
         // Test code
-//        runTestCode()
+        runTestCode()
         // Use labeled block to skip remaining steps on failure
         run stepBlock@{
             if (!writeGameFiles()) {
@@ -98,8 +99,9 @@ private suspend fun findAndActivateAccount(searchOrder: Iterable<Int>): Int? {
 private suspend fun runTestCode() {
     while (true) {
 //        enterMainScreen()
-        ShowMessage(calculateResourcesPercentage(BaseType.Builder).toString())
-        delay(2000000)
+        ShowMessage(detectInstantBuildCost().toString())
+//        delay(2000000)
+        delay(1000)
 //        ShowMessage(recognizeUpgradeResources(BaseType.Main).toString())
     }
 }
