@@ -41,35 +41,31 @@ suspend fun detectInstantBuildCost(): Int? {
 
     val cropBitmap = Bitmap.createBitmap(screenBuffer, startX, startY, width, height)
 
-    // Load the numbers detection model and perform inference
-    YoloDetector.loadWeights("numbers")
-
-    val detections = try {
-        YoloDetector.detect(
+    // Load model and run detection via remote YOLO service; abort if loading fails
+    if (!YoloDetector.loadWeights("numbers")) return null
+    try {
+        val detections = YoloDetector.detect(
             bitmap = cropBitmap,
-            modelType = "numbers",
-            clearWeightsAfter = true,
+            clearWeightsAfter = false,
             threshold = 0.3f
         )
-    } catch (e: Exception) {
+
+        // Return fallback value if no digits were detected
+        if (detections.isEmpty()) {
+            return 9999
+        }
+
+        // Sort detections from left to right to maintain correct digit order
+        val sortedDetections = detections.sortedBy { it.boundingBox.centerX() }
+
+        // Combine detected digits into the final number
+        val result = sortedDetections.joinToString("") { detection ->
+            detection.classIndex.toString()
+        }
+
+        return result.toIntOrNull()
+    } finally {
+        // Always clear model weights after detection to free memory
         YoloDetector.clearWeights()
-        return null
     }
-
-    if (detections.isEmpty()) {
-        return null
-    }
-
-    // Filter out duplicate detections that are too close to each other
-    val filteredDetections = YoloDetector.filterCloseDetections(detections)
-
-    // Sort detections from left to right to maintain correct digit order
-    val sortedDetections = filteredDetections.sortedBy { it.boundingBox.centerX() }
-
-    // Combine detected digits into the final number
-    val result = sortedDetections.joinToString("") { detection ->
-        detection.classIndex.toString()
-    }
-
-    return result.toIntOrNull()
 }

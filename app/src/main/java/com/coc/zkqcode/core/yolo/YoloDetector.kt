@@ -1,22 +1,17 @@
 package com.coc.zkqcode.core.yolo
 
-import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.Matrix
-import android.graphics.Paint
 import android.graphics.RectF
-import org.tensorflow.lite.DataType
-import org.tensorflow.lite.Interpreter
-import java.io.FileInputStream
-import java.nio.ByteBuffer
-import java.nio.ByteOrder
-import java.nio.MappedByteBuffer
-import java.nio.channels.FileChannel
-import com.coc.zkqcode.core.util.fileactions.LogHelper
-import com.coc.zkqcode.core.util.fileactions.LogHelper.showDebugInfo
-import androidx.core.graphics.scale
+import com.coc.zkqcode.core.util.basic.RunShell
+import com.coc.zkqcode.core.util.basic.ShowMessage
+import com.google.gson.Gson
+import kotlinx.coroutines.delay
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.RequestBody.Companion.toRequestBody
+import java.io.ByteArrayOutputStream
+import java.util.concurrent.TimeUnit
 
 data class DetectionResult(
     val boundingBox: RectF,
@@ -25,290 +20,134 @@ data class DetectionResult(
 )
 
 object YoloDetector {
-    private var appContext: Context? = null
-    private const val MODEL_PATH = "obstacles_detector.tflite"
+    private const val BASE_URL = "http://localhost:13462"
+    private const val SERVICE_START_CMD =
+        "am start-foreground-service -n com.coc.zkqyolo/.service.YoloService"
+    private const val READY_TIMEOUT_MS = 10_000L
+    private const val POLL_INTERVAL_MS = 1000L
 
-    private var interpreter: Interpreter? = null
-    private var currentModelType: String? = null
-    private var inputWidth = 0
-    private var inputHeight = 0
+    private val client = OkHttpClient.Builder()
+        .connectTimeout(3, TimeUnit.SECONDS)
+        .readTimeout(30, TimeUnit.SECONDS)
+        .build()
 
-    // Model input details
-    private var inputDataType: DataType = DataType.FLOAT32
-    private var inputScale = 0f
-    private var inputZeroPoint = 0
+    private val gson = Gson()
 
-    // Model output details
-    private var outputIndex = 0
+    /**
+     * Polls /status every ~1 second, restarting the service each iteration if unreachable.
+     * Returns true once the server responds, or false after 10 seconds.
+     * Returns false immediately if com.coc.zkqyolo is not installed.
+     */
+    private suspend fun ensureServerReady(): Boolean {
+        // Check if the YOLO package is installed before attempting to start
+        val installed = RunShell.run("pm list packages com.coc.zkqyolo", isCheckIsPlaying = false)
+        if (installed.none { it.contains("com.coc.zkqyolo") }) {
+            ShowMessage("AI插件未安装，请去网盘手动下载后，才能使用AI功能")
+            return false
+        }
 
-    fun initialize(context: Context) {
-        appContext = context.applicationContext
-    }
-
-    fun loadWeights(modelType: String? = null) {
-        if (interpreter != null && currentModelType == modelType) return // Already loaded
-
-        clearWeights() // Load new model if type changed or not loaded
-
-        val context = appContext ?: LogHelper.logAndRestart("YoloDetector must be initialized with context before loading weights")
-
-        try {
-            val model = loadModelFile(context, modelType)
-            val options = Interpreter.Options()
-            interpreter = Interpreter(model, options)
-
-            val inputTensor = interpreter!!.getInputTensor(0)
-            val shape = inputTensor.shape() // [1, height, width, 3] or [1, size, size, 3]
-            inputHeight = shape[1]
-            inputWidth = shape[2]
-            inputDataType = inputTensor.dataType()
-            currentModelType = modelType
-
-            // Check quantization
-            if (inputDataType == DataType.INT8 || inputDataType == DataType.UINT8) {
-                val quantization = inputTensor.quantizationParams()
-                inputScale = quantization.scale
-                inputZeroPoint = quantization.zeroPoint
+        val startTime = System.currentTimeMillis()
+        while (System.currentTimeMillis() - startTime < READY_TIMEOUT_MS) {
+            try {
+                val request = Request.Builder().url("$BASE_URL/status").get().build()
+                client.newCall(request).execute().use { response ->
+                    if (response.isSuccessful) return true
+                }
+            } catch (_: Exception) {
+                // Server not reachable, attempt to start the service
+                RunShell.runNoOutput(SERVICE_START_CMD, isCheckIsPlaying = false)
+                delay(POLL_INTERVAL_MS)
             }
-
-            // outputIndex = 0 // Assuming single output, no need to get tensor explicitly if just setting index
-            outputIndex = 0
-
-        } catch (e: Exception) {
-            clearWeights()
-            LogHelper.logAndRestart("Failed to load model: ${e.message}")
         }
+        ShowMessage("AI插件启动失败，请确保手动安装并启动")
+        return false
     }
 
-    fun clearWeights() {
-        interpreter?.close()
-        interpreter = null
-        currentModelType = null
-    }
-
-    private fun loadModelFile(context: Context, modelType: String? = null): MappedByteBuffer {
-        if (modelType == "remove-obstacle") {
-            val modelFile = java.io.File(context.filesDir, "assets/obstacles_detector.tflite")
-            val inputStream = FileInputStream(modelFile)
-            val fileChannel = inputStream.channel
-            return fileChannel.map(FileChannel.MapMode.READ_ONLY, 0, modelFile.length())
-        } else if (modelType == "walls-detect") {
-            val fileDescriptor = context.assets.openFd("walls_detect.tflite")
-            val inputStream = FileInputStream(fileDescriptor.fileDescriptor)
-            val fileChannel = inputStream.channel
-            val startOffset = fileDescriptor.startOffset
-            val declaredLength = fileDescriptor.declaredLength
-            return fileChannel.map(FileChannel.MapMode.READ_ONLY, startOffset, declaredLength)
-        } else if (modelType == "numbers") {
-            val fileDescriptor = context.assets.openFd("numbers_detector.tflite")
-            val inputStream = FileInputStream(fileDescriptor.fileDescriptor)
-            val fileChannel = inputStream.channel
-            val startOffset = fileDescriptor.startOffset
-            val declaredLength = fileDescriptor.declaredLength
-            return fileChannel.map(FileChannel.MapMode.READ_ONLY, startOffset, declaredLength)
-        }
-        val fileDescriptor = context.assets.openFd(MODEL_PATH)
-        val inputStream = FileInputStream(fileDescriptor.fileDescriptor)
-        val fileChannel = inputStream.channel
-        val startOffset = fileDescriptor.startOffset
-        val declaredLength = fileDescriptor.declaredLength
-        return fileChannel.map(FileChannel.MapMode.READ_ONLY, startOffset, declaredLength)
-    }
-
-    private fun resizeWithPadding(src: Bitmap, targetWidth: Int, targetHeight: Int): Triple<Bitmap, Float, Pair<Float, Float>> {
-        val srcWidth = src.width.toFloat()
-        val srcHeight = src.height.toFloat()
-        
-        // Calculate scale factor to fit while maintaining aspect ratio
-        val scale = Math.min(targetWidth.toFloat() / srcWidth, targetHeight.toFloat() / srcHeight)
-        
-        val newWidth = srcWidth * scale
-        val newHeight = srcHeight * scale
-        
-        // Calculate offsets to center the image
-        val offsetX = (targetWidth - newWidth) / 2f
-        val offsetY = (targetHeight - newHeight) / 2f
-        
-        val output = Bitmap.createBitmap(targetWidth, targetHeight, Bitmap.Config.ARGB_8888)
-        val canvas = Canvas(output)
-        canvas.drawColor(Color.BLACK)
-        
-        val matrix = Matrix()
-        matrix.postScale(scale, scale)
-        matrix.postTranslate(offsetX, offsetY)
-        
-        val paint = Paint()
-        paint.isFilterBitmap = true
-        
-        canvas.drawBitmap(src, matrix, paint)
-        
-        return Triple(output, scale, Pair(offsetX, offsetY))
-    }
-
-    fun detect(bitmap: Bitmap, modelType: String? = null, clearWeightsAfter: Boolean = true, threshold: Float = 0.3f): List<DetectionResult> {
-        // Ensure weights are loaded strictly for this detection
-        loadWeights(modelType)
-
-        if (interpreter == null) return emptyList()
-
-        var scaledBitmap: Bitmap? = null
-        try {
-            // Preprocess & Save for debug with aspect ratio preservation
-            val (resized, scale, offset) = resizeWithPadding(bitmap, inputWidth, inputHeight)
-            scaledBitmap = resized
-            val (offX, offY) = offset
-            
-            val byteBuffer = convertBitmapToByteBuffer(scaledBitmap)
-
-            // Output buffer [1, 300, 6]
-            // 300 detections, each has 6 values: [x1, y1, x2, y2, score, class]
-            val output = Array(1) { Array(300) { FloatArray(6) } }
-
-            interpreter!!.run(byteBuffer, output)
-
-            val detections = mutableListOf<DetectionResult>()
-            val outputArray = output[0]
-
-            for (detection in outputArray) {
-                // detection: [x1, y1, x2, y2, score, class]
-                val score = detection[4]
-                if (score > threshold) {
-                    // Map back to original coordinate space
-                    // Model returns normalized [0, 1] relative to the padded 640x640 (inputWidth x inputHeight) image
-                    val x1 = (detection[0] * inputWidth - offX) / scale
-                    val y1 = (detection[1] * inputHeight - offY) / scale
-                    val x2 = (detection[2] * inputWidth - offX) / scale
-                    val y2 = (detection[3] * inputHeight - offY) / scale
-                    val classIdx = detection[5]
-
-                    detections.add(
-                        DetectionResult(
-                            boundingBox = RectF(x1, y1, x2, y2),
-                            score = score,
-                            classIndex = classIdx.toInt()
-                        )
-                    )
+    /**
+     * Loads model weights via the YOLO service /load endpoint.
+     * @return true if weights loaded successfully, false on any failure.
+     */
+    suspend fun loadWeights(modelType: String? = null): Boolean {
+        if (!ensureServerReady()) return false
+        val json = if (modelType != null) """{"modelType":"$modelType"}""" else "{}"
+        val body = json.toRequestBody("application/json".toMediaType())
+        val request = Request.Builder().url("$BASE_URL/load").post(body).build()
+        return try {
+            client.newCall(request).execute().use { response ->
+                if (!response.isSuccessful) {
+                    ShowMessage("模型加载失败: HTTP ${response.code}")
+                    return false
+                }
+                val responseBody = response.body.string()
+                val parsed = gson.fromJson(responseBody, LoadResponse::class.java)
+                if (parsed.success) {
+                    true
+                } else {
+                    ShowMessage("模型加载失败: ${parsed.error ?: "未知错误"}")
+                    false
                 }
             }
-            return detections
-        } finally {
-            if (scaledBitmap != null && scaledBitmap != bitmap) {
-                scaledBitmap.recycle()
+        } catch (e: Exception) {
+            ShowMessage("模型加载异常: ${e.message}")
+            false
+        }
+    }
+
+    suspend fun detect(
+        bitmap: Bitmap,
+        clearWeightsAfter: Boolean = true,
+        threshold: Float = 0.3f,
+        distanceThreshold: Double = 5.0
+    ): List<DetectionResult> {
+        if (!ensureServerReady()) return emptyList()
+
+        val stream = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
+        val imageBytes = stream.toByteArray()
+
+        val body = imageBytes.toRequestBody("application/octet-stream".toMediaType())
+        val url = "$BASE_URL/detect?threshold=$threshold&distanceThreshold=$distanceThreshold"
+        val request = Request.Builder().url(url).post(body).build()
+
+        return try {
+            val response = client.newCall(request).execute()
+            val responseBody = response.body.string()
+            val parsed = gson.fromJson(responseBody, DetectResponse::class.java)
+
+            parsed.detections.map { d ->
+                DetectionResult(
+                    boundingBox = RectF(d.x1, d.y1, d.x2, d.y2),
+                    score = d.score,
+                    classIndex = d.classIndex
+                )
             }
-            // Strictly clean weights after detection if requested
+        } catch (_: Exception) {
+            emptyList()
+        } finally {
             if (clearWeightsAfter) {
                 clearWeights()
             }
         }
     }
 
-    private fun convertBitmapToByteBuffer(bitmap: Bitmap): ByteBuffer {
-        // Assume bitmap is already scaled to inputWidth x inputHeight
-        val bufferSize = if (inputDataType == DataType.FLOAT32) {
-            4 * inputWidth * inputHeight * 3
-        } else {
-            1 * inputWidth * inputHeight * 3
-        }
-
-        val byteBuffer = ByteBuffer.allocateDirect(bufferSize)
-        byteBuffer.order(ByteOrder.nativeOrder())
-
-        // MediaProjection might return HARDWARE bitmaps (API 26+), which don't support getPixels directly.
-        val softwareBitmap = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O &&
-            bitmap.config == Bitmap.Config.HARDWARE
-        ) {
-            bitmap.copy(Bitmap.Config.ARGB_8888, false)
-        } else {
-            bitmap
-        }
-
-        val intValues = IntArray(inputWidth * inputHeight)
-        softwareBitmap.getPixels(intValues, 0, softwareBitmap.width, 0, 0, softwareBitmap.width, softwareBitmap.height)
-
-        var pixel = 0
-        repeat(inputHeight) {
-            repeat(inputWidth) {
-                val value = intValues[pixel++]
-                val r = (value shr 16 and 0xFF)
-                val g = (value shr 8 and 0xFF)
-                val b = (value and 0xFF)
-
-                when (inputDataType) {
-                    DataType.FLOAT32 -> {
-                        byteBuffer.putFloat(r / 255.0f)
-                        byteBuffer.putFloat(g / 255.0f)
-                        byteBuffer.putFloat(b / 255.0f)
-                    }
-
-                    DataType.INT8 -> {
-                        val rNormalized = (r / 255.0f / inputScale + inputZeroPoint)
-                        val gNormalized = (g / 255.0f / inputScale + inputZeroPoint)
-                        val bNormalized = (b / 255.0f / inputScale + inputZeroPoint)
-
-                        byteBuffer.put(rNormalized.toInt().toByte())
-                        byteBuffer.put(gNormalized.toInt().toByte())
-                        byteBuffer.put(bNormalized.toInt().toByte())
-                    }
-
-                    DataType.UINT8 -> {
-                        byteBuffer.put(r.toByte())
-                        byteBuffer.put(g.toByte())
-                        byteBuffer.put(b.toByte())
-                    }
-
-                    else -> {}
-                }
-            }
-        }
-
-        if (softwareBitmap != bitmap) {
-            softwareBitmap.recycle()
-        }
-        return byteBuffer
+    suspend fun clearWeights() {
+        if (!ensureServerReady()) return
+        val body = "".toRequestBody()
+        val request = Request.Builder().url("$BASE_URL/clear").post(body).build()
+        client.newCall(request).execute().close()
     }
 
-    /**
-     * Filters out detections that are too close to each other.
-     * If the distance between two detection centers is less than the threshold,
-     * only the one with the higher confidence score is kept.
-     *
-     * @param detections List of detection results to filter
-     * @param distanceThreshold Minimum distance between detection centers (default: 5.0 pixels)
-     * @return Filtered list of detections
-     */
-    fun filterCloseDetections(
-        detections: List<DetectionResult>,
-        distanceThreshold: Double = 5.0
-    ): List<DetectionResult> {
-        val filteredDetections = mutableListOf<DetectionResult>()
+    // JSON response models for Gson deserialization
+    private data class LoadResponse(val success: Boolean, val error: String? = null)
 
-        for (detection in detections) {
-            var isTooClose = false
-            val iterator = filteredDetections.listIterator()
+    private data class RawDetection(
+        val x1: Float,
+        val y1: Float,
+        val x2: Float,
+        val y2: Float,
+        val score: Float,
+        val classIndex: Int
+    )
 
-            while (iterator.hasNext()) {
-                val existing = iterator.next()
-
-                val dx = detection.boundingBox.centerX() - existing.boundingBox.centerX()
-                val dy = detection.boundingBox.centerY() - existing.boundingBox.centerY()
-                val distance = kotlin.math.sqrt((dx * dx + dy * dy).toDouble())
-
-                if (distance < distanceThreshold) {
-                    isTooClose = true
-                    // Keep the detection with higher confidence score
-                    if (detection.score > existing.score) {
-                        iterator.remove()
-                        iterator.add(detection)
-                    }
-                    break
-                }
-            }
-
-            if (!isTooClose) {
-                filteredDetections.add(detection)
-            }
-        }
-
-        return filteredDetections
-    }
+    private data class DetectResponse(val detections: List<RawDetection>)
 }

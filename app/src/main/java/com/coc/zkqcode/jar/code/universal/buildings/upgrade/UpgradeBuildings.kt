@@ -222,25 +222,32 @@ private suspend fun tryToBatchBuildWalls(x: Int, y: Int, currentBase: BaseType) 
     // Locate the arrow element using YOLO detector
     delayWithMultiplier(200)
     val screenBuffer = ScreenCaptureManager.capture(asBitmap = true) as? Bitmap ?: logAndRestart("in BuilderBaseUpgradeBuildings, screen capture failed.")
-    val detections = YoloDetector.detect(screenBuffer, modelType = "walls-detect")
-    val batchBuildWallsArrow = detections.maxByOrNull { it.score }
+    // Early return if model weights fail to load
+    if (!YoloDetector.loadWeights("walls-detect")) return
+    try {
+        val detections = YoloDetector.detect(screenBuffer, clearWeightsAfter = false)
+        val batchBuildWallsArrow = detections.maxByOrNull { it.score }
 
-    if (batchBuildWallsArrow != null) {
-        val arrowX = batchBuildWallsArrow.boundingBox.centerX().toInt()
-        val arrowY = batchBuildWallsArrow.boundingBox.centerY().toInt()
-        ShowMessage("批量建造箭头：$arrowX, $arrowY")
-        val targetCenterY = if (shouldSwipe) centerY - 150 else centerY
-        val dx = arrowX - centerX
-        val dy = arrowY - targetCenterY
-        val distance = sqrt((dx * dx + dy * dy).toDouble())
+        if (batchBuildWallsArrow != null) {
+            val arrowX = batchBuildWallsArrow.boundingBox.centerX().toInt()
+            val arrowY = batchBuildWallsArrow.boundingBox.centerY().toInt()
+            ShowMessage("批量建造箭头：$arrowX, $arrowY")
+            val targetCenterY = if (shouldSwipe) centerY - 150 else centerY
+            val dx = arrowX - centerX
+            val dy = arrowY - targetCenterY
+            val distance = sqrt((dx * dx + dy * dy).toDouble())
 
-        if (distance > 0) {
-            // Calculate trajectory based on the vector from center to the detected arrow
-            val targetOffset = 3000
-            val endX = (arrowX + (dx / distance) * targetOffset).toInt()
-            val endY = (arrowY + (dy / distance) * targetOffset).toInt()
+            if (distance > 0) {
+                // Calculate trajectory based on the vector from center to the detected arrow
+                val targetOffset = 3000
+                val endX = (arrowX + (dx / distance) * targetOffset).toInt()
+                val endY = (arrowY + (dy / distance) * targetOffset).toInt()
 
-            TouchActions.swipe(arrowX, arrowY, endX, endY, delayTime = 300)
+                TouchActions.swipe(arrowX, arrowY, endX, endY, delayTime = 300)
+            }
         }
+    } finally {
+        // Always clear model weights after detection to free memory
+        YoloDetector.clearWeights()
     }
 }
