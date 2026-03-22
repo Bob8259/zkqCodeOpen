@@ -296,58 +296,59 @@ fun LazyListScope.MainBaseConfig(
     item {
         AnimatedVisibility(visible = isExpanded) {
             SettingSection {
-            FlowRow {
-                /* SettingCheckBox(key = "${MAIN_BASE_SETTINGS.UPGRADE_WEARABLE_GEAR.key}_c$index")
-                SettingCheckBox(key = "${MAIN_BASE_SETTINGS.UPGRADE_ALL_GEAR.key}_c$index") */
-                SettingCheckBox(
-                    key = "${MAIN_BASE_SETTINGS.REMOVE_OBSTACLES.key}_c$index",
-                    explain = "勾选后，当主世界资源金水大于30万时生效。有小概率（约5%）移除稀有物品"
-                )
-                AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.REMOVE_OBSTACLES.key}_c$index"]?.value == "1") {
+                FlowRow {
+                    /* SettingCheckBox(key = "${MAIN_BASE_SETTINGS.UPGRADE_WEARABLE_GEAR.key}_c$index")
+                    SettingCheckBox(key = "${MAIN_BASE_SETTINGS.UPGRADE_ALL_GEAR.key}_c$index") */
                     SettingCheckBox(
-                        key = "${MAIN_BASE_SETTINGS.REMOVE_OBSTACLES_ENHANCEMENT.key}_c$index",
-                        explain = "勾选后，移除障碍物时增加随机点击，增大移除稀有物品的概率。\n适合批量挂小号时开启，防止地图建造空间不足。"
+                        key = "${MAIN_BASE_SETTINGS.REMOVE_OBSTACLES.key}_c$index",
+                        explain = "勾选后，当主世界资源金水大于30万时生效。有小概率（约5%）移除稀有物品"
                     )
-                }
-                /* SettingCheckBox(key = "${MAIN_BASE_SETTINGS.CLAIM_TIMED_REWARDS.key}_c$index")
-                SettingCheckBox(
-                    key = "${MAIN_BASE_SETTINGS.CLAIM_TOKEN_REWARDS.key}_c$index",
-                    explain = "仅在资源全满后才会领取"
-                )
-
-                SettingCheckBox(key = "${MAIN_BASE_SETTINGS.CLAIM_CAPITAL_GOLD.key}_c$index")
-                SettingCheckBox(key = "${MAIN_BASE_SETTINGS.DONATE_CAPITAL_GOLD.key}_c$index")
-                SettingCheckBox(key = "${MAIN_BASE_SETTINGS.CLAIM_FREE_SHOP_REWARDS.key}_c$index")
-
-                SettingCheckBox(key = "${MAIN_BASE_SETTINGS.CLAIM_ACHIEVEMENT_GEMS.key}_c$index")
-                SettingCheckBox(
-                    key = "${MAIN_BASE_SETTINGS.USE_TEMP_ITEMS.key}_c$index",
-                    explain = "勾选此选项后，紫孔雀会使用研究浓汤和建筑工人大餐。并且为了防止重复使用导致道具失效，每次只会使用一个道具。"
-                ) */
-            }
-            }
-        }
-    }
-
-    /* // Clan join
-    item {
-        AnimatedVisibility(visible = isExpanded) {
-            Column {
-                SettingCheckBox(
-                    key = "${MAIN_BASE_SETTINGS.AUTO_JOIN_CLAN.key}_c$index",
-                    explain = "勾选此选项后，紫孔雀不仅会自动加部落，也会自动建造部落城堡。但若不勾选此选项，就既不会加部落，也不会建造部落城堡。注意：加部落功能仅对未加入部落的账号生效。"
-                )
-
-                AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.AUTO_JOIN_CLAN.key}_c$index"]?.value == "1") {
-                    Column {
-                        SettingInputRow(key = "${MAIN_BASE_SETTINGS.CLAN_TAG.key}_c$index")
-                        SettingInputRow(key = "${MAIN_BASE_SETTINGS.CLAN_JOIN_MESSAGE.key}_c$index")
+                    AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.REMOVE_OBSTACLES.key}_c$index"]?.value == "1") {
+                        SettingCheckBox(
+                            key = "${MAIN_BASE_SETTINGS.REMOVE_OBSTACLES_ENHANCEMENT.key}_c$index",
+                            explain = "勾选后，移除障碍物时增加随机点击，增大移除稀有物品的概率。\n适合批量挂小号时开启，防止地图建造空间不足。"
+                        )
                     }
+                    /* SettingCheckBox(key = "${MAIN_BASE_SETTINGS.CLAIM_TIMED_REWARDS.key}_c$index")
+                    SettingCheckBox(
+                        key = "${MAIN_BASE_SETTINGS.CLAIM_TOKEN_REWARDS.key}_c$index",
+                        explain = "仅在资源全满后才会领取"
+                    )
+
+                    SettingCheckBox(key = "${MAIN_BASE_SETTINGS.CLAIM_CAPITAL_GOLD.key}_c$index")
+                    SettingCheckBox(key = "${MAIN_BASE_SETTINGS.DONATE_CAPITAL_GOLD.key}_c$index")
+                    SettingCheckBox(key = "${MAIN_BASE_SETTINGS.CLAIM_FREE_SHOP_REWARDS.key}_c$index")
+
+                    SettingCheckBox(key = "${MAIN_BASE_SETTINGS.CLAIM_ACHIEVEMENT_GEMS.key}_c$index")
+                    SettingCheckBox(
+                        key = "${MAIN_BASE_SETTINGS.USE_TEMP_ITEMS.key}_c$index",
+                        explain = "勾选此选项后，紫孔雀会使用研究浓汤和建筑工人大餐。并且为了防止重复使用导致道具失效，每次只会使用一个道具。"
+                    ) */
                 }
             }
         }
     }
 
+
+//    item {
+//        AnimatedVisibility(visible = isExpanded) {
+//            SettingSection {
+//                Column {
+//                    SettingCheckBox(
+//                        key = "${MAIN_BASE_SETTINGS.AUTO_JOIN_CLAN.key}_c$index",
+//                        explain = "勾选此选项后，辅助会自动加部落，也会自动建造部落城堡。加部落功能仅对未加入部落的账号生效。"
+//                    )
+//                    AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.AUTO_JOIN_CLAN.key}_c$index"]?.value == "1") {
+//                        Column {
+//                            SettingInputRow(key = "${MAIN_BASE_SETTINGS.CLAN_TAG.key}_c$index")
+//                            SettingInputRow(key = "${MAIN_BASE_SETTINGS.CLAN_JOIN_MESSAGE.key}_c$index")
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//    }
+    /* // Clan join
     // Consecutive clans & Invite
     item {
         AnimatedVisibility(visible = isExpanded) {
