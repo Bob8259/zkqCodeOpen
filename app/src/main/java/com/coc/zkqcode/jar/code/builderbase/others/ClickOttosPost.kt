@@ -13,23 +13,21 @@ import com.coc.zkqcode.jar.code.universal.clickRightBottom
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.smalltools.StorageKeys
-import com.coc.zkqcode.jar.code.universal.smalltools.readMemory
+import com.coc.zkqcode.jar.code.universal.smalltools.checkMemoryFile
 import com.coc.zkqcode.jar.code.universal.smalltools.writeMemory
-import java.util.Calendar
 
 suspend fun clickOttosOutPost(): Boolean {
     val storageKey = StorageKeys.withAccountNumber(StorageKeys.CLICK_OTTOS_POST, InGamesVars.currentAccountNumber)
-    val lastClickDay = readMemory(storageKey).toIntOrNull()
-    val currentDay = Calendar.getInstance().get(Calendar.DAY_OF_YEAR)
 
-    if (lastClickDay != null && lastClickDay == currentDay) {
+    // Skip if already checked within 24 hours
+    if (!checkMemoryFile(storageKey, 1440)) {
         ShowMessage("账号${InGamesVars.currentAccountNumber}，今日已检测奥仔哨站，暂不点击")
         return true
     }
     ShowMessage("账号${InGamesVars.currentAccountNumber}，准备检测奥仔哨站")
     val worker = WorkerAndResearch.detectWorkerNumber(BaseType.Builder)
     if (worker.total < 2) {
-        writeMemory(storageKey, currentDay.toString())
+        writeMemory(storageKey, (System.currentTimeMillis() / 60_000).toString())
         return true
     }
     pinchIn(141, 423, 1052, 352, 638, 365)
@@ -47,6 +45,6 @@ suspend fun clickOttosOutPost(): Boolean {
             delayWithMultiplier(50)
         }
     }
-    writeMemory(storageKey, currentDay.toString())
+    writeMemory(storageKey, (System.currentTimeMillis() / 60_000).toString())
     return enterMainScreen()
 }

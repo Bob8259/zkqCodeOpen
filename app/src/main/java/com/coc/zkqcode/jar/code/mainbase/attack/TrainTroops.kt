@@ -10,19 +10,13 @@ import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.InGamesVars
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.smalltools.StorageKeys
-import com.coc.zkqcode.jar.code.universal.smalltools.readMemory
+import com.coc.zkqcode.jar.code.universal.smalltools.checkMemoryFile
 import com.coc.zkqcode.jar.code.universal.smalltools.writeMemory
-import java.util.Calendar
-import kotlin.math.abs
 
 suspend fun mainBaseTrainTroops(): Boolean {
     val storageKey = StorageKeys.withAccountNumber(StorageKeys.MAIN_BASE_TRAIN_TROOPS, InGamesVars.currentAccountNumber)
-    val lastTrainingTime = readMemory(storageKey).toIntOrNull()
 
-    val calendar = Calendar.getInstance()
-    val dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH)
-
-    if (lastTrainingTime == null || abs(lastTrainingTime - dayOfMonth) > 0) {
+    if (checkMemoryFile(storageKey, 1440)) {
         ShowMessage("账号${InGamesVars.currentAccountNumber}，准备训练部队")
         GlobalVars.absorbEdge = 1
 
@@ -125,7 +119,7 @@ suspend fun mainBaseTrainTroops(): Boolean {
         TouchActions.tap(219, 139, delayTime = 1000)
         TouchActions.tap(1232, 65, delayTime = 300)
 
-        writeMemory(storageKey, dayOfMonth.toString())
+        writeMemory(storageKey, (System.currentTimeMillis() / 60_000).toString())
         GlobalVars.absorbEdge = 0
         return enterMainScreen()
     } else {

@@ -13,51 +13,61 @@ import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.smalltools.StorageKeys
+import com.coc.zkqcode.jar.code.universal.smalltools.checkMemoryFile
+import com.coc.zkqcode.jar.code.universal.smalltools.getBooleanConfigRuntime
 import com.coc.zkqcode.jar.code.universal.smalltools.getConfigRuntime
-import com.coc.zkqcode.jar.code.universal.smalltools.readMemory
 import com.coc.zkqcode.jar.code.universal.smalltools.setZKQInputMethod
 import com.coc.zkqcode.jar.code.universal.smalltools.writeMemory
 import com.coc.zkqcode.jar.ui.schema.Schema
-import java.util.Calendar
+import kotlinx.coroutines.delay
 
 suspend fun joinClan(): Boolean {
+    if (!getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.AUTO_JOIN_CLAN.key)) return true
     val targetTAG = getConfigRuntime(Schema.MAIN_BASE_SETTINGS.CLAN_TAG.key)
     val clanCode = getConfigRuntime(Schema.MAIN_BASE_SETTINGS.CLAN_JOIN_MESSAGE.key)
 
     // Skip if no clan tag is specified
     if (targetTAG.isBlank()) {
-        return enterMainScreen()
-    }
-
-    // Once-per-day guard: skip if already checked today for this account
-    val storageKey = StorageKeys.withAccountNumber(StorageKeys.JOIN_CLAN, InGamesVars.currentAccountNumber)
-    val lastCheckDay = readMemory(storageKey).toIntOrNull()
-    val currentDay = Calendar.getInstance().get(Calendar.DAY_OF_YEAR)
-
-    if (lastCheckDay != null && lastCheckDay == currentDay) {
-        ShowMessage("账号${InGamesVars.currentAccountNumber}，今日已检测加入部落，暂不重复执行")
-        return true
-    }
-
-    ShowMessage("正在加入部落: $targetTAG")
-    // Open the clan profile via deep link using the correct package name for the current game version
-    RunShell.runNoOutput(
-        "am start -a android.intent.action.VIEW -d 'clashofclans://action=OpenClanProfile&tag=$targetTAG' -p ${InGamesVars.currentGameVersion.packageName}"
-    )
-    val joinOrExitButton = findMultiColorsUntil(schemas = listOf(MyColors.JoinClanButton, MyColors.ExitClanButton), duration = 2000)
-    if (joinOrExitButton != null) {
-        val joinClanButton = findMultiColors(schema = MyColors.JoinClanButton)
-        if (joinClanButton != null) {
-            setZKQInputMethod()
-            TouchActions.tap(joinClanButton.x, joinClanButton.y, delayTime = 500)
-            TouchActions.tap(642, 165, delayTime = 300)//input message
-            ZKQInputMethodService.instance?.inputText(clanCode) ?: logAndRestart("获取输入法失败")
-            delayWithMultiplier(200)
-            TouchActions.tap(787, 327, delayTime = 300)//send message
-            clickRightBottom(1)
+        val notJoinClan = findMultiColors(schema = MyColors.NotJoinClanFlag)
+        if (notJoinClan != null) {
+            TouchActions.tap(53, 42, delayTime = 600)//open profile page
+            TouchActions.tap(754, 55, delayTime = 600)//join clan page
+            val searchResult = findMultiColorsUntil(schemas = listOf(MyColors.SearchOptions, MyColors.ApplyClanSetting), duration = 6000)
+            if (searchResult != null) {
+                repeat(3) {
+                    TouchActions.tap(728, 551, delayTime = 600)
+                }
+            }
         }
+    } else {
+        // Once-per-day guard: skip if already checked within 24 hours for this account
+        val storageKey = StorageKeys.withAccountNumber(StorageKeys.JOIN_CLAN, InGamesVars.currentAccountNumber)
+        if (!checkMemoryFile(storageKey, 1440)) {
+            ShowMessage("账号${InGamesVars.currentAccountNumber}，今日已检测加入部落，暂不重复执行")
+            return true
+        }
+
+        ShowMessage("正在加入部落: $targetTAG")
+        // Open the clan profile via deep link using the correct package name for the current game version
+        RunShell.runNoOutput(
+            "am start -a android.intent.action.VIEW -d 'clashofclans://action=OpenClanProfile&tag=$targetTAG' -p ${InGamesVars.currentGameVersion.packageName}"
+        )
+        val joinOrExitButton = findMultiColorsUntil(schemas = listOf(MyColors.JoinClanButton, MyColors.ExitClanButton), duration = 2000)
+        if (joinOrExitButton != null) {
+            val joinClanButton = findMultiColors(schema = MyColors.JoinClanButton)
+            if (joinClanButton != null) {
+                setZKQInputMethod()
+                TouchActions.tap(joinClanButton.x, joinClanButton.y, delayTime = 500)
+                TouchActions.tap(642, 165, delayTime = 300)//input message
+                if (!clanCode.isBlank())
+                    ZKQInputMethodService.instance?.inputText(clanCode) ?: logAndRestart("获取输入法失败")
+                delayWithMultiplier(200)
+                TouchActions.tap(787, 327, delayTime = 300)//send message
+                clickRightBottom(1)
+            }
+        }
+        // Mark as checked so clan join won't run again within 24 hours
+        writeMemory(storageKey, (System.currentTimeMillis() / 60_000).toString())
     }
-    // Mark today as checked so clan join won't run again today
-    writeMemory(storageKey, currentDay.toString())
     return enterMainScreen()
 }
