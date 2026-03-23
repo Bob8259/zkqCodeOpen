@@ -330,24 +330,24 @@ fun LazyListScope.MainBaseConfig(
     }
 
 
-//    item {
-//        AnimatedVisibility(visible = isExpanded) {
-//            SettingSection {
-//                Column {
-//                    SettingCheckBox(
-//                        key = "${MAIN_BASE_SETTINGS.AUTO_JOIN_CLAN.key}_c$index",
-//                        explain = "勾选此选项后，辅助会自动加部落，也会自动建造部落城堡。加部落功能仅对未加入部落的账号生效。"
-//                    )
-//                    AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.AUTO_JOIN_CLAN.key}_c$index"]?.value == "1") {
-//                        Column {
-//                            SettingInputRow(key = "${MAIN_BASE_SETTINGS.CLAN_TAG.key}_c$index")
-//                            SettingInputRow(key = "${MAIN_BASE_SETTINGS.CLAN_JOIN_MESSAGE.key}_c$index")
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//    }
+    item {
+        AnimatedVisibility(visible = isExpanded) {
+            SettingSection {
+                Column {
+                    SettingCheckBox(
+                        key = "${MAIN_BASE_SETTINGS.AUTO_JOIN_CLAN.key}_c$index",
+                        explain = "勾选此选项后，辅助会自动加部落。若未指定标签，则只有无部落时才加部落。若指定标签，则每天检测一次当前是否加入指定部落。注意：需先建造部落城堡才能使用此功能。"
+                    )
+                    AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.AUTO_JOIN_CLAN.key}_c$index"]?.value == "1") {
+                        Column {
+                            SettingInputRow(key = "${MAIN_BASE_SETTINGS.CLAN_TAG.key}_c$index")
+                            SettingInputRow(key = "${MAIN_BASE_SETTINGS.CLAN_JOIN_MESSAGE.key}_c$index")
+                        }
+                    }
+                }
+            }
+        }
+    }
     /* // Clan join
     // Consecutive clans & Invite
     item {

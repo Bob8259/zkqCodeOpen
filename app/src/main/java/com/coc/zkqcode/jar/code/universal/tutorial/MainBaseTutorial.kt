@@ -155,7 +155,7 @@ suspend fun mainBaseTutorial(): Boolean {
             gameName += InGamesVars.currentAccountNumber
         }
 
-        ZKQInputMethodService.instance?.commitGameName(gameName) ?: logAndRestart("获取输入法失败")
+        ZKQInputMethodService.instance?.inputText(gameName) ?: logAndRestart("获取输入法失败")
         TouchActions.tap(641, 368, delayTime = 300)
     }
 

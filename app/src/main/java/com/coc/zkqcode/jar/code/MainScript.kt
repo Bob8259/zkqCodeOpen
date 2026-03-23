@@ -3,6 +3,7 @@ package com.coc.zkqcode.jar.code
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.jar.code.builderbase.playBuilderBase
+import com.coc.zkqcode.jar.code.mainbase.clan.joinClan
 import com.coc.zkqcode.jar.code.universal.buildings.BaseType
 import com.coc.zkqcode.jar.code.mainbase.playMainBase
 import com.coc.zkqcode.jar.code.universal.GameVersion
@@ -99,8 +100,9 @@ private suspend fun findAndActivateAccount(searchOrder: Iterable<Int>): Int? {
 private suspend fun runTestCode() {
     while (true) {
 //        enterMainScreen()
-        ShowMessage(detectInstantBuildCost().toString())
-//        delay(2000000)
+        joinClan()
+//        ShowMessage(detectInstantBuildCost().toString())
+        delay(2000000)
         delay(1000)
 //        ShowMessage(recognizeUpgradeResources(BaseType.Main).toString())
     }
