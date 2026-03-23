@@ -52,7 +52,7 @@ fun LazyListScope.MainBaseConfig(
                 SettingCheckBox(key = "${MAIN_BASE_SETTINGS.CLAIM_DAILY_REWARD.key}_c$index")
                 SettingCheckBox(key = "${MAIN_BASE_SETTINGS.AUTO_ATTACK.key}_c$index")
                 Text(
-                    text = "紫孔雀会自动配兵，暂不支持手动配兵。",
+                    text = "辅助会自动配兵，暂不支持手动配兵。",
                     style = MaterialTheme.typography.labelMedium,
                 )
                 SettingInputRow(key = "${MAIN_BASE_SETTINGS.GOLD_REQUIREMENT.key}_c$index")
@@ -232,7 +232,7 @@ fun LazyListScope.MainBaseConfig(
                 FlowRow {
                     SettingCheckBox(
                         key = "${MAIN_BASE_SETTINGS.DO_CLAN_GAMES.key}_c$index",
-                        explain = "勾选后，紫孔雀会接取小部分夜世界任务，例如夜世界摧毁率等。注意重点是\"小部分\"，也就是说并不是所有任务都可以接取，并且只会接取夜世界任务！若没有任务可接取，则会放弃第一个任务。接取任务后，会自动打夜世界。"
+                        explain = "勾选后，辅助会接取小部分夜世界任务，例如夜世界摧毁率等。注意重点是\"小部分\"，也就是说并不是所有任务都可以接取，并且只会接取夜世界任务！若没有任务可接取，则会放弃第一个任务。接取任务后，会自动打夜世界。"
                     )
                     SettingCheckBox(key = "${MAIN_BASE_SETTINGS.CLAIM_CLAN_GAME_REWARDS.key}_c$index")
                     SettingCheckBox(
@@ -322,7 +322,7 @@ fun LazyListScope.MainBaseConfig(
                     SettingCheckBox(key = "${MAIN_BASE_SETTINGS.CLAIM_ACHIEVEMENT_GEMS.key}_c$index")
                     SettingCheckBox(
                         key = "${MAIN_BASE_SETTINGS.USE_TEMP_ITEMS.key}_c$index",
-                        explain = "勾选此选项后，紫孔雀会使用研究浓汤和建筑工人大餐。并且为了防止重复使用导致道具失效，每次只会使用一个道具。"
+                        explain = "勾选此选项后，辅助会使用研究浓汤和建筑工人大餐。并且为了防止重复使用导致道具失效，每次只会使用一个道具。"
                     ) */
                 }
             }
@@ -356,11 +356,11 @@ fun LazyListScope.MainBaseConfig(
                 FlowRow {
                     SettingCheckBox(
                         key = "${MAIN_BASE_SETTINGS.CREATE_CONSECUTIVE_CLANS.key}_c$index",
-                        explain = "勾选此选项后，当金币大于总容量80-85%后，紫孔雀将反复创建部落，直到部落标签出现大于或等于用户设定的连续数字或字母为止，或直到金币消耗完为止。\n\n注意：\n必须先建造部落城堡，才能勾选此项，否则会出现异常。\n部分设备使用此功能后，需要手动切换输入法。具体切换方法请参考官网教程。\n部分云手机不支持读取剪贴板，建议在电脑模拟器里使用本功能。"
+                        explain = "勾选此选项后，当金币大于总容量80-85%后，辅助将反复创建部落，直到部落标签出现大于或等于用户设定的连续数字或字母为止，或直到金币消耗完为止。\n\n注意：\n必须先建造部落城堡，才能勾选此项，否则会出现异常。\n部分设备使用此功能后，需要手动切换输入法。具体切换方法请参考官网教程。\n部分云手机不支持读取剪贴板，建议在电脑模拟器里使用本功能。"
                     )
                     SettingCheckBox(
                         key = "${MAIN_BASE_SETTINGS.INVITE_PLAYERS.key}_c$index",
-                        explain = "勾选此选项后，紫孔雀将会从公告栏邀请玩家加入部落。\n\n注意：单次邀请耗时约1小时。\n请先加入部落后再开启本功能。\n请确保账号拥有邀请玩家的权限。"
+                        explain = "勾选此选项后，辅助将会从公告栏邀请玩家加入部落。\n\n注意：单次邀请耗时约1小时。\n请先加入部落后再开启本功能。\n请确保账号拥有邀请玩家的权限。"
                     )
                 }
 

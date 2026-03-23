@@ -183,7 +183,14 @@ object WorkerAndResearch {
                 totalStr = totalStr.first().toString()
             }
 
-            return WorkerInfo(availableStr.toInt(), totalStr.toInt())
+            val available = availableStr.toInt()
+            val total = totalStr.toInt()
+
+            // Swap if available > total, since total must always be >= available
+            if (available > total) {
+                return WorkerInfo(total, available)
+            }
+            return WorkerInfo(available, total)
         }
         return WorkerInfo(0, 0)
     }

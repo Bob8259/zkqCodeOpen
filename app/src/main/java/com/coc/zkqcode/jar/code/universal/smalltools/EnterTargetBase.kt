@@ -6,6 +6,7 @@ import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.jar.code.builderbase.others.zoomSmallBuilderBase
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.mainbase.others.zoomSmallMainBase
+import com.coc.zkqcode.jar.code.universal.clickRightBottom
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.tutorial.AllTutorials
 import kotlinx.coroutines.delay
@@ -16,6 +17,7 @@ import kotlinx.coroutines.delay
  */
 suspend fun enterMainBase(): Boolean {
     val loopStart = System.currentTimeMillis()
+    clickRightBottom(1)
     while (System.currentTimeMillis() - loopStart < 30_000L) {
         val workers = findMultiColorsUntil(schemas = listOf(MyColors.MainBaseWorker, MyColors.MainBaseWorker2, MyColors.GoblinWorker, MyColors.GoblinResearcher), duration = 200)
         if (workers != null) {
@@ -28,7 +30,7 @@ suspend fun enterMainBase(): Boolean {
         if (builderBaseStarBonus != null) {
             TouchActions.tap(builderBaseStarBonus.x + 10, builderBaseStarBonus.y + 10, delayTime = 200)
         }
-        if(!checkReconnections()) return false
+        if (!checkReconnections()) return false
         zoomSmallBuilderBase()
         TouchActions.swipe(750, 150, 750, 550)
         // Tap all grid points in the area to trigger the main base portal
@@ -48,6 +50,7 @@ suspend fun enterMainBase(): Boolean {
  */
 suspend fun enterBuilderBase(isCheck: Boolean): Boolean {
     val loopStart = System.currentTimeMillis()
+    clickRightBottom(1)
     while (System.currentTimeMillis() - loopStart < 30_000L) {
         val remaining = (30_000L - (System.currentTimeMillis() - loopStart)) / 1000.0
         // 1. Check for Builder Base success indicator
@@ -58,7 +61,7 @@ suspend fun enterBuilderBase(isCheck: Boolean): Boolean {
         ShowMessage("尝试进入夜世界中，剩余${"%.1f".format(remaining)}秒后退出\n请手动给主世界和夜世界切换默认场景")
         // Ensure consistent view before attempting interaction
         zoomSmallMainBase()
-        if(!checkReconnections()) return false
+        if (!checkReconnections()) return false
         // List of potential boat locations to handle perspective shifts
         val boatLocations = listOf(
             317 to 474, 336 to 512, 313 to 568

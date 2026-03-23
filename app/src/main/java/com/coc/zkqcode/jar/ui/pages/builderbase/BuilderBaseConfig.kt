@@ -51,7 +51,7 @@ fun LazyListScope.BuilderBaseConfig(
                 }
                 SettingCheckBox(
                     key = "${BUILDER_BASE_SETTINGS.NO_BUILDER_BASE.key}_c${index}",
-                    explain = "勾选后，紫孔雀将完全不会进入夜世界。换言之，夜世界的所有设置都将失效！\n但因为紫孔雀只会接取夜世界竞赛任务，所以如果接取了部落竞赛的任务，那么就算勾选了不打夜世界，紫孔雀也会打夜世界。"
+                    explain = "勾选后，辅助将完全不会进入夜世界。换言之，夜世界的所有设置都将失效！\n但因为辅助只会接取夜世界竞赛任务，所以如果接取了部落竞赛的任务，那么就算勾选了不打夜世界，辅助也会打夜世界。"
                 )
             }
         }
