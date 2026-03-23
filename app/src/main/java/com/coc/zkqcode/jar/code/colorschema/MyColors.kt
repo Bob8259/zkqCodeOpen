@@ -59,4 +59,12 @@ object MyColors : IUIColors by UIColors, IFeatureColors by FeatureColors, IMainB
     val NotJoinClanFlag = ColorSchema.parse(
         40, 302, 63, 318, "BFD9F2", "5|0|C7DFF3,10|0|D9EFF5,14|0|0D40E3,19|0|0D4BE6,0|8|BFD9F2,5|8|C7DFF3,10|8|D9EFF5,14|8|0D40E3,19|8|0D4BE7", 0, 0.9
     )
+
+    //UI Colors
+    val ExclusiveGift = ColorSchema.parse(
+        1080, 113, 1119, 153, "8A83FF", "8|0|FFFFFF,16|0|FFFFFF,23|0|FFFFFF,31|0|8A83FF,12|8|FFFFFF,32|13|1611EC,13|30|2D25CD,-5|18|1A16ED,31|20|1511E8", 0, 0.9, "垃圾专属礼包"
+    )
+    val MorePointCoupon = ColorSchema.parse(
+        879, 195, 926, 241, "8B83FF", "9|0|FFFFFF,19|0|FFFFFF,18|8|FFFFFF,34|11|716BFD,42|15|2621F0,38|23|1712EB,19|23|0D0D0D,28|23|FAF6F6,37|23|1611EA", 0, 0.9, "更多点券"
+    )
 }

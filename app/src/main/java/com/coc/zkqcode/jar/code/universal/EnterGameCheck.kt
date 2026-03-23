@@ -80,6 +80,8 @@ private suspend fun closeAdvertisements() {
 
     // 2. Define the schemas to check against
     val homeSchemas = listOf(
+        MyColors.ExclusiveGift,
+        MyColors.MorePointCoupon,
         MyColors.GreenConfirm,
         MyColors.CNAd,
         MyColors.ClanChat,
@@ -91,7 +93,9 @@ private suspend fun closeAdvertisements() {
         MyColors.CNBackFromAwards,
         MyColors.CollectChest,
         MyColors.EditModeWrench,
-        MyColors.MiddleGreenButton
+        MyColors.MiddleGreenButton,
+        MyColors.ExclusiveGift,
+        MyColors.MorePointCoupon,
     )
 
     // 3. Iterate through schemas
