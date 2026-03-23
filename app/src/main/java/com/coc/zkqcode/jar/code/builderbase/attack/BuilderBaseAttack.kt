@@ -17,13 +17,12 @@ import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.smalltools.StorageKeys
+import com.coc.zkqcode.jar.code.universal.smalltools.checkMemoryFile
 import com.coc.zkqcode.jar.code.universal.smalltools.checkReconnections
 import com.coc.zkqcode.jar.code.universal.smalltools.getBooleanConfigRuntime
 import com.coc.zkqcode.jar.code.universal.smalltools.getConfigRuntime
-import com.coc.zkqcode.jar.code.universal.smalltools.readMemory
 import com.coc.zkqcode.jar.code.universal.smalltools.writeMemory
 import com.coc.zkqcode.jar.ui.schema.Schema
-import java.util.Calendar
 import kotlin.random.Random
 
 suspend fun builderBaseAttack(): Boolean {
@@ -286,16 +285,13 @@ private suspend fun builderBaseTrainTroops() {
 
 suspend fun builderBaseTrainWithConditions(): Boolean {
     val storageKey = StorageKeys.withAccountNumber(StorageKeys.BUILDER_BASE_TRAIN_TROOPS, InGamesVars.currentAccountNumber)
-    val lastTrainingTime = readMemory(storageKey).toIntOrNull()
 
-    // Use Calendar only once to retrieve the current day of the month
-    val currentDay = Calendar.getInstance().get(Calendar.DAY_OF_MONTH)
-    if (lastTrainingTime != currentDay) {
+    if (checkMemoryFile(storageKey, 1440)) {
         builderBaseTrainTroops()
-        writeMemory(storageKey, currentDay.toString())
+        writeMemory(storageKey, (System.currentTimeMillis() / 60_000).toString())
         return enterMainScreen()
     }
 
-    // Returns true if training was already completed today
+    // Training was already completed within 24 hours
     return true
 }

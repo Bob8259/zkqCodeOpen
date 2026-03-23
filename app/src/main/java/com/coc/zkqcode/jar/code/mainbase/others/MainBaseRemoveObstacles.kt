@@ -8,19 +8,16 @@ import com.coc.zkqcode.jar.code.universal.recognizer.recognizeResources
 import com.coc.zkqcode.jar.code.universal.remove.enterEditMode
 import com.coc.zkqcode.jar.code.universal.remove.removeObstacles
 import com.coc.zkqcode.jar.code.universal.smalltools.StorageKeys
+import com.coc.zkqcode.jar.code.universal.smalltools.checkMemoryFile
 import com.coc.zkqcode.jar.code.universal.smalltools.getBooleanConfigRuntime
-import com.coc.zkqcode.jar.code.universal.smalltools.readMemory
 import com.coc.zkqcode.jar.code.universal.smalltools.writeMemory
 import com.coc.zkqcode.jar.ui.schema.Schema
-import java.util.Calendar
 
 suspend fun mainBaseRemoveObstacles(): Boolean {
     if (!getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.REMOVE_OBSTACLES.key)) return true
     val storageKey = StorageKeys.withAccountNumber(StorageKeys.MAIN_BASE_REMOVE_OBSTACLES, InGamesVars.currentAccountNumber)
-    val lastCleaningTime = readMemory(storageKey).toIntOrNull()
-    val currentDay = Calendar.getInstance().get(Calendar.DAY_OF_YEAR)
-    // Check if weed removal was done today
-    if (lastCleaningTime != null && lastCleaningTime == currentDay) {
+    // Skip if obstacle removal was done within 24 hours
+    if (!checkMemoryFile(storageKey, 1440)) {
         ShowMessage("账号${InGamesVars.currentAccountNumber}，今天已移除障碍物，暂不移除")
         return true
     }
@@ -38,7 +35,7 @@ suspend fun mainBaseRemoveObstacles(): Boolean {
     TouchActions.swipe(981, 86, 290, 470, delayTime = 500)
     removeObstacles()
     enhanceRemoveObstacles()
-    writeMemory(storageKey, currentDay.toString())
+    writeMemory(storageKey, (System.currentTimeMillis() / 60_000).toString())
     return enterMainScreen()
 }
 

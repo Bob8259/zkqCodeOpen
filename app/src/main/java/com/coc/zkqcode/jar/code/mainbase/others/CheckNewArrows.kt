@@ -8,9 +8,8 @@ import com.coc.zkqcode.jar.code.universal.InGamesVars
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.smalltools.StorageKeys
-import com.coc.zkqcode.jar.code.universal.smalltools.readMemory
+import com.coc.zkqcode.jar.code.universal.smalltools.checkMemoryFile
 import com.coc.zkqcode.jar.code.universal.smalltools.writeMemory
-import java.util.Calendar
 
 /**
  * Click in a grid pattern around the given base coordinates.
@@ -26,28 +25,27 @@ private suspend fun clickGridPattern(baseX: Int, baseY: Int) {
 
 suspend fun checkNewBuildingArrows(): Boolean {
     val storageKey = StorageKeys.withAccountNumber(StorageKeys.CHECK_NEW_BUILDING_ARROWS, InGamesVars.currentAccountNumber)
-    val lastCheckTime = readMemory(storageKey).toIntOrNull()
-    val currentDay = Calendar.getInstance().get(Calendar.DAY_OF_YEAR)
 
-    // Check if arrow check was done today
-    if (lastCheckTime != null && lastCheckTime == currentDay) {
+    // Skip if arrow check was done within 24 hours
+    if (!checkMemoryFile(storageKey, 1440)) {
         ShowMessage("账号${InGamesVars.currentAccountNumber}，今天已检查新建筑箭头，暂不检查")
         return true
     }
 
+    val currentMinutes = (System.currentTimeMillis() / 60_000).toString()
     zoomSmallMainBase()
     findMultiColorsUntil(schemas = listOf(MyColors.ArrowPointingDown), duration = 2000)?.let {
         clickGridPattern(it.x, it.y)
-        writeMemory(storageKey, currentDay.toString())
+        writeMemory(storageKey, currentMinutes)
         return enterMainScreen()
     }
     TouchActions.swipe(925, 146, 231, 563)
     delayWithMultiplier(200)
     findMultiColorsUntil(schemas = listOf(MyColors.ArrowPointingDown), duration = 2000)?.let {
         clickGridPattern(it.x, it.y)
-        writeMemory(storageKey, currentDay.toString())
+        writeMemory(storageKey, currentMinutes)
         return enterMainScreen()
     }
-    writeMemory(storageKey, currentDay.toString())
+    writeMemory(storageKey, currentMinutes)
     return enterMainScreen()
 }
