@@ -45,7 +45,7 @@ class ZKQInputMethodService : InputMethodService() {
         }
     }
 
-    fun commitGameName(text: String) {
+    fun inputText(text: String) {
         // 1. 获取当前正在输入的连接
         val ic = currentInputConnection ?: logAndRestart("Can not get input connection")
 

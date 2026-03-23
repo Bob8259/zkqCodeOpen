@@ -40,18 +40,15 @@ object MyColors : IUIColors by UIColors, IFeatureColors by FeatureColors, IMainB
     IBuilderBaseUpgradeColors by BuilderBaseUpgradeColors, IBuilderBaseResearchColors by BuilderBaseResearchColors, IBuilderBaseAttackColors by BuilderBaseAttackColors, IUniversalUpgradeColors by UniversalUpgradeColors,
     IMainBaseUpgradeColors by MainBaseUpgradeColors, IMainBaseResearchColors by MainBaseResearchColors, IMainBaseResearchLevelColors by MainBaseResearchLevelColors,
     IClanCapitalTutorialColors by ClanCapitalTutorialColors, IMainBaseAttackColors by MainBaseAttackColors {
-    // Main Base Tutorial Color
-    val TutorialTrainBarbarian = ColorSchema.parse(
-        70, 468, 128, 504, "B8B0A6", "11|0|3DA2D9,23|0|359AD2,35|0|5B4F3A,46|0|355495,0|18|7AEDFF,11|18|6177A4,23|18|395ABF,35|18|60EFFF,46|18|72ACFC", 0, 0.9, "教程训练野蛮人"
+    // Main Base Clan Colors
+    val IUnderstand = ColorSchema.parse(
+        128, 456, 358, 532, "78F1D0", "2|-27|383B41,48|-27|383B41,94|-27|383B41,140|-27|383B41,-44|11|55E0AD,2|11|55E0AD,48|11|54DEAC,94|11|55E0AD,140|11|55E0AD", 0, 0.9, "加部落我了解"
     )
-    val BattlePageColor = ColorSchema.parse(
-        180,
-        249,
-        389,
-        402,
-        "79ADB4",
-        "42|0|394D72,84|0|213F78,125|0|283228,167|0|2E3733,0|77|5F7D8A,42|77|253E4A,84|77|499DD4,125|77|5E67A5,167|77|394970",
-        0,
-        0.9,
+    val JoinClanButton = ColorSchema.parse(
+        962, 475, 1122, 511, "71EDC9", "32|0|71EDC9,111|0|71EDC9,96|0|71EDC9,128|0|71EDC9,0|18|2EC178,32|18|2EC178,64|18|2EC178,96|18|2EC178,128|18|2EC178", 0, 0.9, "加入部落按钮"
     )
+    val ExitClanButton = ColorSchema.parse(
+        966, 475, 1121, 505, "615DF8", "31|0|615DF8,62|0|5653DA,93|0|615DF8,124|0|615DF8,0|15|0E0DCF,31|15|0E0DCF,88|6|5F5DF2,93|15|0E0DCF,124|15|0E0DCF", 0, 0.9,
+    )
+
 }
