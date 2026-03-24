@@ -314,7 +314,7 @@ fun CustomButton(
 }
 
 @Composable
-fun SettingCheckBox(
+fun SettingSwitchIcon(
     key: String,
     explain: String? = null,
     afterChange: ((Boolean) -> Unit)? = null
@@ -495,7 +495,8 @@ fun SettingSection(
 @Composable
 fun SettingDropdown(
     key: String,
-    options: List<String>
+    options: List<String>,
+    afterChange: ((Int) -> Unit)? = null
 ) {
     // Use getOrPut to lazily initialize missing config keys with their Schema defaults
     val state = GlobalVars.configStates.getOrPut(key) {
@@ -549,8 +550,9 @@ fun SettingDropdown(
                         },
                         onClick = {
                             GlobalVars.isAutoRunEnabled = false
-                            state.value = idx.toString() // Update global state
+                            state.value = idx.toString()
                             expanded = false
+                            afterChange?.invoke(idx)
                         },
                         modifier = Modifier.height(35.dp) // Slightly increase height for easier clicking
                     )

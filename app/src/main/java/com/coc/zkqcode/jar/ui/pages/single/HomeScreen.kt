@@ -36,7 +36,7 @@ import com.coc.zkqcode.jar.ui.schema.Schema.GLOBAL_SETTINGS
 import com.coc.zkqcode.jar.ui.components.CustomAlertDialog
 import com.coc.zkqcode.jar.ui.components.CustomNotificationWindow
 import com.coc.zkqcode.jar.ui.components.CustomButton
-import com.coc.zkqcode.jar.ui.components.SettingCheckBox
+import com.coc.zkqcode.jar.ui.components.SettingSwitchIcon
 import com.coc.zkqcode.jar.ui.components.SettingDropdown
 import com.coc.zkqcode.jar.ui.components.SettingInputRow
 import com.coc.zkqcode.jar.ui.components.SettingSection
@@ -218,16 +218,23 @@ fun HomeScreen(
                             FlowRow {
                                 /* SettingInputRow(key = GLOBAL_SETTINGS.DELAY_MULTIPLIER.key) */
                                 SettingInputRow(key = GLOBAL_SETTINGS.ENTER_GAME_TIMER.key)
-                                SettingCheckBox(key = GLOBAL_SETTINGS.RECORD_PROGRESS.key)
+                                SettingSwitchIcon(key = GLOBAL_SETTINGS.RECORD_PROGRESS.key)
 
 
                                 /* SettingDropdown(
                                     key = GLOBAL_SETTINGS.AUTO_UPDATE.key,
                                     options = listOf("关闭", "仅启动时更新", "实时更新")
                                 ) */
-                                SettingCheckBox(key = GLOBAL_SETTINGS.AUTO_START.key)
+                                SettingSwitchIcon(key = GLOBAL_SETTINGS.AUTO_START.key)
                                 SettingDropdown(
-                                    key = GLOBAL_SETTINGS.AFTER_KICK_OPTION.key, options = listOf("立刻重连", "切换账号", "原地等待")
+                                    key = GLOBAL_SETTINGS.AFTER_KICK_OPTION.key,
+                                    options = listOf("立刻重连", "切换账号", "原地等待"),
+                                    // Disable batch create when dropdown is not "立刻重连" (index 0)
+                                    afterChange = { selectedIndex ->
+                                        if (selectedIndex != 0) {
+                                            GlobalVars.configStates[GLOBAL_SETTINGS.BATCH_CREATE_ACCOUNT.key]?.value = "0"
+                                        }
+                                    }
                                 )
                                 Column(Modifier.padding(top = 6.dp)) {
                                     SettingInputRow(key = GLOBAL_SETTINGS.DEVICE_REMARK.key)
