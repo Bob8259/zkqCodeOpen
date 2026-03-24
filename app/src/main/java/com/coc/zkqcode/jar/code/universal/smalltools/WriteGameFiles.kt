@@ -7,6 +7,7 @@ import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
 import com.coc.zkqcode.jar.code.universal.GameVersion
 import com.coc.zkqcode.jar.code.universal.InGamesVars
+import com.coc.zkqcode.jar.ui.schema.Schema
 import com.coc.zkqcode.jar.ui.schema.Schema.ACCOUNT_SETTINGS
 import com.topjohnwu.superuser.Shell
 
@@ -18,6 +19,8 @@ fun getConfigOrStop(key: String): String {
 // Returns the save path name (archive folder suffix) for the current account based on its game version
 fun getGameFilePath(): String {
     val index = InGamesVars.currentAccountNumber
+    if (getConfigOrStop(Schema.GLOBAL_SETTINGS.BATCH_CREATE_ACCOUNT.key) == "1")
+        return index.toString()
     return when (InGamesVars.currentGameVersion) {
         GameVersion.CN -> getConfigOrStop("${ACCOUNT_SETTINGS.CN_PATH.key}$index")
         GameVersion.GLOBAL -> getConfigOrStop("${ACCOUNT_SETTINGS.GLOBAL_PATH.key}$index")

@@ -31,6 +31,7 @@ suspend fun enterMainScreen(isDoubleCheck: Boolean = false): Boolean {
     var mainBaseTutorialElements = 0
     // Counter to throttle clickRightBottom to roughly every 5 seconds
     var clickRightBottomCounter = 20
+    GlobalVars.absorbEdge = 0
     while (System.currentTimeMillis() - startTime < timeoutMillis) {
         // 3. Insert your logic to check if the main screen is actually visible
         if (!isGameAtFront()) {

@@ -27,15 +27,11 @@ suspend fun runMainScript() {
     batchCreateAccounts()//Create all needed accounts first.
     // 1. Initialize/update local memory state
     val isBatchCreate = getConfigOrStop(Schema.GLOBAL_SETTINGS.BATCH_CREATE_ACCOUNT.key) == "1"
-    val startAccount: Int
-    val accountTotal: Int
-    if (isBatchCreate) {
-        // When batch-create is enabled, use the creation ID range
-        startAccount = getConfigOrStop(Schema.GLOBAL_SETTINGS.CREATE_START_ID.key).toInt()
-        accountTotal = getConfigOrStop(Schema.GLOBAL_SETTINGS.CREATE_END_ID.key).toInt()
+    val startAccount = readMemory(StorageKeys.ACCOUNT_NUMBER).toIntOrNull() ?: 1
+    val accountTotal: Int = if (isBatchCreate) {
+        getConfigOrStop(Schema.GLOBAL_SETTINGS.CREATE_END_ID.key).toInt()
     } else {
-        startAccount = readMemory(StorageKeys.ACCOUNT_NUMBER).toIntOrNull() ?: 1
-        accountTotal = getConfigOrStop(Schema.GLOBAL_SETTINGS.ACCOUNT_COUNT.key).toInt()
+        getConfigOrStop(Schema.GLOBAL_SETTINGS.ACCOUNT_COUNT.key).toInt()
     }
     // Reset startAccount to 1 if it exceeds accountTotal (e.g. account count was reduced)
     val safeStartAccount = if (startAccount > accountTotal) 1 else startAccount
