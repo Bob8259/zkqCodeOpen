@@ -7,7 +7,8 @@ import androidx.compose.runtime.setValue
 enum class AppMode {
     Main,
     Run,
-    SwitchAccount
+    SwitchAccount,
+    BugReport
 }
 
 object AppStateManager {

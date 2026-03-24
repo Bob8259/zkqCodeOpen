@@ -8,7 +8,6 @@
 
 - 上号器功能（用户手动注释）
 - 延时倍率（DELAY_MULTIPLIER）
-- 慢速调试模式（DEBUG_MODE）
 - 自动更新（AUTO_UPDATE）
 - 批量创号入口（BatchCreateAccount 调用）
 

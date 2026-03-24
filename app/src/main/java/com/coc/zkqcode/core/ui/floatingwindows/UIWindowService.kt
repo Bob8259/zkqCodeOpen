@@ -147,7 +147,7 @@ class UIWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner, View
 
     private fun handleUIIClose() {
         when (AppStateManager.currentMode) {
-            AppMode.SwitchAccount, AppMode.Main -> {
+            AppMode.SwitchAccount, AppMode.BugReport, AppMode.Main -> {
                 updateWindowSizeForCurrentMode()
             }
 
@@ -177,7 +177,7 @@ class UIWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner, View
         val screenHeight = displayMetrics.heightPixels
 
         val height = when (AppStateManager.currentMode) {
-            AppMode.SwitchAccount -> WindowManager.LayoutParams.WRAP_CONTENT
+            AppMode.SwitchAccount, AppMode.BugReport -> WindowManager.LayoutParams.WRAP_CONTENT
             AppMode.Main -> (screenHeight * HEIGHT_RATIO_MAIN).toInt()
             else -> (screenHeight * HEIGHT_RATIO_DEFAULT).toInt()
         }

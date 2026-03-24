@@ -209,11 +209,14 @@ fun HomeScreen(
                                 AppStateManager.setMode(AppMode.SwitchAccount)
                                 onSaveSuccess()
                             })
+                            CustomButton(text = "Bug反馈", onClick = {
+                                AppStateManager.setMode(AppMode.BugReport)
+                                onSaveSuccess()
+                            })
                             FlowRow {
                                 /* SettingInputRow(key = GLOBAL_SETTINGS.DELAY_MULTIPLIER.key) */
                                 SettingInputRow(key = GLOBAL_SETTINGS.ENTER_GAME_TIMER.key)
 
-                                /* SettingCheckBox(key = GLOBAL_SETTINGS.DEBUG_MODE.key) */
                                 SettingCheckBox(key = GLOBAL_SETTINGS.RECORD_PROGRESS.key)
 
 
