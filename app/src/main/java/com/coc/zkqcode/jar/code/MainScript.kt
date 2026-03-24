@@ -42,10 +42,15 @@ suspend fun runMainScript() {
 
     // 2. Find the first enabled account starting from the saved position, wrapping around
     val initialSearchOrder = (safeStartAccount..accountTotal) + (1 until safeStartAccount)
-    val activeAccount = findAndActivateAccount(initialSearchOrder) ?: return
+    val activeAccount = findAndActivateAccount(initialSearchOrder, isBatchCreate) ?: return
     // 3. Execute main logic loop
     InGamesVars.currentAccountNumber = activeAccount
-    InGamesVars.currentGameVersion = GameVersion.fromId(getConfigOrStop("${Schema.ACCOUNT_SETTINGS.GAME_VERSION.key}${InGamesVars.currentAccountNumber}").toInt())
+    // In batch-create mode, force GLOBAL version for all accounts
+    InGamesVars.currentGameVersion = if (isBatchCreate) {
+        GameVersion.GLOBAL
+    } else {
+        GameVersion.fromId(getConfigOrStop("${Schema.ACCOUNT_SETTINGS.GAME_VERSION.key}${InGamesVars.currentAccountNumber}").toInt())
+    }
 
     while (currentCoroutineContext().isActive) {
         // Test code
@@ -71,22 +76,36 @@ suspend fun runMainScript() {
         }
         // Circularly search for the next enabled account, wrapping back to currentAccountNumber (inclusive)
         val searchOrder = ((InGamesVars.currentAccountNumber + 1)..accountTotal) + (1..InGamesVars.currentAccountNumber)
-        val nextAccount = findAndActivateAccount(searchOrder) ?: return
+        val nextAccount = findAndActivateAccount(searchOrder, isBatchCreate) ?: return
 
         InGamesVars.currentAccountNumber = nextAccount
         writeMemory(StorageKeys.ACCOUNT_NUMBER, nextAccount.toString())
-        InGamesVars.currentGameVersion = GameVersion.fromId(getConfigOrStop("${Schema.ACCOUNT_SETTINGS.GAME_VERSION.key}${InGamesVars.currentAccountNumber}").toInt())
+        // In batch-create mode, force GLOBAL version for all accounts
+        InGamesVars.currentGameVersion = if (isBatchCreate) {
+            GameVersion.GLOBAL
+        } else {
+            GameVersion.fromId(getConfigOrStop("${Schema.ACCOUNT_SETTINGS.GAME_VERSION.key}${InGamesVars.currentAccountNumber}").toInt())
+        }
     }
 }
 
 /**
  * Searches [searchOrder] for the first enabled account.
+ * When [skipIsOpenCheck] is true, all accounts are treated as active (used for batch-create mode).
  * If none is found, loops showing a message until the coroutine is canceled,
  * then returns null — the caller should return immediately on null.
  */
-private suspend fun findAndActivateAccount(searchOrder: Iterable<Int>): Int? {
-    val found = searchOrder.firstOrNull { id ->
-        getConfigOrStop("${Schema.ACCOUNT_SETTINGS.ISOPEN.key}$id") == "1"
+private suspend fun findAndActivateAccount(
+    searchOrder: Iterable<Int>,
+    skipIsOpenCheck: Boolean = false
+): Int? {
+    // In batch-create mode, treat all accounts as active
+    val found = if (skipIsOpenCheck) {
+        searchOrder.firstOrNull()
+    } else {
+        searchOrder.firstOrNull { id ->
+            getConfigOrStop("${Schema.ACCOUNT_SETTINGS.ISOPEN.key}$id") == "1"
+        }
     }
     if (found == null) {
         while (currentCoroutineContext().isActive) {
