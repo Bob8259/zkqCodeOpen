@@ -9,17 +9,6 @@
 - 上号器功能（用户手动注释）
 - 延时倍率（DELAY_MULTIPLIER）
 - 自动更新（AUTO_UPDATE）
-- 批量创号入口（BatchCreateAccount 调用）
-
-## BatchCreateAccount.kt（特殊设置）
-
-- 所有特殊设置文字提示
-- 批量创号（BATCH_CREATE_ACCOUNT）
-- 创号开始序号（CREATE_START_ID）
-- 创号结束序号（CREATE_END_ID）
-- 创号前缀（CREATE_PREFIX）
-- 创号时宝石秒建筑（CREATE_GEM_BUILD）
-- 添加后缀（ADD_SUFFIX_SETTING）
 
 ## MainBaseConfigs.kt（主世界设置）
 

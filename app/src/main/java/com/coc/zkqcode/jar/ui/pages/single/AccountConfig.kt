@@ -15,7 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.coc.zkqcode.jar.ui.components.SettingCheckBox
+import com.coc.zkqcode.jar.ui.components.SettingSwitchIcon
 import com.coc.zkqcode.jar.ui.components.SettingDropdown
 import com.coc.zkqcode.jar.ui.components.SettingSection
 import com.coc.zkqcode.core.data.database.GlobalVars
@@ -28,7 +28,7 @@ fun AccountConfig(
 ) {
     SettingSection {
         Row {
-            SettingCheckBox(key = "${ACCOUNT_SETTINGS.ISOPEN.key}${index}")
+            SettingSwitchIcon(key = "${ACCOUNT_SETTINGS.ISOPEN.key}${index}")
             SettingInputRow(key = "${ACCOUNT_SETTINGS.REMARK.key}${index}")
         }
         SettingDropdown(
