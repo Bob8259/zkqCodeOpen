@@ -1,17 +1,16 @@
+@file:Suppress("AssignedValueIsNeverRead")
+
 package com.coc.zkqcode.jar.ui.pages.single
 
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -21,7 +20,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.drawWithContent
@@ -54,7 +52,6 @@ import java.io.File
 fun BugReport(onClose: () -> Unit) {
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
-    var imageName by remember { mutableStateOf("") }
     var statusMessage by remember { mutableStateOf("") }
     var isSubmitting by remember { mutableStateOf(false) }
     // Hide the UI so screencap captures the screen behind the transparent window
@@ -77,7 +74,7 @@ fun BugReport(onClose: () -> Unit) {
                 .padding(end = 6.dp)
         ) {
             Text(
-                text = "Bug反馈",
+                text = "问题反馈",
                 color = Color.Black,
                 style = MaterialTheme.typography.labelMedium,
                 modifier = Modifier
@@ -86,38 +83,10 @@ fun BugReport(onClose: () -> Unit) {
             )
 
             Text(
-                text = "提交截图后，请与作者/客服联系。",
+                text = "提交截图前，请先与作者/客服联系，确认出现问题的页面。\n确认页面后，请进入问题页面，并点击提交截图。\n提交截图后，请告知作者/客服截图已提交。",
                 style = MaterialTheme.typography.labelMedium,
                 modifier = Modifier.padding(bottom = 8.dp)
             )
-
-            // Image name input row
-            Row(
-                modifier = Modifier.padding(bottom = 8.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "图片名称:",
-                    modifier = Modifier
-                        .padding(end = 8.dp)
-                        .align(Alignment.CenterVertically),
-                    style = MaterialTheme.typography.labelMedium
-                )
-                BasicTextField(
-                    value = imageName,
-                    onValueChange = { imageName = it },
-                    singleLine = true,
-                    modifier = Modifier
-                        .weight(1f)
-                        .background(
-                            color = Color.White,
-                            shape = RoundedCornerShape(4.dp)
-                        )
-                        .border(1.dp, Color.Gray, RoundedCornerShape(4.dp))
-                        .padding(4.dp)
-                        .heightIn(max = 120.dp)
-                )
-            }
 
             // Status / error message
             if (statusMessage.isNotEmpty()) {
@@ -131,18 +100,15 @@ fun BugReport(onClose: () -> Unit) {
 
             Row {
                 CustomButton(
-                    text = "提交",
+                    text = "提交截图",
                     marginTop = 0.dp,
                     enable = !isSubmitting,
                     onClick = {
-                        if (imageName.isBlank()) {
-                            statusMessage = "请输入图片名称"
-                            return@CustomButton
-                        }
                         isSubmitting = true
                         statusMessage = "正在提交..."
 
-                        val nameToSubmit = imageName
+                        // Auto-generate image name using timestamp
+                        val nameToSubmit = "bug_${System.currentTimeMillis()}"
                         // Capture private path before launching coroutine
                         val privateDir = context.filesDir.absolutePath
                         // Make window invisible so screencap sees the real screen
@@ -151,14 +117,12 @@ fun BugReport(onClose: () -> Unit) {
                         scope.launch {
                             try {
                                 // Wait for the transparent recomposition to render
+                                ShowMessage("截屏中，请耐心等待")
                                 delay(300)
-
                                 val sanitizedName =
                                     if (nameToSubmit.endsWith(".png")) nameToSubmit else "$nameToSubmit.png"
                                 val dir = "$privateDir/bugReport"
                                 val fullPath = "$dir/$sanitizedName"
-
-                                ShowMessage.invoke("[debug] 开始截图: $fullPath")
 
                                 // Take screenshot via root shell, chmod so the app can read the file
                                 RunShell.runNoOutput(
@@ -170,10 +134,8 @@ fun BugReport(onClose: () -> Unit) {
                                 val file = File(fullPath)
                                 if (!file.exists()) {
                                     statusMessage = "截图保存失败，文件不存在。"
-                                    ShowMessage.invoke("[debug] 截图文件不存在: $fullPath")
                                     return@launch
                                 }
-                                ShowMessage.invoke("[debug] 截图完成, 文件大小: ${file.length()} bytes, 开始上传...")
 
                                 val requestBody = MultipartBody.Builder()
                                     .setType(MultipartBody.FORM)
@@ -185,7 +147,6 @@ fun BugReport(onClose: () -> Unit) {
                                     .build()
 
                                 val uploadUrl = "${BuildConfig.BASE_URL}api/bug-report"
-                                ShowMessage.invoke("[debug] 上传地址: $uploadUrl")
 
                                 val request = Request.Builder()
                                     .url(uploadUrl)
@@ -198,16 +159,14 @@ fun BugReport(onClose: () -> Unit) {
 
                                 response.use { resp ->
                                     val body = resp.body.string()
-                                    ShowMessage.invoke("[debug] 服务器返回: code=${resp.code}, body=$body")
-                                    if (resp.isSuccessful) {
-                                        statusMessage = "截图提交成功！"
+                                    statusMessage = if (resp.isSuccessful) {
+                                        "截图提交成功！请与作者/客服联系。"
                                     } else {
-                                        statusMessage = translateServerError(body)
+                                        translateServerError(body)
                                     }
                                 }
                             } catch (e: Exception) {
                                 statusMessage = "提交失败：${e.message}"
-                                ShowMessage.invoke("[debug] 异常: ${e.javaClass.simpleName}: ${e.message}")
                             } finally {
                                 // Restore the window so the user sees the result
                                 isTransparent = false
@@ -266,11 +225,14 @@ private fun translateServerError(responseBody: String): String {
 
     return when {
         message.contains("folder is full", ignoreCase = true) ->
-            "Bug截图文件夹已满，最多允许5张图片。"
+            "服务器截图已满，上传失败。请与作者/客服联系。"
+
         message.contains("No file uploaded", ignoreCase = true) ->
             "未上传文件。"
+
         message.contains("Missing", ignoreCase = true) && message.contains("image", ignoreCase = true) ->
             "表单数据中缺少图片字段。"
+
         else ->
             "提交失败：$message"
     }
