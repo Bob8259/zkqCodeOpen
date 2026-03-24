@@ -112,8 +112,17 @@ object YoloDetector {
         return try {
             val response = client.newCall(request).execute()
             val responseBody = response.body.string()
-            val parsed = gson.fromJson(responseBody, DetectResponse::class.java)
 
+            // Surface HTTP errors with status code and body
+            if (!response.isSuccessful) {
+                ShowMessage("检测请求失败: HTTP ${response.code}, $responseBody")
+                return@detect emptyList()
+            }
+
+            // Debug: show raw detection response
+            ShowMessage("检测原始结果: $responseBody", isChecking = false)
+
+            val parsed = gson.fromJson(responseBody, DetectResponse::class.java)
             parsed.detections.map { d ->
                 DetectionResult(
                     boundingBox = RectF(d.x1, d.y1, d.x2, d.y2),
@@ -121,7 +130,8 @@ object YoloDetector {
                     classIndex = d.classIndex
                 )
             }
-        } catch (_: Exception) {
+        } catch (e: Exception) {
+            ShowMessage("检测异常: ${e.message}")
             emptyList()
         } finally {
             if (clearWeightsAfter) {
