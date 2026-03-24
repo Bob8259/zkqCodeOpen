@@ -43,7 +43,7 @@
             android:name="com.coc.zkqcode.core.ui.floatingwindows.UIWindowService"
             android:enabled="true"
             android:exported="false"
-            android:foregroundServiceType="specialUse|mediaProjection"
+            android:foregroundServiceType="mediaProjection"
             tools:ignore="ForegroundServicePermission">
             <property
                 android:name="android.app.PROPERTY_SPECIAL_USE_FGS_TYPE_DESCRIPTION"
@@ -53,7 +53,7 @@
             android:name="com.coc.zkqcode.core.ui.floatingwindows.ControlWindowService"
             android:enabled="true"
             android:exported="false"
-            android:foregroundServiceType="specialUse|mediaProjection">
+            android:foregroundServiceType="mediaProjection">
             <property
                 android:name="android.app.PROPERTY_SPECIAL_USE_FGS_TYPE_DESCRIPTION"
                 android:value="This service provides background control mechanisms and overlay management." />
@@ -62,7 +62,7 @@
             android:name="com.coc.zkqcode.core.ui.floatingwindows.MessageBoxService"
             android:enabled="true"
             android:exported="false"
-            android:foregroundServiceType="specialUse|mediaProjection">
+            android:foregroundServiceType="mediaProjection">
             <property
                 android:name="android.app.PROPERTY_SPECIAL_USE_FGS_TYPE_DESCRIPTION"
                 android:value="This service displays a temporary floating message box overlay." />
