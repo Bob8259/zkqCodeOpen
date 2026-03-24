@@ -24,6 +24,7 @@ import com.coc.zkqcode.jar.ui.components.CustomButton
 import com.coc.zkqcode.jar.ui.pages.mainbase.MainBaseUpgradePriority
 import com.coc.zkqcode.jar.ui.pages.builderbase.BuilderBaseUpgradePriority
 import com.coc.zkqcode.jar.ui.pages.single.HomeScreen
+import com.coc.zkqcode.jar.ui.pages.single.BugReport
 import com.coc.zkqcode.jar.ui.pages.single.SwitchAccount
 import com.coc.zkqcode.jar.ui.schema.ConfigManager
 import com.coc.zkqcode.statehelper.AppMode
@@ -62,44 +63,51 @@ class EnterMainCode : MainCode {
             return
         }
 
-        if (AppStateManager.currentMode == AppMode.SwitchAccount) {
-            SwitchAccount(onClose = onClose)
-            return
-        }
-
-        if (AppStateManager.currentMode == AppMode.Main) {
-            val navController = rememberNavController()
-            NavHost(navController = navController, startDestination = "home") {
-                composable("home") {
-                    HomeScreen(
-                        onSaveSuccess = onClose,
-                        onNavigatePriority = { index ->
-                            navController.navigate("priority/$index")
-                        },
-                        onNavigateBuilderBasePriority = { index ->
-                            navController.navigate("builder_base_priority/$index")
-                        }
-                    )
-                }
-                composable("priority/{index}") { backStackEntry ->
-                    val index = backStackEntry.arguments?.getString("index")?.toIntOrNull() ?: 1
-                    MainBaseUpgradePriority(
-                        index = index,
-                        onSaveSuccess = {
-                            navController.popBackStack()
-                        }
-                    )
-                }
-                composable("builder_base_priority/{index}") { backStackEntry ->
-                    val index = backStackEntry.arguments?.getString("index")?.toIntOrNull() ?: 1
-                    BuilderBaseUpgradePriority(
-                        index = index,
-                        onSaveSuccess = {
-                            navController.popBackStack()
-                        }
-                    )
+        // Route to the appropriate page based on current mode
+        when (AppStateManager.currentMode) {
+            AppMode.SwitchAccount -> {
+                SwitchAccount(onClose = onClose)
+                return
+            }
+            AppMode.BugReport -> {
+                BugReport(onClose = onClose)
+                return
+            }
+            AppMode.Main -> {
+                val navController = rememberNavController()
+                NavHost(navController = navController, startDestination = "home") {
+                    composable("home") {
+                        HomeScreen(
+                            onSaveSuccess = onClose,
+                            onNavigatePriority = { index ->
+                                navController.navigate("priority/$index")
+                            },
+                            onNavigateBuilderBasePriority = { index ->
+                                navController.navigate("builder_base_priority/$index")
+                            }
+                        )
+                    }
+                    composable("priority/{index}") { backStackEntry ->
+                        val index = backStackEntry.arguments?.getString("index")?.toIntOrNull() ?: 1
+                        MainBaseUpgradePriority(
+                            index = index,
+                            onSaveSuccess = {
+                                navController.popBackStack()
+                            }
+                        )
+                    }
+                    composable("builder_base_priority/{index}") { backStackEntry ->
+                        val index = backStackEntry.arguments?.getString("index")?.toIntOrNull() ?: 1
+                        BuilderBaseUpgradePriority(
+                            index = index,
+                            onSaveSuccess = {
+                                navController.popBackStack()
+                            }
+                        )
+                    }
                 }
             }
+            else -> {}
         }
     }
 
