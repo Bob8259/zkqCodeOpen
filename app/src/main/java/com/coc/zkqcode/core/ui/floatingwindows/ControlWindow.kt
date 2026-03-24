@@ -178,7 +178,7 @@ fun ControlWindow(
                             ControlState.COLLAPSED -> ControlState.EXPANDED
                             ControlState.EXPANDED -> ControlState.COLLAPSED
                         }
-                        if (wasCollapsed) {
+                        if (wasCollapsed && isPlaying) {
                             ShowMessage("检测到悬浮窗展开，辅助已自动暂停，避免干扰用户操作", false)
                             isPlaying = false
                         }
@@ -315,7 +315,7 @@ fun ControlWindow(
                             ControlState.COLLAPSED -> ControlState.EXPANDED
                             ControlState.EXPANDED -> ControlState.COLLAPSED
                         }
-                        if (wasCollapsed) {
+                        if (wasCollapsed && isPlaying) {
                             ShowMessage("检测到悬浮窗展开，辅助已自动暂停，避免干扰用户操作", false)
                             isPlaying = false
                         }

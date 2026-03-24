@@ -25,6 +25,7 @@ import androidx.compose.material3.Text
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -71,10 +72,10 @@ private fun batchUpdateAllAccounts(keyPrefix: String, valueProducer: (String) ->
 
 @Composable
 private fun SmallTextField(
+    modifier: Modifier = Modifier,
     value: String,
     onValueChange: (String) -> Unit,
     width: Dp = 40.dp,
-    modifier: Modifier = Modifier
 ) {
     BasicTextField(
         value = value,
@@ -93,160 +94,176 @@ private fun SmallTextField(
 fun LazyListScope.AccountSettings() {
     item {
         SettingSection {
-        SettingInputRow(
-            key = GLOBAL_SETTINGS.CONFIG_COUNT.key,
-            afterChange = { newValue ->
-                val newCount = newValue.toIntOrNull()
-                if (newCount != null) {
-                    ConfigManager.expandProfileConfigs(newCount)
-                }
-            }
-        )
-        SettingInputRow(
-            key = GLOBAL_SETTINGS.ACCOUNT_COUNT.key,
-            afterChange = { newValue ->
-                val newCount = newValue.toIntOrNull()
-                if (newCount != null) {
-                    ConfigManager.expandAccountConfigs(newCount)
-                }
-            }
-        )
-        Row {
-            CustomButton(
-                text = "一键全选",
-                marginTop = 6.dp,
-                onClick = { batchUpdateAllAccounts(ACCOUNT_SETTINGS.ISOPEN.key) { "1" } }
-            )
-            CustomButton(
-                text = "一键反选",
-                marginTop = 6.dp,
-                onClick = { batchUpdateAllAccounts(ACCOUNT_SETTINGS.ISOPEN.key) { if (it == "1") "0" else "1" } }
-            )
-        }
-        var configValue by remember { mutableStateOf("") }
-        var startAccount by remember { mutableStateOf("") }
-        var endAccount by remember { mutableStateOf("") }
-
-        var batchVerStartAccount by remember { mutableStateOf("") }
-        var batchVerEndAccount by remember { mutableStateOf("") }
-        var selectedVerIndex by remember { mutableStateOf(0) }
-        var expandedVer by remember { mutableStateOf(false) }
-        val verOptions = listOf("国服", "国际服", "私服")
-
-        FlowRow(
-            modifier = Modifier.padding(top = 6.dp)
-        ) {
-            Text(
-                text = "将配置",
-                style = MaterialTheme.typography.labelMedium,
-                modifier = Modifier.padding(end = 4.dp).align(Alignment.CenterVertically)
-            )
-            SmallTextField(
-                value = configValue,
-                onValueChange = { configValue = it },
-                width = 60.dp
-            )
-            Text(
-                text = "应用到账号",
-                style = MaterialTheme.typography.labelMedium,
-                modifier = Modifier.padding(horizontal = 4.dp).align(Alignment.CenterVertically)
-            )
-            SmallTextField(
-                value = startAccount,
-                onValueChange = { startAccount = it }
-            )
-            Text(
-                text = "-",
-                style = MaterialTheme.typography.labelMedium,
-                modifier = Modifier.padding(horizontal = 4.dp).align(Alignment.CenterVertically)
-            )
-            SmallTextField(
-                value = endAccount,
-                onValueChange = { endAccount = it }
-            )
-            CustomButton(
-                text = "确认",
-                onClick = {
-                    batchUpdateByRange(startAccount, endAccount, ACCOUNT_SETTINGS.ACCOUNT_CONFIG.key, configValue)
-                },
-                marginTop = 0.dp
-            )
-        }
-
-        FlowRow(
-            modifier = Modifier.padding(top = 6.dp)
-        ) {
-            Text(
-                text = "将账号",
-                style = MaterialTheme.typography.labelMedium,
-                modifier = Modifier.padding(end = 4.dp).align(Alignment.CenterVertically)
-            )
-            SmallTextField(
-                value = batchVerStartAccount,
-                onValueChange = { batchVerStartAccount = it }
-            )
-            Text(
-                text = "-",
-                style = MaterialTheme.typography.labelMedium,
-                modifier = Modifier.padding(horizontal = 4.dp).align(Alignment.CenterVertically)
-            )
-            SmallTextField(
-                value = batchVerEndAccount,
-                onValueChange = { batchVerEndAccount = it }
-            )
-            Text(
-                text = "改为",
-                style = MaterialTheme.typography.labelMedium,
-                modifier = Modifier.padding(horizontal = 4.dp).align(Alignment.CenterVertically)
-            )
-
-            Box(
-                modifier = Modifier
-                    .wrapContentSize(Alignment.TopStart)
-                    .align(Alignment.CenterVertically)
-            ) {
-                Button(
-                    onClick = {
-                        GlobalVars.isAutoRunEnabled = false
-                        expandedVer = true
-                    },
-                    shape = RoundedCornerShape(8.dp),
-                    modifier = Modifier.height(30.dp),
-                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 0.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = AppColors.Azure)
-                ) {
-                    Text(verOptions[selectedVerIndex], style = MaterialTheme.typography.labelMedium)
-                    Icon(Icons.Default.ArrowDropDown, contentDescription = null)
-                }
-
-                DropdownMenu(
-                    expanded = expandedVer,
-                    onDismissRequest = { expandedVer = false }
-                ) {
-                    verOptions.forEachIndexed { idx, option ->
-                        DropdownMenuItem(
-                            text = {
-                                Text(option, style = MaterialTheme.typography.labelMedium)
-                            },
-                            onClick = {
-                                GlobalVars.isAutoRunEnabled = false
-                                selectedVerIndex = idx
-                                expandedVer = false
-                            },
-                            modifier = Modifier.height(35.dp)
-                        )
+            SettingInputRow(
+                key = GLOBAL_SETTINGS.CONFIG_COUNT.key,
+                afterChange = { newValue ->
+                    val newCount = newValue.toIntOrNull()
+                    if (newCount != null) {
+                        ConfigManager.expandProfileConfigs(newCount)
                     }
                 }
+            )
+            SettingInputRow(
+                key = GLOBAL_SETTINGS.ACCOUNT_COUNT.key,
+                afterChange = { newValue ->
+                    val newCount = newValue.toIntOrNull()
+                    if (newCount != null) {
+                        ConfigManager.expandAccountConfigs(newCount)
+                    }
+                }
+            )
+            Row {
+                CustomButton(
+                    text = "一键全选",
+                    marginTop = 6.dp,
+                    onClick = { batchUpdateAllAccounts(ACCOUNT_SETTINGS.ISOPEN.key) { "1" } }
+                )
+                CustomButton(
+                    text = "一键反选",
+                    marginTop = 6.dp,
+                    onClick = { batchUpdateAllAccounts(ACCOUNT_SETTINGS.ISOPEN.key) { if (it == "1") "0" else "1" } }
+                )
+            }
+            var configValue by remember { mutableStateOf("") }
+            var startAccount by remember { mutableStateOf("") }
+            var endAccount by remember { mutableStateOf("") }
+
+            var batchVerStartAccount by remember { mutableStateOf("") }
+            var batchVerEndAccount by remember { mutableStateOf("") }
+            var selectedVerIndex by remember { mutableIntStateOf(0) }
+            var expandedVer by remember { mutableStateOf(false) }
+            val verOptions = listOf("国服", "国际服", "私服")
+
+            FlowRow(
+                modifier = Modifier.padding(top = 6.dp)
+            ) {
+                Text(
+                    text = "将配置",
+                    style = MaterialTheme.typography.labelMedium,
+                    modifier = Modifier
+                        .padding(end = 4.dp)
+                        .align(Alignment.CenterVertically)
+                )
+                SmallTextField(
+                    modifier = Modifier.align(Alignment.CenterVertically),
+                    value = configValue,
+                    onValueChange = { configValue = it },
+                )
+                Text(
+                    text = "应用到账号",
+                    style = MaterialTheme.typography.labelMedium,
+                    modifier = Modifier
+                        .padding(horizontal = 4.dp)
+                        .align(Alignment.CenterVertically)
+                )
+                SmallTextField(
+                    modifier = Modifier.align(Alignment.CenterVertically),
+                    value = startAccount,
+                    onValueChange = { startAccount = it }
+                )
+                Text(
+                    text = "-",
+                    style = MaterialTheme.typography.labelMedium,
+                    modifier = Modifier
+                        .padding(horizontal = 4.dp)
+                        .align(Alignment.CenterVertically)
+                )
+                SmallTextField(
+                    modifier = Modifier.align(Alignment.CenterVertically),
+                    value = endAccount,
+                    onValueChange = { endAccount = it }
+                )
+                CustomButton(
+                    text = "确认",
+                    onClick = {
+                        batchUpdateByRange(startAccount, endAccount, ACCOUNT_SETTINGS.ACCOUNT_CONFIG.key, configValue)
+                    },
+                    marginTop = 0.dp
+                )
             }
 
-            CustomButton(
-                text = "确认",
-                onClick = {
-                    batchUpdateByRange(batchVerStartAccount, batchVerEndAccount, ACCOUNT_SETTINGS.GAME_VERSION.key, selectedVerIndex.toString())
-                },
-                marginTop = 0.dp
-            )
-        }
+            FlowRow(
+                modifier = Modifier.padding(top = 6.dp)
+            ) {
+                Text(
+                    text = "将账号",
+                    style = MaterialTheme.typography.labelMedium,
+                    modifier = Modifier
+                        .padding(end = 4.dp)
+                        .align(Alignment.CenterVertically)
+                )
+                SmallTextField(
+                    modifier = Modifier.align(Alignment.CenterVertically),
+                    value = batchVerStartAccount,
+                    onValueChange = { batchVerStartAccount = it }
+                )
+                Text(
+                    text = "-",
+                    style = MaterialTheme.typography.labelMedium,
+                    modifier = Modifier
+                        .padding(horizontal = 4.dp)
+                        .align(Alignment.CenterVertically)
+                )
+                SmallTextField(
+                    modifier = Modifier.align(Alignment.CenterVertically),
+                    value = batchVerEndAccount,
+                    onValueChange = { batchVerEndAccount = it }
+                )
+                Text(
+                    text = "改为",
+                    style = MaterialTheme.typography.labelMedium,
+                    modifier = Modifier
+                        .padding(horizontal = 4.dp)
+                        .align(Alignment.CenterVertically)
+                )
+
+                Box(
+                    modifier = Modifier
+                        .wrapContentSize(Alignment.TopStart)
+                        .align(Alignment.CenterVertically)
+                ) {
+                    Button(
+                        onClick = {
+                            GlobalVars.isAutoRunEnabled = false
+                            expandedVer = true
+                        },
+                        shape = RoundedCornerShape(8.dp),
+                        modifier = Modifier.height(30.dp),
+                        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 0.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = AppColors.Azure)
+                    ) {
+                        Text(verOptions[selectedVerIndex], style = MaterialTheme.typography.labelMedium)
+                        Icon(Icons.Default.ArrowDropDown, contentDescription = null)
+                    }
+
+                    DropdownMenu(
+                        expanded = expandedVer,
+                        onDismissRequest = { expandedVer = false }
+                    ) {
+                        verOptions.forEachIndexed { idx, option ->
+                            DropdownMenuItem(
+                                text = {
+                                    Text(option, style = MaterialTheme.typography.labelMedium)
+                                },
+                                onClick = {
+                                    GlobalVars.isAutoRunEnabled = false
+                                    selectedVerIndex = idx
+                                    expandedVer = false
+                                },
+                                modifier = Modifier.height(35.dp)
+                            )
+                        }
+                    }
+                }
+
+                CustomButton(
+                    text = "确认",
+                    onClick = {
+                        batchUpdateByRange(batchVerStartAccount, batchVerEndAccount, ACCOUNT_SETTINGS.GAME_VERSION.key, selectedVerIndex.toString())
+                    },
+                    marginTop = 0.dp
+                )
+            }
         }
     }
 
