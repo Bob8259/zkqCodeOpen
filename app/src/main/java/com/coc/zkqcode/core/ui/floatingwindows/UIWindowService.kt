@@ -154,9 +154,7 @@ class UIWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner, View
             else -> {
                 closeMainUI()
                 if (!GlobalVars.isPlaying.value) {// if the script is pause, then run the script for a little bit, show the message, then pause again
-                    GlobalVars.isPlaying.value = true
-                    ShowMessage("当前已暂停运行。\n若要启动辅助，请通过悬浮窗启动。")
-                    GlobalVars.isPlaying.value = false
+                    ShowMessage("当前已暂停运行。\n若要启动辅助，请通过悬浮窗启动。", false)
                 }
                 startService(Intent(this, ControlWindowService::class.java))
             }

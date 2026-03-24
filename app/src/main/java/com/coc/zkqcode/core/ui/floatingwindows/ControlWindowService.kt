@@ -33,7 +33,6 @@ import androidx.savedstate.SavedStateRegistryController
 import androidx.savedstate.SavedStateRegistryOwner
 import androidx.savedstate.setViewTreeSavedStateRegistryOwner
 import com.coc.zkqcode.core.data.database.GlobalVars
-import com.coc.zkqcode.core.util.fileactions.LogHelper
 import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.statehelper.AppMode
 import com.coc.zkqcode.statehelper.AppStateManager

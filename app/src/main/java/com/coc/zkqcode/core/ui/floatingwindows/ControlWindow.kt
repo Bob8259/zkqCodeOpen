@@ -171,10 +171,16 @@ fun ControlWindow(
                 modifier = (if (controlState == ControlState.HIDDEN) hiddenIconModifier else normalIconModifier)
                     .then(dragModifier)
                     .clickable {
+                        // Pause when expanding from COLLAPSED
+                        val wasCollapsed = controlState == ControlState.COLLAPSED
                         controlState = when (controlState) {
                             ControlState.HIDDEN -> ControlState.COLLAPSED
                             ControlState.COLLAPSED -> ControlState.EXPANDED
                             ControlState.EXPANDED -> ControlState.COLLAPSED
+                        }
+                        if (wasCollapsed) {
+                            ShowMessage("检测到悬浮窗展开，辅助已自动暂停，避免干扰用户操作", false)
+                            isPlaying = false
                         }
                         internalInteractionCount++
                     }
@@ -302,10 +308,16 @@ fun ControlWindow(
                 modifier = (if (controlState == ControlState.HIDDEN) hiddenIconModifier else normalIconModifier)
                     .then(dragModifier)
                     .clickable {
+                        // Pause when expanding from COLLAPSED
+                        val wasCollapsed = controlState == ControlState.COLLAPSED
                         controlState = when (controlState) {
                             ControlState.HIDDEN -> ControlState.COLLAPSED
                             ControlState.COLLAPSED -> ControlState.EXPANDED
                             ControlState.EXPANDED -> ControlState.COLLAPSED
+                        }
+                        if (wasCollapsed) {
+                            ShowMessage("检测到悬浮窗展开，辅助已自动暂停，避免干扰用户操作", false)
+                            isPlaying = false
                         }
                         internalInteractionCount++
                     }
