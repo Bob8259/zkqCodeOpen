@@ -205,14 +205,16 @@ fun HomeScreen(
                                 })
                         }
                         SettingSection {
-                            CustomButton(text = "启动手动切号模式", onClick = {
-                                AppStateManager.setMode(AppMode.SwitchAccount)
-                                onSaveSuccess()
-                            })
-                            CustomButton(text = "Bug反馈", onClick = {
-                                AppStateManager.setMode(AppMode.BugReport)
-                                onSaveSuccess()
-                            })
+                            FlowRow {
+                                CustomButton(text = "启动手动切号模式", onClick = {
+                                    AppStateManager.setMode(AppMode.SwitchAccount)
+                                    onSaveSuccess()
+                                })
+                                CustomButton(text = "截屏反馈问题", onClick = {
+                                    AppStateManager.setMode(AppMode.BugReport)
+                                    onSaveSuccess()
+                                })
+                            }
                             FlowRow {
                                 /* SettingInputRow(key = GLOBAL_SETTINGS.DELAY_MULTIPLIER.key) */
                                 SettingInputRow(key = GLOBAL_SETTINGS.ENTER_GAME_TIMER.key)
