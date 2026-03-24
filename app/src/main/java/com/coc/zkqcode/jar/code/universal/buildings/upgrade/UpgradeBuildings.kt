@@ -122,8 +122,8 @@ suspend fun checkContinueBuild(currentBase: BaseType, isWallUpgrade: Boolean = f
 //But for this function, false means no new buildings.
 private suspend fun buildOneNewBuildings(currentBase: BaseType): Boolean {
     ShowMessage("准备建造新建筑")
+    clickRightBottom(1)
     if (zoomOrNot) {
-        clickRightBottom(1)
         if (currentBase == BaseType.Builder) zoomSmallBuilderBase(isForBuild = true)
         else if (currentBase == BaseType.Main) zoomSmallMainBase(isForBuild = true)
         zoomOrNot = false

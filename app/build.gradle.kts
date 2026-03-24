@@ -17,6 +17,7 @@ android {
         }
     }
     val serverPublicKey: String = localProperties.getProperty("SERVER_PUBLIC_KEY") ?: ""
+    val baseUrl: String = localProperties.getProperty("BASE_URL") ?: ""
 
     defaultConfig {
         applicationId = "com.coc.zkqcode"
@@ -27,6 +28,7 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         buildConfigField("String", "SERVER_PUBLIC_KEY", "\"$serverPublicKey\"")
+        buildConfigField("String", "BASE_URL", "\"$baseUrl\"")
     }
 
     buildTypes {
