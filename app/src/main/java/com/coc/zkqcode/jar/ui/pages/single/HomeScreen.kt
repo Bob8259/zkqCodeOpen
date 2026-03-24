@@ -218,19 +218,20 @@ fun HomeScreen(
                             FlowRow {
                                 /* SettingInputRow(key = GLOBAL_SETTINGS.DELAY_MULTIPLIER.key) */
                                 SettingInputRow(key = GLOBAL_SETTINGS.ENTER_GAME_TIMER.key)
-
                                 SettingCheckBox(key = GLOBAL_SETTINGS.RECORD_PROGRESS.key)
 
 
                                 /* SettingDropdown(
                                     key = GLOBAL_SETTINGS.AUTO_UPDATE.key,
-                                    options = listOf("关闭", "仅更新稳定版", "更新测试版")
+                                    options = listOf("关闭", "仅启动时更新", "实时更新")
                                 ) */
                                 SettingCheckBox(key = GLOBAL_SETTINGS.AUTO_START.key)
                                 SettingDropdown(
                                     key = GLOBAL_SETTINGS.AFTER_KICK_OPTION.key, options = listOf("立刻重连", "切换账号", "原地等待")
                                 )
-                                SettingInputRow(key = GLOBAL_SETTINGS.DEVICE_REMARK.key)
+                                Column(Modifier.padding(top = 6.dp)) {
+                                    SettingInputRow(key = GLOBAL_SETTINGS.DEVICE_REMARK.key)
+                                }
                             }
                             FlowRow {
                                 CustomButton(

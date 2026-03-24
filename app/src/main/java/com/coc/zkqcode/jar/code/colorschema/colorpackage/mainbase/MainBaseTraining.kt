@@ -1,3 +1,5 @@
+@file:Suppress("PropertyName")
+
 package com.coc.zkqcode.jar.code.colorschema.colorpackage.mainbase
 
 import com.coc.zkqcode.jar.code.colorschema.ColorSchema
@@ -5,6 +7,7 @@ import com.coc.zkqcode.jar.code.colorschema.ColorSchema
 interface IMainBaseTraining {
     val TrainingPage: ColorSchema
     val AttackInTrainingPage: ColorSchema
+    val AttackInTrainingPage2: ColorSchema
     val DeleteAll1: ColorSchema
     val DeleteAll2: ColorSchema
     val DeleteAll3: ColorSchema
@@ -24,6 +27,9 @@ object MainBaseTraining : IMainBaseTraining {
     )
     override val AttackInTrainingPage = ColorSchema.parse(
         1009, 615, 1252, 665, "7084A2", "13|-1|6F83A1,50|-2|6E82A0,80|-5|6D809E,110|-5|6D809E,125|1|7184A2,125|6|768AA8,125|20|8298B6,112|26|859BB9,26|22|8399B7", 0, 0.9, "训练部队内进攻"
+    )
+    override val AttackInTrainingPage2 = ColorSchema.parse(
+        1066, 626, 1113, 656, "99FBCD", "9|0|99FBCD,19|0|99FBCD,28|0|99FBCD,37|0|99FBCD,0|15|4CE69D,9|15|4CE69D,19|15|4CE69D,28|15|4CE69D,37|15|4CE69D", 0, 0.9, "训练部队内进攻2"
     )
     override val DeleteAll1 = ColorSchema.parse(
         1219, 152, 1252, 185, "EDFCFF", "2|0|EDFCFF,5|0|EDFCFF,8|0|EDFCFF,11|0|EDFCFF,13|7|EDFCFF,5|17|D5E4E9,3|17|D5E4E9,-1|7|EDFCFF,-1|5|EDFCFF", 0, 0.9, "删除部队"

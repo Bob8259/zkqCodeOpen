@@ -31,9 +31,9 @@ suspend fun mainBaseTrainTroops(): Boolean {
         }
 
         // Verify training page
-        point = findMultiColorsUntil(schemas = listOf(MyColors.AttackInTrainingPage), duration = 1500)
+        point = findMultiColorsUntil(schemas = listOf(MyColors.AttackInTrainingPage, MyColors.AttackInTrainingPage2), duration = 1500)
         if (point == null) {
-            ShowMessage("账号${InGamesVars.currentAccountNumber}，训练部队失败")
+            ShowMessage("账号${InGamesVars.currentAccountNumber}，未找到训练标志")
             GlobalVars.absorbEdge = 0
             return enterMainScreen()
         }
@@ -88,8 +88,7 @@ suspend fun mainBaseTrainTroops(): Boolean {
         TouchActions.tap(797, 420, delayTime = 1000)
         if (findMultiColorsUntil(schemas = listOf(MyColors.TrainLighteningSpell), duration = 500) != null) {
             // Optimized sequence of taps for lightning spells
-            val spellCoords =
-                listOf(351 to 621, 351 to 621, 351 to 621, 220 to 499, 91 to 494, 91 to 494, 91 to 494, 91 to 494)
+            val spellCoords = listOf(351 to 621, 351 to 621, 351 to 621, 220 to 499, 91 to 494, 91 to 494, 91 to 494, 91 to 494)
             for (coord in spellCoords) {
                 TouchActions.tap(coord.first, coord.second, delayTime = 50)
             }

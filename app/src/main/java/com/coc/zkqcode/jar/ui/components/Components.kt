@@ -512,7 +512,7 @@ fun SettingDropdown(
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.padding(vertical = 6.dp)
+        modifier = Modifier.padding(vertical = 6.dp).padding(end = 6.dp)
     ) {
         Text(
             text = label,
