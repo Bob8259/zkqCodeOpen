@@ -33,7 +33,7 @@ enum class BuildButtonType {
 }
 
 suspend fun upgradeBuildings(currentBase: BaseType): Boolean {
-
+    zoomOrNot = true
     upgradableBuildingsMap.keys.forEach { upgradableBuildingsMap[it] = false }
     var isNewBuildingDetected = false
     clickRightBottom(1)
