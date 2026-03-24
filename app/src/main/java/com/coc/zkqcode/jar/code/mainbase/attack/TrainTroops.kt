@@ -31,7 +31,7 @@ suspend fun mainBaseTrainTroops(): Boolean {
         }
 
         // Verify training page
-        point = findMultiColorsUntil(schemas = listOf(MyColors.AttackInTrainingPage, MyColors.AttackInTrainingPage2), duration = 1500)
+        point = findMultiColorsUntil(schemas = listOf(MyColors.AttackInTrainingPage, MyColors.AttackInTrainingPage2, MyColors.AttackInTrainingPage3), duration = 1500)
         if (point == null) {
             ShowMessage("账号${InGamesVars.currentAccountNumber}，未找到训练标志")
             GlobalVars.absorbEdge = 0

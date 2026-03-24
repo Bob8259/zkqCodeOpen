@@ -6,19 +6,13 @@ package com.coc.zkqcode.jar.code.universal
  */
 enum class GameVersion(val id: Int, val packageName: String, val launchComponent: String) {
     CN(
-        0,
-        "com.tencent.tmgp.supercell.clashofclans",
-        "com.tencent.tmgp.supercell.clashofclans/com.supercell.titan.tencent.GameAppTencent"
+        0, "com.tencent.tmgp.supercell.clashofclans", "com.tencent.tmgp.supercell.clashofclans/com.supercell.titan.tencent.GameAppTencent"
     ),
     GLOBAL(
-        1,
-        "com.supercell.clashofclans",
-        "com.supercell.clashofclans/com.supercell.titan.GameApp"
+        1, "com.supercell.clashofclans", "com.supercell.clashofclans/com.supercell.titan.GameApp"
     ),
     PRIVATE(
-        2,
-        "com.atrasis.original",
-        "com.atrasis.original/com.atrasis.main.AtrasisGameApp"
+        2, "com.atrasis.original", "com.atrasis.original/com.atrasis.main.AtrasisGameApp"
     );
 
     companion object {
@@ -28,6 +22,9 @@ enum class GameVersion(val id: Int, val packageName: String, val launchComponent
 }
 
 object InGamesVars {
+    @Volatile
     var currentAccountNumber: Int = 1
+
+    @Volatile
     var currentGameVersion: GameVersion = GameVersion.CN
 }
