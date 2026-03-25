@@ -20,7 +20,8 @@ suspend fun checkReconnections(): Boolean {
 
     // 2. Define the schemas to check against
     val homeSchemas = listOf(
-        MyColors.Reconnection
+        MyColors.Reconnection,
+        MyColors.ReconnectionOnCloudPhone
     )
     val screenBuffer =
         ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult
@@ -45,7 +46,6 @@ suspend fun checkReconnections(): Boolean {
                     // Action: Tap the "Reload" button
                     TouchActions.tap(379, 458)
                     TouchActions.tap(338, 511)//Tutorial "Confirm" button
-
                 }
 
                 1 -> {

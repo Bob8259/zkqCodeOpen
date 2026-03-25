@@ -104,8 +104,10 @@ suspend fun upgradeAllExistingBuildings(buildings: List<String>, currentBase: Ba
             // Locate the specific building in the UI
             if (skipOrdering) {
                 if (!findSpecificBuilding(building, true)) {
+                    // Wall not found; clean up UI and signal caller to stop its upgrade loop
                     clickRightBottom(1)
-                    break // Not found this building anymore, go to next building type
+                    enterMainScreen()
+                    return UpgradeResult.StopLoop
                 }
             } else {
                 if (!findSpecificBuilding(building)) {

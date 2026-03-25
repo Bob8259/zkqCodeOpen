@@ -6,6 +6,7 @@ import com.coc.zkqcode.jar.code.colorschema.ColorSchema
 
 interface IUIColors {
     val Reconnection: ColorSchema
+    val ReconnectionOnCloudPhone: ColorSchema
     val GreenConfirm: ColorSchema
     val CNAd: ColorSchema
     val ClanChat: ColorSchema
@@ -33,6 +34,9 @@ interface IUIColors {
 object UIColors : IUIColors {
     override val Reconnection = ColorSchema.parse(
         240, 195, 1030, 530, "1B1B1C", "106|-4|1B1B1C,184|8|1B1B1C,142|-121|1B1B1C,236|-139|1B1B1C,302|-142|1B1B1C,442|-13|1B1B1C,541|-48|1B1B1C,539|-91|1B1B1C,523|-135|1B1B1C", 0, 0.99, "重连1"
+    )
+    override val ReconnectionOnCloudPhone = ColorSchema.parse(
+        240, 195, 1030, 530, "#424242", "106|-4|#424242,184|8|#424242,142|-121|#424242,236|-139|#424242,302|-142|#424242,442|-13|#424242,541|-48|#424242,539|-91|#424242,523|-135|#424242", 0, 0.99, "重连1"
     )
     override val GreenConfirm = ColorSchema.parse(
         577, 564, 731, 642, "7AF1D2", "25|-3|7FF3D7,45|-4|81F4D9,60|-4|81F4D9,66|5|70ECC8,67|17|53DFAB,67|23|2CCD84,45|35|30BA71,22|33|2FBF76,-1|26|2CCC83", 0, 0.9, "绿色确认"
@@ -102,6 +106,7 @@ object UIColors : IUIColors {
     override val BuilderBaseStarBonus = ColorSchema.parse(
         541, 522, 739, 606, "82E8B8", "39|0|82E8B8,79|0|82E8B8,119|0|82E8B8,158|0|82E8B8,0|42|3AD38A,39|42|3AD38A,79|42|3AD38A,119|42|3AD38A,158|42|3AD38A", 0, 0.9, "夜世界胜利之星"
     )
+
     // Middle green confirmation button (e.g. events and helper tutorials)
     override val MiddleGreenButton = ColorSchema.parse(
         577, 526, 704, 567, "86E8BA", "25|0|86E8BA,51|0|86E8BA,76|0|86E8BA,101|0|86E8BA,0|21|3AD48B,25|21|3AD48B,51|21|3AD48B,76|21|3AD48B,101|21|3AD48B", 0, 0.9, "中心绿色确认（类似活动和帮手教程）"
