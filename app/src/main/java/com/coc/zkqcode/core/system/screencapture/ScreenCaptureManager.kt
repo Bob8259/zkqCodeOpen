@@ -9,6 +9,7 @@ import android.hardware.display.DisplayManager
 import android.hardware.display.VirtualDisplay
 import android.media.ImageReader
 import android.media.projection.MediaProjection
+import android.media.projection.MediaProjectionConfig
 import android.media.projection.MediaProjectionManager
 import android.os.*
 import android.util.DisplayMetrics
@@ -131,7 +132,15 @@ object ScreenCaptureManager {
         MyAccessibilityService.isDetectionEnabled = true
 
         mediaProjectionManager?.let {
-            launcher.launch(it.createScreenCaptureIntent())
+            val intent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                // Force whole-screen capture on Android 14+, skipping the app-picker dialog
+                it.createScreenCaptureIntent(
+                    MediaProjectionConfig.createConfigForDefaultDisplay()
+                )
+            } else {
+                it.createScreenCaptureIntent()
+            }
+            launcher.launch(intent)
         }
     }
 
