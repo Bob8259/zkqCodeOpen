@@ -35,6 +35,7 @@ import com.coc.zkqcode.loadjar.Loadjar
 import com.coc.zkqcode.statehelper.AppMode
 import com.coc.zkqcode.statehelper.AppStateManager
 import com.topjohnwu.superuser.Shell
+import timber.log.Timber
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -239,17 +240,22 @@ class UIWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner, View
 
     private fun updateForegroundRecord() {
         val notification = NotificationHelper.createNotification(this)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            val type = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE or ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                // Only use MEDIA_PROJECTION type — SPECIAL_USE is not declared in
+                // the manifest for this service, and would cause startForeground()
+                // to throw on API 34+ (Android 14+).
+                startForeground(
+                    NOTIFICATION_ID, notification,
+                    ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION
+                )
             } else {
-                ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION
+                startForeground(NOTIFICATION_ID, notification)
             }
-            startForeground(NOTIFICATION_ID, notification, type)
-        } else {
-            startForeground(NOTIFICATION_ID, notification)
+            // Signal that the foreground service is now running
+            foregroundReady.complete(Unit)
+        } catch (e: Exception) {
+            Timber.e(e, "UIWindowService: startForeground() failed, API=${Build.VERSION.SDK_INT}")
         }
-        // Signal that the foreground service is now running
-        foregroundReady.complete(Unit)
     }
 }

@@ -100,9 +100,16 @@ object ScreenCaptureManager {
             val data = cachedIntentData
             if (code != null && data != null) {
                 ensureHandlerThread()
-                mediaProjection = mediaProjectionManager?.getMediaProjection(code, data)?.also {
-                    // Key: Register callback also using backgroundHandler
-                    it.registerCallback(projectionCallback, backgroundHandler)
+                // getMediaProjection() requires a running foreground service with
+                // FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION on Android 14+.
+                Timber.d("ensureProjection: re-creating MediaProjection (API=${Build.VERSION.SDK_INT})")
+                try {
+                    mediaProjection = mediaProjectionManager?.getMediaProjection(code, data)?.also {
+                        it.registerCallback(projectionCallback, backgroundHandler)
+                    }
+                } catch (e: SecurityException) {
+                    Timber.e(e, "ensureProjection: getMediaProjection() failed — " +
+                            "foreground service with MEDIA_PROJECTION type may not be running")
                 }
             }
         }
