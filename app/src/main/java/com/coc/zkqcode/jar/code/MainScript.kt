@@ -27,17 +27,25 @@ suspend fun runMainScript() {
     batchCreateAccounts()//Create all needed accounts first.
     // 1. Initialize/update local memory state
     val isBatchCreate = getConfigOrStop(Schema.GLOBAL_SETTINGS.BATCH_CREATE_ACCOUNT.key) == "1"
-    val startAccount = readMemory(StorageKeys.ACCOUNT_NUMBER).toIntOrNull() ?: 1
+
     val accountTotal: Int = if (isBatchCreate) {
         getConfigOrStop(Schema.GLOBAL_SETTINGS.CREATE_END_ID.key).toInt()
     } else {
         getConfigOrStop(Schema.GLOBAL_SETTINGS.ACCOUNT_COUNT.key).toInt()
     }
-    // Reset startAccount to 1 if it exceeds accountTotal (e.g. account count was reduced)
-    val safeStartAccount = if (startAccount > accountTotal) 1 else startAccount
+    // In batch-create mode, the lower bound comes from CREATE_START_ID
+    val accountStart: Int = if (isBatchCreate) {
+        getConfigOrStop(Schema.GLOBAL_SETTINGS.CREATE_START_ID.key).toInt()
+    } else {
+        1
+    }
+
+    val startAccount = readMemory(StorageKeys.ACCOUNT_NUMBER).toIntOrNull() ?: accountStart
+    // Reset startAccount to accountStart if it is out of range (e.g. account count was reduced)
+    val safeStartAccount = if (startAccount > accountTotal || startAccount < accountStart) accountStart else startAccount
 
     // 2. Find the first enabled account starting from the saved position, wrapping around
-    val initialSearchOrder = (safeStartAccount..accountTotal) + (1 until safeStartAccount)
+    val initialSearchOrder = (safeStartAccount..accountTotal) + (accountStart until safeStartAccount)
     val activeAccount = findAndActivateAccount(initialSearchOrder, isBatchCreate) ?: return
     // 3. Execute main logic loop
     InGamesVars.currentAccountNumber = activeAccount
@@ -71,7 +79,7 @@ suspend fun runMainScript() {
             }
         }
         // Circularly search for the next enabled account, wrapping back to currentAccountNumber (inclusive)
-        val searchOrder = ((InGamesVars.currentAccountNumber + 1)..accountTotal) + (1..InGamesVars.currentAccountNumber)
+        val searchOrder = ((InGamesVars.currentAccountNumber + 1)..accountTotal) + (accountStart..InGamesVars.currentAccountNumber)
         val nextAccount = findAndActivateAccount(searchOrder, isBatchCreate) ?: return
 
         InGamesVars.currentAccountNumber = nextAccount
