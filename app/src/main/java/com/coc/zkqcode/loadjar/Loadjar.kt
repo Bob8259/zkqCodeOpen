@@ -14,6 +14,7 @@ import com.coc.zkqcode.interfaces.MainCode
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.statehelper.AppMode
 import com.coc.zkqcode.statehelper.AppStateManager
+import android.os.Build
 import dalvik.system.DexClassLoader
 import timber.log.Timber
 import java.io.File
@@ -94,6 +95,9 @@ class Loadjar(private val context: Context) {
                 return false
             }
 
+            // Android 16+ requires DEX files to be non-writable
+            jarFile.setReadOnly()
+
             // Load the jar using DexClassLoader
             val classLoader = DexClassLoader(
                 jarFile.absolutePath, dexOutputDir.absolutePath, null, context.classLoader
@@ -123,7 +127,7 @@ class Loadjar(private val context: Context) {
             val decryptedBytes = com.coc.zkqcode.nativehelper.RustTools.decryptJar(encryptedBytes)
             if (decryptedBytes.isEmpty()) return false
 
-            val classLoader: ClassLoader = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            val classLoader: ClassLoader = if (Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
                 // 3. Load from memory (Android 8.0+)
                 // Since the decrypted bytes are a JAR, we need to extract classes.dex first
                 var dexBytes: ByteArray? = null
@@ -147,7 +151,7 @@ class Loadjar(private val context: Context) {
             } else {
                 // 4. Fallback for older versions: Use in-memory file descriptor (memfd/ashmem)
                 Timber.d(
-                    "loadEncryptedPlugin: Using fallback for API ${android.os.Build.VERSION.SDK_INT}"
+                    "loadEncryptedPlugin: Using fallback for API ${Build.VERSION.SDK_INT}"
                 )
 
                 val fd = com.coc.zkqcode.nativehelper.RustTools.createInMemoryDex(decryptedBytes)
@@ -210,9 +214,10 @@ class Loadjar(private val context: Context) {
 
                 try {
                     val outputFile = File(assetsDir, assetName)
-
-                    // If it's a jar and it already exists, don't overwrite it
+                    // If it's a jar, and it already exists, don't overwrite it
                     if (assetName.endsWith(".jar", ignoreCase = true) && outputFile.exists()) {
+                        // Ensure existing JARs are read-only (required by Android 16+)
+                        outputFile.setReadOnly()
                         continue
                     }
 
@@ -220,6 +225,10 @@ class Loadjar(private val context: Context) {
                         outputFile.outputStream().use { output ->
                             input.copyTo(output)
                         }
+                    }
+                    // Make newly extracted JARs read-only (required by Android 16+)
+                    if (assetName.endsWith(".jar", ignoreCase = true)) {
+                        outputFile.setReadOnly()
                     }
                 } catch (e: Exception) {
                     // This handles cases where .jar might be a directory name (unlikely but safe)
