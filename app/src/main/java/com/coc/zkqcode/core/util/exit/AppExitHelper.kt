@@ -68,9 +68,6 @@ object AppExitHelper {
             context.stopService(Intent(context, MessageBoxService::class.java))
             context.stopService(Intent(context, DaemonService::class.java))
 
-// Stop accessibility service
-// MyAccessibilityService.disableService()
-
             // Release screen capture resources
             ScreenCaptureManager.releaseAll()
         } catch (e: Exception) {
