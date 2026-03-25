@@ -6,6 +6,7 @@ import com.coc.zkqcode.jar.code.colorschema.ColorSchema
 
 interface IMainBaseTutorial {
     val ImportantNotice: ColorSchema
+    val ImportantNoticeOnCloudPhone: ColorSchema
     val SpeakingVillager: ColorSchema
     val SpeakingVillager2: ColorSchema
     val EnterAge: ColorSchema
@@ -33,6 +34,9 @@ interface IMainBaseTutorial {
 object MainBaseTutorial : IMainBaseTutorial {
     override val ImportantNotice = ColorSchema.parse(
         252, 142, 1024, 562, "1B1B1C", "84|3|1B1B1C,184|-3|1B1B1C,279|-4|1B1B1C,317|-8|1B1B1C,336|-91|1B1B1C,330|-157|1B1B1C,312|-247|1B1B1C,174|-254|1B1B1C,87|-253|1B1B1C", 0, 0.99, "重要提示"
+    )
+    override val ImportantNoticeOnCloudPhone = ColorSchema.parse(
+        252, 142, 1024, 562, "424242", "84|3|424242,184|-3|424242,279|-4|424242,317|-8|424242,336|-91|424242,330|-157|424242,312|-247|424242,174|-254|424242,87|-253|424242", 0, 0.99, "重要提示"
     )
     override val SpeakingVillager = ColorSchema.parse(
         277, 313, 674, 517, "FFFFFF", "56|-1|FFFFFF,157|-3|FFFFFF,252|-7|62ACDE,274|-3|68ACDD,275|20|85CFDD,275|101|6AAFE1,-30|108|66AEDE,-48|104|66AADE,-49|5|9EE3FF", 0, 0.9, "村民说话框"
