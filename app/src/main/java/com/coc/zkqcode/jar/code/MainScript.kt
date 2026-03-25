@@ -17,6 +17,8 @@ import com.coc.zkqcode.jar.code.universal.smalltools.getConfigOrStop
 import com.coc.zkqcode.jar.code.universal.smalltools.readMemory
 import com.coc.zkqcode.jar.code.universal.smalltools.writeGameFiles
 import com.coc.zkqcode.jar.code.universal.smalltools.writeMemory
+import com.coc.zkqcode.jar.code.colorschema.MyColors
+import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.ui.schema.Schema
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
@@ -42,7 +44,7 @@ suspend fun runMainScript() {
 
     val startAccount = readMemory(StorageKeys.ACCOUNT_NUMBER).toIntOrNull() ?: accountStart
     // Reset startAccount to accountStart if it is out of range (e.g. account count was reduced)
-    val safeStartAccount = if (startAccount > accountTotal || startAccount < accountStart) accountStart else startAccount
+    val safeStartAccount = if (startAccount !in accountStart..accountTotal) accountStart else startAccount
 
     // 2. Find the first enabled account starting from the saved position, wrapping around
     val initialSearchOrder = (safeStartAccount..accountTotal) + (accountStart until safeStartAccount)
@@ -57,7 +59,7 @@ suspend fun runMainScript() {
     }
 
     while (currentCoroutineContext().isActive) {
-        // Test code
+        // Test code – uncomment to run heartbeat diagnostic
 //        runTestCode()
         // Use labeled block to skip remaining steps on failure
         run stepBlock@{
@@ -100,8 +102,7 @@ suspend fun runMainScript() {
  * then returns null — the caller should return immediately on null.
  */
 private suspend fun findAndActivateAccount(
-    searchOrder: Iterable<Int>,
-    skipIsOpenCheck: Boolean = false
+    searchOrder: Iterable<Int>, skipIsOpenCheck: Boolean = false
 ): Int? {
     // In batch-create mode, treat all accounts as active
     val found = if (skipIsOpenCheck) {
@@ -122,12 +123,9 @@ private suspend fun findAndActivateAccount(
 
 private suspend fun runTestCode() {
     while (true) {
-//        enterMainScreen()
-        joinClan()
-//        ShowMessage(detectInstantBuildCost().toString())
-        delay(2000000)
-        delay(1000)
-//        ShowMessage(recognizeUpgradeResources(BaseType.Main).toString())
+        val result = findMultiColors(schema = MyColors.TrainTroops)
+        ShowMessage("TrainTroops: $result")
+        delay(3000)
     }
 }
 

@@ -15,10 +15,7 @@ class MyAccessibilityService : AccessibilityService() {
         var isDetectionEnabled = false
         private var instance: MyAccessibilityService? = null
         private val handler = Handler(Looper.getMainLooper())
-
-        fun disableService() {
-            instance?.disableSelf()
-        }
+        
     }
 
     override fun onServiceConnected() {
@@ -44,7 +41,7 @@ class MyAccessibilityService : AccessibilityService() {
                 if (found) break
             }
 
-            // schedule it to be close after 10 seconds
+            // Schedule detection to be disabled after 10 seconds
             handler.postDelayed({
                 isDetectionEnabled = false
             }, 10000)
@@ -64,8 +61,8 @@ class MyAccessibilityService : AccessibilityService() {
         var result = false
         if (targetNode != null && targetNode.isEnabled) {
             performClick(targetNode)
-            // Disable detection immediately after click to avoid interfering with other operations
-            handler.postDelayed({//keep detecting for 1 second
+            // Disable detection after a short delay to avoid interfering with other operations
+            handler.postDelayed({
                 isDetectionEnabled = false
             }, 1000)
             result = true
