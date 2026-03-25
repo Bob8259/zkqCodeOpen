@@ -66,6 +66,9 @@ suspend fun mainBaseTutorial(): Boolean {
     findMultiColors(schema = MyColors.ImportantNotice)?.let {
         TouchActions.tap(344, 510, delayTime = 500)
     }
+    findMultiColors(schema = MyColors.ImportantNoticeOnCloudPhone)?.let {
+        TouchActions.tap(344, 510, delayTime = 500)
+    }
     findMultiColors(schema = MyColors.AttackMap)?.let {
         if (findMultiColors(schema = MyColors.TrainTroops) == null && findMultiColors(schema = MyColors.ShopAfterTutorial) == null) {
             TouchActions.tap(it.x, it.y, delayTime = 500)
