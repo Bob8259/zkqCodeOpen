@@ -8,7 +8,6 @@ import com.coc.zkqcode.core.system.screencapture.ProjectionPermissionHelper
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.fileactions.LogHelper
-import timber.log.Timber
 
 class MainActivity : ComponentActivity() {
     private lateinit var projectionPermissionHelper: ProjectionPermissionHelper
@@ -20,7 +19,7 @@ class MainActivity : ComponentActivity() {
         System.loadLibrary("rust_logic")
         ScreenCaptureManager.init(this)
         LogHelper.initTimber(this)
-        Timber.v("MainActivity Start!")
+        LogHelper.showDebugInfo("MainActivity Start!")
         setContent {
             CheckRootScreen()
         }

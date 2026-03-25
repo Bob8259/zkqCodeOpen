@@ -34,6 +34,7 @@ import androidx.savedstate.SavedStateRegistry
 import androidx.savedstate.SavedStateRegistryController
 import androidx.savedstate.SavedStateRegistryOwner
 import androidx.savedstate.setViewTreeSavedStateRegistryOwner
+import timber.log.Timber
 import kotlinx.coroutines.delay
 
 class MessageBoxService : Service(), LifecycleOwner, SavedStateRegistryOwner {
@@ -186,29 +187,24 @@ class MessageBoxService : Service(), LifecycleOwner, SavedStateRegistryOwner {
     private var isForeground = false
 
     private fun updateForegroundRecord() {
-        if (isForeground) return // Avoid redundant calls if already foreground
+        if (isForeground) return
 
         val notification = NotificationHelper.createNotification(this)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            val type = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE or
-                        ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                // Only use MEDIA_PROJECTION type — SPECIAL_USE is not declared in
+                // the manifest for this service, and would cause startForeground()
+                // to throw on API 34+ (Android 14+).
+                startForeground(
+                    1000, notification,
+                    ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION
+                )
             } else {
-                ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION
-            }
-            try {
-                startForeground(1000, notification, type)
-                isForeground = true
-            } catch (e: Exception) {
-                 e.printStackTrace()
-            }
-        } else {
-            try {
                 startForeground(1000, notification)
-                isForeground = true
-            } catch (e: Exception) {
-                e.printStackTrace()
             }
+            isForeground = true
+        } catch (e: Exception) {
+            Timber.e(e, "MessageBoxService: startForeground() failed, API=${Build.VERSION.SDK_INT}")
         }
     }
 

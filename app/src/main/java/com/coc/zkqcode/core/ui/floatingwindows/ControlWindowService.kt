@@ -37,6 +37,7 @@ import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.statehelper.AppMode
 import com.coc.zkqcode.statehelper.AppStateManager
 import com.topjohnwu.superuser.Shell
+import timber.log.Timber
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -276,16 +277,20 @@ class ControlWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner 
 
     private fun updateForegroundRecord() {
         val notification = NotificationHelper.createNotification(this)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            val type = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE or
-                        ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                // Only use MEDIA_PROJECTION type — SPECIAL_USE is not declared in
+                // the manifest for this service, and would cause startForeground()
+                // to throw on API 34+ (Android 14+).
+                startForeground(
+                    1000, notification,
+                    ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION
+                )
             } else {
-                ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION
+                startForeground(1000, notification)
             }
-            startForeground(1000, notification, type)
-        } else {
-            startForeground(1000, notification)
+        } catch (e: Exception) {
+            Timber.e(e, "ControlWindowService: startForeground() failed, API=${Build.VERSION.SDK_INT}")
         }
     }
 }
