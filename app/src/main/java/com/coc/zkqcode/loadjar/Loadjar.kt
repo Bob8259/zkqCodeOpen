@@ -127,7 +127,7 @@ class Loadjar(private val context: Context) {
             val decryptedBytes = com.coc.zkqcode.nativehelper.RustTools.decryptJar(encryptedBytes)
             if (decryptedBytes.isEmpty()) return false
 
-            val classLoader: ClassLoader = if (Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            val classLoader: ClassLoader = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 // 3. Load from memory (Android 8.0+)
                 // Since the decrypted bytes are a JAR, we need to extract classes.dex first
                 var dexBytes: ByteArray? = null
