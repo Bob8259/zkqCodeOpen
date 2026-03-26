@@ -1,5 +1,6 @@
 package com.coc.zkqcode.core.data.websocket
 
+import com.coc.zkqcode.core.util.fileactions.LogHelper
 import com.google.gson.Gson
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -20,12 +21,12 @@ class ServerConnection(private val url: String) {
     private var onMessageReceived: ((String) -> Unit)? = null
 
     fun connect(onOpen: () -> Unit, onMessage: (String) -> Unit, onFailure: (Throwable) -> Unit) {
-        Timber.d("Connecting to $url")
+        LogHelper.showDebugInfo("Connecting to $url")
         this.onMessageReceived = onMessage
         val request = Request.Builder().url(url).build()
         webSocket = client.newWebSocket(request, object : WebSocketListener() {
             override fun onOpen(webSocket: WebSocket, response: Response) {
-                Timber.d("WebSocket Opened")
+                LogHelper.showDebugInfo("WebSocket Opened")
                 onOpen()
             }
 
@@ -39,11 +40,11 @@ class ServerConnection(private val url: String) {
             }
 
             override fun onClosing(webSocket: WebSocket, code: Int, reason: String) {
-                Timber.d("WebSocket Closing: $code / $reason")
+                LogHelper.showDebugInfo("WebSocket Closing: $code / $reason")
             }
 
             override fun onClosed(webSocket: WebSocket, code: Int, reason: String) {
-                Timber.d("WebSocket Closed: $code / $reason")
+                LogHelper.showDebugInfo("WebSocket Closed: $code / $reason")
             }
         })
     }
@@ -57,7 +58,7 @@ class ServerConnection(private val url: String) {
     }
 
     fun close() {
-        Timber.d("Closing WebSocket")
+        LogHelper.showDebugInfo("Closing WebSocket")
         webSocket?.close(1000, "Normal closure")
         webSocket = null
         onMessageReceived = null

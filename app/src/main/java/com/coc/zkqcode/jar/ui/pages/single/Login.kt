@@ -322,14 +322,14 @@ fun LoginScreen(onAdFreeClick: () -> Unit = {}) {
         }
 
         Row(Modifier.padding(bottom = 4.dp)) {
-//            CustomButton(
-//                text = "登录", marginTop = 0.dp, onClick = {
-//                    login(
-//                        GlobalVars.configStates[GLOBAL_SETTINGS.EMAIL.key]!!.value,
-//                        GlobalVars.configStates[GLOBAL_SETTINGS.PASSWORD.key]!!.value
-//                    )
-//                }, enable = isLoginButtonEnabled
-//            )
+            CustomButton(
+                text = "登录", marginTop = 0.dp, onClick = {
+                    login(
+                        GlobalVars.configStates[GLOBAL_SETTINGS.EMAIL.key]!!.value,
+                        GlobalVars.configStates[GLOBAL_SETTINGS.PASSWORD.key]!!.value
+                    )
+                }, enable = isLoginButtonEnabled
+            )
             val context = LocalContext.current
             CustomButton(
                 text = "免广告", marginTop = 0.dp, onClick = {
@@ -342,21 +342,21 @@ fun LoginScreen(onAdFreeClick: () -> Unit = {}) {
                     onAdFreeClick()
                 }, enable = isLoginButtonEnabled
             )
-//            CustomButton(
-//                text = "退出", marginTop = 0.dp, onClick = {
-//                    showMessage = true
-//                    scope.launch {
-//                        GlobalVars.serverActions?.writeToConfigFile(
-//                            GLOBAL_SETTINGS.GEM_COUNT.key,
-//                            ""
-//                        )
-//                        GlobalVars.configStates[GLOBAL_SETTINGS.EMAIL.key]!!.value = ""
-//                        GlobalVars.configStates[GLOBAL_SETTINGS.PASSWORD.key]!!.value = ""
-//                        GlobalVars.configStates[GLOBAL_SETTINGS.GEM_COUNT.key]!!.value = ""
-//                    }
-//                    gemInfo = "退出成功"
-//                }, enable = isLoginButtonEnabled
-//            )
+            CustomButton(
+                text = "退出", marginTop = 0.dp, onClick = {
+                    showMessage = true
+                    scope.launch {
+                        GlobalVars.serverActions?.writeToConfigFile(
+                            GLOBAL_SETTINGS.GEM_COUNT.key,
+                            ""
+                        )
+                        GlobalVars.configStates[GLOBAL_SETTINGS.EMAIL.key]!!.value = ""
+                        GlobalVars.configStates[GLOBAL_SETTINGS.PASSWORD.key]!!.value = ""
+                        GlobalVars.configStates[GLOBAL_SETTINGS.GEM_COUNT.key]!!.value = ""
+                    }
+                    gemInfo = "退出成功"
+                }, enable = isLoginButtonEnabled
+            )
         }
     }
 }
