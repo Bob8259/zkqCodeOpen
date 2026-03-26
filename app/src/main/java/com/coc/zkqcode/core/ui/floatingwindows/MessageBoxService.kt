@@ -45,9 +45,9 @@ class MessageBoxService : Service(), LifecycleOwner, SavedStateRegistryOwner {
     private val lifecycleRegistry = LifecycleRegistry(this)
     override val lifecycle: Lifecycle = lifecycleRegistry
 
-    private val savedStateRegistryController = SavedStateRegistryController.create(this).apply {
-        performRestore(null)
-    }
+    // Defer performRestore() to onCreate() so class-construction failures
+    // cannot prevent startForeground() from being called.
+    private val savedStateRegistryController = SavedStateRegistryController.create(this)
     override val savedStateRegistry: SavedStateRegistry =
         savedStateRegistryController.savedStateRegistry
 
@@ -63,10 +63,17 @@ class MessageBoxService : Service(), LifecycleOwner, SavedStateRegistryOwner {
 
     override fun onCreate() {
         super.onCreate()
+        // Must call startForeground() before anything else to satisfy the
+        // system contract from startForegroundService().
         updateForegroundRecord()
+        savedStateRegistryController.performRestore(null)
         lifecycleRegistry.currentState = Lifecycle.State.CREATED
         windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
-        showWindow()
+        try {
+            showWindow()
+        } catch (e: Exception) {
+            Timber.e(e, "MessageBoxService: showWindow() failed")
+        }
     }
 
     private fun showWindow() {
@@ -189,8 +196,8 @@ class MessageBoxService : Service(), LifecycleOwner, SavedStateRegistryOwner {
     private fun updateForegroundRecord() {
         if (isForeground) return
 
-        val notification = NotificationHelper.createNotification(this)
         try {
+            val notification = NotificationHelper.createNotification(this)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
                 // API 34+: must specify a foreground service type matching the manifest
                 startForeground(
@@ -202,7 +209,10 @@ class MessageBoxService : Service(), LifecycleOwner, SavedStateRegistryOwner {
             }
             isForeground = true
         } catch (e: Exception) {
+            // If startForeground() fails the service is doomed — stop gracefully
+            // instead of letting the system throw RemoteServiceException later.
             Timber.e(e, "MessageBoxService: startForeground() failed, API=${Build.VERSION.SDK_INT}")
+            stopSelf()
         }
     }
 
