@@ -61,6 +61,7 @@ suspend fun enterBuilderBase(isCheck: Boolean): Boolean {
         ShowMessage("尝试进入夜世界中，剩余${"%.1f".format(remaining)}秒后退出\n请手动给主世界和夜世界切换默认场景")
         // Ensure consistent view before attempting interaction
         zoomSmallMainBase()
+        clickRightBottom(1)
         if (!checkReconnections()) return false
         // List of potential boat locations to handle perspective shifts
         val boatLocations = listOf(
