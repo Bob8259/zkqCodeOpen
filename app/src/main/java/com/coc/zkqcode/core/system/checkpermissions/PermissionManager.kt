@@ -8,7 +8,7 @@ import com.topjohnwu.superuser.Shell
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
-import timber.log.Timber
+import com.coc.zkqcode.core.util.fileactions.LogHelper
 
 object PermissionManager {
     /**
@@ -60,7 +60,7 @@ object PermissionManager {
                 while (response == null && attempts < 10) {
                     response = ServerHelper.waitForServerResponse()
                     if (response == null) {
-                        Timber.d("Server not responding, retrying... (Attempt ${attempts + 1})")
+                        LogHelper.showDebugInfo("Server not responding, retrying... (Attempt ${attempts + 1})")
                         ServerManager.startServer(context)
                         delay(1000)
                         attempts++
