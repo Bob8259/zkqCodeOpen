@@ -7,6 +7,7 @@ import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.core.util.touchactions.TouchActions.pinchIn
 import com.coc.zkqcode.core.util.touchactions.TouchActions.swipe
 import com.coc.zkqcode.jar.code.builderbase.resources.collectBuilderBaseResources
+import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.jar.code.colorschema.ColorSchema
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.buildings.BaseType
@@ -85,16 +86,23 @@ private suspend fun realAttack(mode: String, battleNumber: Int = 1, battleTimes:
         }
         val remainingMin = (8 * 60 * 1000L - elapsed) / 60000.0
         ShowMessage("账号${InGamesVars.currentAccountNumber}，对战中，第${battleNumber}/${battleTimes}局\n若${"%.1f".format(remainingMin)}分钟内未完成对战，则强制重启")
-        val trainTroopButton = findMultiColors(schema = MyColors.TrainTroops)
+
+        // Capture a single screenshot and reuse it for all state checks in this iteration
+        val capturedScreen = ScreenCaptureManager.capture(asBitmap = false)
+            as? ScreenCaptureManager.CaptureResult
+
+        val trainTroopButton = findMultiColors(byteBuffer = capturedScreen, schema = MyColors.TrainTroops)
         if (trainTroopButton != null) {
-            TouchActions.tap(86, 638, delayTime = 500)//Attack
+            TouchActions.tap(86, 638, delayTime = 500)
+            continue // State matched, skip remaining checks
         }
         if (!checkReconnections()) return false
-        val builderBaseStarBonus = findMultiColors(schema = MyColors.BuilderBaseStarBonus)
+        val builderBaseStarBonus = findMultiColors(byteBuffer = capturedScreen, schema = MyColors.BuilderBaseStarBonus)
         if (builderBaseStarBonus != null) {
             TouchActions.tap(builderBaseStarBonus.x + 10, builderBaseStarBonus.y + 10, delayTime = 200)
+            continue
         }
-        val attackNow = findMultiColors(schema = MyColors.AttackNow)
+        val attackNow = findMultiColors(byteBuffer = capturedScreen, schema = MyColors.AttackNow)
         if (attackNow != null) {
             TouchActions.tap(attackNow.x, attackNow.y, delayTime = 200)
             val warning = findMultiColorsUntil(schemas = listOf(MyColors.TrainTroopsWarning), duration = 500)
@@ -102,12 +110,14 @@ private suspend fun realAttack(mode: String, battleNumber: Int = 1, battleTimes:
                 clickRightBottom(2)
                 builderBaseTrainTroops()
             }
+            continue
         }
-        val search = findMultiColors(schema = MyColors.CancelAttackSearch)
+        val search = findMultiColors(byteBuffer = capturedScreen, schema = MyColors.CancelAttackSearch)
         if (search != null) {
             waitLoop()
+            continue
         }
-        val switchTroopButton = findMultiColors(schema = MyColors.SwitchTroopButton)
+        val switchTroopButton = findMultiColors(byteBuffer = capturedScreen, schema = MyColors.SwitchTroopButton)
         if (switchTroopButton != null) {
             // Use shorter delay on first detection, normal delay afterward
             if (isFirstSwitchTroop) {
@@ -122,17 +132,18 @@ private suspend fun realAttack(mode: String, battleNumber: Int = 1, battleTimes:
             } else if (mode == "exile") {
                 deployAndExit()
             }
+            continue
         }
-        val builderBaseEndBattle = findMultiColors(schema = MyColors.BuilderBackToCamp)
+        val builderBaseEndBattle = findMultiColors(byteBuffer = capturedScreen, schema = MyColors.BuilderBackToCamp)
         if (builderBaseEndBattle != null) {
             TouchActions.tap(builderBaseEndBattle.x, builderBaseEndBattle.y, delayTime = 200)
             break
         }
-        val machineSkills = findMultiColors(schema = MyColors.MachineSkills)
+        val machineSkills = findMultiColors(byteBuffer = capturedScreen, schema = MyColors.MachineSkills)
         if (machineSkills != null) {
             TouchActions.tap(machineSkills.x, machineSkills.y + 100, delayTime = 200)
         }
-        delayWithMultiplier(100)
+        delayWithMultiplier(1000)
     }
     return enterMainScreen()
 }
@@ -201,17 +212,22 @@ private suspend fun normalBattle(isNormal: Boolean = true) {
                 delayWithMultiplier(600)
 
                 // Steps 2-3: Move smoothly to random positions until barbarian is gone
+                var moveCount = 0
                 while (true) {
                     val nextPos = deployPositions.random()
                     TouchActions.moveSmoothly(
                         fromX = currentPos.first.toFloat(), fromY = currentPos.second.toFloat(), toX = nextPos.first.toFloat(), toY = nextPos.second.toFloat(), duration = Random.nextInt(200, 500)
                     )
                     currentPos = nextPos
-                    val barbarian = findMultiColors(schema = MyColors.BuilderBaseBarbarian)
-                    if (barbarian == null) {
-                        // Step 4: Release finger and exit outer loop — barbarian is gone
-                        TouchActions.touchUp(1)
-                        break@attemptLoop
+                    moveCount++
+                    // Only check barbarian presence every 3 moves to reduce findMultiColors calls
+                    if (moveCount % 3 == 0) {
+                        val barbarian = findMultiColors(schema = MyColors.BuilderBaseBarbarian)
+                        if (barbarian == null) {
+                            // Release finger and exit outer loop — barbarian is gone
+                            TouchActions.touchUp(1)
+                            break@attemptLoop
+                        }
                     }
                 }
             }
