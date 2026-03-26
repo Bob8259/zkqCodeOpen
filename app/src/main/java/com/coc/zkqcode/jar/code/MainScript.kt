@@ -67,10 +67,12 @@ suspend fun runMainScript() {
                 delayWithMultiplier(2000)
                 return@stepBlock
             }
+
             if (!enterMainScreen(true)) {
                 ShowMessage("进入游戏失败")
                 return@stepBlock
             }
+
             if (!playBuilderBase()) {
                 ShowMessage("夜世界对战完成，准备进入主世界")
                 return@stepBlock
