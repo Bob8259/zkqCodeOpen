@@ -1,3 +1,4 @@
+use crate::auth;
 use crate::color::find_multi_colors_internal;
 use jni::objects::{JByteBuffer, JIntArray, JObject};
 use jni::sys::{jint, jintArray};
@@ -19,7 +20,11 @@ pub extern "system" fn find_multi_colors_raw(
     threshold: jint,
     flat_offsets: JIntArray,
     direction: jint,
+    increment: jint,
 ) -> jintArray {
+    // Validate increment and update the native-side call counter
+    auth::validate_and_increment(increment);
+
     let src_buf = env.get_direct_buffer_address(&byte_buffer);
     if src_buf.is_err() {
         return std::ptr::null_mut();
