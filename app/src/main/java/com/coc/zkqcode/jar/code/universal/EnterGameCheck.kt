@@ -111,17 +111,20 @@ private suspend fun closeAdvertisements() {
             screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult ?: return@forEach // Use return@forEach to skip to next if capture fails
         }
     }
-    findMultiColors(schema = MyColors.UpgradeTHArrow)?.let {
+    // Reuse screenBuffer for remaining checks; refresh after each tap
+    findMultiColors(byteBuffer = screenBuffer, schema = MyColors.UpgradeTHArrow)?.let {
         TouchActions.tap(it.x + 50, it.y + 100, delayTime = 500)
+        screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult ?: return
     }
-    findMultiColors(schema = MyColors.DailyLoginReward)?.let {
+    findMultiColors(byteBuffer = screenBuffer, schema = MyColors.DailyLoginReward)?.let {
         if (getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.CLAIM_DAILY_REWARD.key)) {
             TouchActions.tap(622, 492, delayTime = 2000)
         } else {
             TouchActions.tap(it.x, it.y)
         }
+        screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult ?: return
     }
-    findMultiColors(schema = MyColors.ReturnAwards)?.let {
+    findMultiColors(byteBuffer = screenBuffer, schema = MyColors.ReturnAwards)?.let {
         // Define the coordinate pairs in order of execution
         val tapPoints = listOf(
             257 to 297, 464 to 307, 662 to 305, 267 to 512, 466 to 511, 654 to 515, 882 to 513, 1077 to 101
@@ -131,12 +134,14 @@ private suspend fun closeAdvertisements() {
         tapPoints.forEach { (x, y) ->
             TouchActions.tap(x, y, delayTime = 100)
         }
+        screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult ?: return
     }
-    findMultiColors(schema = MyColors.CancelEditMode)?.let {
+    findMultiColors(byteBuffer = screenBuffer, schema = MyColors.CancelEditMode)?.let {
         TouchActions.tap(it.x, it.y, delayTime = 500)
         TouchActions.tap(788, 464)
+        screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult ?: return
     }
-    findMultiColors(schema = MyColors.TrainingPage)?.let {
+    findMultiColors(byteBuffer = screenBuffer, schema = MyColors.TrainingPage)?.let {
         TouchActions.tap(219, 139, delayTime = 1000)//close training tap
         TouchActions.tap(1232, 65, delayTime = 300)//close training page
     }

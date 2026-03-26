@@ -9,6 +9,10 @@ import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
 import com.coc.zkqcode.jar.code.colorschema.ColorSchema
 import com.coc.zkqcode.nativehelper.RustTools
 import kotlinx.coroutines.delay
+import java.util.concurrent.atomic.AtomicInteger
+
+// Counter to track the total number of findMultiColors invocations
+private val findMultiColorsCallCount = AtomicInteger(0)
 
 
 /**
@@ -24,6 +28,12 @@ suspend fun findMultiColors(
 ): Point? {
     while (!GlobalVars.isPlaying.value) {
         delay(1000)//the user paused the script, then we should also stop
+    }
+
+    // Increment the call counter and show a message every 100 calls
+    val count = findMultiColorsCallCount.incrementAndGet()
+    if (count % 100 == 0) {
+        ShowMessage("findMultiColors 已调用 $count 次")
     }
 
     val resultAny = when {
