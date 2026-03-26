@@ -4,6 +4,7 @@ use jni::{JavaVM, NativeMethod};
 use log::LevelFilter;
 use std::ffi::c_void;
 
+pub mod auth;
 mod bridge;
 pub mod color;
 mod dexloader;
@@ -64,12 +65,12 @@ pub extern "system" fn JNI_OnLoad(vm: JavaVM, _reserved: *mut c_void) -> jint {
         },
         NativeMethod {
             name: "findMultiColors".into(),
-            sig: "(Landroid/graphics/Bitmap;IIIIII[II)[I".into(),
+            sig: "(Landroid/graphics/Bitmap;IIIIII[III)[I".into(),
             fn_ptr: color::multi_colors::find_multi_colors as *mut c_void,
         },
         NativeMethod {
             name: "findMultiColorsRaw".into(),
-            sig: "(Ljava/nio/ByteBuffer;IIIIIIIII[II)[I".into(),
+            sig: "(Ljava/nio/ByteBuffer;IIIIIIIII[III)[I".into(),
             fn_ptr: color::multi_colors_raw::find_multi_colors_raw as *mut c_void,
         },
     ];

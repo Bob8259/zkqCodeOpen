@@ -1,3 +1,4 @@
+use crate::auth;
 use crate::color::find_multi_colors_internal;
 use jni::objects::{JIntArray, JObject};
 use jni::sys::{jint, jintArray, jobject};
@@ -76,7 +77,11 @@ pub extern "system" fn find_multi_colors(
     threshold: jint,
     flat_offsets: JIntArray,
     direction: jint,
+    increment: jint,
 ) -> jintArray {
+    // Validate increment and update the native-side call counter
+    auth::validate_and_increment(increment);
+
     let mut info = AndroidBitmapInfo::default();
     unsafe {
         if AndroidBitmap_getInfo(env.get_native_interface(), bitmap.as_raw(), &mut info) < 0 {
