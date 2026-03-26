@@ -23,7 +23,12 @@ import java.nio.ByteBuffer
 import kotlin.coroutines.resume
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import timber.log.Timber
+import android.graphics.BitmapFactory
+import com.topjohnwu.superuser.Shell
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import com.coc.zkqcode.core.util.fileactions.LogHelper
+import java.io.File
 
 
 object ScreenCaptureManager {
@@ -36,6 +41,9 @@ object ScreenCaptureManager {
     private var cachedBitmap: Bitmap? = null
     private var cachedCaptureResult: CaptureResult? = null
     private var lastFrameTimestamp: Long = 0
+
+    // Skip MediaProjection and go straight to shell screencap after first failure
+    private var useShellFallback = false
 
     // --- New: Dedicated background thread for handling screenshots ---
     private var handlerThread: HandlerThread? = null
@@ -103,14 +111,14 @@ object ScreenCaptureManager {
                 ensureHandlerThread()
                 // getMediaProjection() requires a running foreground service with
                 // FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION on Android 14+.
-                Timber.d("ensureProjection: re-creating MediaProjection (API=${Build.VERSION.SDK_INT})")
+                LogHelper.showDebugInfo("ensureProjection: re-creating MediaProjection (API=${Build.VERSION.SDK_INT})")
                 try {
                     mediaProjection = mediaProjectionManager?.getMediaProjection(code, data)?.also {
                         it.registerCallback(projectionCallback, backgroundHandler)
                     }
                 } catch (e: SecurityException) {
-                    Timber.e(e, "ensureProjection: getMediaProjection() failed — " +
-                            "foreground service with MEDIA_PROJECTION type may not be running")
+                    LogHelper.showDebugInfo("ensureProjection: getMediaProjection() failed — " +
+                            "foreground service with MEDIA_PROJECTION type may not be running: ${e.message}")
                 }
             }
         }
@@ -128,7 +136,7 @@ object ScreenCaptureManager {
         }
 
         // Keep the accessibility logic here
-        AutoGrantTool.forceEnableAccessibility() // 确保这个工具类在你的项目中
+        AutoGrantTool.forceEnableAccessibility() 
         MyAccessibilityService.isDetectionEnabled = true
 
         mediaProjectionManager?.let {
@@ -153,7 +161,7 @@ object ScreenCaptureManager {
             // Stop the current projection session
             mediaProjection?.stop()
         } catch (e: Exception) {
-            Timber.e(e, "reset: Error stopping mediaProjection")
+            LogHelper.showDebugInfo("reset: Error stopping mediaProjection: ${e.message}")
         }
 
         // Clean up resources like VirtualDisplay and ImageReader
@@ -182,7 +190,7 @@ object ScreenCaptureManager {
                     backgroundHandler
                 )
             } catch (e: Exception) {
-                Timber.e(e, "ensureVirtualDisplay: Error creating VirtualDisplay")
+                LogHelper.showDebugInfo("ensureVirtualDisplay: Error creating VirtualDisplay: ${e.message}")
                 cleanupDisplayResources()
             }
         } else {
@@ -191,7 +199,7 @@ object ScreenCaptureManager {
             // But usually updateMetrics has been called in capture(), so we can assume metrics are new
             // Simple check if imageReader matches
             if (imageReader?.width != screenWidth || imageReader?.height != screenHeight) {
-                Timber.d("ensureVirtualDisplay: Size changed, recreating resources")
+                LogHelper.showDebugInfo("ensureVirtualDisplay: Size changed, recreating resources")
                 cleanupDisplayResources()
                 prepareImageReader()
                 try {
@@ -206,7 +214,7 @@ object ScreenCaptureManager {
                         backgroundHandler
                     )
                 } catch (e: Exception) {
-                    Timber.e(e, "ensureVirtualDisplay: Error recreating VirtualDisplay")
+                    LogHelper.showDebugInfo("ensureVirtualDisplay: Error recreating VirtualDisplay: ${e.message}")
                 }
             }
         }
@@ -219,7 +227,7 @@ object ScreenCaptureManager {
     fun takeScreenshot(): Boolean {
         updateMetrics()
         val projection = ensureProjection() ?: run {
-            Timber.e("takeScreenshot: Failed to ensure projection")
+            LogHelper.showDebugInfo("takeScreenshot: Failed to ensure projection")
             return false
         }
         ensureHandlerThread() // 确保后台线程已启动
@@ -228,7 +236,7 @@ object ScreenCaptureManager {
             ensureVirtualDisplay(projection)
             virtualDisplay != null
         } catch (e: Exception) {
-            Timber.e(e, "takeScreenshot: Error during capture setup")
+            LogHelper.showDebugInfo("takeScreenshot: Error during capture setup: ${e.message}")
             cleanupDisplayResources()
             false
         }
@@ -246,12 +254,14 @@ object ScreenCaptureManager {
         if (resultCode == Activity.RESULT_OK) {
             cachedResultCode = resultCode
             cachedIntentData = data
+            // Re-enable MediaProjection path since new permission was granted
+            useShellFallback = false
             ensureHandlerThread()
             mediaProjection = mediaProjectionManager?.getMediaProjection(resultCode, data)?.also {
                 it.registerCallback(projectionCallback, backgroundHandler)
             }
         } else {
-            Timber.e("onPermissionGranted: Permission denied (resultCode=$resultCode)")
+            LogHelper.showDebugInfo("onPermissionGranted: Permission denied (resultCode=$resultCode)")
         }
     }
 
@@ -290,145 +300,221 @@ object ScreenCaptureManager {
     )
 
     /**
-     * Improved coroutine screenshot method
+     * Improved coroutine screenshot method.
+     * Tries MediaProjection first; falls back to shell screencap -p on failure.
      */
     suspend fun capture(asBitmap: Boolean = true): Any? = captureMutex.withLock {
-        ensureHandlerThread()
+        // If MediaProjection already failed, skip directly to shell
+        if (useShellFallback) {
+            return@withLock captureViaShell(asBitmap)
+        }
 
-        // Internal function: Attempt a complete screenshot process (reuse or create new)
-        suspend fun attemptCapture(): Any? {
-            return suspendCancellableCoroutine { cont ->
-                updateMetrics()
-                val projection = ensureProjection()
+        // Try MediaProjection first
+        val projectionResult = try {
+            ensureHandlerThread()
 
-                if (projection == null) {
-                    Timber.e("capture: Projection is null")
-                    if (cont.isActive) cont.resume(null)
-                    return@suspendCancellableCoroutine
-                }
+            // Internal function: Attempt a complete screenshot process (reuse or create new)
+            suspend fun attemptCapture(): Any? {
+                return suspendCancellableCoroutine { cont ->
+                    updateMetrics()
+                    val projection = ensureProjection()
 
-                ensureVirtualDisplay(projection)
-                val reader = imageReader
-                if (reader == null) {
-                    if (cont.isActive) cont.resume(null)
-                    return@suspendCancellableCoroutine
-                }
-
-                // Helper to process image
-                fun processImage(image: android.media.Image) {
-                    try {
-                        val plane = image.planes[0]
-                        val buffer: ByteBuffer = plane.buffer
-                        val pixelStride = plane.pixelStride
-                        val rowStride = plane.rowStride
-                        val rowPadding = rowStride - pixelStride * screenWidth
-
-                        if (asBitmap) {
-                            val bitmap = createBitmap(screenWidth + rowPadding / pixelStride, screenHeight)
-                            bitmap.copyPixelsFromBuffer(buffer)
-                            val finalBitmap = if (rowPadding == 0) {
-                                bitmap
-                            } else {
-                                Bitmap.createBitmap(bitmap, 0, 0, screenWidth, screenHeight).also {
-                                    if (it != bitmap) bitmap.recycle()
-                                }
-                            }
-                            // Update cache
-                            cachedBitmap = finalBitmap
-                            lastFrameTimestamp = System.currentTimeMillis()
-
-                            if (cont.isActive) cont.resume(finalBitmap)
-                        } else {
-                            val capacity = buffer.capacity()
-                            val directCopy = ByteBuffer.allocateDirect(capacity)
-                            buffer.rewind()
-                            directCopy.put(buffer)
-                            directCopy.flip()
-
-                            val result = CaptureResult(
-                                buffer = directCopy,
-                                width = screenWidth,
-                                height = screenHeight,
-                                pixelStride = pixelStride,
-                                rowStride = rowStride
-                            )
-
-                            // Update cache
-                            cachedCaptureResult = result
-                            lastFrameTimestamp = System.currentTimeMillis()
-
-                            if (cont.isActive) cont.resume(result)
-                        }
-                    } catch (e: Exception) {
-                        Timber.e(e, "capture: Error processing image")
+                    if (projection == null) {
+                        LogHelper.showDebugInfo("capture: Projection is null")
                         if (cont.isActive) cont.resume(null)
-                    } finally {
-                        image.close()
-                    }
-                }
-
-                // 1. Try to get existing latest image immediately
-                try {
-                    val latestImage = reader.acquireLatestImage()
-                    if (latestImage != null) {
-                        processImage(latestImage)
                         return@suspendCancellableCoroutine
                     }
-                } catch (_: Exception) {
-                    // ignore
-                }
 
-                // 2. No image available, wait for new one
-                reader.setOnImageAvailableListener({ _reader ->
-                    _reader.setOnImageAvailableListener(null, null)
-                    val image = try {
-                        _reader.acquireLatestImage()
+                    ensureVirtualDisplay(projection)
+                    val reader = imageReader
+                    if (reader == null) {
+                        if (cont.isActive) cont.resume(null)
+                        return@suspendCancellableCoroutine
+                    }
+
+                    // Helper to process image
+                    fun processImage(image: android.media.Image) {
+                        try {
+                            val plane = image.planes[0]
+                            val buffer: ByteBuffer = plane.buffer
+                            val pixelStride = plane.pixelStride
+                            val rowStride = plane.rowStride
+                            val rowPadding = rowStride - pixelStride * screenWidth
+
+                            if (asBitmap) {
+                                val bitmap = createBitmap(screenWidth + rowPadding / pixelStride, screenHeight)
+                                bitmap.copyPixelsFromBuffer(buffer)
+                                val finalBitmap = if (rowPadding == 0) {
+                                    bitmap
+                                } else {
+                                    Bitmap.createBitmap(bitmap, 0, 0, screenWidth, screenHeight).also {
+                                        if (it != bitmap) bitmap.recycle()
+                                    }
+                                }
+                                // Update cache
+                                cachedBitmap = finalBitmap
+                                lastFrameTimestamp = System.currentTimeMillis()
+
+                                if (cont.isActive) cont.resume(finalBitmap)
+                            } else {
+                                val capacity = buffer.capacity()
+                                val directCopy = ByteBuffer.allocateDirect(capacity)
+                                buffer.rewind()
+                                directCopy.put(buffer)
+                                directCopy.flip()
+
+                                val result = CaptureResult(
+                                    buffer = directCopy,
+                                    width = screenWidth,
+                                    height = screenHeight,
+                                    pixelStride = pixelStride,
+                                    rowStride = rowStride
+                                )
+
+                                // Update cache
+                                cachedCaptureResult = result
+                                lastFrameTimestamp = System.currentTimeMillis()
+
+                                if (cont.isActive) cont.resume(result)
+                            }
+                        } catch (e: Exception) {
+                            LogHelper.showDebugInfo("capture: Error processing image: ${e.message}")
+                            if (cont.isActive) cont.resume(null)
+                        } finally {
+                            image.close()
+                        }
+                    }
+
+                    // 1. Try to get existing latest image immediately
+                    try {
+                        val latestImage = reader.acquireLatestImage()
+                        if (latestImage != null) {
+                            processImage(latestImage)
+                            return@suspendCancellableCoroutine
+                        }
                     } catch (_: Exception) {
+                        // ignore
+                    }
+
+                    // 2. No image available, wait for new one
+                    reader.setOnImageAvailableListener({ _reader ->
+                        _reader.setOnImageAvailableListener(null, null)
+                        val image = try {
+                            _reader.acquireLatestImage()
+                        } catch (_: Exception) {
+                            null
+                        }
+                        if (image != null) {
+                            processImage(image)
+                        } else {
+                            if (cont.isActive) cont.resume(null)
+                        }
+                    }, backgroundHandler)
+
+                    cont.invokeOnCancellation {
+                        reader.setOnImageAvailableListener(null, null)
+                    }
+                }
+            }
+
+            // 1. Try to get a new frame (Short timeout)
+            val result = withTimeoutOrNull(100) {
+                attemptCapture()
+            }
+
+            if (result != null) {
+                result
+            } else {
+                // 2. Timeout: Check if we can reuse cached frame
+                val now = System.currentTimeMillis()
+                val isCacheValid = (now - lastFrameTimestamp) < 3000 // 3 seconds valid window
+
+                if (isCacheValid) {
+                    if (asBitmap && cachedBitmap != null) {
+                        cachedBitmap
+                    } else if (!asBitmap && cachedCaptureResult != null) {
+                        cachedCaptureResult
+                    } else {
                         null
                     }
-                    if (image != null) {
-                        processImage(image)
-                    } else {
-                        if (cont.isActive) cont.resume(null)
-                    }
-                }, backgroundHandler)
+                } else {
+                    // 3. Cache expired or not available -> Force reset
+                    LogHelper.showDebugInfo("capture: No new frame for >3s, recreating resources")
+                    cleanupDisplayResources()
 
-                cont.invokeOnCancellation {
-                    reader.setOnImageAvailableListener(null, null)
+                    // 4. Retry after reset (longer timeout to allow setup)
+                    withTimeoutOrNull(200) {
+                        attemptCapture()
+                    }
                 }
             }
+        } catch (e: Exception) {
+            LogHelper.showDebugInfo("capture: MediaProjection capture failed: ${e.message}")
+            null
         }
 
-        // 1. Try to get a new frame (Short timeout)
-        val result = withTimeoutOrNull(100) {
-            attemptCapture()
+        if (projectionResult != null) {
+            return@withLock projectionResult
         }
 
-        if (result != null) {
-            return@withLock result
-        }
+        // Fallback to shell screencap when MediaProjection fails or returns null
+        useShellFallback = true
+        LogHelper.showDebugInfo("capture: Falling back to shell screencap -p (will skip MediaProjection next time)")
+        return@withLock captureViaShell(asBitmap)
+    }
 
-        // 2. Timeout: Check if we can reuse cached frame
-        val now = System.currentTimeMillis()
-        val isCacheValid = (now - lastFrameTimestamp) < 3000 // 3 seconds valid window
+    /**
+     * Fallback capture method using root shell `screencap -p`.
+     * Saves PNG to a temp file via LibSU, reads it from the app side, then cleans up.
+     */
+    private suspend fun captureViaShell(asBitmap: Boolean): Any? = withContext(Dispatchers.IO) {
+        try {
+            val context = appContext ?: return@withContext null
+            val tempFile = File(context.cacheDir, "screencap_temp.png")
+            val tempPath = tempFile.absolutePath
 
-        if (isCacheValid) {
-            if (asBitmap && cachedBitmap != null) {
-                // Timber.v("capture: Reusing cached bitmap")
-                return@withLock cachedBitmap
-            } else if (!asBitmap && cachedCaptureResult != null) {
-                // Timber.v("capture: Reusing cached result")
-                return@withLock cachedCaptureResult
+            // Use LibSU root shell to capture screenshot and chmod so app can read it
+            val result = Shell.cmd("screencap -p $tempPath && chmod 644 $tempPath").exec()
+            if (!result.isSuccess) {
+                LogHelper.showDebugInfo("captureViaShell: screencap command failed")
+                return@withContext null
             }
-        }
 
-        // 3. Cache expired or not available -> Force reset
-        Timber.d("capture: No new frame for >3s, recreating resources")
-        cleanupDisplayResources()
+            if (!tempFile.exists() || tempFile.length() == 0L) {
+                LogHelper.showDebugInfo("captureViaShell: temp file not found or empty")
+                return@withContext null
+            }
 
-        // 4. Retry after reset (longer timeout to allow setup)
-        return@withLock withTimeoutOrNull(200) {
-            attemptCapture()
+            val bitmap = BitmapFactory.decodeFile(tempPath)
+
+            // Clean up temp file (try app-level delete, then root delete as fallback)
+            if (!tempFile.delete() && tempFile.exists()) {
+                Shell.cmd("rm -f $tempPath").exec()
+            }
+
+            if (bitmap == null) {
+                LogHelper.showDebugInfo("captureViaShell: Failed to decode PNG from screencap")
+                return@withContext null
+            }
+
+            if (asBitmap) {
+                return@withContext bitmap
+            }
+
+            // Convert Bitmap to CaptureResult (raw RGBA buffer)
+            val width = bitmap.width
+            val height = bitmap.height
+            val pixelStride = 4  // RGBA_8888
+            val rowStride = width * pixelStride
+            val buffer = ByteBuffer.allocateDirect(height * rowStride)
+            bitmap.copyPixelsToBuffer(buffer)
+            buffer.flip()
+            bitmap.recycle()
+
+            CaptureResult(buffer, width, height, pixelStride, rowStride)
+        } catch (e: Exception) {
+            LogHelper.showDebugInfo("captureViaShell: Shell screencap failed: ${e.message}")
+            null
         }
     }
 }
