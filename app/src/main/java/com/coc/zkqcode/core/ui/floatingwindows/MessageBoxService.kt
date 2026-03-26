@@ -191,13 +191,11 @@ class MessageBoxService : Service(), LifecycleOwner, SavedStateRegistryOwner {
 
         val notification = NotificationHelper.createNotification(this)
         try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                // Only use MEDIA_PROJECTION type — SPECIAL_USE is not declared in
-                // the manifest for this service, and would cause startForeground()
-                // to throw on API 34+ (Android 14+).
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                // API 34+: must specify a foreground service type matching the manifest
                 startForeground(
                     1000, notification,
-                    ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION
+                    ServiceInfo.FOREGROUND_SERVICE_TYPE_REMOTE_MESSAGING
                 )
             } else {
                 startForeground(1000, notification)
