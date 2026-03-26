@@ -394,10 +394,10 @@ object ScreenCaptureManager {
                     }
 
                     // 2. No image available, wait for new one
-                    reader.setOnImageAvailableListener({ _reader ->
-                        _reader.setOnImageAvailableListener(null, null)
+                    reader.setOnImageAvailableListener({ availableReader ->
+                        availableReader.setOnImageAvailableListener(null, null)
                         val image = try {
-                            _reader.acquireLatestImage()
+                            availableReader.acquireLatestImage()
                         } catch (_: Exception) {
                             null
                         }
