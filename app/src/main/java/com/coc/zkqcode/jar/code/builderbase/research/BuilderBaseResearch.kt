@@ -18,11 +18,11 @@ import com.coc.zkqcode.jar.ui.schema.details.BuilderBaseTroops
 
 suspend fun builderBaseResearch(): Boolean {
     if (getBooleanConfigRuntime(Schema.BUILDER_BASE_SETTINGS.BUILDER_BASE_RESEARCH.key) && WorkerAndResearch.detectResearch(BaseType.Builder)) {
-        val research = findMultiColors(schema = MyColors.ResearchIcon)
+        val research = findMultiColors(schema = MyColors.ResearchIcon, increment = 1)
         if (research != null) {
             TouchActions.tap(research.x, research.y, delayTime = 600)
             TouchActions.tap(research.x, research.y + 130)//Open research tab
-            val backArrow = findMultiColorsUntil(schemas = listOf(MyColors.BuilderResearchBackArrow), duration = 1000)
+            val backArrow = findMultiColorsUntil(schemas = listOf(MyColors.BuilderResearchBackArrow), duration = 1000, increment = 1)
             if (backArrow != null) {
                 TouchActions.tap(backArrow.x, backArrow.y, delayTime = 600)
                 builderBaseCheckAllResearch()
@@ -44,10 +44,10 @@ suspend fun builderBaseCheckAllResearch() {
             val x2 = x1 + 40
             val y2 = if (row == 0) 500 else 640
 
-            val elixirIcon = findMultiColors(schema = ColorSchema.rescope(MyColors.BuilderResearchElixir, x1, y1, x2, y2))
+            val elixirIcon = findMultiColors(schema = ColorSchema.rescope(MyColors.BuilderResearchElixir, x1, y1, x2, y2), increment = 1)
             if (elixirIcon != null) {
                 val resX1 = x1 - 100
-                val insufficient = findMultiColors(schema = ColorSchema.rescope(MyColors.BuilderResearchInsufficientResources, resX1, y1, x1, y2))
+                val insufficient = findMultiColors(schema = ColorSchema.rescope(MyColors.BuilderResearchInsufficientResources, resX1, y1, x1, y2), increment = 1)
                 if (insufficient == null) {
                     ShowMessage("账号${InGamesVars.currentAccountNumber}，开始研究 ${troop.displayName}")
                     TouchActions.tap(elixirIcon.x, elixirIcon.y, delayTime = 500)

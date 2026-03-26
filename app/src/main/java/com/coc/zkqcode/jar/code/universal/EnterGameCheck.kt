@@ -10,6 +10,7 @@ import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.smalltools.checkReconnections
 import com.coc.zkqcode.jar.code.universal.smalltools.getBooleanConfigRuntime
 import com.coc.zkqcode.jar.code.universal.smalltools.isGameAtFront
+import com.coc.zkqcode.jar.code.universal.smalltools.killGame
 import com.coc.zkqcode.jar.code.universal.smalltools.runGame
 import com.coc.zkqcode.jar.code.universal.tutorial.AllTutorials
 import com.coc.zkqcode.jar.ui.schema.Schema
@@ -64,6 +65,7 @@ suspend fun enterMainScreen(isDoubleCheck: Boolean = false): Boolean {
     }
 
     // Return false if the loop finishes without finding the main screen
+    killGame()
     return false
 }
 
@@ -102,7 +104,7 @@ private suspend fun closeAdvertisements() {
     // 3. Iterate through schemas
     homeSchemas.forEach { schema ->
         // Check if the current schema exists on the current screenBuffer
-        val point = findMultiColors(byteBuffer = screenBuffer, schema = schema)
+        val point = findMultiColors(byteBuffer = screenBuffer, schema = schema, increment = 1)
 
         if (point != null) {
             // If found, perform the tap
@@ -112,11 +114,11 @@ private suspend fun closeAdvertisements() {
         }
     }
     // Reuse screenBuffer for remaining checks; refresh after each tap
-    findMultiColors(byteBuffer = screenBuffer, schema = MyColors.UpgradeTHArrow)?.let {
+    findMultiColors(byteBuffer = screenBuffer, schema = MyColors.UpgradeTHArrow, increment = 1)?.let {
         TouchActions.tap(it.x + 50, it.y + 100, delayTime = 500)
         screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult ?: return
     }
-    findMultiColors(byteBuffer = screenBuffer, schema = MyColors.DailyLoginReward)?.let {
+    findMultiColors(byteBuffer = screenBuffer, schema = MyColors.DailyLoginReward, increment = 1)?.let {
         if (getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.CLAIM_DAILY_REWARD.key)) {
             TouchActions.tap(622, 492, delayTime = 2000)
         } else {
@@ -124,7 +126,7 @@ private suspend fun closeAdvertisements() {
         }
         screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult ?: return
     }
-    findMultiColors(byteBuffer = screenBuffer, schema = MyColors.ReturnAwards)?.let {
+    findMultiColors(byteBuffer = screenBuffer, schema = MyColors.ReturnAwards, increment = 1)?.let {
         // Define the coordinate pairs in order of execution
         val tapPoints = listOf(
             257 to 297, 464 to 307, 662 to 305, 267 to 512, 466 to 511, 654 to 515, 882 to 513, 1077 to 101
@@ -136,12 +138,12 @@ private suspend fun closeAdvertisements() {
         }
         screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult ?: return
     }
-    findMultiColors(byteBuffer = screenBuffer, schema = MyColors.CancelEditMode)?.let {
+    findMultiColors(byteBuffer = screenBuffer, schema = MyColors.CancelEditMode, increment = 1)?.let {
         TouchActions.tap(it.x, it.y, delayTime = 500)
         TouchActions.tap(788, 464)
         screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult ?: return
     }
-    findMultiColors(byteBuffer = screenBuffer, schema = MyColors.TrainingPage)?.let {
+    findMultiColors(byteBuffer = screenBuffer, schema = MyColors.TrainingPage, increment = 1)?.let {
         TouchActions.tap(219, 139, delayTime = 1000)//close training tap
         TouchActions.tap(1232, 65, delayTime = 300)//close training page
     }
@@ -152,7 +154,7 @@ private suspend fun isInHomePage(): Boolean {
     val screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult ?: logAndRestart("in isInHomePage, screen capture failed.")
 
     // 2. Check for the training button presence
-    val hasTrainButton = findMultiColors(byteBuffer = screenBuffer, schema = MyColors.TrainTroops) != null
+    val hasTrainButton = findMultiColors(byteBuffer = screenBuffer, schema = MyColors.TrainTroops, increment = 1) != null
     if (!hasTrainButton) return false
 
     // 3. Check for any of the worker icons (Main base, Goblin workers, or Builder base)
@@ -160,5 +162,5 @@ private suspend fun isInHomePage(): Boolean {
         MyColors.MainBaseWorker, MyColors.MainBaseWorker2, MyColors.GoblinWorker, MyColors.GoblinResearcher, MyColors.BuilderBaseWorker, MyColors.BuilderBaseWorker2
     )
 
-    return workerSchemas.any { findMultiColors(byteBuffer = screenBuffer, schema = it) != null }
+    return workerSchemas.any { findMultiColors(byteBuffer = screenBuffer, schema = it, increment = 1) != null }
 }

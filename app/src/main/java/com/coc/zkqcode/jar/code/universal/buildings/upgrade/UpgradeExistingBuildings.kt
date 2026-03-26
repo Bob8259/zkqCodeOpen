@@ -347,7 +347,7 @@ private suspend fun findSpecificBuilding(buildingName: String, excludeNewBuildin
         val building = result.buildings.find { it.name == buildingName }
         if (building != null) {
             ShowMessage("已找到$buildingName")
-            TouchActions.tap(building.x + 20, building.y + 20, delayTime = 1500)
+            TouchActions.tap(building.x + 20, building.y + 20, delayTime = 1000)
             found = true
             true
         } else {

@@ -49,11 +49,11 @@ val ResearchLevelColors: List<Pair<Int, List<ColorSchema>>> = listOf(
 
 suspend fun mainBaseResearch(): Boolean {
     if (getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.RESEARCH_SETTING.key) && WorkerAndResearch.detectResearch(BaseType.Main)) {
-        val researchIcon = findMultiColorsUntil(schemas = listOf(MyColors.ResearchIcon), duration = 1000)
+        val researchIcon = findMultiColorsUntil(schemas = listOf(MyColors.ResearchIcon), duration = 1000, increment = 1)
         if (researchIcon != null) {
             TouchActions.tap(researchIcon.x + 20, researchIcon.y, delayTime = 500)
             // Find white number indicating available research and tap it
-            val whiteNumber = findMultiColorsUntil(schemas = listOf(MyColors.WhiteNumberColor), duration = 1000)
+            val whiteNumber = findMultiColorsUntil(schemas = listOf(MyColors.WhiteNumberColor), duration = 1000, increment = 1)
             if (whiteNumber != null) {
                 TouchActions.tap(whiteNumber.x, whiteNumber.y, delayTime = 800)
                 TouchActions.tap(1130, 55, delayTime = 500)
@@ -90,7 +90,7 @@ private suspend fun findAllResearchItems() {
 
         // Search for enabled research items on current screen
         for (schema in enabledResearchColors) {
-            val result = findMultiColors(schema = schema, byteBuffer = screenBuffer)
+            val result = findMultiColors(schema = schema, byteBuffer = screenBuffer, increment = 1)
             if (result != null) {
                 val insufficientLeft = (result.x - 25).coerceAtLeast(0)
                 val insufficientTop = (result.y + 60).coerceAtLeast(0)
@@ -102,7 +102,7 @@ private suspend fun findAllResearchItems() {
                     insufficientLeft, insufficientTop, insufficientRight, insufficientBottom
                 )
 
-                if (findMultiColors(byteBuffer = screenBuffer, schema = insufficientSchema) != null) {
+                if (findMultiColors(byteBuffer = screenBuffer, schema = insufficientSchema, increment = 1) != null) {
                     ShowMessage("账号${InGamesVars.currentAccountNumber}，跳过 ${schema.name}: 资源不足")
                     continue
                 }
@@ -122,7 +122,7 @@ private suspend fun findAllResearchItems() {
                                 levelColorSchema,
                                 cropLeft, cropTop, cropLeft + cropWidth - 1, cropTop + cropHeight - 1
                             )
-                            val levelResult = findMultiColors(byteBuffer = screenBuffer, schema = levelSchema)
+                            val levelResult = findMultiColors(byteBuffer = screenBuffer, schema = levelSchema, increment = 1)
                             if (levelResult != null) {
                                 detectedLevel = level
                                 break@outer

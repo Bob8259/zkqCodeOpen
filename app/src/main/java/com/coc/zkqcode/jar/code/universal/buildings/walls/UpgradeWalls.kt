@@ -29,7 +29,12 @@ suspend fun upgradeWalls(currentBase: BaseType): Boolean {
         ShowMessage("检测到工人数量${workerNumber.available}/${workerNumber.total}")
         return true
     }
-    val thresholds = 25.coerceAtLeast(getConfigRuntime(Schema.MAIN_BASE_SETTINGS.UPGRADE_WALL_THRESHOLD.key).toInt())
+    // Use the appropriate threshold key based on the current base type
+    val wallThresholdKey = when (currentBase) {
+        BaseType.Main -> Schema.MAIN_BASE_SETTINGS.UPGRADE_WALL_THRESHOLD.key
+        BaseType.Builder -> Schema.BUILDER_BASE_SETTINGS.BUILDER_BASE_UPGRADE_WALL_THRESHOLD.key
+    }
+    val thresholds = 25.coerceAtLeast(getConfigRuntime(wallThresholdKey).toInt())
     val startTime = System.currentTimeMillis()
     val timeoutMs = 5 * 60 * 1000L // 5 minutes
 
