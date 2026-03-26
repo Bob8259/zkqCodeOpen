@@ -18,7 +18,7 @@ const ASHMEM_SET_SIZE: u32 = 0x40047703;
 #[cfg(unix)]
 const ASHMEM_SET_NAME: u64 = 0x41007701;
 
-#[no_mangle]
+// Symbol name stripped — registered via RegisterNatives in JNI_OnLoad
 #[allow(non_snake_case)]
 pub extern "system" fn create_in_memory_dex(
     env: JNIEnv,

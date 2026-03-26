@@ -64,7 +64,7 @@ impl Drop for BitmapLock<'_> {
     }
 }
 
-#[no_mangle]
+// Symbol name stripped — registered via RegisterNatives in JNI_OnLoad
 pub extern "system" fn find_multi_colors(
     env: JNIEnv,
     _class: JObject,

@@ -4,7 +4,7 @@ use jni::objects::{JByteBuffer, JIntArray, JObject};
 use jni::sys::{jint, jintArray};
 use jni::JNIEnv;
 
-#[no_mangle]
+// Symbol name stripped — registered via RegisterNatives in JNI_OnLoad
 pub extern "system" fn find_multi_colors_raw(
     env: JNIEnv,
     _class: JObject,

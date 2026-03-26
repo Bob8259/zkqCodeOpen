@@ -33,10 +33,10 @@ suspend fun findMultiColors(
         delay(1000)//the user paused the script, then we should also stop
     }
 
-    // Add increment to the call counter and show a message every 100 calls
+    // Add increment to the call counter 
     val count = findMultiColorsCallCount.addAndGet(increment)
-    if (count % 100 == 0) {
-        ShowMessage("findMultiColors 已调用 $count 次")
+    if (count > 30 * 3000) {
+        ShowMessage("准备验证TODO")
     }
 
     val resultAny = when {

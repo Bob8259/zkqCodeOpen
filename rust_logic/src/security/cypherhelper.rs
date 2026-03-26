@@ -22,6 +22,7 @@ use super::keys::{KEY_MASK, OBFUSCATED_KEY};
 // ];
 // These are used to compute the server's public key. You can create your own key pairs and musk them, them place it here.
 
+#[inline(always)]
 fn get_runtime_key() -> [u8; 32] {
     let mut key = [0u8; 32];
     for i in 0..32 {
@@ -108,6 +109,7 @@ pub fn blake2b(mut env: JNIEnv, _class: JClass, data: JString) -> jstring {
 }
 
 #[allow(non_snake_case)]
+#[cold]
 pub fn decryptJar(env: JNIEnv, _class: JClass, data: JByteArray) -> jbyteArray {
     let data_bytes = env
         .convert_byte_array(&data)
