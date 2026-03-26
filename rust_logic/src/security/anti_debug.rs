@@ -15,16 +15,108 @@ use std::thread;
 use std::time::Duration;
 
 pub static G_SECURITY_POISON_FLAG: AtomicI32 = AtomicI32::new(0);
+// Secondary poison flag — set by a different subset of detections
+pub static G_SECURITY_POISON_FLAG_2: AtomicI32 = AtomicI32::new(0);
+// Tertiary poison flag — accumulates violation counts, triggers after threshold
+pub static G_SECURITY_POISON_FLAG_3: AtomicI32 = AtomicI32::new(0);
 
+// Compile-time XOR encoder — plaintext is evaluated at compile time only,
+// the original bytes never appear in the output binary
+#[allow(dead_code)]
+const fn xor_bytes<const N: usize>(input: [u8; N], key: u8) -> [u8; N] {
+    let mut out = [0u8; N];
+    let mut i = 0;
+    while i < N {
+        out[i] = input[i] ^ key;
+        i += 1;
+    }
+    out
+}
+
+// Runtime XOR decoder — force-inlined so no single "decode" callsite exists
 #[cfg(not(debug_assertions))]
-fn trigger_poison(reason: &str) {
+#[inline(always)]
+fn xor_decode(encrypted: &[u8], key: u8) -> String {
+    encrypted.iter().map(|&b| (b ^ key) as char).collect()
+}
+
+// Per-category XOR keys to frustrate batch decryption
+#[cfg(all(unix, not(debug_assertions)))]
+const K_PROC: u8 = 0x42;
+#[cfg(not(debug_assertions))]
+const K_MAPS: u8 = 0x5A;
+#[cfg(not(debug_assertions))]
+const K_ENV: u8 = 0x73;
+#[cfg(not(debug_assertions))]
+const K_NET: u8 = 0x37;
+#[cfg(not(debug_assertions))]
+const K_HOOK: u8 = 0x2E;
+
+// Encrypted constants — proc filesystem paths
+#[cfg(all(unix, not(debug_assertions)))]
+const ENC_PROC_STATUS: [u8; 17] = xor_bytes(*b"/proc/self/status", K_PROC);
+#[cfg(all(unix, not(debug_assertions)))]
+const ENC_TRACER_PID: [u8; 10] = xor_bytes(*b"TracerPid:", K_PROC);
+#[cfg(all(unix, not(debug_assertions)))]
+const ENC_PROC_MAPS: [u8; 15] = xor_bytes(*b"/proc/self/maps", K_MAPS);
+
+// Encrypted constants — memory map analysis keywords
+#[cfg(not(debug_assertions))]
+const ENC_FRIDA_MAP: [u8; 5] = xor_bytes(*b"frida", K_MAPS);
+#[cfg(not(debug_assertions))]
+const ENC_GADGET: [u8; 6] = xor_bytes(*b"gadget", K_MAPS);
+#[cfg(not(debug_assertions))]
+const ENC_GUM_JS: [u8; 6] = xor_bytes(*b"gum-js", K_MAPS);
+#[cfg(not(debug_assertions))]
+const ENC_DATA_LOCAL_TMP: [u8; 15] = xor_bytes(*b"/data/local/tmp", K_MAPS);
+#[cfg(not(debug_assertions))]
+const ENC_RWXP: [u8; 4] = xor_bytes(*b"rwxp", K_MAPS);
+#[cfg(not(debug_assertions))]
+const ENC_ANON: [u8; 6] = xor_bytes(*b"[anon]", K_MAPS);
+
+// Encrypted constants — environment variable name
+#[cfg(not(debug_assertions))]
+const ENC_LD_PRELOAD: [u8; 10] = xor_bytes(*b"LD_PRELOAD", K_ENV);
+
+// Encrypted constants — network address
+#[cfg(not(debug_assertions))]
+const ENC_FRIDA_ADDR: [u8; 15] = xor_bytes(*b"127.0.0.1:27042", K_NET);
+
+// Encrypted constants — hook framework names
+#[cfg(not(debug_assertions))]
+const ENC_LSPOSED: [u8; 7] = xor_bytes(*b"lsposed", K_HOOK);
+#[cfg(not(debug_assertions))]
+const ENC_XPOSED: [u8; 6] = xor_bytes(*b"xposed", K_HOOK);
+#[cfg(not(debug_assertions))]
+const ENC_FRIDA_HOOK: [u8; 5] = xor_bytes(*b"frida", K_HOOK);
+
+// Silent poison triggers — no log output in release to avoid leaking detection info.
+// Split across multiple flags so no single NOP can disable all protection.
+#[cfg(not(debug_assertions))]
+#[inline(always)]
+fn trigger_poison() {
     if G_SECURITY_POISON_FLAG.load(Ordering::SeqCst) == 0 {
         G_SECURITY_POISON_FLAG.store(42, Ordering::SeqCst);
-        log::error!("Security monitor: Violation detected! Reason: {}", reason);
     }
 }
 
+#[cfg(not(debug_assertions))]
+#[inline(always)]
+fn trigger_poison_secondary() {
+    if G_SECURITY_POISON_FLAG_2.load(Ordering::SeqCst) == 0 {
+        G_SECURITY_POISON_FLAG_2.store(42, Ordering::SeqCst);
+    }
+}
+
+#[cfg(not(debug_assertions))]
+#[inline(always)]
+fn trigger_poison_accumulate() {
+    G_SECURITY_POISON_FLAG_3.fetch_add(1, Ordering::SeqCst);
+}
+
+// Marked cold — only used in security check paths, not normal operation
 #[cfg(all(unix, not(debug_assertions)))]
+#[cold]
 fn read_to_string_rustix(path: &str) -> Option<String> {
     let fd = openat(CWD, path, OFlags::RDONLY, Mode::empty()).ok()?;
     let mut buf = Vec::new();
@@ -40,49 +132,12 @@ fn read_to_string_rustix(path: &str) -> Option<String> {
 }
 
 #[cfg(not(debug_assertions))]
+#[inline(always)]
 fn check_debugger_present() {
     #[cfg(unix)]
     {
-        const XOR_KEY: u8 = 0x42;
-
-        fn xor_decrypt(encrypted: &[u8]) -> String {
-            encrypted.iter().map(|&b| (b ^ XOR_KEY) as char).collect()
-        }
-
-        const ENCRYPTED_PATH: [u8; 17] = [
-            0x2f ^ XOR_KEY,
-            0x70 ^ XOR_KEY,
-            0x72 ^ XOR_KEY,
-            0x6f ^ XOR_KEY,
-            0x63 ^ XOR_KEY,
-            0x2f ^ XOR_KEY,
-            0x73 ^ XOR_KEY,
-            0x65 ^ XOR_KEY,
-            0x6c ^ XOR_KEY,
-            0x66 ^ XOR_KEY,
-            0x2f ^ XOR_KEY,
-            0x73 ^ XOR_KEY,
-            0x74 ^ XOR_KEY,
-            0x61 ^ XOR_KEY,
-            0x74 ^ XOR_KEY,
-            0x75 ^ XOR_KEY,
-            0x73 ^ XOR_KEY,
-        ];
-        const ENCRYPTED_TRACER: [u8; 10] = [
-            0x54 ^ XOR_KEY,
-            0x72 ^ XOR_KEY,
-            0x61 ^ XOR_KEY,
-            0x63 ^ XOR_KEY,
-            0x65 ^ XOR_KEY,
-            0x72 ^ XOR_KEY,
-            0x50 ^ XOR_KEY,
-            0x69 ^ XOR_KEY,
-            0x64 ^ XOR_KEY,
-            0x3a ^ XOR_KEY,
-        ];
-
-        let path = xor_decrypt(&ENCRYPTED_PATH);
-        let tracer = xor_decrypt(&ENCRYPTED_TRACER);
+        let path = xor_decode(&ENC_PROC_STATUS, K_PROC);
+        let tracer = xor_decode(&ENC_TRACER_PID, K_PROC);
 
         if let Some(content) = read_to_string_rustix(&path) {
             for line in content.lines() {
@@ -90,7 +145,8 @@ fn check_debugger_present() {
                     let pid_str = line.replace(&tracer, "").trim().to_string();
                     if let Ok(pid) = pid_str.parse::<i32>() {
                         if pid != 0 {
-                            trigger_poison("tracer pid detected");
+                            trigger_poison();
+                            trigger_poison_accumulate();
                             return;
                         }
                     }
@@ -101,13 +157,17 @@ fn check_debugger_present() {
 }
 
 #[cfg(not(debug_assertions))]
+#[inline(always)]
 fn check_env_injection() {
-    if env::var("LD_PRELOAD").is_ok() {
-        trigger_poison("LD_PRELOAD detected");
+    let var_name = xor_decode(&ENC_LD_PRELOAD, K_ENV);
+    if env::var(&var_name).is_ok() {
+        trigger_poison_secondary();
+        trigger_poison_accumulate();
     }
 }
 
 #[cfg(not(debug_assertions))]
+#[inline(always)]
 fn check_time_drift() {
     let start = std::time::Instant::now();
     let mut _x = 0;
@@ -116,26 +176,40 @@ fn check_time_drift() {
     }
 
     if start.elapsed().as_micros() > 500 {
-        trigger_poison("time drift detected");
+        trigger_poison_accumulate();
     }
 }
 
 #[cfg(not(debug_assertions))]
+#[inline(always)]
 fn check_memory_maps() {
     #[cfg(unix)]
     {
-        if let Some(maps) = read_to_string_rustix("/proc/self/maps") {
+        let maps_path = xor_decode(&ENC_PROC_MAPS, K_MAPS);
+        let s_frida = xor_decode(&ENC_FRIDA_MAP, K_MAPS);
+        let s_gadget = xor_decode(&ENC_GADGET, K_MAPS);
+        let s_gum_js = xor_decode(&ENC_GUM_JS, K_MAPS);
+        let s_data_tmp = xor_decode(&ENC_DATA_LOCAL_TMP, K_MAPS);
+        let s_rwxp = xor_decode(&ENC_RWXP, K_MAPS);
+        let s_anon = xor_decode(&ENC_ANON, K_MAPS);
+
+        if let Some(maps) = read_to_string_rustix(&maps_path) {
             for line in maps.lines() {
-                if line.contains("frida") || line.contains("gadget") || line.contains("gum-js") {
-                    trigger_poison("unauthorized memory segment detected");
+                if line.contains(&*s_frida)
+                    || line.contains(&*s_gadget)
+                    || line.contains(&*s_gum_js)
+                {
+                    trigger_poison_secondary();
+                    trigger_poison_accumulate();
                     return;
                 }
-                if line.contains("/data/local/tmp") {
-                    trigger_poison("unauthorized memory segment detected");
+                if line.contains(&*s_data_tmp) {
+                    trigger_poison_secondary();
                     return;
                 }
-                if line.contains("rwxp") && line.contains("[anon]") {
-                    trigger_poison("unauthorized memory segment detected");
+                if line.contains(&*s_rwxp) && line.contains(&*s_anon) {
+                    trigger_poison_secondary();
+                    trigger_poison_accumulate();
                     return;
                 }
             }
@@ -144,15 +218,19 @@ fn check_memory_maps() {
 }
 
 #[cfg(not(debug_assertions))]
+#[inline(always)]
 fn check_frida_port() {
-    if let Ok(addr) = "127.0.0.1:27042".parse() {
+    let addr_str = xor_decode(&ENC_FRIDA_ADDR, K_NET);
+    if let Ok(addr) = addr_str.parse() {
         if TcpStream::connect_timeout(&addr, Duration::from_millis(200)).is_ok() {
-            trigger_poison("frida port detected");
+            trigger_poison();
+            trigger_poison_secondary();
         }
     }
 }
 
 #[cfg(not(debug_assertions))]
+#[inline(always)]
 fn check_native_hooks() {
     #[cfg(target_os = "android")]
     {
@@ -203,12 +281,19 @@ fn check_native_hooks() {
                 let mut info: Dl_info = std::mem::zeroed();
                 if dladdr(pc as *const c_void, &mut info) != 0 && !info.dli_fname.is_null() {
                     let fname = CStr::from_ptr(info.dli_fname as *const c_char).to_string_lossy();
-                    if fname.contains("lsposed")
-                        || fname.contains("xposed")
-                        || fname.contains("frida")
+                    // Decrypt hook framework names inside the callback
+                    let s1 = xor_decode(&ENC_LSPOSED, K_HOOK);
+                    let s2 = xor_decode(&ENC_XPOSED, K_HOOK);
+                    let s3 = xor_decode(&ENC_FRIDA_HOOK, K_HOOK);
+                    if fname.contains(&*s1)
+                        || fname.contains(&*s2)
+                        || fname.contains(&*s3)
                     {
                         HOOK_DETECTED.store(true, Ordering::SeqCst);
+                        // Set all poison flags from inside the callback directly
                         G_SECURITY_POISON_FLAG.store(42, Ordering::SeqCst);
+                        G_SECURITY_POISON_FLAG_2.store(42, Ordering::SeqCst);
+                        G_SECURITY_POISON_FLAG_3.fetch_add(10, Ordering::SeqCst);
                         return _Unwind_Reason_Code::_URC_END_OF_STACK;
                     }
                 }
@@ -221,31 +306,135 @@ fn check_native_hooks() {
         }
 
         if HOOK_DETECTED.load(Ordering::SeqCst) {
-            trigger_poison("native hooks detected");
+            trigger_poison();
+            trigger_poison_secondary();
         }
     }
 }
 
+// Additional Frida detection: scan extra default ports
+#[cfg(not(debug_assertions))]
+#[inline(always)]
+fn check_frida_extra_ports() {
+    const ENC_ADDR_43: [u8; 15] = xor_bytes(*b"127.0.0.1:27043", K_NET);
+    const ENC_ADDR_44: [u8; 15] = xor_bytes(*b"127.0.0.1:27044", K_NET);
+
+    for enc_addr in [&ENC_ADDR_43[..], &ENC_ADDR_44[..]] {
+        let addr_str = xor_decode(enc_addr, K_NET);
+        if let Ok(addr) = addr_str.parse() {
+            if TcpStream::connect_timeout(&addr, Duration::from_millis(100)).is_ok() {
+                trigger_poison_secondary();
+                trigger_poison_accumulate();
+            }
+        }
+    }
+}
+
+// Scan /proc/self/fd for suspicious open file descriptors pointing to injected libs
+#[cfg(all(unix, not(debug_assertions)))]
+#[inline(always)]
+fn check_proc_fd() {
+    const K_FD: u8 = 0x4F;
+    const ENC_PROC_FD: [u8; 13] = xor_bytes(*b"/proc/self/fd", K_FD);
+    const ENC_FRIDA_FD: [u8; 5] = xor_bytes(*b"frida", K_FD);
+    const ENC_GADGET_FD: [u8; 6] = xor_bytes(*b"gadget", K_FD);
+
+    let fd_dir = xor_decode(&ENC_PROC_FD, K_FD);
+    let s_frida = xor_decode(&ENC_FRIDA_FD, K_FD);
+    let s_gadget = xor_decode(&ENC_GADGET_FD, K_FD);
+
+    if let Ok(entries) = std::fs::read_dir(&fd_dir) {
+        for entry in entries.flatten() {
+            if let Ok(link) = std::fs::read_link(entry.path()) {
+                let link_str = link.to_string_lossy();
+                if link_str.contains(&*s_frida) || link_str.contains(&*s_gadget) {
+                    trigger_poison();
+                    trigger_poison_secondary();
+                    return;
+                }
+            }
+        }
+    }
+}
+
+// Verify .so integrity by checking its size on disk via /proc/self/maps
+#[cfg(all(unix, not(debug_assertions)))]
+#[inline(always)]
+fn check_so_integrity() {
+    const K_SO: u8 = 0x61;
+    const ENC_LIB_NAME: [u8; 16] = xor_bytes(*b"librust_logic.so", K_SO);
+
+    let lib_name = xor_decode(&ENC_LIB_NAME, K_SO);
+    let maps_path = xor_decode(&ENC_PROC_MAPS, K_MAPS);
+
+    if let Some(maps_content) = read_to_string_rustix(&maps_path) {
+        for line in maps_content.lines() {
+            if line.contains(&*lib_name) {
+                // Extract the mapped file path from the maps entry
+                if let Some(path) = line.rsplit_once(' ').map(|(_, p)| p.trim()) {
+                    if !path.is_empty() && path.starts_with('/') {
+                        // Verify the on-disk file is readable and not zero-length
+                        if let Ok(metadata) = std::fs::metadata(path) {
+                            if metadata.len() == 0 {
+                                trigger_poison_accumulate();
+                            }
+                        } else {
+                            // File missing from disk — possible tampering
+                            trigger_poison_accumulate();
+                        }
+                        return;
+                    }
+                }
+            }
+        }
+    }
+}
+
+// Simple LCG pseudo-random for sleep jitter (avoids pulling in rand for the monitor thread)
+#[cfg(not(debug_assertions))]
+#[inline(always)]
+fn lcg_rand(state: &mut u64) -> u64 {
+    *state = state.wrapping_mul(6364136223846793005).wrapping_add(1442695040888963407);
+    *state
+}
+
+#[cold]
 pub fn start_security_monitor() {
     #[cfg(not(debug_assertions))]
     thread::spawn(|| {
         let result = panic::catch_unwind(|| {
-            let mut heavy_check_counter = 0;
+            let mut heavy_check_counter: u32 = 0;
+            // Seed the LCG from the current time for non-deterministic intervals
+            let mut rng_state = std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)
+                .unwrap_or_default()
+                .as_nanos() as u64;
 
             loop {
                 check_debugger_present();
                 check_env_injection();
                 check_time_drift();
 
-                if heavy_check_counter >= 12 {
+                // Heavy checks at variable frequency (every 8-16 light iterations)
+                let heavy_threshold = 8 + (lcg_rand(&mut rng_state) % 9) as u32;
+                if heavy_check_counter >= heavy_threshold {
                     check_memory_maps();
                     check_frida_port();
+                    check_frida_extra_ports();
                     check_native_hooks();
+                    #[cfg(unix)]
+                    {
+                        check_proc_fd();
+                        check_so_integrity();
+                    }
                     heavy_check_counter = 0;
                 }
 
                 heavy_check_counter += 1;
-                thread::sleep(Duration::from_secs(5));
+
+                // Randomized sleep interval: 3-8 seconds
+                let sleep_ms = 3000 + (lcg_rand(&mut rng_state) % 5001) as u64;
+                thread::sleep(Duration::from_millis(sleep_ms));
             }
         });
 

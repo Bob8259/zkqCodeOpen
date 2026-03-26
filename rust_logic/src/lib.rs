@@ -27,9 +27,20 @@ pub extern "system" fn JNI_OnLoad(vm: JavaVM, _reserved: *mut c_void) -> jint {
 
     let mut env = vm.get_env().expect("Cannot get JNIEnv");
 
-    // Find your Kotlin class
-    let class_name = "com/coc/zkqcode/nativehelper/RustTools";
-    let class = env.find_class(class_name).expect("Class not found");
+    // Decrypt JNI class path at runtime — plaintext never appears in binary
+    const K_JNI: u8 = 0x3B;
+    const fn xor_bytes_jni<const N: usize>(input: [u8; N], key: u8) -> [u8; N] {
+        let mut out = [0u8; N];
+        let mut i = 0;
+        while i < N {
+            out[i] = input[i] ^ key;
+            i += 1;
+        }
+        out
+    }
+    const ENC_CLASS: [u8; 38] = xor_bytes_jni(*b"com/coc/zkqcode/nativehelper/RustTools", K_JNI);
+    let class_name: String = ENC_CLASS.iter().map(|&b| (b ^ K_JNI) as char).collect();
+    let class = env.find_class(&class_name).expect("Class not found");
 
     // Define method mappings
     let methods = [

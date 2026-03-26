@@ -1,10 +1,12 @@
 use crate::security::anti_debug::G_SECURITY_POISON_FLAG;
-use std::sync::atomic::{Ordering};
+use crate::security::anti_debug::G_SECURITY_POISON_FLAG_2;
+use crate::security::anti_debug::G_SECURITY_POISON_FLAG_3;
+use std::sync::atomic::Ordering;
 
 pub mod multi_colors;
 pub mod multi_colors_raw;
 
-#[inline]
+#[inline(always)]
 pub fn is_color_match(pixel: u32, target_color: u32, threshold: i32) -> bool {
     // pixel (RGBA little endian 0xAABBGGRR)
     // targetColor (Java ARGB: 0xAARRGGBB)
@@ -17,11 +19,21 @@ pub fn is_color_match(pixel: u32, target_color: u32, threshold: i32) -> bool {
     let tg = ((target_color >> 8) & 0xFF) as i32;
     let tb = (target_color & 0xFF) as i32;
 
-    // If poison flag is set, reduce the threshold or shift colors to make it fail
-    let poison_val = G_SECURITY_POISON_FLAG.load(Ordering::SeqCst);
+    // Multiple independent poison checks — no single patch point can disable all
+    let poison1 = G_SECURITY_POISON_FLAG.load(Ordering::SeqCst);
+    let poison2 = G_SECURITY_POISON_FLAG_2.load(Ordering::SeqCst);
+    let poison3 = G_SECURITY_POISON_FLAG_3.load(Ordering::SeqCst);
+
     let mut effective_threshold = threshold;
-    if poison_val != 0 {
-        effective_threshold = 20;
+    if poison1 != 0 {
+        effective_threshold = effective_threshold.min(20);
+    }
+    if poison2 != 0 {
+        effective_threshold = effective_threshold.min(15);
+    }
+    // Delayed trigger — accumulated violations past threshold
+    if poison3 >= 3 {
+        effective_threshold = effective_threshold.min(5);
     }
 
     (pr - tr).abs() <= effective_threshold
@@ -80,7 +92,7 @@ where
     None
 }
 
-#[inline]
+#[inline(always)]
 fn check_offsets<F>(
     x: i32,
     y: i32,
