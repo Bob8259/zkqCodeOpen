@@ -23,12 +23,7 @@ import java.nio.ByteBuffer
 import kotlin.coroutines.resume
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import android.graphics.BitmapFactory
-import com.topjohnwu.superuser.Shell
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import com.coc.zkqcode.core.util.fileactions.LogHelper
-import java.io.File
 
 
 object ScreenCaptureManager {
@@ -289,6 +284,8 @@ object ScreenCaptureManager {
         handlerThread?.quitSafely()
         handlerThread = null
         backgroundHandler = null
+        // Release persistent shell connection
+        ShellScreenCapture.release()
     }
 
     data class CaptureResult(
@@ -464,58 +461,11 @@ object ScreenCaptureManager {
     }
 
     /**
-     * Fallback capture method using root shell `screencap -p`.
-     * Saves PNG to a temp file via LibSU, reads it from the app side, then cleans up.
+     * Fallback capture method delegating to ShellScreenCapture which maintains a
+     * persistent root shell and reads screencap output directly from stdout.
      */
-    private suspend fun captureViaShell(asBitmap: Boolean): Any? = withContext(Dispatchers.IO) {
-        try {
-            val context = appContext ?: return@withContext null
-            val tempFile = File(context.cacheDir, "screencap_temp.png")
-            val tempPath = tempFile.absolutePath
-
-            // Use LibSU root shell to capture screenshot and chmod so app can read it
-            val result = Shell.cmd("screencap -p $tempPath && chmod 644 $tempPath").exec()
-            if (!result.isSuccess) {
-                LogHelper.showDebugInfo("captureViaShell: screencap command failed")
-                return@withContext null
-            }
-
-            if (!tempFile.exists() || tempFile.length() == 0L) {
-                LogHelper.showDebugInfo("captureViaShell: temp file not found or empty")
-                return@withContext null
-            }
-
-            val bitmap = BitmapFactory.decodeFile(tempPath)
-
-            // Clean up temp file (try app-level delete, then root delete as fallback)
-            if (!tempFile.delete() && tempFile.exists()) {
-                Shell.cmd("rm -f $tempPath").exec()
-            }
-
-            if (bitmap == null) {
-                LogHelper.showDebugInfo("captureViaShell: Failed to decode PNG from screencap")
-                return@withContext null
-            }
-
-            if (asBitmap) {
-                return@withContext bitmap
-            }
-
-            // Convert Bitmap to CaptureResult (raw RGBA buffer)
-            val width = bitmap.width
-            val height = bitmap.height
-            val pixelStride = 4  // RGBA_8888
-            val rowStride = width * pixelStride
-            val buffer = ByteBuffer.allocateDirect(height * rowStride)
-            bitmap.copyPixelsToBuffer(buffer)
-            buffer.flip()
-            bitmap.recycle()
-
-            CaptureResult(buffer, width, height, pixelStride, rowStride)
-        } catch (e: Exception) {
-            LogHelper.showDebugInfo("captureViaShell: Shell screencap failed: ${e.message}")
-            null
-        }
+    private suspend fun captureViaShell(asBitmap: Boolean): Any? {
+        return ShellScreenCapture.capture(asBitmap)
     }
 }
 
