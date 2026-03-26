@@ -36,7 +36,7 @@ object ShellScreenCapture {
      */
     private fun ensureConnection() {
         synchronized(connectionLock) {
-            if (process != null && process!!.isAlive) return
+            if (process != null && isProcessAlive(process!!)) return
             closeConnectionLocked()
 
             try {
@@ -86,7 +86,7 @@ object ShellScreenCapture {
     private fun closeConnectionLocked() {
         runCatching { shellStdin?.close() }
         runCatching { shellStdout?.close() }
-        runCatching { process?.destroyForcibly() }
+        runCatching { process?.destroy() }
         process = null
         shellStdin = null
         shellStdout = null
@@ -145,7 +145,7 @@ object ShellScreenCapture {
     /**
      * Capture using `screencap -p` and parse PNG chunks from the stream.
      * PNG structure: 8-byte signature, then chunks until IEND.
-     * Each chunk: 4-byte length (big-endian) + 4-byte type + [length] data + 4-byte CRC.
+     * Each chunk: 4-byte length (big-endian) + 4-byte type + length data + 4-byte CRC.
      */
     private fun captureViaPng(
         stdin: OutputStream,
@@ -208,7 +208,7 @@ object ShellScreenCapture {
             val length = ByteBuffer.wrap(chunkHeader, 0, 4).order(ByteOrder.BIG_ENDIAN).getInt()
             val type = String(chunkHeader, 4, 4, Charsets.US_ASCII)
 
-            if (length < 0 || length > 50_000_000) {
+            if (length !in 0..50_000_000) {
                 throw IOException("PNG chunk '$type' has unreasonable length: $length")
             }
 
@@ -229,6 +229,19 @@ object ShellScreenCapture {
     }
 
     // ======================== Utility ========================
+
+    /**
+     * API 24-compatible check for whether a process is still running.
+     * Uses exitValue() which throws IllegalThreadStateException if the process has not yet terminated.
+     */
+    private fun isProcessAlive(proc: Process): Boolean {
+        return try {
+            proc.exitValue()
+            false
+        } catch (_: IllegalThreadStateException) {
+            true
+        }
+    }
 
     /**
      * Read exactly [size] bytes from [stream], blocking until all bytes are received.
