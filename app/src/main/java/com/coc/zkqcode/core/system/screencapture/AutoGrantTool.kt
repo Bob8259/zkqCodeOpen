@@ -27,13 +27,13 @@ object AutoGrantTool {
             // === Cycle 1: process removal so the system fully forgets our service ===
             Shell.cmd("settings put secure enabled_accessibility_services $strippedList").exec()
             Shell.cmd("settings put secure accessibility_enabled 0").exec()
-            Thread.sleep(300)
+            Thread.sleep(30)
             Shell.cmd("settings put secure accessibility_enabled 1").exec()
-            Thread.sleep(500)
+            Thread.sleep(50)
 
             // === Cycle 2: add our service as a brand-new entry and trigger bind ===
             Shell.cmd("settings put secure accessibility_enabled 0").exec()
-            Thread.sleep(300)
+            Thread.sleep(30)
             val newList = if (strippedList.isEmpty()) SERVICE_PATH else "$strippedList:$SERVICE_PATH"
             Shell.cmd("settings put secure enabled_accessibility_services $newList").exec()
             Shell.cmd("settings put secure accessibility_enabled 1").exec()

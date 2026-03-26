@@ -60,7 +60,7 @@ suspend fun enterMainScreen(isDoubleCheck: Boolean = false): Boolean {
             if (AllTutorials.checkIsInTutorial(mainBaseTutorialElements)) mainBaseTutorialElements++
         }
         // 4. Wait before checking again to save CPU cycles
-        delay(150)
+        delay(1000)
     }
 
     // Return false if the loop finishes without finding the main screen
