@@ -27,7 +27,7 @@ suspend fun findMultiColors(
     bitmap: Bitmap? = null,
     byteBuffer: ScreenCaptureManager.CaptureResult? = null,
     schema: ColorSchema,
-    increment: Int = 5
+    increment: Int = 10
 ): Point? {
     while (!GlobalVars.isPlaying.value) {
         delay(1000)//the user paused the script, then we should also stop

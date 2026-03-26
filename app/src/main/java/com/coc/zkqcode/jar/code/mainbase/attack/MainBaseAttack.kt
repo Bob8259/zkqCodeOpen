@@ -40,7 +40,7 @@ suspend fun mainBaseAttack(): Boolean {
             break
         }
 
-        delay(1000) // Poll every second to avoid busy-waiting
+        delay(500) // Poll every second to avoid busy-waiting
     }
 
     return enterMainScreen()
