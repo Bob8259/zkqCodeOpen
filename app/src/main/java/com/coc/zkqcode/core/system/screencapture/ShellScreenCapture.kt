@@ -1,7 +1,6 @@
 package com.coc.zkqcode.core.system.screencapture
 
 import android.graphics.BitmapFactory
-import com.coc.zkqcode.core.util.fileactions.LogHelper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -50,9 +49,7 @@ object ShellScreenCapture {
                 // Drain any initial output (e.g. Magisk greeting) by sending a marker
                 drainUntilMarker()
 
-                LogHelper.showDebugInfo("ShellScreenCapture: su connection established")
             } catch (e: Exception) {
-                LogHelper.showDebugInfo("ShellScreenCapture: Failed to create su connection: ${e.message}")
                 closeConnectionLocked()
                 throw e
             }
@@ -98,7 +95,6 @@ object ShellScreenCapture {
     fun release() {
         synchronized(connectionLock) {
             closeConnectionLocked()
-            LogHelper.showDebugInfo("ShellScreenCapture: connection released")
         }
     }
 
@@ -113,8 +109,6 @@ object ShellScreenCapture {
     }
 
     private fun captureInternal(asBitmap: Boolean): Any? {
-        val startTime = System.currentTimeMillis()
-
         // Retry once: first attempt may fail if the connection died between captures
         repeat(2) { attempt ->
             try {
@@ -125,14 +119,11 @@ object ShellScreenCapture {
                 val result = captureViaPng(stdin, stdout, asBitmap)
 
                 if (result != null) {
-                    val elapsed = System.currentTimeMillis() - startTime
-                    LogHelper.showDebugInfo("ShellScreenCapture: captured in ${elapsed}ms")
                     return result
                 }
 
                 return null
             } catch (e: Exception) {
-                LogHelper.showDebugInfo("ShellScreenCapture: attempt ${attempt + 1} failed: ${e.message}")
                 synchronized(connectionLock) { closeConnectionLocked() }
                 if (attempt > 0) return null
             }
@@ -158,10 +149,7 @@ object ShellScreenCapture {
         val pngBytes = readPngFromStream(stdout)
 
         val bitmap = BitmapFactory.decodeByteArray(pngBytes, 0, pngBytes.size)
-            ?: run {
-                LogHelper.showDebugInfo("ShellScreenCapture: Failed to decode PNG data (${pngBytes.size} bytes)")
-                return null
-            }
+            ?: return null
 
         if (asBitmap) return bitmap
 
