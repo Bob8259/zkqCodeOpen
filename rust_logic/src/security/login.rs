@@ -11,6 +11,8 @@ use rand::RngCore;
 use std::sync::Mutex;
 use x25519_dalek::{PublicKey, StaticSecret};
 
+use super::keys::SERVER_PUBLIC_KEY_HEX;
+
 lazy_static! {
     static ref SESSION_KEY: Mutex<Option<[u8; 32]>> = Mutex::new(None);
 }
@@ -28,18 +30,14 @@ pub fn encryptLoginPayload(
     mut env: JNIEnv,
     _class: jni::objects::JClass,
     payload: JString,
-    server_public_key_hex: JString,
 ) -> jstring {
     let payload_str: String = env
         .get_string(&payload)
         .expect("Couldn't get payload")
         .into();
-    let server_pub_hex: String = env
-        .get_string(&server_public_key_hex)
-        .expect("Couldn't get server public key")
-        .into();
 
-    let server_pub_bin = match hex::decode(&server_pub_hex) {
+    // Read server public key directly from hardcoded constant
+    let server_pub_bin = match hex::decode(SERVER_PUBLIC_KEY_HEX) {
         Ok(bin) => bin,
         Err(_) => {
             return env
@@ -137,7 +135,6 @@ pub fn decryptLoginResponse(
             .unwrap()
             .into_raw();
     }
-
 
     let nonce_bin = match hex::decode(nonce_hex) {
         Ok(bin) => bin,

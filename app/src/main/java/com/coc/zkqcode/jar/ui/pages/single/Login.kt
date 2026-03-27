@@ -89,7 +89,6 @@ fun LoginScreen(onAdFreeClick: () -> Unit = {}) {
     }
     var failTimesCount by remember { mutableIntStateOf(0) }
     var formattedGem by remember { mutableStateOf("") }
-    val serverPublicKey = BuildConfig.SERVER_PUBLIC_KEY
 
     val globalGemCount = GlobalVars.configStates[GLOBAL_SETTINGS.GEM_COUNT.key]!!.value
     LaunchedEffect(globalGemCount) {
@@ -147,7 +146,7 @@ fun LoginScreen(onAdFreeClick: () -> Unit = {}) {
             // 2. Encrypt Payload via Native Layer
             // Returns: "my_public_key,nonce,ciphertext" (comma separated)
             val encryptionResult = try {
-                RustTools.encryptLoginPayload(payload, serverPublicKey)
+                RustTools.encryptLoginPayload(payload)
             } catch (e: Exception) {
                 gemInfo = "准备信息失败: ${e.message}"
                 isLoginButtonEnabled = true
