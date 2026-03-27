@@ -21,6 +21,8 @@ object RustTools {
 
     external fun updateLastTime(newTime: Long)
 
+    external fun getIsAuthPass(): Boolean
+
     external fun createInMemoryDex(data: ByteArray): Int
 
     external fun findMultiColors(
