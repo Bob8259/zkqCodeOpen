@@ -138,6 +138,7 @@ pub fn decryptLoginResponse(
             .into_raw();
     }
 
+
     let nonce_bin = match hex::decode(nonce_hex) {
         Ok(bin) => bin,
         Err(_) => {
