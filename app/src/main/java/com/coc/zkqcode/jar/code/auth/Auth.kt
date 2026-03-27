@@ -21,9 +21,6 @@ import java.net.URLEncoder
 private val authMutex = Mutex()
 private val httpClient = OkHttpClient()
 
-// Keep last_time only in runtime memory. It is never persisted to local config/file.
-private var runtimeLastTime: Long? = null
-
 private fun parseUrlEncoded(raw: String): Map<String, String> {
     if (raw.isBlank()) return emptyMap()
     val result = mutableMapOf<String, String>()
@@ -52,10 +49,8 @@ suspend fun userAuth() {
 
         val baseUrl = BuildConfig.BASE_URL
         val timestamp = System.currentTimeMillis()
-        if (runtimeLastTime == null) {
-            runtimeLastTime = timestamp
-        }
-        val lastTime = runtimeLastTime ?: timestamp
+        // Retrieve last_time from native Rust storage (auto-initializes on first call)
+        val lastTime = RustTools.getLastTime()
 
         val powNonce = try {
             val challengeRequest = Request.Builder().url("${baseUrl}api/pow/challenge").get().build()
@@ -142,7 +137,8 @@ suspend fun userAuth() {
         val newTimestamp = result["timestamp"]?.toLongOrNull()
         when {
             newTimestamp != null -> {
-                runtimeLastTime = newTimestamp
+                // Persist updated timestamp back into native Rust storage
+                RustTools.updateLastTime(newTimestamp)
                 ShowMessage("宝石扣费成功")
             }
 

@@ -17,6 +17,10 @@ object RustTools {
 
     external fun decryptLoginResponse(encryptedResponse: String): String
 
+    external fun getLastTime(): Long
+
+    external fun updateLastTime(newTime: Long)
+
     external fun createInMemoryDex(data: ByteArray): Int
 
     external fun findMultiColors(
