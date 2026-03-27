@@ -122,29 +122,34 @@ suspend fun searchOpponentsAndDeployTroops() {
             delayWithMultiplier(200)
             val res = recognizeResources(true)
 
+            // Cap recognized resource values to their in-game maximums to filter out OCR misreads
+            val cappedGold = res.gold.coerceAtMost(2_000_000)
+            val cappedElixir = res.elixir.coerceAtMost(2_000_000)
+            val cappedDarkElixir = res.darkElixir.coerceAtMost(12_000)
+
             // Incrementally update target resource thresholds using a running average.
             // When restored from memory, the value already encodes past sessions,
             // so weight it as an existing data point (searchTimes) instead of (searchTimes - 1).
             if (isDynamicAdjust) {
                 if (targetGold > 0) {
                     targetGold = if (goldFromMemory) {
-                        (targetGold * searchTimes + res.gold) / (searchTimes + 1)
+                        (targetGold * searchTimes + cappedGold) / (searchTimes + 1)
                     } else {
-                        (targetGold * (searchTimes - 1) + res.gold) / searchTimes
+                        (targetGold * (searchTimes - 1) + cappedGold) / searchTimes
                     }
                 }
                 if (targetElixir > 0) {
                     targetElixir = if (elixirFromMemory) {
-                        (targetElixir * searchTimes + res.elixir) / (searchTimes + 1)
+                        (targetElixir * searchTimes + cappedElixir) / (searchTimes + 1)
                     } else {
-                        (targetElixir * (searchTimes - 1) + res.elixir) / searchTimes
+                        (targetElixir * (searchTimes - 1) + cappedElixir) / searchTimes
                     }
                 }
                 if (targetDarkElixir > 0) {
                     targetDarkElixir = if (darkElixirFromMemory) {
-                        (targetDarkElixir * searchTimes + res.darkElixir) / (searchTimes + 1)
+                        (targetDarkElixir * searchTimes + cappedDarkElixir) / (searchTimes + 1)
                     } else {
-                        (targetDarkElixir * (searchTimes - 1) + res.darkElixir) / searchTimes
+                        (targetDarkElixir * (searchTimes - 1) + cappedDarkElixir) / searchTimes
                     }
                 }
             }
