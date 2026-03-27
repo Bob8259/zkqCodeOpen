@@ -13,7 +13,7 @@ object RustTools {
 
     external fun generateNonce(): String
 
-    external fun encryptLoginPayload(payload: String, serverPublicKeyHex: String): String
+    external fun encryptLoginPayload(payload: String): String
 
     external fun decryptLoginResponse(encryptedResponse: String): String
 

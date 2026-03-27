@@ -61,7 +61,7 @@ pub extern "system" fn JNI_OnLoad(vm: JavaVM, _reserved: *mut c_void) -> jint {
         },
         NativeMethod {
             name: "encryptLoginPayload".into(),
-            sig: "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;".into(),
+            sig: "(Ljava/lang/String;)Ljava/lang/String;".into(),
             fn_ptr: security::login::encryptLoginPayload as *mut c_void,
         },
         NativeMethod {

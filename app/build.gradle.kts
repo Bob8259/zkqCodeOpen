@@ -16,7 +16,6 @@ android {
             localProperties.load(it)
         }
     }
-    val serverPublicKey: String = localProperties.getProperty("SERVER_PUBLIC_KEY") ?: ""
     val baseUrl: String = localProperties.getProperty("BASE_URL") ?: ""
 
     defaultConfig {
@@ -27,7 +26,6 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        buildConfigField("String", "SERVER_PUBLIC_KEY", "\"$serverPublicKey\"")
         buildConfigField("String", "BASE_URL", "\"$baseUrl\"")
     }
 
