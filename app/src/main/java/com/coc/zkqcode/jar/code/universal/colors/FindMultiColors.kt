@@ -6,6 +6,7 @@ import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
+import com.coc.zkqcode.jar.code.auth.userAuth
 import com.coc.zkqcode.jar.code.colorschema.ColorSchema
 import com.coc.zkqcode.nativehelper.RustTools
 import kotlinx.coroutines.delay
@@ -37,6 +38,7 @@ suspend fun findMultiColors(
     val count = findMultiColorsCallCount.addAndGet(increment)
     if (count > 30 * 3000) {
         ShowMessage("准备验证")
+        userAuth()
         // Reset the call counter after triggering verification
         findMultiColorsCallCount.set(0)
     }
@@ -120,7 +122,7 @@ suspend fun findMultiColorsUntil(
     byteBuffer: ScreenCaptureManager.CaptureResult? = null,
     schemas: List<ColorSchema>,
     duration: Int,
-    increment: Int = 5
+    increment: Int = 10
 ): Point? {
     val startTime = System.currentTimeMillis()
     val multiplier = GlobalVars.configStates["delay_multiplier"]?.value?.toFloat()

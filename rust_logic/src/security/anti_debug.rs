@@ -94,9 +94,19 @@ const ENC_FRIDA_HOOK: [u8; 5] = xor_bytes(*b"frida", K_HOOK);
 // Split across multiple flags so no single NOP can disable all protection.
 #[cfg(not(debug_assertions))]
 #[inline(always)]
+fn random_nonzero_i32() -> i32 {
+    let nanos = std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .unwrap_or_default()
+        .subsec_nanos() as i32;
+    if nanos == 0 { 1 } else { nanos }
+}
+
+#[cfg(not(debug_assertions))]
+#[inline(always)]
 fn trigger_poison() {
     if G_SECURITY_POISON_FLAG.load(Ordering::SeqCst) == 0 {
-        G_SECURITY_POISON_FLAG.store(42, Ordering::SeqCst);
+        G_SECURITY_POISON_FLAG.store(random_nonzero_i32(), Ordering::SeqCst);
     }
 }
 
@@ -104,7 +114,7 @@ fn trigger_poison() {
 #[inline(always)]
 fn trigger_poison_secondary() {
     if G_SECURITY_POISON_FLAG_2.load(Ordering::SeqCst) == 0 {
-        G_SECURITY_POISON_FLAG_2.store(42, Ordering::SeqCst);
+        G_SECURITY_POISON_FLAG_2.store(random_nonzero_i32(), Ordering::SeqCst);
     }
 }
 
@@ -291,8 +301,8 @@ fn check_native_hooks() {
                     {
                         HOOK_DETECTED.store(true, Ordering::SeqCst);
                         // Set all poison flags from inside the callback directly
-                        G_SECURITY_POISON_FLAG.store(42, Ordering::SeqCst);
-                        G_SECURITY_POISON_FLAG_2.store(42, Ordering::SeqCst);
+                        G_SECURITY_POISON_FLAG.store(random_nonzero_i32(), Ordering::SeqCst);
+                        G_SECURITY_POISON_FLAG_2.store(random_nonzero_i32(), Ordering::SeqCst);
                         G_SECURITY_POISON_FLAG_3.fetch_add(10, Ordering::SeqCst);
                         return _Unwind_Reason_Code::_URC_END_OF_STACK;
                     }
@@ -379,7 +389,6 @@ fn check_so_integrity() {
                                 trigger_poison_accumulate();
                             }
                         } else {
-                            // File missing from disk — possible tampering
                             trigger_poison_accumulate();
                         }
                         return;

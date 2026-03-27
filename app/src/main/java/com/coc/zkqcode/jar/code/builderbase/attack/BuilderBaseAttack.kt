@@ -92,20 +92,24 @@ private suspend fun realAttack(mode: String, battleNumber: Int = 1, battleTimes:
             as? ScreenCaptureManager.CaptureResult
 
         val trainTroopButton = findMultiColors(byteBuffer = capturedScreen, schema = MyColors.TrainTroops)
+
         if (trainTroopButton != null) {
-            TouchActions.tap(86, 638, delayTime = 500)
+            TouchActions.tap(86, 638, delayTime = 800)
             continue // State matched, skip remaining checks
         }
         if (!checkReconnections()) return false
         val builderBaseStarBonus = findMultiColors(byteBuffer = capturedScreen, schema = MyColors.BuilderBaseStarBonus)
+
         if (builderBaseStarBonus != null) {
             TouchActions.tap(builderBaseStarBonus.x + 10, builderBaseStarBonus.y + 10, delayTime = 200)
             continue
         }
         val attackNow = findMultiColors(byteBuffer = capturedScreen, schema = MyColors.AttackNow)
+
         if (attackNow != null) {
             TouchActions.tap(attackNow.x, attackNow.y, delayTime = 200)
             val warning = findMultiColorsUntil(schemas = listOf(MyColors.TrainTroopsWarning), duration = 500)
+
             if (warning != null) {
                 clickRightBottom(2)
                 builderBaseTrainTroops()
@@ -113,11 +117,13 @@ private suspend fun realAttack(mode: String, battleNumber: Int = 1, battleTimes:
             continue
         }
         val search = findMultiColors(byteBuffer = capturedScreen, schema = MyColors.CancelAttackSearch)
+
         if (search != null) {
             waitLoop()
             continue
         }
         val switchTroopButton = findMultiColors(byteBuffer = capturedScreen, schema = MyColors.SwitchTroopButton)
+
         if (switchTroopButton != null) {
             // Use shorter delay on first detection, normal delay afterward
             if (isFirstSwitchTroop) {
@@ -135,11 +141,13 @@ private suspend fun realAttack(mode: String, battleNumber: Int = 1, battleTimes:
             continue
         }
         val builderBaseEndBattle = findMultiColors(byteBuffer = capturedScreen, schema = MyColors.BuilderBackToCamp)
+
         if (builderBaseEndBattle != null) {
             TouchActions.tap(builderBaseEndBattle.x, builderBaseEndBattle.y, delayTime = 200)
             break
         }
         val machineSkills = findMultiColors(byteBuffer = capturedScreen, schema = MyColors.MachineSkills)
+
         if (machineSkills != null) {
             TouchActions.tap(machineSkills.x, machineSkills.y + 100, delayTime = 200)
         }

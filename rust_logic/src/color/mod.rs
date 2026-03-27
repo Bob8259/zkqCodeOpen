@@ -19,26 +19,9 @@ pub fn is_color_match(pixel: u32, target_color: u32, threshold: i32) -> bool {
     let tg = ((target_color >> 8) & 0xFF) as i32;
     let tb = (target_color & 0xFF) as i32;
 
-    // Multiple independent poison checks — no single patch point can disable all
-    let poison1 = G_SECURITY_POISON_FLAG.load(Ordering::SeqCst);
-    let poison2 = G_SECURITY_POISON_FLAG_2.load(Ordering::SeqCst);
-    let poison3 = G_SECURITY_POISON_FLAG_3.load(Ordering::SeqCst);
-
-    let mut effective_threshold = threshold;
-    if poison1 != 0 {
-        effective_threshold = effective_threshold.min(20);
-    }
-    if poison2 != 0 {
-        effective_threshold = effective_threshold.min(15);
-    }
-    // Delayed trigger — accumulated violations past threshold
-    if poison3 >= 3 {
-        effective_threshold = effective_threshold.min(5);
-    }
-
-    (pr - tr).abs() <= effective_threshold
-        && (pg - tg).abs() <= effective_threshold
-        && (pb - tb).abs() <= effective_threshold
+    (pr - tr).abs() <= threshold
+        && (pg - tg).abs() <= threshold
+        && (pb - tb).abs() <= threshold
 }
 
 pub fn find_multi_colors_internal<F>(
@@ -63,33 +46,57 @@ where
     x2 = x2.min(width - 1);
     y2 = y2.min(height - 1);
 
-    if direction == 1 {
-        // From bottom-right to top-left
-        for y in (y1..=y2).rev() {
-            for x in (x1..=x2).rev() {
-                let pixel = get_pixel(x, y);
-                if is_color_match(pixel, main_color, threshold) {
-                    if check_offsets(x, y, width, height, threshold, offsets_arr, &get_pixel) {
-                        return Some((x, y));
+    // Run the real search (preserves normal execution timing to defeat timing attacks)
+    let real_result = {
+        let mut found: Option<(i32, i32)> = None;
+        if direction == 1 {
+            // From bottom-right to top-left
+            'outer_rev: for y in (y1..=y2).rev() {
+                for x in (x1..=x2).rev() {
+                    let pixel = get_pixel(x, y);
+                    if is_color_match(pixel, main_color, threshold) {
+                        if check_offsets(x, y, width, height, threshold, offsets_arr, &get_pixel) {
+                            found = Some((x, y));
+                            break 'outer_rev;
+                        }
+                    }
+                }
+            }
+        } else {
+            // Default: From top-left to bottom-right (direction 0 or any other)
+            'outer: for y in y1..=y2 {
+                for x in x1..=x2 {
+                    let pixel = get_pixel(x, y);
+                    if is_color_match(pixel, main_color, threshold) {
+                        if check_offsets(x, y, width, height, threshold, offsets_arr, &get_pixel) {
+                            found = Some((x, y));
+                            break 'outer;
+                        }
                     }
                 }
             }
         }
-    } else {
-        // Default: From top-left to bottom-right (direction 0 or any other)
-        for y in y1..=y2 {
-            for x in x1..=x2 {
-                let pixel = get_pixel(x, y);
-                if is_color_match(pixel, main_color, threshold) {
-                    if check_offsets(x, y, width, height, threshold, offsets_arr, &get_pixel) {
-                        return Some((x, y));
-                    }
-                }
-            }
-        }
+        found
+    };
+
+    // Tamper sabotage — discard real result, return deterministic fake position
+    let poison1 = G_SECURITY_POISON_FLAG.load(Ordering::SeqCst);
+    let poison2 = G_SECURITY_POISON_FLAG_2.load(Ordering::SeqCst);
+    let poison3 = G_SECURITY_POISON_FLAG_3.load(Ordering::SeqCst);
+
+    if poison1 != 0 || poison2 != 0 || poison3 >= 3 {
+        let hash = (main_color as i32)
+            .wrapping_mul(31)
+            .wrapping_add(x1.wrapping_mul(17))
+            .wrapping_add(y1.wrapping_mul(13));
+        let range_x = (x2 - x1).max(1);
+        let range_y = (y2 - y1).max(1);
+        let fake_x = x1 + (hash.unsigned_abs() as i32 % range_x);
+        let fake_y = y1 + ((hash.wrapping_mul(7)).unsigned_abs() as i32 % range_y);
+        return Some((fake_x, fake_y));
     }
 
-    None
+    real_result
 }
 
 #[inline(always)]
