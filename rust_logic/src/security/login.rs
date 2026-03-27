@@ -24,7 +24,6 @@ pub fn generateNonce(env: JNIEnv, _class: jni::objects::JClass) -> jstring {
 }
 
 #[allow(non_snake_case)]
-#[cold]
 pub fn encryptLoginPayload(
     mut env: JNIEnv,
     _class: jni::objects::JClass,
@@ -97,7 +96,6 @@ pub fn encryptLoginPayload(
 }
 
 #[allow(non_snake_case)]
-#[cold]
 pub fn decryptLoginResponse(
     mut env: JNIEnv,
     _class: jni::objects::JClass,

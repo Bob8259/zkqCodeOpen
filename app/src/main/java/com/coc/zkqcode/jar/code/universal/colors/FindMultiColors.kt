@@ -36,7 +36,9 @@ suspend fun findMultiColors(
     // Add increment to the call counter 
     val count = findMultiColorsCallCount.addAndGet(increment)
     if (count > 30 * 3000) {
-        ShowMessage("准备验证TODO")
+        ShowMessage("准备验证")
+        // Reset the call counter after triggering verification
+        findMultiColorsCallCount.set(0)
     }
 
     val resultAny = when {

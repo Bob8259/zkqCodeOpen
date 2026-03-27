@@ -9,7 +9,21 @@ import com.coc.zkqcode.core.util.exit.AppExitHelper
 import java.security.MessageDigest
 
 object CheckIntergrity {
-    private const val EXPECTED_SHA256 = "BD:6C:AC:AC:7C:E2:62:63:E5:65:2F:AC:C4:B5:D1:58:FA:4C:98:8E:EE:FF:24:76:BB:25:46:BE:0D:97:1D:AE"
+    // Obfuscated hash storage - XOR encoded to prevent static string extraction
+    private val _d = intArrayOf(
+        24, 120, 72, 90, 12, 40, 27, 127, 73, 90, 8, 89,
+        108, 14, 72, 42, 8, 94, 108, 9, 76, 95, 12, 40,
+        25, 8, 60, 44, 9, 90, 111, 4, 56, 88, 121, 40,
+        99, 4, 70, 92, 8, 46, 28, 122, 76, 45, 122, 93,
+        24, 126, 76, 44, 121, 93, 24, 121, 78, 93, 116, 92,
+        107, 120, 63, 92
+    )
+    private val _k = intArrayOf(0x5A, 0x3C, 0x7E, 0x19, 0x4D, 0x6B)
+
+    // Recover the expected SHA256 hex string at runtime via XOR deobfuscation
+    private fun expectedHash(): String {
+        return _d.mapIndexed { i, v -> (v xor _k[i % _k.size]).toChar() }.joinToString("")
+    }
 
     fun checkAppIntegrity(context: Context) {
         // Only check at release mode
@@ -47,7 +61,7 @@ object CheckIntergrity {
             }
 
             val sha256 = getSHA256(signature)
-            return sha256.equals(EXPECTED_SHA256.replace(":", ""), ignoreCase = true)
+            return sha256.equals(expectedHash(), ignoreCase = true)
         } catch (e: Exception) {
             e.printStackTrace()
             return false
