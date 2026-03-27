@@ -8,10 +8,13 @@ use jni::sys::jstring;
 use jni::JNIEnv;
 use lazy_static::lazy_static;
 use rand::RngCore;
+use std::sync::atomic::Ordering;
 use std::sync::Mutex;
+use std::time::SystemTime;
 use x25519_dalek::{PublicKey, StaticSecret};
 
 use super::keys::SERVER_PUBLIC_KEY_HEX;
+use crate::auth::ad_track::IS_AUTH_PASS;
 
 lazy_static! {
     static ref SESSION_KEY: Mutex<Option<[u8; 32]>> = Mutex::new(None);
@@ -93,6 +96,18 @@ pub fn encryptLoginPayload(
     env.new_string(result).unwrap().into_raw()
 }
 
+// XOR-obfuscated "gem_not_enough" to avoid plain-text exposure in the binary
+const _GNE_KEY: u8 = 0x5A;
+const _GNE_ENC: [u8; 14] = [
+    0x3D, 0x3F, 0x37, 0x05, 0x34, 0x35, 0x2E, 0x05,
+    0x3F, 0x34, 0x35, 0x2F, 0x3D, 0x32,
+];
+
+#[inline(always)]
+fn _decode_gne() -> String {
+    _GNE_ENC.iter().map(|b| (b ^ _GNE_KEY) as char).collect()
+}
+
 #[allow(non_snake_case)]
 pub fn decryptLoginResponse(
     mut env: JNIEnv,
@@ -167,7 +182,21 @@ pub fn decryptLoginResponse(
     cipher.apply_keystream(&mut buffer);
 
     match String::from_utf8(buffer) {
-        Ok(result) => env.new_string(result).unwrap().into_raw(),
+        Ok(result) => {
+            // If the decrypted result is a valid timestamp within 150s of now, mark ad-auth as passed
+            if let Ok(ts) = result.trim().parse::<u64>() {
+                if let Ok(elapsed) = SystemTime::now().duration_since(SystemTime::UNIX_EPOCH) {
+                    let now = elapsed.as_secs();
+                    if now.abs_diff(ts) < 150 {
+                        IS_AUTH_PASS.store(true, Ordering::SeqCst);
+                    }
+                }
+            } else if result.contains(&_decode_gne()) {
+                // Server indicated insufficient gems; revoke auth
+                IS_AUTH_PASS.store(false, Ordering::SeqCst);
+            }
+            env.new_string(result).unwrap().into_raw()
+        }
         Err(_) => env.new_string("Error: Invalid UTF-8").unwrap().into_raw(),
     }
 }
