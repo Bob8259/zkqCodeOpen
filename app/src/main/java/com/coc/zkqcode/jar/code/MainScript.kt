@@ -2,6 +2,7 @@ package com.coc.zkqcode.jar.code
 
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
+import com.coc.zkqcode.jar.code.auth.userAuth
 import com.coc.zkqcode.jar.code.builderbase.playBuilderBase
 import com.coc.zkqcode.jar.code.mainbase.clan.joinClan
 import com.coc.zkqcode.jar.code.universal.buildings.BaseType
@@ -60,7 +61,7 @@ suspend fun runMainScript() {
 
     while (currentCoroutineContext().isActive) {
         // Test code – uncomment to run heartbeat diagnostic
-//        runTestCode()
+        runTestCode()
         // Use labeled block to skip remaining steps on failure
         run stepBlock@{
             if (!writeGameFiles()) {
@@ -125,8 +126,7 @@ private suspend fun findAndActivateAccount(
 
 private suspend fun runTestCode() {
     while (true) {
-        val result = findMultiColors(schema = MyColors.TrainTroops)
-        ShowMessage("TrainTroops: $result")
+        userAuth()
         delay(3000)
     }
 }
