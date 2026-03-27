@@ -75,6 +75,16 @@ pub extern "system" fn JNI_OnLoad(vm: JavaVM, _reserved: *mut c_void) -> jint {
             fn_ptr: dexloader::dex_loader::create_in_memory_dex as *mut c_void,
         },
         NativeMethod {
+            name: "getLastTime".into(),
+            sig: "()J".into(),
+            fn_ptr: auth::last_time::getLastTime as *mut c_void,
+        },
+        NativeMethod {
+            name: "updateLastTime".into(),
+            sig: "(J)V".into(),
+            fn_ptr: auth::last_time::updateLastTime as *mut c_void,
+        },
+        NativeMethod {
             name: "findMultiColors".into(),
             sig: "(Landroid/graphics/Bitmap;IIIIII[III)[I".into(),
             fn_ptr: color::multi_colors::find_multi_colors as *mut c_void,

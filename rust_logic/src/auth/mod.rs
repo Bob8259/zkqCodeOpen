@@ -1,3 +1,5 @@
+pub mod last_time;
+
 use crate::security::anti_debug::G_SECURITY_POISON_FLAG;
 use crate::security::anti_debug::G_SECURITY_POISON_FLAG_2;
 use std::sync::atomic::{AtomicI32, Ordering};
