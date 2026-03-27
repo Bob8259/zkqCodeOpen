@@ -57,7 +57,7 @@ import kotlinx.coroutines.withContext
 
 
 @Suppress("KotlinUnreachableCode")
-private suspend fun solvePoW(nonce: String): String = withContext(Dispatchers.Default) {
+suspend fun solvePoW(nonce: String): String = withContext(Dispatchers.Default) {
     var salt = 0
     val md = MessageDigest.getInstance("SHA-256")
     while (true) {
