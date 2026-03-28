@@ -7,6 +7,7 @@ use std::net::TcpStream;
 #[cfg(not(debug_assertions))]
 use std::panic;
 use std::sync::atomic::AtomicI32;
+use std::sync::atomic::AtomicI64;
 #[cfg(not(debug_assertions))]
 use std::sync::atomic::Ordering;
 #[cfg(not(debug_assertions))]
@@ -14,11 +15,18 @@ use std::thread;
 #[cfg(not(debug_assertions))]
 use std::time::Duration;
 
+#[cfg(not(debug_assertions))]
+use crate::auth::last_time::mono_millis;
+
 pub static G_SECURITY_POISON_FLAG: AtomicI32 = AtomicI32::new(0);
 // Secondary poison flag — set by a different subset of detections
 pub static G_SECURITY_POISON_FLAG_2: AtomicI32 = AtomicI32::new(0);
 // Tertiary poison flag — accumulates violation counts, triggers after threshold
 pub static G_SECURITY_POISON_FLAG_3: AtomicI32 = AtomicI32::new(0);
+
+// Monotonic heartbeat updated every iteration of the security monitor thread.
+// External code can compare this against the current time to detect thread death.
+pub static MONITOR_HEARTBEAT: AtomicI64 = AtomicI64::new(0);
 
 // Compile-time XOR encoder — plaintext is evaluated at compile time only,
 // the original bytes never appear in the output binary
@@ -408,10 +416,10 @@ fn check_auth_call_frequency() {
     if !crate::auth::ad_track::is_auth_pass() {
         return;
     }
-    let ts = crate::auth::last_time::last_get_call_ts();
+    let ts = crate::auth::last_time::last_get_call_mono_ts();
     if ts == 0 {
         // First check after auth passed — seed the monotonic timer
-        crate::auth::last_time::try_init_get_call_ts();
+        crate::auth::last_time::try_init_get_call_mono_ts();
         return;
     }
     let now = crate::auth::last_time::mono_millis();
@@ -435,46 +443,57 @@ fn lcg_rand(state: &mut u64) -> u64 {
 pub fn start_security_monitor() {
     #[cfg(not(debug_assertions))]
     thread::spawn(|| {
-        let result = panic::catch_unwind(|| {
-            let mut heavy_check_counter: u32 = 0;
-            // Seed the LCG from the current time for non-deterministic intervals
-            let mut rng_state = std::time::SystemTime::now()
-                .duration_since(std::time::UNIX_EPOCH)
-                .unwrap_or_default()
-                .as_nanos() as u64;
+        // Outer restart loop — if the inner catch_unwind ever exits, restart immediately
+        loop {
+            let _ = panic::catch_unwind(|| {
+                let mut heavy_check_counter: u32 = 0;
+                // Seed the LCG from the current time for non-deterministic intervals
+                let mut rng_state = std::time::SystemTime::now()
+                    .duration_since(std::time::UNIX_EPOCH)
+                    .unwrap_or_default()
+                    .as_nanos() as u64;
 
-            loop {
-                check_debugger_present();
-                check_env_injection();
-                check_time_drift();
+                // Set initial heartbeat to prove the monitor has started
+                MONITOR_HEARTBEAT.store(mono_millis(), Ordering::SeqCst);
 
-                // Heavy checks at variable frequency (every 8-16 light iterations)
-                let heavy_threshold = 8 + (lcg_rand(&mut rng_state) % 9) as u32;
-                if heavy_check_counter >= heavy_threshold {
-                    check_memory_maps();
-                    check_frida_port();
-                    check_frida_extra_ports();
-                    check_native_hooks();
-                    check_auth_call_frequency();
-                    // Verify ads are being displayed at the required frequency
-                    crate::auth::ad_track::check_ad_display_frequency();
-                    #[cfg(unix)]
-                    {
-                        check_proc_fd();
-                        check_so_integrity();
+                loop {
+                    // Wrap each check individually so a panic in one doesn't skip the rest
+                    let _ = panic::catch_unwind(|| check_debugger_present());
+                    let _ = panic::catch_unwind(|| check_env_injection());
+                    let _ = panic::catch_unwind(|| check_time_drift());
+
+                    // Heavy checks at variable frequency (every 8-16 light iterations)
+                    let heavy_threshold = 8 + (lcg_rand(&mut rng_state) % 9) as u32;
+                    if heavy_check_counter >= heavy_threshold {
+                        let _ = panic::catch_unwind(|| check_memory_maps());
+                        let _ = panic::catch_unwind(|| check_frida_port());
+                        let _ = panic::catch_unwind(|| check_frida_extra_ports());
+                        let _ = panic::catch_unwind(|| check_native_hooks());
+                        let _ = panic::catch_unwind(|| check_auth_call_frequency());
+                        let _ = panic::catch_unwind(|| {
+                            crate::auth::ad_track::check_ad_display_frequency();
+                        });
+                        #[cfg(unix)]
+                        {
+                            let _ = panic::catch_unwind(|| check_proc_fd());
+                            let _ = panic::catch_unwind(|| check_so_integrity());
+                        }
+                        heavy_check_counter = 0;
                     }
-                    heavy_check_counter = 0;
+
+                    heavy_check_counter += 1;
+
+                    // Update heartbeat — proves this thread is still alive
+                    MONITOR_HEARTBEAT.store(mono_millis(), Ordering::SeqCst);
+
+                    // Randomized sleep interval: 3-8 seconds
+                    let sleep_ms = 3000 + (lcg_rand(&mut rng_state) % 5001) as u64;
+                    thread::sleep(Duration::from_millis(sleep_ms));
                 }
-
-                heavy_check_counter += 1;
-
-                // Randomized sleep interval: 3-8 seconds
-                let sleep_ms = 3000 + (lcg_rand(&mut rng_state) % 5001) as u64;
-                thread::sleep(Duration::from_millis(sleep_ms));
-            }
-        });
-
-        if let Err(_e) = result {}
+            });
+            // Outer catch_unwind caught a panic — restart after a short delay
+            thread::sleep(Duration::from_millis(1000));
+        }
     });
 
     #[cfg(debug_assertions)]

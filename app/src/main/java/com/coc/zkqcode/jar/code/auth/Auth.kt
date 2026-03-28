@@ -17,6 +17,10 @@ import org.json.JSONObject
 import com.coc.zkqcode.jar.ui.pages.single.solvePoW
 import java.net.URLDecoder
 import java.net.URLEncoder
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+import java.util.TimeZone
 
 private val authMutex = Mutex()
 private val httpClient = OkHttpClient()
@@ -59,6 +63,13 @@ suspend fun userAuth() {
         val timestamp = System.currentTimeMillis()
         // Retrieve last_time from native Rust storage (auto-initializes on first call)
         val lastTime = RustTools.getLastTime()
+
+        // Format timestamps to UTC+8 human-readable time for debugging
+        val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).apply {
+            timeZone = TimeZone.getTimeZone("GMT+8")
+        }
+        ShowMessage("timestamp: $timestamp -> ${sdf.format(Date(timestamp))}")
+        ShowMessage("last_time: $lastTime -> ${sdf.format(Date(lastTime))}")
 
         val powNonce = try {
             val challengeRequest = Request.Builder().url("${baseUrl}api/pow/challenge").get().build()

@@ -20,21 +20,38 @@ pub fn mono_millis() -> i64 {
     MONO_ANCHOR.get_or_init(Instant::now).elapsed().as_millis() as i64
 }
 
-/// Tracks the monotonic timestamp of the most recent `getLastTime` JNI invocation.
+/// Stores the server-provided timestamp (epoch millis) received during login.
 static LAST_GET_CALL_TS: AtomicI64 = AtomicI64::new(0);
 
-/// Returns the monotonic timestamp of the last `getLastTime` call, or 0 if never called.
+/// Returns the server timestamp stored in `LAST_GET_CALL_TS`, or 0 if not yet set.
 #[inline(always)]
 pub fn last_get_call_ts() -> i64 {
     LAST_GET_CALL_TS.load(Ordering::SeqCst)
 }
 
-/// Atomically seeds `LAST_GET_CALL_TS` to the current monotonic time only when still 0.
-/// Used by the security monitor to start the 6-hour countdown without racing a real call.
+/// Writes the server-provided timestamp into `LAST_GET_CALL_TS`.
 #[inline(always)]
-pub fn try_init_get_call_ts() {
+pub fn set_last_get_call_ts(ts: i64) {
+    LAST_GET_CALL_TS.store(ts, Ordering::SeqCst);
+}
+
+// ── Monotonic tracking for auth-call-frequency guard ──
+
+/// Tracks the monotonic timestamp of the most recent `getLastTime` JNI invocation.
+static LAST_GET_CALL_MONO_TS: AtomicI64 = AtomicI64::new(0);
+
+/// Returns the monotonic timestamp of the last `getLastTime` call, or 0 if never called.
+#[inline(always)]
+pub fn last_get_call_mono_ts() -> i64 {
+    LAST_GET_CALL_MONO_TS.load(Ordering::SeqCst)
+}
+
+/// Atomically seeds `LAST_GET_CALL_MONO_TS` to the current monotonic time only when still 0.
+/// Used by the security monitor to start the frequency countdown without racing a real call.
+#[inline(always)]
+pub fn try_init_get_call_mono_ts() {
     let now = mono_millis();
-    let _ = LAST_GET_CALL_TS.compare_exchange(0, now, Ordering::SeqCst, Ordering::SeqCst);
+    let _ = LAST_GET_CALL_MONO_TS.compare_exchange(0, now, Ordering::SeqCst, Ordering::SeqCst);
 }
 
 /// Returns the current system time in milliseconds since UNIX epoch.
@@ -74,8 +91,14 @@ pub fn set_last_time(new_time: i64) {
 #[allow(non_snake_case)]
 pub fn getLastTime(_env: JNIEnv, _class: jni::objects::JClass) -> jlong {
     // Record monotonic invocation time for auth-call-frequency guard
-    LAST_GET_CALL_TS.store(mono_millis(), Ordering::SeqCst);
-    get_or_init_last_time()
+    LAST_GET_CALL_MONO_TS.store(mono_millis(), Ordering::SeqCst);
+    // Return server timestamp if available, otherwise fall back to local init
+    let server_ts = LAST_GET_CALL_TS.load(Ordering::SeqCst);
+    if server_ts != 0 {
+        server_ts
+    } else {
+        get_or_init_last_time()
+    }
 }
 
 #[inline(always)]
