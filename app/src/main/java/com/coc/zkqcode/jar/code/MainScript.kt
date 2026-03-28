@@ -62,7 +62,7 @@ suspend fun runMainScript() {
     }
 
     while (currentCoroutineContext().isActive) {
-        runTestCode()
+//        runTestCode()
 
         displayAds()
         // Use labeled block to skip remaining steps on failure
