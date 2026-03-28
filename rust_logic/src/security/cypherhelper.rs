@@ -8,26 +8,31 @@ use jni::JNIEnv;
 use rand::RngCore;
 use x25519_dalek::{PublicKey, StaticSecret};
 
-use super::keys::{KEY_MASK, OBFUSCATED_KEY};
+use super::keys::key;
 
-// You need to create a file at the same level as cypherhelper.rs, and add your own musk and key. They should look like this:
-// pub const KEY_MASK: [u8; 32] = [
-//     0x5F, 0x2A, 0xC1, 0x8E, 0x3D, 0x72, 0x1B, 0x94, 0x66, 0xD0, 0xE9, 0x4A, 0x2B, 0x8C, 0xF7, 0x31,
-//     0xA5, 0x6E, 0x92, 0x13, 0xBD, 0x4F, 0x08, 0x7C, 0x63, 0xDA, 0xE1, 0x25, 0xB8, 0x97, 0x40, 0x3D,
-// ];
+//You need to create a key.rs at the same level as this file and add the following code:
 
-// pub const OBFUSCATED_KEY: [u8; 32] = [
-//     0x82, 0xEF, 0x34, 0x1C, 0x9B, 0x56, 0xAD, 0x70, 0x24, 0x68, 0xDF, 0x11, 0x43, 0xEA, 0xB2, 0x95,
-//     0x0D, 0x77, 0x5C, 0x8F, 0x21, 0x3E, 0x6A, 0xCC, 0xF9, 0x1A, 0x48, 0xBD, 0x73, 0x0E, 0x55, 0x86,
-// ];
-// These are used to compute the server's public key. You can create your own key pairs and musk them, them place it here.
+// use obfstr::obfstr;
 
+//  ChaCha20 encryption key (hex-encoded), obfuscated at compile time
+// #[inline(always)]
+// pub fn key() -> String {
+//     obfstr!("758xxxxx Your Own ChaCha20 Key").to_string()
+// }
+
+// Server public key for login encryption (X25519), obfuscated at compile time
+// #[inline(always)]
+// pub fn server_public_key_hex() -> String {
+//     obfstr!("aacxxxx Your Own Server Public Key").to_string()
+// }
+
+
+// Decode the hex-encoded ChaCha20 key at runtime
 #[inline(always)]
 fn get_runtime_key() -> [u8; 32] {
+    let decoded = hex::decode(key()).expect("Invalid hex in KEY");
     let mut key = [0u8; 32];
-    for i in 0..32 {
-        key[i] = KEY_MASK[i] ^ OBFUSCATED_KEY[i];
-    }
+    key.copy_from_slice(&decoded);
     key
 }
 

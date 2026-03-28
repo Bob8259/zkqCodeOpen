@@ -13,7 +13,7 @@ use std::sync::Mutex;
 use std::time::SystemTime;
 use x25519_dalek::{PublicKey, StaticSecret};
 
-use super::keys::SERVER_PUBLIC_KEY_HEX;
+use super::keys::server_public_key_hex;
 use crate::auth::ad_track::IS_AUTH_PASS;
 
 lazy_static! {
@@ -40,7 +40,7 @@ pub fn encryptLoginPayload(
         .into();
 
     // Read server public key directly from hardcoded constant
-    let server_pub_bin = match hex::decode(SERVER_PUBLIC_KEY_HEX) {
+    let server_pub_bin = match hex::decode(server_public_key_hex()) {
         Ok(bin) => bin,
         Err(_) => {
             return env
