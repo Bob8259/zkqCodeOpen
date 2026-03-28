@@ -100,8 +100,10 @@ fun HomeScreen(
             lazyListState.animateScrollToItem(lazyListState.layoutInfo.totalItemsCount - 1)
         }
     }
-    val saveAndRun = {
+    // Save configs and explicitly set the playing state before closing the config window
+    val saveAndSetPlaying: (Boolean) -> Unit = { play ->
         scope.launch {
+            GlobalVars.isPlaying.value = play
             ConfigManager.saveAndRun {
                 onSaveSuccess()
             }
@@ -146,7 +148,7 @@ fun HomeScreen(
             delay(1000L)
             GlobalVars.autoRunTimer--
             if (GlobalVars.autoRunTimer <= 0) {
-                saveAndRun()
+                saveAndSetPlaying(true)
             }
         }
     }
@@ -200,8 +202,7 @@ fun HomeScreen(
                             }
                             LoginScreen(
                                 onAdFreeClick = {
-                                    GlobalVars.isPlaying.value = false
-                                    saveAndRun()
+                                    saveAndSetPlaying(false)
                                 })
                         }
                         SettingSection {
@@ -309,7 +310,11 @@ fun HomeScreen(
             Row {
                 CustomButton(
                     text = "保存并运行", onClick = {
-                        saveAndRun()
+                        saveAndSetPlaying(true)
+                    })
+                CustomButton(
+                    text = "保存并暂停", onClick = {
+                        saveAndSetPlaying(false)
                     })
                 CustomButton(
                     text = "保存并退出", onClick = {
