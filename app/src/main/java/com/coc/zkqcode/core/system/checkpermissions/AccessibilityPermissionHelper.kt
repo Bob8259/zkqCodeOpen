@@ -17,7 +17,6 @@ object AccessibilityPermissionHelper {
             } else {
                 "$currentServices:$serviceComponent"
             }
-            LogHelper.showDebugInfo("settings put secure enabled_accessibility_services $newServices")
             // 3. 写入新的服务列表
             Shell.cmd("settings put secure enabled_accessibility_services $newServices").exec()
         }

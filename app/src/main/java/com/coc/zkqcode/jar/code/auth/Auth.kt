@@ -46,7 +46,7 @@ suspend fun userAuth() {
             GlobalVars.isShowAd = true
             return
         }
-
+        ShowMessage("准备连接服务器")
         val email = GlobalVars.configStates[GLOBAL_SETTINGS.EMAIL.key]?.value.orEmpty()
         val password = GlobalVars.configStates[GLOBAL_SETTINGS.PASSWORD.key]?.value.orEmpty()
         if (email.isBlank() || password.isBlank()) {
