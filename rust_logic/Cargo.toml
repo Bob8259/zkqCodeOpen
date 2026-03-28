@@ -19,6 +19,7 @@ rand = "0.8"
 lazy_static = "1.4"
 libc = "0.2"
 rustix = { version = "0.38", features = ["fs"] }
+obfstr = "0.4"
 
 [profile.release]
 opt-level = "z"      # 针对体积进行极限优化 (类似于 -Oz)
