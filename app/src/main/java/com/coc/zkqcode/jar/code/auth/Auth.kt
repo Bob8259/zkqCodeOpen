@@ -86,9 +86,9 @@ suspend fun userAuth() {
         }
 
         val payload = "email=${urlEncode(email)}" +
-            "&password=${urlEncode(password)}" +
-            "&timestamp=$timestamp" +
-            "&last_time=$lastTime"
+                "&password=${urlEncode(password)}" +
+                "&timestamp=$timestamp" +
+                "&last_time=$lastTime"
 
         val encryptionParts = try {
             RustTools.encryptLoginPayload(payload).split(",", limit = 3)
@@ -104,10 +104,10 @@ suspend fun userAuth() {
         }
 
         val postData = "public_key=${encryptionParts[0]}" +
-            "&nonce=${encryptionParts[1]}" +
-            "&data=${encryptionParts[2]}" +
-            "&pow_nonce=$powNonce" +
-            "&pow_salt=$powSalt"
+                "&nonce=${encryptionParts[1]}" +
+                "&data=${encryptionParts[2]}" +
+                "&pow_nonce=$powNonce" +
+                "&pow_salt=$powSalt"
 
         val responseCode: Int
         val responseBody: String
@@ -155,7 +155,7 @@ suspend fun userAuth() {
             newTimestamp != null -> {
                 // Persist updated timestamp back into native Rust storage
                 RustTools.updateLastTime(newTimestamp)
-                ShowMessage("宝石扣费成功")
+                GlobalVars.isShowAd = false
             }
 
             result["msg"] == "gem_not_enough" -> {
