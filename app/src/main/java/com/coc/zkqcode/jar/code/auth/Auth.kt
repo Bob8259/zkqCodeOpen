@@ -40,10 +40,18 @@ private fun urlEncode(value: String): String {
 
 suspend fun userAuth() {
     authMutex.withLock {
+        // Early exit if gem_count is insufficient
+        val gemCount = GlobalVars.configStates["gem_count"]?.value?.toDoubleOrNull() ?: 0.0
+        if (gemCount <= 0.00001) {
+            GlobalVars.isShowAd = true
+            return
+        }
+
         val email = GlobalVars.configStates[GLOBAL_SETTINGS.EMAIL.key]?.value.orEmpty()
         val password = GlobalVars.configStates[GLOBAL_SETTINGS.PASSWORD.key]?.value.orEmpty()
         if (email.isBlank() || password.isBlank()) {
-            ShowMessage("请先填写邮箱和密码")
+            // Flag ad display on missing credentials
+            GlobalVars.isShowAd = true
             return
         }
 
@@ -64,14 +72,16 @@ suspend fun userAuth() {
             }
             JSONObject(challengeResponse).getString("nonce")
         } catch (e: Exception) {
-            ShowMessage("获取PoW失败: ${e.message}")
+            // Flag ad display on PoW challenge failure
+            GlobalVars.isShowAd = true
             return
         }
 
         val powSalt = try {
             solvePoW(powNonce)
         } catch (e: Exception) {
-            ShowMessage("PoW计算失败: ${e.message}")
+            // Flag ad display on PoW solve failure
+            GlobalVars.isShowAd = true
             return
         }
 
@@ -83,11 +93,13 @@ suspend fun userAuth() {
         val encryptionParts = try {
             RustTools.encryptLoginPayload(payload).split(",", limit = 3)
         } catch (e: Exception) {
-            ShowMessage("请求加密失败: ${e.message}")
+            // Flag ad display on encryption failure
+            GlobalVars.isShowAd = true
             return
         }
         if (encryptionParts.size != 3) {
-            ShowMessage("请求加密结果异常")
+            // Flag ad display on abnormal encryption result
+            GlobalVars.isShowAd = true
             return
         }
 
@@ -113,23 +125,27 @@ suspend fun userAuth() {
                 responseBody = it.body.string()
             }
         } catch (e: Exception) {
-            ShowMessage("扣费请求失败: ${e.message}")
+            // Flag ad display on deduct request failure
+            GlobalVars.isShowAd = true
             return
         }
 
         if (responseCode != 200) {
-            ShowMessage("扣费失败($responseCode): $responseBody")
+            // Flag ad display on non-200 deduct response
+            GlobalVars.isShowAd = true
             return
         }
 
         val decrypted = try {
             RustTools.decryptLoginResponse(responseBody)
         } catch (e: Exception) {
-            ShowMessage("响应解密失败: ${e.message}")
+            // Flag ad display on response decryption failure
+            GlobalVars.isShowAd = true
             return
         }
         if (decrypted.startsWith("Error")) {
-            ShowMessage("响应解密失败: $decrypted")
+            // Flag ad display on decrypted error response
+            GlobalVars.isShowAd = true
             return
         }
 
@@ -143,11 +159,16 @@ suspend fun userAuth() {
             }
 
             result["msg"] == "gem_not_enough" -> {
-                ShowMessage("宝石不足，无法继续扣费")
+                // Reset gem_count to zero in config file and UI state
+                GlobalVars.serverActions?.writeToConfigFile("gem_count", "0")
+                GlobalVars.configStates["gem_count"]?.value = "0"
+                // Flag ad display on insufficient gems
+                GlobalVars.isShowAd = true
             }
 
             else -> {
-                ShowMessage("扣费响应无法解析: $decrypted")
+                // Flag ad display on unparseable deduct response
+                GlobalVars.isShowAd = true
             }
         }
     }
