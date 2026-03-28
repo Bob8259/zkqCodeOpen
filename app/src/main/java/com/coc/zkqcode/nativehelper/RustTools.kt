@@ -25,7 +25,9 @@ object RustTools {
 
     external fun revokeAuthPass()
 
-    external fun resetLastAdDisplayTs()
+    external fun markAdStart()
+
+    external fun markAdEnd()
 
     external fun createInMemoryDex(data: ByteArray): Int
 
