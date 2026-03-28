@@ -21,8 +21,13 @@ object ShowMessage {
             return//the user paused the script, then we should also stop
         }
         val now = System.currentTimeMillis()
-        // If message is the same, and it hasn't been long since last show, ignore it to save Binder IPC
-        if (text == lastMessage && (now - lastShowTime) < 500) {
+        val elapsed = now - lastShowTime
+        // Global throttle: skip any message within 200ms to reduce resource cost
+        if (elapsed < 200) {
+            return
+        }
+        // Dedup: skip identical messages within 500ms
+        if (text == lastMessage && elapsed < 500) {
             return
         }
 

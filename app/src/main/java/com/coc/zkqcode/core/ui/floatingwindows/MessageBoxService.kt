@@ -35,9 +35,40 @@ import androidx.savedstate.SavedStateRegistryController
 import androidx.savedstate.SavedStateRegistryOwner
 import androidx.savedstate.setViewTreeSavedStateRegistryOwner
 import timber.log.Timber
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.launch
+import java.util.concurrent.atomic.AtomicBoolean
+
+// Lightweight message payload for in-process delivery via SharedFlow
+data class MessageData(
+    val text: String,
+    val x: Int,
+    val y: Int,
+    val fontSize: Float,
+    val duration: Long
+)
 
 class MessageBoxService : Service(), LifecycleOwner, SavedStateRegistryOwner {
+
+    companion object {
+        private const val INACTIVITY_TIMEOUT_MS = 2500L
+
+        // Flag to let MessageBoxHelper bypass Binder IPC when the service is alive
+        val isRunning = AtomicBoolean(false)
+
+        // In-process message channel; extraBufferCapacity ensures tryEmit() never fails
+        val messageFlow = MutableSharedFlow<MessageData>(
+            extraBufferCapacity = 1,
+            onBufferOverflow = BufferOverflow.DROP_OLDEST
+        )
+    }
 
     private lateinit var windowManager: WindowManager
     private var composeView: ComposeView? = null
@@ -50,6 +81,9 @@ class MessageBoxService : Service(), LifecycleOwner, SavedStateRegistryOwner {
     private val savedStateRegistryController = SavedStateRegistryController.create(this)
     override val savedStateRegistry: SavedStateRegistry =
         savedStateRegistryController.savedStateRegistry
+
+    private val serviceScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
+    private var inactivityJob: Job? = null
 
     private var messageX by mutableIntStateOf(1280)
     private var messageY by mutableIntStateOf(720)
@@ -69,10 +103,40 @@ class MessageBoxService : Service(), LifecycleOwner, SavedStateRegistryOwner {
         savedStateRegistryController.performRestore(null)
         lifecycleRegistry.currentState = Lifecycle.State.CREATED
         windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
+        isRunning.set(true)
+
+        // Collect in-process messages delivered via SharedFlow (bypasses Binder IPC)
+        serviceScope.launch {
+            messageFlow.collect { msg ->
+                applyMessage(msg)
+            }
+        }
+
         try {
             showWindow()
         } catch (e: Exception) {
             Timber.e(e, "MessageBoxService: showWindow() failed")
+        }
+    }
+
+    // Apply message data to Compose state and reset the inactivity timer
+    private fun applyMessage(msg: MessageData) {
+        messageText = msg.text
+        messageX = msg.x
+        messageY = msg.y
+        messageFontSize = msg.fontSize.sp
+        messageDuration = msg.duration
+        isVisible = true
+        showTrigger++
+        resetInactivityTimer()
+    }
+
+    // Cancel and restart the inactivity timer; service stops after INACTIVITY_TIMEOUT_MS of silence
+    private fun resetInactivityTimer() {
+        inactivityJob?.cancel()
+        inactivityJob = serviceScope.launch {
+            delay(INACTIVITY_TIMEOUT_MS)
+            stopSelf()
         }
     }
 
@@ -119,7 +183,7 @@ class MessageBoxService : Service(), LifecycleOwner, SavedStateRegistryOwner {
             if (isVisible) {
                 delay(messageDuration)
                 isVisible = false
-                stopSelf()
+                // Service stays alive; inactivity timer handles shutdown
             }
         }
 
@@ -166,25 +230,19 @@ class MessageBoxService : Service(), LifecycleOwner, SavedStateRegistryOwner {
         updateForegroundRecord()
         lifecycleRegistry.currentState = Lifecycle.State.STARTED
 
+        // Handle cold-start messages delivered via Intent
         intent?.let {
             val text = it.getStringExtra("text") ?: ""
             if (text.isNotEmpty()) {
-                messageText = text
-
-                // Defaults
-                val x = it.getIntExtra("x", 1280)
-                val y = it.getIntExtra("y", 720)
-                val size = it.getFloatExtra("fontSize", 15f) // passed as float sp value
-                val duration = it.getLongExtra("duration", 2000L)
-
-                messageX = x
-                messageY = y
-                messageFontSize = size.sp
-                messageDuration = duration
-
-                isVisible = true
-                showTrigger++
-
+                applyMessage(
+                    MessageData(
+                        text = text,
+                        x = it.getIntExtra("x", 1280),
+                        y = it.getIntExtra("y", 720),
+                        fontSize = it.getFloatExtra("fontSize", 15f),
+                        duration = it.getLongExtra("duration", 2000L)
+                    )
+                )
             }
         }
 
@@ -218,6 +276,8 @@ class MessageBoxService : Service(), LifecycleOwner, SavedStateRegistryOwner {
 
     override fun onDestroy() {
         super.onDestroy()
+        isRunning.set(false)
+        serviceScope.cancel()
         lifecycleRegistry.currentState = Lifecycle.State.DESTROYED
         if (composeView != null) {
             try {

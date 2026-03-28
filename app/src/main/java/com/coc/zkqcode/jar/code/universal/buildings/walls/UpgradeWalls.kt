@@ -26,7 +26,6 @@ suspend fun upgradeWalls(currentBase: BaseType): Boolean {
     val workerNumber = WorkerAndResearch.detectWorkerNumber(currentBase)
 
     if (workerNumber.available < 1 || workerNumber.total < 1) {
-        ShowMessage("检测到工人数量${workerNumber.available}/${workerNumber.total}")
         return true
     }
     // Use the appropriate threshold key based on the current base type

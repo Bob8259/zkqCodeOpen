@@ -62,7 +62,7 @@ suspend fun runMainScript() {
     }
 
     while (currentCoroutineContext().isActive) {
-//        runTestCode()
+//       runTestCode()
 
         displayAds()
         // Use labeled block to skip remaining steps on failure
@@ -129,8 +129,8 @@ private suspend fun findAndActivateAccount(
 
 private suspend fun runTestCode() {
     while (true) {
-        userAuth()
-        delay(30000)
+        ShowMessage("A long sentence to test. A long sentence to test.\nA long sentence to test. A long sentence to test.")
+        delay(8000)
     }
 }
 
