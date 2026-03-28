@@ -13,17 +13,29 @@ object MessageBoxHelper {
         fontSize: Float = 9f,
         duration: Long = 2500L
     ) {
-        // 3. Get screen dimensions
         val displayMetrics = context.resources.displayMetrics
-
-        // 4. Use the Elvis operator (?:). If x is null, use widthPixels.
         val finalX = x ?: displayMetrics.widthPixels
         val finalY = y ?: displayMetrics.heightPixels
 
+        // Fast path: deliver directly via SharedFlow when the service is already running
+        if (MessageBoxService.isRunning.get()) {
+            MessageBoxService.messageFlow.tryEmit(
+                MessageData(
+                    text = text,
+                    x = finalX,
+                    y = finalY,
+                    fontSize = fontSize,
+                    duration = duration
+                )
+            )
+            return
+        }
+
+        // Cold start: use Intent to bootstrap the foreground service
         val intent = Intent(context, MessageBoxService::class.java).apply {
             putExtra("text", text)
-            putExtra("x", finalX) // Pass the calculated value
-            putExtra("y", finalY) // Pass the calculated value
+            putExtra("x", finalX)
+            putExtra("y", finalY)
             putExtra("fontSize", fontSize)
             putExtra("duration", duration)
         }
