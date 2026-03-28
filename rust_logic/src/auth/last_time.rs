@@ -5,6 +5,8 @@ use std::time::{Instant, SystemTime, UNIX_EPOCH};
 use jni::sys::jlong;
 use jni::JNIEnv;
 
+use crate::security::obfuscated::ObfuscatedAtomicI64;
+
 /// Stores the last authentication timestamp in native memory, invisible to JVM inspection.
 static LAST_TIME: AtomicI64 = AtomicI64::new(0);
 
@@ -21,18 +23,19 @@ pub fn mono_millis() -> i64 {
 }
 
 /// Stores the server-provided timestamp (epoch millis) received during login.
-static LAST_GET_CALL_TS: AtomicI64 = AtomicI64::new(0);
+/// XOR-obfuscated with re-keying to defeat memory scanners.
+static LAST_GET_CALL_TS: ObfuscatedAtomicI64 = ObfuscatedAtomicI64::new(0);
 
 /// Returns the server timestamp stored in `LAST_GET_CALL_TS`, or 0 if not yet set.
 #[inline(always)]
 pub fn last_get_call_ts() -> i64 {
-    LAST_GET_CALL_TS.load(Ordering::SeqCst)
+    LAST_GET_CALL_TS.load()
 }
 
 /// Writes the server-provided timestamp into `LAST_GET_CALL_TS`.
 #[inline(always)]
 pub fn set_last_get_call_ts(ts: i64) {
-    LAST_GET_CALL_TS.store(ts, Ordering::SeqCst);
+    LAST_GET_CALL_TS.store(ts);
 }
 
 // ── Monotonic tracking for auth-call-frequency guard ──
@@ -93,7 +96,7 @@ pub fn getLastTime(_env: JNIEnv, _class: jni::objects::JClass) -> jlong {
     // Record monotonic invocation time for auth-call-frequency guard
     LAST_GET_CALL_MONO_TS.store(mono_millis(), Ordering::SeqCst);
     // Return server timestamp if available, otherwise fall back to local init
-    let server_ts = LAST_GET_CALL_TS.load(Ordering::SeqCst);
+    let server_ts = LAST_GET_CALL_TS.load();
     if server_ts != 0 {
         server_ts
     } else {

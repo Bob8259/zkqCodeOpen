@@ -1,15 +1,22 @@
-use std::sync::atomic::{AtomicBool, AtomicI64, Ordering};
+use std::sync::atomic::{AtomicI64, Ordering};
 
 use jni::sys::jboolean;
 use jni::JNIEnv;
+use rand::Rng;
 
 use crate::auth::last_time::mono_millis;
+use crate::security::obfuscated::ObfuscatedAtomicI32;
+use crate::security::obfuscated::ObfuscatedAtomicI64;
 
 /// Tracks whether the user has passed advertisement authentication, stored in native memory.
-pub static IS_AUTH_PASS: AtomicBool = AtomicBool::new(false);
+/// Uses an obfuscated integer instead of a plain boolean: values > 10000 mean passed,
+/// values < 10000 mean not passed. Re-randomized on every read to defeat memory scanners.
+/// Additionally XOR-obfuscated with re-keying for defense in depth.
+pub static IS_AUTH_PASS: ObfuscatedAtomicI32 = ObfuscatedAtomicI32::new(0);
 
 /// Monotonic timestamp (ms) of the last ad display; 0 means no ad has been shown yet.
-pub static LAST_AD_DISPLAY_TS: AtomicI64 = AtomicI64::new(0);
+/// XOR-obfuscated with re-keying to defeat memory scanners.
+pub static LAST_AD_DISPLAY_TS: ObfuscatedAtomicI64 = ObfuscatedAtomicI64::new(0);
 
 /// Monotonic timestamp (ms) when the current ad display started; 0 means idle.
 static AD_DISPLAY_START_TS: AtomicI64 = AtomicI64::new(0);
@@ -21,17 +28,28 @@ const AD_MIN_DURATION_MS: i64 = 10_000;
 const AD_MAX_INTERVAL_MS: i64 = 15 * 60 * 1000;
 
 /// Returns the current value of the auth-pass flag.
+/// Also re-randomizes the stored integer within the same range to keep the in-memory
+/// value constantly changing, making it harder to locate or patch via memory scanning.
 #[inline(always)]
 pub fn is_auth_pass() -> bool {
-    IS_AUTH_PASS.load(Ordering::SeqCst)
+    let val = IS_AUTH_PASS.load();
+    let passed = val > 10000;
+    // Re-randomize in the same range so the decoded value keeps changing too
+    let new_val = if passed {
+        rand::thread_rng().gen_range(10001..=i32::MAX)
+    } else {
+        rand::thread_rng().gen_range(0..10000)
+    };
+    IS_AUTH_PASS.store(new_val);
+    passed
 }
 
 /// Revokes the auth-pass flag and resets the ad display timestamp so the
 /// 10-minute frequency countdown restarts from this moment.
 #[inline(always)]
 pub fn revoke_auth_pass() {
-    IS_AUTH_PASS.store(false, Ordering::SeqCst);
-    LAST_AD_DISPLAY_TS.store(0, Ordering::SeqCst);
+    IS_AUTH_PASS.store(rand::thread_rng().gen_range(0..10000));
+    LAST_AD_DISPLAY_TS.store(0);
 }
 
 // ── Ad display duration enforcement ──
@@ -51,7 +69,7 @@ fn mark_ad_end() {
     let now = mono_millis();
 
     // Always stamp the last-display time so the frequency guard is satisfied
-    LAST_AD_DISPLAY_TS.store(now, Ordering::SeqCst);
+    LAST_AD_DISPLAY_TS.store(now);
     AD_DISPLAY_START_TS.store(0, Ordering::SeqCst);
 
     if start == 0 {
@@ -90,11 +108,11 @@ pub fn check_ad_display_frequency() {
         return;
     }
 
-    let ts = LAST_AD_DISPLAY_TS.load(Ordering::SeqCst);
+    let ts = LAST_AD_DISPLAY_TS.load();
     if ts == 0 {
         // First check — seed the monotonic timer so the countdown starts now
         let now = mono_millis();
-        let _ = LAST_AD_DISPLAY_TS.compare_exchange(0, now, Ordering::SeqCst, Ordering::SeqCst);
+        let _ = LAST_AD_DISPLAY_TS.compare_exchange(0, now);
         return;
     }
 

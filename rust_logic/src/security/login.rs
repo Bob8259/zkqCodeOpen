@@ -7,8 +7,8 @@ use jni::objects::JString;
 use jni::sys::jstring;
 use jni::JNIEnv;
 use lazy_static::lazy_static;
+use rand::Rng;
 use rand::RngCore;
-use std::sync::atomic::Ordering;
 use std::sync::Mutex;
 use std::time::SystemTime;
 use x25519_dalek::{PublicKey, StaticSecret};
@@ -192,15 +192,16 @@ pub fn decryptLoginResponse(
                     if let Ok(elapsed) = SystemTime::now().duration_since(SystemTime::UNIX_EPOCH) {
                         let now = elapsed.as_secs();
                         if now.abs_diff(ts) < 150 {
-                            IS_AUTH_PASS.store(true, Ordering::SeqCst);
+                            // Store a random value > 10000 to indicate auth passed
+                            IS_AUTH_PASS.store(rand::thread_rng().gen_range(10001..=i32::MAX));
                             // Persist the server-provided timestamp for getLastTime
                             set_last_get_call_ts(ts_ms as i64);
                         }
                     }
                 }
             } else if result.contains(&_decode_gne()) {
-                // Server indicated insufficient gems; revoke auth
-                IS_AUTH_PASS.store(false, Ordering::SeqCst);
+                // Server indicated insufficient gems; revoke auth with a random value < 10000
+                IS_AUTH_PASS.store(rand::thread_rng().gen_range(0..10000));
             }
             env.new_string(result).unwrap().into_raw()
         }
