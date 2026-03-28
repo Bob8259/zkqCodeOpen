@@ -47,14 +47,15 @@ fn current_millis() -> i64 {
 }
 
 /// Returns the stored last_time. If uninitialized (0), atomically sets it to the current
-/// system time and returns that value. Uses CAS to avoid races on first init.
+/// system time minus 5 minutes and returns that value. Uses CAS to avoid races on first init.
 #[inline(always)]
 pub fn get_or_init_last_time() -> i64 {
     let stored = LAST_TIME.load(Ordering::SeqCst);
     if stored != 0 {
         return stored;
     }
-    let now = current_millis();
+    // Offset by -5 minutes so the first call appears as if last auth was 5 minutes ago
+    let now = current_millis() - 5 * 60 * 1000;
     match LAST_TIME.compare_exchange(0, now, Ordering::SeqCst, Ordering::SeqCst) {
         Ok(_) => now,
         Err(existing) => existing,
