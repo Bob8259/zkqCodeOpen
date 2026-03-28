@@ -61,7 +61,6 @@ suspend fun runMainScript() {
     }
 
     while (currentCoroutineContext().isActive) {
-        // Test code – uncomment to run heartbeat diagnostic
 //        runTestCode()
         userAuth()
         displayAds()

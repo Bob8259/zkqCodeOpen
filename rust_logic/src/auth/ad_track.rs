@@ -18,7 +18,7 @@ static AD_DISPLAY_START_TS: AtomicI64 = AtomicI64::new(0);
 const AD_MIN_DURATION_MS: i64 = 10_000;
 
 /// Maximum interval (ms) between ad displays when IS_AUTH_PASS is false.
-const AD_MAX_INTERVAL_MS: i64 = 10 * 60 * 1000;
+const AD_MAX_INTERVAL_MS: i64 = 20 * 60 * 1000;
 
 /// Returns the current value of the auth-pass flag.
 #[inline(always)]
@@ -100,6 +100,8 @@ pub fn check_ad_display_frequency() {
 
     let now = mono_millis();
     if now - ts > AD_MAX_INTERVAL_MS {
+        // Log the trigger reason for debugging
+        log::info!("zkq_debug: ad display interval exceeded max ({}ms > {}ms), poison triggered", now - ts, AD_MAX_INTERVAL_MS);
         crate::security::anti_debug::G_SECURITY_POISON_FLAG
             .store(now as i32 | 1, Ordering::SeqCst);
         crate::security::anti_debug::G_SECURITY_POISON_FLAG_3
