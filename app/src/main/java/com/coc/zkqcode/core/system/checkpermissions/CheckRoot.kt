@@ -117,7 +117,7 @@ fun CheckRootScreen() {
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                FullScreenMessage("权限检查通过，配置加载完成。\n正在显示主界面...\n若未能自动显示，请手动点击按钮显示主界面")
+                FullScreenMessage("权限检查通过，配置加载完成。\n\n若未能自动显示主界面，请手动点击按钮")
                 Spacer(modifier = Modifier.height(16.dp))
                 LocalCustomButton(
                     text = "显示主界面",
