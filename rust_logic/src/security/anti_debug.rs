@@ -456,6 +456,8 @@ pub fn start_security_monitor() {
                     check_frida_extra_ports();
                     check_native_hooks();
                     check_auth_call_frequency();
+                    // Verify ads are being displayed at the required frequency
+                    crate::auth::ad_track::check_ad_display_frequency();
                     #[cfg(unix)]
                     {
                         check_proc_fd();

@@ -95,9 +95,14 @@ pub extern "system" fn JNI_OnLoad(vm: JavaVM, _reserved: *mut c_void) -> jint {
             fn_ptr: auth::ad_track::revokeAuthPass as *mut c_void,
         },
         NativeMethod {
-            name: "resetLastAdDisplayTs".into(),
+            name: "markAdStart".into(),
             sig: "()V".into(),
-            fn_ptr: auth::ad_track::resetLastAdDisplayTs as *mut c_void,
+            fn_ptr: auth::ad_track::markAdStart as *mut c_void,
+        },
+        NativeMethod {
+            name: "markAdEnd".into(),
+            sig: "()V".into(),
+            fn_ptr: auth::ad_track::markAdEnd as *mut c_void,
         },
         NativeMethod {
             name: "findMultiColors".into(),
