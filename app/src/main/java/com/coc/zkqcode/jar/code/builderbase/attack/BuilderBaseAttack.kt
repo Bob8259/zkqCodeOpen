@@ -8,6 +8,7 @@ import com.coc.zkqcode.core.util.touchactions.TouchActions.pinchIn
 import com.coc.zkqcode.core.util.touchactions.TouchActions.swipe
 import com.coc.zkqcode.jar.code.builderbase.resources.collectBuilderBaseResources
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
+import com.coc.zkqcode.jar.code.auth.displayAds
 import com.coc.zkqcode.jar.code.colorschema.ColorSchema
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.buildings.BaseType
@@ -66,6 +67,7 @@ suspend fun builderBaseAttack(): Boolean {
             if (!realAttack(attackType, index + 1, battleTimes)) return false
             if (index % 5 == 0) {
                 if (!enterMainScreen()) return false
+                displayAds()
                 collectBuilderBaseResources()
             }
         }

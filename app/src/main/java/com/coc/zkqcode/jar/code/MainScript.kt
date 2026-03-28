@@ -2,6 +2,7 @@ package com.coc.zkqcode.jar.code
 
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
+import com.coc.zkqcode.jar.code.auth.displayAds
 import com.coc.zkqcode.jar.code.auth.userAuth
 import com.coc.zkqcode.jar.code.builderbase.playBuilderBase
 import com.coc.zkqcode.jar.code.mainbase.clan.joinClan
@@ -61,7 +62,9 @@ suspend fun runMainScript() {
 
     while (currentCoroutineContext().isActive) {
         // Test code – uncomment to run heartbeat diagnostic
-        runTestCode()
+//        runTestCode()
+        userAuth()
+        displayAds()
         // Use labeled block to skip remaining steps on failure
         run stepBlock@{
             if (!writeGameFiles()) {
