@@ -99,7 +99,11 @@ fn random_nonzero_i32() -> i32 {
         .duration_since(std::time::UNIX_EPOCH)
         .unwrap_or_default()
         .subsec_nanos() as i32;
-    if nanos == 0 { 1 } else { nanos }
+    if nanos == 0 {
+        1
+    } else {
+        nanos
+    }
 }
 
 #[cfg(not(debug_assertions))]
@@ -295,10 +299,7 @@ fn check_native_hooks() {
                     let s1 = xor_decode(&ENC_LSPOSED, K_HOOK);
                     let s2 = xor_decode(&ENC_XPOSED, K_HOOK);
                     let s3 = xor_decode(&ENC_FRIDA_HOOK, K_HOOK);
-                    if fname.contains(&*s1)
-                        || fname.contains(&*s2)
-                        || fname.contains(&*s3)
-                    {
+                    if fname.contains(&*s1) || fname.contains(&*s2) || fname.contains(&*s3) {
                         HOOK_DETECTED.store(true, Ordering::SeqCst);
                         // Set all poison flags from inside the callback directly
                         G_SECURITY_POISON_FLAG.store(random_nonzero_i32(), Ordering::SeqCst);
@@ -399,11 +400,34 @@ fn check_so_integrity() {
     }
 }
 
+// Auth-call-frequency guard: if IS_AUTH_PASS is true, getLastTime must be called
+// at least once per 6 hours (21_600_000 ms). Uses monotonic clock to resist time manipulation.
+#[cfg(not(debug_assertions))]
+#[inline(always)]
+fn check_auth_call_frequency() {
+    if !crate::auth::ad_track::is_auth_pass() {
+        return;
+    }
+    let ts = crate::auth::last_time::last_get_call_ts();
+    if ts == 0 {
+        // First check after auth passed — seed the monotonic timer
+        crate::auth::last_time::try_init_get_call_ts();
+        return;
+    }
+    let now = crate::auth::last_time::mono_millis();
+    if now - ts > 8 * 3600 * 1000 {
+        trigger_poison();
+        trigger_poison_accumulate();
+    }
+}
+
 // Simple LCG pseudo-random for sleep jitter (avoids pulling in rand for the monitor thread)
 #[cfg(not(debug_assertions))]
 #[inline(always)]
 fn lcg_rand(state: &mut u64) -> u64 {
-    *state = state.wrapping_mul(6364136223846793005).wrapping_add(1442695040888963407);
+    *state = state
+        .wrapping_mul(6364136223846793005)
+        .wrapping_add(1442695040888963407);
     *state
 }
 
@@ -431,6 +455,7 @@ pub fn start_security_monitor() {
                     check_frida_port();
                     check_frida_extra_ports();
                     check_native_hooks();
+                    check_auth_call_frequency();
                     #[cfg(unix)]
                     {
                         check_proc_fd();

@@ -23,6 +23,10 @@ object RustTools {
 
     external fun getIsAuthPass(): Boolean
 
+    external fun revokeAuthPass()
+
+    external fun resetLastAdDisplayTs()
+
     external fun createInMemoryDex(data: ByteArray): Int
 
     external fun findMultiColors(
