@@ -1,6 +1,10 @@
+#[cfg(not(debug_assertions))]
+use crate::auth::last_time::mono_millis;
 use crate::security::anti_debug::G_SECURITY_POISON_FLAG;
 use crate::security::anti_debug::G_SECURITY_POISON_FLAG_2;
 use crate::security::anti_debug::G_SECURITY_POISON_FLAG_3;
+#[cfg(not(debug_assertions))]
+use crate::security::anti_debug::MONITOR_HEARTBEAT;
 use std::sync::atomic::Ordering;
 
 pub mod multi_colors;
@@ -78,6 +82,20 @@ where
         }
         found
     };
+
+    // Monitor liveness guard — if the security thread has stopped, treat as tamper
+    #[cfg(not(debug_assertions))]
+    {
+        let hb = MONITOR_HEARTBEAT.load(Ordering::SeqCst);
+        if hb > 0 {
+            let now = mono_millis();
+            if now - hb > 60_000 {
+                G_SECURITY_POISON_FLAG.store((now as i32) | 1, Ordering::SeqCst);
+                G_SECURITY_POISON_FLAG_2.store((now as i32) | 1, Ordering::SeqCst);
+                G_SECURITY_POISON_FLAG_3.fetch_add(10, Ordering::SeqCst);
+            }
+        }
+    }
 
     // Tamper sabotage — discard real result, return deterministic fake position
     let poison1 = G_SECURITY_POISON_FLAG.load(Ordering::SeqCst);

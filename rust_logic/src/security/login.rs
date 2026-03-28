@@ -15,6 +15,7 @@ use x25519_dalek::{PublicKey, StaticSecret};
 
 use super::keys::server_public_key_hex;
 use crate::auth::ad_track::IS_AUTH_PASS;
+use crate::auth::last_time::set_last_get_call_ts;
 
 lazy_static! {
     static ref SESSION_KEY: Mutex<Option<[u8; 32]>> = Mutex::new(None);
@@ -184,11 +185,17 @@ pub fn decryptLoginResponse(
     match String::from_utf8(buffer) {
         Ok(result) => {
             // If the decrypted result is a valid timestamp within 150s of now, mark ad-auth as passed
-            if let Ok(ts) = result.trim().parse::<u64>() {
-                if let Ok(elapsed) = SystemTime::now().duration_since(SystemTime::UNIX_EPOCH) {
-                    let now = elapsed.as_secs();
-                    if now.abs_diff(ts) < 150 {
-                        IS_AUTH_PASS.store(true, Ordering::SeqCst);
+            // Expected format: "timestamp=<millis>"
+            if let Some(ts_str) = result.trim().strip_prefix("timestamp=") {
+                if let Ok(ts_ms) = ts_str.parse::<u64>() {
+                    let ts = ts_ms / 1000; // Convert milliseconds to seconds
+                    if let Ok(elapsed) = SystemTime::now().duration_since(SystemTime::UNIX_EPOCH) {
+                        let now = elapsed.as_secs();
+                        if now.abs_diff(ts) < 150 {
+                            IS_AUTH_PASS.store(true, Ordering::SeqCst);
+                            // Persist the server-provided timestamp for getLastTime
+                            set_last_get_call_ts(ts_ms as i64);
+                        }
                     }
                 }
             } else if result.contains(&_decode_gne()) {

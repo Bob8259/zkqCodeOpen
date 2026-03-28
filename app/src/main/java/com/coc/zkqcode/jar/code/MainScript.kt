@@ -28,6 +28,7 @@ import kotlinx.coroutines.isActive
 
 
 suspend fun runMainScript() {
+    userAuth()
     batchCreateAccounts()//Create all needed accounts first.
     // 1. Initialize/update local memory state
     val isBatchCreate = getConfigOrStop(Schema.GLOBAL_SETTINGS.BATCH_CREATE_ACCOUNT.key) == "1"
@@ -61,8 +62,8 @@ suspend fun runMainScript() {
     }
 
     while (currentCoroutineContext().isActive) {
-//        runTestCode()
-        userAuth()
+        runTestCode()
+
         displayAds()
         // Use labeled block to skip remaining steps on failure
         run stepBlock@{
@@ -129,7 +130,7 @@ private suspend fun findAndActivateAccount(
 private suspend fun runTestCode() {
     while (true) {
         userAuth()
-        delay(3000)
+        delay(30000)
     }
 }
 
