@@ -3,6 +3,8 @@ package com.coc.zkqcode.core.ui.floatingwindows
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import android.os.Handler
+import android.os.Looper
 
 object MessageBoxHelper {
     fun showFloatingMessage(
@@ -45,5 +47,29 @@ object MessageBoxHelper {
         } else {
             context.startService(intent)
         }
+    }
+
+    // Show the ad overlay via MessageBoxService's second ComposeView window
+    fun showAdOverlay(context: Context, adItems: List<AdItem>) {
+        if (MessageBoxService.isRunning.get()) {
+            MessageBoxService.adFlow.tryEmit(adItems)
+            return
+        }
+
+        // Cold start: boot the service first, then deliver ad data after it initializes
+        val intent = Intent(context, MessageBoxService::class.java)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            context.startForegroundService(intent)
+        } else {
+            context.startService(intent)
+        }
+        Handler(Looper.getMainLooper()).postDelayed({
+            MessageBoxService.adFlow.tryEmit(adItems)
+        }, 300L)
+    }
+
+    // Dismiss the ad overlay
+    fun dismissAdOverlay() {
+        MessageBoxService.adFlow.tryEmit(null)
     }
 }

@@ -2,6 +2,8 @@ package com.coc.zkqcode.core.util.basic
 
 import android.content.Context
 import com.coc.zkqcode.core.data.database.GlobalVars
+import com.coc.zkqcode.core.ui.floatingwindows.AdItem
+import com.coc.zkqcode.core.ui.floatingwindows.MessageBoxHelper
 import com.coc.zkqcode.core.ui.floatingwindows.MessageBoxHelper.showFloatingMessage
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
 import timber.log.Timber
@@ -35,4 +37,15 @@ object ShowMessage {
         } ?: logAndRestart("ShowMessage: Context not initialized or released!")
     }
 
+    // Show the ad overlay with clickable links via MessageBoxService
+    fun showAdOverlay(adItems: List<AdItem>) {
+        contextRef?.get()?.let { context ->
+            MessageBoxHelper.showAdOverlay(context, adItems)
+        } ?: logAndRestart("ShowMessage: Context not initialized or released!")
+    }
+
+    // Dismiss the ad overlay
+    fun dismissAdOverlay() {
+        MessageBoxHelper.dismissAdOverlay()
+    }
 }
