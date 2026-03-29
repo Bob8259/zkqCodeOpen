@@ -23,9 +23,11 @@ suspend fun playBuilderBase(): Boolean {
     if (!enterBuilderBase(false)) return true
     if (!clickOttosOutPost()) return false
     if (!builderBaseRemoveObstacles()) return false
+    if (!enterBuilderBase(false)) return true
     if (!upgradeWalls(BaseType.Builder)) return false
     if (!upgradeBuildings(BaseType.Builder)) return false
     if (!builderBaseResearch()) return false
+    if (!enterBuilderBase(false)) return true
     if (!builderBaseTrainWithConditions()) return false
     if (!builderBaseAttack()) return false
     return true

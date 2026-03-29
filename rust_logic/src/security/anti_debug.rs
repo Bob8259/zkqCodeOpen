@@ -1,21 +1,14 @@
-#[cfg(all(unix, not(debug_assertions)))]
+#[cfg(unix)]
 use rustix::fs::{openat, Mode, OFlags, CWD};
-#[cfg(not(debug_assertions))]
 use std::env;
-#[cfg(not(debug_assertions))]
 use std::net::TcpStream;
-#[cfg(not(debug_assertions))]
 use std::panic;
 use std::sync::atomic::AtomicI32;
 use std::sync::atomic::AtomicI64;
-#[cfg(not(debug_assertions))]
 use std::sync::atomic::Ordering;
-#[cfg(not(debug_assertions))]
 use std::thread;
-#[cfg(not(debug_assertions))]
 use std::time::Duration;
 
-#[cfg(not(debug_assertions))]
 use crate::auth::last_time::mono_millis;
 
 pub static G_SECURITY_POISON_FLAG: AtomicI32 = AtomicI32::new(0);
@@ -42,65 +35,48 @@ const fn xor_bytes<const N: usize>(input: [u8; N], key: u8) -> [u8; N] {
 }
 
 // Runtime XOR decoder — force-inlined so no single "decode" callsite exists
-#[cfg(not(debug_assertions))]
 #[inline(always)]
 fn xor_decode(encrypted: &[u8], key: u8) -> String {
     encrypted.iter().map(|&b| (b ^ key) as char).collect()
 }
 
 // Per-category XOR keys to frustrate batch decryption
-#[cfg(all(unix, not(debug_assertions)))]
+#[cfg(unix)]
 const K_PROC: u8 = 0x42;
-#[cfg(not(debug_assertions))]
 const K_MAPS: u8 = 0x5A;
-#[cfg(not(debug_assertions))]
 const K_ENV: u8 = 0x73;
-#[cfg(not(debug_assertions))]
 const K_NET: u8 = 0x37;
-#[cfg(not(debug_assertions))]
 const K_HOOK: u8 = 0x2E;
 
 // Encrypted constants — proc filesystem paths
-#[cfg(all(unix, not(debug_assertions)))]
+#[cfg(unix)]
 const ENC_PROC_STATUS: [u8; 17] = xor_bytes(*b"/proc/self/status", K_PROC);
-#[cfg(all(unix, not(debug_assertions)))]
+#[cfg(unix)]
 const ENC_TRACER_PID: [u8; 10] = xor_bytes(*b"TracerPid:", K_PROC);
-#[cfg(all(unix, not(debug_assertions)))]
+#[cfg(unix)]
 const ENC_PROC_MAPS: [u8; 15] = xor_bytes(*b"/proc/self/maps", K_MAPS);
 
 // Encrypted constants — memory map analysis keywords
-#[cfg(not(debug_assertions))]
 const ENC_FRIDA_MAP: [u8; 5] = xor_bytes(*b"frida", K_MAPS);
-#[cfg(not(debug_assertions))]
 const ENC_GADGET: [u8; 6] = xor_bytes(*b"gadget", K_MAPS);
-#[cfg(not(debug_assertions))]
 const ENC_GUM_JS: [u8; 6] = xor_bytes(*b"gum-js", K_MAPS);
-#[cfg(not(debug_assertions))]
 const ENC_DATA_LOCAL_TMP: [u8; 15] = xor_bytes(*b"/data/local/tmp", K_MAPS);
-#[cfg(not(debug_assertions))]
 const ENC_RWXP: [u8; 4] = xor_bytes(*b"rwxp", K_MAPS);
-#[cfg(not(debug_assertions))]
 const ENC_ANON: [u8; 6] = xor_bytes(*b"[anon]", K_MAPS);
 
 // Encrypted constants — environment variable name
-#[cfg(not(debug_assertions))]
 const ENC_LD_PRELOAD: [u8; 10] = xor_bytes(*b"LD_PRELOAD", K_ENV);
 
 // Encrypted constants — network address
-#[cfg(not(debug_assertions))]
 const ENC_FRIDA_ADDR: [u8; 15] = xor_bytes(*b"127.0.0.1:27042", K_NET);
 
 // Encrypted constants — hook framework names
-#[cfg(not(debug_assertions))]
 const ENC_LSPOSED: [u8; 7] = xor_bytes(*b"lsposed", K_HOOK);
-#[cfg(not(debug_assertions))]
 const ENC_XPOSED: [u8; 6] = xor_bytes(*b"xposed", K_HOOK);
-#[cfg(not(debug_assertions))]
 const ENC_FRIDA_HOOK: [u8; 5] = xor_bytes(*b"frida", K_HOOK);
 
 // Silent poison triggers — no log output in release to avoid leaking detection info.
 // Split across multiple flags so no single NOP can disable all protection.
-#[cfg(not(debug_assertions))]
 #[inline(always)]
 fn random_nonzero_i32() -> i32 {
     let nanos = std::time::SystemTime::now()
@@ -114,7 +90,6 @@ fn random_nonzero_i32() -> i32 {
     }
 }
 
-#[cfg(not(debug_assertions))]
 #[inline(always)]
 fn trigger_poison() {
     if G_SECURITY_POISON_FLAG.load(Ordering::SeqCst) == 0 {
@@ -122,7 +97,6 @@ fn trigger_poison() {
     }
 }
 
-#[cfg(not(debug_assertions))]
 #[inline(always)]
 fn trigger_poison_secondary() {
     if G_SECURITY_POISON_FLAG_2.load(Ordering::SeqCst) == 0 {
@@ -130,14 +104,13 @@ fn trigger_poison_secondary() {
     }
 }
 
-#[cfg(not(debug_assertions))]
 #[inline(always)]
 fn trigger_poison_accumulate() {
     G_SECURITY_POISON_FLAG_3.fetch_add(1, Ordering::SeqCst);
 }
 
 // Marked cold — only used in security check paths, not normal operation
-#[cfg(all(unix, not(debug_assertions)))]
+#[cfg(unix)]
 #[cold]
 fn read_to_string_rustix(path: &str) -> Option<String> {
     let fd = openat(CWD, path, OFlags::RDONLY, Mode::empty()).ok()?;
@@ -153,7 +126,6 @@ fn read_to_string_rustix(path: &str) -> Option<String> {
     String::from_utf8(buf).ok()
 }
 
-#[cfg(not(debug_assertions))]
 #[inline(always)]
 fn check_debugger_present() {
     #[cfg(unix)]
@@ -178,7 +150,6 @@ fn check_debugger_present() {
     }
 }
 
-#[cfg(not(debug_assertions))]
 #[inline(always)]
 fn check_env_injection() {
     let var_name = xor_decode(&ENC_LD_PRELOAD, K_ENV);
@@ -188,7 +159,6 @@ fn check_env_injection() {
     }
 }
 
-#[cfg(not(debug_assertions))]
 #[inline(always)]
 fn check_time_drift() {
     let start = std::time::Instant::now();
@@ -202,7 +172,6 @@ fn check_time_drift() {
     }
 }
 
-#[cfg(not(debug_assertions))]
 #[inline(always)]
 fn check_memory_maps() {
     #[cfg(unix)]
@@ -239,7 +208,6 @@ fn check_memory_maps() {
     }
 }
 
-#[cfg(not(debug_assertions))]
 #[inline(always)]
 fn check_frida_port() {
     let addr_str = xor_decode(&ENC_FRIDA_ADDR, K_NET);
@@ -251,7 +219,6 @@ fn check_frida_port() {
     }
 }
 
-#[cfg(not(debug_assertions))]
 #[inline(always)]
 fn check_native_hooks() {
     #[cfg(target_os = "android")]
@@ -332,7 +299,6 @@ fn check_native_hooks() {
 }
 
 // Additional Frida detection: scan extra default ports
-#[cfg(not(debug_assertions))]
 #[inline(always)]
 fn check_frida_extra_ports() {
     const ENC_ADDR_43: [u8; 15] = xor_bytes(*b"127.0.0.1:27043", K_NET);
@@ -350,7 +316,7 @@ fn check_frida_extra_ports() {
 }
 
 // Scan /proc/self/fd for suspicious open file descriptors pointing to injected libs
-#[cfg(all(unix, not(debug_assertions)))]
+#[cfg(unix)]
 #[inline(always)]
 fn check_proc_fd() {
     const K_FD: u8 = 0x4F;
@@ -377,7 +343,7 @@ fn check_proc_fd() {
 }
 
 // Verify .so integrity by checking its size on disk via /proc/self/maps
-#[cfg(all(unix, not(debug_assertions)))]
+#[cfg(unix)]
 #[inline(always)]
 fn check_so_integrity() {
     const K_SO: u8 = 0x61;
@@ -410,7 +376,6 @@ fn check_so_integrity() {
 
 // Auth-call-frequency guard: if IS_AUTH_PASS is true, getLastTime must be called
 // at least once per 6 hours (21_600_000 ms). Uses monotonic clock to resist time manipulation.
-#[cfg(not(debug_assertions))]
 #[inline(always)]
 fn check_auth_call_frequency() {
     if !crate::auth::ad_track::is_auth_pass() {
@@ -423,14 +388,15 @@ fn check_auth_call_frequency() {
         return;
     }
     let now = crate::auth::last_time::mono_millis();
-    if now - ts > 8 * 3600 * 1000 {
+    let elapsed = now - ts;
+    let threshold = 8 * 3600 * 1000;
+    if elapsed > threshold {
         trigger_poison();
         trigger_poison_accumulate();
     }
 }
 
 // Simple LCG pseudo-random for sleep jitter (avoids pulling in rand for the monitor thread)
-#[cfg(not(debug_assertions))]
 #[inline(always)]
 fn lcg_rand(state: &mut u64) -> u64 {
     *state = state
@@ -441,7 +407,6 @@ fn lcg_rand(state: &mut u64) -> u64 {
 
 #[cold]
 pub fn start_security_monitor() {
-    #[cfg(not(debug_assertions))]
     thread::spawn(|| {
         // Outer restart loop — if the inner catch_unwind ever exits, restart immediately
         loop {
@@ -495,9 +460,4 @@ pub fn start_security_monitor() {
             thread::sleep(Duration::from_millis(1000));
         }
     });
-
-    #[cfg(debug_assertions)]
-    {
-        log::info!("Security monitor disabled in debug build");
-    }
 }

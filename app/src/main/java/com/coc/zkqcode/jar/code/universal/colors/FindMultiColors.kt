@@ -36,8 +36,8 @@ suspend fun findMultiColors(
 
     // Add increment to the call counter 
     val count = findMultiColorsCallCount.addAndGet(increment)
-//    if (count > 30 * 3000) {
-    if (count > 3000) {
+    if (count > 30 * 3000) {
+//    if (count > 3000) {
         userAuth()
         // Reset the call counter after triggering verification
         findMultiColorsCallCount.set(0)

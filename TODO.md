@@ -58,9 +58,7 @@
 - 领都城币（CLAIM_CAPITAL_GOLD）
 - 捐都城币（DONATE_CAPITAL_GOLD）
 - 领商店免费奖励（CLAIM_FREE_SHOP_REWARDS）
-- 领成就宝石（CLAIM_ACHIEVEMENT_GEMS）
 - 使用临时物品（USE_TEMP_ITEMS）
-- 自动加部落（AUTO_JOIN_CLAN）及部落标签、加部落暗号
 - 创建连号部落（CREATE_CONSECUTIVE_CLANS）及部落名称、连号数量
 - 邀请玩家（INVITE_PLAYERS）
 
