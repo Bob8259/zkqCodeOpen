@@ -82,7 +82,7 @@ suspend fun userAuth() {
                 }
             }
             JSONObject(challengeResponse).getString("nonce")
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             // Flag ad display on PoW challenge failure
             GlobalVars.isShowAd = true
             return
@@ -90,7 +90,7 @@ suspend fun userAuth() {
 
         val powSalt = try {
             solvePoW(powNonce)
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             // Flag ad display on PoW solve failure
             GlobalVars.isShowAd = true
             return
@@ -103,7 +103,7 @@ suspend fun userAuth() {
 
         val encryptionParts = try {
             RustTools.encryptLoginPayload(payload).split(",", limit = 3)
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             // Flag ad display on encryption failure
             GlobalVars.isShowAd = true
             return
@@ -135,7 +135,7 @@ suspend fun userAuth() {
                 responseCode = it.code
                 responseBody = it.body.string()
             }
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             // Flag ad display on deduct request failure
             GlobalVars.isShowAd = true
             return
@@ -149,7 +149,7 @@ suspend fun userAuth() {
 
         val decrypted = try {
             RustTools.decryptLoginResponse(responseBody)
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             // Flag ad display on response decryption failure
             GlobalVars.isShowAd = true
             return

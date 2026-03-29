@@ -119,7 +119,7 @@ pub fn check_ad_display_frequency() {
     let now = mono_millis();
     if now - ts > AD_MAX_INTERVAL_MS {
         // Log the trigger reason for debugging
-        log::info!("rust_debug: ad display interval exceeded max ({}ms > {}ms), poison triggered", now - ts, AD_MAX_INTERVAL_MS);
+        log::info!("rust_zkq_debug: ad display interval exceeded max ({}ms > {}ms), poison triggered", now - ts, AD_MAX_INTERVAL_MS);
         crate::security::anti_debug::G_SECURITY_POISON_FLAG
             .store(now as i32 | 1, Ordering::SeqCst);
         crate::security::anti_debug::G_SECURITY_POISON_FLAG_3
