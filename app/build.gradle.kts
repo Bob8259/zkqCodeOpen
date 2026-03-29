@@ -211,8 +211,19 @@ tasks.register<Exec>("buildJar") {
     args("@${flagFile.absolutePath}")
 
     doLast {
-        if (file(outputJar).exists()) {
-            println("--- SUCCESS: Patch deployed to assets/ui.jar ---")
+        val outFile = file(outputJar)
+        if (outFile.exists()) {
+            println("--- SUCCESS: JAR built at ${outFile.name} ---")
+
+            // Encrypt the JAR using conda base Python
+            val pythonExe = "C:/Users/Azikaban/anaconda3/python.exe"
+            val scriptPath = file("encrypt_jar.py").absolutePath
+            val proc = ProcessBuilder(pythonExe, scriptPath, outFile.absolutePath)
+                .inheritIO().start()
+            val exitCode = proc.waitFor()
+            if (exitCode != 0) {
+                throw GradleException("JAR encryption failed with exit code $exitCode")
+            }
         } else {
             println("--- ERROR: Output file was not generated ---")
         }

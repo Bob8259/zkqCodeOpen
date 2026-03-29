@@ -56,13 +56,23 @@ class Loadjar(private val context: Context) {
         val assetsDir = File(context.filesDir, "assets")
         val assetList = assetsDir.list() ?: emptyArray()
 
-        // Find the jar with the highest timestamp number (latest build)
+        // Find the unencrypted jar with the highest timestamp number (latest build, dev/debug)
         val timestampJar = assetList
             .filter { it.endsWith(".jar") && it.removeSuffix(".jar").toLongOrNull() != null }
             .maxByOrNull { it.removeSuffix(".jar").toLong() }
 
+        // Find the encrypted jar with the highest timestamp number (encrypted_<timestamp>.jar)
+        val encryptedTimestampJar = assetList
+            .filter {
+                it.startsWith("encrypted_") && it.endsWith(".jar") &&
+                        it.removePrefix("encrypted_").removeSuffix(".jar").toLongOrNull() != null
+            }
+            .maxByOrNull { it.removePrefix("encrypted_").removeSuffix(".jar").toLong() }
+
         val success = if (timestampJar != null) {
             loadPluginFromAssets(timestampJar)
+        } else if (encryptedTimestampJar != null) {
+            loadEncryptedPlugin(encryptedTimestampJar)
         } else if (assetList.contains("encrypted_code.jar")) {
             loadEncryptedPlugin("encrypted_code.jar")
         } else {
