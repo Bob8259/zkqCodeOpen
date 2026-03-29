@@ -2,8 +2,8 @@ package com.coc.zkqcode.jar.code.universal.recognizer
 
 import android.graphics.Bitmap
 import android.graphics.Rect
-import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
+import com.coc.zkqcode.core.util.basic.waitForPlay
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
 import com.coc.zkqcode.core.util.fileactions.LogHelper.showDebugInfo
 import com.google.android.gms.tasks.Tasks
@@ -12,7 +12,6 @@ import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.chinese.ChineseTextRecognizerOptions
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import androidx.core.graphics.createBitmap
 import java.io.File
@@ -47,9 +46,7 @@ object TextRecognizer {
             logAndRestart("Invalid crop area: width=$width, height=$height")
         }
 
-        while (!GlobalVars.isPlaying.value) {
-            delay(1000)
-        }
+        waitForPlay()
 
         try {
             if (startX + width <= screenBuffer.width && startY + height <= screenBuffer.height) {

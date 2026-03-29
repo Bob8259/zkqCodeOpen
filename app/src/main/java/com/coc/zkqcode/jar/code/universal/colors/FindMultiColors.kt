@@ -5,6 +5,7 @@ import android.graphics.Point
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.util.basic.ShowMessage
+import com.coc.zkqcode.core.util.basic.waitForPlay
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
 import com.coc.zkqcode.jar.code.auth.userAuth
 import com.coc.zkqcode.jar.code.colorschema.ColorSchema
@@ -30,9 +31,7 @@ suspend fun findMultiColors(
     schema: ColorSchema,
     increment: Int = 10
 ): Point? {
-    while (!GlobalVars.isPlaying.value) {
-        delay(1000)//the user paused the script, then we should also stop
-    }
+    waitForPlay()
 
     // Add increment to the call counter 
     val count = findMultiColorsCallCount.addAndGet(increment)

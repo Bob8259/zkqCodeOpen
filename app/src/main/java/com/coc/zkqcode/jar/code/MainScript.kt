@@ -1,8 +1,8 @@
 package com.coc.zkqcode.jar.code
 
-import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
+import com.coc.zkqcode.core.util.basic.waitForPlay
 import com.coc.zkqcode.jar.code.auth.displayAds
 import com.coc.zkqcode.jar.code.auth.userAuth
 import com.coc.zkqcode.jar.code.builderbase.playBuilderBase
@@ -29,7 +29,7 @@ import kotlinx.coroutines.isActive
 
 
 suspend fun runMainScript() {
-    while (!GlobalVars.isPlaying.value) delay(1000)
+    waitForPlay()
     ShowMessage("检测到设置已更新\n保存设置中，即将重新运行")
     delay(2000)
     userAuth()

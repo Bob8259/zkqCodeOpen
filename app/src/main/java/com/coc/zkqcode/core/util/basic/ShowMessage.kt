@@ -18,6 +18,8 @@ object ShowMessage {
         this.contextRef = WeakReference(context.applicationContext)
     }
 
+    fun getContext(): Context? = contextRef?.get()
+
     operator fun invoke(text: String, isChecking: Boolean = true) {
         if (isChecking && !GlobalVars.isPlaying.value && !GlobalVars.isSwitchingAccount) {
             return//the user paused the script, then we should also stop

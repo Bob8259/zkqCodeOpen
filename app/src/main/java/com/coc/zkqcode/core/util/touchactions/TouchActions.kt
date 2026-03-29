@@ -2,6 +2,7 @@ package com.coc.zkqcode.core.util.touchactions
 
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
+import com.coc.zkqcode.core.util.basic.waitForPlay
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.delay
@@ -89,11 +90,6 @@ object TouchActions {
         )
     }
 
-    private suspend fun waitForPlay() {
-        while (!GlobalVars.isPlaying.value) {
-            delay(1000)
-        }
-    }
 
     suspend fun swipe(
         startX: Int,

@@ -4,6 +4,7 @@ import com.coc.zkqcode.BuildConfig
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.ui.floatingwindows.AdItem
 import com.coc.zkqcode.core.util.basic.ShowMessage
+import com.coc.zkqcode.core.util.basic.waitForPlay
 import com.coc.zkqcode.jar.code.universal.InGamesVars
 import com.coc.zkqcode.nativehelper.RustTools
 import kotlinx.coroutines.Dispatchers
@@ -20,9 +21,7 @@ private val httpClient = OkHttpClient()
 // Falls back to a simple countdown if the API request fails.
 suspend fun displayAds() {
     if (!GlobalVars.isShowAd) return
-    while (!GlobalVars.isPlaying.value) {
-        delay(1000)
-    }
+    waitForPlay()
     RustTools.markAdStart()
 
     // Fetch ad data from the server API
