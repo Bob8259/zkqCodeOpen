@@ -64,24 +64,17 @@ import java.util.concurrent.atomic.AtomicBoolean
 
 // Lightweight message payload for in-process delivery via SharedFlow
 data class MessageData(
-    val text: String,
-    val x: Int,
-    val y: Int,
-    val fontSize: Float,
-    val duration: Long
+    val text: String, val x: Int, val y: Int, val fontSize: Float, val duration: Long
 )
 
 // Ad item from the server API
 data class AdItem(
-    val content: String,
-    val link: String?,
-    val topAd: Int
+    val content: String, val link: String?, val topAd: Int
 )
 
 // Payload carrying ad items and the display duration for the overlay
 data class AdOverlayData(
-    val items: List<AdItem>,
-    val durationSeconds: Int
+    val items: List<AdItem>, val durationSeconds: Int
 )
 
 class MessageBoxService : Service(), LifecycleOwner, SavedStateRegistryOwner {
@@ -94,14 +87,12 @@ class MessageBoxService : Service(), LifecycleOwner, SavedStateRegistryOwner {
 
         // In-process message channel; extraBufferCapacity ensures tryEmit() never fails
         val messageFlow = MutableSharedFlow<MessageData>(
-            extraBufferCapacity = 1,
-            onBufferOverflow = BufferOverflow.DROP_OLDEST
+            extraBufferCapacity = 1, onBufferOverflow = BufferOverflow.DROP_OLDEST
         )
 
         // Ad overlay channel; null signals dismiss
         val adFlow = MutableSharedFlow<AdOverlayData?>(
-            extraBufferCapacity = 1,
-            onBufferOverflow = BufferOverflow.DROP_OLDEST
+            extraBufferCapacity = 1, onBufferOverflow = BufferOverflow.DROP_OLDEST
         )
     }
 
@@ -114,8 +105,7 @@ class MessageBoxService : Service(), LifecycleOwner, SavedStateRegistryOwner {
     // Defer performRestore() to onCreate() so class-construction failures
     // cannot prevent startForeground() from being called.
     private val savedStateRegistryController = SavedStateRegistryController.create(this)
-    override val savedStateRegistry: SavedStateRegistry =
-        savedStateRegistryController.savedStateRegistry
+    override val savedStateRegistry: SavedStateRegistry = savedStateRegistryController.savedStateRegistry
 
     private val serviceScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
     private var inactivityJob: Job? = null
@@ -205,17 +195,14 @@ class MessageBoxService : Service(), LifecycleOwner, SavedStateRegistryOwner {
         val windowType = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
         } else {
-            @Suppress("DEPRECATION")
-            WindowManager.LayoutParams.TYPE_PHONE
+            @Suppress("DEPRECATION") WindowManager.LayoutParams.TYPE_PHONE
         }
 
         val params = WindowManager.LayoutParams(
             WindowManager.LayoutParams.WRAP_CONTENT,
             WindowManager.LayoutParams.WRAP_CONTENT,
             windowType,
-            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
-                    WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
-                    WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL,
+            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL,
             PixelFormat.TRANSLUCENT
         ).apply {
             gravity = Gravity.TOP or Gravity.START
@@ -275,13 +262,9 @@ class MessageBoxService : Service(), LifecycleOwner, SavedStateRegistryOwner {
                     .background(Color.Black)
                     .onGloballyPositioned { coordinates ->
                         boxSize = coordinates.size
-                    }
-            ) {
+                    }) {
                 Text(
-                    text = messageText,
-                    color = Color.White,
-                    fontSize = messageFontSize,
-                    fontWeight = FontWeight.Normal
+                    text = messageText, color = Color.White, fontSize = messageFontSize, fontWeight = FontWeight.Normal
                 )
             }
         }
@@ -295,19 +278,14 @@ class MessageBoxService : Service(), LifecycleOwner, SavedStateRegistryOwner {
         val windowType = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
         } else {
-            @Suppress("DEPRECATION")
-            WindowManager.LayoutParams.TYPE_PHONE
+            @Suppress("DEPRECATION") WindowManager.LayoutParams.TYPE_PHONE
         }
 
         val displayMetrics = resources.displayMetrics
         val adParams = WindowManager.LayoutParams(
-            displayMetrics.widthPixels,
-            WindowManager.LayoutParams.WRAP_CONTENT,
-            windowType,
+            displayMetrics.widthPixels, WindowManager.LayoutParams.WRAP_CONTENT, windowType,
             // Focusable so links are clickable (no FLAG_NOT_FOCUSABLE)
-            WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or
-                    WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,
-            PixelFormat.TRANSLUCENT
+            WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN, PixelFormat.TRANSLUCENT
         ).apply {
             gravity = Gravity.CENTER
             windowAnimations = 0
@@ -360,67 +338,47 @@ class MessageBoxService : Service(), LifecycleOwner, SavedStateRegistryOwner {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(Color(0xCC000000)),
-                contentAlignment = Alignment.Center
+                    .background(Color(0xCC000000)), contentAlignment = Alignment.Center
             ) {
                 Surface(
                     modifier = Modifier
                         .fillMaxWidth(0.9f)
-                        .padding(vertical = 24.dp),
-                    shape = RoundedCornerShape(12.dp),
-                    color = Color.White,
-                    shadowElevation = 8.dp
+                        .padding(vertical = 24.dp), shape = RoundedCornerShape(12.dp), color = Color.White, shadowElevation = 8.dp
                 ) {
                     Column(
-                        modifier = Modifier.padding(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                        modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         Text(
-                            text = "广告剩余: ${adCountdown}秒",
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = Color.Black,
-                            modifier = Modifier.padding(bottom = 4.dp)
+                            text = "广告剩余: ${adCountdown}秒", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = Color.Black, modifier = Modifier.padding(bottom = 4.dp)
                         )
 
                         LazyColumn(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .heightIn(max = 300.dp),
-                            verticalArrangement = Arrangement.spacedBy(6.dp)
+                                .heightIn(max = 300.dp), verticalArrangement = Arrangement.spacedBy(6.dp)
                         ) {
                             items(adItems) { item ->
                                 if (item.link != null) {
                                     // Clickable link item
-                                    Text(
-                                        text = item.content,
-                                        fontSize = 13.sp,
-                                        color = Color(0xFF2196F3),
-                                        textDecoration = TextDecoration.Underline,
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .clickable {
-                                                try {
-                                                    val intent = Intent(
-                                                        Intent.ACTION_VIEW,
-                                                        item.link.toUri()
-                                                    ).apply {
-                                                        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                                                    }
-                                                    context.startActivity(intent)
-                                                } catch (e: Exception) {
-                                                    Timber.e(e, "Failed to open ad link")
+                                    Text(text = item.content, fontSize = 13.sp, color = Color(0xFF2196F3), textDecoration = TextDecoration.Underline, modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clickable {
+                                            try {
+                                                val intent = Intent(
+                                                    Intent.ACTION_VIEW, item.link.toUri()
+                                                ).apply {
+                                                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                                                 }
+                                                context.startActivity(intent)
+                                            } catch (e: Exception) {
+                                                Timber.e(e, "Failed to open ad link")
                                             }
-                                            .padding(vertical = 4.dp)
-                                    )
+                                        }
+                                        .padding(vertical = 4.dp))
                                 } else {
                                     // Plain text item
                                     Text(
-                                        text = item.content,
-                                        fontSize = 13.sp,
-                                        color = Color.DarkGray,
-                                        modifier = Modifier
+                                        text = item.content, fontSize = 13.sp, color = Color.DarkGray, modifier = Modifier
                                             .fillMaxWidth()
                                             .padding(vertical = 4.dp)
                                     )
@@ -429,15 +387,11 @@ class MessageBoxService : Service(), LifecycleOwner, SavedStateRegistryOwner {
                         }
 
                         HorizontalDivider(
-                            modifier = Modifier.padding(vertical = 4.dp),
-                            color = Color.LightGray
+                            modifier = Modifier.padding(vertical = 4.dp), color = Color.LightGray
                         )
 
                         Text(
-                            text = "官网注册账号并赞助，可以免广告\n一天2毛5，用多久扣多少，精确到分钟。",
-                            fontSize = 12.sp,
-                            color = Color.Gray,
-                            modifier = Modifier.align(Alignment.CenterHorizontally)
+                            text = "官网注册账号并赞助，可以免广告\n一天2毛5，用多久扣多少，精确到分钟。", fontSize = 12.sp, color = Color.Gray, modifier = Modifier.align(Alignment.CenterHorizontally)
                         )
                     }
                 }
@@ -455,11 +409,7 @@ class MessageBoxService : Service(), LifecycleOwner, SavedStateRegistryOwner {
             if (text.isNotEmpty()) {
                 applyMessage(
                     MessageData(
-                        text = text,
-                        x = it.getIntExtra("x", 1280),
-                        y = it.getIntExtra("y", 720),
-                        fontSize = it.getFloatExtra("fontSize", 15f),
-                        duration = it.getLongExtra("duration", 2000L)
+                        text = text, x = it.getIntExtra("x", 1280), y = it.getIntExtra("y", 720), fontSize = it.getFloatExtra("fontSize", 15f), duration = it.getLongExtra("duration", 2000L)
                     )
                 )
             }
@@ -478,8 +428,7 @@ class MessageBoxService : Service(), LifecycleOwner, SavedStateRegistryOwner {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
                 // API 34+: must specify a foreground service type matching the manifest
                 startForeground(
-                    1000, notification,
-                    ServiceInfo.FOREGROUND_SERVICE_TYPE_REMOTE_MESSAGING
+                    1000, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_REMOTE_MESSAGING
                 )
             } else {
                 startForeground(1000, notification)

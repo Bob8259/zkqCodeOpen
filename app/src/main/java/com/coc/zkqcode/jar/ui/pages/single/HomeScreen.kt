@@ -361,7 +361,7 @@ fun HomeScreen(
                 )
             }, text = {
                 Text(
-                    text = "确认要删除所有数据吗？此操作不可撤销，将删除辅助设置、账号信息等全部数据。", style = MaterialTheme.typography.bodyMedium
+                    text = "确认要删除所有数据吗？\n此操作不可撤销，将删除辅助设置、账号信息等全部数据。\n\n清除数据后，辅助将自动关闭，请手动重启辅助。", style = MaterialTheme.typography.bodyMedium
                 )
             }, confirmButton = {
                 Row {
@@ -370,6 +370,7 @@ fun HomeScreen(
                     }
                     TextButton(onClick = {
                         showCleanAllConfirmation = false
+                        // Delete all data files and exit immediately without saving GlobalVars
                         scope.launch {
                             val sdPath = Environment.getExternalStorageDirectory().path
                             withContext(Dispatchers.IO) {
@@ -377,7 +378,7 @@ fun HomeScreen(
                                     "rm -rf $sdPath/zkqFiles", isCheckIsPlaying = false
                                 )
                             }
-                            showMsg("全部数据清除成功")
+                            AppExitHelper.exitApplication(context)
                         }
                     }) {
                         Text("确认")

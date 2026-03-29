@@ -10,8 +10,8 @@ object GlobalSettings {
     val EXTRACT_CN = SettingDef("extract_cn", "提取国服存档到此序号", "1", "GLOBAL_SETTINGS")
     val EXTRACT_GLOBAL = SettingDef("extract_global", "提取国际服存档到此序号", "1", "GLOBAL_SETTINGS")
 
-    val EMAIL = SettingDef("email", "邮箱", "", "GLOBAL_SETTINGS")
-    val PASSWORD = SettingDef("password", "密码", "", "GLOBAL_SETTINGS")
+    val EMAIL = SettingDef("email", "邮箱", "free@zkq", "GLOBAL_SETTINGS")
+    val PASSWORD = SettingDef("password", "密码", "free_for_testing", "GLOBAL_SETTINGS")
     val ENTER_GAME_TIMER = SettingDef("enter_game_timer", "进入游戏计时", "80", "GLOBAL_SETTINGS")
     val DELAY_MULTIPLIER = SettingDef(
         "delay_multiplier", "延时倍率(低性能设备建议设置1.5-2.5)", "1", "GLOBAL_SETTINGS"
