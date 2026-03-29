@@ -14,10 +14,10 @@ import org.json.JSONArray
 
 private val httpClient = OkHttpClient()
 
-// Fetch ads from the server, display them in an overlay for 15 seconds,
+// Fetch ads from the server, display them in an overlay for the given duration,
 // bracketed by native start/end markers for tamper detection.
 // Falls back to a simple countdown if the API request fails.
-suspend fun displayAds() {
+suspend fun displayAds(time: Int = 15) {
     if (!GlobalVars.isShowAd) return
     while (!GlobalVars.isPlaying.value) {
         delay(1000)
@@ -47,17 +47,16 @@ suspend fun displayAds() {
     }
 
     if (adItems != null) {
-        ShowMessage.showAdOverlay(adItems)
-        delay(15_000L)
+        ShowMessage.showAdOverlay(adItems, time)
+        delay(time * 1000L)
         ShowMessage.dismissAdOverlay()
     } else {
         // Fallback: simple countdown when API is unreachable
-        for (remaining in 15 downTo 1) {
-            ShowMessage("广告倒计时：${remaining}秒")
+        for (remaining in time downTo 1) {
+            ShowMessage("获取广告失败，展示默认广告中：\n广告倒计时：${remaining}秒\n官网注册账号并赞助，可以免广告\n一天2毛5，用多久扣多少，精确到分钟。")
             delay(1000L)
         }
     }
 
-    ShowMessage("广告已结束")
     RustTools.markAdEnd()
 }

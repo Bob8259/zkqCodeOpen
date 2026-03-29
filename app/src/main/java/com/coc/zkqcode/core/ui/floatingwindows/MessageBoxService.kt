@@ -4,7 +4,6 @@ import android.app.Service
 import android.content.Intent
 import android.content.pm.ServiceInfo
 import android.graphics.PixelFormat
-import android.net.Uri
 import android.os.Build
 import android.os.IBinder
 import android.view.Gravity
@@ -42,6 +41,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.net.toUri
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
@@ -50,16 +50,16 @@ import androidx.savedstate.SavedStateRegistry
 import androidx.savedstate.SavedStateRegistryController
 import androidx.savedstate.SavedStateRegistryOwner
 import androidx.savedstate.setViewTreeSavedStateRegistryOwner
-import timber.log.Timber
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import java.util.concurrent.atomic.AtomicBoolean
 
 // Lightweight message payload for in-process delivery via SharedFlow
@@ -78,11 +78,16 @@ data class AdItem(
     val topAd: Int
 )
 
+// Payload carrying ad items and the display duration for the overlay
+data class AdOverlayData(
+    val items: List<AdItem>,
+    val durationSeconds: Int
+)
+
 class MessageBoxService : Service(), LifecycleOwner, SavedStateRegistryOwner {
 
     companion object {
         private const val INACTIVITY_TIMEOUT_MS = 2500L
-        private const val AD_COUNTDOWN_SECONDS = 15
 
         // Flag to let MessageBoxHelper bypass Binder IPC when the service is alive
         val isRunning = AtomicBoolean(false)
@@ -94,7 +99,7 @@ class MessageBoxService : Service(), LifecycleOwner, SavedStateRegistryOwner {
         )
 
         // Ad overlay channel; null signals dismiss
-        val adFlow = MutableSharedFlow<List<AdItem>?>(
+        val adFlow = MutableSharedFlow<AdOverlayData?>(
             extraBufferCapacity = 1,
             onBufferOverflow = BufferOverflow.DROP_OLDEST
         )
@@ -125,11 +130,12 @@ class MessageBoxService : Service(), LifecycleOwner, SavedStateRegistryOwner {
     // To handle multiple concurrent requests or updates, we might need a trigger
     private var showTrigger by mutableLongStateOf(0L)
 
-    // --- Ad overlay state (second window, independent from debug messages) ---
+    // --- Ad overlay state (second window, independent of debug messages) ---
     private var adComposeView: ComposeView? = null
     private var adItems by mutableStateOf<List<AdItem>>(emptyList())
     private var isAdVisible by mutableStateOf(false)
-    private var adCountdown by mutableIntStateOf(AD_COUNTDOWN_SECONDS)
+    private var adDurationSeconds by mutableIntStateOf(15)
+    private var adCountdown by mutableIntStateOf(15)
 
     override fun onCreate() {
         super.onCreate()
@@ -150,10 +156,11 @@ class MessageBoxService : Service(), LifecycleOwner, SavedStateRegistryOwner {
 
         // Collect ad overlay show/dismiss signals
         serviceScope.launch {
-            adFlow.collect { items ->
-                if (items != null) {
-                    adItems = items.sortedByDescending { it.topAd }
-                    adCountdown = AD_COUNTDOWN_SECONDS
+            adFlow.collect { data ->
+                if (data != null) {
+                    adItems = data.items.sortedByDescending { it.topAd }
+                    adDurationSeconds = data.durationSeconds
+                    adCountdown = data.durationSeconds
                     isAdVisible = true
                     showAdWindow()
                 } else {
@@ -338,10 +345,10 @@ class MessageBoxService : Service(), LifecycleOwner, SavedStateRegistryOwner {
     private fun AdOverlayContent() {
         val context = LocalContext.current
 
-        // Countdown timer that ticks every second
-        LaunchedEffect(isAdVisible) {
+        // Countdown timer that ticks every second using dynamic duration
+        LaunchedEffect(isAdVisible, adDurationSeconds) {
             if (isAdVisible) {
-                for (remaining in AD_COUNTDOWN_SECONDS downTo 1) {
+                for (remaining in adDurationSeconds downTo 1) {
                     adCountdown = remaining
                     delay(1000L)
                 }
@@ -369,7 +376,7 @@ class MessageBoxService : Service(), LifecycleOwner, SavedStateRegistryOwner {
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         Text(
-                            text = "广告",
+                            text = "广告剩余: ${adCountdown}秒",
                             fontSize = 16.sp,
                             fontWeight = FontWeight.Bold,
                             color = Color.Black,
@@ -396,7 +403,7 @@ class MessageBoxService : Service(), LifecycleOwner, SavedStateRegistryOwner {
                                                 try {
                                                     val intent = Intent(
                                                         Intent.ACTION_VIEW,
-                                                        Uri.parse(item.link)
+                                                        item.link.toUri()
                                                     ).apply {
                                                         addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                                                     }
@@ -427,7 +434,7 @@ class MessageBoxService : Service(), LifecycleOwner, SavedStateRegistryOwner {
                         )
 
                         Text(
-                            text = "广告剩余: ${adCountdown}秒",
+                            text = "官网注册账号并赞助，可以免广告\n一天2毛5，用多久扣多少，精确到分钟。",
                             fontSize = 12.sp,
                             color = Color.Gray,
                             modifier = Modifier.align(Alignment.CenterHorizontally)

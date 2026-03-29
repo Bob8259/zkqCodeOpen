@@ -247,7 +247,7 @@ fun LoginScreen(onAdFreeClick: () -> Unit = {}) {
         )
         if (showMessage) {
             Text(
-                text = "登录后免广告，运行更高效！不登陆也可以运行。免广告每天花费0.2卡班积分，用多久扣多久。",
+                text = "登录后免广告，运行更高效！不登陆也可以运行。免广告每天花费0.25卡班积分，用多久扣多久。",
                 style = MaterialTheme.typography.labelMedium
             )
             Text(

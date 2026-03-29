@@ -38,9 +38,9 @@ object ShowMessage {
     }
 
     // Show the ad overlay with clickable links via MessageBoxService
-    fun showAdOverlay(adItems: List<AdItem>) {
+    fun showAdOverlay(adItems: List<AdItem>, durationSeconds: Int) {
         contextRef?.get()?.let { context ->
-            MessageBoxHelper.showAdOverlay(context, adItems)
+            MessageBoxHelper.showAdOverlay(context, adItems, durationSeconds)
         } ?: logAndRestart("ShowMessage: Context not initialized or released!")
     }
 
