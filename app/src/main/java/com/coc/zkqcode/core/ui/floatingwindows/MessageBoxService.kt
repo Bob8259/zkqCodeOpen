@@ -391,7 +391,10 @@ class MessageBoxService : Service(), LifecycleOwner, SavedStateRegistryOwner {
                         )
 
                         Text(
-                            text = "官网注册账号并赞助，可以免广告。每天价格仅需2毛5，用多久扣多少，精确到分钟。\n免费用户不限制多开数量，但多开超过2个后广告时间会增加。\n\n广告播放时，只能退出辅助或等待，不能进行其他操作。", fontSize = 12.sp, color = Color.Gray, modifier = Modifier.align(Alignment.CenterHorizontally)
+                            text = "官网注册账号并赞助，可以免广告。每天价格仅需2毛5，用多久扣多少，精确到分钟。\n\n免费用户不限制多开数量，但多开超过2个后广告时间会成比例增加。\n\n广告播放时，只能退出辅助或等待，不能进行其他操作。",
+                            fontSize = 10.sp,
+                            color = Color.Gray,
+                            modifier = Modifier.align(Alignment.CenterHorizontally)
                         )
                     }
                 }

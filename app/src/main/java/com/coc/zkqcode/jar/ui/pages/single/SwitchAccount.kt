@@ -186,7 +186,6 @@ fun SwitchAccount(onClose: () -> Unit) {
                                 GlobalVars.isSwitchingAccount = true
                                 GlobalVars.updateWindowPosition = true
                                 val accNum = accountNumber.ifEmpty { "1" }
-                                ShowMessage("正在切换账号$accNum")
                                 // 1. Get Game Version
                                 val versionKey = "${ACCOUNT_SETTINGS.GAME_VERSION.key}$accNum"
                                 val versionStr = GlobalVars.configStates[versionKey]?.value

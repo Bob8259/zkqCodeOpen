@@ -47,7 +47,7 @@ suspend fun displayAds() {
         null
     }
     GlobalVars.absorbYPercentage = 10
-    InGamesVars.isAdPlaying = true
+    GlobalVars.isAdPlaying = true
     if (adItems != null) {
         ShowMessage.showAdOverlay(adItems, InGamesVars.adTime)
         delay(InGamesVars.adTime * 1000L)
@@ -59,7 +59,7 @@ suspend fun displayAds() {
             delay(1000L)
         }
     }
-    InGamesVars.isAdPlaying = false
+    GlobalVars.isAdPlaying = false
     GlobalVars.absorbYPercentage = 50
     RustTools.markAdEnd()
 }
