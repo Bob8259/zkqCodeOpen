@@ -65,7 +65,7 @@ suspend fun builderBaseAttack(): Boolean {
         val battleTimes = getConfigRuntime(Schema.BUILDER_BASE_SETTINGS.SWITCH_ACCOUNT_AFTER_BATTLES.key).toInt()
         repeat(battleTimes) { index ->
             if (!realAttack(attackType, index + 1, battleTimes)) return false
-            if (index % 5 == 0) {
+            if ((index + 1) % 5 == 0) {
                 if (!enterMainScreen()) return false
                 displayAds()
                 collectBuilderBaseResources()
@@ -90,28 +90,23 @@ private suspend fun realAttack(mode: String, battleNumber: Int = 1, battleTimes:
         ShowMessage("账号${InGamesVars.currentAccountNumber}，对战中，第${battleNumber}/${battleTimes}局\n若${"%.1f".format(remainingMin)}分钟内未完成对战，则强制重启")
 
         // Capture a single screenshot and reuse it for all state checks in this iteration
-        val capturedScreen = ScreenCaptureManager.capture(asBitmap = false)
-            as? ScreenCaptureManager.CaptureResult
+        val capturedScreen = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult
 
         val trainTroopButton = findMultiColors(byteBuffer = capturedScreen, schema = MyColors.TrainTroops)
-
         if (trainTroopButton != null) {
             TouchActions.tap(86, 638, delayTime = 800)
             continue // State matched, skip remaining checks
         }
         if (!checkReconnections()) return false
         val builderBaseStarBonus = findMultiColors(byteBuffer = capturedScreen, schema = MyColors.BuilderBaseStarBonus)
-
         if (builderBaseStarBonus != null) {
             TouchActions.tap(builderBaseStarBonus.x + 10, builderBaseStarBonus.y + 10, delayTime = 200)
             continue
         }
         val attackNow = findMultiColors(byteBuffer = capturedScreen, schema = MyColors.AttackNow)
-
         if (attackNow != null) {
             TouchActions.tap(attackNow.x, attackNow.y, delayTime = 200)
             val warning = findMultiColorsUntil(schemas = listOf(MyColors.TrainTroopsWarning), duration = 500)
-
             if (warning != null) {
                 clickRightBottom(2)
                 builderBaseTrainTroops()
@@ -119,13 +114,16 @@ private suspend fun realAttack(mode: String, battleNumber: Int = 1, battleTimes:
             continue
         }
         val search = findMultiColors(byteBuffer = capturedScreen, schema = MyColors.CancelAttackSearch)
-
         if (search != null) {
             waitLoop()
             continue
         }
+        val builderBaseEndBattle = findMultiColors(byteBuffer = capturedScreen, schema = MyColors.BuilderBackToCamp)
+        if (builderBaseEndBattle != null) {
+            TouchActions.tap(builderBaseEndBattle.x, builderBaseEndBattle.y, delayTime = 200)
+            break
+        }
         val switchTroopButton = findMultiColors(byteBuffer = capturedScreen, schema = MyColors.SwitchTroopButton)
-
         if (switchTroopButton != null) {
             // Use shorter delay on first detection, normal delay afterward
             if (isFirstSwitchTroop) {
@@ -142,12 +140,7 @@ private suspend fun realAttack(mode: String, battleNumber: Int = 1, battleTimes:
             }
             continue
         }
-        val builderBaseEndBattle = findMultiColors(byteBuffer = capturedScreen, schema = MyColors.BuilderBackToCamp)
 
-        if (builderBaseEndBattle != null) {
-            TouchActions.tap(builderBaseEndBattle.x, builderBaseEndBattle.y, delayTime = 200)
-            break
-        }
         val machineSkills = findMultiColors(byteBuffer = capturedScreen, schema = MyColors.MachineSkills)
 
         if (machineSkills != null) {
@@ -163,7 +156,7 @@ private suspend fun deployAndExit() {
     val exitButton = findMultiColorsUntil(schemas = listOf(MyColors.ExitBattleButton), duration = 2000)
     if (exitButton != null) {
         TouchActions.tap(exitButton.x, exitButton.y, delayTime = 200)
-        TouchActions.tap(775, 469, delayTime = 100)
+        TouchActions.tap(775, 469, delayTime = 400)//Confirm exit
     }
 }
 

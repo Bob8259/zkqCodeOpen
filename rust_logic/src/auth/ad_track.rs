@@ -101,7 +101,6 @@ fn mark_ad_end() {
 
 /// Checks that ads are being displayed at least once per AD_MAX_INTERVAL_MS
 /// when IS_AUTH_PASS is false. Seeds the timestamp on first invocation.
-#[cfg(not(debug_assertions))]
 #[inline(always)]
 pub fn check_ad_display_frequency() {
     if is_auth_pass() {

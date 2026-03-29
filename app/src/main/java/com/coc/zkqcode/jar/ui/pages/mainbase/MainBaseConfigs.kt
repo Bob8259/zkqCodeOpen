@@ -318,8 +318,9 @@ fun LazyListScope.MainBaseConfig(
                     SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.CLAIM_CAPITAL_GOLD.key}_c$index")
                     SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.DONATE_CAPITAL_GOLD.key}_c$index")
                     SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.CLAIM_FREE_SHOP_REWARDS.key}_c$index")
-
+                    */
                     SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.CLAIM_ACHIEVEMENT_GEMS.key}_c$index")
+                    /*
                     SettingSwitchIcon(
                         key = "${MAIN_BASE_SETTINGS.USE_TEMP_ITEMS.key}_c$index",
                         explain = "勾选此选项后，辅助会使用研究浓汤和建筑工人大餐。并且为了防止重复使用导致道具失效，每次只会使用一个道具。"
