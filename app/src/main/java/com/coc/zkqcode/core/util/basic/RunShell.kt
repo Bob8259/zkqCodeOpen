@@ -1,8 +1,6 @@
 package com.coc.zkqcode.core.util.basic
 
-import com.coc.zkqcode.core.data.database.GlobalVars
 import com.topjohnwu.superuser.Shell
-import kotlinx.coroutines.delay
 
 /**
  * Utility for running shell commands.
@@ -14,9 +12,7 @@ object RunShell {
      */
     suspend fun run(cmd: String, isCheckIsPlaying: Boolean = true): List<String> {
         if (isCheckIsPlaying) {
-            while (!GlobalVars.isPlaying.value) {
-                delay(1000)//the user paused the script, then we should also stop
-            }
+            waitForPlay()
         }
         return Shell.cmd(cmd).exec().out
     }
@@ -27,9 +23,7 @@ object RunShell {
      */
     suspend fun runNoOutput(cmd: String, isCheckIsPlaying: Boolean = true) {
         if (isCheckIsPlaying) {
-            while (!GlobalVars.isPlaying.value) {
-                delay(1000)//the user paused the script, then we should also stop
-            }
+            waitForPlay()
         }
         Shell.cmd(cmd).exec()
     }
@@ -40,9 +34,7 @@ object RunShell {
      */
     suspend fun runAndGetFirst(cmd: String, isCheckIsPlaying: Boolean = true): String {
         if (isCheckIsPlaying) {
-            while (!GlobalVars.isPlaying.value) {
-                delay(1000)//the user paused the script, then we should also stop
-            }
+            waitForPlay()
         }
         return run(cmd, isCheckIsPlaying).firstOrNull { it.isNotBlank() } ?: ""
     }
