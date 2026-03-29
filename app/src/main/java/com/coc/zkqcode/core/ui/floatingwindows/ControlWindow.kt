@@ -41,7 +41,6 @@ import com.coc.zkqcode.core.util.exit.AppExitHelper
 import com.coc.zkqcode.core.util.exit.AppExitHelper.restoreDefaultInputMethod
 import com.coc.zkqcode.statehelper.AppMode
 import com.coc.zkqcode.statehelper.AppStateManager
-import com.coc.zkqcode.jar.code.universal.InGamesVars
 import kotlinx.coroutines.delay
 
 // Base DPI for consistent physical size across devices
@@ -180,7 +179,7 @@ fun ControlWindow(
                             ControlState.EXPANDED -> ControlState.COLLAPSED
                         }
                         // Skip auto-pause when ad is playing
-                        if (wasCollapsed && isPlaying && !InGamesVars.isAdPlaying) {
+                        if (wasCollapsed && isPlaying && !GlobalVars.isAdPlaying) {
                             ShowMessage("检测到悬浮窗展开，辅助已自动暂停，避免干扰用户操作", false)
                             isPlaying = false
                         }
@@ -198,7 +197,7 @@ fun ControlWindow(
                         .clickable {
                             internalInteractionCount++
                             // Skip confirmation and exit immediately when ad is playing
-                            if (InGamesVars.isAdPlaying) {
+                            if (GlobalVars.isAdPlaying) {
                                 AppExitHelper.exitApplication(context)
                                 return@clickable
                             }
@@ -213,7 +212,7 @@ fun ControlWindow(
                         .padding(4.dp)
                         .clickable {
                             // Disable setting icon when ad is playing
-                            if (InGamesVars.isAdPlaying) return@clickable
+                            if (GlobalVars.isAdPlaying) return@clickable
                             internalInteractionCount++
                             AppStateManager.setMode(AppMode.Main)
                             restoreDefaultInputMethod()
@@ -228,7 +227,7 @@ fun ControlWindow(
                         .padding(4.dp)
                         .clickable {
                             // Disable switch account icon when ad is playing
-                            if (InGamesVars.isAdPlaying) return@clickable
+                            if (GlobalVars.isAdPlaying) return@clickable
                             internalInteractionCount++
                             AppStateManager.setMode(AppMode.SwitchAccount)
                             restoreDefaultInputMethod()
@@ -243,7 +242,7 @@ fun ControlWindow(
                         .padding(4.dp)
                         .clickable {
                             // Disable play/pause icon when ad is playing
-                            if (InGamesVars.isAdPlaying) return@clickable
+                            if (GlobalVars.isAdPlaying) return@clickable
                             internalInteractionCount++
                             isPlaying = !isPlaying
                             if (!isPlaying) {
@@ -265,7 +264,7 @@ fun ControlWindow(
                         .padding(4.dp)
                         .clickable {
                             // Disable play/pause icon when ad is playing
-                            if (InGamesVars.isAdPlaying) return@clickable
+                            if (GlobalVars.isAdPlaying) return@clickable
                             internalInteractionCount++
                             isPlaying = !isPlaying
                             if (!isPlaying) {
@@ -283,7 +282,7 @@ fun ControlWindow(
                         .padding(4.dp)
                         .clickable {
                             // Disable switch account icon when ad is playing
-                            if (InGamesVars.isAdPlaying) return@clickable
+                            if (GlobalVars.isAdPlaying) return@clickable
                             internalInteractionCount++
                             AppStateManager.setMode(AppMode.SwitchAccount)
                             restoreDefaultInputMethod()
@@ -298,7 +297,7 @@ fun ControlWindow(
                         .padding(4.dp)
                         .clickable {
                             // Disable setting icon when ad is playing
-                            if (InGamesVars.isAdPlaying) return@clickable
+                            if (GlobalVars.isAdPlaying) return@clickable
                             internalInteractionCount++
                             AppStateManager.setMode(AppMode.Main)
                             restoreDefaultInputMethod()
@@ -314,7 +313,7 @@ fun ControlWindow(
                         .clickable {
                             internalInteractionCount++
                             // Skip confirmation and exit immediately when ad is playing
-                            if (InGamesVars.isAdPlaying) {
+                            if (GlobalVars.isAdPlaying) {
                                 AppExitHelper.exitApplication(context)
                                 return@clickable
                             }
@@ -338,7 +337,7 @@ fun ControlWindow(
                             ControlState.EXPANDED -> ControlState.COLLAPSED
                         }
                         // Skip auto-pause when ad is playing
-                        if (wasCollapsed && isPlaying && !InGamesVars.isAdPlaying) {
+                        if (wasCollapsed && isPlaying && !GlobalVars.isAdPlaying) {
                             ShowMessage("检测到悬浮窗展开，辅助已自动暂停，避免干扰用户操作", false)
                             isPlaying = false
                         }

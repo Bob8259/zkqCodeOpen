@@ -13,20 +13,30 @@ object GlobalVars {
     // --- Volatile fields (no Compose reactivity, thread-safe reads/writes) ---
     @Volatile
     var pluginUI: MainCode? = null
+
     @Volatile
     var serverPath: String = ""
+
     @Volatile
     var isConfigLoaded: Boolean = false
+
     @Volatile
     var defaultInputMethod: String? = null
+
     @Volatile
     var isSwitchingAccount: Boolean = false
+
     @Volatile
     var absorbEdge: Int = 0 // 1: Left, 0: Right
+
     @Volatile
     var absorbYPercentage: Int = 50 // Percentage of Y axis
+
     @Volatile
     var updateWindowPosition: Boolean = false
+
+    @Volatile
+    var isAdPlaying: Boolean = false
     var isShowAd: Boolean = true
 
     // --- Compose-reactive fields (observed by UI for recomposition) ---

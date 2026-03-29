@@ -11,9 +11,14 @@ import com.coc.zkqcode.jar.code.universal.InGamesVars
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.smalltools.StorageKeys
 import com.coc.zkqcode.jar.code.universal.smalltools.checkMemoryFile
+import com.coc.zkqcode.jar.code.universal.smalltools.getBooleanConfigRuntime
 import com.coc.zkqcode.jar.code.universal.smalltools.writeMemory
+import com.coc.zkqcode.jar.ui.schema.Schema
 
 suspend fun mainBaseTrainTroops(): Boolean {
+    val isAttackEnabled = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.AUTO_ATTACK.key)
+    val isManualTrainEnabled = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.MANUAL_TRAINING.key)
+    if (!isAttackEnabled || isManualTrainEnabled) return true
     val storageKey = StorageKeys.withAccountNumber(StorageKeys.MAIN_BASE_TRAIN_TROOPS, InGamesVars.currentAccountNumber)
 
     if (checkMemoryFile(storageKey, 1440)) {

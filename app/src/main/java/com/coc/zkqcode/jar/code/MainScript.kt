@@ -33,7 +33,7 @@ suspend fun runMainScript() {
     ShowMessage("检测到设置已更新\n保存设置中，即将重新运行")
     delay(2000)
     userAuth()
-    batchCreateAccounts()//Create all needed accounts first.
+
     // 1. Initialize/update local memory state
     val isBatchCreate = getConfigOrStop(Schema.GLOBAL_SETTINGS.BATCH_CREATE_ACCOUNT.key) == "1"
 
@@ -65,6 +65,7 @@ suspend fun runMainScript() {
         GameVersion.fromId(getConfigOrStop("${Schema.ACCOUNT_SETTINGS.GAME_VERSION.key}${InGamesVars.currentAccountNumber}").toInt())
     }
     InGamesVars.adTime = 15.coerceAtLeast(accountTotal * 8)
+    batchCreateAccounts()//Create all needed accounts first.
     while (currentCoroutineContext().isActive) {
 //       runTestCode()
 

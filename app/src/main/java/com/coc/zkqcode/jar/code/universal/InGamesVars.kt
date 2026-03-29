@@ -28,7 +28,4 @@ object InGamesVars {
     @Volatile
     var currentGameVersion: GameVersion = GameVersion.CN
     var adTime: Int = 15
-
-    @Volatile
-    var isAdPlaying: Boolean = false
 }

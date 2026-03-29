@@ -1,5 +1,6 @@
 package com.coc.zkqcode.jar.ui.components
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -471,23 +472,26 @@ private fun CustomCheckBox(
     }
 }
 
-// Rounded-corner white card for grouping related settings
+// Rounded-corner white card for grouping related settings, with built-in AnimatedVisibility support
 @Composable
 fun SettingSection(
     modifier: Modifier = Modifier,
+    visible: Boolean = true,
     content: @Composable () -> Unit
 ) {
-    Surface(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(vertical = 4.dp),
-        shape = RoundedCornerShape(12.dp),
-        color = Color.White,
-        shadowElevation = 8.dp,
-        tonalElevation = 5.dp
-    ) {
-        Column(modifier = Modifier.padding(horizontal = 10.dp, vertical = 8.dp)) {
-            content()
+    AnimatedVisibility(visible = visible) {
+        Surface(
+            modifier = modifier
+                .fillMaxWidth()
+                .padding(vertical = 4.dp),
+            shape = RoundedCornerShape(12.dp),
+            color = Color.White,
+            shadowElevation = 8.dp,
+            tonalElevation = 5.dp
+        ) {
+            Column(modifier = Modifier.padding(horizontal = 10.dp, vertical = 8.dp)) {
+                content()
+            }
         }
     }
 }
