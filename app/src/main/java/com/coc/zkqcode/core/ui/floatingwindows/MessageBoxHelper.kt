@@ -50,9 +50,10 @@ object MessageBoxHelper {
     }
 
     // Show the ad overlay via MessageBoxService's second ComposeView window
-    fun showAdOverlay(context: Context, adItems: List<AdItem>) {
+    fun showAdOverlay(context: Context, adItems: List<AdItem>, durationSeconds: Int) {
+        val payload = AdOverlayData(items = adItems, durationSeconds = durationSeconds)
         if (MessageBoxService.isRunning.get()) {
-            MessageBoxService.adFlow.tryEmit(adItems)
+            MessageBoxService.adFlow.tryEmit(payload)
             return
         }
 
@@ -64,7 +65,7 @@ object MessageBoxHelper {
             context.startService(intent)
         }
         Handler(Looper.getMainLooper()).postDelayed({
-            MessageBoxService.adFlow.tryEmit(adItems)
+            MessageBoxService.adFlow.tryEmit(payload)
         }, 300L)
     }
 
