@@ -22,19 +22,15 @@ object ShowMessage {
         }
         val now = System.currentTimeMillis()
         val elapsed = now - lastShowTime
-        // Global throttle: skip any message within 200ms to reduce resource cost
-        if (elapsed < 200) {
-            return
-        }
-        // Dedup: skip identical messages within 500ms
-        if (text == lastMessage && elapsed < 500) {
-            return
-        }
+        val shouldShow = elapsed >= 200 && !(text == lastMessage && elapsed < 500)
 
         lastMessage = text
         lastShowTime = now
         contextRef?.get()?.let { context ->
-            showFloatingMessage(context = context, text = text)
+            // Throttle and dedup only gate the floating message; Timber always logs
+            if (shouldShow) {
+                showFloatingMessage(context = context, text = text)
+            }
             Timber.tag("zkq_debug").v("Verbose: $text")
         } ?: logAndRestart("ShowMessage: Context not initialized or released!")
     }
