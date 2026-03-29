@@ -26,7 +26,7 @@ private const val GOLD_FULL_X_THRESHOLD = 1017
 private const val ELIXIR_FULL_X_THRESHOLD = 1017
 private const val DARK_ELIXIR_FULL_X_THRESHOLD = 1080
 
-suspend fun searchOpponentsAndDeployTroops() {
+suspend fun searchOpponentsAndDeployTroops(): Boolean {
 
     var targetGold = getConfigRuntime(Schema.MAIN_BASE_SETTINGS.GOLD_REQUIREMENT.key).toInt()
     var targetElixir = getConfigRuntime(Schema.MAIN_BASE_SETTINGS.ELIXIR_REQUIREMENT.key).toInt()
@@ -89,19 +89,27 @@ suspend fun searchOpponentsAndDeployTroops() {
         ShowMessage("账号${InGamesVars.currentAccountNumber}，${fullResources.joinToString("、")}已满")
     }
     if (getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.STOP_BATTLE_AFTER_FULL_RESOURCES.key)) {
-        if (targetGold == 0 && targetElixir == 0 && targetDarkElixir == 0) return
+        if (targetGold == 0 && targetElixir == 0 && targetDarkElixir == 0) return false
     }
     var searchTimes = 0
+    var battleStarted = false
     val battleStartTime = System.currentTimeMillis()
     while (System.currentTimeMillis() - battleStartTime < SEARCH_TIMEOUT_MS) {
         val battleIcon = findMultiColorsUntil(schemas = listOf(MyColors.TrainTroops), duration = 500)
         if (battleIcon != null) {
             TouchActions.tap(83, 631, delayTime = 500)
         }
+        // Detect attack cooldown screen; abort search so mainBaseAttack() can skip battle logic
+        val waitForBattle = findMultiColors(schema = MyColors.WaitForBattle)
+        if (waitForBattle != null) {
+            ShowMessage("账号${InGamesVars.currentAccountNumber}，进攻需等待冷却")
+            if (!getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.WAIT_FOR_BATTLE.key))
+                return false
+        }
         val villagerSpeaking = findMultiColors(schema = MyColors.SpeakingVillager)
         val setBaseIcon = findMultiColors(schema = MyColors.SetBaseIcon)
         if (villagerSpeaking != null || setBaseIcon != null) {
-            if (!mainBaseBattleTutorial()) return
+            if (!mainBaseBattleTutorial()) return false
         }
         val searchOpponents = findMultiColors(schema = MyColors.SearchOpponents)
         if (searchOpponents != null) {
@@ -115,7 +123,7 @@ suspend fun searchOpponentsAndDeployTroops() {
         if (insufficientGold != null) {
             break
         }
-        if (!checkReconnections()) return
+        if (!checkReconnections()) return false
         val nextOpponent = findMultiColors(schema = MyColors.NextOpponent)
         if (nextOpponent != null) {
             searchTimes++
@@ -166,6 +174,7 @@ suspend fun searchOpponentsAndDeployTroops() {
                     writeMemory(darkElixirKey, targetDarkElixir.toString())
                 }
 
+                battleStarted = true
                 mainBaseDeployTroops()
                 break
             } else {
@@ -176,6 +185,7 @@ suspend fun searchOpponentsAndDeployTroops() {
         ShowMessage("账号${InGamesVars.currentAccountNumber}，搜索中... ${"%.1f".format(remainingMinutes)}分钟后强制退出")
         delayWithMultiplier(100)
     }
+    return battleStarted
 }
 
 private suspend fun mainBaseBattleTutorial(): Boolean {
