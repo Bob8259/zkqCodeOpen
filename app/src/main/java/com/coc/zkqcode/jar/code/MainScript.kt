@@ -64,7 +64,7 @@ suspend fun runMainScript() {
     } else {
         GameVersion.fromId(getConfigOrStop("${Schema.ACCOUNT_SETTINGS.GAME_VERSION.key}${InGamesVars.currentAccountNumber}").toInt())
     }
-
+    InGamesVars.adTime = 15.coerceAtLeast(accountTotal * 8)
     while (currentCoroutineContext().isActive) {
 //       runTestCode()
 
