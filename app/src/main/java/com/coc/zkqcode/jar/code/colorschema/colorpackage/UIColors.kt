@@ -29,6 +29,8 @@ interface IUIColors {
     val DailyLoginReward: ColorSchema
     val BuilderBaseStarBonus: ColorSchema
     val MiddleGreenButton: ColorSchema
+    val ExclusiveGift: ColorSchema
+    val MorePointCoupon: ColorSchema
 }
 
 object UIColors : IUIColors {
@@ -110,5 +112,13 @@ object UIColors : IUIColors {
     // Middle green confirmation button (e.g. events and helper tutorials)
     override val MiddleGreenButton = ColorSchema.parse(
         577, 526, 704, 567, "86E8BA", "25|0|86E8BA,51|0|86E8BA,76|0|86E8BA,101|0|86E8BA,0|21|3AD48B,25|21|3AD48B,51|21|3AD48B,76|21|3AD48B,101|21|3AD48B", 0, 0.9, "中心绿色确认（类似活动和帮手教程）"
+    )
+    // Exclusive gift/offer popup indicator
+    override val ExclusiveGift = ColorSchema.parse(
+        1080, 113, 1119, 153, "8A83FF", "8|0|FFFFFF,16|0|FFFFFF,23|0|FFFFFF,31|0|8A83FF,12|8|FFFFFF,32|13|1611EC,13|30|2D25CD,-5|18|1A16ED,31|20|1511E8", 0, 0.9, "垃圾专属礼包"
+    )
+    // More coupons/points button
+    override val MorePointCoupon = ColorSchema.parse(
+        880, 195, 925, 240, "8B83FF", "9|0|FFFFFF,19|0|FFFFFF,18|8|FFFFFF,34|11|716BFD,42|15|2621F0,38|23|1712EB,19|23|0D0D0D,28|23|FAF6F6,37|23|1611EA", 0, 0.9, "更多点券"
     )
 }

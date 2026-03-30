@@ -46,6 +46,7 @@ interface IMainBaseAttackColors {
     val SpellColorAtDeploymentBar: ColorSchema
     val SuperTroopColorAtDeploymentBar: ColorSchema
     val SpecialTroopColorAtDeploymentBar: ColorSchema
+    val WaitForBattle: ColorSchema
 }
 
 object MainBaseAttackColors : IMainBaseAttackColors {
@@ -185,5 +186,9 @@ object MainBaseAttackColors : IMainBaseAttackColors {
     )
     override val SpecialTroopColorAtDeploymentBar = ColorSchema.parse(
         80, 590, 1200, 720, "F7E2D1", "3|0|F7E2D1,6|0|F7E2D1,9|0|F7E2D1,12|0|F7E2D1,0|7|DDC5B2,3|7|DDC5B3,6|7|DFC6B3,9|7|DEC7B3,12|7|DEC6B3", 0, 0.95, "活动兵颜色"
+    )
+    // Indicator shown when attack must wait (e.g. war cooldown)
+    override val WaitForBattle = ColorSchema.parse(
+        70, 480, 525, 585, "9D9D9D", "-8|10|9D9D9D,5|6|9D9D9D,13|6|9D9D9D,20|22|9D9D9D,108|18|9D9D9D,36|25|9D9D9D,22|35|9D9D9D,9|37|9D9D9D,-8|39|9D9D9D", 0, 0.9, "进攻需等待"
     )
 }
