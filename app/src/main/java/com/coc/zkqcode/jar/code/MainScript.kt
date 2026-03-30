@@ -6,13 +6,9 @@ import com.coc.zkqcode.core.util.basic.waitForPlay
 import com.coc.zkqcode.jar.code.auth.displayAds
 import com.coc.zkqcode.jar.code.auth.userAuth
 import com.coc.zkqcode.jar.code.builderbase.playBuilderBase
-import com.coc.zkqcode.jar.code.mainbase.clan.joinClan
-import com.coc.zkqcode.jar.code.universal.buildings.BaseType
 import com.coc.zkqcode.jar.code.mainbase.playMainBase
 import com.coc.zkqcode.jar.code.universal.GameVersion
 import com.coc.zkqcode.jar.code.universal.InGamesVars
-import com.coc.zkqcode.jar.code.universal.buildings.upgrade.detectInstantBuildCost
-import com.coc.zkqcode.jar.code.universal.buildings.walls.calculateResourcesPercentage
 import com.coc.zkqcode.jar.code.universal.create.batchCreateAccounts
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.smalltools.StorageKeys
@@ -20,9 +16,7 @@ import com.coc.zkqcode.jar.code.universal.smalltools.getConfigOrStop
 import com.coc.zkqcode.jar.code.universal.smalltools.readMemory
 import com.coc.zkqcode.jar.code.universal.smalltools.writeGameFiles
 import com.coc.zkqcode.jar.code.universal.smalltools.writeMemory
-import com.coc.zkqcode.jar.code.colorschema.MyColors
-import com.coc.zkqcode.jar.code.mainbase.donate.donateToClan
-import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
+import com.coc.zkqcode.jar.code.mainbase.clan.donateToClan
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
 import com.coc.zkqcode.jar.ui.schema.Schema
 import kotlinx.coroutines.currentCoroutineContext
