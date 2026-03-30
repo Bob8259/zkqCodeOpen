@@ -61,4 +61,5 @@ object MyColors : IUIColors by UIColors, IFeatureColors by FeatureColors, IMainB
     val PreviousDonation = ColorSchema.parse(
         417, 64, 479, 118, "FFFFFF", "-6|0|12CE97,-6|3|13C78D,-6|8|18A761,7|10|18A661,7|7|16B979,7|3|13C78D,7|2|13CA91,7|1|13CC94,7|0|12CE97", 0, 0.9, "上一个捐赠"
     )
+
 }
