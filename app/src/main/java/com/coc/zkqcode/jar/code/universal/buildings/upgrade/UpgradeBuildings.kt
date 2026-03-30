@@ -165,7 +165,7 @@ private suspend fun buildOneNewBuildings(currentBase: BaseType): Boolean {
                     TouchActions.tap(currentTick.x, currentTick.y, delayTime = 500)
                     if (currentBase == BaseType.Main && getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.INSTANT_UPGRADE.key)) {
                         val gemCost = detectInstantBuildCost()
-                        val costThreshold = getConfigRuntime(Schema.MAIN_BASE_SETTINGS.INSTANT_UPGRADE_THRESHOLD.key).toInt()
+                        val costThreshold = getConfigRuntime(Schema.MAIN_BASE_SETTINGS.INSTANT_UPGRADE_THRESHOLD.key).toIntOrNull() ?: logAndRestart("${Schema.MAIN_BASE_SETTINGS.INSTANT_UPGRADE_THRESHOLD.displayName} 必须是数字，请检查配置")
                         ShowMessage("检测到的宝石消耗数量: $gemCost\n设置的宝石消耗限额: $costThreshold")
                         if (gemCost != null && gemCost <= costThreshold) {
                             val upgradeGemIcon = findMultiColorsUntil(

@@ -17,6 +17,7 @@ import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.recognizer.recognizeResources
 import com.coc.zkqcode.jar.code.universal.recognizer.recognizeUpgradeResources
 import com.coc.zkqcode.jar.code.universal.smalltools.getBooleanConfigRuntime
+import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
 import com.coc.zkqcode.jar.code.universal.smalltools.getConfigRuntime
 import com.coc.zkqcode.jar.ui.schema.Schema
 import com.coc.zkqcode.jar.ui.schema.details.BuilderBaseBuildings
@@ -199,7 +200,7 @@ private suspend fun upgradeWalls(currentBase: BaseType, wallType: WallType): Loo
             return LoopAction.Proceed
         } else {
             val wallCost = recognizeUpgradeResources(currentBase)
-            val thresholds = 25.coerceAtLeast(getConfigRuntime(Schema.MAIN_BASE_SETTINGS.UPGRADE_WALL_THRESHOLD.key).toInt())
+            val thresholds = 25.coerceAtLeast(getConfigRuntime(Schema.MAIN_BASE_SETTINGS.UPGRADE_WALL_THRESHOLD.key).toIntOrNull() ?: logAndRestart("${Schema.MAIN_BASE_SETTINGS.UPGRADE_WALL_THRESHOLD.displayName} 必须是数字，请检查配置"))
             // Calculate how many walls we can upgrade while keeping resources above the threshold
             val currentResource = if (wallType == WallType.Gold) resources.gold else resources.elixir
             val currentPercent = if (wallType == WallType.Gold) currentResourcePercentage.gold else currentResourcePercentage.elixir
@@ -372,13 +373,13 @@ private fun getOrderedList(buildings: List<String>, baseType: BaseType): List<St
     val priorityMap = when (baseType) {
         BaseType.Main -> MainBaseBuildingPriorities.all.associate { settingDef ->
             val priorityStr = getConfigRuntime(settingDef.key)
-            val priority = priorityStr.toInt()
+            val priority = priorityStr.toIntOrNull() ?: logAndRestart("${settingDef.displayName} 必须是数字，请检查配置")
             settingDef.displayName to priority
         }
 
         BaseType.Builder -> BuilderBaseBuildingsPriority.all.associate { settingDef ->
             val priorityStr = getConfigRuntime(settingDef.key)
-            val priority = priorityStr.toInt()
+            val priority = priorityStr.toIntOrNull() ?: logAndRestart("${settingDef.displayName} 必须是数字，请检查配置")
             settingDef.displayName to priority
         }
     }

@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.util.Log
 import com.coc.zkqcode.BuildConfig
+import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.topjohnwu.superuser.Shell
 import timber.log.Timber
 import java.io.File
@@ -23,6 +24,10 @@ object LogHelper {
 
     fun logAndRestart(message: String): Nothing {
         Timber.tag("zkq_debug").e("CRITICAL_ERROR: $message")
+        repeat(10) {
+            ShowMessage("出现未知错误，即将尝试重启。\n注意：请检查辅助配置，确保除了部落标签和暗号以外，其他所有的输入框都不能为空。\n并且该填数字的地方就要填数字，该填文字的地方填文字，不能乱填。\n若辅助配置没问题，则请截图该错误信息向作者反馈。\n\n错误信息：\n$message")
+            Thread.sleep(1000)
+        }
         // Spawn a detached process via setsid to restart the app after killing it.
         // The new session ensures this child survives the parent process termination.
         Shell.cmd(
@@ -44,8 +49,7 @@ object LogHelper {
             val fileName = if (priority >= Log.ERROR) "error.log" else "info.log"
             val logFile = File(logDir, fileName)
 
-            val timestamp =
-                SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.getDefault()).format(Date())
+            val timestamp = SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.getDefault()).format(Date())
             val logEntry = "$timestamp [$tag] $message\n"
 
             try {

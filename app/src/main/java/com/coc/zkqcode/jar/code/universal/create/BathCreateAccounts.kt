@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.os.Environment
 import com.coc.zkqcode.core.util.basic.RunShell
 import com.coc.zkqcode.core.util.basic.ShowMessage
+import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
 import com.coc.zkqcode.jar.code.auth.displayAds
 import com.coc.zkqcode.jar.code.universal.GameVersion
 import com.coc.zkqcode.jar.code.universal.InGamesVars
@@ -17,8 +18,8 @@ import com.topjohnwu.superuser.Shell
 @SuppressLint("SdCardPath")
 suspend fun batchCreateAccounts() {
     if (getConfigOrStop(Schema.GLOBAL_SETTINGS.BATCH_CREATE_ACCOUNT.key) != "1") return
-    val startID = getConfigOrStop(Schema.GLOBAL_SETTINGS.CREATE_START_ID.key).toInt()
-    val endID = getConfigOrStop(Schema.GLOBAL_SETTINGS.CREATE_END_ID.key).toInt()
+    val startID = getConfigOrStop(Schema.GLOBAL_SETTINGS.CREATE_START_ID.key).toIntOrNull() ?: logAndRestart("${Schema.GLOBAL_SETTINGS.CREATE_START_ID.displayName} 必须是数字，请检查配置")
+    val endID = getConfigOrStop(Schema.GLOBAL_SETTINGS.CREATE_END_ID.key).toIntOrNull() ?: logAndRestart("${Schema.GLOBAL_SETTINGS.CREATE_END_ID.displayName} 必须是数字，请检查配置")
     val globalPackageName = GameVersion.GLOBAL.packageName
 
     for (i in startID..endID) {
