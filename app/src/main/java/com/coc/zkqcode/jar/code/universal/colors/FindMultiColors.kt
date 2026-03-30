@@ -26,9 +26,9 @@ private val findMultiColorsCallCount = AtomicInteger(0)
  * @return The Point where the main color was found, or null if not found.
  */
 suspend fun findMultiColors(
+    schema: ColorSchema,
     bitmap: Bitmap? = null,
     byteBuffer: ScreenCaptureManager.CaptureResult? = null,
-    schema: ColorSchema,
     increment: Int = 10
 ): Point? {
     waitForPlay()
@@ -130,7 +130,7 @@ suspend fun findMultiColorsUntil(
         val captured = if (bitmap == null && byteBuffer == null) ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult else null
         for (schema in schemas) {
             // Forward increment so the per-call weight is consistent with the caller's context
-            val result = findMultiColors(bitmap, byteBuffer ?: captured, schema, increment)
+            val result = findMultiColors(schema, bitmap, byteBuffer ?: captured, increment)
             if (result != null) return result
         }
         if (System.currentTimeMillis() - startTime >= duration * multiplier) break
