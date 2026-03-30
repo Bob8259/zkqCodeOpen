@@ -64,7 +64,9 @@ suspend fun runMainScript() {
     InGamesVars.currentGameVersion = if (isBatchCreate) {
         GameVersion.GLOBAL
     } else {
-        GameVersion.fromId(getConfigOrStop("${Schema.ACCOUNT_SETTINGS.GAME_VERSION.key}${InGamesVars.currentAccountNumber}").toIntOrNull() ?: logAndRestart("${Schema.ACCOUNT_SETTINGS.GAME_VERSION.displayName} 必须是数字，请检查配置"))
+        GameVersion.fromId(
+            getConfigOrStop("${Schema.ACCOUNT_SETTINGS.GAME_VERSION.key}${InGamesVars.currentAccountNumber}").toIntOrNull() ?: logAndRestart("${Schema.ACCOUNT_SETTINGS.GAME_VERSION.displayName} 必须是数字，请检查配置")
+        )
     }
     InGamesVars.adTime = 15.coerceAtLeast(accountTotal * 8)
     batchCreateAccounts()//Create all needed accounts first.
@@ -103,7 +105,10 @@ suspend fun runMainScript() {
         InGamesVars.currentGameVersion = if (isBatchCreate) {
             GameVersion.GLOBAL
         } else {
-            GameVersion.fromId(getConfigOrStop("${Schema.ACCOUNT_SETTINGS.GAME_VERSION.key}${InGamesVars.currentAccountNumber}").toIntOrNull() ?: logAndRestart("${Schema.ACCOUNT_SETTINGS.GAME_VERSION.displayName} 必须是数字，请检查配置"))
+            GameVersion.fromId(
+                getConfigOrStop("${Schema.ACCOUNT_SETTINGS.GAME_VERSION.key}${InGamesVars.currentAccountNumber}").toIntOrNull()
+                    ?: logAndRestart("${Schema.ACCOUNT_SETTINGS.GAME_VERSION.displayName} 必须是数字，请检查配置")
+            )
         }
     }
 }
@@ -139,6 +144,8 @@ private suspend fun runTestCode() {
         donateToClan()
         ShowMessage("测试代码结束")
         delay(10000000)
+//        ShowMessage(findMultiColors(MyColors.DarkElixirColor).toString())
+//        delay(1000)
     }
 }
 

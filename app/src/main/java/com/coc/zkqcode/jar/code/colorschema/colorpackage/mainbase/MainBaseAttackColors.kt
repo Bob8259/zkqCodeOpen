@@ -72,7 +72,7 @@ object MainBaseAttackColors : IMainBaseAttackColors {
         998, 19, 1215, 136, "C027C0", "0|1|C027C0,0|2|C027C0,0|3|C027C0,0|4|C027C0,0|5|C027C0,0|6|C027C0,0|7|C027C0", 0, 0.97,
     )
     override val DarkElixirColor = ColorSchema.parse(
-        1062, 133, 1091, 197, "330D27", "0|1|330D27,0|2|330D27,0|3|330D27,0|4|330D27,0|5|330D27,0|6|330D27,0|7|330D27", 0, 0.97,
+        1060, 130, 1210, 200, "330D27", "0|1|330D27,0|2|330D27,0|3|330D27,0|4|330D27,0|5|330D27,0|6|330D27,0|7|330D27", 0, 0.97
     )
     override val DarkElixirIcon = ColorSchema.parse(
         1214, 136, 1255, 233, "4A3445", "5|0|443241,9|0|554050,13|0|695162,18|0|685062,0|13|342E37,5|13|38303C,9|13|3A313D,13|13|3B313E,18|13|3B303D", 0, 0.9,
@@ -187,6 +187,7 @@ object MainBaseAttackColors : IMainBaseAttackColors {
     override val SpecialTroopColorAtDeploymentBar = ColorSchema.parse(
         80, 590, 1200, 720, "F7E2D1", "3|0|F7E2D1,6|0|F7E2D1,9|0|F7E2D1,12|0|F7E2D1,0|7|DDC5B2,3|7|DDC5B3,6|7|DFC6B3,9|7|DEC7B3,12|7|DEC6B3", 0, 0.95, "活动兵颜色"
     )
+
     // Indicator shown when attack must wait (e.g. war cooldown)
     override val WaitForBattle = ColorSchema.parse(
         70, 480, 525, 585, "9D9D9D", "-8|10|9D9D9D,5|6|9D9D9D,13|6|9D9D9D,20|22|9D9D9D,108|18|9D9D9D,36|25|9D9D9D,22|35|9D9D9D,9|37|9D9D9D,-8|39|9D9D9D", 0, 0.9, "进攻需等待"
