@@ -11,6 +11,7 @@ import com.coc.zkqcode.jar.code.universal.buildings.BaseType
 import com.coc.zkqcode.jar.code.universal.buildings.walls.calculateResourcesPercentage
 import com.coc.zkqcode.jar.code.universal.clickRightBottom
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
+import com.coc.zkqcode.jar.code.mainbase.attack.mainBaseAttack
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.recognizer.recognizeResources
 import com.coc.zkqcode.jar.code.universal.smalltools.checkReconnections
@@ -35,6 +36,9 @@ suspend fun donateToClan(): Boolean {
 
     val startTime = System.currentTimeMillis()
     val intervalMillis = donationTimeInterval * 1000L
+    // Track farming mode state across donation loop iterations
+    var inFarmingMode = false
+    var lastBattleTime = 0L
     while (System.currentTimeMillis() - startTime < intervalMillis) {
         // Capture a single frame buffer and reuse it for all color checks in this iteration
         val screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult ?: logAndRestart("in donateToClan, screen capture failed.")
@@ -86,6 +90,29 @@ suspend fun donateToClan(): Boolean {
         // Display dark elixir as a percentage when unlocked, or as 未解锁 when the icon is absent
         val darkElixirDisplay = if (darkElixirIcon != null) "暗黑重油：${darkElixirPercentage}%" else "暗黑重油：未解锁"
         ShowMessage("账号${InGamesVars.currentAccountNumber}，捐兵检测中，剩余${remainingSeconds}秒结束\n当前资源百分比：\n圣水：${resources.elixir}%\n${darkElixirDisplay}")
+
+        // Check whether resources have recovered above the higher threshold
+        val isDarkElixirUnlocked = darkElixirIcon != null
+        val bothRecovered = resources.elixir >= higherThreshold &&
+                (!isDarkElixirUnlocked || darkElixirPercentage >= higherThreshold)
+        if (bothRecovered) {
+            inFarmingMode = false
+        }
+        // Check whether either resource is below the lower threshold
+        val isResourceLow = resources.elixir < lowerThreshold ||
+                (isDarkElixirUnlocked && darkElixirPercentage < lowerThreshold)
+        if (isResourceLow || inFarmingMode) {
+            inFarmingMode = true
+            // Fire a battle only if 3 minutes have elapsed since the last one;
+            // the donation loop keeps running normally between battles
+            val timeSinceLastBattle = System.currentTimeMillis() - lastBattleTime
+            if (timeSinceLastBattle >= 3 * 60 * 1000L) {
+                ShowMessage("账号${InGamesVars.currentAccountNumber}，资源不足，开始刷资源\n圣水：${resources.elixir}%，暗黑重油：${if (isDarkElixirUnlocked) "$darkElixirPercentage%" else "未解锁"}")
+                if (!enterMainScreen()) return false
+                if (!mainBaseAttack()) return false
+                lastBattleTime = System.currentTimeMillis()
+            }
+        }
         if (!checkReconnections()) return false
         delayWithMultiplier(1500)
     }
