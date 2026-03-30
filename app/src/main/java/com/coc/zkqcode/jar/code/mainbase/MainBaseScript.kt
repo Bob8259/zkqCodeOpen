@@ -4,7 +4,7 @@ package com.coc.zkqcode.jar.code.mainbase
 import com.coc.zkqcode.jar.code.mainbase.attack.mainBaseAttack
 import com.coc.zkqcode.jar.code.mainbase.attack.mainBaseTrainTroops
 import com.coc.zkqcode.jar.code.mainbase.clan.joinClan
-import com.coc.zkqcode.jar.code.mainbase.donate.donateToClan
+import com.coc.zkqcode.jar.code.mainbase.clan.donateToClan
 import com.coc.zkqcode.jar.code.mainbase.others.mainBaseRemoveObstacles
 import com.coc.zkqcode.jar.code.mainbase.others.zoomSmallMainBase
 import com.coc.zkqcode.jar.code.mainbase.research.mainBaseResearch

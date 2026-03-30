@@ -45,7 +45,7 @@ suspend fun displayAds() {
     } catch (_: Exception) {
         null
     }
-    GlobalVars.absorbYPercentage = 10
+    GlobalVars.absorbYPercentage = 5
     GlobalVars.isAdPlaying = true
     if (adItems != null) {
         ShowMessage.showAdOverlay(adItems, InGamesVars.adTime)
