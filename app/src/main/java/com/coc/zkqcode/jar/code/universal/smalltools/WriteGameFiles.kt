@@ -67,7 +67,7 @@ suspend fun writeGameFilesCore(
  * to the game's data directory, then sets permissions to 777.
  */
 suspend fun writeGameFiles(): Boolean {
-    val startMethod = getConfigOrStop("${ACCOUNT_SETTINGS.START_METHOD.key}${InGamesVars.currentAccountNumber}").toInt()
+    val startMethod = getConfigOrStop("${ACCOUNT_SETTINGS.START_METHOD.key}${InGamesVars.currentAccountNumber}").toIntOrNull() ?: logAndRestart("${ACCOUNT_SETTINGS.START_METHOD.displayName} 必须是数字，请检查配置")
     if (startMethod != 0) return true
     killGame()
     val savePathName = getGameFilePath()

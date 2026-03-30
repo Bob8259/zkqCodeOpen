@@ -10,6 +10,7 @@ import com.coc.zkqcode.jar.code.universal.buildings.upgrade.upgradeAllExistingBu
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.smalltools.getBooleanConfigRuntime
 import com.coc.zkqcode.jar.code.universal.smalltools.getConfigRuntime
+import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
 import com.coc.zkqcode.jar.ui.schema.Schema
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import kotlin.math.roundToInt
@@ -28,12 +29,15 @@ suspend fun upgradeWalls(currentBase: BaseType): Boolean {
     if (workerNumber.available < 1 || workerNumber.total < 1) {
         return true
     }
-    // Use the appropriate threshold key based on the current base type
-    val wallThresholdKey = when (currentBase) {
-        BaseType.Main -> Schema.MAIN_BASE_SETTINGS.UPGRADE_WALL_THRESHOLD.key
-        BaseType.Builder -> Schema.BUILDER_BASE_SETTINGS.BUILDER_BASE_UPGRADE_WALL_THRESHOLD.key
+    // Use the appropriate threshold key and display name based on the current base type
+    val (wallThresholdKey, wallThresholdName) = when (currentBase) {
+        BaseType.Main -> Schema.MAIN_BASE_SETTINGS.UPGRADE_WALL_THRESHOLD.key to
+            Schema.MAIN_BASE_SETTINGS.UPGRADE_WALL_THRESHOLD.displayName
+        BaseType.Builder -> Schema.BUILDER_BASE_SETTINGS.BUILDER_BASE_UPGRADE_WALL_THRESHOLD.key to
+            Schema.BUILDER_BASE_SETTINGS.BUILDER_BASE_UPGRADE_WALL_THRESHOLD.displayName
     }
-    val thresholds = 25.coerceAtLeast(getConfigRuntime(wallThresholdKey).toInt())
+    val thresholds = 25.coerceAtLeast(getConfigRuntime(wallThresholdKey).toIntOrNull()
+        ?: logAndRestart("$wallThresholdName 必须是数字，请检查配置"))
     val startTime = System.currentTimeMillis()
     val timeoutMs = 5 * 60 * 1000L // 5 minutes
 

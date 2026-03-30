@@ -2,6 +2,7 @@ package com.coc.zkqcode.jar.code.mainbase.attack
 
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
+import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
 import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.InGamesVars
@@ -28,9 +29,9 @@ private const val DARK_ELIXIR_FULL_X_THRESHOLD = 1080
 
 suspend fun searchOpponentsAndDeployTroops(): Boolean {
 
-    var targetGold = getConfigRuntime(Schema.MAIN_BASE_SETTINGS.GOLD_REQUIREMENT.key).toInt()
-    var targetElixir = getConfigRuntime(Schema.MAIN_BASE_SETTINGS.ELIXIR_REQUIREMENT.key).toInt()
-    var targetDarkElixir = getConfigRuntime(Schema.MAIN_BASE_SETTINGS.DARK_ELIXIR_REQUIREMENT.key).toInt()
+    var targetGold = getConfigRuntime(Schema.MAIN_BASE_SETTINGS.GOLD_REQUIREMENT.key).toIntOrNull() ?: logAndRestart("${Schema.MAIN_BASE_SETTINGS.GOLD_REQUIREMENT.displayName} 必须是数字，请检查配置")
+    var targetElixir = getConfigRuntime(Schema.MAIN_BASE_SETTINGS.ELIXIR_REQUIREMENT.key).toIntOrNull() ?: logAndRestart("${Schema.MAIN_BASE_SETTINGS.ELIXIR_REQUIREMENT.displayName} 必须是数字，请检查配置")
+    var targetDarkElixir = getConfigRuntime(Schema.MAIN_BASE_SETTINGS.DARK_ELIXIR_REQUIREMENT.key).toIntOrNull() ?: logAndRestart("${Schema.MAIN_BASE_SETTINGS.DARK_ELIXIR_REQUIREMENT.displayName} 必须是数字，请检查配置")
 
     val darkElixirIcon = findMultiColors(schema = MyColors.DarkElixirIcon)
     if (darkElixirIcon == null) {

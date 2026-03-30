@@ -23,6 +23,7 @@ import com.coc.zkqcode.jar.code.universal.smalltools.writeMemory
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.mainbase.donate.donateToClan
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
+import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
 import com.coc.zkqcode.jar.ui.schema.Schema
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
@@ -39,13 +40,13 @@ suspend fun runMainScript() {
     val isBatchCreate = getConfigOrStop(Schema.GLOBAL_SETTINGS.BATCH_CREATE_ACCOUNT.key) == "1"
 
     val accountTotal: Int = if (isBatchCreate) {
-        getConfigOrStop(Schema.GLOBAL_SETTINGS.CREATE_END_ID.key).toInt()
+        getConfigOrStop(Schema.GLOBAL_SETTINGS.CREATE_END_ID.key).toIntOrNull() ?: logAndRestart("${Schema.GLOBAL_SETTINGS.CREATE_END_ID.displayName} 必须是数字，请检查配置")
     } else {
-        getConfigOrStop(Schema.GLOBAL_SETTINGS.ACCOUNT_COUNT.key).toInt()
+        getConfigOrStop(Schema.GLOBAL_SETTINGS.ACCOUNT_COUNT.key).toIntOrNull() ?: logAndRestart("${Schema.GLOBAL_SETTINGS.ACCOUNT_COUNT.displayName} 必须是数字，请检查配置")
     }
     // In batch-create mode, the lower bound comes from CREATE_START_ID
     val accountStart: Int = if (isBatchCreate) {
-        getConfigOrStop(Schema.GLOBAL_SETTINGS.CREATE_START_ID.key).toInt()
+        getConfigOrStop(Schema.GLOBAL_SETTINGS.CREATE_START_ID.key).toIntOrNull() ?: logAndRestart("${Schema.GLOBAL_SETTINGS.CREATE_START_ID.displayName} 必须是数字，请检查配置")
     } else {
         1
     }
@@ -63,12 +64,12 @@ suspend fun runMainScript() {
     InGamesVars.currentGameVersion = if (isBatchCreate) {
         GameVersion.GLOBAL
     } else {
-        GameVersion.fromId(getConfigOrStop("${Schema.ACCOUNT_SETTINGS.GAME_VERSION.key}${InGamesVars.currentAccountNumber}").toInt())
+        GameVersion.fromId(getConfigOrStop("${Schema.ACCOUNT_SETTINGS.GAME_VERSION.key}${InGamesVars.currentAccountNumber}").toIntOrNull() ?: logAndRestart("${Schema.ACCOUNT_SETTINGS.GAME_VERSION.displayName} 必须是数字，请检查配置"))
     }
     InGamesVars.adTime = 15.coerceAtLeast(accountTotal * 8)
     batchCreateAccounts()//Create all needed accounts first.
     while (currentCoroutineContext().isActive) {
-        runTestCode()
+//        runTestCode()
 
         displayAds()
         // Use labeled block to skip remaining steps on failure
@@ -102,7 +103,7 @@ suspend fun runMainScript() {
         InGamesVars.currentGameVersion = if (isBatchCreate) {
             GameVersion.GLOBAL
         } else {
-            GameVersion.fromId(getConfigOrStop("${Schema.ACCOUNT_SETTINGS.GAME_VERSION.key}${InGamesVars.currentAccountNumber}").toInt())
+            GameVersion.fromId(getConfigOrStop("${Schema.ACCOUNT_SETTINGS.GAME_VERSION.key}${InGamesVars.currentAccountNumber}").toIntOrNull() ?: logAndRestart("${Schema.ACCOUNT_SETTINGS.GAME_VERSION.displayName} 必须是数字，请检查配置"))
         }
     }
 }
