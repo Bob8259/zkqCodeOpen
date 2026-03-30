@@ -54,17 +54,17 @@ suspend fun searchOpponentsAndDeployTroops(): Boolean {
     if (isDynamicAdjust) {
         // Only overwrite if the storage is not already marked as full (target > 0)
         readMemory(goldKey).toIntOrNull()?.let {
-            if (targetGold > 0) {
+            if (targetGold > 0 && it > 0) {
                 targetGold = it; goldFromMemory = true
             }
         }
         readMemory(elixirKey).toIntOrNull()?.let {
-            if (targetElixir > 0) {
+            if (targetElixir > 0 && it > 0) {
                 targetElixir = it; elixirFromMemory = true
             }
         }
         readMemory(darkElixirKey).toIntOrNull()?.let {
-            if (targetDarkElixir > 0) {
+            if (targetDarkElixir > 0 && it > 0) {
                 targetDarkElixir = it; darkElixirFromMemory = true
             }
         }
@@ -104,8 +104,7 @@ suspend fun searchOpponentsAndDeployTroops(): Boolean {
         val waitForBattle = findMultiColors(schema = MyColors.WaitForBattle)
         if (waitForBattle != null) {
             ShowMessage("账号${InGamesVars.currentAccountNumber}，进攻需等待冷却")
-            if (!getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.WAIT_FOR_BATTLE.key))
-                return false
+            if (!getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.WAIT_FOR_BATTLE.key)) return false
         }
         val villagerSpeaking = findMultiColors(schema = MyColors.SpeakingVillager)
         val setBaseIcon = findMultiColors(schema = MyColors.SetBaseIcon)
