@@ -74,7 +74,7 @@ suspend fun donateToClan(): Boolean {
         val resources = calculateResourcesPercentage(BaseType.Main)
         // Default to 0; only updated when the dark elixir icon is visible on screen
         var darkElixirPercentage: Int = 0
-        val darkElixirIcon = findMultiColors(schema = MyColors.DarkElixirIcon)
+        val darkElixirIcon = findMultiColors(schema = MyColors.DarkElixirIcon, increment = 1)
         if (darkElixirIcon != null) {
             // darkElixirBar is the rightmost colored point on the dark elixir bar
             val darkElixirBar = findMultiColors(schema = MyColors.DarkElixirColor)
@@ -125,14 +125,21 @@ private suspend fun donateActions() {
     val donationSchemas = listOf(
         MyColors.DonateSuperTroops, MyColors.DonateNormalTroops, MyColors.DonateSpells
     )
-    repeat(5) {
+    var emptyLoopCount = 0
+    repeat(10) {
+        // Early return if nothing was found in 2 consecutive loops
+        if (emptyLoopCount >= 2) return
+
+        var foundAny = false
         for (schema in donationSchemas) {
             val target = findMultiColors(schema, increment = 1)
             if (target != null) {
-                repeat(5) {
-                    TouchActions.tap(target.x, target.y, delayTime = 100)
+                foundAny = true
+                repeat(3) {
+                    TouchActions.tap(target.x, target.y)
                 }
             }
         }
+        if (foundAny) emptyLoopCount = 0 else emptyLoopCount++
     }
 }
