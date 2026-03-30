@@ -21,6 +21,7 @@ import com.coc.zkqcode.jar.code.universal.smalltools.readMemory
 import com.coc.zkqcode.jar.code.universal.smalltools.writeGameFiles
 import com.coc.zkqcode.jar.code.universal.smalltools.writeMemory
 import com.coc.zkqcode.jar.code.colorschema.MyColors
+import com.coc.zkqcode.jar.code.mainbase.donate.donateToClan
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.ui.schema.Schema
 import kotlinx.coroutines.currentCoroutineContext
@@ -30,8 +31,8 @@ import kotlinx.coroutines.isActive
 
 suspend fun runMainScript() {
     waitForPlay()
-    ShowMessage("检测到设置已更新\n保存设置中，即将重新运行")
-    delay(2000)
+    ShowMessage("检测到设置已更新\n即将重新运行")
+    delay(200)
     userAuth()
 
     // 1. Initialize/update local memory state
@@ -67,7 +68,7 @@ suspend fun runMainScript() {
     InGamesVars.adTime = 15.coerceAtLeast(accountTotal * 8)
     batchCreateAccounts()//Create all needed accounts first.
     while (currentCoroutineContext().isActive) {
-//       runTestCode()
+        runTestCode()
 
         displayAds()
         // Use labeled block to skip remaining steps on failure
@@ -134,8 +135,9 @@ private suspend fun findAndActivateAccount(
 
 private suspend fun runTestCode() {
     while (true) {
-        ShowMessage("A long sentence to test. A long sentence to test.\nA long sentence to test. A long sentence to test.")
-        delay(8000)
+        donateToClan()
+        ShowMessage("测试代码结束")
+        delay(10000000)
     }
 }
 

@@ -248,6 +248,54 @@ fun SettingInputRow(key: String, afterChange: ((String) -> Unit)? = null) {
     }
 }
 
+// Variant of SettingInputRow that appends a suffix text after the input field,
+// allowing sentence-style labels such as: 持续检测 [xx] 秒钟
+@Composable
+fun SettingInputRowWithSuffix(key: String, suffix: String, afterChange: ((String) -> Unit)? = null) {
+    val state = GlobalVars.configStates.getOrPut(key) {
+        mutableStateOf(Schema.getDefaultValue(key))
+    }
+    val label = Schema.getDisplayName(key)
+
+    Row(
+        modifier = Modifier
+            .padding(top = 2.dp)
+            .padding(bottom = 4.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = label,
+            modifier = Modifier.padding(end = 8.dp),
+            style = MaterialTheme.typography.labelMedium
+        )
+
+        BasicTextField(
+            value = state.value,
+            onValueChange = { newValue ->
+                GlobalVars.isAutoRunEnabled = false
+                state.value = newValue
+                afterChange?.invoke(newValue)
+            },
+            modifier = Modifier
+                .padding(end = 6.dp)
+                .background(
+                    color = Color.White,
+                    shape = RoundedCornerShape(4.dp)
+                )
+                .border(1.dp, Color.Gray, RoundedCornerShape(4.dp))
+                .padding(4.dp)
+                .heightIn(max = 120.dp)
+                .verticalScroll(rememberScrollState())
+        )
+
+        Text(
+            text = suffix,
+            modifier = Modifier.padding(end = 8.dp),
+            style = MaterialTheme.typography.labelMedium
+        )
+    }
+}
+
 @Composable
 fun CustomButton(
     text: String,

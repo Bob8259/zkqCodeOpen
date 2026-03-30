@@ -3,6 +3,7 @@ package com.coc.zkqcode.jar.code.mainbase
 
 import com.coc.zkqcode.jar.code.mainbase.attack.mainBaseAttack
 import com.coc.zkqcode.jar.code.mainbase.attack.mainBaseTrainTroops
+import com.coc.zkqcode.jar.code.mainbase.clan.joinClan
 import com.coc.zkqcode.jar.code.mainbase.others.mainBaseRemoveObstacles
 import com.coc.zkqcode.jar.code.mainbase.others.zoomSmallMainBase
 import com.coc.zkqcode.jar.code.mainbase.research.mainBaseResearch
@@ -17,6 +18,7 @@ suspend fun playMainBase(): Boolean {
     if (!mainBaseTrainTroops()) return false
     if (!mainBaseAttack()) return false
     if (!mainBaseRemoveObstacles()) return false
+    if (!joinClan()) return false
     if (!upgradeWalls(BaseType.Main)) return false
     if (!upgradeBuildings(BaseType.Main)) return false
     if (!mainBaseResearch()) return false

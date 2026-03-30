@@ -19,6 +19,7 @@ import com.coc.zkqcode.jar.ui.components.CustomButton
 import com.coc.zkqcode.jar.ui.components.SettingSwitchIcon
 import com.coc.zkqcode.jar.ui.components.SettingDropdown
 import com.coc.zkqcode.jar.ui.components.SettingInputRow
+import com.coc.zkqcode.jar.ui.components.SettingInputRowWithSuffix
 import com.coc.zkqcode.jar.ui.components.SettingSection
 import com.coc.zkqcode.jar.ui.schema.Schema.MAIN_BASE_SETTINGS
 
@@ -139,7 +140,23 @@ fun LazyListScope.MainBaseConfig(
             }
 
             AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.DONATION_SETTING.key}_c$index"]?.value == "1") {
-                SettingInputRow(key = "${MAIN_BASE_SETTINGS.DONATION_TIMES.key}_c$index")
+                Column {
+                    FlowRow {
+                        // Resource farming trigger: detect interval, start threshold, stop threshold
+                        SettingInputRowWithSuffix(
+                            key = "${MAIN_BASE_SETTINGS.DONATION_DETECT_INTERVAL.key}_c$index",
+                            suffix = "秒钟"
+                        )
+                        SettingInputRowWithSuffix(
+                            key = "${MAIN_BASE_SETTINGS.DONATION_FARMING_START_THRESHOLD.key}_c$index",
+                            suffix = "％时开始对战"
+                        )
+                        SettingInputRowWithSuffix(
+                            key = "${MAIN_BASE_SETTINGS.DONATION_FARMING_STOP_THRESHOLD.key}_c$index",
+                            suffix = "％为止"
+                        )
+                    }
+                }
             }
 
             AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.RESEARCH_SETTING.key}_c$index"]?.value == "1") {

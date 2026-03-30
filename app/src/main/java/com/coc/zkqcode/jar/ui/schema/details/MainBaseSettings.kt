@@ -20,7 +20,10 @@ object MainBaseSettings {
     val DONATION_SETTING = SettingDef("donation_setting", "自动捐兵", 1, "MAIN_BASE_SETTINGS")
     val REQUEST_REINFORCEMENT_SETTING =
         SettingDef("request_reinforcement_setting", "请求增援", 1, "MAIN_BASE_SETTINGS")
-    val DONATION_TIMES = SettingDef("donation_times", "捐兵轮数", 1, "MAIN_BASE_SETTINGS")
+    // Resource farming trigger settings for auto-donation
+    val DONATION_DETECT_INTERVAL = SettingDef("donation_detect_interval", "持续检测", "5", "MAIN_BASE_SETTINGS")
+    val DONATION_FARMING_START_THRESHOLD = SettingDef("donation_farming_start_threshold", "当资源低于", "30", "MAIN_BASE_SETTINGS")
+    val DONATION_FARMING_STOP_THRESHOLD  = SettingDef("donation_farming_stop_threshold",  "直到打到",   "80", "MAIN_BASE_SETTINGS")
     val RESEARCH_SETTING = SettingDef("research_setting", "自动研究", 1, "MAIN_BASE_SETTINGS")
     val RESEARCH_LEVEL = SettingDef("research_level", "研究等级至", "0", "MAIN_BASE_SETTINGS")
     val COLLECT_CLAN_CASTLE = SettingDef("collect_clan_castle", "领宝库", 1, "MAIN_BASE_SETTINGS")
@@ -139,7 +142,9 @@ object MainBaseSettings {
         TACTICS_MODE,
         DONATION_SETTING,
         REQUEST_REINFORCEMENT_SETTING,
-        DONATION_TIMES,
+        DONATION_DETECT_INTERVAL,
+        DONATION_FARMING_START_THRESHOLD,
+        DONATION_FARMING_STOP_THRESHOLD,
         RESEARCH_SETTING,
         RESEARCH_LEVEL,
         COLLECT_CLAN_CASTLE,
