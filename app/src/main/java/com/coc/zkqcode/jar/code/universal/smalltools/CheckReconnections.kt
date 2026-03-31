@@ -20,12 +20,9 @@ suspend fun checkReconnections(): Boolean {
 
     // 2. Define the schemas to check against
     val homeSchemas = listOf(
-        MyColors.Reconnection,
-        MyColors.ReconnectionOnCloudPhone
+        MyColors.Reconnection, MyColors.ReconnectionOnCloudPhone, MyColors.RatingOnCloudPhone
     )
-    val screenBuffer =
-        ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult
-            ?: return true
+    val screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult ?: return true
     // 3. Run the check and capture the result
     // We return the result of 'any' to determine if a reconnection event occurred.
     return homeSchemas.any { schema ->
@@ -38,13 +35,13 @@ suspend fun checkReconnections(): Boolean {
             }
             // Retrieve the configuration state for the specific account
             val configKey = Schema.GLOBAL_SETTINGS.AFTER_KICK_OPTION.key
-            val action = GlobalVars.configStates[configKey]?.value?.toInt()
-                ?: logAndRestart("Can not get $configKey")
+            val action = GlobalVars.configStates[configKey]?.value?.toInt() ?: logAndRestart("Can not get $configKey")
             // 4. Implement logic based on the action value
             when (action) {
                 0 -> {
                     // Action: Tap the "Reload" button
                     TouchActions.tap(379, 458)
+                    TouchActions.tap(793, 459)//Rating Notification
                     TouchActions.tap(338, 511)//Tutorial "Confirm" button
                 }
 
@@ -73,8 +70,7 @@ suspend fun checkReconnections(): Boolean {
  * Uses absolute ByteBuffer.get(index) so it is position-independent.
  */
 private fun countWhitePixels(
-    screenBuffer: ScreenCaptureManager.CaptureResult,
-    x1: Int, y1: Int, x2: Int, y2: Int
+    screenBuffer: ScreenCaptureManager.CaptureResult, x1: Int, y1: Int, x2: Int, y2: Int
 ): Int {
     val buf = screenBuffer.buffer
     val pixelStride = screenBuffer.pixelStride

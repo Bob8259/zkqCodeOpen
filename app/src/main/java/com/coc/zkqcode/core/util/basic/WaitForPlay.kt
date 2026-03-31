@@ -9,7 +9,7 @@ import kotlinx.coroutines.delay
  */
 suspend fun waitForPlay() {
     if (GlobalVars.isPlaying.value) return
-
+    ShowMessage("当前已暂停\n为节省资源占用，暂停5分钟后会自动退出。")
     val startTime = System.currentTimeMillis()
 
     while (!GlobalVars.isPlaying.value) {

@@ -30,6 +30,7 @@ import androidx.savedstate.SavedStateRegistryController
 import androidx.savedstate.SavedStateRegistryOwner
 import androidx.savedstate.setViewTreeSavedStateRegistryOwner
 import com.coc.zkqcode.core.data.database.GlobalVars
+import com.coc.zkqcode.core.system.hotupdate.HotUpdateManager
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.loadjar.Loadjar
 import com.coc.zkqcode.statehelper.AppMode
@@ -90,6 +91,7 @@ class UIWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner, View
         lifecycleRegistry.currentState = Lifecycle.State.CREATED
         windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
         startJarLoading()
+        startHotUpdateListener()
         showFloatingWindow()
     }
 
@@ -101,6 +103,13 @@ class UIWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner, View
                     loadStatus.value = status
                 }
             }
+        }
+    }
+
+    // Launch the hot update signal listener on a background thread
+    private fun startHotUpdateListener() {
+        serviceScope.launch(Dispatchers.IO) {
+            HotUpdateManager.listenForSignal(this@UIWindowService)
         }
     }
 
