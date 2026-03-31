@@ -17,7 +17,7 @@ object GlobalSettings {
         "delay_multiplier", "延时倍率(低性能设备建议设置1.5-2.5)", "1", "GLOBAL_SETTINGS"
     )
     val RECORD_PROGRESS = SettingDef("record_progress", "记录账号进度", 1, "GLOBAL_SETTINGS")
-    val AUTO_UPDATE = SettingDef("auto_update", "自动更新", "1", "GLOBAL_SETTINGS")
+    val AUTO_UPDATE = SettingDef("auto_update", "自动更新", "2", "GLOBAL_SETTINGS")
     val BATCH_CREATE_ACCOUNT = SettingDef("batch_create_account", "批量创号", 0, "GLOBAL_SETTINGS")
     val CREATE_START_ID = SettingDef("create_start_id", "创号开始序号", 1, "GLOBAL_SETTINGS")
     val CREATE_END_ID = SettingDef("create_end_id", "创号结束序号", 10, "GLOBAL_SETTINGS")

@@ -95,10 +95,13 @@ class ControlWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner 
         }
     }
 
-    // Launch the hot update signal listener on a background thread
+    // Launch the hot update signal listener and watchdog on background threads
     private fun startHotUpdateListener() {
         serviceScope.launch(Dispatchers.IO) {
             HotUpdateManager.listenForSignal(this@ControlWindowService)
+        }
+        serviceScope.launch(Dispatchers.IO) {
+            HotUpdateManager.startWatchdog(this@ControlWindowService)
         }
     }
 
