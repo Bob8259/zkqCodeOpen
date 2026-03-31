@@ -72,6 +72,9 @@ suspend fun runMainScript() {
     }
     InGamesVars.adTime = 15.coerceAtLeast(accountTotal * 8)
     batchCreateAccounts()//Create all needed accounts first.
+    // Track elapsed time for periodic hot update checks (updateOption 2)
+    var lastUpdateCheckTime = System.currentTimeMillis()
+    var nextUpdateInterval = (2 * 3600_000L) + (Math.random() * 3600_000L).toLong()
     while (currentCoroutineContext().isActive) {
         runTestCode()
 
@@ -98,11 +101,13 @@ suspend fun runMainScript() {
             }
         }
         // Circularly search for the next enabled account, wrapping back to currentAccountNumber (inclusive)
-        // Emit hot update signal at safe point between account switches
-        if (updateOption == 2) {
+        // Emit hot update signal at safe point, throttled to once every 2-3 hours randomly
+        if (updateOption == 2 && System.currentTimeMillis() - lastUpdateCheckTime >= nextUpdateInterval) {
             val deferred = CompletableDeferred<Unit>()
             GlobalVars.updateCheckSignal.tryEmit(deferred)
             deferred.await()
+            lastUpdateCheckTime = System.currentTimeMillis()
+            nextUpdateInterval = (2 * 3600_000L) + (Math.random() * 3600_000L).toLong()
         }
         val searchOrder = ((InGamesVars.currentAccountNumber + 1)..accountTotal) + (accountStart..InGamesVars.currentAccountNumber)
         val nextAccount = findAndActivateAccount(searchOrder, isBatchCreate) ?: return
@@ -124,7 +129,7 @@ suspend fun runMainScript() {
 private suspend fun runTestCode() {
     while (true) {
 //        donateToClan()
-        ShowMessage("测试代码333")
+        ShowMessage("测试代码1234")
 //        ShowMessage(findMultiColors(MyColors.DarkElixirColor).toString())
         delay(1000)
     }

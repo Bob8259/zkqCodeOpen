@@ -106,10 +106,13 @@ class UIWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner, View
         }
     }
 
-    // Launch the hot update signal listener on a background thread
+    // Launch the hot update signal listener and watchdog on background threads
     private fun startHotUpdateListener() {
         serviceScope.launch(Dispatchers.IO) {
             HotUpdateManager.listenForSignal(this@UIWindowService)
+        }
+        serviceScope.launch(Dispatchers.IO) {
+            HotUpdateManager.startWatchdog(this@UIWindowService)
         }
     }
 

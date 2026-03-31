@@ -13,6 +13,8 @@ import com.coc.zkqcode.statehelper.AppMode
 import com.coc.zkqcode.statehelper.AppStateManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
@@ -26,12 +28,16 @@ import java.util.concurrent.TimeUnit
 object HotUpdateManager {
 
     private const val MAX_RETRY = 3
+    private const val WATCHDOG_TIMEOUT_MS = 8 * 3600_000L       // 8 hours
+    private const val WATCHDOG_CHECK_INTERVAL_MS = 30 * 60_000L // 30 minutes
 
-    private val httpClient = OkHttpClient.Builder()
-        .connectTimeout(30, TimeUnit.SECONDS)
-        .readTimeout(120, TimeUnit.SECONDS)
-        .writeTimeout(30, TimeUnit.SECONDS)
-        .build()
+    // Timestamp of the last update signal received from the JAR side
+    private var lastSignalTime: Long = System.currentTimeMillis()
+
+    // Prevents concurrent checkAndUpdate calls from signal listener and watchdog
+    private val updateMutex = Mutex()
+
+    private val httpClient = OkHttpClient.Builder().connectTimeout(30, TimeUnit.SECONDS).readTimeout(120, TimeUnit.SECONDS).writeTimeout(30, TimeUnit.SECONDS).build()
 
     /**
      * Collects from the shared update signal flow. Each emission triggers
@@ -41,10 +47,33 @@ object HotUpdateManager {
     suspend fun listenForSignal(context: Context) {
         GlobalVars.updateCheckSignal.collect { deferred ->
             try {
-                checkAndUpdate(context)
+                lastSignalTime = System.currentTimeMillis()
+                updateMutex.withLock {
+                    checkAndUpdate(context)
+                }
             } finally {
                 // Always unblock the caller, even if checkAndUpdate threw
                 deferred.complete(Unit)
+            }
+        }
+    }
+
+    /**
+     * Watchdog that forces an update check when updateOption is 2 and no
+     * signal has been received from the JAR side for 8 hours. This handles
+     * the case where the JAR code is stuck or broken.
+     */
+    suspend fun startWatchdog(context: Context) {
+        while (true) {
+            delay(WATCHDOG_CHECK_INTERVAL_MS)
+            if (!GlobalVars.isConfigLoaded) continue
+            val updateOption = GlobalVars.configStates["auto_update"]?.value?.toIntOrNull() ?: 0
+            if (updateOption == 2 && System.currentTimeMillis() - lastSignalTime >= WATCHDOG_TIMEOUT_MS) {
+                ShowMessage("超过8小时未收到更新信号，强制检查更新")
+                updateMutex.withLock {
+                    checkAndUpdate(context)
+                }
+                lastSignalTime = System.currentTimeMillis()
             }
         }
     }
@@ -55,20 +84,15 @@ object HotUpdateManager {
         val assetsDir = File(context.filesDir, "assets")
 
         // --- Step A: Determine the local JAR version ---
-        val localVersion = assetsDir.listFiles()
-            ?.filter { it.name.startsWith("encrypted_") && it.name.endsWith(".jar") }
-            ?.mapNotNull { it.name.removePrefix("encrypted_").removeSuffix(".jar").toLongOrNull() }
-            ?.maxOrNull() ?: 0L
+        val localVersion =
+            assetsDir.listFiles()?.filter { it.name.startsWith("encrypted_") && it.name.endsWith(".jar") }?.mapNotNull { it.name.removePrefix("encrypted_").removeSuffix(".jar").toLongOrNull() }?.maxOrNull() ?: 0L
 
         // --- Step B: Check server for a newer version ---
         val serverMd5: String
         val serverFileName: String
         val serverVersion: Long
         try {
-            val checkRequest = Request.Builder()
-                .url("${baseUrl}api/hot-update-md5")
-                .get()
-                .build()
+            val checkRequest = Request.Builder().url("${baseUrl}api/hot-update-md5").get().build()
             val responseStr = withContext(Dispatchers.IO) {
                 httpClient.newCall(checkRequest).execute().use { response ->
                     if (!response.isSuccessful) {
@@ -80,10 +104,7 @@ object HotUpdateManager {
             val json = JSONObject(responseStr)
             serverMd5 = json.getString("md5")
             serverFileName = json.getString("fileName")
-            serverVersion = serverFileName
-                .removePrefix("encrypted_")
-                .removeSuffix(".jar")
-                .toLongOrNull() ?: 0L
+            serverVersion = serverFileName.removePrefix("encrypted_").removeSuffix(".jar").toLongOrNull() ?: 0L
         } catch (e: Exception) {
             LogHelper.showDebugInfo("HotUpdateManager: Version check error: ${e.message}")
             return
@@ -123,12 +144,8 @@ object HotUpdateManager {
                     put("powNonce", powNonce)
                     put("powSalt", powSalt)
                 }
-                val requestBody = jsonBody.toString()
-                    .toRequestBody("application/json".toMediaTypeOrNull())
-                val downloadRequest = Request.Builder()
-                    .url("${baseUrl}api/hot-update-download")
-                    .post(requestBody)
-                    .build()
+                val requestBody = jsonBody.toString().toRequestBody("application/json".toMediaTypeOrNull())
+                val downloadRequest = Request.Builder().url("${baseUrl}api/hot-update-download").post(requestBody).build()
 
                 // Stream response bytes to file
                 withContext(Dispatchers.IO) {
@@ -174,15 +191,12 @@ object HotUpdateManager {
         }
 
         // --- Step D: Clean up old JARs and reload ---
-        assetsDir.listFiles()
-            ?.filter {
-                it.name.startsWith("encrypted_") && it.name.endsWith(".jar")
-                        && it.name != serverFileName
-            }
-            ?.forEach { oldJar ->
-                oldJar.setWritable(true)
-                oldJar.delete()
-            }
+        assetsDir.listFiles()?.filter {
+            it.name.startsWith("encrypted_") && it.name.endsWith(".jar") && it.name != serverFileName
+        }?.forEach { oldJar ->
+            oldJar.setWritable(true)
+            oldJar.delete()
+        }
 
         // Android 16+ requires DEX files to be non-writable
         targetFile.setReadOnly()
@@ -207,10 +221,7 @@ object HotUpdateManager {
      * Fetches a fresh PoW nonce from the server challenge endpoint.
      */
     private suspend fun fetchPowNonce(baseUrl: String): String {
-        val request = Request.Builder()
-            .url("${baseUrl}api/pow/challenge")
-            .get()
-            .build()
+        val request = Request.Builder().url("${baseUrl}api/pow/challenge").get().build()
         val responseStr = withContext(Dispatchers.IO) {
             httpClient.newCall(request).execute().use { response ->
                 if (!response.isSuccessful) {
