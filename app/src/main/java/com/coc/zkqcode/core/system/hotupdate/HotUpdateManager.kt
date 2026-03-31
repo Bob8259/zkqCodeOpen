@@ -11,11 +11,13 @@ import com.coc.zkqcode.core.util.fileactions.LogHelper
 import com.coc.zkqcode.loadjar.Loadjar
 import com.coc.zkqcode.statehelper.AppMode
 import com.coc.zkqcode.statehelper.AppStateManager
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeout
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -30,6 +32,8 @@ object HotUpdateManager {
     private const val MAX_RETRY = 3
     private const val WATCHDOG_TIMEOUT_MS = 8 * 3600_000L       // 8 hours
     private const val WATCHDOG_CHECK_INTERVAL_MS = 30 * 60_000L // 30 minutes
+    private const val UPDATE_TIMEOUT_MS = 10 * 60_000L          // 10 minutes max for entire update
+    private const val SIGNAL_LISTENER_RESTART_DELAY_MS = 5000L  // Delay before restarting signal listener after error
 
     // Timestamp of the last update signal received from the JAR side
     private var lastSignalTime: Long = System.currentTimeMillis()
@@ -43,17 +47,28 @@ object HotUpdateManager {
      * Collects from the shared update signal flow. Each emission triggers
      * an update check. This suspends indefinitely and should be launched
      * in a long-lived coroutine scope (e.g. the service scope).
+     * Automatically restarts on non-cancellation errors so the listener
+     * is never permanently killed by a transient failure.
      */
     suspend fun listenForSignal(context: Context) {
-        GlobalVars.updateCheckSignal.collect { deferred ->
+        while (true) {
             try {
-                lastSignalTime = System.currentTimeMillis()
-                updateMutex.withLock {
-                    checkAndUpdate(context)
+                GlobalVars.updateCheckSignal.collect { deferred ->
+                    try {
+                        lastSignalTime = System.currentTimeMillis()
+                        updateMutex.withLock {
+                            checkAndUpdate(context)
+                        }
+                    } finally {
+                        // Always unblock the caller, even if checkAndUpdate threw
+                        deferred.complete(Unit)
+                    }
                 }
-            } finally {
-                // Always unblock the caller, even if checkAndUpdate threw
-                deferred.complete(Unit)
+            } catch (e: CancellationException) {
+                throw e // Respect coroutine cancellation
+            } catch (e: Exception) {
+                LogHelper.showDebugInfo("HotUpdateManager: Signal listener error, restarting in ${SIGNAL_LISTENER_RESTART_DELAY_MS}ms: ${e.message}")
+                delay(SIGNAL_LISTENER_RESTART_DELAY_MS)
             }
         }
     }
@@ -62,26 +77,36 @@ object HotUpdateManager {
      * Watchdog that forces an update check when updateOption is 2 and no
      * signal has been received from the JAR side for 8 hours. This handles
      * the case where the JAR code is stuck or broken.
+     * Each iteration is individually guarded so a single failure never kills
+     * the watchdog loop.
      */
     suspend fun startWatchdog(context: Context) {
         while (true) {
             delay(WATCHDOG_CHECK_INTERVAL_MS)
-            if (!GlobalVars.isConfigLoaded) continue
-            val updateOption = GlobalVars.configStates["auto_update"]?.value?.toIntOrNull() ?: 0
-            if (updateOption == 2 && System.currentTimeMillis() - lastSignalTime >= WATCHDOG_TIMEOUT_MS) {
-                ShowMessage("超过8小时未收到更新信号，强制检查更新")
-                updateMutex.withLock {
-                    checkAndUpdate(context)
+            try {
+                if (!GlobalVars.isConfigLoaded) continue
+                val updateOption = GlobalVars.configStates["auto_update"]?.value?.toIntOrNull() ?: 0
+                if (updateOption == 2 && System.currentTimeMillis() - lastSignalTime >= WATCHDOG_TIMEOUT_MS) {
+                    ShowMessage("超过8小时未收到更新信号，强制检查更新")
+                    updateMutex.withLock {
+                        checkAndUpdate(context)
+                    }
+                    lastSignalTime = System.currentTimeMillis()
                 }
-                lastSignalTime = System.currentTimeMillis()
+            } catch (e: CancellationException) {
+                throw e // Respect coroutine cancellation
+            } catch (e: Exception) {
+                LogHelper.showDebugInfo("HotUpdateManager: Watchdog error: ${e.message}")
             }
         }
     }
 
-    private suspend fun checkAndUpdate(context: Context) {
+    private suspend fun checkAndUpdate(context: Context) = withTimeout(UPDATE_TIMEOUT_MS) {
         ShowMessage("准备检查新版本")
         val baseUrl = BuildConfig.BASE_URL
         val assetsDir = File(context.filesDir, "assets")
+        // Ensure assets directory exists (e.g. on fresh install)
+        if (!assetsDir.exists()) assetsDir.mkdirs()
 
         // --- Step A: Determine the local JAR version ---
         val localVersion =
@@ -105,14 +130,16 @@ object HotUpdateManager {
             serverMd5 = json.getString("md5")
             serverFileName = json.getString("fileName")
             serverVersion = serverFileName.removePrefix("encrypted_").removeSuffix(".jar").toLongOrNull() ?: 0L
+        } catch (e: CancellationException) {
+            throw e // Respect coroutine cancellation
         } catch (e: Exception) {
             LogHelper.showDebugInfo("HotUpdateManager: Version check error: ${e.message}")
-            return
+            return@withTimeout
         }
 
         if (serverVersion <= localVersion) {
             ShowMessage("当前已是最新版本 (服务器版本号=$serverVersion, 本地版本号=$localVersion)")
-            return
+            return@withTimeout
         }
         ShowMessage("检测到新版 (服务器版本号=$serverVersion, 本地版本号=$localVersion)")
 
@@ -124,10 +151,12 @@ object HotUpdateManager {
                 ShowMessage("请登录账号后，再使用自动更新\n(自动更新可免费使用，仅需登录即可)")
                 delay(2000)
             }
-            return
+            return@withTimeout
         }
 
         val targetFile = File(assetsDir, serverFileName)
+        // Download to a temp file first to avoid leaving a corrupt JAR on network failure
+        val tempFile = File(assetsDir, "${serverFileName}.tmp")
         var downloadSuccess = false
 
         for (attempt in 1..MAX_RETRY) {
@@ -147,73 +176,99 @@ object HotUpdateManager {
                 val requestBody = jsonBody.toString().toRequestBody("application/json".toMediaTypeOrNull())
                 val downloadRequest = Request.Builder().url("${baseUrl}api/hot-update-download").post(requestBody).build()
 
-                // Stream response bytes to file
+                // Stream response bytes to temp file (atomic: only rename after MD5 verification)
                 withContext(Dispatchers.IO) {
                     httpClient.newCall(downloadRequest).execute().use { response ->
                         if (!response.isSuccessful) {
                             throw IllegalStateException("Download failed: ${response.code}")
                         }
-                        // Ensure the file is writable before writing
-                        if (targetFile.exists()) {
-                            targetFile.setWritable(true)
+                        if (tempFile.exists()) {
+                            tempFile.setWritable(true)
                         }
-                        targetFile.outputStream().use { out ->
+                        tempFile.outputStream().use { out ->
                             response.body.byteStream().copyTo(out)
                         }
                     }
                 }
 
-                // Verify MD5 of downloaded file
-                val actualMd5 = computeFileMd5(targetFile)
+                // Verify MD5 of downloaded temp file
+                val actualMd5 = computeFileMd5(tempFile)
                 if (actualMd5.equals(serverMd5, ignoreCase = true)) {
+                    // Atomically move verified temp file to final target
+                    if (targetFile.exists()) {
+                        targetFile.setWritable(true)
+                        targetFile.delete()
+                    }
+                    if (!tempFile.renameTo(targetFile)) {
+                        // Fallback: copy + delete if rename fails (e.g. cross-filesystem)
+                        tempFile.copyTo(targetFile, overwrite = true)
+                        tempFile.delete()
+                    }
                     ShowMessage("新版下载成功")
                     downloadSuccess = true
                     break
                 } else {
                     ShowMessage("下载失败，可能是网络问题，导致下载中断。若反复出现此问题，则建议去官网手动下载新版。")
                     delay(2000)
-                    targetFile.setWritable(true)
-                    targetFile.delete()
+                    tempFile.setWritable(true)
+                    tempFile.delete()
                 }
+            } catch (e: CancellationException) {
+                // Clean up temp file before propagating cancellation
+                if (tempFile.exists()) { tempFile.setWritable(true); tempFile.delete() }
+                throw e
             } catch (e: Exception) {
                 ShowMessage("下载更新失败: 尝试次数 $attempt\n错误信息: ${e.message}")
                 delay(2000)
-                if (targetFile.exists()) {
-                    targetFile.setWritable(true)
-                    targetFile.delete()
+                if (tempFile.exists()) {
+                    tempFile.setWritable(true)
+                    tempFile.delete()
                 }
             }
         }
 
         if (!downloadSuccess) {
             ShowMessage("已尝试 $MAX_RETRY 此，但依然更新失败\n即将停止自动更新")
-            return
+            return@withTimeout
         }
 
         // --- Step D: Clean up old JARs and reload ---
         assetsDir.listFiles()?.filter {
             it.name.startsWith("encrypted_") && it.name.endsWith(".jar") && it.name != serverFileName
         }?.forEach { oldJar ->
-            oldJar.setWritable(true)
-            oldJar.delete()
+            try {
+                oldJar.setWritable(true)
+                if (!oldJar.delete()) {
+                    LogHelper.showDebugInfo("HotUpdateManager: Failed to delete old JAR: ${oldJar.name}")
+                }
+            } catch (e: Exception) {
+                LogHelper.showDebugInfo("HotUpdateManager: Error deleting old JAR ${oldJar.name}: ${e.message}")
+            }
         }
 
         // Android 16+ requires DEX files to be non-writable
         targetFile.setReadOnly()
 
-        ShowMessage("已成功下载新版，正在重启中")
-        // Reuse DebugReloadReceiver pattern: stop bot, reload, restart
-        AppStateManager.setMode(AppMode.Main)
-        val loader = Loadjar(context)
-        loader.startLoading { status ->
-            LogHelper.showDebugInfo("HotUpdateManager: $status")
-            if (status == "Plugin loaded successfully") {
-                GlobalVars.isPlaying.value = true
-                Handler(Looper.getMainLooper()).postDelayed({
-                    AppStateManager.setMode(AppMode.Run)
-                    ShowMessage("重启成功")
-                }, 500)
+        // Reload the new JAR; wrapped in try-catch so a load failure doesn't crash the app
+        try {
+            ShowMessage("已成功下载新版，正在重启中")
+            AppStateManager.setMode(AppMode.Main)
+            val loader = Loadjar(context)
+            loader.startLoading { status ->
+                LogHelper.showDebugInfo("HotUpdateManager: $status")
+                if (status == "Plugin loaded successfully") {
+                    GlobalVars.isPlaying.value = true
+                    Handler(Looper.getMainLooper()).postDelayed({
+                        AppStateManager.setMode(AppMode.Run)
+                        ShowMessage("重启成功")
+                    }, 500)
+                }
             }
+        } catch (e: CancellationException) {
+            throw e // Respect coroutine cancellation
+        } catch (e: Exception) {
+            LogHelper.showDebugInfo("HotUpdateManager: Reload failed: ${e.message}")
+            ShowMessage("热更新重载失败: ${e.message}，请手动重启应用")
         }
     }
 
