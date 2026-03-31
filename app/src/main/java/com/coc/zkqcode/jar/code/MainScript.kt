@@ -20,6 +20,7 @@ import com.coc.zkqcode.jar.code.universal.smalltools.writeMemory
 import com.coc.zkqcode.jar.code.mainbase.clan.donateToClan
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
 import com.coc.zkqcode.jar.ui.schema.Schema
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
@@ -33,7 +34,9 @@ suspend fun runMainScript() {
     // Read hot update preference and emit signal if "OnStart" mode is selected
     val updateOption = getConfigOrStop(Schema.GLOBAL_SETTINGS.AUTO_UPDATE.key).toIntOrNull() ?: 0
     if (updateOption == 1) {
-        GlobalVars.updateCheckSignal.tryEmit(Unit)
+        val deferred = CompletableDeferred<Unit>()
+        GlobalVars.updateCheckSignal.tryEmit(deferred)
+        deferred.await()
     }
     // 1. Initialize/update local memory state
     val isBatchCreate = getConfigOrStop(Schema.GLOBAL_SETTINGS.BATCH_CREATE_ACCOUNT.key) == "1"
@@ -70,7 +73,7 @@ suspend fun runMainScript() {
     InGamesVars.adTime = 15.coerceAtLeast(accountTotal * 8)
     batchCreateAccounts()//Create all needed accounts first.
     while (currentCoroutineContext().isActive) {
-//        runTestCode()
+        runTestCode()
 
         displayAds()
         // Use labeled block to skip remaining steps on failure
@@ -97,7 +100,9 @@ suspend fun runMainScript() {
         // Circularly search for the next enabled account, wrapping back to currentAccountNumber (inclusive)
         // Emit hot update signal at safe point between account switches
         if (updateOption == 2) {
-            GlobalVars.updateCheckSignal.tryEmit(Unit)
+            val deferred = CompletableDeferred<Unit>()
+            GlobalVars.updateCheckSignal.tryEmit(deferred)
+            deferred.await()
         }
         val searchOrder = ((InGamesVars.currentAccountNumber + 1)..accountTotal) + (accountStart..InGamesVars.currentAccountNumber)
         val nextAccount = findAndActivateAccount(searchOrder, isBatchCreate) ?: return
@@ -118,11 +123,10 @@ suspend fun runMainScript() {
 
 private suspend fun runTestCode() {
     while (true) {
-        donateToClan()
-        ShowMessage("测试代码结束")
-        delay(10000000)
+//        donateToClan()
+        ShowMessage("测试代码333")
 //        ShowMessage(findMultiColors(MyColors.DarkElixirColor).toString())
-//        delay(1000)
+        delay(1000)
     }
 }
 

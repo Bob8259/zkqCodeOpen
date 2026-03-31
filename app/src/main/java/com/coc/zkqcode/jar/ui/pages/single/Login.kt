@@ -50,32 +50,10 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
 import java.io.IOException
 import java.util.Locale
-import java.security.MessageDigest
+import com.coc.zkqcode.core.util.crypto.solvePoW
 import org.json.JSONObject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-
-
-@Suppress("KotlinUnreachableCode")
-suspend fun solvePoW(nonce: String): String = withContext(Dispatchers.Default) {
-    var salt = 0
-    val md = MessageDigest.getInstance("SHA-256")
-    while (true) {
-        val saltStr = salt.toString()
-        val data = (nonce + saltStr).toByteArray()
-        val hashBytes = md.digest(data)
-
-        // Check for 0000 (first 2 bytes are 0) and 5th char < 3 (high nibble of 3rd byte < 3)
-        if (hashBytes[0] == 0.toByte() && hashBytes[1] == 0.toByte()) {
-            val highNibble = (hashBytes[2].toInt() and 0xFF) ushr 4
-            if (highNibble < 3) {
-                return@withContext saltStr
-            }
-        }
-        salt++
-    }
-    return@withContext "" // Should not reach here
-}
 
 @Composable
 fun LoginScreen(onAdFreeClick: () -> Unit = {}) {
