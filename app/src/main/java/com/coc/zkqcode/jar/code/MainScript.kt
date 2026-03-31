@@ -76,7 +76,7 @@ suspend fun runMainScript() {
     var lastUpdateCheckTime = System.currentTimeMillis()
     var nextUpdateInterval = (2 * 3600_000L) + (Math.random() * 3600_000L).toLong()
     while (currentCoroutineContext().isActive) {
-        runTestCode()
+//        runTestCode()
 
         displayAds()
         // Use labeled block to skip remaining steps on failure
@@ -129,7 +129,7 @@ suspend fun runMainScript() {
 private suspend fun runTestCode() {
     while (true) {
 //        donateToClan()
-        ShowMessage("测试代码1234")
+        ShowMessage("测试代码1111")
 //        ShowMessage(findMultiColors(MyColors.DarkElixirColor).toString())
         delay(1000)
     }

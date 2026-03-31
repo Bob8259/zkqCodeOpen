@@ -141,7 +141,6 @@ object HotUpdateManager {
             ShowMessage("当前已是最新版本 (服务器版本号=$serverVersion, 本地版本号=$localVersion)")
             return@withTimeout
         }
-        ShowMessage("检测到新版 (服务器版本号=$serverVersion, 本地版本号=$localVersion)")
 
         // --- Step C: Download with PoW authentication, retry up to MAX_RETRY times ---
         val email = GlobalVars.configStates["email"]?.value.orEmpty()
@@ -160,7 +159,7 @@ object HotUpdateManager {
         var downloadSuccess = false
 
         for (attempt in 1..MAX_RETRY) {
-            ShowMessage("下载中，第$attempt/$MAX_RETRY 次尝试")
+            ShowMessage("检测到新版 (服务器版本号=$serverVersion, 本地版本号=$localVersion)\n下载中，第$attempt/$MAX_RETRY 次尝试")
             try {
                 // Fetch PoW challenge (nonce valid for 10s, single-use)
                 val powNonce = fetchPowNonce(baseUrl)
@@ -176,17 +175,35 @@ object HotUpdateManager {
                 val requestBody = jsonBody.toString().toRequestBody("application/json".toMediaTypeOrNull())
                 val downloadRequest = Request.Builder().url("${baseUrl}api/hot-update-download").post(requestBody).build()
 
-                // Stream response bytes to temp file (atomic: only rename after MD5 verification)
+                // Stream response bytes to temp file with progress reporting
                 withContext(Dispatchers.IO) {
                     httpClient.newCall(downloadRequest).execute().use { response ->
                         if (!response.isSuccessful) {
                             throw IllegalStateException("Download failed: ${response.code}")
                         }
+                        val contentLength = response.body.contentLength()
                         if (tempFile.exists()) {
                             tempFile.setWritable(true)
                         }
                         tempFile.outputStream().use { out ->
-                            response.body.byteStream().copyTo(out)
+                            val buffer = ByteArray(8192)
+                            var totalBytesRead = 0L
+                            var lastProgressTime = 0L
+                            val inputStream = response.body.byteStream()
+                            var bytesRead: Int
+                            while (inputStream.read(buffer).also { bytesRead = it } != -1) {
+                                out.write(buffer, 0, bytesRead)
+                                totalBytesRead += bytesRead
+                                val now = System.currentTimeMillis()
+                                // Throttle progress updates to avoid flooding ShowMessage
+                                if (now - lastProgressTime >= 500L) {
+                                    lastProgressTime = now
+                                    val progressText = formatDownloadProgress(totalBytesRead, contentLength)
+                                    Handler(Looper.getMainLooper()).post {
+                                        ShowMessage(progressText)
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -269,6 +286,21 @@ object HotUpdateManager {
         } catch (e: Exception) {
             LogHelper.showDebugInfo("HotUpdateManager: Reload failed: ${e.message}")
             ShowMessage("热更新重载失败: ${e.message}，请手动重启应用")
+        }
+    }
+
+    /**
+     * Formats download progress into a human-readable KB string.
+     * Falls back to showing only downloaded size when total is unknown.
+     */
+    private fun formatDownloadProgress(downloaded: Long, total: Long): String {
+        val dlKB = downloaded / 1024
+        return if (total > 0) {
+            val pct = (downloaded * 100 / total).toInt()
+            val totalKB = total / 1024
+            "下载中: $pct% (${dlKB}KB / ${totalKB}KB)"
+        } else {
+            "下载中: ${dlKB}KB"
         }
     }
 
