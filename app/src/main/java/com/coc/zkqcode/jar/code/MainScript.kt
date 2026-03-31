@@ -1,5 +1,6 @@
 package com.coc.zkqcode.jar.code
 
+import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.basic.waitForPlay
@@ -29,7 +30,11 @@ suspend fun runMainScript() {
     ShowMessage("检测到设置已更新\n即将重新运行")
     delay(200)
     userAuth()
-
+    // Read hot update preference and emit signal if "OnStart" mode is selected
+    val updateOption = getConfigOrStop(Schema.GLOBAL_SETTINGS.AUTO_UPDATE.key).toIntOrNull() ?: 0
+    if (updateOption == 1) {
+        GlobalVars.updateCheckSignal.tryEmit(Unit)
+    }
     // 1. Initialize/update local memory state
     val isBatchCreate = getConfigOrStop(Schema.GLOBAL_SETTINGS.BATCH_CREATE_ACCOUNT.key) == "1"
 
@@ -90,6 +95,10 @@ suspend fun runMainScript() {
             }
         }
         // Circularly search for the next enabled account, wrapping back to currentAccountNumber (inclusive)
+        // Emit hot update signal at safe point between account switches
+        if (updateOption == 2) {
+            GlobalVars.updateCheckSignal.tryEmit(Unit)
+        }
         val searchOrder = ((InGamesVars.currentAccountNumber + 1)..accountTotal) + (accountStart..InGamesVars.currentAccountNumber)
         val nextAccount = findAndActivateAccount(searchOrder, isBatchCreate) ?: return
 
@@ -104,6 +113,16 @@ suspend fun runMainScript() {
                     ?: logAndRestart("${Schema.ACCOUNT_SETTINGS.GAME_VERSION.displayName} 必须是数字，请检查配置")
             )
         }
+    }
+}
+
+private suspend fun runTestCode() {
+    while (true) {
+        donateToClan()
+        ShowMessage("测试代码结束")
+        delay(10000000)
+//        ShowMessage(findMultiColors(MyColors.DarkElixirColor).toString())
+//        delay(1000)
     }
 }
 
@@ -133,13 +152,4 @@ private suspend fun findAndActivateAccount(
     return found
 }
 
-private suspend fun runTestCode() {
-    while (true) {
-        donateToClan()
-        ShowMessage("测试代码结束")
-        delay(10000000)
-//        ShowMessage(findMultiColors(MyColors.DarkElixirColor).toString())
-//        delay(1000)
-    }
-}
 

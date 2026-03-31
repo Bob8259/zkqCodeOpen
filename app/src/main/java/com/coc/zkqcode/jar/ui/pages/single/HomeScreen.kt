@@ -222,10 +222,10 @@ fun HomeScreen(
                                 SettingSwitchIcon(key = GLOBAL_SETTINGS.RECORD_PROGRESS.key)
 
 
-                                /* SettingDropdown(
+                                SettingDropdown(
                                     key = GLOBAL_SETTINGS.AUTO_UPDATE.key,
-                                    options = listOf("关闭", "仅启动时更新", "实时更新")
-                                ) */
+                                    options = listOf("关闭自动更新", "仅启动时更新", "实时自动更新")
+                                )
                                 SettingSwitchIcon(key = GLOBAL_SETTINGS.AUTO_START.key)
                                 SettingDropdown(
                                     key = GLOBAL_SETTINGS.AFTER_KICK_OPTION.key,

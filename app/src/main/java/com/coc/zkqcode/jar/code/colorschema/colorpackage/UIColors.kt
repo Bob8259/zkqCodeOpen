@@ -7,6 +7,7 @@ import com.coc.zkqcode.jar.code.colorschema.ColorSchema
 interface IUIColors {
     val Reconnection: ColorSchema
     val ReconnectionOnCloudPhone: ColorSchema
+    val RatingOnCloudPhone: ColorSchema
     val GreenConfirm: ColorSchema
     val CNAd: ColorSchema
     val ClanChat: ColorSchema
@@ -39,6 +40,9 @@ object UIColors : IUIColors {
     )
     override val ReconnectionOnCloudPhone = ColorSchema.parse(
         240, 195, 1030, 530, "424242", "106|-4|424242,184|8|424242,142|-121|424242,236|-139|424242,302|-142|424242,442|-13|424242,541|-48|424242,539|-91|424242,523|-135|424242", 0, 0.99, "重连1"
+    )
+    override val RatingOnCloudPhone = ColorSchema.parse(
+        249, 206, 1035, 522, "424242", "157|0|424242,314|0|424242,471|0|424242,628|0|424242,0|158|424242,157|158|424242,314|158|424242,471|158|424242,628|158|424242", 0, 0.99, "云手机打分提示"
     )
     override val GreenConfirm = ColorSchema.parse(
         577, 564, 731, 642, "7AF1D2", "25|-3|7FF3D7,45|-4|81F4D9,60|-4|81F4D9,66|5|70ECC8,67|17|53DFAB,67|23|2CCD84,45|35|30BA71,22|33|2FBF76,-1|26|2CCC83", 0, 0.9, "绿色确认"
@@ -113,10 +117,12 @@ object UIColors : IUIColors {
     override val MiddleGreenButton = ColorSchema.parse(
         577, 526, 704, 567, "86E8BA", "25|0|86E8BA,51|0|86E8BA,76|0|86E8BA,101|0|86E8BA,0|21|3AD48B,25|21|3AD48B,51|21|3AD48B,76|21|3AD48B,101|21|3AD48B", 0, 0.9, "中心绿色确认（类似活动和帮手教程）"
     )
+
     // Exclusive gift/offer popup indicator
     override val ExclusiveGift = ColorSchema.parse(
         1080, 113, 1119, 153, "8A83FF", "8|0|FFFFFF,16|0|FFFFFF,23|0|FFFFFF,31|0|8A83FF,12|8|FFFFFF,32|13|1611EC,13|30|2D25CD,-5|18|1A16ED,31|20|1511E8", 0, 0.9, "垃圾专属礼包"
     )
+
     // More coupons/points button
     override val MorePointCoupon = ColorSchema.parse(
         880, 195, 925, 240, "8B83FF", "9|0|FFFFFF,19|0|FFFFFF,18|8|FFFFFF,34|11|716BFD,42|15|2621F0,38|23|1712EB,19|23|0D0D0D,28|23|FAF6F6,37|23|1611EA", 0, 0.9, "更多点券"
