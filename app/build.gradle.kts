@@ -230,6 +230,32 @@ tasks.register<Exec>("buildJar") {
     }
 }
 
+// Upload the encrypted JAR to the hot update server
+tasks.register("uploadJar") {
+    group = "build"
+    description = "Build, encrypt, and upload the JAR to the hot update server"
+    dependsOn("buildJar")
+
+    doLast {
+        val assetsPath = file("${project.projectDir.absolutePath}/src/main/assets")
+        val encryptedJar = assetsPath.listFiles()
+            ?.firstOrNull { it.name.startsWith("encrypted_") && it.extension == "jar" }
+            ?: throw GradleException("No encrypted jar found in assets directory")
+
+        val pythonExe = "C:/Users/Azikaban/anaconda3/python.exe"
+        val scriptPath = file("upload_jar.py").absolutePath
+
+        println("Uploading ${encryptedJar.name} to hot update server...")
+        val proc = ProcessBuilder(pythonExe, scriptPath, encryptedJar.absolutePath)
+            .inheritIO().start()
+        val exitCode = proc.waitFor()
+        if (exitCode != 0) {
+            throw GradleException("JAR upload failed with exit code $exitCode")
+        }
+        println("--- Upload complete ---")
+    }
+}
+
 tasks.register("deployAndReload") {
     group = "custom"
     description = "Build JAR, push to device, and trigger debug reload"
