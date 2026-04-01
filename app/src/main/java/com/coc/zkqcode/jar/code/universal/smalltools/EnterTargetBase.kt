@@ -19,7 +19,7 @@ suspend fun enterMainBase(): Boolean {
     val loopStart = System.currentTimeMillis()
     clickRightBottom(1)
     while (System.currentTimeMillis() - loopStart < 30_000L) {
-        val workers = findMultiColorsUntil(schemas = listOf(MyColors.MainBaseWorker, MyColors.MainBaseWorker2, MyColors.GoblinWorker, MyColors.GoblinResearcher), duration = 200)
+        val workers = findMultiColorsUntil(schemas = listOf(MyColors.MainBaseWorker, MyColors.MainBaseWorker2, MyColors.MainBaseWorker3, MyColors.GoblinWorker, MyColors.GoblinResearcher), duration = 200)
         if (workers != null) {
             ShowMessage("已进入主世界")
             return true
