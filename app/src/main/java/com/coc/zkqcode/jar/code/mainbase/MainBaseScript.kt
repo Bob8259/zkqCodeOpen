@@ -1,6 +1,7 @@
 package com.coc.zkqcode.jar.code.mainbase
 
 
+import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.jar.code.mainbase.attack.mainBaseAttack
 import com.coc.zkqcode.jar.code.mainbase.attack.mainBaseTrainTroops
 import com.coc.zkqcode.jar.code.mainbase.clan.joinClan
@@ -15,6 +16,7 @@ import com.coc.zkqcode.jar.code.universal.smalltools.enterMainBase
 
 suspend fun playMainBase(): Boolean {
     if (!enterMainBase()) return false
+
     zoomSmallMainBase()
     if (!mainBaseTrainTroops()) return false
     if (!mainBaseAttack()) return false

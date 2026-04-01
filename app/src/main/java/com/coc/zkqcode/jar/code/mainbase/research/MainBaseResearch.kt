@@ -49,7 +49,7 @@ val ResearchLevelColors: List<Pair<Int, List<ColorSchema>>> = listOf(
 
 suspend fun mainBaseResearch(): Boolean {
     if (getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.RESEARCH_SETTING.key) && WorkerAndResearch.detectResearch(BaseType.Main)) {
-        val researchIcon = findMultiColorsUntil(schemas = listOf(MyColors.ResearchIcon), duration = 1000, increment = 1)
+        val researchIcon = findMultiColorsUntil(schemas = listOf(MyColors.ResearchIcon, MyColors.ResearchIcon2), duration = 1000, increment = 1)
         if (researchIcon != null) {
             TouchActions.tap(researchIcon.x + 20, researchIcon.y, delayTime = 500)
             // Find white number indicating available research and tap it

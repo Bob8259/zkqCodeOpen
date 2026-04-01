@@ -93,7 +93,9 @@ object WorkerAndResearch {
         }
 
         // Detect research icon and count researchers
+        // Fallback to ResearchIcon2 if ResearchIcon is not found
         val research = findMultiColors(schema = MyColors.ResearchIcon)
+            ?: findMultiColors(schema = MyColors.ResearchIcon2)
         if (research != null) {
             // Define the crop region for the researcher number text
             val startX = research.x - 100
