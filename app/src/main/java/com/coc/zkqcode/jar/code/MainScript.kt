@@ -35,7 +35,7 @@ suspend fun runMainScript() {
     userAuth()
     // Read hot update preference and emit signal if "OnStart" mode is selected
     val updateOption = getConfigOrStop(Schema.GLOBAL_SETTINGS.AUTO_UPDATE.key).toIntOrNull() ?: 0
-    if (updateOption == 1) {
+    if (updateOption == 1 || updateOption == 2) {
         val deferred = CompletableDeferred<Unit>()
         GlobalVars.updateCheckSignal.tryEmit(deferred)
         deferred.await()
