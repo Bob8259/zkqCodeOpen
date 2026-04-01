@@ -15,6 +15,7 @@ interface IMainBaseTraining {
     val DeleteAll3: ColorSchema
     val MiddleGreenYes: ColorSchema
     val TrainDragon: ColorSchema
+    val TrainDragon2: ColorSchema
     val TrainGiant: ColorSchema
     val TrainArcher: ColorSchema
     val TrainBarbarian: ColorSchema
@@ -50,6 +51,9 @@ object MainBaseTraining : IMainBaseTraining {
     )
     override val TrainDragon = ColorSchema.parse(
         18, 416, 1275, 710, "C95369", "4|-12|F97389,19|-6|D26275,20|5|893F4E,11|12|733071,6|23|3C3276,-3|24|737681,-7|9|3A2F85,8|2|D35D6B,25|3|7F3C4F", 0, 0.9, "训练飞龙"
+    )
+    override val TrainDragon2 = ColorSchema.parse(
+        18, 416, 1275, 710, "DA758A", "6|0|F06D83,12|0|F67286,18|0|F47288,24|0|F46E83,0|26|2E1178,6|26|362B84,12|26|7445FF,18|26|6D45E3,24|26|703DB2", 0, 0.9, "训练飞龙2"
     )
     override val TrainGiant = ColorSchema.parse(
         18, 416, 1275, 710, "5578C6", "-18|-14|4A609E,-12|-23|5E71B2,1|-22|86BDFF,19|-22|5F8CED,23|-21|7CADFF,24|-13|85BCFF,15|7|93CBFF,1|3|84B8FF,-12|-4|8287B9", 0, 0.9, "训练巨人"
