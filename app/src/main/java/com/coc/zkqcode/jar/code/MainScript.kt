@@ -1,6 +1,7 @@
 package com.coc.zkqcode.jar.code
 
 import com.coc.zkqcode.core.data.database.GlobalVars
+import com.coc.zkqcode.core.util.basic.RunShell
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.basic.waitForPlay
@@ -83,6 +84,7 @@ suspend fun runMainScript() {
 //        runTestCode()
 
         displayAds()
+        RunShell.runNoOutput("am kill-all")//clean up memory
         // Use labeled block to skip remaining steps on failure
         run stepBlock@{
             if (!writeGameFiles()) {
