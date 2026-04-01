@@ -39,7 +39,11 @@ suspend fun enterMainBase(): Boolean {
                 TouchActions.tap(x, y, isJitter = false, delayTime = 50)
             }
         }
-
+        for (x in 1000..1050 step 30) {
+            for (y in 250..330 step 30) {
+                TouchActions.tap(x, y, isJitter = false, delayTime = 50)
+            }
+        }
     }
     return false
 }
