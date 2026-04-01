@@ -20,8 +20,10 @@ object ServerManager {
             }
             GlobalVars.serverPath = serverFile.absolutePath
 
-            // Execute the shell command to start the server
-            // Use setsid to create a new session and detach from the controlling terminal
+            // Kill any stale ShellServer processes to free port 6839 before starting a new one
+            Shell.cmd("pkill -f com.coc.zkqserver.ShellServer").exec()
+
+            // Start the server in a detached session so it survives parent process termination
             Shell.cmd("setsid sh -c 'export CLASSPATH=${GlobalVars.serverPath}; exec app_process /system/bin com.coc.zkqserver.ShellServer' > /dev/null 2>&1 &")
                 .exec()
             // Use nohup for enhanced fault tolerance

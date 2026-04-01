@@ -75,12 +75,10 @@ fun LazyListScope.MainBaseConfig(
     item {
         SettingSection(visible = isExpanded) {
             FlowRow {
-                /*
                 SettingSwitchIcon(
                     key = "${MAIN_BASE_SETTINGS.WAIT_FOR_BATTLE.key}_c$index",
                     explain = "勾选后，如果当前处于对战冷却时间，辅助会一直等待到冷却结束。"
                 )
-                */
                 SettingSwitchIcon(
                     key = "${MAIN_BASE_SETTINGS.RESTART_GAME.key}_c$index", explain = "勾选后，部署完所有部队后，辅助会重启游戏。仅对主世界对战有效。"
                 )
