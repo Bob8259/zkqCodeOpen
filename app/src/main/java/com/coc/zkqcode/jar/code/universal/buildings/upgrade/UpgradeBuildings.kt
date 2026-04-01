@@ -33,6 +33,11 @@ enum class BuildButtonType {
 }
 
 suspend fun upgradeBuildings(currentBase: BaseType): Boolean {
+    if (currentBase == BaseType.Builder) {
+        if (!getBooleanConfigRuntime(Schema.BUILDER_BASE_SETTINGS.BUILDER_BASE_BUILD_SETTING.key)) return true
+    } else if (currentBase == BaseType.Main) {
+        if (!getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.BUILD_SETTING.key)) return true
+    }
     zoomOrNot = true
     upgradableBuildingsMap.keys.forEach { upgradableBuildingsMap[it] = false }
     var isNewBuildingDetected = false
@@ -157,20 +162,19 @@ private suspend fun buildOneNewBuildings(currentBase: BaseType): Boolean {
         } else {
             // Handle standard building with retry logic
             for (i in 1..5) {
-                val currentTick =
-                    if (currentBase == BaseType.Main) mainBaseFindBuildButton(type = BuildButtonType.Tick, duration = 500) else builderBaseFindBuildButton(type = BuildButtonType.Tick, duration = 500)
+                val currentTick = if (currentBase == BaseType.Main) mainBaseFindBuildButton(type = BuildButtonType.Tick, duration = 500) else builderBaseFindBuildButton(type = BuildButtonType.Tick, duration = 500)
                 if (currentTick != null) {
                     ShowMessage("点击第 $i 次绿色按钮：${currentTick.x}, ${currentTick.y}")
                     if (i > 1) zoomOrNot = true
                     TouchActions.tap(currentTick.x, currentTick.y, delayTime = 500)
                     if (currentBase == BaseType.Main && getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.INSTANT_UPGRADE.key)) {
                         val gemCost = detectInstantBuildCost()
-                        val costThreshold = getConfigRuntime(Schema.MAIN_BASE_SETTINGS.INSTANT_UPGRADE_THRESHOLD.key).toIntOrNull() ?: logAndRestart("${Schema.MAIN_BASE_SETTINGS.INSTANT_UPGRADE_THRESHOLD.displayName} 必须是数字，请检查配置")
+                        val costThreshold = getConfigRuntime(Schema.MAIN_BASE_SETTINGS.INSTANT_UPGRADE_THRESHOLD.key).toIntOrNull()
+                            ?: logAndRestart("${Schema.MAIN_BASE_SETTINGS.INSTANT_UPGRADE_THRESHOLD.displayName} 必须是数字，请检查配置")
                         ShowMessage("检测到的宝石消耗数量: $gemCost\n设置的宝石消耗限额: $costThreshold")
                         if (gemCost != null && gemCost <= costThreshold) {
                             val upgradeGemIcon = findMultiColorsUntil(
-                                schemas = listOf(MyColors.UpgradeGemIcon, MyColors.UpgradeGemIcon2, MyColors.UpgradeGemIcon3),
-                                duration = 500
+                                schemas = listOf(MyColors.UpgradeGemIcon, MyColors.UpgradeGemIcon2, MyColors.UpgradeGemIcon3), duration = 500
                             )
                             if (upgradeGemIcon != null) {
                                 TouchActions.tap(upgradeGemIcon.x, upgradeGemIcon.y, delayTime = 500)
