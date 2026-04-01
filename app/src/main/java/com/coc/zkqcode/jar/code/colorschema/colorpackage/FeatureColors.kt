@@ -10,6 +10,7 @@ interface IFeatureColors {
     val UpgradeToTH6: ColorSchema
     val OrangeTutorialArrow: ColorSchema
     val ResearchIcon: ColorSchema
+    val ResearchIcon2: ColorSchema
     val WhiteNumberColor: ColorSchema
     val MiddleGreenConfirm: ColorSchema
 }
@@ -29,6 +30,9 @@ object FeatureColors : IFeatureColors {
     )
     override val ResearchIcon = ColorSchema.parse(
         374, 18, 900, 62, "F900D1", "3|0|F004A4,7|0|ED0599,10|0|E80691,13|0|E00587,0|8|F001AD,3|8|4BBFD1,7|8|59E2F2,10|8|FFFFFF,13|8|FFFFFF", 0, 0.9,
+    )
+    override val ResearchIcon2 = ColorSchema.parse(
+        374, 18, 900, 62, "F700CE", "3|0|EF0094,7|0|E8028E,10|0|E40389,13|0|DB0380,32|-2|FAF8F7,30|7|B9AFA5,7|7|62D8E7,10|7|FFFFFF,13|7|FFFFFF", 0, 0.9
     )
     override val WhiteNumberColor = ColorSchema.parse(
         338, 102, 966, 560, "FFFFFF", "-1|1|FFFFFF,-1|2|FFFFFF,-1|3|FFFFFF,-1|4|FFFFFF,7|5|FFFFFF,7|4|FFFFFF,7|3|FFFFFF,7|2|FFFFFF,7|1|FFFFFF", 0, 0.99,

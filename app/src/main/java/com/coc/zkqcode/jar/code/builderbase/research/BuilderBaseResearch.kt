@@ -19,6 +19,7 @@ import com.coc.zkqcode.jar.ui.schema.details.BuilderBaseTroops
 suspend fun builderBaseResearch(): Boolean {
     if (getBooleanConfigRuntime(Schema.BUILDER_BASE_SETTINGS.BUILDER_BASE_RESEARCH.key) && WorkerAndResearch.detectResearch(BaseType.Builder)) {
         val research = findMultiColors(schema = MyColors.ResearchIcon, increment = 1)
+            ?: findMultiColors(schema = MyColors.ResearchIcon2, increment = 1)
         if (research != null) {
             TouchActions.tap(research.x, research.y, delayTime = 600)
             TouchActions.tap(research.x, research.y + 130)//Open research tab
