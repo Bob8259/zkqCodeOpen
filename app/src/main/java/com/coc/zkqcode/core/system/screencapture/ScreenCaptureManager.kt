@@ -210,6 +210,8 @@ object ScreenCaptureManager {
                     )
                 } catch (e: Exception) {
                     LogHelper.showDebugInfo("ensureVirtualDisplay: Error recreating VirtualDisplay: ${e.message}")
+                    // Clean up dangling imageReader to prevent Surface/native buffer leak
+                    cleanupDisplayResources()
                 }
             }
         }
@@ -266,7 +268,8 @@ object ScreenCaptureManager {
         imageReader?.close()
         imageReader = null
 
-        // Clear caches so we don't return stale data after a reset
+        // Recycle cached bitmap to free native pixel memory before clearing
+        cachedBitmap?.recycle()
         cachedBitmap = null
         cachedCaptureResult = null
         lastFrameTimestamp = 0
@@ -331,6 +334,9 @@ object ScreenCaptureManager {
 
                     // Helper to process image
                     fun processImage(image: android.media.Image) {
+                        // Track in-flight bitmap so it can be recycled if an exception
+                        // occurs before it is safely stored in the cache.
+                        var pendingBitmap: Bitmap? = null
                         try {
                             val plane = image.planes[0]
                             val buffer: ByteBuffer = plane.buffer
@@ -340,16 +346,24 @@ object ScreenCaptureManager {
 
                             if (asBitmap) {
                                 val bitmap = createBitmap(screenWidth + rowPadding / pixelStride, screenHeight)
+                                pendingBitmap = bitmap
                                 bitmap.copyPixelsFromBuffer(buffer)
                                 val finalBitmap = if (rowPadding == 0) {
                                     bitmap
                                 } else {
                                     Bitmap.createBitmap(bitmap, 0, 0, screenWidth, screenHeight).also {
                                         if (it != bitmap) bitmap.recycle()
+                                        pendingBitmap = it
                                     }
                                 }
-                                // Update cache
+                                // Recycle the previous cached bitmap to free native memory
+                                val oldBitmap = cachedBitmap
                                 cachedBitmap = finalBitmap
+                                if (oldBitmap != null && oldBitmap != finalBitmap) {
+                                    oldBitmap.recycle()
+                                }
+                                // Successfully cached; clear pending tracker
+                                pendingBitmap = null
                                 lastFrameTimestamp = System.currentTimeMillis()
 
                                 if (cont.isActive) cont.resume(finalBitmap)
@@ -375,6 +389,10 @@ object ScreenCaptureManager {
                                 if (cont.isActive) cont.resume(result)
                             }
                         } catch (e: Exception) {
+                            // Recycle any bitmap allocated but not yet cached to prevent native memory leak
+                            if (pendingBitmap != null && !pendingBitmap!!.isRecycled) {
+                                pendingBitmap!!.recycle()
+                            }
                             LogHelper.showDebugInfo("capture: Error processing image: ${e.message}")
                             if (cont.isActive) cont.resume(null)
                         } finally {
