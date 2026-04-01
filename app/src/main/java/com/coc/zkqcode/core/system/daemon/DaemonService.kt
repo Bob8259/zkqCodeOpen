@@ -14,7 +14,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.net.InetSocketAddress
 import java.net.Socket
-
+//Used for start on deivce boot
 class DaemonService : Service() {
 
     private val scope = CoroutineScope(Dispatchers.IO)

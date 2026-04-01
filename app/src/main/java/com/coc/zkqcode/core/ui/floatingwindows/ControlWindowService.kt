@@ -70,6 +70,7 @@ class ControlWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner 
         windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
         showControlWindow()
         startBotLogic()
+        startBotDaemon()
         startHotUpdateListener()
     }
 
@@ -92,6 +93,22 @@ class ControlWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner 
                         }
                     }
                 }
+        }
+    }
+
+    // Periodically check if botJob has died while AppMode is still Run, and restart it
+    private fun startBotDaemon() {
+        serviceScope.launch {
+            while (true) {
+                delay(10000L)
+                if (AppStateManager.currentMode == AppMode.Run &&
+                    (botJob == null || botJob?.isActive != true)) {
+                    Timber.w("BotDaemon: botJob is dead while AppMode is Run, restarting...")
+                    botJob = serviceScope.launch(Dispatchers.IO) {
+                        GlobalVars.pluginUI?.runBot()
+                    }
+                }
+            }
         }
     }
 
