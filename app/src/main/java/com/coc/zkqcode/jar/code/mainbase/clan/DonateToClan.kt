@@ -46,6 +46,12 @@ suspend fun donateToClan(): Boolean {
         if (clanChat != null) {
             // Tap the clan chat icon to open the chat panel
             TouchActions.tap(clanChat.x, clanChat.y, delayTime = 500)
+            if (InGamesVars.currentGameVersion == GameVersion.CN) {
+                TouchActions.tap(523, 239, delayTime = 200)
+                TouchActions.tap(152, 88, delayTime = 200)
+            } else {
+                TouchActions.tap(523, 98, delayTime = 300)//Global version chat area
+            }
             TouchActions.tap(40, 608, delayTime = 500)//Goto bottom
             continue
         }
@@ -72,7 +78,7 @@ suspend fun donateToClan(): Boolean {
         }
         val resources = calculateResourcesPercentage(BaseType.Main)
         // Default to 0; only updated when the dark elixir icon is visible on screen
-        var darkElixirPercentage: Int = 0
+        var darkElixirPercentage = 0
         val darkElixirIcon = findMultiColors(schema = MyColors.DarkElixirIcon, increment = 1)
         if (darkElixirIcon != null) {
             // darkElixirBar is the rightmost colored point on the dark elixir bar
