@@ -10,7 +10,6 @@ import com.coc.zkqcode.core.util.fileactions.InitConfigs
 import com.coc.zkqcode.core.util.fileactions.LogHelper.showDebugInfo
 import com.google.gson.Gson
 import com.google.gson.JsonObject
-import com.topjohnwu.superuser.Shell
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -44,11 +43,7 @@ class ServerActions(
     }
 
     private fun performConnect() {
-        // Use setsid to create a new session and nohup for enhanced fault tolerance
-        Shell.cmd("setsid sh -c 'export CLASSPATH=${GlobalVars.serverPath}; exec app_process /system/bin com.coc.zkqserver.ShellServer' > /dev/null 2>&1 &")
-            .exec()
-        Shell.cmd("nohup sh -c 'export CLASSPATH=${GlobalVars.serverPath}; exec app_process /system/bin com.coc.zkqserver.ShellServer' > /dev/null 2>&1 &")
-            .exec()
+        // Server is already started by ServerManager; this method only connects as a client
         serverConnection.connect(
             // Do not modify these logics. This is designed for an ultra-fast config loading.
             // This will send two messages to the server, if the config file exists, then we will discard the check_exists response, and only load the config from read response.

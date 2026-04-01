@@ -101,10 +101,13 @@ suspend fun searchOpponentsAndDeployTroops(): Boolean {
             TouchActions.tap(83, 631, delayTime = 500)
         }
         // Detect attack cooldown screen; abort search so mainBaseAttack() can skip battle logic
-        val waitForBattle = findMultiColors(schema = MyColors.WaitForBattle)
-        if (waitForBattle != null) {
-            ShowMessage("账号${InGamesVars.currentAccountNumber}，进攻需等待冷却")
-            if (!getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.WAIT_FOR_BATTLE.key)) return false
+        val battlePage = findMultiColors(MyColors.BattlePage)
+        if (battlePage != null) {
+            val waitForBattle = findMultiColors(schema = MyColors.WaitForBattle)
+            if (waitForBattle != null) {
+                ShowMessage("账号${InGamesVars.currentAccountNumber}，进攻需等待冷却")
+                if (!getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.WAIT_FOR_BATTLE.key)) return false
+            }
         }
         val villagerSpeaking = findMultiColors(schema = MyColors.SpeakingVillager)
         val setBaseIcon = findMultiColors(schema = MyColors.SetBaseIcon)
