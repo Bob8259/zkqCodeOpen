@@ -281,9 +281,9 @@ private suspend fun builderBaseTrainTroops() {
     /**
      * Helper to perform repeated taps on a specific coordinate
      */
-    suspend fun tapRepeat(x: Int, y: Int, times: Int = 10) {
+    suspend fun tapRepeat(x: Int, y: Int, times: Int = 12) {
         repeat(times) {
-            TouchActions.tap(x, y, delayTime = 50)
+            TouchActions.tap(x, y, delayTime = 80)
         }
     }
 
