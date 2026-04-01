@@ -32,7 +32,8 @@ import com.coc.zkqcode.statehelper.AppStateManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.runBlocking
+import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.launch
 
 class EnterMainCode : MainCode {
     @Composable
@@ -125,16 +126,20 @@ private fun ConfigLoadingScreen() {
             delay(1000L)
             countdown--
         }
-        RunShell.runNoOutput("am force-stop com.coc.zkqcode >>/dev/null 2>&1")
+        // Skip waitForPlay check — force-stop should execute immediately
+        RunShell.runNoOutput("am force-stop com.coc.zkqcode >>/dev/null 2>&1", isCheckIsPlaying = false)
     }
+
+    val scope = rememberCoroutineScope()
 
     Column {
         Text("正在初始化配置文件...\n若长时间卡在此界面，将在 $countdown 秒后自动重启。")
         CustomButton(
             text = "点击此处手动关闭辅助",
             onClick = {
-                runBlocking(Dispatchers.IO) {
-                    RunShell.runNoOutput("am force-stop com.coc.zkqcode >>/dev/null 2>&1")
+                // Launch on IO dispatcher to avoid blocking the main thread (ANR)
+                scope.launch(Dispatchers.IO) {
+                    RunShell.runNoOutput("am force-stop com.coc.zkqcode >>/dev/null 2>&1", isCheckIsPlaying = false)
                 }
             }
         )
