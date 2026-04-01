@@ -19,6 +19,8 @@ import com.coc.zkqcode.jar.code.universal.smalltools.writeGameFiles
 import com.coc.zkqcode.jar.code.universal.smalltools.writeMemory
 import com.coc.zkqcode.jar.code.mainbase.clan.donateToClan
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
+import com.coc.zkqcode.jar.code.colorschema.MyColors
+import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.ui.schema.Schema
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.currentCoroutineContext
@@ -129,7 +131,7 @@ suspend fun runMainScript() {
 private suspend fun runTestCode() {
     while (true) {
 //        donateToClan()
-        ShowMessage("测试代码1111")
+        ShowMessage(findMultiColors(MyColors.smallElixirUpgradeIcon).toString())
 //        ShowMessage(findMultiColors(MyColors.DarkElixirColor).toString())
         delay(1000)
     }

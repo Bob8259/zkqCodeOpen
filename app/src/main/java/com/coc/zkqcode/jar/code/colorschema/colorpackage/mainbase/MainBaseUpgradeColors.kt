@@ -11,6 +11,7 @@ interface IMainBaseUpgradeColors {
     val MainBaseWorker2: ColorSchema
     val GoblinWorker: ColorSchema
     val smallElixirUpgradeIcon: ColorSchema
+    val builderBaseSmallElixirUpgradeIcon: ColorSchema
 }
 
 object MainBaseUpgradeColors : IMainBaseUpgradeColors {
@@ -29,9 +30,10 @@ object MainBaseUpgradeColors : IMainBaseUpgradeColors {
     override val GoblinWorker = ColorSchema.parse(
         550, 10, 853, 82, "37AB98", "-10|8|57D5CD,-20|0|3B9C8F,-20|-7|2C9098,-8|-12|155D68,-1|-17|48EED9,5|-18|4DFADA,7|-6|2C5A4E,13|-2|49DFC6,3|4|3CAA97", 0, 0.9, "哥布林工人"
     )
-    // Small elixir icon for upgrade detection
     override val smallElixirUpgradeIcon = ColorSchema.parse(
-        0, 0, 0, 0, "FF60FF", "-2|1|FF2DEB,-3|2|FF41D2,-1|3|FF22D3,0|5|DF21B2,2|5|F221C2,2|4|FF22D9,3|4|FF23DD,3|3|FF26EC,3|2|FF39FF", 0, 0.9
+        1, 1, 1270, 710, "FF60FF", "-2|1|FF2DEB,-3|2|FF41D2,-1|3|FF22D3,0|5|DF21B2,2|5|F221C2,2|4|FF22D9,3|4|FF23DD,3|3|FF26EC,3|2|FF39FF", 0, 0.9
     )
-
+    override val builderBaseSmallElixirUpgradeIcon = ColorSchema.parse(
+        1, 1, 1270, 710, "FF299A", "0|-2|FF4CC2,-2|-3|FF47BF,-3|0|FF338B,3|0|FF45BC,3|-3|FF81ED,3|-5|FF5FD9,1|3|FF2C83,-2|3|FA307B,-3|2|FB307B", 0, 0.9
+    )
 }

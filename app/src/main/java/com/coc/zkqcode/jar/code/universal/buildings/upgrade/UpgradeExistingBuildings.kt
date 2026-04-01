@@ -172,9 +172,11 @@ private suspend fun upgradeWalls(currentBase: BaseType, wallType: WallType): Loo
     )
     val hammer = findMultiColorsUntil(schemas = listOf(hammerSchema), duration = 1000) ?: return LoopAction.Continue
     if (wallType == WallType.Elixir) {
+        // Select elixir icon color based on base type
+        val elixirIconBase = if (currentBase == BaseType.Builder) MyColors.builderBaseSmallElixirUpgradeIcon else MyColors.smallElixirUpgradeIcon
         // Rescope search area for elixir upgrade icon relative to hammer position
         val elixirIconSchema = ColorSchema.rescope(
-            MyColors.smallElixirUpgradeIcon, hammer.x + 45, hammer.y - 60, hammer.x + 80, hammer.y - 10
+            elixirIconBase, hammer.x + 45, hammer.y - 60, hammer.x + 80, hammer.y - 10
         )
         val smallElixirUpgradeIcon = findMultiColors(schema = elixirIconSchema)
         if (smallElixirUpgradeIcon == null) {
@@ -200,7 +202,9 @@ private suspend fun upgradeWalls(currentBase: BaseType, wallType: WallType): Loo
             return LoopAction.Proceed
         } else {
             val wallCost = recognizeUpgradeResources(currentBase)
-            val thresholds = 25.coerceAtLeast(getConfigRuntime(Schema.MAIN_BASE_SETTINGS.UPGRADE_WALL_THRESHOLD.key).toIntOrNull() ?: logAndRestart("${Schema.MAIN_BASE_SETTINGS.UPGRADE_WALL_THRESHOLD.displayName} 必须是数字，请检查配置"))
+            val thresholds = 25.coerceAtLeast(
+                getConfigRuntime(Schema.MAIN_BASE_SETTINGS.UPGRADE_WALL_THRESHOLD.key).toIntOrNull() ?: logAndRestart("${Schema.MAIN_BASE_SETTINGS.UPGRADE_WALL_THRESHOLD.displayName} 必须是数字，请检查配置")
+            )
             // Calculate how many walls we can upgrade while keeping resources above the threshold
             val currentResource = if (wallType == WallType.Gold) resources.gold else resources.elixir
             val currentPercent = if (wallType == WallType.Gold) currentResourcePercentage.gold else currentResourcePercentage.elixir
