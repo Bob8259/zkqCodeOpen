@@ -92,7 +92,7 @@ suspend fun upgradeAllExistingBuildings(buildings: List<String>, currentBase: Ba
             // Locate the worker icon
             val worker = if (currentBase == BaseType.Builder) findMultiColorsUntil(
                 schemas = listOf(MyColors.BuilderBaseWorker, MyColors.BuilderBaseWorker2), duration = 1000
-            ) else findMultiColorsUntil(schemas = listOf(MyColors.MainBaseWorker, MyColors.MainBaseWorker2), duration = 1000)
+            ) else findMultiColorsUntil(schemas = listOf(MyColors.MainBaseWorker, MyColors.MainBaseWorker2, MyColors.MainBaseWorker3), duration = 1000)
 
             // Pre-condition check: if it cannot continue building or worker not found, skip to next
             // Pass skipOrdering as isWallUpgrade so the saved worker is available for wall upgrades

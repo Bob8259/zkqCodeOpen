@@ -13,7 +13,7 @@ suspend fun builderBaseFindNewBuildings(currentBase: BaseType): Boolean {
             findMultiColorsUntil(schemas = listOf(MyColors.BuilderBaseWorker, MyColors.BuilderBaseWorker2), duration = 1000)
 
         BaseType.Main ->
-            findMultiColorsUntil(schemas = listOf(MyColors.MainBaseWorker, MyColors.MainBaseWorker2), duration = 1000)
+            findMultiColorsUntil(schemas = listOf(MyColors.MainBaseWorker, MyColors.MainBaseWorker2, MyColors.MainBaseWorker3), duration = 1000)
     }
     if (worker != null) {
         TouchActions.tap(worker.x, worker.y, delayTime = 500)
