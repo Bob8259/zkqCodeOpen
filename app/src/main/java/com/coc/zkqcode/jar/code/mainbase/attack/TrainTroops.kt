@@ -58,12 +58,11 @@ suspend fun mainBaseTrainTroops(): Boolean {
 
         for (i in 1..8) {
             // Priority training check
-            val dragonPoint = findMultiColors(schema = MyColors.TrainDragon)
+            val dragonPoint = findMultiColorsUntil(schemas = listOf(MyColors.TrainDragon, MyColors.TrainDragon2), duration = 100)
             if (dragonPoint != null) {
                 repeat(25) { TouchActions.tap(dragonPoint.x, dragonPoint.y, delayTime = 40) }
                 break
             }
-
             findMultiColors(schema = MyColors.TrainGiant)?.let { p ->
                 repeat(5) { TouchActions.tap(p.x, p.y, delayTime = 40) }
             }
