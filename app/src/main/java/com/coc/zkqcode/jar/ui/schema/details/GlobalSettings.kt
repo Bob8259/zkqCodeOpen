@@ -7,6 +7,7 @@ object GlobalSettings {
     val ACCOUNT_COUNT = SettingDef("account_count", "多开账号数量", "2", "GLOBAL_SETTINGS")
     val AUTO_START = SettingDef("auto_start", "开机自启(仅部分设备有效)", 1, "GLOBAL_SETTINGS")
     val EXTRACT_VERSION = SettingDef("extract_version", "提取存档版本选择", "0", "GLOBAL_SETTINGS")
+    val SWITCH_ACCOUNT_VERSION = SettingDef("switch_account_version", "提取存档版本选择", "0", "GLOBAL_SETTINGS")
     val EXTRACT_CN = SettingDef("extract_cn", "提取国服存档到此序号", "1", "GLOBAL_SETTINGS")
     val EXTRACT_GLOBAL = SettingDef("extract_global", "提取国际服存档到此序号", "1", "GLOBAL_SETTINGS")
 
@@ -34,6 +35,7 @@ object GlobalSettings {
         ACCOUNT_COUNT,
         AUTO_START,
         EXTRACT_VERSION,
+        SWITCH_ACCOUNT_VERSION,
         EXTRACT_CN,
         EXTRACT_GLOBAL,
         EMAIL,

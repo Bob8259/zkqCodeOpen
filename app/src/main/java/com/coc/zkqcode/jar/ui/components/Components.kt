@@ -302,7 +302,7 @@ fun CustomButton(
     onClick: () -> Unit,
     enable: Boolean = true,
     explain: String? = null,
-    marginTop: Dp = 8.dp,
+    marginTop: Dp = 6.dp,
     marginBottom: Dp = 0.dp,
 ) {
 
