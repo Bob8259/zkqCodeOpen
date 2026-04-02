@@ -189,7 +189,7 @@ private suspend fun normalBattle(isNormal: Boolean = true) {
     if (!isNormal) return
     val generalTroops = findMultiColorsUntil(schemas = listOf(MyColors.TroopsWithSkills, MyColors.TroopsWithOutSkills), duration = 200)
     if (generalTroops != null) {
-        TouchActions.tap(generalTroops.x + 15, 646, delayTime = 200) // Troops
+        TouchActions.tap(generalTroops.x + 15, 635, delayTime = 200) // Troops
         val nightWitch = findMultiColors(schema = MyColors.NightWitch)
         if (nightWitch != null) {
             TouchActions.touchDown((deployPos.first + Random.nextInt(1, 4)).toFloat(), (deployPos.second + Random.nextInt(1, 4)).toFloat(), 1)
