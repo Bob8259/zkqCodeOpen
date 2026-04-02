@@ -38,11 +38,11 @@ import androidx.core.content.edit
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.util.basic.RunShell
 import com.coc.zkqcode.core.util.basic.ShowMessage
-import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.jar.code.universal.smalltools.writeGameFilesCore
 import com.coc.zkqcode.jar.ui.components.CustomButton
+import com.coc.zkqcode.jar.ui.components.SettingDropdown
 import com.coc.zkqcode.jar.ui.components.SettingInputRow
-import com.coc.zkqcode.jar.ui.schema.Schema.ACCOUNT_SETTINGS
+import com.coc.zkqcode.jar.ui.schema.Schema.GLOBAL_SETTINGS
 import com.coc.zkqcode.statehelper.AppMode
 import com.coc.zkqcode.statehelper.AppStateManager
 import com.topjohnwu.superuser.Shell
@@ -54,8 +54,7 @@ import kotlinx.coroutines.withContext
 fun SwitchAccount(onClose: () -> Unit) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
-    val sharedPreferences =
-        remember { context.getSharedPreferences("SwitchAccountPrefs", Context.MODE_PRIVATE) }
+    val sharedPreferences = remember { context.getSharedPreferences("SwitchAccountPrefs", Context.MODE_PRIVATE) }
     var accountNumber by remember {
         mutableStateOf(sharedPreferences.getString("accountNumber", "1") ?: "1")
     }
@@ -85,9 +84,7 @@ fun SwitchAccount(onClose: () -> Unit) {
         Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
             // Top Text aligned to start
             Text(
-                text = "小提示：在悬浮窗点击此按钮，即可回到切号工具。每次关闭切号工具时，辅助会从头开始运行。",
-                color = Color.Black,
-                modifier = Modifier
+                text = "小提示：在悬浮窗点击此按钮，即可回到切号工具。", color = Color.Black, modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 8.dp)
             )
@@ -95,27 +92,25 @@ fun SwitchAccount(onClose: () -> Unit) {
             // Image
             if (imageBitmap != null) {
                 Image(
-                    bitmap = imageBitmap,
-                    contentDescription = "Switch Explain",
-                    modifier = Modifier
+                    bitmap = imageBitmap, contentDescription = "Switch Explain", modifier = Modifier
                         .fillMaxWidth()
                         .padding(bottom = 8.dp)
                 )
             } else {
                 Text(
-                    text = "Image 'switch_explain.png' not found",
-                    color = Color.Red,
-                    modifier = Modifier.padding(bottom = 8.dp)
+                    text = "Image 'switch_explain.png' not found", color = Color.Red, modifier = Modifier.padding(bottom = 8.dp)
                 )
             }
 
             // Divider
             HorizontalDivider(
-                modifier = Modifier.padding(vertical = 8.dp),
-                thickness = 1.dp,
-                color = Color.Gray
+                modifier = Modifier.padding(vertical = 8.dp), thickness = 1.dp, color = Color.Gray
             )
             FlowRow {
+                SettingDropdown(
+                    key = GLOBAL_SETTINGS.SWITCH_ACCOUNT_VERSION.key,
+                    options = listOf("国服", "国际服")
+                )
                 Row {
                     CustomButton(text = "▼", onClick = {
                         val current = accountNumber.toIntOrNull() ?: 1
@@ -130,29 +125,22 @@ fun SwitchAccount(onClose: () -> Unit) {
                 }
                 // Account Selection Row
                 Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.padding(vertical = 8.dp),
-                    horizontalArrangement = Arrangement.Center
+                    verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(vertical = 8.dp), horizontalArrangement = Arrangement.Center
                 ) {
                     Text(
-                        text = "切换到第",
-                        modifier = Modifier.padding(horizontal = 8.dp),
-                        color = Color.Black
+                        text = "切换到第", modifier = Modifier.padding(horizontal = 8.dp), color = Color.Black
                     )
 
                     BasicTextField(
-                        value = accountNumber,
-                        onValueChange = { newValue ->
+                        value = accountNumber, onValueChange = { newValue ->
                             // Only allow numeric input
                             if (newValue.isEmpty() || newValue.all { it.isDigit() }) {
                                 accountNumber = newValue.filter { it.isDigit() }
                             }
-                        },
-                        modifier = Modifier
+                        }, modifier = Modifier
                             .width(60.dp)
                             .background(
-                                color = Color.White,
-                                shape = RoundedCornerShape(4.dp)
+                                color = Color.White, shape = RoundedCornerShape(4.dp)
                             )
                             .border(1.dp, Color.Gray, RoundedCornerShape(4.dp))
                             .padding(4.dp)
@@ -161,55 +149,40 @@ fun SwitchAccount(onClose: () -> Unit) {
                     )
 
                     Text(
-                        text = "个账号",
-                        modifier = Modifier.padding(horizontal = 8.dp),
-                        color = Color.Black
+                        text = "个账号", modifier = Modifier.padding(horizontal = 8.dp), color = Color.Black
                     )
-                }
-                // Display the remark for the currently selected account
-                val remarkValue = GlobalVars.configStates["${ACCOUNT_SETTINGS.REMARK.key}${accountNumber}"]?.value
-                if (remarkValue != null) {
-                    Column(modifier = Modifier.padding(top = 8.dp)) {
-                        SettingInputRow(key = "${ACCOUNT_SETTINGS.REMARK.key}${accountNumber}")
-                    }
                 }
             }
             FlowRow(horizontalArrangement = Arrangement.Center) {
-
+                HorizontalDivider(
+                    modifier = Modifier.padding(vertical = 8.dp), thickness = 1.dp, color = Color.Gray
+                )
                 ExtractGameSaveContent()
+                HorizontalDivider(
+                    modifier = Modifier.padding(vertical = 8.dp), thickness = 1.dp, color = Color.Gray
+                )
                 Row {
                     // Confirm Button aligned to start
                     CustomButton(
-                        text = "确认切号",
-                        onClick = {
+                        text = "确认切号", onClick = {
                             scope.launch(Dispatchers.IO) {
                                 GlobalVars.isSwitchingAccount = true
                                 GlobalVars.updateWindowPosition = true
                                 val accNum = accountNumber.ifEmpty { "1" }
-                                // 1. Get Game Version
-                                val versionKey = "${ACCOUNT_SETTINGS.GAME_VERSION.key}$accNum"
-                                val versionStr = GlobalVars.configStates[versionKey]?.value
-                                if (versionStr == null) {
-                                    ShowMessage("设置中未找到账号$accNum，请检查切号范围\n举个例子：\n如果在辅助里只设置了3个账号\n但是尝试切换第4个账号，就会出现此错误")
-                                    delayWithMultiplier(2000)
-                                    return@launch
-                                }
+                                // Use SWITCH_ACCOUNT_VERSION dropdown to determine game version directly
+                                val versionKey = GLOBAL_SETTINGS.SWITCH_ACCOUNT_VERSION.key
+                                val versionStr = GlobalVars.configStates[versionKey]?.value ?: "0"
                                 val version = versionStr.toIntOrNull() ?: 0
                                 val sdPath = Environment.getExternalStorageDirectory().path
+                                // Use accountNumber directly as the save path name
+                                val savePathName = accNum
 
                                 if (version == 0) {
                                     // CN Version
-                                    val pathKey = "${ACCOUNT_SETTINGS.CN_PATH.key}$accNum"
-                                    val savePathName = GlobalVars.configStates[pathKey]!!.value
-                                    if (savePathName.isEmpty()) {
-                                        GlobalVars.isSwitchingAccount = false
-                                        return@launch
-                                    }
                                     val sourceDir = "$sdPath/zkqFiles/zkqCNGameSave/$savePathName"
                                     // Check existence
                                     if (!Shell.cmd("[ -d \"$sourceDir\" ]").exec().isSuccess) {
                                         ShowMessage("存档文件不存在！\n请仔细检查存档路径以及游戏版本！")
-                                        // Handle error (optional: could add a toast here if context was available, but simple return for now as per minimal change)
                                         GlobalVars.isSwitchingAccount = false
                                         return@launch
                                     }
@@ -217,26 +190,14 @@ fun SwitchAccount(onClose: () -> Unit) {
                                     // Force-stop before writing to avoid file-in-use conflicts
                                     RunShell.runNoOutput("am force-stop com.tencent.tmgp.supercell.clashofclans", false)
                                     writeGameFilesCore(
-                                        packageName = "com.tencent.tmgp.supercell.clashofclans",
-                                        savePathName = savePathName,
-                                        folderName = "zkqCNGameSave",
-                                        subDirs = listOf("shared_prefs", "databases"),
-                                        killGame = false
+                                        packageName = "com.tencent.tmgp.supercell.clashofclans", savePathName = savePathName, folderName = "zkqCNGameSave", subDirs = listOf("shared_prefs", "databases"), killGame = false
                                     )
                                     // Launch the game after write completes
                                     RunShell.runNoOutput("monkey -p com.tencent.tmgp.supercell.clashofclans -c android.intent.category.LAUNCHER 1", false)
                                     RunShell.runNoOutput("am start -n com.tencent.tmgp.supercell.clashofclans/com.supercell.titan.tencent.GameAppTencent", false)
                                 } else {
                                     // Global Version
-                                    val pathKey = "${ACCOUNT_SETTINGS.GLOBAL_PATH.key}$accNum"
-                                    val savePathName = GlobalVars.configStates[pathKey]!!.value
-                                    if (savePathName.isEmpty()) {
-                                        GlobalVars.isSwitchingAccount = false
-                                        return@launch
-                                    }
-
-                                    val sourceDir =
-                                        "$sdPath/zkqFiles/zkqGlobalGameSave/$savePathName"
+                                    val sourceDir = "$sdPath/zkqFiles/zkqGlobalGameSave/$savePathName"
 
                                     // Check existence
                                     if (!Shell.cmd("[ -d \"$sourceDir\" ]").exec().isSuccess) {
@@ -248,11 +209,7 @@ fun SwitchAccount(onClose: () -> Unit) {
                                     // Force-stop before writing to avoid file-in-use conflicts
                                     RunShell.runNoOutput("am force-stop com.supercell.clashofclans", false)
                                     writeGameFilesCore(
-                                        packageName = "com.supercell.clashofclans",
-                                        savePathName = savePathName,
-                                        folderName = "zkqGlobalGameSave",
-                                        subDirs = listOf("shared_prefs"),
-                                        killGame = false
+                                        packageName = "com.supercell.clashofclans", savePathName = savePathName, folderName = "zkqGlobalGameSave", subDirs = listOf("shared_prefs"), killGame = false
                                     )
                                     // Launch the game after write completes
                                     RunShell.runNoOutput("monkey -p com.supercell.clashofclans -c android.intent.category.LAUNCHER 1", false)
@@ -264,19 +221,16 @@ fun SwitchAccount(onClose: () -> Unit) {
                                     onClose()
                                 }
                             }
-                        }
-                    )
+                        })
                     CustomButton(
-                        text = "关闭窗口",
-                        onClick = {
+                        text = "关闭窗口", onClick = {
                             AppStateManager.setMode(AppMode.Run) //just to close the ui
                             GlobalVars.isPlaying.value = false
                             GlobalVars.updateWindowPosition = true
                             scope.launch {
                                 onClose()
                             }
-                        }
-                    )
+                        })
                 }
             }
         }
