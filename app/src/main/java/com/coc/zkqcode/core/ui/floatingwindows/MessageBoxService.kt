@@ -9,6 +9,7 @@ import android.os.IBinder
 import android.view.Gravity
 import android.view.WindowManager
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -35,6 +36,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
@@ -59,6 +61,8 @@ import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
+import com.coc.zkqcode.core.ui.localcomponents.LocalCustomButton
+import com.coc.zkqcode.core.util.exit.AppExitHelper
 import timber.log.Timber
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -322,6 +326,8 @@ class MessageBoxService : Service(), LifecycleOwner, SavedStateRegistryOwner {
     @Composable
     private fun AdOverlayContent() {
         val context = LocalContext.current
+        // Cap the overlay height at 95% of screen to prevent overflow on long ad lists
+        val screenHeightDp = LocalConfiguration.current.screenHeightDp
 
         // Countdown timer that ticks every second using dynamic duration
         LaunchedEffect(isAdVisible, adDurationSeconds) {
@@ -338,65 +344,97 @@ class MessageBoxService : Service(), LifecycleOwner, SavedStateRegistryOwner {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(Color(0xCC000000)), contentAlignment = Alignment.Center
+                    .heightIn(max = (screenHeightDp * 0.95f).dp)
+                    .background(Color(0xCC000000)),
+                contentAlignment = Alignment.Center
             ) {
                 Surface(
                     modifier = Modifier
                         .fillMaxWidth(0.9f)
-                        .padding(vertical = 24.dp), shape = RoundedCornerShape(12.dp), color = Color.White, shadowElevation = 8.dp
+                        .padding(vertical = 24.dp),
+                    shape = RoundedCornerShape(12.dp),
+                    color = Color.White,
+                    shadowElevation = 8.dp
                 ) {
                     Column(
-                        modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)
+                        modifier = Modifier.padding(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         Text(
-                            text = "广告剩余: ${adCountdown}秒", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = Color.Black, modifier = Modifier.padding(bottom = 4.dp)
+                            text = "广告剩余: ${adCountdown}秒",
+                            fontSize = 13.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.Black,
+                            modifier = Modifier.padding(bottom = 4.dp)
                         )
 
-                        LazyColumn(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .heightIn(max = 300.dp), verticalArrangement = Arrangement.spacedBy(6.dp)
-                        ) {
-                            items(adItems) { item ->
-                                if (item.link != null) {
-                                    // Clickable link item
-                                    Text(text = item.content, fontSize = 13.sp, color = Color(0xFF2196F3), textDecoration = TextDecoration.Underline, modifier = Modifier
-                                        .fillMaxWidth()
-                                        .clickable {
-                                            try {
-                                                val intent = Intent(
-                                                    Intent.ACTION_VIEW, item.link.toUri()
-                                                ).apply {
-                                                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                                                }
-                                                context.startActivity(intent)
-                                            } catch (e: Exception) {
-                                                Timber.e(e, "Failed to open ad link")
-                                            }
-                                        }
-                                        .padding(vertical = 4.dp))
-                                } else {
-                                    // Plain text item
-                                    Text(
-                                        text = item.content, fontSize = 13.sp, color = Color.DarkGray, modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(vertical = 4.dp)
-                                    )
-                                }
-                            }
-                        }
+                        // Use weight so the list flexes within the height-constrained parent
+                        AdList(context)
 
                         HorizontalDivider(
-                            modifier = Modifier.padding(vertical = 4.dp), color = Color.LightGray
+                            modifier = Modifier.padding(vertical = 4.dp),
+                            color = Color.LightGray
                         )
 
                         Text(
-                            text = "官网注册账号并赞助，可以免广告。每天价格仅需2毛5，用多久扣多少，精确到分钟。\n\n免费用户不限制多开数量，但多开超过2个后广告时间会成比例增加。\n\n广告播放时，只能退出辅助或等待，不能进行其他操作。",
-                            fontSize = 10.sp,
+                            text = "官网注册账号并赞助，可以免广告。每天仅需0.25卡班积分，用多久扣多少，精确到分钟。\n\n免费用户不限制多开数量，但多开超过2个账号后广告时间会成比例增加。广告播放时，只能退出辅助或等待，不能进行其他操作。",
+                            fontSize = 8.sp,
                             color = Color.Gray,
                             modifier = Modifier.align(Alignment.CenterHorizontally)
                         )
+
+                        // Exit button to let users quit the app during ad playback
+                        LocalCustomButton(
+                            text = "退出辅助",
+                            onClick = { AppExitHelper.exitApplication(context) }
+                        )
                     }
+                }
+            }
+        }
+    }
+
+    // Extracted ad list into a ColumnScope extension so weight() modifier is available
+    @Composable
+    private fun ColumnScope.AdList(context: android.content.Context) {
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f, fill = false),
+            verticalArrangement = Arrangement.spacedBy(6.dp)
+        ) {
+            items(adItems) { item ->
+                if (item.link != null) {
+                    Text(
+                        text = item.content,
+                        fontSize = 13.sp,
+                        color = Color(0xFF2196F3),
+                        textDecoration = TextDecoration.Underline,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable {
+                                try {
+                                    val intent = Intent(
+                                        Intent.ACTION_VIEW, item.link.toUri()
+                                    ).apply {
+                                        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                    }
+                                    context.startActivity(intent)
+                                } catch (e: Exception) {
+                                    Timber.e(e, "Failed to open ad link")
+                                }
+                            }
+                            .padding(vertical = 4.dp)
+                    )
+                } else {
+                    Text(
+                        text = item.content,
+                        fontSize = 13.sp,
+                        color = Color.DarkGray,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 4.dp)
+                    )
                 }
             }
         }
