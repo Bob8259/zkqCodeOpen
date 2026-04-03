@@ -36,8 +36,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.IntSize
@@ -327,8 +328,10 @@ class MessageBoxService : Service(), LifecycleOwner, SavedStateRegistryOwner {
     private fun AdOverlayContent() {
         val context = LocalContext.current
         // Cap the overlay height at 95% of screen to prevent overflow on long ad lists
-        val screenHeightDp = LocalConfiguration.current.screenHeightDp
-
+        // Use LocalWindowInfo for accurate container dimensions instead of system config
+        val screenHeightDp = with(LocalDensity.current) {
+            LocalWindowInfo.current.containerSize.height.toDp()
+        }
         // Countdown timer that ticks every second using dynamic duration
         LaunchedEffect(isAdVisible, adDurationSeconds) {
             if (isAdVisible) {
@@ -344,7 +347,7 @@ class MessageBoxService : Service(), LifecycleOwner, SavedStateRegistryOwner {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .heightIn(max = (screenHeightDp * 0.95f).dp)
+                    .heightIn(max = screenHeightDp * 0.95f)
                     .background(Color(0xCC000000)),
                 contentAlignment = Alignment.Center
             ) {
