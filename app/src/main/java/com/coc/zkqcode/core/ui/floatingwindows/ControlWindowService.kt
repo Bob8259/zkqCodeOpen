@@ -6,6 +6,7 @@ import android.content.pm.ServiceInfo
 import android.graphics.PixelFormat
 import android.os.Build
 import android.os.IBinder
+import android.os.Process
 import android.view.Gravity
 import android.view.WindowManager
 import androidx.compose.foundation.layout.Box
@@ -34,6 +35,7 @@ import androidx.savedstate.SavedStateRegistryOwner
 import androidx.savedstate.setViewTreeSavedStateRegistryOwner
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.system.hotupdate.HotUpdateManager
+import com.coc.zkqcode.core.util.basic.RunShell
 import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.statehelper.AppMode
 import com.coc.zkqcode.statehelper.AppStateManager
@@ -71,6 +73,7 @@ class ControlWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner 
         showControlWindow()
         startBotLogic()
         startHotUpdateListener()
+        startOomProtection()
     }
 
     private fun startBotLogic() {
@@ -103,6 +106,28 @@ class ControlWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner 
         }
         serviceScope.launch(Dispatchers.IO) {
             HotUpdateManager.startWatchdog(this@ControlWindowService)
+        }
+    }
+
+    // Periodically enforce oom_score_adj = -1000 to prevent OOM killer from targeting this process
+    private fun startOomProtection() {
+        serviceScope.launch(Dispatchers.IO) {
+            val pid = Process.myPid()
+            while (true) {
+                try {
+                    val current = RunShell.runAndGetFirst(
+                        "cat /proc/$pid/oom_score_adj",
+                        isCheckIsPlaying = false
+                    )
+                    if (current.trim() != "-1000") {
+                        RunShell.runNoOutput(
+                            "echo -1000 > /proc/$pid/oom_score_adj",
+                            isCheckIsPlaying = false
+                        )
+                    }
+                } catch (_: Exception) { }
+                delay(5000)
+            }
         }
     }
 
