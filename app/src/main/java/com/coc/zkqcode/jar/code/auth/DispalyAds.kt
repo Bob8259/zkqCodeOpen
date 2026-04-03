@@ -43,22 +43,13 @@ suspend fun displayAds() {
             )
         }
     } catch (_: Exception) {
-        null
+        // Default ads when the API request fails
+        listOf(
+            AdItem(content = "测试普通广告", link = null, topAd = 0)
+        )
     }
-    GlobalVars.absorbYPercentage = 5
-    GlobalVars.isAdPlaying = true
-    if (adItems != null) {
-        ShowMessage.showAdOverlay(adItems, InGamesVars.adTime)
-        delay(InGamesVars.adTime * 1000L)
-        ShowMessage.dismissAdOverlay()
-    } else {
-        // Fallback: simple countdown when API is unreachable
-        for (remaining in InGamesVars.adTime downTo 1) {
-            ShowMessage("获取广告失败，展示默认广告中：\n广告倒计时：${remaining}秒\n官网注册账号并赞助，可以免广告\n一天2毛5，用多久扣多少，精确到分钟。")
-            delay(1000L)
-        }
-    }
-    GlobalVars.isAdPlaying = false
-    GlobalVars.absorbYPercentage = 50
+    ShowMessage.showAdOverlay(adItems, InGamesVars.adTime)
+    delay(InGamesVars.adTime * 1000L)
+    ShowMessage.dismissAdOverlay()
     RustTools.markAdEnd()
 }
