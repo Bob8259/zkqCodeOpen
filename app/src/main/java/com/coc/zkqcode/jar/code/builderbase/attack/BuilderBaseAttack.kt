@@ -63,7 +63,8 @@ suspend fun builderBaseAttack(): Boolean {
             resourcePercentage.gold < 96 -> "gold"
             else -> "exile"
         }
-        val battleTimes = getConfigRuntime(Schema.BUILDER_BASE_SETTINGS.SWITCH_ACCOUNT_AFTER_BATTLES.key).toIntOrNull() ?: logAndRestart("${Schema.BUILDER_BASE_SETTINGS.SWITCH_ACCOUNT_AFTER_BATTLES.displayName} 必须是数字，请检查配置")
+        val battleTimes =
+            getConfigRuntime(Schema.BUILDER_BASE_SETTINGS.SWITCH_ACCOUNT_AFTER_BATTLES.key).toIntOrNull() ?: logAndRestart("${Schema.BUILDER_BASE_SETTINGS.SWITCH_ACCOUNT_AFTER_BATTLES.displayName} 必须是数字，请检查配置")
         repeat(battleTimes) { index ->
             if (!realAttack(attackType, index + 1, battleTimes)) return false
             if ((index + 1) % 5 == 0) {
@@ -184,12 +185,12 @@ private suspend fun normalBattle(isNormal: Boolean = true) {
 
     // Deploy machine and troops to the same random position
     val deployPos = positions.random()
-    TouchActions.tap(126, 638, delayTime = 200) // Battle Machine
+    TouchActions.tap(126, 610, delayTime = 200) // Battle Machine
     TouchActions.tap(deployPos.first, deployPos.second, delayTime = 200) // Deploy the Machine
     if (!isNormal) return
     val generalTroops = findMultiColorsUntil(schemas = listOf(MyColors.TroopsWithSkills, MyColors.TroopsWithOutSkills), duration = 200)
     if (generalTroops != null) {
-        TouchActions.tap(generalTroops.x + 15, 635, delayTime = 200) // Troops
+        TouchActions.tap(generalTroops.x + 15, 610, delayTime = 200) // Troops
         val nightWitch = findMultiColors(schema = MyColors.NightWitch)
         if (nightWitch != null) {
             TouchActions.touchDown((deployPos.first + Random.nextInt(1, 4)).toFloat(), (deployPos.second + Random.nextInt(1, 4)).toFloat(), 1)
