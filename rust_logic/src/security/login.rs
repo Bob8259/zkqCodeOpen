@@ -7,6 +7,7 @@ use jni::objects::JString;
 use jni::sys::jstring;
 use jni::JNIEnv;
 use lazy_static::lazy_static;
+use obfstr::obfstr;
 use rand::Rng;
 use rand::RngCore;
 use std::sync::Mutex;
@@ -95,18 +96,6 @@ pub fn encryptLoginPayload(
         hex::encode(buffer)
     );
     env.new_string(result).unwrap().into_raw()
-}
-
-// XOR-obfuscated "gem_not_enough" to avoid plain-text exposure in the binary
-const _GNE_KEY: u8 = 0x5A;
-const _GNE_ENC: [u8; 14] = [
-    0x3D, 0x3F, 0x37, 0x05, 0x34, 0x35, 0x2E, 0x05,
-    0x3F, 0x34, 0x35, 0x2F, 0x3D, 0x32,
-];
-
-#[inline(always)]
-fn _decode_gne() -> String {
-    _GNE_ENC.iter().map(|b| (b ^ _GNE_KEY) as char).collect()
 }
 
 #[allow(non_snake_case)]
@@ -199,8 +188,10 @@ pub fn decryptLoginResponse(
                         }
                     }
                 }
-            } else if result.contains(&_decode_gne()) {
-                // Server indicated insufficient gems; revoke auth with a random value < 10000
+            } else if result.contains(obfstr!("gem_not_enough"))
+                || result.contains(obfstr!("邮箱或密码错误"))
+            {
+                // Server indicated insufficient gems or wrong credentials; revoke auth
                 IS_AUTH_PASS.store(rand::thread_rng().gen_range(0..10000));
             }
             env.new_string(result).unwrap().into_raw()

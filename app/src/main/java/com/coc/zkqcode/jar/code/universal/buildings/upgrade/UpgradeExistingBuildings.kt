@@ -231,6 +231,11 @@ private suspend fun upgradeWalls(currentBase: BaseType, wallType: WallType): Loo
                     repeat(upgradableNumber - 1) {
                         TouchActions.tap(upgradeGreenCrossMark.x, upgradeGreenCrossMark.y, delayTime = 50)
                     }
+                    val cancelButton = findMultiColorsUntil(schemas = listOf(MyColors.CancelUpgradeWall), duration = 500)
+                    if (cancelButton != null) {//Sometimes, when clicking the green button, the buttons will change, and may wrongly click upgrade button.
+                        //So, we need to check it and cancel the upgrade.
+                        TouchActions.tap(cancelButton.x, cancelButton.y, delayTime = 500)
+                    }
                 }
 
                 // Rescope both hammer schemas to match the elixir search direction when needed (same pattern as line 153-155)

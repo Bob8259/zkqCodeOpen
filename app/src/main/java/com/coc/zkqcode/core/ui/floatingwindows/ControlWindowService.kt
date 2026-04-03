@@ -70,7 +70,6 @@ class ControlWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner 
         windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
         showControlWindow()
         startBotLogic()
-        startBotDaemon()
         startHotUpdateListener()
     }
 
@@ -96,21 +95,6 @@ class ControlWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner 
         }
     }
 
-    // Periodically check if botJob has died while AppMode is still Run, and restart it
-    private fun startBotDaemon() {
-        serviceScope.launch {
-            while (true) {
-                delay(10000L)
-                if (AppStateManager.currentMode == AppMode.Run &&
-                    (botJob == null || botJob?.isActive != true)) {
-                    Timber.w("BotDaemon: botJob is dead while AppMode is Run, restarting...")
-                    botJob = serviceScope.launch(Dispatchers.IO) {
-                        GlobalVars.pluginUI?.runBot()
-                    }
-                }
-            }
-        }
-    }
 
     // Launch the hot update signal listener and watchdog on background threads
     private fun startHotUpdateListener() {
@@ -299,6 +283,12 @@ class ControlWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner 
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        // Detect START_STICKY restart: system delivers null intent after LMKD kill
+        if (intent == null) {
+            // Relaunch MainActivity to re-initialize the full app (JAR loading, etc.)
+            Shell.cmd("am start -n com.coc.zkqcode/.MainActivity >>/dev/null 2>&1").exec()
+            GlobalVars.autoRunTimer = 5
+        }
         updateForegroundRecord()
         lifecycleRegistry.currentState = Lifecycle.State.STARTED
         return START_STICKY

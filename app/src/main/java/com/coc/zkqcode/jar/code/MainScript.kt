@@ -135,7 +135,8 @@ suspend fun runMainScript() {
 private suspend fun runTestCode() {
     while (true) {
 
-        enterMainBase()
+        userAuth()
+        ShowMessage(GlobalVars.isShowAd.toString())
 //        ShowMessage(findMultiColors(MyColors.DarkElixirColor).toString())
         delay(1000)
     }

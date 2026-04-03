@@ -32,6 +32,7 @@ interface IUIColors {
     val MiddleGreenButton: ColorSchema
     val ExclusiveGift: ColorSchema
     val MorePointCoupon: ColorSchema
+    val TencentChildProtection: ColorSchema
 }
 
 object UIColors : IUIColors {
@@ -126,5 +127,8 @@ object UIColors : IUIColors {
     // More coupons/points button
     override val MorePointCoupon = ColorSchema.parse(
         880, 195, 925, 240, "8B83FF", "9|0|FFFFFF,19|0|FFFFFF,18|8|FFFFFF,34|11|716BFD,42|15|2621F0,38|23|1712EB,19|23|0D0D0D,28|23|FAF6F6,37|23|1611EA", 0, 0.9, "更多点券"
+    )
+    override val TencentChildProtection = ColorSchema.parse(
+        344, 66, 928, 235, "8ED139", "117|0|85CA2E,234|0|78C11F,351|0|7BC520,468|0|9FDF38,0|85|8BCF35,117|85|7FC627,234|85|75C01A,351|85|75C013,468|85|89CF14", 0, 0.9, "未成年守护"
     )
 }
