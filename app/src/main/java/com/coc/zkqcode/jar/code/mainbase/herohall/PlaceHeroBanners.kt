@@ -1,29 +1,25 @@
 package com.coc.zkqcode.jar.code.mainbase.herohall
 
 import com.coc.zkqcode.core.util.basic.ShowMessage
-import com.coc.zkqcode.core.util.basic.ShowMessage.invoke
 import com.coc.zkqcode.core.util.bugreporter.BugReporter
-import com.coc.zkqcode.jar.code.universal.InGamesVars
-import com.coc.zkqcode.jar.code.universal.smalltools.StorageKeys
-import com.coc.zkqcode.jar.code.universal.smalltools.checkMemoryFile
-import com.coc.zkqcode.jar.code.universal.smalltools.writeMemory
 import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.core.util.touchactions.TouchActions.swipe
-import com.coc.zkqcode.jar.code.builderbase.upgrade.builderBaseFindBuildButton
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.mainbase.others.zoomSmallMainBase
 import com.coc.zkqcode.jar.code.mainbase.upgrade.mainBaseFindBuildButton
+import com.coc.zkqcode.jar.code.universal.InGamesVars
 import com.coc.zkqcode.jar.code.universal.buildings.BaseType
 import com.coc.zkqcode.jar.code.universal.buildings.upgrade.BuildButtonType
 import com.coc.zkqcode.jar.code.universal.buildings.upgrade.moveWithDelay
 import com.coc.zkqcode.jar.code.universal.buildings.upgrade.tryToFindBuildPosition
 import com.coc.zkqcode.jar.code.universal.clickRightBottom
-import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
+import com.coc.zkqcode.jar.code.universal.smalltools.StorageKeys
+import com.coc.zkqcode.jar.code.universal.smalltools.checkMemoryFile
 import com.coc.zkqcode.jar.code.universal.smalltools.killGame
+import com.coc.zkqcode.jar.code.universal.smalltools.writeMemory
 import com.coc.zkqcode.jar.code.universal.yolo.tiledYoloDetect
-import kotlinx.coroutines.delay
 
 suspend fun placeHeroBanners(): Boolean {
     val storageKey = StorageKeys.withAccountNumber(
@@ -69,6 +65,7 @@ suspend fun tryToOpenHeroHall(x: Int, y: Int): Boolean {
     val openHeroHallIcon = findMultiColorsUntil(schemas = listOf(MyColors.OpenHeroHall), duration = 500)
     if (openHeroHallIcon != null) {
         TouchActions.tap(openHeroHallIcon.x, openHeroHallIcon.y, delayTime = 600)
+        findMultiColorsUntil(schemas = listOf(MyColors.RedExclamationMark), duration = 500) ?: return true//Make sure we can place the banner
         TouchActions.tap(598, 591, delayTime = 300) // Place hero banner page
         val placeHeroBanner = findMultiColorsUntil(schemas = listOf(MyColors.PlaceBannerButton), duration = 500)
 
