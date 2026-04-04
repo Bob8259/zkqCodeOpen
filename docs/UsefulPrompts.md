@@ -1,0 +1,3 @@
+Help me analyze this file to make a plan to optimize it. I want to keep all functionalities but remove code redudancy. I want you to write the full modified code in the plan, point out where did you modify, and let me check it.  File Path:
+
+Help me modify app\src\main\java\com\coc\zkqcode\jar\code\colorschema\MyColors.kt to move the colors into corresponding files under app\src\main\java\com\coc\zkqcode\jar\code\colorschema\colorpackage. If no corresponding file is found, you can create a new one.
