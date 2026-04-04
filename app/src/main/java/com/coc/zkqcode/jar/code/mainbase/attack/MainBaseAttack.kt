@@ -52,5 +52,5 @@ suspend fun mainBaseAttack(): Boolean {
             delay(500) // Poll every second to avoid busy-waiting
         }
     }
-    return enterMainScreen()
+    return enterMainScreen(isRestartGame)
 }

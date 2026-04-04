@@ -2,7 +2,7 @@ package com.coc.zkqcode.jar.code.universal.buildings.upgrade
 
 import android.graphics.Bitmap
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
-import com.coc.zkqcode.core.yolo.YoloDetector
+import com.coc.zkqcode.jar.code.universal.yolo.YoloDetector
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil

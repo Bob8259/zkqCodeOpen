@@ -44,7 +44,7 @@ fun LazyListScope.MainBaseConfig(
             SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.CLAIM_DAILY_REWARD.key}_c$index")
             SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.AUTO_ATTACK.key}_c$index")
             Text(
-                text = "辅助会自动配兵，暂不支持手动配兵。",
+                text = "辅助会自动配兵，若想手动配兵，请勾选手动配兵选项。",
                 style = MaterialTheme.typography.labelMedium,
             )
             SettingInputRow(key = "${MAIN_BASE_SETTINGS.GOLD_REQUIREMENT.key}_c$index")

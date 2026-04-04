@@ -1,4 +1,4 @@
-package com.coc.zkqcode.core.yolo
+package com.coc.zkqcode.jar.code.universal.yolo
 
 import android.graphics.Bitmap
 import android.graphics.RectF
