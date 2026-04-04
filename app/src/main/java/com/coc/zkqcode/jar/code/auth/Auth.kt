@@ -8,7 +8,6 @@ import com.coc.zkqcode.core.util.crypto.solvePoW
 import com.coc.zkqcode.jar.ui.schema.Schema.GLOBAL_SETTINGS
 import com.coc.zkqcode.nativehelper.RustTools
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
@@ -87,10 +86,7 @@ suspend fun userAuth() {
             return
         }
 
-        val payload = "email=${urlEncode(email)}" +
-                "&password=${urlEncode(password)}" +
-                "&timestamp=$timestamp" +
-                "&last_time=$lastTime"
+        val payload = "email=${urlEncode(email)}" + "&password=${urlEncode(password)}" + "&timestamp=$timestamp" + "&last_time=$lastTime"
 
         val encryptionParts = try {
             RustTools.encryptLoginPayload(payload).split(",", limit = 3)
@@ -105,20 +101,13 @@ suspend fun userAuth() {
             return
         }
 
-        val postData = "public_key=${encryptionParts[0]}" +
-                "&nonce=${encryptionParts[1]}" +
-                "&data=${encryptionParts[2]}" +
-                "&pow_nonce=$powNonce" +
-                "&pow_salt=$powSalt"
+        val postData = "public_key=${encryptionParts[0]}" + "&nonce=${encryptionParts[1]}" + "&data=${encryptionParts[2]}" + "&pow_nonce=$powNonce" + "&pow_salt=$powSalt"
 
         val responseCode: Int
         val responseBody: String
         try {
             val requestBody = postData.toRequestBody("application/x-www-form-urlencoded".toMediaTypeOrNull())
-            val deductRequest = Request.Builder()
-                .url("${baseUrl}api/mobile-deduct")
-                .post(requestBody)
-                .build()
+            val deductRequest = Request.Builder().url("${baseUrl}api/mobile-deduct").post(requestBody).build()
             val response = withContext(Dispatchers.IO) {
                 httpClient.newCall(deductRequest).execute()
             }
@@ -136,8 +125,10 @@ suspend fun userAuth() {
             // Flag ad display on non-200 deduct response
             ShowMessage("登录失败，错误信息：$responseBody")
             delayWithMultiplier(2000)
-            GlobalVars.serverActions?.writeToConfigFile("gem_count", "0")
-            GlobalVars.configStates["gem_count"]?.value = "0"
+            if (responseBody.contains("密码错误")) {
+                GlobalVars.serverActions?.writeToConfigFile("gem_count", "0")
+                GlobalVars.configStates["gem_count"]?.value = "0"
+            }
             GlobalVars.isShowAd = true
             return
         }
