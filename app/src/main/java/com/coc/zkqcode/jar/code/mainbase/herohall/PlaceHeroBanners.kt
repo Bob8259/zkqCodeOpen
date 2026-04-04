@@ -29,7 +29,7 @@ suspend fun placeHeroBanners(): Boolean {
     // Guard: only attempt banner placement once per day (1440 minutes)
     if (!checkMemoryFile(storageKey, 1440)) {
         ShowMessage("账号${InGamesVars.currentAccountNumber}，该账号今日已检测战旗")
-        return true
+//        return true
     }
 
     clickRightBottom(1)
@@ -65,7 +65,11 @@ suspend fun tryToOpenHeroHall(x: Int, y: Int): Boolean {
     val openHeroHallIcon = findMultiColorsUntil(schemas = listOf(MyColors.OpenHeroHall), duration = 500)
     if (openHeroHallIcon != null) {
         TouchActions.tap(openHeroHallIcon.x, openHeroHallIcon.y, delayTime = 600)
-        findMultiColorsUntil(schemas = listOf(MyColors.RedExclamationMark), duration = 500) ?: return true//Make sure we can place the banner
+        val redExclamationMark = findMultiColorsUntil(schemas = listOf(MyColors.RedExclamationMark), duration = 500)
+        if (redExclamationMark == null) {//Make sure we can place the banner
+            clickRightBottom(1)
+            return true
+        }
         TouchActions.tap(598, 591, delayTime = 300) // Place hero banner page
         val placeHeroBanner = findMultiColorsUntil(schemas = listOf(MyColors.PlaceBannerButton), duration = 500)
 
