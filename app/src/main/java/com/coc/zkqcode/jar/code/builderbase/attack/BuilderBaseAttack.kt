@@ -213,8 +213,8 @@ private suspend fun normalBattle(isNormal: Boolean = true) {
             attemptLoop@ for (attempt in 0 until 5) {
                 // Step 1: Touch down at a random position
                 var currentPos = deployPositions.random()
-                TouchActions.touchDown(currentPos.first.toFloat(), currentPos.second.toFloat(), 1)
-                delayWithMultiplier(700)
+                TouchActions.touchDown(deployPos.first.toFloat(), deployPos.second.toFloat(), 1)
+                delayWithMultiplier(600)
 
                 // Steps 2-3: Move smoothly to random positions until barbarian is gone
                 var moveCount = 0
