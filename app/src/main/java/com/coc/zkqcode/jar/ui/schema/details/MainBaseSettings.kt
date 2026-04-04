@@ -110,7 +110,7 @@ object MainBaseSettings {
     val SELL_RING_OF_WALL = SettingDef("sell_ring_of_wall", "卖壁垒之戒", 0, "MAIN_BASE_SETTINGS")
 
     //////////////
-    val UPGRADE_WEARED_GEAR = SettingDef("upgrade_weared_gear", "升级穿戴装备", 0, "MAIN_BASE_SETTINGS")
+    val UPGRADE_WERA_GEAR = SettingDef("upgrade_wear_gear", "升级穿戴装备", 0, "MAIN_BASE_SETTINGS")
     val UPGRADE_ALL_GEAR = SettingDef("upgrade_all_gear", "升所有装备", 0, "MAIN_BASE_SETTINGS")
     val REMOVE_OBSTACLES = SettingDef("remove_obstacles", "移除障碍物", 0, "MAIN_BASE_SETTINGS")
     val REMOVE_OBSTACLES_ENHANCEMENT = SettingDef("remove_obstacles_enhancement", "增强移除", 0, "MAIN_BASE_SETTINGS")
@@ -197,7 +197,7 @@ object MainBaseSettings {
         SELL_CLOCK_TOWER_POTION,
         USE_BUILDER_POTION,
         SELL_RING_OF_WALL,
-        UPGRADE_WEARED_GEAR,
+        UPGRADE_WERA_GEAR,
         UPGRADE_ALL_GEAR,
         REMOVE_OBSTACLES,
         REMOVE_OBSTACLES_ENHANCEMENT,
