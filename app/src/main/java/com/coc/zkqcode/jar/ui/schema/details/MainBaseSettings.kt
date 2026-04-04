@@ -23,7 +23,7 @@ object MainBaseSettings {
     // Resource farming trigger settings for auto-donation
     val DONATION_DETECT_INTERVAL = SettingDef("donation_detect_interval", "持续检测", "5", "MAIN_BASE_SETTINGS")
     val DONATION_FARMING_START_THRESHOLD = SettingDef("donation_farming_start_threshold", "当资源低于", "30", "MAIN_BASE_SETTINGS")
-    val DONATION_FARMING_STOP_THRESHOLD  = SettingDef("donation_farming_stop_threshold",  "直到打到",   "80", "MAIN_BASE_SETTINGS")
+    val DONATION_FARMING_STOP_THRESHOLD  = SettingDef("donation_farming_stop_threshold",  "直到资源超过",   "80", "MAIN_BASE_SETTINGS")
     val RESEARCH_SETTING = SettingDef("research_setting", "自动研究", 1, "MAIN_BASE_SETTINGS")
     val RESEARCH_LEVEL = SettingDef("research_level", "研究等级至", "0", "MAIN_BASE_SETTINGS")
     val COLLECT_CLAN_CASTLE = SettingDef("collect_clan_castle", "领宝库", 1, "MAIN_BASE_SETTINGS")
