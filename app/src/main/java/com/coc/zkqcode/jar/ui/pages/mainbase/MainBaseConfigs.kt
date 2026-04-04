@@ -293,7 +293,7 @@ fun LazyListScope.MainBaseConfig(
     item {
         SettingSection(visible = isExpanded) {
             FlowRow {
-                SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.UPGRADE_WEARAED_GEAR.key}_c$index")
+                SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.UPGRADE_WERA_GEAR.key}_c$index")
                 SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.UPGRADE_ALL_GEAR.key}_c$index")
                 SettingSwitchIcon(
                     key = "${MAIN_BASE_SETTINGS.REMOVE_OBSTACLES.key}_c$index", explain = "勾选后，当主世界资源金水大于30万时生效。有小概率（约5%）移除稀有物品"
