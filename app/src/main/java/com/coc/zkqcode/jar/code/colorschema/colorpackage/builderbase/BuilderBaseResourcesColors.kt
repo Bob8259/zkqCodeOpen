@@ -6,7 +6,9 @@ interface IBuilderBaseResourcesColors {
     val CannotCollectExilerCart: ColorSchema
     val CollectExilerCart: ColorSchema
     val BuilderBaseCollectGold1: ColorSchema
+    val BuilderBaseCollectGold2: ColorSchema
     val BuilderBaseCollectExiler1: ColorSchema
+    val BuilderBaseCollectExiler2: ColorSchema
     val BuilderBaseCollectGem1: ColorSchema
     val BuilderBaseCollectGem2: ColorSchema
 }
@@ -21,8 +23,16 @@ object BuilderBaseResourcesColors : IBuilderBaseResourcesColors {
     override val BuilderBaseCollectGold1 = ColorSchema.parse(
         115, 86, 1127, 609, "10CAEE", "-3|2|44D1EE,1|5|03B2E8,5|5|0DBEF1,4|0|1ED9EF,0|-2|46E9ED,-3|16|71B2A9,-13|4|90C0B9,-14|-3|A4C8C3,11|-2|A3CAC4", 0, 0.92, "收集金币1"
     )
+    // Additional gold color variant for builder base resource collection
+    override val BuilderBaseCollectGold2 = ColorSchema.parse(
+        115, 86, 1127, 609, "46D5F6", "4|0|0DC8F6,3|-3|46EAF5,6|-3|26E3F5,8|-2|1EE2F5,8|1|12CEF6,8|4|08BDF7,4|4|03B4EA,-9|4|93C5BE,17|-3|A9CFCB", 0, 0.92, "收集金币2"
+    )
     override val BuilderBaseCollectExiler1 = ColorSchema.parse(
         115, 82, 1127, 609, "EA3494", "-3|0|DE217A,-3|-5|EB2C9D,-7|-11|B0D1CC,-11|-8|ABCCC9,10|-6|AFD5CF,3|-1|F294D2,1|2|E02280,-2|5|C41757,-5|5|9D114C", 0, 0.92, "收集圣水1"
+    )
+    // Additional elixir color variant for builder base resource collection
+    override val BuilderBaseCollectExiler2 = ColorSchema.parse(
+        115, 82, 1127, 609, "F14FA8", "5|-2|EE94D1,7|2|E8218F,4|5|E6237D,-3|5|C01759,-3|-1|F055AA,-2|5|C9185C,3|7|D11B5F,13|4|90C1BA,13|-2|9FC5C0", 0, 0.92, "收集圣水2"
     )
     override val BuilderBaseCollectGem1 = ColorSchema.parse(
         115, 86, 1127, 609, "85F1DA", "-13|-5|AED6D2,12|-5|ADD5D1,12|4|8FC7BF,4|5|3DA57C,-2|6|69EABD,-2|1|84F0D6,-5|3|69E7CB,1|-2|7EF0D9,4|0|62EDCB", 0, 0.92, "收集宝石1"

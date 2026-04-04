@@ -18,7 +18,9 @@ suspend fun collectBuilderBaseResources(): Boolean {
         val resourceSchemas = listOf(
             MyColors.BuilderBaseCollectGem1,
             MyColors.BuilderBaseCollectGold1,
+            MyColors.BuilderBaseCollectGold2,
             MyColors.BuilderBaseCollectExiler1,
+            MyColors.BuilderBaseCollectExiler2,
             MyColors.BuilderBaseCollectGem2
         )
 
