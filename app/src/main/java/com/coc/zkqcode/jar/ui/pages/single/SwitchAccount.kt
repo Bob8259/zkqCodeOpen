@@ -216,8 +216,11 @@ fun SwitchAccount(onClose: () -> Unit) {
                                     RunShell.runNoOutput("am start -n com.supercell.clashofclans/com.supercell.titan.GameApp", false)
                                 }
                                 GlobalVars.isSwitchingAccount = false
+                                AppStateManager.setMode(AppMode.Run) //just to close the ui
+                                GlobalVars.isPlaying.value = false
+                                GlobalVars.updateWindowPosition = true
                                 withContext(Dispatchers.Main) {
-                                    ShowMessage("切号完成")
+                                    ShowMessage("切号完成", false)
                                     onClose()
                                 }
                             }

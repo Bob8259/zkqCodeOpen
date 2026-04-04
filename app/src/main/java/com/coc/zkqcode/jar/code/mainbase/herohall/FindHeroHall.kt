@@ -60,7 +60,9 @@ suspend fun findHeroHall(): List<DetectionResult> {
             }
         }
 
+        // classIndex 3 == HeroHall in the building-detect model
         val result = detections
+            .filter { it.classIndex == 3 }
             .filter { it.boundingBox.centerX() in 100f..1180f }
             .sortedByDescending { it.score }
 
