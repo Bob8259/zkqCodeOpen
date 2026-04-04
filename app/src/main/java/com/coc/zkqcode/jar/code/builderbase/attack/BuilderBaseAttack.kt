@@ -254,7 +254,7 @@ private suspend fun waitLoop() {
     val totalDuration = 15_000L
     val startTime = System.currentTimeMillis()
     // Guaranteed non-null at use site due to early return guard below
-    var lastPosition: Point? = null
+    var lastPosition: Point?
 
     while (true) {
         val elapsed = System.currentTimeMillis() - startTime
@@ -269,7 +269,7 @@ private suspend fun waitLoop() {
         accountLog("搜索中，剩余 ${"%.1f".format(remainingSeconds)} 秒")
         delayWithMultiplier(1000)
     }
-    TouchActions.tap(lastPosition!!.x, lastPosition.y, delayTime = 200)
+    TouchActions.tap(lastPosition.x, lastPosition.y, delayTime = 200)
 }
 
 private suspend fun builderBaseTrainTroops() {
