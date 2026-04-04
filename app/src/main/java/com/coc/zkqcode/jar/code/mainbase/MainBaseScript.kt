@@ -6,6 +6,7 @@ import com.coc.zkqcode.jar.code.mainbase.attack.mainBaseAttack
 import com.coc.zkqcode.jar.code.mainbase.attack.mainBaseTrainTroops
 import com.coc.zkqcode.jar.code.mainbase.clan.joinClan
 import com.coc.zkqcode.jar.code.mainbase.clan.donateToClan
+import com.coc.zkqcode.jar.code.mainbase.clan.requestReinforcements
 import com.coc.zkqcode.jar.code.mainbase.herohall.placeHeroBanners
 import com.coc.zkqcode.jar.code.mainbase.others.mainBaseRemoveObstacles
 import com.coc.zkqcode.jar.code.mainbase.others.zoomSmallMainBase
@@ -23,6 +24,7 @@ suspend fun playMainBase(): Boolean {
     if (!mainBaseAttack()) return false
     if (!mainBaseRemoveObstacles()) return false
     if (!joinClan()) return false
+    if (!requestReinforcements()) return false
     if (!donateToClan()) return false
     if (!upgradeWalls(BaseType.Main)) return false
     if (!upgradeBuildings(BaseType.Main)) return false
