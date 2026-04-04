@@ -1,6 +1,6 @@
 # ZKQyolo — YOLO Inference Service for Android
 
-**Version:** 1.00
+**Version:** 1.01
 
 An Android app that runs a local HTTP server exposing YOLO object-detection inference. The app launches a foreground service on startup, making the detection API available to other apps or automation tools on the device via `http://localhost:13462`.
 
@@ -26,8 +26,8 @@ An Android app that runs a local HTTP server exposing YOLO object-detection infe
 # Verify the service is running
 curl http://localhost:13462/status
 
-# Load default model
-curl -X POST http://localhost:13462/load -d '{}'
+# Load a model (modelType is required)
+curl -X POST http://localhost:13462/load -d '{"modelType":"walls-detect"}'
 
 # Run detection on an image
 curl -X POST http://localhost:13462/detect \
@@ -48,10 +48,12 @@ Models are loaded by passing a `modelType` string to the `/load` endpoint.
 
 | `modelType` value | Model file | Source |
 |---|---|---|
-| *(omitted or null)* | `obstacles_detector.tflite` | Bundled in assets |
-| `"walls-detect"` | `walls_detect.tflite` | Bundled in assets |
+| `"walls-detect"` | `walls_detector.tflite` | Bundled in assets |
 | `"numbers"` | `numbers_detector.tflite` | Bundled in assets |
+| `"building-detect"` | `my_building_detector.tflite` | Bundled in assets |
 | `"remove-obstacle"` | `obstacles_detector.tflite` | App private files dir (`filesDir/assets/`) |
+
+> **Note:** `modelType` is required. Omitting it or passing an unrecognized value will result in an error.
 
 The detector dynamically reads the model's input/output tensor shapes, so any compatible YOLO-style TFLite model with output shape `[1, N, 6]` (where each detection is `[x1, y1, x2, y2, score, classIndex]`) will work.
 
@@ -72,7 +74,7 @@ Health check. Returns the server status, version, and current model state.
 ```json
 {
   "status": "running",
-  "version": "1.00",
+  "version": "1.01",
   "modelLoaded": true,
   "modelType": "walls-detect"
 }
@@ -101,7 +103,7 @@ Load model weights into the TFLite interpreter. If the same model type is alread
 
 | Field | Type | Required | Description |
 |---|---|---|---|
-| `modelType` | string | No | Model identifier (see [Supported Models](#supported-models)). Omit or set to `null` for the default model. |
+| `modelType` | string | **Yes** | Model identifier (see [Supported Models](#supported-models)). Must be one of the listed values. |
 
 **Success response:**
 
@@ -109,7 +111,13 @@ Load model weights into the TFLite interpreter. If the same model type is alread
 { "success": true }
 ```
 
-**Error response (500):**
+**Error response (400) — missing or invalid `modelType`:**
+
+```json
+{ "success": false, "error": "\"modelType\" is required. Valid types: walls-detect, numbers, building-detect, remove-obstacle" }
+```
+
+**Error response (500) — model failed to load:**
 
 ```json
 { "success": false, "error": "..." }

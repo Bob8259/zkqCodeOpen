@@ -6,8 +6,8 @@ import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
 import com.coc.zkqcode.core.util.touchactions.TouchActions
-import com.coc.zkqcode.core.yolo.DetectionResult
-import com.coc.zkqcode.core.yolo.YoloDetector
+import com.coc.zkqcode.jar.code.universal.yolo.DetectionResult
+import com.coc.zkqcode.jar.code.universal.yolo.YoloDetector
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.GameVersion
 import com.coc.zkqcode.jar.code.universal.InGamesVars

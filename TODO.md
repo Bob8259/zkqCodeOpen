@@ -11,11 +11,8 @@
 ## MainBaseConfigs.kt（主世界设置）
 
 ### 对战相关
-- 资源满后停止对战（STOP_BATTLE_AFTER_FULL_RESOURCES）
 - 无胜利之星后停止对战（STOP_BATTLE_WHEN_NO_STAR）
 - 排位对战（PLAY_LADDER）及切换阵型（CHANGE_BASE）
-- 等待对战（WAIT_FOR_BATTLE）
-- 手动练兵（MANUAL_TRAINING）
 - 随机换英雄（CHANGE_HEROES）
 
 ### 战术与AI

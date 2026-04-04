@@ -15,7 +15,7 @@ object MainBaseSettings {
     val STOP_BATTLE_AFTER_FULL_RESOURCES = SettingDef(
         "stop_battle_after_full_resources", "资源满后停止对战", 1, "MAIN_BASE_SETTINGS"
     )
-    val MANUAL_TRAINING = SettingDef("manual_training", "手动练兵", 0, "MAIN_BASE_SETTINGS")
+    val MANUAL_TRAINING = SettingDef("manual_training", "手动配兵", 0, "MAIN_BASE_SETTINGS")
     val TACTICS_MODE = SettingDef("tactics_mode", "战术设置", "0", "MAIN_BASE_SETTINGS")
     val DONATION_SETTING = SettingDef("donation_setting", "自动捐兵", 1, "MAIN_BASE_SETTINGS")
     val REQUEST_REINFORCEMENT_SETTING =
