@@ -16,6 +16,7 @@ object StorageKeys {
     const val BUILDER_BASE_TRAIN_TROOPS = "BuilderBaseTrainTroops"
     const val CLICK_OTTOS_POST = "ClickOttosPost"
     const val JOIN_CLAN = "JoinClan"
+    const val PLACE_HERO_BANNERS = "PlaceHeroBanners"
 
     // Per-account keys for dynamic adjustment resource thresholds
     const val DYNAMIC_GOLD = "DynamicGold"

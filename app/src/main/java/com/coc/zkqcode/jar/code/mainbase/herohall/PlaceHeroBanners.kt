@@ -3,6 +3,10 @@ package com.coc.zkqcode.jar.code.mainbase.herohall
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.basic.ShowMessage.invoke
 import com.coc.zkqcode.core.util.bugreporter.BugReporter
+import com.coc.zkqcode.jar.code.universal.InGamesVars
+import com.coc.zkqcode.jar.code.universal.smalltools.StorageKeys
+import com.coc.zkqcode.jar.code.universal.smalltools.checkMemoryFile
+import com.coc.zkqcode.jar.code.universal.smalltools.writeMemory
 import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.core.util.touchactions.TouchActions.swipe
 import com.coc.zkqcode.jar.code.builderbase.upgrade.builderBaseFindBuildButton
@@ -22,30 +26,41 @@ import com.coc.zkqcode.jar.code.universal.yolo.tiledYoloDetect
 import kotlinx.coroutines.delay
 
 suspend fun placeHeroBanners(): Boolean {
+    val storageKey = StorageKeys.withAccountNumber(
+        StorageKeys.PLACE_HERO_BANNERS, InGamesVars.currentAccountNumber
+    )
+
+    // Guard: only attempt banner placement once per day (1440 minutes)
+    if (!checkMemoryFile(storageKey, 1440)) {
+        ShowMessage("账号${InGamesVars.currentAccountNumber}，该账号今日已检测战旗")
+        return true
+    }
+
     clickRightBottom(1)
     zoomSmallMainBase()
 
-    // First scan: detect and tap hero halls sorted by confidence (highest first)
-    val firstScan = tiledYoloDetect(
-        modelName = "building-detect", callerTag = "FindHeroHall", classIndex = 3
-    )
-    for (detection in firstScan) {
-        val box = detection.boundingBox
-        if (tryToOpenHeroHall(box.centerX().toInt(), box.centerY().toInt())) return enterMainScreen()
+    // Scan the current view for hero halls and attempt to open the first one found
+    suspend fun scanAndPlace(): Boolean {
+        val scan = tiledYoloDetect(
+            modelName = "building-detect", callerTag = "FindHeroHall", classIndex = 3
+        )
+        for (detection in scan) {
+            val box = detection.boundingBox
+            if (tryToOpenHeroHall(box.centerX().toInt(), box.centerY().toInt())) {
+                return true
+            }
+        }
+        return false
     }
 
-    // Swipe to reveal more of the base
-    swipe(900, 130, 0, 720)
-
-    // Second scan: detect and tap hero halls in the newly visible area
-    val secondScan = tiledYoloDetect(
-        modelName = "building-detect", callerTag = "FindHeroHall", classIndex = 3
-    )
-    for (detection in secondScan) {
-        val box = detection.boundingBox
-        if (tryToOpenHeroHall(box.centerX().toInt(), box.centerY().toInt())) return enterMainScreen()
+    // First scan; if nothing found, swipe to reveal more and scan again
+    if (!scanAndPlace()) {
+        swipe(900, 130, 0, 720)
+        scanAndPlace()
     }
 
+    // Always record completion and return to main screen
+    writeMemory(storageKey, (System.currentTimeMillis() / 60_000).toString())
     return enterMainScreen()
 }
 
@@ -54,12 +69,12 @@ suspend fun tryToOpenHeroHall(x: Int, y: Int): Boolean {
     val openHeroHallIcon = findMultiColorsUntil(schemas = listOf(MyColors.OpenHeroHall), duration = 500)
     if (openHeroHallIcon != null) {
         TouchActions.tap(openHeroHallIcon.x, openHeroHallIcon.y, delayTime = 600)
-        TouchActions.tap(598, 591, delayTime = 300)//Place hero banner page
+        TouchActions.tap(598, 591, delayTime = 300) // Place hero banner page
         val placeHeroBanner = findMultiColorsUntil(schemas = listOf(MyColors.PlaceBannerButton), duration = 500)
 
         if (placeHeroBanner != null) {
             TouchActions.tap(placeHeroBanner.x, placeHeroBanner.y, delayTime = 300)
-            //Locate the confirmation button (Green Tick)
+            // Locate the confirmation button (Green Tick)
             var targetTick = mainBaseFindBuildButton(type = BuildButtonType.Tick)
             if (targetTick == null) {
                 ShowMessage("建造失败，尝试寻找空位")
@@ -67,9 +82,7 @@ suspend fun tryToOpenHeroHall(x: Int, y: Int): Boolean {
                 if (redCross != null) {
                     val centerX = redCross.x + 20
                     val centerY = redCross.y + 45
-                    val downX = centerX.toFloat()
-                    val downY = centerY.toFloat()
-                    TouchActions.touchDown(downX, downY, 1)
+                    TouchActions.touchDown(centerX.toFloat(), centerY.toFloat(), 1)
                     moveWithDelay(635F, 330F)
                     zoomSmallMainBase(isForBuild = true)
                     targetTick = tryToFindBuildPosition(BaseType.Main)
