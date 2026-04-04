@@ -29,7 +29,7 @@ suspend fun placeHeroBanners(): Boolean {
     // Guard: only attempt banner placement once per day (1440 minutes)
     if (!checkMemoryFile(storageKey, 1440)) {
         ShowMessage("账号${InGamesVars.currentAccountNumber}，该账号今日已检测战旗")
-//        return true
+        return true
     }
 
     clickRightBottom(1)
