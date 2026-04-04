@@ -18,9 +18,70 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONObject
 import java.net.URLDecoder
 import java.net.URLEncoder
+import java.text.SimpleDateFormat
+import java.util.Locale
+import java.util.TimeZone
+import java.util.concurrent.TimeUnit
 
 private val authMutex = Mutex()
 private val httpClient = OkHttpClient()
+
+// Dedicated client with short timeouts for network time fetching
+private val timeClient = OkHttpClient.Builder().connectTimeout(5, TimeUnit.SECONDS).readTimeout(5, TimeUnit.SECONDS).build()
+
+// Fetch epoch millis from QQ video checktime API (returns seconds, multiply by 1000)
+private suspend fun fetchTimestampFromQQ(): Long? = withContext(Dispatchers.IO) {
+    val request = Request.Builder().url("http://vv.video.qq.com/checktime?otype=json").get().build()
+    timeClient.newCall(request).execute().use { response ->
+        if (!response.isSuccessful) return@withContext null
+        val body = response.body.string()
+        val match = Regex(""""t"\s*:\s*(\d+)""").find(body)
+        match?.groupValues?.get(1)?.toLongOrNull()?.times(1000)
+    }
+}
+
+// Fetch epoch millis from Suning time API (already returns millis)
+private suspend fun fetchTimestampFromSuning(): Long? = withContext(Dispatchers.IO) {
+    val request = Request.Builder().url("https://f.m.suning.com/api/ct.do").get().build()
+    timeClient.newCall(request).execute().use { response ->
+        if (!response.isSuccessful) return@withContext null
+        val json = JSONObject(response.body.string())
+        if (json.has("currentTime")) json.getLong("currentTime") else null
+    }
+}
+
+// Fetch epoch millis from zkqcoc.store HTTP Date header
+private suspend fun fetchTimestampFromZkqcoc(): Long? = withContext(Dispatchers.IO) {
+    val request = Request.Builder().url("https://zkqcoc.store/").head().build()
+    timeClient.newCall(request).execute().use { response ->
+        if (!response.isSuccessful) return@withContext null
+        val dateStr = response.header("Date") ?: return@withContext null
+        val fmt = SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z", Locale.US)
+        fmt.timeZone = TimeZone.getTimeZone("GMT")
+        fmt.parse(dateStr)?.time
+    }
+}
+
+/**
+ * Cascading network timestamp retrieval (epoch millis):
+ * 1. QQ checktime API
+ * 2. Suning time API
+ * 3. zkqcoc.store HTTP Date header
+ * 4. Local system time (fallback)
+ */
+suspend fun getNetworkTimestamp(): Long {
+    val sources: List<suspend () -> Long?> = listOf(
+        ::fetchTimestampFromQQ, ::fetchTimestampFromSuning, ::fetchTimestampFromZkqcoc
+    )
+    for (source in sources) {
+        try {
+            val ts = source()
+            if (ts != null) return ts
+        } catch (_: Exception) {
+        }
+    }
+    return System.currentTimeMillis()
+}
 
 private fun parseUrlEncoded(raw: String): Map<String, String> {
     if (raw.isBlank()) return emptyMap()
@@ -57,7 +118,7 @@ suspend fun userAuth() {
         }
 
         val baseUrl = BuildConfig.BASE_URL
-        val timestamp = System.currentTimeMillis()
+        val timestamp = getNetworkTimestamp()
         // Retrieve last_time from native Rust storage (auto-initializes on first call)
         val lastTime = RustTools.getLastTime()
 

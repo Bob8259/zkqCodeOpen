@@ -51,6 +51,7 @@ import okhttp3.Response
 import java.io.IOException
 import java.util.Locale
 import com.coc.zkqcode.core.util.crypto.solvePoW
+import com.coc.zkqcode.jar.code.auth.getNetworkTimestamp
 import org.json.JSONObject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -118,7 +119,7 @@ fun LoginScreen(onAdFreeClick: () -> Unit = {}) {
             val powSalt: String = solvePoW(powNonce)
 
             // 1. Prepare Payload
-            val timestamp = System.currentTimeMillis()
+            val timestamp = getNetworkTimestamp()
 
             val payload = "email=$email&password=$password&timestamp=$timestamp"
             // 2. Encrypt Payload via Native Layer
