@@ -4,6 +4,7 @@ import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
+import android.graphics.BitmapFactory
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import com.coc.zkqcode.R
@@ -26,10 +27,14 @@ object NotificationHelper {
             }
         }
 
+        // Decode the drawable as a full-color large icon for the notification
+        val largeIcon = BitmapFactory.decodeResource(context.resources, R.drawable.main_icon)
+
         return NotificationCompat.Builder(context, CHANNEL_ID)
             .setContentTitle("紫孔雀")
             .setContentText("紫孔雀正在运行")
             .setSmallIcon(R.drawable.main_icon)
+            .setLargeIcon(largeIcon)
             .setPriority(NotificationCompat.PRIORITY_LOW)
             .build()
     }
