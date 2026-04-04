@@ -19,7 +19,7 @@ import kotlin.random.Random
 private var lastX = 0f
 private var lastY = 0f
 
-private suspend fun moveWithDelay(x: Float, y: Float) {
+suspend fun moveWithDelay(x: Float, y: Float) {
     val dx = x - lastX
     val dy = y - lastY
     val distance = sqrt(dx * dx + dy * dy)

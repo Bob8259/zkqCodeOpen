@@ -129,9 +129,6 @@ object YoloDetector {
                 return@detect emptyList()
             }
 
-            // Debug: show raw detection response
-            ShowMessage("检测原始结果: $responseBody", isChecking = false)
-
             val parsed = gson.fromJson(responseBody, DetectResponse::class.java)
             parsed.detections.map { d ->
                 DetectionResult(
