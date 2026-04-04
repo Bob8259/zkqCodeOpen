@@ -1,6 +1,7 @@
 package com.coc.zkqcode.jar.code.mainbase.clan
 
 import com.coc.zkqcode.core.util.basic.ShowMessage
+import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.GameVersion
@@ -35,6 +36,7 @@ suspend fun requestReinforcements(): Boolean {
                 TouchActions.tap(780, 490, delayTime = 500)
                 break
             }
+            delayWithMultiplier(200)
         }
     }
     return enterMainScreen()

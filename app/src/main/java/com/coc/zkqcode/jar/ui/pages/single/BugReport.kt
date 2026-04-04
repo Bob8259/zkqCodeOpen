@@ -83,7 +83,7 @@ fun BugReport(onClose: () -> Unit) {
             )
 
             Text(
-                text = "提交截图前，请先与作者/客服联系，确认出现问题的页面。\n确认页面后，请进入问题页面，并点击提交截图。\n提交截图后，请告知作者/客服截图已提交。",
+                text = "提交截图前，请先与作者/客服联系，确认出现问题的页面。\n确认页面后，请进入问题页面，并点击提交截图。\n提交截图后，请告知作者/客服截图已提交(一定要告知，否则截图无效)。",
                 style = MaterialTheme.typography.labelMedium,
                 modifier = Modifier.padding(bottom = 8.dp)
             )

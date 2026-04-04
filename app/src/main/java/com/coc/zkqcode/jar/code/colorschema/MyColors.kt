@@ -55,6 +55,6 @@ object MyColors : IUIColors by UIColors, IFeatureColors by FeatureColors, IMainB
 
     // Main Base Clan Colors
     val RequestReinforcement = ColorSchema.parse(
-        375, 649, 483, 709, "3AD48B", "-27|-2|2D2D31,-8|-17|FFFFFF,-9|-33|ECECEC,2|-24|949494,14|-29|F5F5F5,15|-19|FFFFFF,-42|-24|97A4B1,14|-21|FFFFFF,12|-26|FDFDFD", 0, 0.9, "求援按钮"
+        284, 650, 482, 714, "3AD48B", "-27|-2|2D2D31,-8|-17|FFFFFF,-9|-33|ECECEC,2|-24|949494,14|-29|F5F5F5,15|-19|FFFFFF,-42|-24|97A4B1,14|-21|FFFFFF,12|-26|FDFDFD", 0, 0.9, "求援按钮"
     )
 }
