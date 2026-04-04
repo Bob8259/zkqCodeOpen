@@ -180,7 +180,7 @@ fun ControlWindow(
                         }
                         // Skip auto-pause when ad is playing
                         if (wasCollapsed && isPlaying && !GlobalVars.isAdPlaying) {
-                            ShowMessage("检测到悬浮窗展开，辅助已自动暂停，避免干扰用户操作", false)
+                            ShowMessage("检测到悬浮窗展开，辅助已自动暂停，避免干扰用户操作\n为节省资源，暂停5分钟后会自动退出。", false)
                             isPlaying = false
                         }
                         internalInteractionCount++
@@ -338,7 +338,7 @@ fun ControlWindow(
                         }
                         // Skip auto-pause when ad is playing
                         if (wasCollapsed && isPlaying && !GlobalVars.isAdPlaying) {
-                            ShowMessage("检测到悬浮窗展开，辅助已自动暂停，避免干扰用户操作", false)
+                            ShowMessage("检测到悬浮窗展开，辅助已自动暂停，避免干扰用户操作\n为节省资源，暂停5分钟后会自动退出。", false)
                             isPlaying = false
                         }
                         internalInteractionCount++

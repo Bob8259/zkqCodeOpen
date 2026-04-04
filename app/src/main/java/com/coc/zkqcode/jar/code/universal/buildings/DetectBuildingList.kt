@@ -37,7 +37,6 @@ suspend fun detectBuildingList(excludeNewBuildings: Boolean = false): BuildingDe
             "${item.text}($x,$y)"
         }
     }
-    ShowMessage("Building raw list $rawSummary")
 
     // Take a screenshot for color checking (needed for post-process and later filtering)
     val screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult
