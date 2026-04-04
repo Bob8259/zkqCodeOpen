@@ -51,7 +51,17 @@ object YoloDetector {
             try {
                 val request = Request.Builder().url("$BASE_URL/status").get().build()
                 client.newCall(request).execute().use { response ->
-                    if (response.isSuccessful) return true
+                    if (response.isSuccessful) {
+                        val body = response.body.string()
+                        val status = gson.fromJson(body, StatusResponse::class.java)
+                        // Verify the plugin version meets the minimum requirement
+                        val ver = status.version.toDoubleOrNull() ?: 0.0
+                        if (ver < 1.01) {
+                            ShowMessage("AI插件版本过低，请手动下载最新版")
+                            return false
+                        }
+                        return true
+                    }
                 }
             } catch (_: Exception) {
                 // Server not reachable, attempt to start the service
@@ -148,6 +158,7 @@ object YoloDetector {
     }
 
     // JSON response models for Gson deserialization
+    private data class StatusResponse(val status: String, val version: String)
     private data class LoadResponse(val success: Boolean, val error: String? = null)
 
     private data class RawDetection(
