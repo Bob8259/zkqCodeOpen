@@ -20,8 +20,6 @@ import com.coc.zkqcode.jar.code.universal.smalltools.enterMainBase
 suspend fun playMainBase(): Boolean {
     if (!enterMainBase()) return false
     zoomSmallMainBase()
-    if (!placeHeroBanners()) return false
-    if (!upgradeGears()) return false
     if (!mainBaseTrainTroops()) return false
     if (!mainBaseAttack()) return false
     if (!mainBaseRemoveObstacles()) return false
@@ -31,6 +29,7 @@ suspend fun playMainBase(): Boolean {
     if (!upgradeWalls(BaseType.Main)) return false
     if (!upgradeBuildings(BaseType.Main)) return false
     if (!mainBaseResearch()) return false
-
+    if (!placeHeroBanners()) return false
+//    if (!upgradeGears()) return false
     return true
 }

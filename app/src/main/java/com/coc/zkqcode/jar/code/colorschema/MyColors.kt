@@ -52,6 +52,12 @@ object MyColors : IUIColors by UIColors, IFeatureColors by FeatureColors, IMainB
     val PlaceBannerButton = ColorSchema.parse(
         627, 465, 775, 514, "7EE6B4", "29|0|7EE6B4,59|0|7EE6B4,89|0|7EE6B4,118|0|7EE6B4,0|25|3AD48B,29|25|3AD48B,59|25|3AD48B,89|25|3AD48B,118|25|3AD48B", 0, 0.9, "放置英雄战旗"
     )
+    val UpgradeGearArrow = ColorSchema.parse(
+        114, 269, 1191, 302, "2EC87D", "0|-2|36D288,2|-2|36D288,0|-1|2ECB80,3|-1|2ECB80,3|1|2EC87D,3|3|2EC87D,2|3|2EC87D,2|-4|41E39E,1|-4|41E39E", 0, 0.9, "升级装备箭头"
+    )
+    val NewGear = ColorSchema.parse(
+        114, 269, 1191, 302, "2ECB88", "0|1|2ECD91,0|2|2ECE93,0|3|2ED196,0|4|41EABA,0|5|42EABB,24|1|2ECD91,24|2|2ECE93,24|3|2ED196,24|4|41EABA", 0, 0.9, "新装备"
+    )
 
     // Main Base Clan Colors
     val RequestReinforcement = ColorSchema.parse(
