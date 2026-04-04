@@ -28,17 +28,27 @@ import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
 import com.coc.zkqcode.jar.ui.schema.Schema
 import kotlin.random.Random
 
+// Shared helper to prepend account number to all log messages
+private fun accountLog(msg: String) = ShowMessage("账号${InGamesVars.currentAccountNumber}，$msg")
+
+// Elevated from local nested function to private top-level for reusability
+private suspend fun tapRepeat(x: Int, y: Int, times: Int = 12) {
+    repeat(times) {
+        TouchActions.tap(x, y, delayTime = 80)
+    }
+}
+
 suspend fun builderBaseAttack(): Boolean {
     // 1. Check if Builder Base farming is enabled
     val isEnabled = getBooleanConfigRuntime(Schema.BUILDER_BASE_SETTINGS.BUILDER_BASE_FARMING.key)
     if (!isEnabled) {
-        ShowMessage("账号${InGamesVars.currentAccountNumber}，未开启打夜世界")
+        accountLog("未开启打夜世界")
         return true
     }
 
     // 2. Calculate resource percentages using shared utility
     val resourcePercentage = calculateResourcesPercentage(BaseType.Builder)
-    ShowMessage("账号${InGamesVars.currentAccountNumber}，金币百分比: ${resourcePercentage.gold}%, 圣水百分比: ${resourcePercentage.elixir}%")
+    accountLog("金币百分比: ${resourcePercentage.gold}%, 圣水百分比: ${resourcePercentage.elixir}%")
     // Consider resource full if percentage >= 96%
     val isGoldFull = resourcePercentage.gold >= 96
     val isExileFull = resourcePercentage.elixir >= 96
@@ -46,17 +56,17 @@ suspend fun builderBaseAttack(): Boolean {
 
     // 3. Determine action based on resource state and settings
     if (isGoldFull && isExileFull && stopIfFull) {
-        ShowMessage("账号${InGamesVars.currentAccountNumber}，资源已满，停止对战")
+        accountLog("资源已满，停止对战")
     } else {
         // Evaluate attack strategy
         val attackType = when {
             getBooleanConfigRuntime(Schema.BUILDER_BASE_SETTINGS.TROPHY_PUSHING_MODE.key) -> {
-                ShowMessage("账号${InGamesVars.currentAccountNumber}，已勾选上分模式")
+                accountLog("已勾选上分模式")
                 "gold"
             }
 
             getBooleanConfigRuntime(Schema.BUILDER_BASE_SETTINGS.ELIXIR_CART_FARMING.key) -> {
-                ShowMessage("账号${InGamesVars.currentAccountNumber}，已勾选刷圣水车模式")
+                accountLog("已勾选刷圣水车模式")
                 "exile"
             }
             // If gold is not full (< 96%), prioritize gold; otherwise, default to exile
@@ -85,18 +95,18 @@ private suspend fun realAttack(mode: String, battleNumber: Int = 1, battleTimes:
     while (true) {
         val elapsed = System.currentTimeMillis() - startTime
         if (elapsed > 8 * 60 * 1000L) {
-            ShowMessage("账号${InGamesVars.currentAccountNumber}，战斗超过8分钟，强制退出")
+            accountLog("战斗超过8分钟，强制退出")
             break
         }
         val remainingMin = (8 * 60 * 1000L - elapsed) / 60000.0
-        ShowMessage("账号${InGamesVars.currentAccountNumber}，对战中，第${battleNumber}/${battleTimes}局\n若${"%.1f".format(remainingMin)}分钟内未完成对战，则强制重启")
+        accountLog("对战中，第${battleNumber}/${battleTimes}局\n若${"%.1f".format(remainingMin)}分钟内未完成对战，则强制重启")
 
         // Capture a single screenshot and reuse it for all state checks in this iteration
         val capturedScreen = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult
 
         val trainTroopButton = findMultiColors(byteBuffer = capturedScreen, schema = MyColors.TrainTroops)
         if (trainTroopButton != null) {
-            TouchActions.tap(86, 638, delayTime = 800)
+            TouchActions.tap(85, 640, delayTime = 800)
             continue // State matched, skip remaining checks
         }
         if (!checkReconnections()) return false
@@ -132,13 +142,12 @@ private suspend fun realAttack(mode: String, battleNumber: Int = 1, battleTimes:
                 delayWithMultiplier(500)
                 isFirstSwitchTroop = false
             } else {
-                ShowMessage("账号${InGamesVars.currentAccountNumber}，已进入第二区域")
+                accountLog("已进入第二区域")
                 delayWithMultiplier(2000)
             }
-            if (mode == "gold") {
-                normalBattle()
-            } else if (mode == "exile") {
-                deployAndExit()
+            when (mode) {
+                "gold" -> normalBattle()
+                "exile" -> deployAndExit()
             }
             continue
         }
@@ -158,7 +167,7 @@ private suspend fun deployAndExit() {
     val exitButton = findMultiColorsUntil(schemas = listOf(MyColors.ExitBattleButton), duration = 2000)
     if (exitButton != null) {
         TouchActions.tap(exitButton.x, exitButton.y, delayTime = 200)
-        TouchActions.tap(775, 469, delayTime = 400)//Confirm exit
+        TouchActions.tap(775, 470, delayTime = 400)//Confirm exit
     }
 }
 
@@ -175,17 +184,18 @@ private suspend fun normalBattle(isNormal: Boolean = true) {
     pinchIn(141, 423, 1052, 352, 638, 365, duration = 200)
 
     // Choose swipe direction and corresponding deploy positions
-    val (swipeParams, positions) = if (Random.nextBoolean()) {
-        Triple(981, 485, 0) to deployPositions
-    } else {
-        Triple(100, 117, 1280) to alternativeDeployPositions
-    }
+    val useRightSwipe = Random.nextBoolean()
+    val positions = if (useRightSwipe) deployPositions else alternativeDeployPositions
     delayWithMultiplier(100)
-    swipe(swipeParams.first, swipeParams.second, swipeParams.third, if (swipeParams.third == 0) 0 else 720, delayTime = 120)
+    if (useRightSwipe) {
+        swipe(981, 485, 0, 0, delayTime = 120)
+    } else {
+        swipe(100, 117, 1280, 720, delayTime = 120)
+    }
 
     // Deploy machine and troops to the same random position
     val deployPos = positions.random()
-    TouchActions.tap(126, 610, delayTime = 200) // Battle Machine
+    TouchActions.tap(125, 610, delayTime = 200) // Battle Machine
     TouchActions.tap(deployPos.first, deployPos.second, delayTime = 200) // Deploy the Machine
     if (!isNormal) return
     val generalTroops = findMultiColorsUntil(schemas = listOf(MyColors.TroopsWithSkills, MyColors.TroopsWithOutSkills), duration = 200)
@@ -196,7 +206,7 @@ private suspend fun normalBattle(isNormal: Boolean = true) {
             TouchActions.touchDown((deployPos.first + Random.nextInt(1, 4)).toFloat(), (deployPos.second + Random.nextInt(1, 4)).toFloat(), 1)
             delayWithMultiplier(4000)
             TouchActions.touchUp(1)
-            ShowMessage("账号${InGamesVars.currentAccountNumber}，等女巫走一会")
+            accountLog("等女巫走一会")
             delayWithMultiplier(Random.nextInt(5000, 10000))
             repeat(6) {
                 val skillsPos = findMultiColors(
@@ -243,7 +253,8 @@ private suspend fun normalBattle(isNormal: Boolean = true) {
 private suspend fun waitLoop() {
     val totalDuration = 15_000L
     val startTime = System.currentTimeMillis()
-    var lastPosition: Point?
+    // Guaranteed non-null at use site due to early return guard below
+    var lastPosition: Point? = null
 
     while (true) {
         val elapsed = System.currentTimeMillis() - startTime
@@ -255,10 +266,10 @@ private suspend fun waitLoop() {
         if (remainingMs <= 0) break
 
         val remainingSeconds = remainingMs / 1000.0
-        ShowMessage("账号${InGamesVars.currentAccountNumber}，搜索中，剩余 ${"%.1f".format(remainingSeconds)} 秒")
+        accountLog("搜索中，剩余 ${"%.1f".format(remainingSeconds)} 秒")
         delayWithMultiplier(1000)
     }
-    TouchActions.tap(lastPosition.x, lastPosition.y, delayTime = 200)
+    TouchActions.tap(lastPosition!!.x, lastPosition.y, delayTime = 200)
 }
 
 private suspend fun builderBaseTrainTroops() {
@@ -266,7 +277,7 @@ private suspend fun builderBaseTrainTroops() {
     val trainingButton = findMultiColorsUntil(schemas = listOf(MyColors.TrainTroops), duration = 1500)
 
     if (trainingButton == null) {
-        ShowMessage("账号${InGamesVars.currentAccountNumber}，夜世界练兵失败")
+        accountLog("夜世界练兵失败")
         return
     }
 
@@ -279,24 +290,15 @@ private suspend fun builderBaseTrainTroops() {
         TouchActions.tap(cleanTroops.x, cleanTroops.y, delayTime = 500)
     }
 
-    /**
-     * Helper to perform repeated taps on a specific coordinate
-     */
-    suspend fun tapRepeat(x: Int, y: Int, times: Int = 12) {
-        repeat(times) {
-            TouchActions.tap(x, y, delayTime = 80)
-        }
-    }
-
     // Identify troop type and train
     val trainNightWitch = findMultiColors(schema = MyColors.TrainNightWitch)
     if (trainNightWitch != null) {
         // Train Night Witches based on detected location
-        ShowMessage("账号${InGamesVars.currentAccountNumber}，练暗夜女巫")
+        accountLog("练暗夜女巫")
         tapRepeat(trainNightWitch.x, trainNightWitch.y)
     } else {
         // Fallback to Barbarians using original hardcoded coordinates
-        ShowMessage("账号${InGamesVars.currentAccountNumber}，未检测到暗夜女巫，练野蛮人\n（有暗夜女巫后会练暗夜女巫）")
+        accountLog("未检测到暗夜女巫，练野蛮人\n（有暗夜女巫后会练暗夜女巫）")
         tapRepeat(278, 491)
     }
 
