@@ -60,8 +60,7 @@ import kotlinx.coroutines.delay
 
 @Composable
 fun InputRowWithCheckBox(
-    checkBoxKey: String,
-    inputKey: String
+    checkBoxKey: String, inputKey: String
 ) {
     // Use getOrPut to lazily initialize missing config keys with their Schema defaults
     val checkBoxState = GlobalVars.configStates.getOrPut(checkBoxKey) {
@@ -86,16 +85,13 @@ fun InputRowWithCheckBox(
             },
         )
         BasicTextField(
-            value = inputState.value,
-            onValueChange = { newValue ->
+            value = inputState.value, onValueChange = { newValue ->
                 GlobalVars.isAutoRunEnabled = false
                 inputState.value = newValue
-            },
-            modifier = Modifier
+            }, modifier = Modifier
                 .padding(end = 6.dp, top = 6.dp, start = 6.dp)
                 .background(
-                    color = Color.White,
-                    shape = RoundedCornerShape(4.dp)
+                    color = Color.White, shape = RoundedCornerShape(4.dp)
                 )
                 .border(1.dp, Color.Gray, RoundedCornerShape(4.dp))
                 .padding(4.dp)
@@ -105,11 +101,9 @@ fun InputRowWithCheckBox(
         )
         if (inputLabel.isNotEmpty()) {
             Text(
-                text = inputLabel,
-                modifier = Modifier
+                text = inputLabel, modifier = Modifier
                     .padding(start = 2.dp, top = 7.dp)
-                    .align(Alignment.CenterVertically),
-                style = MaterialTheme.typography.labelMedium
+                    .align(Alignment.CenterVertically), style = MaterialTheme.typography.labelMedium
             )
         }
     }
@@ -118,23 +112,15 @@ fun InputRowWithCheckBox(
 
 @Composable
 fun CustomAlertDialog(
-    onDismissRequest: () -> Unit,
-    title: @Composable (() -> Unit)? = null,
-    text: @Composable (() -> Unit)? = null,
-    confirmButton: @Composable () -> Unit
+    onDismissRequest: () -> Unit, title: @Composable (() -> Unit)? = null, text: @Composable (() -> Unit)? = null, confirmButton: @Composable () -> Unit
 ) {
     Popup(
-        popupPositionProvider = WindowCenterPositionProvider(),
-        onDismissRequest = onDismissRequest,
-        properties = PopupProperties(focusable = true)
+        popupPositionProvider = WindowCenterPositionProvider(), onDismissRequest = onDismissRequest, properties = PopupProperties(focusable = true)
     ) {
         Surface(
             modifier = Modifier
                 .wrapContentSize()
-                .padding(16.dp),
-            shape = RoundedCornerShape(28.dp),
-            color = MaterialTheme.colorScheme.surface,
-            shadowElevation = 6.dp
+                .padding(16.dp), shape = RoundedCornerShape(28.dp), color = MaterialTheme.colorScheme.surface, shadowElevation = 6.dp
         ) {
             Column(modifier = Modifier.padding(24.dp)) {
                 title?.let {
@@ -157,8 +143,7 @@ fun CustomAlertDialog(
 
 @Composable
 fun CustomNotificationWindow(
-    message: String,
-    onDismissRequest: () -> Unit
+    message: String, onDismissRequest: () -> Unit
 ) {
     LaunchedEffect(message) {
         delay(2000)
@@ -167,17 +152,12 @@ fun CustomNotificationWindow(
 
     Popup(
 
-        alignment = Alignment.Center,
-        onDismissRequest = onDismissRequest,
-        properties = PopupProperties(focusable = false)
+        alignment = Alignment.Center, onDismissRequest = onDismissRequest, properties = PopupProperties(focusable = false)
     ) {
         Surface(
             modifier = Modifier
                 .wrapContentSize()
-                .padding(16.dp),
-            shape = RoundedCornerShape(28.dp),
-            color = MaterialTheme.colorScheme.surface,
-            shadowElevation = 6.dp
+                .padding(16.dp), shape = RoundedCornerShape(28.dp), color = MaterialTheme.colorScheme.surface, shadowElevation = 6.dp
         ) {
             Box(modifier = Modifier.padding(24.dp), contentAlignment = Alignment.Center) {
                 Text(text = message, style = MaterialTheme.typography.bodyMedium)
@@ -188,18 +168,13 @@ fun CustomNotificationWindow(
 
 class WindowCenterPositionProvider : PopupPositionProvider {
     override fun calculatePosition(
-        anchorBounds: IntRect,
-        windowSize: IntSize,
-        layoutDirection: LayoutDirection,
-        popupContentSize: IntSize
+        anchorBounds: IntRect, windowSize: IntSize, layoutDirection: LayoutDirection, popupContentSize: IntSize
     ): IntOffset {
         val windowCenter = IntOffset(
-            windowSize.width / 2,
-            windowSize.height / 2
+            windowSize.width / 2, windowSize.height / 2
         )
         return IntOffset(
-            windowCenter.x - popupContentSize.width / 2,
-            windowCenter.y - popupContentSize.height / 2
+            windowCenter.x - popupContentSize.width / 2, windowCenter.y - popupContentSize.height / 2
         )
     }
 }
@@ -214,30 +189,23 @@ fun SettingInputRow(key: String, afterChange: ((String) -> Unit)? = null) {
     val label = Schema.getDisplayName(key)
 
     Row(
-        modifier = Modifier
-            .padding(top = 2.dp)
-            .padding(bottom = 4.dp)
+        modifier = Modifier.padding(top = 6.dp)
     ) {
         Text(
-            text = label,
-            modifier = Modifier
+            text = label, modifier = Modifier
                 .padding(end = 8.dp)
-                .align(Alignment.CenterVertically),
-            style = MaterialTheme.typography.labelMedium
+                .align(Alignment.CenterVertically), style = MaterialTheme.typography.labelMedium
         )
 
         BasicTextField(
-            value = state.value,
-            onValueChange = { newValue ->
+            value = state.value, onValueChange = { newValue ->
                 GlobalVars.isAutoRunEnabled = false
                 state.value = newValue
                 afterChange?.invoke(newValue)
-            },
-            modifier = Modifier
+            }, modifier = Modifier
                 .padding(end = 16.dp)
                 .background(
-                    color = Color.White,
-                    shape = RoundedCornerShape(4.dp)
+                    color = Color.White, shape = RoundedCornerShape(4.dp)
                 )
                 .border(1.dp, Color.Gray, RoundedCornerShape(4.dp))
                 .padding(4.dp)
@@ -258,29 +226,21 @@ fun SettingInputRowWithSuffix(key: String, suffix: String, afterChange: ((String
     val label = Schema.getDisplayName(key)
 
     Row(
-        modifier = Modifier
-            .padding(top = 2.dp)
-            .padding(bottom = 4.dp),
-        verticalAlignment = Alignment.CenterVertically
+        modifier = Modifier.padding(top = 6.dp), verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            text = label,
-            modifier = Modifier.padding(end = 8.dp),
-            style = MaterialTheme.typography.labelMedium
+            text = label, modifier = Modifier.padding(end = 8.dp), style = MaterialTheme.typography.labelMedium
         )
 
         BasicTextField(
-            value = state.value,
-            onValueChange = { newValue ->
+            value = state.value, onValueChange = { newValue ->
                 GlobalVars.isAutoRunEnabled = false
                 state.value = newValue
                 afterChange?.invoke(newValue)
-            },
-            modifier = Modifier
+            }, modifier = Modifier
                 .padding(end = 6.dp)
                 .background(
-                    color = Color.White,
-                    shape = RoundedCornerShape(4.dp)
+                    color = Color.White, shape = RoundedCornerShape(4.dp)
                 )
                 .border(1.dp, Color.Gray, RoundedCornerShape(4.dp))
                 .padding(4.dp)
@@ -289,9 +249,7 @@ fun SettingInputRowWithSuffix(key: String, suffix: String, afterChange: ((String
         )
 
         Text(
-            text = suffix,
-            modifier = Modifier.padding(end = 8.dp),
-            style = MaterialTheme.typography.labelMedium
+            text = suffix, modifier = Modifier.padding(end = 8.dp), style = MaterialTheme.typography.labelMedium
         )
     }
 }
@@ -312,13 +270,9 @@ fun CustomButton(
             onClick = {
                 GlobalVars.isAutoRunEnabled = false
                 onClick()
-            },
-            modifier = Modifier
+            }, modifier = Modifier
                 .padding(start = 8.dp, top = marginTop, bottom = marginBottom)
-                .height(32.dp),
-            shape = RoundedCornerShape(8.dp),
-            enabled = enable,
-            colors = ButtonDefaults.buttonColors(
+                .height(32.dp), shape = RoundedCornerShape(8.dp), enabled = enable, colors = ButtonDefaults.buttonColors(
                 containerColor = AppColors.Azure
             )
         ) {
@@ -336,26 +290,20 @@ fun CustomButton(
                     tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
 
                 if (showExplanation) {
-                    CustomAlertDialog(
-                        onDismissRequest = { showExplanation = false },
-                        title = {
-                            Text(
-                                text = "注意事项",
-                                style = MaterialTheme.typography.titleMedium
-                            )
-                        },
-                        text = {
-                            Text(
-                                text = explain,
-                                style = MaterialTheme.typography.bodyMedium
-                            )
-                        },
-                        confirmButton = {
-                            TextButton(
-                                onClick = { showExplanation = false }) {
-                                Text("明白了")
-                            }
-                        })
+                    CustomAlertDialog(onDismissRequest = { showExplanation = false }, title = {
+                        Text(
+                            text = "注意事项", style = MaterialTheme.typography.titleMedium
+                        )
+                    }, text = {
+                        Text(
+                            text = explain, style = MaterialTheme.typography.bodyMedium
+                        )
+                    }, confirmButton = {
+                        TextButton(
+                            onClick = { showExplanation = false }) {
+                            Text("明白了")
+                        }
+                    })
                 }
             }
         }
@@ -364,9 +312,7 @@ fun CustomButton(
 
 @Composable
 fun SettingSwitchIcon(
-    key: String,
-    explain: String? = null,
-    afterChange: ((Boolean) -> Unit)? = null
+    key: String, explain: String? = null, afterChange: ((Boolean) -> Unit)? = null
 ) {
     // If key is absent from configStates, create a new state using the Schema default value
     // and register it so subsequent reads are consistent.
@@ -375,13 +321,10 @@ fun SettingSwitchIcon(
     }
 
     CustomCheckBox(
-        text = Schema.getDisplayName(key),
-        checkedState = state.value,
-        onCheckStateChange = { checked ->
+        text = Schema.getDisplayName(key), checkedState = state.value, onCheckStateChange = { checked ->
             state.value = if (checked) "1" else "0"
             afterChange?.invoke(checked)
-        },
-        explain = explain
+        }, explain = explain
     )
 }
 
@@ -402,15 +345,10 @@ fun SettingToggleButton(key: String) {
             onClick = {
                 GlobalVars.isAutoRunEnabled = false
                 state.value = "0"
-            },
-            modifier = Modifier
+            }, modifier = Modifier
                 .padding(2.dp)
-                .height(32.dp),
-            shape = RoundedCornerShape(8.dp),
-            contentPadding = PaddingValues(horizontal = 10.dp, vertical = 0.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = ToggleButtonBlue,
-                contentColor = Color.White
+                .height(32.dp), shape = RoundedCornerShape(8.dp), contentPadding = PaddingValues(horizontal = 10.dp, vertical = 0.dp), colors = ButtonDefaults.buttonColors(
+                containerColor = ToggleButtonBlue, contentColor = Color.White
             )
         ) {
             Text(label, style = MaterialTheme.typography.labelMedium)
@@ -420,13 +358,9 @@ fun SettingToggleButton(key: String) {
             onClick = {
                 GlobalVars.isAutoRunEnabled = false
                 state.value = "1"
-            },
-            modifier = Modifier
+            }, modifier = Modifier
                 .padding(2.dp)
-                .height(32.dp),
-            shape = RoundedCornerShape(8.dp),
-            contentPadding = PaddingValues(horizontal = 10.dp, vertical = 0.dp),
-            colors = ButtonDefaults.outlinedButtonColors(
+                .height(32.dp), shape = RoundedCornerShape(8.dp), contentPadding = PaddingValues(horizontal = 10.dp, vertical = 0.dp), colors = ButtonDefaults.outlinedButtonColors(
                 contentColor = Color.Gray
             )
         ) {
@@ -438,29 +372,21 @@ fun SettingToggleButton(key: String) {
 // Reordered layout: [Text] [Info Icon] [Toggle Switch]
 @Composable
 private fun CustomCheckBox(
-    text: String,
-    checkedState: String,
-    onCheckStateChange: (Boolean) -> Unit,
-    explain: String? = null
+    text: String, checkedState: String, onCheckStateChange: (Boolean) -> Unit, explain: String? = null
 ) {
     var showExplanation by remember { mutableStateOf(false) }
     val isChecked = checkedState == "1"
 
     Row(
-        modifier = Modifier.padding(top = 4.dp),
-        verticalAlignment = Alignment.CenterVertically
+        modifier = Modifier.padding(top = 4.dp), verticalAlignment = Alignment.CenterVertically
     ) {
         Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.clickable {
+            verticalAlignment = Alignment.CenterVertically, modifier = Modifier.clickable {
                 GlobalVars.isAutoRunEnabled = false
                 onCheckStateChange(!isChecked)
-            }
-        ) {
+            }) {
             Text(
-                text = text,
-                modifier = Modifier.padding(top = 2.dp),
-                style = MaterialTheme.typography.labelMedium
+                text = text, modifier = Modifier.padding(top = 2.dp), style = MaterialTheme.typography.labelMedium
             )
 
             explain?.let {
@@ -471,50 +397,37 @@ private fun CustomCheckBox(
                         .height(18.dp)
                         .clickable { showExplanation = true }
                         .padding(end = 2.dp),
-                    tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                )
+                    tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
 
                 if (showExplanation) {
-                    CustomAlertDialog(
-                        onDismissRequest = { showExplanation = false },
-                        title = {
-                            Text(
-                                text = "注意事项",
-                                style = MaterialTheme.typography.titleMedium
-                            )
-                        },
-                        text = {
-                            Text(
-                                text = explain,
-                                style = MaterialTheme.typography.bodyMedium
-                            )
-                        },
-                        confirmButton = {
-                            TextButton(
-                                onClick = { showExplanation = false }
-                            ) {
-                                Text("明白了")
-                            }
+                    CustomAlertDialog(onDismissRequest = { showExplanation = false }, title = {
+                        Text(
+                            text = "注意事项", style = MaterialTheme.typography.titleMedium
+                        )
+                    }, text = {
+                        Text(
+                            text = explain, style = MaterialTheme.typography.bodyMedium
+                        )
+                    }, confirmButton = {
+                        TextButton(
+                            onClick = { showExplanation = false }) {
+                            Text("明白了")
                         }
-                    )
+                    })
                 }
             }
         }
 
         // Scaled-down toggle switch to keep similar row height
         Switch(
-            checked = isChecked,
-            onCheckedChange = { checked ->
+            checked = isChecked, onCheckedChange = { checked ->
                 GlobalVars.isAutoRunEnabled = false
                 onCheckStateChange(checked)
-            },
-            modifier = Modifier
+            }, modifier = Modifier
                 .height(20.dp)
                 .padding(start = 4.dp)
-                .scale(0.7f),
-            colors = SwitchDefaults.colors(
-                checkedTrackColor = AppColors.Azure,
-                checkedThumbColor = Color.White
+                .scale(0.7f), colors = SwitchDefaults.colors(
+                checkedTrackColor = AppColors.Azure, checkedThumbColor = Color.White
             )
         )
     }
@@ -523,19 +436,13 @@ private fun CustomCheckBox(
 // Rounded-corner white card for grouping related settings, with built-in AnimatedVisibility support
 @Composable
 fun SettingSection(
-    modifier: Modifier = Modifier,
-    visible: Boolean = true,
-    content: @Composable () -> Unit
+    modifier: Modifier = Modifier, visible: Boolean = true, content: @Composable () -> Unit
 ) {
     AnimatedVisibility(visible = visible) {
         Surface(
             modifier = modifier
                 .fillMaxWidth()
-                .padding(vertical = 4.dp),
-            shape = RoundedCornerShape(12.dp),
-            color = Color.White,
-            shadowElevation = 8.dp,
-            tonalElevation = 5.dp
+                .padding(vertical = 4.dp), shape = RoundedCornerShape(12.dp), color = Color.White, shadowElevation = 8.dp, tonalElevation = 5.dp
         ) {
             Column(modifier = Modifier.padding(horizontal = 10.dp, vertical = 8.dp)) {
                 content()
@@ -546,9 +453,7 @@ fun SettingSection(
 
 @Composable
 fun SettingDropdown(
-    key: String,
-    options: List<String>,
-    afterChange: ((Int) -> Unit)? = null
+    key: String, options: List<String>, afterChange: ((Int) -> Unit)? = null
 ) {
     // Use getOrPut to lazily initialize missing config keys with their Schema defaults
     val state = GlobalVars.configStates.getOrPut(key) {
@@ -564,14 +469,12 @@ fun SettingDropdown(
     val selectedOption = options.getOrElse(selectedIndex) { options.getOrNull(0) ?: "" }
 
     Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.padding(vertical = 6.dp).padding(end = 6.dp)
+        verticalAlignment = Alignment.CenterVertically, modifier = Modifier
+            .padding(top = 6.dp)
+            .padding(end = 6.dp)
     ) {
         Text(
-            text = label,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.padding(end = 10.dp),
-            style = MaterialTheme.typography.labelMedium
+            text = label, textAlign = TextAlign.Center, modifier = Modifier.padding(end = 10.dp), style = MaterialTheme.typography.labelMedium
         )
 
         Box(modifier = Modifier.wrapContentSize(Alignment.TopStart)) {
@@ -592,21 +495,17 @@ fun SettingDropdown(
 
             // Dropdown menu
             DropdownMenu(
-                expanded = expanded,
-                onDismissRequest = { expanded = false }
-            ) {
+                expanded = expanded, onDismissRequest = { expanded = false }) {
                 options.forEachIndexed { idx, option ->
                     DropdownMenuItem(
                         text = {
-                            Text(option, style = MaterialTheme.typography.labelMedium)
-                        },
-                        onClick = {
-                            GlobalVars.isAutoRunEnabled = false
-                            state.value = idx.toString()
-                            expanded = false
-                            afterChange?.invoke(idx)
-                        },
-                        modifier = Modifier.height(35.dp) // Slightly increase height for easier clicking
+                        Text(option, style = MaterialTheme.typography.labelMedium)
+                    }, onClick = {
+                        GlobalVars.isAutoRunEnabled = false
+                        state.value = idx.toString()
+                        expanded = false
+                        afterChange?.invoke(idx)
+                    }, modifier = Modifier.height(35.dp) // Slightly increase height for easier clicking
                     )
                 }
             }
