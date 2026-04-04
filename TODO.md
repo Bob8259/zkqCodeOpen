@@ -7,7 +7,6 @@
 ## HomeScreen.kt（上号器 / 主页设置）
 
 - 上号器功能（用户手动注释）
-- 延时倍率（DELAY_MULTIPLIER）
 
 ## MainBaseConfigs.kt（主世界设置）
 
