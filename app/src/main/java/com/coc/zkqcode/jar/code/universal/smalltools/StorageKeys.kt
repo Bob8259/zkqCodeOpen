@@ -17,7 +17,7 @@ object StorageKeys {
     const val CLICK_OTTOS_POST = "ClickOttosPost"
     const val JOIN_CLAN = "JoinClan"
     const val PLACE_HERO_BANNERS = "PlaceHeroBanners"
-    const val UPGRADE_GEARS = "UpgradeGears"
+    const val UPGRADE_GEARS_AND_PETS = "UpgradeGearsAndPets"
 
     // Per-account keys for dynamic adjustment resource thresholds
     const val DYNAMIC_GOLD = "DynamicGold"

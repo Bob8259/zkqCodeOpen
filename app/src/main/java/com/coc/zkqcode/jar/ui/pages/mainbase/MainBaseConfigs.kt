@@ -294,7 +294,16 @@ fun LazyListScope.MainBaseConfig(
         SettingSection(visible = isExpanded) {
             FlowRow {
                 SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.UPGRADE_WERA_GEAR.key}_c$index")
-                SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.UPGRADE_ALL_GEAR.key}_c$index")
+                SettingSwitchIcon(
+                    key = "${MAIN_BASE_SETTINGS.UPGRADE_ALL_GEAR.key}_c$index",
+                    explain = "勾选后，辅助也会自动升级穿戴的装备。",
+                    // Keep the base wearable gear toggle aligned with "upgrade all gear".
+                    afterChange = { checked ->
+                        if (checked) {
+                            GlobalVars.configStates["${MAIN_BASE_SETTINGS.UPGRADE_WERA_GEAR.key}_c$index"]?.value = "1"
+                        }
+                    }
+                )
                 SettingSwitchIcon(
                     key = "${MAIN_BASE_SETTINGS.REMOVE_OBSTACLES.key}_c$index", explain = "勾选后，当主世界资源金水大于30万时生效。有小概率（约5%）移除稀有物品"
                 )
