@@ -17,6 +17,7 @@ interface IMainBaseClanColors {
     val DonateNormalTroops: ColorSchema
     val DonateSpells: ColorSchema
     val PreviousDonation: ColorSchema
+    val RequestReinforcement: ColorSchema
 }
 
 object MainBaseClanColors : IMainBaseClanColors {
@@ -67,5 +68,9 @@ object MainBaseClanColors : IMainBaseClanColors {
     // Navigate to previous donation request
     override val PreviousDonation = ColorSchema.parse(
         417, 64, 479, 118, "FFFFFF", "-6|0|12CE97,-6|3|13C78D,-6|8|18A761,7|10|18A661,7|7|16B979,7|3|13C78D,7|2|13CA91,7|1|13CC94,7|0|12CE97", 0, 0.9, "上一个捐赠"
+    )
+    // Request reinforcements button in the clan chat window
+    override val RequestReinforcement = ColorSchema.parse(
+        284, 650, 482, 714, "3AD48B", "-27|-2|2D2D31,-8|-17|FFFFFF,-9|-33|ECECEC,2|-24|949494,14|-29|F5F5F5,15|-19|FFFFFF,-42|-24|97A4B1,14|-21|FFFFFF,12|-26|FDFDFD", 0, 0.9, "求援按钮"
     )
 }

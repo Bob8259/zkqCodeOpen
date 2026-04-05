@@ -174,7 +174,7 @@ private suspend fun deployAndExit() {
 private suspend fun normalBattle(isNormal: Boolean = true) {
     // Define possible deploy positions for each swipe direction
     val deployPositions = listOf(
-        Pair(605, 553), Pair(108, 183), Pair(330, 358), Pair(855, 371), Pair(1090, 180), Pair(271, 64)
+        Pair(605, 553), Pair(108, 183), Pair(330, 358), Pair(855, 371)
     )
 
     val alternativeDeployPositions = listOf(
@@ -200,9 +200,9 @@ private suspend fun normalBattle(isNormal: Boolean = true) {
     if (!isNormal) return
     val generalTroops = findMultiColorsUntil(schemas = listOf(MyColors.TroopsWithSkills, MyColors.TroopsWithOutSkills), duration = 200)
     if (generalTroops != null) {
-        ShowMessage("准备点击女巫，点击坐标${generalTroops.x + 1}, 610")
+        ShowMessage("准备点击女巫，点击坐标${generalTroops.x + 1}, 610\n当前部署位置${deployPos.first}, ${deployPos.second}")
         delayWithMultiplier(1500)
-        TouchActions.tap(generalTroops.x + 15, 610, delayTime = 200) // Troops
+        TouchActions.tap(generalTroops.x + 15, 620, delayTime = 200) // Troops
         val nightWitch = findMultiColors(schema = MyColors.NightWitch)
         if (nightWitch != null) {
             TouchActions.touchDown((deployPos.first + Random.nextInt(1, 4)).toFloat(), (deployPos.second + Random.nextInt(1, 4)).toFloat(), 1)
@@ -217,7 +217,7 @@ private suspend fun normalBattle(isNormal: Boolean = true) {
                     )
                 )
                 if (skillsPos != null) {
-                    TouchActions.tap(skillsPos.x, skillsPos.y + 100)
+                    TouchActions.tap(skillsPos.x, 620)
                     delayWithMultiplier(Random.nextInt(500, 4000))
                 }
             }
