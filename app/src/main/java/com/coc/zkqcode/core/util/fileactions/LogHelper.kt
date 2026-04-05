@@ -32,7 +32,7 @@ object LogHelper {
             error("logAndRestart re-entered: $message")
         }
         Timber.tag("zkq_debug").e("CRITICAL_ERROR: $message")
-        repeat(10) {
+        repeat(3) {
             try {
                 ShowMessage("出现未知错误，即将尝试重启。\n注意：请检查辅助配置，确保除了部落标签和暗号以外，其他所有的输入框都不能为空。\n并且该填数字的地方就要填数字，该填文字的地方填文字，不能乱填。\n若辅助配置没问题，则请截图该错误信息向作者反馈。\n\n错误信息：\n$message")
             } catch (e: Exception) {

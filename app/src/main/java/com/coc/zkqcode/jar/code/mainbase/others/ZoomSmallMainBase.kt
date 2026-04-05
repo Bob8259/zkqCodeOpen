@@ -6,7 +6,9 @@ import com.coc.zkqcode.core.util.touchactions.TouchActions.swipe
 import com.coc.zkqcode.jar.code.universal.clickRightBottom
 
 suspend fun zoomSmallMainBase(isForBuild: Boolean = false, isForAttack: Boolean = false) {
+    clickRightBottom(1)
     swipe(200, 500, 950, -500)
+    clickRightBottom(1)
     delayWithMultiplier(50)
     pinchIn(141, 423, 1052, 352, 638, 365)
     delayWithMultiplier(200)
