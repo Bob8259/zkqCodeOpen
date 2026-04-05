@@ -230,10 +230,47 @@ tasks.register<Exec>("buildJar") {
     }
 }
 
+tasks.register("validateUploadJarGuard") {
+    group = "verification"
+    description = "Block uploadJar when MainScript test code is still enabled"
+
+    doLast {
+        val mainScriptFile = file("src/main/java/com/coc/zkqcode/jar/code/MainScript.kt")
+        if (!mainScriptFile.exists()) {
+            throw GradleException("Cannot validate upload safety because MainScript.kt was not found.")
+        }
+
+        val scriptLines = mainScriptFile.readLines()
+        val runMainScriptStart = scriptLines.indexOfFirst { it.contains("suspend fun runMainScript()") }
+        val runTestCodeDeclaration = scriptLines.indexOfFirst { it.contains("private suspend fun runTestCode()") }
+        if (runMainScriptStart == -1 || runTestCodeDeclaration == -1 || runTestCodeDeclaration <= runMainScriptStart) {
+            throw GradleException("Cannot validate upload safety because the expected MainScript structure was not found.")
+        }
+
+        // Only scan the main script body so the helper declaration itself does not trigger the guard.
+        val runMainScriptLines = scriptLines.subList(runMainScriptStart, runTestCodeDeclaration)
+        val activeRunTestCodeLine = Regex("""^\s*runTestCode\s*\(\s*\)\s*(?://.*)?$""")
+        val isTestHookEnabled = runMainScriptLines.any { line ->
+            activeRunTestCodeLine.matches(line)
+        }
+
+        if (isTestHookEnabled) {
+            throw GradleException(
+                "runTestCode() is still enabled in MainScript.kt. Comment out or disable that call before running uploadJar."
+            )
+        }
+    }
+}
+
+tasks.named("buildJar") {
+    mustRunAfter("validateUploadJarGuard")
+}
+
 // Upload the encrypted JAR to the hot update server
 tasks.register("uploadJar") {
     group = "build"
     description = "Build, encrypt, and upload the JAR to the hot update server"
+    dependsOn("validateUploadJarGuard")
     dependsOn("buildJar")
 
     doLast {

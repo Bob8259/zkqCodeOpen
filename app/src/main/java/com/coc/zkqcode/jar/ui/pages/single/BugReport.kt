@@ -2,6 +2,7 @@
 
 package com.coc.zkqcode.jar.ui.pages.single
 
+import android.graphics.Bitmap
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -27,11 +28,10 @@ import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.coc.zkqcode.BuildConfig
 import com.coc.zkqcode.core.data.database.GlobalVars
-import com.coc.zkqcode.core.util.basic.RunShell
+import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.jar.ui.components.CustomButton
 import com.coc.zkqcode.statehelper.AppMode
@@ -44,14 +44,13 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import okhttp3.RequestBody.Companion.asRequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONObject
-import java.io.File
+import java.io.ByteArrayOutputStream
 
 @Composable
 fun BugReport(onClose: () -> Unit) {
     val scope = rememberCoroutineScope()
-    val context = LocalContext.current
     var statusMessage by remember { mutableStateOf("") }
     var isSubmitting by remember { mutableStateOf(false) }
     // Hide the UI so screencap captures the screen behind the transparent window
@@ -109,8 +108,6 @@ fun BugReport(onClose: () -> Unit) {
 
                         // Auto-generate image name using timestamp
                         val nameToSubmit = "bug_${System.currentTimeMillis()}"
-                        // Capture private path before launching coroutine
-                        val privateDir = context.filesDir.absolutePath
                         // Make window invisible so screencap sees the real screen
                         isTransparent = true
 
@@ -121,28 +118,30 @@ fun BugReport(onClose: () -> Unit) {
                                 delay(300)
                                 val sanitizedName =
                                     if (nameToSubmit.endsWith(".png")) nameToSubmit else "$nameToSubmit.png"
-                                val dir = "$privateDir/bugReport"
-                                val fullPath = "$dir/$sanitizedName"
 
-                                // Take screenshot via root shell, chmod so the app can read the file
-                                RunShell.runNoOutput(
-                                    "mkdir -p $dir && screencap -p $fullPath && chmod 644 $fullPath",
-                                    isCheckIsPlaying = false
-                                )
-                                delay(1500)
-
-                                val file = File(fullPath)
-                                if (!file.exists()) {
-                                    statusMessage = "截图保存失败，文件不存在。"
+                                val screenshotBitmap =
+                                    ScreenCaptureManager.capture(asBitmap = true) as? Bitmap
+                                if (screenshotBitmap == null) {
+                                    statusMessage = "截图保存失败，截图为空。"
                                     return@launch
                                 }
+
+                                // Encode the captured bitmap in the app process so upload does not
+                                // depend on a root-created file inside private storage.
+                                val imageBytes = withContext(Dispatchers.IO) {
+                                    ByteArrayOutputStream().use { outputStream ->
+                                        screenshotBitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
+                                        outputStream.toByteArray()
+                                    }
+                                }
+                                screenshotBitmap.recycle()
 
                                 val requestBody = MultipartBody.Builder()
                                     .setType(MultipartBody.FORM)
                                     .addFormDataPart(
                                         "image",
                                         sanitizedName,
-                                        file.asRequestBody("image/png".toMediaTypeOrNull())
+                                        imageBytes.toRequestBody("image/png".toMediaTypeOrNull())
                                     )
                                     .build()
 
