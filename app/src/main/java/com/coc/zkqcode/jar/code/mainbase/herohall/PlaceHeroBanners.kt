@@ -12,7 +12,6 @@ import com.coc.zkqcode.jar.code.universal.buildings.upgrade.BuildButtonType
 import com.coc.zkqcode.jar.code.universal.buildings.upgrade.moveWithDelay
 import com.coc.zkqcode.jar.code.universal.buildings.upgrade.tryToFindBuildPosition
 import com.coc.zkqcode.jar.code.universal.clickRightBottom
-import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.smalltools.StorageKeys
 import com.coc.zkqcode.jar.code.universal.smalltools.checkMemoryFile
@@ -31,11 +30,10 @@ suspend fun placeHeroBanners(): Boolean {
     }
     ShowMessage("准备检测是否卡战旗")
     val result = withHeroHall { placeHeroBannerAction() }
-    val returnedToMainScreen = enterMainScreen()
 
     // Always record completion and return to main screen
     writeMemory(storageKey, (System.currentTimeMillis() / 60_000).toString())
-    return result && returnedToMainScreen
+    return result
 }
 
 private suspend fun placeHeroBannerAction() {

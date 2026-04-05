@@ -61,6 +61,9 @@ object MyColors : IUIColors by UIColors, IFeatureColors by FeatureColors, IMainB
     val SmithOreIcon = ColorSchema.parse(
         405, 627, 418, 643, "B47F28", "3|0|F3A930,6|0|FFC44B,8|0|FFC752,11|0|FFCB59,0|8|B07C0D,3|8|C38E0D,6|8|D1980D,8|8|CB940D,11|8|FFF19E", 0, 0.9, "铁匠铺标志"
     )
+    val PetsIconInHeroHall = ColorSchema.parse(
+        758, 586, 786, 605, "45C2DF", "5|0|3DAAC9,11|0|1E8EB9,17|0|1672A0,22|0|289CC2,0|9|39B9DA,5|9|42BEDC,11|9|3DB9D7,17|9|32A9CA,22|9|2AA2C5", 0, 0.9, "英雄殿堂宠物标志"
+    )
 
     // Main Base Clan Colors
     val RequestReinforcement = ColorSchema.parse(

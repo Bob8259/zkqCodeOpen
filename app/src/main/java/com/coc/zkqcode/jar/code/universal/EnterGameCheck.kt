@@ -118,6 +118,13 @@ private suspend fun closeAdvertisements() {
         TouchActions.tap(it.x + 50, it.y + 100, delayTime = 500)
         screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult ?: logAndRestart("failed to take screenshot at close advertisement")
     }
+    findMultiColors(byteBuffer = screenBuffer, schema = MyColors.CollectElixirCartTutorial, increment = 1)?.let {
+        TouchActions.tap(644, 377)
+        repeat(5) {
+            TouchActions.tap(946, 601, delayTime = 300)
+        }
+
+    }
     findMultiColors(byteBuffer = screenBuffer, schema = MyColors.TencentChildProtection, increment = 1)?.let {
         TouchActions.tap(1011, 87, delayTime = 500)
         screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult ?: logAndRestart("failed to take screenshot at close advertisement")

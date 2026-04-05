@@ -6,6 +6,7 @@ import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.mainbase.others.zoomSmallMainBase
 import com.coc.zkqcode.jar.code.universal.clickRightBottom
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
+import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.yolo.tiledYoloDetect
 
 suspend fun withHeroHall(action: suspend () -> Unit): Boolean {
@@ -27,13 +28,12 @@ suspend fun withHeroHall(action: suspend () -> Unit): Boolean {
         return false
     }
 
-    if (scanAndHandle()) {
-        return true
+    if (!scanAndHandle()) {
+        swipe(900, 130, 0, 720)
+        scanAndHandle()
     }
 
-    // Retry once after shifting the camera if the first scan missed the hero hall.
-    swipe(900, 130, 0, 720)
-    return scanAndHandle()
+    return enterMainScreen()
 }
 
 suspend fun openHeroHall(x: Int, y: Int): Boolean {
