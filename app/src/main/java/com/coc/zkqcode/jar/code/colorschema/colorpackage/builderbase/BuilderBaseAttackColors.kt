@@ -43,7 +43,7 @@ object BuilderBaseAttackColors : IBuilderBaseAttackColors {
         33, 491, 153, 518, "5F5DF4", "24|0|5F5DF4,18|2|5F5DF2,72|0|5F5DF4,96|0|5F5DF4,0|13|0E0DCE,24|13|0E0DCE,46|18|0E0DCF,72|13|0E0DCE,96|13|0E0DCE", 0, 0.9, "红色退出对战"
     )
     override val NightWitch = ColorSchema.parse(
-        190, 587, 800, 712, "191814", "9|0|141413,19|0|292E32,29|0|2E3438,38|0|A5A4CB,0|17|836F5D,9|17|745F48,19|17|2E3438,29|17|AEAFDE,38|17|9497DA", 0, 0.9, "部署暗夜女巫"
+        190, 587, 800, 712, "191814", "9|0|141413,19|0|292E32,29|0|2E3438,38|0|A5A4CB,0|17|836F5D,9|17|745F48,19|17|2E3438,29|17|AEAFDE,38|17|9497DA", 0, 0.9
     )
     override val TroopSkills = ColorSchema.parse(
         189, 570, 1241, 600, "FF44C9", "7|0|FF44C9,14|0|FF44C9,20|0|FF44C9,27|0|FF44C9,0|7|FF69D1,7|7|FF69D1,14|7|FF69D1,20|7|FF69D1,27|7|FF69D1", 0, 0.9, "开部队技能"
@@ -54,6 +54,7 @@ object BuilderBaseAttackColors : IBuilderBaseAttackColors {
     override val BuilderBaseBarbarian = ColorSchema.parse(
         193, 585, 1261, 623, "FF763A", "7|0|FF763A,15|0|FF773B,23|0|FF783C,30|0|FF793C,0|6|FF773A,7|6|FF793C,15|6|FF7B3E,23|6|FF7D40,30|6|FF7E41", 0, 0.9, "夜世界野蛮人"
     )
+
     // Troops with/without skills indicators
     override val TroopsWithSkills = ColorSchema.parse(
         195, 570, 1210, 630, "FE41C8", "7|0|FE41C8,14|0|FE41C8,21|0|FE41C8,28|0|FE41C8,0|9|FF74D4,7|9|FF74D4,14|9|FF74D4,21|9|FF74D4,28|9|FF74D4", 0, 0.9, "带技能部队"

@@ -28,13 +28,15 @@ suspend fun upgradeGearsAndPets(): Boolean {
     }
 
     ShowMessage("准备升级装备和战宠")
-    var result = false
-    if (getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.UPGRADE_ALL_GEAR.key) && getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.UPGRADE_WERA_GEAR.key)) {
-        result = withHeroHall { upgradeGearsAction() }
-    }
+    val result: Boolean = withHeroHall { upgradeGearsAction() }
+
     // Always record completion and return to main screen
     writeMemory(storageKey, (System.currentTimeMillis() / 60_000).toString())
     return result
+}
+
+suspend fun checkPets() {
+
 }
 
 private suspend fun upgradeGearsAction() {
@@ -45,36 +47,46 @@ private suspend fun upgradeGearsAction() {
         repeat(2) { TouchActions.tap(1130, 640, delayTime = 300) }
         TouchActions.tap(1220, 635, delayTime = 300)
     }
-    if (getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.UPGRADE_ALL_GEAR.key)) {
-        suspend fun tryUpgradeInVisibleRows(): Boolean {
-            val firstRowArrow = ColorSchema.rescope(MyColors.UpgradeGearArrow, 80, 425, 1210, 460)
-            val firstRowNewGear = ColorSchema.rescope(MyColors.NewGear, 80, 425, 1210, 460)
-            val secondRowArrow = ColorSchema.rescope(MyColors.UpgradeGearArrow, 90, 510, 1220, 540)
-            val secondRowNewGear = ColorSchema.rescope(MyColors.NewGear, 90, 510, 1220, 540)
-            val gear = findMultiColorsUntil(
-                schemas = listOf(firstRowArrow, firstRowNewGear, secondRowArrow, secondRowNewGear), duration = 800
-            )
-            if (gear != null) {
-                TouchActions.tap(gear.x, gear.y, delayTime = 500)
-                repeat(2) { TouchActions.tap(1130, 640, delayTime = 300) }
-                TouchActions.tap(1220, 635, delayTime = 300)
-                return true
+    run upgradeGears@{
+        if (getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.UPGRADE_ALL_GEAR.key)) {
+            suspend fun tryUpgradeInVisibleRows(): Boolean {
+                val firstRowArrow = ColorSchema.rescope(MyColors.UpgradeGearArrow, 80, 425, 1210, 460)
+                val firstRowNewGear = ColorSchema.rescope(MyColors.NewGear, 80, 425, 1210, 460)
+                val secondRowArrow = ColorSchema.rescope(MyColors.UpgradeGearArrow, 90, 510, 1220, 540)
+                val secondRowNewGear = ColorSchema.rescope(MyColors.NewGear, 90, 510, 1220, 540)
+                val gear = findMultiColorsUntil(
+                    schemas = listOf(firstRowArrow, firstRowNewGear, secondRowArrow, secondRowNewGear), duration = 800
+                )
+                if (gear != null) {
+                    TouchActions.tap(gear.x, gear.y, delayTime = 500)
+                    repeat(2) { TouchActions.tap(1130, 640, delayTime = 300) }
+                    TouchActions.tap(1220, 635, delayTime = 300)
+                    return true
+                }
+                return false
             }
-            return false
+
+            // Scan both visible rows in one pass using four rescoped schemas.
+            if (tryUpgradeInVisibleRows()) return@upgradeGears
+
+            // Swipe once, then run the same one-pass scan again.
+            TouchActions.swipe(1220, 510, 0, 510, delayTime = 300)
+            if (tryUpgradeInVisibleRows()) return@upgradeGears
         }
-
-        // Scan both visible rows in one pass using four rescoped schemas.
-        if (tryUpgradeInVisibleRows()) return
-
-        // Swipe once, then run the same one-pass scan again.
-        TouchActions.swipe(1220, 510, 0, 510, delayTime = 300)
-        if (tryUpgradeInVisibleRows()) return
     }
     backToHeroHall()
     if (getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.UPGRADE_PETS.key)) {
         val petsIcon = findMultiColors(MyColors.PetsIconInHeroHall)
         if (petsIcon != null) {
-            TouchActions.tap(petsIcon.x, petsIcon.y)
+            TouchActions.tap(petsIcon.x, petsIcon.y, delayTime = 500)
+            TouchActions.tap(882, 478, delayTime = 300)//Open Pets Shop
+            val petsShopBanner = findMultiColorsUntil(schemas = listOf(MyColors.PetsShopInnerBanner), duration = 1000)
+            if (petsShopBanner != null) {
+                ShowMessage("已进入宠物店")
+                delayWithMultiplier(200)
+                checkPets()
+            }
+
         }
     }
 }
