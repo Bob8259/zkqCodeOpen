@@ -14,7 +14,9 @@ fun getConfigRuntime(configName: String): String {
             "Can not get the config number for account ${InGamesVars.currentAccountNumber}"
         )
     }
-    val result = GlobalVars.configStates["${configName}_c$configNumber"]?.value ?: logAndRestart("Can not get the config for ${configName}_c$configNumber")
+    // Fall back to the schema default when the runtime state has not been initialized yet.
+    val result = GlobalVars.configStates["${configName}_c$configNumber"]?.value
+        ?: Schema.getDefaultValue("${configName}_c$configNumber")
     return result
 }
 
@@ -23,5 +25,5 @@ fun getBooleanConfigRuntime(configName: String): Boolean {
 }
 
 fun getStaticConfig(key: String): String {
-    return GlobalVars.configStates[key]?.value ?: logAndRestart("Failed to get configuration for: $key")
+    return GlobalVars.configStates[key]?.value ?: Schema.getDefaultValue(key)
 }

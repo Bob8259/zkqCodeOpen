@@ -2,6 +2,7 @@
 
 package com.coc.zkqcode.jar.ui.schema
 
+import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
 import com.coc.zkqcode.jar.ui.schema.details.*
 
 /**
@@ -30,7 +31,8 @@ object Schema {
         return keyToDisplayName[baseKey] ?: fullKey
     }
 
-    // Returns the Schema-defined default value for a key, falling back to "0" if not found.
+    // Returns the Schema-defined default value for a key.
+    // Missing defaults indicate a schema/config mismatch, so restart after logging the error.
     // Applies the same suffix-stripping logic as getDisplayName.
     fun getDefaultValue(fullKey: String): String {
         // Strip profile suffix (_c1, _c2, ...)
@@ -39,7 +41,8 @@ object Schema {
         if (baseKey == fullKey) {
             baseKey = fullKey.replace(Regex("\\d+$"), "")
         }
-        return keyToDefaultValue[baseKey] ?: "0"
+        return keyToDefaultValue[baseKey]
+            ?: logAndRestart("Schema default value not found for fullKey=$fullKey, baseKey=$baseKey")
     }
 
     // --- 1. Global Settings Definitions (Formerly basicConfigs) ---

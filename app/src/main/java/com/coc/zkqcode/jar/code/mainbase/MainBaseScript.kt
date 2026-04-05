@@ -15,10 +15,12 @@ import com.coc.zkqcode.jar.code.mainbase.research.mainBaseResearch
 import com.coc.zkqcode.jar.code.universal.buildings.BaseType
 import com.coc.zkqcode.jar.code.universal.buildings.upgrade.upgradeBuildings
 import com.coc.zkqcode.jar.code.universal.buildings.walls.upgradeWalls
+import com.coc.zkqcode.jar.code.universal.clickRightBottom
 import com.coc.zkqcode.jar.code.universal.smalltools.enterMainBase
 
 suspend fun playMainBase(): Boolean {
     if (!enterMainBase()) return false
+
     zoomSmallMainBase()
     if (!mainBaseTrainTroops()) return false
     if (!mainBaseAttack()) return false

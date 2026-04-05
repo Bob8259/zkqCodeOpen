@@ -1,6 +1,7 @@
 package com.coc.zkqcode.jar.code.universal.smalltools
 
 import com.coc.zkqcode.core.util.basic.ShowMessage
+import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.jar.code.builderbase.others.zoomSmallBuilderBase
@@ -22,6 +23,8 @@ suspend fun enterMainBase(): Boolean {
         val workers = findMultiColorsUntil(schemas = listOf(MyColors.MainBaseWorker, MyColors.MainBaseWorker2, MyColors.MainBaseWorker3, MyColors.GoblinWorker, MyColors.GoblinResearcher), duration = 200)
         if (workers != null) {
             ShowMessage("已进入主世界")
+            clickRightBottom(1)
+            delayWithMultiplier(200)
             return true
         }
         val remaining = (30_000L - (System.currentTimeMillis() - loopStart)) / 1000.0

@@ -1,6 +1,7 @@
 package com.coc.zkqcode.jar.code.mainbase.herohall
 
 import com.coc.zkqcode.core.util.basic.ShowMessage
+import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.ColorSchema
 import com.coc.zkqcode.jar.code.colorschema.MyColors
@@ -11,7 +12,6 @@ import com.coc.zkqcode.jar.code.universal.smalltools.checkMemoryFile
 import com.coc.zkqcode.jar.code.universal.smalltools.getBooleanConfigRuntime
 import com.coc.zkqcode.jar.code.universal.smalltools.writeMemory
 import com.coc.zkqcode.jar.ui.schema.Schema
-import kotlinx.coroutines.delay
 
 suspend fun upgradeGears(): Boolean {
     if (!getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.UPGRADE_ALL_GEAR.key) && !getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.UPGRADE_WERA_GEAR.key) && !getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.UPGRADE_PETS.key)) return true
@@ -30,10 +30,20 @@ suspend fun upgradeGears(): Boolean {
     var result = false
     if (getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.UPGRADE_ALL_GEAR.key) && getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.UPGRADE_WERA_GEAR.key)) {
         result = withHeroHall { upgradeGearsAction() }
+        backToHeroHall()
     }
-    // Always record completion and return to main screen
+    // Always record completion and keep the current screen for the next hero hall step.
     writeMemory(storageKey, (System.currentTimeMillis() / 60_000).toString())
     return result
+}
+
+private suspend fun backToHeroHall() {
+    // Reserved for follow-up hero hall navigation logic.
+    while (true){
+
+        TouchActions.tap(1216, 622)
+        delayWithMultiplier(500)
+    }
 }
 
 private suspend fun upgradeGearsAction() {
