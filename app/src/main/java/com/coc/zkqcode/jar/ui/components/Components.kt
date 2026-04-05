@@ -76,7 +76,7 @@ fun InputRowWithCheckBox(
     Row(
         verticalAlignment = Alignment.CenterVertically
     ) {
-        CustomCheckBox(
+        CustomSwitch(
             text = checkBoxLabel,
             checkedState = checkBoxState.value,
             onCheckStateChange = { checked ->
@@ -271,7 +271,7 @@ fun CustomButton(
                 GlobalVars.isAutoRunEnabled = false
                 onClick()
             }, modifier = Modifier
-                .padding(start = 8.dp, top = marginTop, bottom = marginBottom)
+                .padding(top = marginTop, bottom = marginBottom, end = 8.dp)
                 .height(32.dp), shape = RoundedCornerShape(8.dp), enabled = enable, colors = ButtonDefaults.buttonColors(
                 containerColor = AppColors.Azure
             )
@@ -320,7 +320,7 @@ fun SettingSwitchIcon(
         mutableStateOf(Schema.getDefaultValue(key))
     }
 
-    CustomCheckBox(
+    CustomSwitch(
         text = Schema.getDisplayName(key), checkedState = state.value, onCheckStateChange = { checked ->
             state.value = if (checked) "1" else "0"
             afterChange?.invoke(checked)
@@ -329,7 +329,13 @@ fun SettingSwitchIcon(
 }
 
 // Lighter blue for research/building toggle buttons to distinguish from action buttons
-private val ToggleButtonBlue = Color(0xFF0BD8F4)
+private val ToggleButtonBlue = Color(0xFF0084BF)
+
+// Selected toggle buttons keep white text on blue backgrounds
+private val EnabledSettingToggleTextColor = Color(0xFFFFFFFF)
+
+// Unselected toggle buttons use black text for clearer contrast
+private val DisabledSettingToggleTextColor = Color(0xFF000000)
 
 // Single toggle text button for research/building item lists
 @Composable
@@ -348,10 +354,10 @@ fun SettingToggleButton(key: String) {
             }, modifier = Modifier
                 .padding(2.dp)
                 .height(32.dp), shape = RoundedCornerShape(8.dp), contentPadding = PaddingValues(horizontal = 10.dp, vertical = 0.dp), colors = ButtonDefaults.buttonColors(
-                containerColor = ToggleButtonBlue, contentColor = Color.White
+                containerColor = ToggleButtonBlue, contentColor = EnabledSettingToggleTextColor, disabledContentColor = EnabledSettingToggleTextColor
             )
         ) {
-            Text(label, style = MaterialTheme.typography.labelMedium)
+            Text(label, color = EnabledSettingToggleTextColor, style = MaterialTheme.typography.labelMedium)
         }
     } else {
         OutlinedButton(
@@ -361,17 +367,17 @@ fun SettingToggleButton(key: String) {
             }, modifier = Modifier
                 .padding(2.dp)
                 .height(32.dp), shape = RoundedCornerShape(8.dp), contentPadding = PaddingValues(horizontal = 10.dp, vertical = 0.dp), colors = ButtonDefaults.outlinedButtonColors(
-                contentColor = Color.Gray
+                contentColor = DisabledSettingToggleTextColor, disabledContentColor = DisabledSettingToggleTextColor
             )
         ) {
-            Text(label, style = MaterialTheme.typography.labelMedium)
+            Text(label, color = DisabledSettingToggleTextColor, style = MaterialTheme.typography.labelMedium)
         }
     }
 }
 
 // Reordered layout: [Text] [Info Icon] [Toggle Switch]
 @Composable
-private fun CustomCheckBox(
+private fun CustomSwitch(
     text: String, checkedState: String, onCheckStateChange: (Boolean) -> Unit, explain: String? = null
 ) {
     var showExplanation by remember { mutableStateOf(false) }

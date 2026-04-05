@@ -33,6 +33,7 @@ interface IUIColors {
     val ExclusiveGift: ColorSchema
     val MorePointCoupon: ColorSchema
     val TencentChildProtection: ColorSchema
+    val CollectElixirCartTutorial: ColorSchema
 }
 
 object UIColors : IUIColors {
@@ -130,5 +131,8 @@ object UIColors : IUIColors {
     )
     override val TencentChildProtection = ColorSchema.parse(
         344, 66, 928, 235, "8ED139", "117|0|85CA2E,234|0|78C11F,351|0|7BC520,468|0|9FDF38,0|85|8BCF35,117|85|7FC627,234|85|75C01A,351|85|75C013,468|85|89CF14", 0, 0.9, "未成年守护"
+    )
+    override val CollectElixirCartTutorial = ColorSchema.parse(
+        618, 461, 658, 542, "02A5FE", "8|0|00A8FD,16|0|00A9FD,24|0|00A9FD,32|0|00A5FD,0|41|22AFFF,8|41|21B8FF,16|41|21BDFF,24|41|21BBFF,32|41|22B2FF", 0, 0.9, "领圣水车教程"
     )
 }

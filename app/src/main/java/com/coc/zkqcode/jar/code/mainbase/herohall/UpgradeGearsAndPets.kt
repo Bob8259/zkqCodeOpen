@@ -13,9 +13,8 @@ import com.coc.zkqcode.jar.code.universal.smalltools.checkMemoryFile
 import com.coc.zkqcode.jar.code.universal.smalltools.getBooleanConfigRuntime
 import com.coc.zkqcode.jar.code.universal.smalltools.writeMemory
 import com.coc.zkqcode.jar.ui.schema.Schema
-import kotlinx.coroutines.delay
 
-suspend fun upgradeGears(): Boolean {
+suspend fun upgradeGearsAndPets(): Boolean {
     if (!getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.UPGRADE_ALL_GEAR.key) && !getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.UPGRADE_WERA_GEAR.key) && !getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.UPGRADE_PETS.key)) return true
 
     val storageKey = StorageKeys.withAccountNumber(
@@ -72,6 +71,12 @@ private suspend fun upgradeGearsAction() {
         if (tryUpgradeInVisibleRows()) return
     }
     backToHeroHall()
+    if (getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.UPGRADE_PETS.key)) {
+        val petsIcon = findMultiColors(MyColors.PetsIconInHeroHall)
+        if (petsIcon != null) {
+            TouchActions.tap(petsIcon.x, petsIcon.y)
+        }
+    }
 }
 
 private suspend fun backToHeroHall() {
@@ -81,6 +86,10 @@ private suspend fun backToHeroHall() {
         val smithIcon = findMultiColors(MyColors.SmithOreIcon)
         if (smithIcon != null) {
             TouchActions.tap(1222, 80)
+        }
+        val petsIcon = findMultiColors(MyColors.PetsIconInHeroHall)
+        if (petsIcon != null) {
+            return
         }
         TouchActions.tap(1216, 622)
         delayWithMultiplier(500)

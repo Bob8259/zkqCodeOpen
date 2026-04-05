@@ -12,29 +12,10 @@ import com.coc.zkqcode.jar.code.universal.enterMainScreen
 suspend fun collectBuilderBaseResources(): Boolean {
     zoomSmallBuilderBase()
     TouchActions.swipe(587, 420, 587, 700, delayTime = 100)
-
-    repeat(3) {
-        // Define the resource schemas to iterate through in each cycle
-        val resourceSchemas = listOf(
-            MyColors.BuilderBaseCollectGem1,
-            MyColors.BuilderBaseCollectGold1,
-            MyColors.BuilderBaseCollectGold2,
-            MyColors.BuilderBaseCollectExiler1,
-            MyColors.BuilderBaseCollectExiler2,
-            MyColors.BuilderBaseCollectGem2
-        )
-
-        for (schema in resourceSchemas) {
-            val resource = findMultiColors(schema = schema)
-            if (resource != null) {
-                // Use existing TouchActions implementation to interact with the resource coordinates
-                TouchActions.tap(resource.x, resource.y)
-            }
-        }
-    }
+    goldMineAndElixirCollector()
     TouchActions.swipe(587, 420, 587, 700)
     delayWithMultiplier(100)
-
+    goldMineAndElixirCollector()
     // Use a label so we can break out of both loops when a cart is found
     outerLoop@ for (tx in 745..920 step 40) {
         for (ty in 260..415 step 40) {
@@ -48,4 +29,22 @@ suspend fun collectBuilderBaseResources(): Boolean {
         }
     }
     return enterMainScreen()
+}
+
+private suspend fun goldMineAndElixirCollector() {
+    repeat(3) {
+        // Define the resource schemas to iterate through in each cycle
+        val resourceSchemas = listOf(
+            MyColors.BuilderBaseCollectGem1, MyColors.BuilderBaseCollectGold1, MyColors.BuilderBaseCollectGold2, MyColors.BuilderBaseCollectExiler1, MyColors.BuilderBaseCollectExiler2, MyColors.BuilderBaseCollectGem2
+        )
+
+        for (schema in resourceSchemas) {
+            val resource = findMultiColors(schema = schema)
+            if (resource != null) {
+                // Use existing TouchActions implementation to interact with the resource coordinates
+                TouchActions.tap(resource.x, resource.y)
+            }
+        }
+    }
+    delayWithMultiplier(200)
 }

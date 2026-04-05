@@ -200,6 +200,8 @@ private suspend fun normalBattle(isNormal: Boolean = true) {
     if (!isNormal) return
     val generalTroops = findMultiColorsUntil(schemas = listOf(MyColors.TroopsWithSkills, MyColors.TroopsWithOutSkills), duration = 200)
     if (generalTroops != null) {
+        ShowMessage("准备点击女巫，点击坐标${generalTroops.x + 1}, 610")
+        delayWithMultiplier(1500)
         TouchActions.tap(generalTroops.x + 15, 610, delayTime = 200) // Troops
         val nightWitch = findMultiColors(schema = MyColors.NightWitch)
         if (nightWitch != null) {

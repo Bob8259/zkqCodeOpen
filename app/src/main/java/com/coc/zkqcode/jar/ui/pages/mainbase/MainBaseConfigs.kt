@@ -76,8 +76,7 @@ fun LazyListScope.MainBaseConfig(
         SettingSection(visible = isExpanded) {
             FlowRow {
                 SettingSwitchIcon(
-                    key = "${MAIN_BASE_SETTINGS.WAIT_FOR_BATTLE.key}_c$index",
-                    explain = "勾选后，如果当前处于对战冷却时间，辅助会一直等待到冷却结束。"
+                    key = "${MAIN_BASE_SETTINGS.WAIT_FOR_BATTLE.key}_c$index", explain = "勾选后，如果当前处于对战冷却时间，辅助会一直等待到冷却结束。"
                 )
                 SettingSwitchIcon(
                     key = "${MAIN_BASE_SETTINGS.RESTART_GAME.key}_c$index", explain = "勾选后，部署完所有部队后，辅助会重启游戏。仅对主世界对战有效。"
@@ -133,8 +132,7 @@ fun LazyListScope.MainBaseConfig(
             FlowRow {
                 SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.DONATION_SETTING.key}_c$index")
                 SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.REQUEST_REINFORCEMENT_SETTING.key}_c$index")
-                SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.RESEARCH_SETTING.key}_c$index")
-                /* SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.COLLECT_CLAN_CASTLE.key}_c$index") */
+                SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.RESEARCH_SETTING.key}_c$index")/* SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.COLLECT_CLAN_CASTLE.key}_c$index") */
             }
 
             AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.DONATION_SETTING.key}_c$index"]?.value == "1") {
@@ -142,16 +140,13 @@ fun LazyListScope.MainBaseConfig(
                     FlowRow {
                         // Resource farming trigger: detect interval, start threshold, stop threshold
                         SettingInputRowWithSuffix(
-                            key = "${MAIN_BASE_SETTINGS.DONATION_DETECT_INTERVAL.key}_c$index",
-                            suffix = "秒钟"
+                            key = "${MAIN_BASE_SETTINGS.DONATION_DETECT_INTERVAL.key}_c$index", suffix = "秒钟"
                         )
                         SettingInputRowWithSuffix(
-                            key = "${MAIN_BASE_SETTINGS.DONATION_FARMING_START_THRESHOLD.key}_c$index",
-                            suffix = "％时开始对战"
+                            key = "${MAIN_BASE_SETTINGS.DONATION_FARMING_START_THRESHOLD.key}_c$index", suffix = "％时开始对战"
                         )
                         SettingInputRowWithSuffix(
-                            key = "${MAIN_BASE_SETTINGS.DONATION_FARMING_STOP_THRESHOLD.key}_c$index",
-                            suffix = "％为止"
+                            key = "${MAIN_BASE_SETTINGS.DONATION_FARMING_STOP_THRESHOLD.key}_c$index", suffix = "％为止"
                         )
                     }
                 }
@@ -190,8 +185,8 @@ fun LazyListScope.MainBaseConfig(
     }
 
     // Pet upgrades
-    /* item {
-        AnimatedVisibility(visible = isExpanded) {
+    item {
+        SettingSection(visible = isExpanded) {
             Column {
                 SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.UPGRADE_PETS.key}_c$index")
 
@@ -200,94 +195,93 @@ fun LazyListScope.MainBaseConfig(
                 }
             }
         }
-    }
-
-    // Helper settings
-    item {
-        AnimatedVisibility(visible = isExpanded) {
-            FlowRow {
-                SettingSwitchIcon(
-                    key = "${MAIN_BASE_SETTINGS.HELPER_SETTINGS.key}_c$index",
-                    explain = "勾选后，会自动用实验助手以及建筑工人学徒。"
-                )
-                SettingSwitchIcon(
-                    key = "${MAIN_BASE_SETTINGS.UPGRADE_RESEARCH_HELPER.key}_c$index",
-                    explain = "升级实验助手的优先级高于购买建筑工人和升级工人学徒，请谨慎勾选！"
-                )
-                SettingSwitchIcon(
-                    key = "${MAIN_BASE_SETTINGS.UPGRADE_BUILDER_APPRENTICE.key}_c$index",
-                    explain = "升级工人学徒的优先级高于购买建筑工人，请谨慎勾选！"
-                )
-            }
-        }
-    }
-
-    // Clan Games & War
-    item {
-        AnimatedVisibility(visible = isExpanded) {
-            Column {
+    }/*
+        // Helper settings
+        item {
+            AnimatedVisibility(visible = isExpanded) {
                 FlowRow {
                     SettingSwitchIcon(
-                        key = "${MAIN_BASE_SETTINGS.DO_CLAN_GAMES.key}_c$index",
-                        explain = "勾选后，辅助会接取小部分夜世界任务，例如夜世界摧毁率等。注意重点是\"小部分\"，也就是说并不是所有任务都可以接取，并且只会接取夜世界任务！若没有任务可接取，则会放弃第一个任务。接取任务后，会自动打夜世界。"
-                    )
-                    SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.CLAIM_CLAN_GAME_REWARDS.key}_c$index")
-                    SettingSwitchIcon(
-                        key = "${MAIN_BASE_SETTINGS.PLAY_CLAN_WAR.key}_c$index",
-                        explain = "勾选后，部落战会进攻推荐对手。胜率较低，容易黑三，建议谨慎勾选。"
+                        key = "${MAIN_BASE_SETTINGS.HELPER_SETTINGS.key}_c$index",
+                        explain = "勾选后，会自动用实验助手以及建筑工人学徒。"
                     )
                     SettingSwitchIcon(
-                        key = "${MAIN_BASE_SETTINGS.PLAY_LEAGUE.key}_c$index",
-                        explain = "勾选后，会进攻最后一位没有被部落成员进攻过的对手。胜率较低，容易黑三，建议谨慎勾选。"
+                        key = "${MAIN_BASE_SETTINGS.UPGRADE_RESEARCH_HELPER.key}_c$index",
+                        explain = "升级实验助手的优先级高于购买建筑工人和升级工人学徒，请谨慎勾选！"
                     )
-                    SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.PLAY_RAID.key}_c$index")
-                }
-
-                FlowRow {
-                    SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.START_CLAN_WAR_SETTINGS.key}_c$index")
-                    SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.START_LEAGUE_SETTINGS.key}_c$index")
-                    SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.START_RAID.key}_c$index")
+                    SettingSwitchIcon(
+                        key = "${MAIN_BASE_SETTINGS.UPGRADE_BUILDER_APPRENTICE.key}_c$index",
+                        explain = "升级工人学徒的优先级高于购买建筑工人，请谨慎勾选！"
+                    )
                 }
             }
         }
-    }
 
-    // Shop purchases
-    item {
-        AnimatedVisibility(visible = isExpanded) {
-            Column {
-                FlowRow {
-                    listOf(
-                        MAIN_BASE_SETTINGS.BUY_STAR_ORE_WITH_RAID_MEDAL,
-                        MAIN_BASE_SETTINGS.BUY_CLOCK_TOWER_POTION_WITH_RAID_MEDAL,
-                        MAIN_BASE_SETTINGS.BUY_RING_OF_WALL_WITH_RAID_MEDAL,
-                        MAIN_BASE_SETTINGS.BUY_RESEARCH_POTION_WITH_RAID_MEDAL,
-                        MAIN_BASE_SETTINGS.BUY_TRAINING_POTION_WITH_RAID_MEDAL,
-                        MAIN_BASE_SETTINGS.BUY_RESEARCH_POTION_WITH_LEAGUE_MEDAL,
-                        MAIN_BASE_SETTINGS.BUY_BUILDER_POTION_WITH_LEAGUE_MEDAL,
-                        MAIN_BASE_SETTINGS.BUY_STAR_ORE_WITH_EVENT_MEDAL,
-                        MAIN_BASE_SETTINGS.BUY_BUILDER_POTION_WITH_EVENT_MEDAL,
-                        MAIN_BASE_SETTINGS.BUY_NEW_EQUIPMENT_WITH_EVENT_MEDAL,
-                        MAIN_BASE_SETTINGS.BUY_RESEARCH_POTION_WITH_EVENT_MEDAL,
-                        MAIN_BASE_SETTINGS.USE_RESEARCH_POTION,
-                        MAIN_BASE_SETTINGS.SELL_TRAINING_POTION,
-                        MAIN_BASE_SETTINGS.USE_CLOCK_TOWER_POTION,
-                        MAIN_BASE_SETTINGS.SELL_CLOCK_TOWER_POTION,
-                        MAIN_BASE_SETTINGS.USE_BUILDER_POTION,
-                        MAIN_BASE_SETTINGS.SELL_RING_OF_WALL
-                    ).forEach { setting ->
-                        SettingSwitchIcon(key = "${setting.key}_c$index")
+        // Clan Games & War
+        item {
+            AnimatedVisibility(visible = isExpanded) {
+                Column {
+                    FlowRow {
+                        SettingSwitchIcon(
+                            key = "${MAIN_BASE_SETTINGS.DO_CLAN_GAMES.key}_c$index",
+                            explain = "勾选后，辅助会接取小部分夜世界任务，例如夜世界摧毁率等。注意重点是\"小部分\"，也就是说并不是所有任务都可以接取，并且只会接取夜世界任务！若没有任务可接取，则会放弃第一个任务。接取任务后，会自动打夜世界。"
+                        )
+                        SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.CLAIM_CLAN_GAME_REWARDS.key}_c$index")
+                        SettingSwitchIcon(
+                            key = "${MAIN_BASE_SETTINGS.PLAY_CLAN_WAR.key}_c$index",
+                            explain = "勾选后，部落战会进攻推荐对手。胜率较低，容易黑三，建议谨慎勾选。"
+                        )
+                        SettingSwitchIcon(
+                            key = "${MAIN_BASE_SETTINGS.PLAY_LEAGUE.key}_c$index",
+                            explain = "勾选后，会进攻最后一位没有被部落成员进攻过的对手。胜率较低，容易黑三，建议谨慎勾选。"
+                        )
+                        SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.PLAY_RAID.key}_c$index")
+                    }
+
+                    FlowRow {
+                        SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.START_CLAN_WAR_SETTINGS.key}_c$index")
+                        SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.START_LEAGUE_SETTINGS.key}_c$index")
+                        SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.START_RAID.key}_c$index")
                     }
                 }
-
-                HorizontalDivider(
-                    modifier = Modifier.padding(top = 6.dp),
-                    thickness = 1.dp,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 1f)
-                )
             }
         }
-    } */
+
+        // Shop purchases
+        item {
+            AnimatedVisibility(visible = isExpanded) {
+                Column {
+                    FlowRow {
+                        listOf(
+                            MAIN_BASE_SETTINGS.BUY_STAR_ORE_WITH_RAID_MEDAL,
+                            MAIN_BASE_SETTINGS.BUY_CLOCK_TOWER_POTION_WITH_RAID_MEDAL,
+                            MAIN_BASE_SETTINGS.BUY_RING_OF_WALL_WITH_RAID_MEDAL,
+                            MAIN_BASE_SETTINGS.BUY_RESEARCH_POTION_WITH_RAID_MEDAL,
+                            MAIN_BASE_SETTINGS.BUY_TRAINING_POTION_WITH_RAID_MEDAL,
+                            MAIN_BASE_SETTINGS.BUY_RESEARCH_POTION_WITH_LEAGUE_MEDAL,
+                            MAIN_BASE_SETTINGS.BUY_BUILDER_POTION_WITH_LEAGUE_MEDAL,
+                            MAIN_BASE_SETTINGS.BUY_STAR_ORE_WITH_EVENT_MEDAL,
+                            MAIN_BASE_SETTINGS.BUY_BUILDER_POTION_WITH_EVENT_MEDAL,
+                            MAIN_BASE_SETTINGS.BUY_NEW_EQUIPMENT_WITH_EVENT_MEDAL,
+                            MAIN_BASE_SETTINGS.BUY_RESEARCH_POTION_WITH_EVENT_MEDAL,
+                            MAIN_BASE_SETTINGS.USE_RESEARCH_POTION,
+                            MAIN_BASE_SETTINGS.SELL_TRAINING_POTION,
+                            MAIN_BASE_SETTINGS.USE_CLOCK_TOWER_POTION,
+                            MAIN_BASE_SETTINGS.SELL_CLOCK_TOWER_POTION,
+                            MAIN_BASE_SETTINGS.USE_BUILDER_POTION,
+                            MAIN_BASE_SETTINGS.SELL_RING_OF_WALL
+                        ).forEach { setting ->
+                            SettingSwitchIcon(key = "${setting.key}_c$index")
+                        }
+                    }
+
+                    HorizontalDivider(
+                        modifier = Modifier.padding(top = 6.dp),
+                        thickness = 1.dp,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 1f)
+                    )
+                }
+            }
+        } */
 
     // Gear & Rewards
     item {
@@ -295,15 +289,13 @@ fun LazyListScope.MainBaseConfig(
             FlowRow {
                 SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.UPGRADE_WERA_GEAR.key}_c$index")
                 SettingSwitchIcon(
-                    key = "${MAIN_BASE_SETTINGS.UPGRADE_ALL_GEAR.key}_c$index",
-                    explain = "勾选后，辅助也会自动升级穿戴的装备。",
+                    key = "${MAIN_BASE_SETTINGS.UPGRADE_ALL_GEAR.key}_c$index", explain = "勾选后，辅助也会自动升级穿戴的装备。",
                     // Keep the base wearable gear toggle aligned with "upgrade all gear".
                     afterChange = { checked ->
                         if (checked) {
                             GlobalVars.configStates["${MAIN_BASE_SETTINGS.UPGRADE_WERA_GEAR.key}_c$index"]?.value = "1"
                         }
-                    }
-                )
+                    })
                 SettingSwitchIcon(
                     key = "${MAIN_BASE_SETTINGS.REMOVE_OBSTACLES.key}_c$index", explain = "勾选后，当主世界资源金水大于30万时生效。有小概率（约5%）移除稀有物品"
                 )

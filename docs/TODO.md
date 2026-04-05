@@ -29,7 +29,6 @@
 - 升级城墙失败后建造（UPGRADE_AFTER_FAIL_WALL_UPGRADE）
 
 ### 升级战宠及之后的所有主世界UI
-- 升级战宠（UPGRADE_PETS）及战宠选择列表
 - 用帮手（HELPER_SETTINGS）
 - 升级实验助手（UPGRADE_RESEARCH_HELPER）
 - 升级工人学徒（UPGRADE_BUILDER_APPRENTICE）
