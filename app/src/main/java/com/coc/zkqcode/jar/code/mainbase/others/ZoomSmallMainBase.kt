@@ -14,7 +14,7 @@ suspend fun zoomSmallMainBase(isForBuild: Boolean = false, isForAttack: Boolean 
     delayWithMultiplier(200)
     if (isForAttack) {
         repeat(2) {
-            swipe(911, 134, 249, 529)
+            swipe(911, 134, 0, 720)
         }
     } else {
         swipe(218, 523, 939, 162)

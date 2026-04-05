@@ -1,7 +1,9 @@
 package com.coc.zkqcode.jar.code.mainbase.others
 
+import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.touchactions.TouchActions
+import com.coc.zkqcode.core.util.touchactions.TouchActions.swipe
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.clickRightBottom
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
@@ -9,20 +11,44 @@ import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
 
 suspend fun mainBaseCheckTutorials(): Boolean {
+    ShowMessage("准备检测常见教程")
     zoomSmallMainBase()
-    val tutorialArrow = findMultiColorsUntil(schemas = listOf(MyColors.MainBaseSmallTutorial), duration = 1500)
-    if (tutorialArrow != null) {
-        TouchActions.tap(tutorialArrow.x + 20, tutorialArrow.y + 60, delayTime = 800)
-        val petsTutorial = findMultiColors(MyColors.OuterPetIcon)
-        if (petsTutorial != null) {
-            petsTutorialHelper()
-        }
-    }
+
+    // Check the current view first, then scan the lower area after swiping.
+    handleTutorialArrowIfNeeded()
+    swipe(911, 134, 0, 720)
+    handleTutorialArrowIfNeeded()
     return enterMainScreen()
 }
 
+private suspend fun handleTutorialArrowIfNeeded() {
+    val tutorialArrow = findMultiColorsUntil(
+        schemas = listOf(MyColors.MainBaseSmallTutorial),
+        duration = 1500
+    ) ?: return
+
+    TouchActions.tap(tutorialArrow.x + 20, tutorialArrow.y + 60, delayTime = 800)
+
+    if (findMultiColors(MyColors.OuterPetIcon) != null) {
+        petsTutorialHelper()
+        return
+    }
+
+    delayWithMultiplier(1000)
+    clickRightBottom(10)
+}
+
 suspend fun petsTutorialHelper() {
+    val startTime = System.currentTimeMillis()
+    val timeoutMillis = 60_000L
+
     while (true) {
+        // Exit if the pet tutorial does not complete within one minute.
+        if (System.currentTimeMillis() - startTime >= timeoutMillis) {
+            return
+        }
+        val remainingSeconds = (timeoutMillis - (System.currentTimeMillis() - startTime)) / 1000
+        ShowMessage("宠物店教程中，若${remainingSeconds}秒后未完成则强制退出")
         val petsTutorial = findMultiColors(MyColors.OuterPetIcon)
         if (petsTutorial != null) {
             TouchActions.tap(petsTutorial.x, petsTutorial.y, delayTime = 500)
@@ -33,12 +59,22 @@ suspend fun petsTutorialHelper() {
         }
         val innerBanner = findMultiColors(MyColors.PetsShopInnerBanner)
         if (innerBanner != null) {
-            TouchActions.tap(542, 50, delayTime = 300)//tap the banner, to prevent bugs
-            TouchActions.tap(229, 485, delayTime = 500)//Choose a hero
-            TouchActions.tap(67, 376, delayTime = 500)//King Barbarian
-            clickRightBottom(4)
+            completePetsTutorialSelection()
             return
         }
         delayWithMultiplier(500)
     }
+}
+
+private suspend fun completePetsTutorialSelection() {
+    val tapSequence = listOf(
+        Triple(542, 50, 300), // Tap the banner first to avoid tutorial UI bugs.
+        Triple(229, 485, 500), // Choose a hero.
+        Triple(67, 376, 500) // King Barbarian.
+    )
+
+    tapSequence.forEach { (x, y, delayTime) ->
+        TouchActions.tap(x, y, delayTime = delayTime)
+    }
+    clickRightBottom(5)
 }
