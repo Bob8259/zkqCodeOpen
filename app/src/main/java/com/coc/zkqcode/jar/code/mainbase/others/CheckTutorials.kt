@@ -18,7 +18,7 @@ suspend fun mainBaseCheckTutorials(): Boolean {
     val storageKey = StorageKeys.withAccountNumber(StorageKeys.MAIN_BASE_CHECK_TUTORIALS, InGamesVars.currentAccountNumber)
     if (!checkMemoryFile(storageKey, 1440)) {
         ShowMessage("账号${InGamesVars.currentAccountNumber}，今天已检查常见教程")
-//        return true
+        return true
     }
 
     ShowMessage("准备检测常见教程")
