@@ -12,6 +12,7 @@ object StorageKeys {
     const val MAIN_BASE_REMOVE_OBSTACLES = "MainBaseRemoveObstacles"
     const val BUILDER_BASE_REMOVE_OBSTACLES = "BuilderBaseRemoveObstacles"
     const val CHECK_NEW_BUILDING_ARROWS = "CheckNewBuildingArrows"
+    const val MAIN_BASE_CHECK_TUTORIALS = "MainBaseCheckTutorials"
     const val MAIN_BASE_TRAIN_TROOPS = "MainBaseTrainTroops"
     const val BUILDER_BASE_TRAIN_TROOPS = "BuilderBaseTrainTroops"
     const val CLICK_OTTOS_POST = "ClickOttosPost"
