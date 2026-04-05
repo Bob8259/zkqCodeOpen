@@ -14,6 +14,7 @@ import com.coc.zkqcode.jar.ui.schema.Schema.MAIN_BASE_PETS
 
 @Composable
 fun MainBasePetConfigs(index: Int) {
+    // Render pet toggles directly from the schema list so new pets appear automatically.
     val items = MAIN_BASE_PETS.all
     val isExpanded = remember { mutableStateOf(true) }
 
