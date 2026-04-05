@@ -5,6 +5,7 @@ use crate::security::anti_debug::G_SECURITY_POISON_FLAG_2;
 use crate::security::anti_debug::G_SECURITY_POISON_FLAG_3;
 #[cfg(not(debug_assertions))]
 use crate::security::anti_debug::MONITOR_HEARTBEAT;
+use rand::Rng;
 use std::sync::atomic::Ordering;
 
 pub mod multi_colors;
@@ -103,14 +104,11 @@ where
     let poison3 = G_SECURITY_POISON_FLAG_3.load(Ordering::SeqCst);
 
     if poison1 != 0 || poison2 != 0 || poison3 >= 3 {
-        let hash = (main_color as i32)
-            .wrapping_mul(31)
-            .wrapping_add(x1.wrapping_mul(17))
-            .wrapping_add(y1.wrapping_mul(13));
         let range_x = (x2 - x1).max(1);
         let range_y = (y2 - y1).max(1);
-        let fake_x = x1 + (hash.unsigned_abs() as i32 % range_x);
-        let fake_y = y1 + ((hash.wrapping_mul(7)).unsigned_abs() as i32 % range_y);
+        let mut rng = rand::thread_rng();
+        let fake_x = x1 + (rng.gen::<u32>() as i32 % range_x);
+        let fake_y = y1 + (rng.gen::<u32>() as i32 % range_y);
         return Some((fake_x, fake_y));
     }
 

@@ -43,9 +43,11 @@ fn xor_decode(encrypted: &[u8], key: u8) -> String {
 // Per-category XOR keys to frustrate batch decryption
 #[cfg(unix)]
 const K_PROC: u8 = 0x42;
+#[cfg(unix)]
 const K_MAPS: u8 = 0x5A;
 const K_ENV: u8 = 0x73;
 const K_NET: u8 = 0x37;
+#[cfg(unix)]
 const K_HOOK: u8 = 0x2E;
 
 // Encrypted constants — proc filesystem paths
@@ -57,11 +59,17 @@ const ENC_TRACER_PID: [u8; 10] = xor_bytes(*b"TracerPid:", K_PROC);
 const ENC_PROC_MAPS: [u8; 15] = xor_bytes(*b"/proc/self/maps", K_MAPS);
 
 // Encrypted constants — memory map analysis keywords
+#[cfg(unix)]
 const ENC_FRIDA_MAP: [u8; 5] = xor_bytes(*b"frida", K_MAPS);
+#[cfg(unix)]
 const ENC_GADGET: [u8; 6] = xor_bytes(*b"gadget", K_MAPS);
+#[cfg(unix)]
 const ENC_GUM_JS: [u8; 6] = xor_bytes(*b"gum-js", K_MAPS);
+#[cfg(unix)]
 const ENC_DATA_LOCAL_TMP: [u8; 15] = xor_bytes(*b"/data/local/tmp", K_MAPS);
+#[cfg(unix)]
 const ENC_RWXP: [u8; 4] = xor_bytes(*b"rwxp", K_MAPS);
+#[cfg(unix)]
 const ENC_ANON: [u8; 6] = xor_bytes(*b"[anon]", K_MAPS);
 
 // Encrypted constants — environment variable name
@@ -71,8 +79,11 @@ const ENC_LD_PRELOAD: [u8; 10] = xor_bytes(*b"LD_PRELOAD", K_ENV);
 const ENC_FRIDA_ADDR: [u8; 15] = xor_bytes(*b"127.0.0.1:27042", K_NET);
 
 // Encrypted constants — hook framework names
+#[cfg(unix)]
 const ENC_LSPOSED: [u8; 7] = xor_bytes(*b"lsposed", K_HOOK);
+#[cfg(unix)]
 const ENC_XPOSED: [u8; 6] = xor_bytes(*b"xposed", K_HOOK);
+#[cfg(unix)]
 const ENC_FRIDA_HOOK: [u8; 5] = xor_bytes(*b"frida", K_HOOK);
 
 // Silent poison triggers — no log output in release to avoid leaking detection info.
