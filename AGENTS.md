@@ -21,5 +21,3 @@ When importing a class/object/function or others, you should import the full pac
 For example, instead of using com.coc.zkqcode.jar.code.colorschema.ColorSchema in the code, you should import it as import com.coc.zkqcode.jar.code.colorschema.ColorSchema. Then, you can use ColorSchema in the code as ColorSchema.
 
 When the instructions are unclear, you need to ask the user for clarification. Only proceed after you have understood every detail of the instructions.
-
-If you are a GLM or MiniMax series model, you MUST always run gradle assembleDebug and fix bugs after making changes.

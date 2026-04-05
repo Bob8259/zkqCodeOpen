@@ -24,6 +24,7 @@ suspend fun mainBaseRemoveObstacles(): Boolean {
     val resources = recognizeResources()
     if (resources.gold < 300000 || resources.elixir < 300000) {
         ShowMessage("账号${InGamesVars.currentAccountNumber}，检测金：${resources.gold}，检测水：${resources.elixir}\n不足30万，暂不移除")
+        writeMemory(storageKey, (System.currentTimeMillis() / 60_000).toString())
         return true
     }
     ShowMessage("账号${InGamesVars.currentAccountNumber}，准备移除主世界障碍物")

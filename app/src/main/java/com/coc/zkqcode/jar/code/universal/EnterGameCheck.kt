@@ -120,7 +120,7 @@ private suspend fun closeAdvertisements() {
     }
     findMultiColors(byteBuffer = screenBuffer, schema = MyColors.CollectElixirCartTutorial, increment = 1)?.let {
         TouchActions.tap(644, 377)
-        repeat(5) {
+        repeat(10) {
             TouchActions.tap(946, 601, delayTime = 300)
         }
 

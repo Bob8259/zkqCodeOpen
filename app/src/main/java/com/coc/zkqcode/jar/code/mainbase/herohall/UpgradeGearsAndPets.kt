@@ -10,6 +10,7 @@ import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.mainbase.MainBaseResearchColors
 import com.coc.zkqcode.jar.ui.schema.details.MainBasePets
 import com.coc.zkqcode.jar.code.universal.InGamesVars
+import com.coc.zkqcode.jar.code.universal.clickRightBottom
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.smalltools.StorageKeys
@@ -28,7 +29,7 @@ suspend fun upgradeGearsAndPets(): Boolean {
     // Guard: only attempt gear upgrade once per 8 hours (480 minutes)
     if (!checkMemoryFile(storageKey, 480)) {
         ShowMessage("账号${InGamesVars.currentAccountNumber}，该账号8小时内已检测装备和战宠升级")
-//        return true
+        return true
     }
 
     ShowMessage("准备升级装备和战宠")
@@ -39,7 +40,7 @@ suspend fun upgradeGearsAndPets(): Boolean {
     return result
 }
 
-suspend fun checkPets() {
+private suspend fun checkPets() {
     val petColorMap = listOf(
         MainBasePets.LASSI to MyColors.Lassi,
         MainBasePets.ELECTRO_OWL to MyColors.ElectroOwl,
@@ -64,7 +65,7 @@ suspend fun checkPets() {
 
     ShowMessage("账号${InGamesVars.currentAccountNumber}，已启用 ${enabledPets.size} 个战宠")
 
-    repeat(4) {
+    repeat(3) {
         val screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult ?: logAndRestart("checkPets: Screen Capture Failed.")
 
         for ((pet, colorSchema) in enabledPets) {
@@ -79,8 +80,6 @@ suspend fun checkPets() {
                     MainBaseResearchColors.MainBaseResearchInsufficientColors, insufficientLeft, insufficientTop, insufficientRight, insufficientBottom
                 )
 
-                ShowMessage("资源检测区域: 左:${insufficientLeft} 上:${insufficientTop} 右:${insufficientRight} 下:${insufficientBottom}")
-
                 if (findMultiColors(byteBuffer = screenBuffer, schema = insufficientSchema, increment = 1) != null) {
                     ShowMessage("账号${InGamesVars.currentAccountNumber}，跳过 ${pet.displayName}: 资源不足")
                     continue
@@ -94,12 +93,14 @@ suspend fun checkPets() {
                 }
 
                 ShowMessage("账号${InGamesVars.currentAccountNumber}，升级 ${pet.displayName}")
-                delayWithMultiplier(3600000)
+                TouchActions.tap(confirmUpgrade.x, confirmUpgrade.y)
+                clickRightBottom(1)
                 return
             }
         }
 
-        TouchActions.swipe(940, 530, 180, 530)
+        TouchActions.swipe(800, 600, 180, 600)
+        delayWithMultiplier(100)
     }
 }
 
@@ -130,7 +131,7 @@ private suspend fun upgradeGearsAction() {
                     }
                     return false
                 }
-                
+
                 // Scan both visible rows in one pass using four rescoped schemas.
                 if (tryUpgradeInVisibleRows()) return@upgradeGears
 
@@ -151,7 +152,6 @@ private suspend fun upgradeGearsAction() {
                 delayWithMultiplier(200)
                 checkPets()
             }
-
         }
     }
 }
