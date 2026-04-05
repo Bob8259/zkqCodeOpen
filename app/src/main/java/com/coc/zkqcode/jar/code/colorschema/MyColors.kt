@@ -59,4 +59,10 @@ object MyColors : IUIColors by UIColors, IFeatureColors by FeatureColors, IMainB
     val ClanCastleAddReinforcement = ColorSchema.parse(
         171, 510, 1122, 634, "67778F", "9|0|7F8EAA,18|0|8C94A5,26|0|ABB6BE,35|0|E2D1B9,0|20|545A67,9|20|6C7388,18|20|A4B4C6,26|20|DCE1E5,35|20|E4D1BB", 0, 0.9, "部落城堡教程"
     )
+    val RemoteGuardsIcon = ColorSchema.parse(
+        165, 502, 1133, 632, "2F4B72", "7|0|5C4E55,13|0|546370,19|0|1E81D6,26|0|525B66,0|18|634C4F,7|18|ACC6D4,13|18|C8E4F1,19|18|C6E5F5,26|18|97ADBF", 0, 0.9, "远程守卫图标"
+    )
+    val MeleeGuardsIcon = ColorSchema.parse(
+        165, 502, 1133, 632, "56281F", "6|0|FFD451,12|0|FFE13E,17|0|BCFFC4,23|0|43BFFF,0|17|8E9AAA,6|17|7C899A,12|17|748294,17|17|91AABA,23|17|9BB5C2", 0, 0.9, "近战守卫图标"
+    )
 }
