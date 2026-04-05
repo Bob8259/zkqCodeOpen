@@ -5,12 +5,22 @@ import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.core.util.touchactions.TouchActions.swipe
 import com.coc.zkqcode.jar.code.colorschema.MyColors
+import com.coc.zkqcode.jar.code.universal.InGamesVars
 import com.coc.zkqcode.jar.code.universal.clickRightBottom
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
+import com.coc.zkqcode.jar.code.universal.smalltools.StorageKeys
+import com.coc.zkqcode.jar.code.universal.smalltools.checkMemoryFile
+import com.coc.zkqcode.jar.code.universal.smalltools.writeMemory
 
 suspend fun mainBaseCheckTutorials(): Boolean {
+    val storageKey = StorageKeys.withAccountNumber(StorageKeys.MAIN_BASE_CHECK_TUTORIALS, InGamesVars.currentAccountNumber)
+    if (!checkMemoryFile(storageKey, 1440)) {
+        ShowMessage("账号${InGamesVars.currentAccountNumber}，今天已检查常见教程")
+        return true
+    }
+
     ShowMessage("准备检测常见教程")
     zoomSmallMainBase()
 
@@ -18,6 +28,8 @@ suspend fun mainBaseCheckTutorials(): Boolean {
     handleTutorialArrowIfNeeded()
     swipe(911, 134, 0, 720)
     handleTutorialArrowIfNeeded()
+    // Record the completed daily check so we only scan once per day.
+    writeMemory(storageKey, (System.currentTimeMillis() / 60_000).toString())
     return enterMainScreen()
 }
 
