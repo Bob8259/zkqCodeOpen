@@ -136,7 +136,8 @@ suspend fun runMainScript() {
 private suspend fun runTestCode() {
     while (true) {
 //        upgradeGearsAndPets()
-        petsTutorialHelper()
+        mainBaseCheckTutorials()
+//        petsTutorialHelper()
         delay(1000)
     }
 }
