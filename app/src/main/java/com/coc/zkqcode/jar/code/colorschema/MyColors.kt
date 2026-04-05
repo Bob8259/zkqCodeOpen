@@ -56,4 +56,7 @@ object MyColors : IUIColors by UIColors, IFeatureColors by FeatureColors, IMainB
     val OuterPetIcon = ColorSchema.parse(
         167, 503, 1115, 628, "32AFD2", "8|0|42BFDC,16|0|3DB9D7,23|0|39AECF,31|0|0D6EB4,0|10|32AFD2,8|10|3FBCDA,16|10|187AAA,23|10|36B0D0,31|10|2FA6CA", 0, 0.9, "宠物店按钮"
     )
+    val ClanCastleAddReinforcement = ColorSchema.parse(
+        171, 510, 1122, 634, "67778F", "9|0|7F8EAA,18|0|8C94A5,26|0|ABB6BE,35|0|E2D1B9,0|20|545A67,9|20|6C7388,18|20|A4B4C6,26|20|DCE1E5,35|20|E4D1BB", 0, 0.9, "部落城堡教程"
+    )
 }

@@ -8,6 +8,7 @@ import com.coc.zkqcode.jar.code.mainbase.clan.joinClan
 import com.coc.zkqcode.jar.code.mainbase.clan.donateToClan
 import com.coc.zkqcode.jar.code.mainbase.clan.requestReinforcements
 import com.coc.zkqcode.jar.code.mainbase.herohall.placeHeroBanners
+import com.coc.zkqcode.jar.code.mainbase.others.mainBaseCheckTutorials
 import com.coc.zkqcode.jar.code.mainbase.others.mainBaseRemoveObstacles
 import com.coc.zkqcode.jar.code.mainbase.others.zoomSmallMainBase
 import com.coc.zkqcode.jar.code.mainbase.research.mainBaseResearch
@@ -31,6 +32,7 @@ suspend fun playMainBase(): Boolean {
     if (!upgradeBuildings(BaseType.Main)) return false
     if (!mainBaseResearch()) return false
     if (!placeHeroBanners()) return false
+    if (!mainBaseCheckTutorials()) return false
 //    if (!upgradeGears()) return false
     return true
 }

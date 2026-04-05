@@ -42,15 +42,28 @@ private suspend fun handleTutorialArrowIfNeeded() {
     TouchActions.tap(tutorialArrow.x + 20, tutorialArrow.y + 60, delayTime = 800)
 
     if (findMultiColors(MyColors.OuterPetIcon) != null) {
-        petsTutorialHelper()
+        petsTutorial()
         return
     }
 
+    if (findMultiColors(MyColors.ClanCastleAddReinforcement) != null) {
+        clanCastleTutorialHelper()
+    }
     delayWithMultiplier(1000)
     clickRightBottom(10)
 }
 
-suspend fun petsTutorialHelper() {
+private suspend fun clanCastleTutorialHelper() {
+    val clanCastle = findMultiColors(MyColors.ClanCastleAddReinforcement)
+    if (clanCastle != null) {
+        TouchActions.tap(clanCastle.x, clanCastle.y, delayTime = 500)
+    }
+    repeat(10) {
+        TouchActions.tap(900, 130, delayTime = 50)//Edit troop. To skip tutorial.
+    }
+}
+
+private suspend fun petsTutorial() {
     val startTime = System.currentTimeMillis()
     val timeoutMillis = 60_000L
 
