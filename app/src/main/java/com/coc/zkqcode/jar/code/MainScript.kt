@@ -74,7 +74,7 @@ suspend fun runMainScript() {
             getConfigOrStop("${Schema.ACCOUNT_SETTINGS.GAME_VERSION.key}${InGamesVars.currentAccountNumber}").toIntOrNull() ?: logAndRestart("${Schema.ACCOUNT_SETTINGS.GAME_VERSION.displayName} 必须是数字，请检查配置")
         )
     }
-    InGamesVars.adTime = 15.coerceAtLeast(accountTotal * 8)
+    InGamesVars.adTime = 10.coerceAtLeast(accountTotal * 8)
     batchCreateAccounts()//Create all needed accounts first.
     // Track elapsed time for periodic hot update checks (updateOption 2)
     var lastUpdateCheckTime = System.currentTimeMillis()
