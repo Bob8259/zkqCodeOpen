@@ -6,12 +6,14 @@ import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.ColorSchema
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.InGamesVars
+import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.smalltools.StorageKeys
 import com.coc.zkqcode.jar.code.universal.smalltools.checkMemoryFile
 import com.coc.zkqcode.jar.code.universal.smalltools.getBooleanConfigRuntime
 import com.coc.zkqcode.jar.code.universal.smalltools.writeMemory
 import com.coc.zkqcode.jar.ui.schema.Schema
+import kotlinx.coroutines.delay
 
 suspend fun upgradeGears(): Boolean {
     if (!getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.UPGRADE_ALL_GEAR.key) && !getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.UPGRADE_WERA_GEAR.key) && !getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.UPGRADE_PETS.key)) return true
@@ -30,20 +32,10 @@ suspend fun upgradeGears(): Boolean {
     var result = false
     if (getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.UPGRADE_ALL_GEAR.key) && getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.UPGRADE_WERA_GEAR.key)) {
         result = withHeroHall { upgradeGearsAction() }
-        backToHeroHall()
     }
-    // Always record completion and keep the current screen for the next hero hall step.
+    // Always record completion and return to main screen
     writeMemory(storageKey, (System.currentTimeMillis() / 60_000).toString())
     return result
-}
-
-private suspend fun backToHeroHall() {
-    // Reserved for follow-up hero hall navigation logic.
-    while (true){
-
-        TouchActions.tap(1216, 622)
-        delayWithMultiplier(500)
-    }
 }
 
 private suspend fun upgradeGearsAction() {
@@ -78,5 +70,19 @@ private suspend fun upgradeGearsAction() {
         // Swipe once, then run the same one-pass scan again.
         TouchActions.swipe(1220, 510, 0, 510, delayTime = 300)
         if (tryUpgradeInVisibleRows()) return
+    }
+    backToHeroHall()
+}
+
+private suspend fun backToHeroHall() {
+    // Stop retrying after 10 seconds to avoid getting stuck in an endless back loop.
+    val deadline = System.currentTimeMillis() + 10_000
+    while (System.currentTimeMillis() < deadline) {
+        val smithIcon = findMultiColors(MyColors.SmithOreIcon)
+        if (smithIcon != null) {
+            TouchActions.tap(1222, 80)
+        }
+        TouchActions.tap(1216, 622)
+        delayWithMultiplier(500)
     }
 }
