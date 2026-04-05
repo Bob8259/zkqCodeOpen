@@ -34,19 +34,19 @@ suspend fun mainBaseTutorial(): Boolean {
 
     // 1. Process standard priority schemas (Find -> Tap)
     prioritySchemas.forEach { schema ->
-        findMultiColors(byteBuffer = screenBuffer, schema = schema)?.let { point ->
+        findMultiColors(byteBuffer = screenBuffer, schema = schema, increment = 1)?.let { point ->
             TouchActions.tap(point.x, point.y, delayTime = 500)
         }
     }
 
     // Speaking Villager sequence
-    findMultiColors(schema = MyColors.SpeakingVillager)?.let {
+    findMultiColors(schema = MyColors.SpeakingVillager, increment = 1)?.let {
         delayWithMultiplier(600)
         TouchActions.tap(it.x, it.y, delayTime = 500)
     }
-    findMultiColors(schema = MyColors.UpgradeTHArrow)?.let {
+    findMultiColors(schema = MyColors.UpgradeTHArrow, increment = 1)?.let {
         TouchActions.tap(it.x + 50, it.y + 100, delayTime = 500)
-        val upgradeHammer = findMultiColorsUntil(schemas = listOf(MyColors.UpgradeHammer), duration = 500)
+        val upgradeHammer = findMultiColorsUntil(schemas = listOf(MyColors.UpgradeHammer), duration = 500, increment = 1)
         if (upgradeHammer != null) {
             TouchActions.tap(720, 570, delayTime = 500)
         } else {
@@ -56,26 +56,26 @@ suspend fun mainBaseTutorial(): Boolean {
             }
         }
     }
-    findMultiColors(schema = MyColors.BattlePageColor)?.let { clickRightBottom(1) }
-    findMultiColors(schema = MyColors.TutorialTrainBarbarian)?.let { value ->
+    findMultiColors(schema = MyColors.BattlePageColor, increment = 1)?.let { clickRightBottom(1) }
+    findMultiColors(schema = MyColors.TutorialTrainBarbarian, increment = 1)?.let { value ->
         repeat(20) {
             TouchActions.tap(value.x, value.y, delayTime = 50)
         }
     }
     // Important Notice tap
-    findMultiColors(schema = MyColors.ImportantNotice)?.let {
+    findMultiColors(schema = MyColors.ImportantNotice, increment = 1)?.let {
         TouchActions.tap(344, 510, delayTime = 500)
     }
-    findMultiColors(schema = MyColors.ImportantNoticeOnCloudPhone)?.let {
+    findMultiColors(schema = MyColors.ImportantNoticeOnCloudPhone, increment = 1)?.let {
         TouchActions.tap(344, 510, delayTime = 500)
     }
-    findMultiColors(schema = MyColors.AttackMap)?.let {
-        if (findMultiColors(schema = MyColors.TrainTroops) == null && findMultiColors(schema = MyColors.ShopAfterTutorial) == null) {
+    findMultiColors(schema = MyColors.AttackMap, increment = 1)?.let {
+        if (findMultiColors(schema = MyColors.TrainTroops, increment = 1) == null && findMultiColors(schema = MyColors.ShopAfterTutorial, increment = 1) == null) {
             TouchActions.tap(it.x, it.y, delayTime = 500)
         }
     }
     // Building logic with Gem speed-up check
-    findMultiColors(schema = MyColors.TutorialBuildClick)?.let { point ->
+    findMultiColors(schema = MyColors.TutorialBuildClick, increment = 1)?.let { point ->
         TouchActions.tap(point.x, point.y, delayTime = 500)
         val isSpeedUp = getStaticConfig(Schema.GLOBAL_SETTINGS.CREATE_GEM_BUILD.key) == "1"
         if (isSpeedUp) {
@@ -84,7 +84,7 @@ suspend fun mainBaseTutorial(): Boolean {
     }
 
     // Age Entry Workflow
-    findMultiColors(schema = MyColors.EnterAge)?.let {
+    findMultiColors(schema = MyColors.EnterAge, increment = 1)?.let {
         val sequence = listOf(640 to 347, 640 to 347, 773 to 546)
         sequence.forEach { (x, y) ->
             TouchActions.tap(x, y, delayTime = 500)
@@ -92,21 +92,21 @@ suspend fun mainBaseTutorial(): Boolean {
     }
 
     // Shop Navigation
-    findMultiColors(schema = MyColors.TutorialShop)?.let {
-        if (findMultiColors(schema = MyColors.TrainTroops) == null && findMultiColors(schema = MyColors.ShopAfterTutorial) == null) {
+    findMultiColors(schema = MyColors.TutorialShop, increment = 1)?.let {
+        if (findMultiColors(schema = MyColors.TrainTroops, increment = 1) == null && findMultiColors(schema = MyColors.ShopAfterTutorial, increment = 1) == null) {
             TouchActions.tap(1193, 632, delayTime = 1500)
         }
     }
 
     // Dynamic Offset for Inner Shop
-    findMultiColors(schema = MyColors.ShopInnerArrow)?.let {
+    findMultiColors(schema = MyColors.ShopInnerArrow, increment = 1)?.let {
         TouchActions.tap(it.x - 100, it.y + 50, delayTime = 500)
 
     }
 
     // Wizard Attack / Blue Troop anti-stuck (Restart App)
     // Check for the multi-color schema before executing the sequence
-    findMultiColors(schema = MyColors.TutorialBlueTroop)?.let {
+    findMultiColors(schema = MyColors.TutorialBlueTroop, increment = 1)?.let {
         // Define the tap sequence as a list of pairs (x, y)
         val tapPoints = listOf(
             148 to 650,
@@ -127,7 +127,7 @@ suspend fun mainBaseTutorial(): Boolean {
             TouchActions.tap(x, y, delayTime = 100)
         }
     }
-    findMultiColors(schema = MyColors.TutorialUpgradeTownHall)?.let {
+    findMultiColors(schema = MyColors.TutorialUpgradeTownHall, increment = 1)?.let {
         TouchActions.tap(it.x, it.y, delayTime = 500)
         val isSpeedUp = getStaticConfig(Schema.GLOBAL_SETTINGS.CREATE_GEM_BUILD.key) == "1"
         if (isSpeedUp) {
@@ -136,7 +136,7 @@ suspend fun mainBaseTutorial(): Boolean {
     }
 
     // Troop Training sequence
-    findMultiColors(schema = MyColors.TutorialTrainInner)?.let {
+    findMultiColors(schema = MyColors.TutorialTrainInner, increment = 1)?.let {
         TouchActions.tap(666, 250, delayTime = 1000)
         repeat(25) {
             TouchActions.tap(96, 490, delayTime = 10)
@@ -147,7 +147,7 @@ suspend fun mainBaseTutorial(): Boolean {
     }
 
     // Village Naming Logic
-    findMultiColors(schema = MyColors.MyVillageIsCalled)?.let {
+    findMultiColors(schema = MyColors.MyVillageIsCalled, increment = 1)?.let {
         setZKQInputMethod()
         TouchActions.tap(625, 297, delayTime = 200)
 
@@ -163,7 +163,7 @@ suspend fun mainBaseTutorial(): Boolean {
     }
 
     // Tutorial Conclusion and Cleanup
-    findMultiColors(schema = MyColors.TrainTroops)?.let {
+    findMultiColors(schema = MyColors.TrainTroops, increment = 1)?.let {
         ShowMessage("教程结束，即将进行首尾工作")
 
         // Worker tap sequence
@@ -180,7 +180,7 @@ suspend fun mainBaseTutorial(): Boolean {
         reExtractGameSavings()
         return true
     }
-    findMultiColors(schema = MyColors.ReturnAwards)?.let {
+    findMultiColors(schema = MyColors.ReturnAwards, increment = 1)?.let {
         return true
     }
 
