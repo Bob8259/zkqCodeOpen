@@ -25,7 +25,7 @@ static AD_DISPLAY_START_TS: AtomicI64 = AtomicI64::new(0);
 const AD_MIN_DURATION_MS: i64 = 10_000;
 
 /// Maximum interval (ms) between ad displays when IS_AUTH_PASS is false.
-const AD_MAX_INTERVAL_MS: i64 = 15 * 60 * 1000;
+const AD_MAX_INTERVAL_MS: i64 = 7_000;
 
 /// Returns the current value of the auth-pass flag.
 /// Also re-randomizes the stored integer within the same range to keep the in-memory
