@@ -32,11 +32,13 @@ suspend fun builderBaseRemoveObstacles(): Boolean {
     if (worker.total == 2) {
         if (resources.gold < 600000 || resources.elixir < 600000) {
             ShowMessage("账号${InGamesVars.currentAccountNumber}，检测金：${resources.gold}，检测水：${resources.elixir}\n不足60万，暂不移除")
+            writeMemory(storageKey, (System.currentTimeMillis() / 60_000).toString())
             return true
         }
     } else {
         if (resources.gold < 300000 || resources.elixir < 300000) {
             ShowMessage("账号${InGamesVars.currentAccountNumber}，检测金：${resources.gold}，检测水：${resources.elixir}\n不足30万，暂不移除")
+            writeMemory(storageKey, (System.currentTimeMillis() / 60_000).toString())
             return true
         }
     }
