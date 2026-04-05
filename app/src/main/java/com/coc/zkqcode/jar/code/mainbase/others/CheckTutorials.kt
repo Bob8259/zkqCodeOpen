@@ -18,7 +18,7 @@ suspend fun mainBaseCheckTutorials(): Boolean {
     val storageKey = StorageKeys.withAccountNumber(StorageKeys.MAIN_BASE_CHECK_TUTORIALS, InGamesVars.currentAccountNumber)
     if (!checkMemoryFile(storageKey, 1440)) {
         ShowMessage("账号${InGamesVars.currentAccountNumber}，今天已检查常见教程")
-        return true
+//        return true
     }
 
     ShowMessage("准备检测常见教程")
@@ -35,8 +35,7 @@ suspend fun mainBaseCheckTutorials(): Boolean {
 
 private suspend fun handleTutorialArrowIfNeeded() {
     val tutorialArrow = findMultiColorsUntil(
-        schemas = listOf(MyColors.MainBaseSmallTutorial),
-        duration = 1500
+        schemas = listOf(MyColors.MainBaseSmallTutorial), duration = 1500
     ) ?: return
 
     TouchActions.tap(tutorialArrow.x + 20, tutorialArrow.y + 60, delayTime = 800)
@@ -49,6 +48,12 @@ private suspend fun handleTutorialArrowIfNeeded() {
     if (findMultiColors(MyColors.ClanCastleAddReinforcement) != null) {
         clanCastleTutorialHelper()
     }
+
+    val th18Tutorial = findMultiColorsUntil(schemas = listOf(MyColors.RemoteGuardsIcon, MyColors.MeleeGuardsIcon), duration = 200)
+    if (th18Tutorial != null) {
+        TouchActions.tap(th18Tutorial.x, th18Tutorial.y)
+    }
+
     delayWithMultiplier(1000)
     clickRightBottom(10)
 }
