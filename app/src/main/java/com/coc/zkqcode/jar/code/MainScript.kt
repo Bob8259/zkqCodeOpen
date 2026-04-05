@@ -22,9 +22,6 @@ import com.coc.zkqcode.jar.code.mainbase.clan.donateToClan
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
 import com.coc.zkqcode.jar.code.colorschema.ColorSchema
 import com.coc.zkqcode.jar.code.mainbase.herohall.upgradeGearsAndPets
-import com.coc.zkqcode.jar.code.mainbase.others.mainBaseCheckTutorials
-import com.coc.zkqcode.jar.code.mainbase.others.petsTutorialHelper
-import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.ui.schema.Schema
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.currentCoroutineContext
@@ -135,8 +132,7 @@ suspend fun runMainScript() {
 
 private suspend fun runTestCode() {
     while (true) {
-//        upgradeGearsAndPets()
-        mainBaseCheckTutorials()
+        upgradeGearsAndPets()
 //        petsTutorialHelper()
         delay(1000)
     }
