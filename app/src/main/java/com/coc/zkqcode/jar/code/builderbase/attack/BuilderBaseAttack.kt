@@ -25,6 +25,7 @@ import com.coc.zkqcode.jar.code.universal.smalltools.getBooleanConfigRuntime
 import com.coc.zkqcode.jar.code.universal.smalltools.getConfigRuntime
 import com.coc.zkqcode.jar.code.universal.smalltools.writeMemory
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
+import com.coc.zkqcode.jar.code.universal.smalltools.enterBuilderBase
 import com.coc.zkqcode.jar.ui.schema.Schema
 import kotlin.random.Random
 
@@ -159,7 +160,8 @@ private suspend fun realAttack(mode: String, battleNumber: Int = 1, battleTimes:
         }
         delayWithMultiplier(1000)
     }
-    return enterMainScreen()
+    if (!enterMainScreen()) return false
+    return enterBuilderBase(false)
 }
 
 private suspend fun deployAndExit() {
