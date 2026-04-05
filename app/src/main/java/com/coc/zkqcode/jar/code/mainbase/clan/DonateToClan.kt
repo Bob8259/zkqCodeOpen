@@ -8,6 +8,7 @@ import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.GameVersion
 import com.coc.zkqcode.jar.code.universal.InGamesVars
+import com.coc.zkqcode.jar.code.auth.displayAds
 import com.coc.zkqcode.jar.code.universal.buildings.BaseType
 import com.coc.zkqcode.jar.code.universal.buildings.walls.calculateResourcesPercentage
 import com.coc.zkqcode.jar.code.universal.clickRightBottom
@@ -35,10 +36,15 @@ suspend fun donateToClan(): Boolean {
 
     val startTime = System.currentTimeMillis()
     val intervalMillis = donationTimeInterval * 1000L
+    var lastAdTime = 0L
     // Track farming mode state across donation loop iterations
     var inFarmingMode = false
     var lastBattleTime = 0L
     while (System.currentTimeMillis() - startTime < intervalMillis) {
+        if (System.currentTimeMillis() - lastAdTime >= 8000L) {
+            displayAds()
+            lastAdTime = System.currentTimeMillis()
+        }
         // Capture a single frame buffer and reuse it for all color checks in this iteration
         val screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult ?: logAndRestart("in donateToClan, screen capture failed.")
 
