@@ -1,9 +1,9 @@
-package com.coc.zkqcode.jar.code.builderbase.resources
+package com.coc.zkqcode.jar.code.builderbase.others
 
+import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.core.util.touchactions.TouchActions
-import com.coc.zkqcode.jar.code.builderbase.others.zoomSmallBuilderBase
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.clickRightBottom
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
@@ -32,17 +32,20 @@ suspend fun collectBuilderBaseResources(): Boolean {
 }
 
 private suspend fun goldMineAndElixirCollector() {
-    repeat(3) {
+    repeat(2) {
         // Define the resource schemas to iterate through in each cycle
         val resourceSchemas = listOf(
             MyColors.BuilderBaseCollectGem1, MyColors.BuilderBaseCollectGold1, MyColors.BuilderBaseCollectGold2, MyColors.BuilderBaseCollectExiler1, MyColors.BuilderBaseCollectExiler2, MyColors.BuilderBaseCollectGem2
         )
+        // Reuse one captured frame for this pass and refresh it only after a successful collection tap.
+        var capturedScreen = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult
 
         for (schema in resourceSchemas) {
-            val resource = findMultiColors(schema = schema)
+            val resource = findMultiColors(schema = schema, byteBuffer = capturedScreen)
             if (resource != null) {
                 // Use existing TouchActions implementation to interact with the resource coordinates
                 TouchActions.tap(resource.x, resource.y)
+                capturedScreen = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult
             }
         }
     }

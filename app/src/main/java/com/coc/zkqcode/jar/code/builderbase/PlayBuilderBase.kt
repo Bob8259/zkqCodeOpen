@@ -6,7 +6,7 @@ import com.coc.zkqcode.jar.code.builderbase.others.builderBaseRemoveObstacles
 import com.coc.zkqcode.jar.code.builderbase.others.clickOttosOutPost
 import com.coc.zkqcode.jar.code.builderbase.precheck.claimAchievement
 import com.coc.zkqcode.jar.code.builderbase.research.builderBaseResearch
-import com.coc.zkqcode.jar.code.builderbase.resources.collectBuilderBaseResources
+import com.coc.zkqcode.jar.code.builderbase.others.collectBuilderBaseResources
 import com.coc.zkqcode.jar.code.universal.buildings.BaseType
 import com.coc.zkqcode.jar.code.universal.buildings.upgrade.upgradeBuildings
 import com.coc.zkqcode.jar.code.universal.buildings.walls.upgradeWalls

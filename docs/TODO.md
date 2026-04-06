@@ -21,8 +21,6 @@
 （使用雷电飞龙，雷电雷龙，图腾飞龙，图腾治疗根蔓，低本用胖弓蛮雷电
 关键建筑：地狱塔，投石炮，黑油塔，防空火箭，空气炮，复仇塔。
 ）
-### 捐兵与宝库
-- 领宝库（COLLECT_CLAN_CASTLE）
 
 ### 城墙相关
 - 改装建筑（BUILDING_CONVERSION_SETTINGS）
@@ -42,7 +40,6 @@
 - 发起都城突袭（START_RAID）
 - 商店购买相关（突袭币、联赛币、活动币购买各种药水/矿石/戒指等）
 - 用研究药水、卖训练药水、用钟楼药水、卖钟楼药水、用工人药水、卖壁垒之戒
-- 升所有装备（UPGRADE_ALL_GEAR）
 - 领限时活动奖励（CLAIM_TIMED_REWARDS）
 - 领令牌奖励（CLAIM_TOKEN_REWARDS）
 - 领都城币（CLAIM_CAPITAL_GOLD）

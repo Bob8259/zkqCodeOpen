@@ -6,7 +6,7 @@ import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.core.util.touchactions.TouchActions.pinchIn
 import com.coc.zkqcode.core.util.touchactions.TouchActions.swipe
-import com.coc.zkqcode.jar.code.builderbase.resources.collectBuilderBaseResources
+import com.coc.zkqcode.jar.code.builderbase.others.collectBuilderBaseResources
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.jar.code.auth.displayAds
 import com.coc.zkqcode.jar.code.colorschema.ColorSchema
