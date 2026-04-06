@@ -124,6 +124,8 @@ fun LazyListScope.BuilderBaseConfig(
                     explain = "若未解锁第二区域，则金水大于30万后生效。\n若解锁了第二区域，则金水大于60万后生效。\n该功能会移除野蛮人雕像，请谨慎使用。"
                 )
                 SettingSwitchIcon(key = "${BUILDER_BASE_SETTINGS.BUILDER_BASE_SAVE_WORKER.key}_c${index}")
+                // Keep the Clock Tower toggle beside other Builder Base upgrade switches.
+                SettingSwitchIcon(key = "${BUILDER_BASE_SETTINGS.BUILDER_BASE_ENABLE_CLOCK_TOWER.key}_c${index}")
             }
             AnimatedVisibility(visible = GlobalVars.configStates["${BUILDER_BASE_SETTINGS.BUILDER_BASE_WALL_UPGRADE_SETTINGS.key}_c$index"]?.value == "1") {
                 Column {

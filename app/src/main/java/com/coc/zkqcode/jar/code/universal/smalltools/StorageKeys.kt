@@ -16,6 +16,7 @@ object StorageKeys {
     const val MAIN_BASE_TRAIN_TROOPS = "MainBaseTrainTroops"
     const val BUILDER_BASE_TRAIN_TROOPS = "BuilderBaseTrainTroops"
     const val CLICK_OTTOS_POST = "ClickOttosPost"
+    const val TURN_ON_CLOCK_TOWER = "TurnOnClockTower"
     const val JOIN_CLAN = "JoinClan"
     const val PLACE_HERO_BANNERS = "PlaceHeroBanners"
     const val COLLECT_CLAN_CASTLE_RESOURCES = "CollectClanCastleResources"

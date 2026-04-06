@@ -7,6 +7,7 @@ import com.coc.zkqcode.jar.code.builderbase.others.clickOttosOutPost
 import com.coc.zkqcode.jar.code.builderbase.precheck.claimAchievement
 import com.coc.zkqcode.jar.code.builderbase.research.builderBaseResearch
 import com.coc.zkqcode.jar.code.builderbase.others.collectBuilderBaseResources
+import com.coc.zkqcode.jar.code.builderbase.others.turnOnClockTower
 import com.coc.zkqcode.jar.code.universal.buildings.BaseType
 import com.coc.zkqcode.jar.code.universal.buildings.upgrade.upgradeBuildings
 import com.coc.zkqcode.jar.code.universal.buildings.walls.upgradeWalls
@@ -27,6 +28,7 @@ suspend fun playBuilderBase(): Boolean {
     if (!upgradeWalls(BaseType.Builder)) return false
     if (!upgradeBuildings(BaseType.Builder)) return false
     if (!builderBaseResearch()) return false
+    if (!turnOnClockTower()) return true
     if (!enterBuilderBase(false)) return true
     if (!builderBaseTrainWithConditions()) return false
     if (!builderBaseAttack()) return false

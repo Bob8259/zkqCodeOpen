@@ -52,6 +52,11 @@ object MyColors : IUIColors by UIColors, IFeatureColors by FeatureColors, IMainB
         196, 509, 1082, 628, "497CB2", "9|0|6DC7E5,18|0|3D404F,27|0|3DAFD1,36|0|4B7DB6,0|21|4579AE,9|21|3699C7,18|21|141A20,27|21|86D9F3,36|21|4678AF", 0, 0.9, "检测宝库"
     )
 
+    //Night Base Clock Tower
+    val ClockTower = ColorSchema.parse(
+        221, 491, 1078, 633, "FFFBFF", "5|0|FFF1FF,10|0|0EB0D7,15|0|FFF0FF,20|0|FFFFFF,0|13|FFF4FF,5|13|FFFCFF,10|13|131314,15|13|FEEFFE,20|13|FFF8FF", 0, 0.9, "免费提速"
+    )
+
     // Main Base Collect Resource Colors
     val MainBaseCollectElixir1 = ColorSchema.parse(
         115, 85, 1130, 610, "D55BE1", "-4|-3|CD40D8,0|-4|D750E7,3|-7|E138F0,5|-2|E061ED,0|1|D458DD,-3|1|C74BCC,-12|-5|AAD5CF,-10|-10|B8DBD7,11|4|89C3BB", 0, 0.92

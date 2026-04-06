@@ -18,12 +18,9 @@ import com.coc.zkqcode.jar.code.universal.smalltools.getConfigOrStop
 import com.coc.zkqcode.jar.code.universal.smalltools.readMemory
 import com.coc.zkqcode.jar.code.universal.smalltools.writeGameFiles
 import com.coc.zkqcode.jar.code.universal.smalltools.writeMemory
-import com.coc.zkqcode.jar.code.mainbase.clan.donateToClan
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
-import com.coc.zkqcode.jar.code.mainbase.herohall.collectClanCastleResources
-import com.coc.zkqcode.jar.code.mainbase.herohall.upgradeGearsAndPets
-import com.coc.zkqcode.jar.code.mainbase.others.mainBaseCheckTutorials
-import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
+import com.coc.zkqcode.jar.code.builderbase.others.turnOnClockTower
+import com.coc.zkqcode.jar.code.mainbase.others.collectClanCastleResources
 import com.coc.zkqcode.jar.ui.schema.Schema
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.currentCoroutineContext
@@ -134,7 +131,7 @@ suspend fun runMainScript() {
 
 private suspend fun runTestCode() {
     while (true) {
-        collectClanCastleResources()
+        turnOnClockTower()
 //        ShowMessage(findMultiColors(MyColors.ElectroOwl).toString())
         delay(1000000)
     }

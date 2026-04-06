@@ -1,10 +1,9 @@
-package com.coc.zkqcode.jar.code.mainbase.herohall
+package com.coc.zkqcode.jar.code.mainbase.others
 
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.core.util.touchactions.TouchActions.swipe
 import com.coc.zkqcode.jar.code.colorschema.MyColors
-import com.coc.zkqcode.jar.code.mainbase.others.zoomSmallMainBase
 import com.coc.zkqcode.jar.code.universal.InGamesVars
 import com.coc.zkqcode.jar.code.universal.aidetection.tiledAiDetect
 import com.coc.zkqcode.jar.code.universal.clickRightBottom
@@ -44,6 +43,8 @@ suspend fun collectClanCastleResources(): Boolean {
             if (openClanCastle != null) {
                 TouchActions.tap(openClanCastle.x, openClanCastle.y, delayTime = 500)
                 TouchActions.tap(653, 504, delayTime = 300)//Collect
+                // Record memory immediately after the collection action succeeds.
+                writeMemory(storageKey, (System.currentTimeMillis() / 60_000).toString())
                 clickRightBottom(1)
                 return true
             }
@@ -55,9 +56,6 @@ suspend fun collectClanCastleResources(): Boolean {
         swipe(900, 130, 0, 720)
         scanAndTapClanCastle()
     }
-
-    // Record the daily check after the collection attempt finishes.
-    writeMemory(storageKey, (System.currentTimeMillis() / 60_000).toString())
     return enterMainScreen()
 }
 
