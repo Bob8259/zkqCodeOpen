@@ -29,7 +29,7 @@ suspend fun upgradeGearsAndPets(): Boolean {
     // Guard: only attempt gear upgrade once per 8 hours (480 minutes)
     if (!checkMemoryFile(storageKey, 480)) {
         ShowMessage("账号${InGamesVars.currentAccountNumber}，该账号8小时内已检测装备和战宠升级")
-        return true
+//        return true
     }
 
     ShowMessage("准备升级装备和战宠")
@@ -150,7 +150,8 @@ private suspend fun upgradeGearsAction() {
             if (petsShopBanner != null) {
                 ShowMessage("已进入宠物店")
                 delayWithMultiplier(200)
-                checkPets()
+                val alreadyBeingUpgraded = findMultiColors(MyColors.AlreadyBeingUpgraded)
+                if (alreadyBeingUpgraded == null) checkPets()
             }
         }
     }

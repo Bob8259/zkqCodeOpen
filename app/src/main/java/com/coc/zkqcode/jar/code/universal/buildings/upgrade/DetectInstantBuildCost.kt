@@ -2,14 +2,14 @@ package com.coc.zkqcode.jar.code.universal.buildings.upgrade
 
 import android.graphics.Bitmap
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
-import com.coc.zkqcode.jar.code.universal.yolo.YoloDetector
 import com.coc.zkqcode.jar.code.colorschema.MyColors
+import com.coc.zkqcode.jar.code.universal.aidetection.AiDetector
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 
 /**
  * Detects the instant build cost by recognizing numbers near the upgrade gem icon.
- * Uses YOLO model to detect individual digits and combines them into the final cost value.
+ * Uses the AI detection model to detect individual digits and combines them into the final cost value.
  *
  * @return The detected cost as an integer, or null if detection fails
  */
@@ -41,10 +41,10 @@ suspend fun detectInstantBuildCost(): Int? {
 
     val cropBitmap = Bitmap.createBitmap(screenBuffer, startX, startY, width, height)
 
-    // Load model and run detection via remote YOLO service; abort if loading fails
-    if (!YoloDetector.loadWeights("numbers")) return null
+    // Load the model and run detection via the remote AI detection service.
+    if (!AiDetector.loadWeights("numbers")) return null
     try {
-        val detections = YoloDetector.detect(
+        val detections = AiDetector.detect(
             bitmap = cropBitmap,
             clearWeightsAfter = false,
             threshold = 0.3f
@@ -65,7 +65,7 @@ suspend fun detectInstantBuildCost(): Int? {
 
         return result.toIntOrNull()
     } finally {
-        // Always clear model weights after detection to free memory
-        YoloDetector.clearWeights()
+        // Always clear model weights after detection to free memory.
+        AiDetector.clearWeights()
     }
 }

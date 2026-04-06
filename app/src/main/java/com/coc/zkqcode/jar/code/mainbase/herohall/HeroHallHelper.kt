@@ -6,8 +6,8 @@ import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.mainbase.others.zoomSmallMainBase
 import com.coc.zkqcode.jar.code.universal.clickRightBottom
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
+import com.coc.zkqcode.jar.code.universal.aidetection.tiledAiDetect
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
-import com.coc.zkqcode.jar.code.universal.yolo.tiledYoloDetect
 
 suspend fun withHeroHall(action: suspend () -> Unit): Boolean {
     clickRightBottom(1)
@@ -15,7 +15,7 @@ suspend fun withHeroHall(action: suspend () -> Unit): Boolean {
 
     // Shared detection flow: scan once, then swipe and retry once.
     suspend fun scanAndHandle(): Boolean {
-        val scan = tiledYoloDetect(
+        val scan = tiledAiDetect(
             modelName = "building-detect", callerTag = "FindHeroHall", classIndex = 3
         )
         for (detection in scan) {

@@ -3,9 +3,8 @@ package com.coc.zkqcode.jar.code.universal.remove
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.touchactions.TouchActions
-import com.coc.zkqcode.jar.code.universal.yolo.DetectionResult
-import com.coc.zkqcode.jar.code.universal.yolo.tiledYoloDetect
 import com.coc.zkqcode.jar.code.colorschema.MyColors
+import com.coc.zkqcode.jar.code.universal.aidetection.tiledAiDetect
 import com.coc.zkqcode.jar.code.universal.GameVersion
 import com.coc.zkqcode.jar.code.universal.InGamesVars
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
@@ -54,7 +53,7 @@ suspend fun removeAllBuildings() {
 
 suspend fun removeObstacles() {
     delayWithMultiplier(200)
-    val obstacles = tiledYoloDetect(
+    val obstacles = tiledAiDetect(
         modelName = "remove-obstacle", callerTag = "BuilderBaseRemoveObstacles"
     )
     obstacles.forEach { obstacle ->

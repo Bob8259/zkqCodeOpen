@@ -6,7 +6,7 @@ import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
 import com.coc.zkqcode.core.util.touchactions.TouchActions
-import com.coc.zkqcode.jar.code.universal.yolo.YoloDetector
+import com.coc.zkqcode.jar.code.universal.aidetection.AiDetector
 import com.coc.zkqcode.jar.code.builderbase.others.zoomSmallBuilderBase
 import com.coc.zkqcode.jar.code.builderbase.upgrade.builderBaseFindBuildButton
 import com.coc.zkqcode.jar.code.colorschema.MyColors
@@ -223,13 +223,13 @@ private suspend fun tryToBatchBuildWalls(x: Int, y: Int, currentBase: BaseType) 
         // Swipe up to avoid overlapping.
         TouchActions.swipe(280, 480, 280, 320, delayTime = 600)//Swiped for 160 pixels here, so in the trajectory calculate, the offset for y should be 150
     }
-    // Locate the arrow element using YOLO detector
+    // Locate the arrow element using the AI detection service.
     delayWithMultiplier(200)
     val screenBuffer = ScreenCaptureManager.capture(asBitmap = true) as? Bitmap ?: logAndRestart("in BuilderBaseUpgradeBuildings, screen capture failed.")
-    // Early return if model weights fail to load
-    if (!YoloDetector.loadWeights("walls-detect")) return
+    // Return early if the model weights fail to load.
+    if (!AiDetector.loadWeights("walls-detect")) return
     try {
-        val detections = YoloDetector.detect(screenBuffer, clearWeightsAfter = false)
+        val detections = AiDetector.detect(screenBuffer, clearWeightsAfter = false)
         val batchBuildWallsArrow = detections.maxByOrNull { it.score }
         if (batchBuildWallsArrow != null) {
             val arrowX = batchBuildWallsArrow.boundingBox.centerX().toInt()
@@ -250,7 +250,7 @@ private suspend fun tryToBatchBuildWalls(x: Int, y: Int, currentBase: BaseType) 
             }
         }
     } finally {
-        // Always clear model weights after detection to free memory
-        YoloDetector.clearWeights()
+        // Always clear model weights after detection to free memory.
+        AiDetector.clearWeights()
     }
 }
