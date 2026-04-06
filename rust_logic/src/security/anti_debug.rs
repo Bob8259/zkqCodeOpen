@@ -74,6 +74,10 @@ const ENC_ANON: [u8; 6] = xor_bytes(*b"[anon]", K_MAPS);
 
 // Encrypted constants — environment variable name
 const ENC_LD_PRELOAD: [u8; 10] = xor_bytes(*b"LD_PRELOAD", K_ENV);
+const ENC_SO_SUFFIX_ENV: [u8; 3] = xor_bytes(*b".so", K_ENV);
+const ENC_DATA_LOCAL_TMP_ENV: [u8; 15] = xor_bytes(*b"/data/local/tmp", K_ENV);
+const ENC_FRIDA_ENV: [u8; 5] = xor_bytes(*b"frida", K_ENV);
+const ENC_GADGET_ENV: [u8; 6] = xor_bytes(*b"gadget", K_ENV);
 
 // Encrypted constants — network address
 const ENC_FRIDA_ADDR: [u8; 15] = xor_bytes(*b"127.0.0.1:27042", K_NET);
@@ -164,9 +168,28 @@ fn check_debugger_present() {
 #[inline(always)]
 fn check_env_injection() {
     let var_name = xor_decode(&ENC_LD_PRELOAD, K_ENV);
-    if env::var(&var_name).is_ok() {
-        trigger_poison_secondary();
-        trigger_poison_accumulate();
+    if let Ok(raw_value) = env::var(&var_name) {
+        let value = raw_value.trim();
+        if value.is_empty() {
+            return;
+        }
+
+        // Only treat preload state as abnormal when it looks like an actual library injection
+        // path or contains common suspicious keywords. This reduces false positives in modded environments.
+        let lowered = value.to_ascii_lowercase();
+        let so_suffix = xor_decode(&ENC_SO_SUFFIX_ENV, K_ENV);
+        let data_local_tmp = xor_decode(&ENC_DATA_LOCAL_TMP_ENV, K_ENV);
+        let frida = xor_decode(&ENC_FRIDA_ENV, K_ENV);
+        let gadget = xor_decode(&ENC_GADGET_ENV, K_ENV);
+        let looks_like_preloaded_library = lowered.contains(&so_suffix);
+        let looks_like_suspicious_source = lowered.contains(&data_local_tmp)
+            || lowered.contains(&frida)
+            || lowered.contains(&gadget);
+
+        if looks_like_preloaded_library || looks_like_suspicious_source {
+            trigger_poison_secondary();
+            trigger_poison_accumulate();
+        }
     }
 }
 

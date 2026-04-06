@@ -22,7 +22,7 @@ suspend fun turnOnClockTower(): Boolean {
     // Guard the Clock Tower check so each account only scans once every twenty-two hours.
     if (!checkMemoryFile(storageKey, 1320)) {
         ShowMessage("22小时内已开启过时光钟楼，暂不检测")
-        return true
+//        return true
     }
 
     clickRightBottom(1)
