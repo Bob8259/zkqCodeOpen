@@ -25,7 +25,7 @@ object ShowMessage {
         }
         val now = System.currentTimeMillis()
         val elapsed = now - lastShowTime
-        val shouldShow = elapsed >= 100 && !(text == lastMessage && elapsed < 500)
+        val shouldShow = elapsed >= 20 && !(text == lastMessage && elapsed < 500)
 
         lastMessage = text
         lastShowTime = now

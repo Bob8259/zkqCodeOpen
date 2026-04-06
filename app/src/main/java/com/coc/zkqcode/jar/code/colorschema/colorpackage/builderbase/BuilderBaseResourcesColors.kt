@@ -13,6 +13,7 @@ interface IBuilderBaseResourcesColors {
     val BuilderBaseCollectExiler2: ColorSchema
     val BuilderBaseCollectGem1: ColorSchema
     val BuilderBaseCollectGem2: ColorSchema
+    val BuilderBaseCollectGem3: ColorSchema
 }
 
 object BuilderBaseResourcesColors : IBuilderBaseResourcesColors {
@@ -43,5 +44,10 @@ object BuilderBaseResourcesColors : IBuilderBaseResourcesColors {
     )
     override val BuilderBaseCollectGem2 = ColorSchema.parse(
         115, 85, 1130, 610, "85F1D9", "-1|-3|74EBD1,4|-5|7BF0DC,3|0|5FE9C1,-13|0|9CCDC7,-12|-8|B4DAD5,13|-9|B6DAD6,3|1|7AF0D1,-2|7|24B48C,4|4|6DF0CC", 0, 0.92, "收集宝石2"
+    )
+
+    // Add a third gem variant to improve builder base gem pickup coverage.
+    override val BuilderBaseCollectGem3 = ColorSchema.parse(
+        115, 85, 1130, 610, "72DEC8", "-2|7|77E3C1,-6|2|6CEDD6,0|-4|3FC094,2|-2|6FDCC7,5|-1|7CE1CF,1|3|80E3CC,-3|-1|66D9C0,-4|-3|3CBC89,1|0|76DFC9", 0, 0.92, "收集宝石3"
     )
 }

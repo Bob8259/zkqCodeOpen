@@ -35,7 +35,13 @@ private suspend fun goldMineAndElixirCollector() {
     repeat(2) {
         // Define the resource schemas to iterate through in each cycle
         val resourceSchemas = listOf(
-            MyColors.BuilderBaseCollectGem1, MyColors.BuilderBaseCollectGold1, MyColors.BuilderBaseCollectGold2, MyColors.BuilderBaseCollectExiler1, MyColors.BuilderBaseCollectExiler2, MyColors.BuilderBaseCollectGem2
+            MyColors.BuilderBaseCollectGem1,
+            MyColors.BuilderBaseCollectGold1,
+            MyColors.BuilderBaseCollectGold2,
+            MyColors.BuilderBaseCollectExiler1,
+            MyColors.BuilderBaseCollectExiler2,
+            MyColors.BuilderBaseCollectGem2,
+            MyColors.BuilderBaseCollectGem3
         )
         // Reuse one captured frame for this pass and refresh it only after a successful collection tap.
         var capturedScreen = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult

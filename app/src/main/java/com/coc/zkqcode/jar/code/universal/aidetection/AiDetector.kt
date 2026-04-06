@@ -173,17 +173,14 @@ object AiDetector {
     }
 
     /**
-     * The plugin needs one foreground launch on first install so its app-side initialization
-     * can complete before the detector returns to the game and polls the local server again.
+     * Downloads from gitee, installs, and launches the plugin.
+     * Used both on first install and for forced version upgrades.
+     * The plugin needs one foreground launch so its app-side initialization can complete
+     * before the detector returns to the game and polls the local server again.
      */
-    private suspend fun ensurePluginInstalled(): Boolean {
-        if (isPluginInstalled()) {
-            return true
-        }
-
+    private suspend fun downloadAndInstallPlugin(): Boolean {
         val apkFile = getPluginApkFile() ?: return false
         try {
-            ShowMessage("未检测到AI插件，开始自动下载安装")
             if (!downloadPluginApk(apkFile)) {
                 return false
             }
@@ -204,17 +201,31 @@ object AiDetector {
     }
 
     /**
+     * Ensures the plugin APK is present on the device; downloads and installs it if missing.
+     */
+    private suspend fun ensurePluginInstalled(): Boolean {
+        if (isPluginInstalled()) {
+            return true
+        }
+        ShowMessage("未检测到AI插件，开始自动下载安装")
+        return downloadAndInstallPlugin()
+    }
+
+    /**
      * Polls /status every ~1 second, restarting the service each iteration if unreachable.
-     * Returns true once the server responds, or false after 10 seconds.
-     * Downloads and installs the external AI plugin automatically when it is missing.
+     * Returns true once the server responds with an acceptable version, or false after the
+     * timeout. If the installed version is too low, automatically downloads and reinstalls
+     * the latest APK from gitee (at most once per call to avoid infinite loops).
      */
     private suspend fun ensureServerReady(): Boolean {
         if (!ensurePluginInstalled()) {
             return false
         }
 
-        val startTime = System.currentTimeMillis()
+        var updateAttempted = false
+        var startTime = System.currentTimeMillis()
         while (System.currentTimeMillis() - startTime < READY_TIMEOUT_MS) {
+            var versionTooLow = false
             try {
                 val request = Request.Builder().url("$BASE_URL/status").get().build()
                 client.newCall(request).execute().use { response ->
@@ -224,14 +235,33 @@ object AiDetector {
                         // Verify the plugin version meets the minimum requirement.
                         val ver = status.version.toDoubleOrNull() ?: 0.0
                         if (ver < 1.01) {
-                            ShowMessage("AI插件版本过低，请下载安装最新版")
-                            return false
+                            versionTooLow = true
+                        } else {
+                            return true
                         }
-                        return true
                     }
                 }
             } catch (_: Exception) {
                 // If the service is unreachable, try starting it again and wait briefly.
+                RunShell.runNoOutput(SERVICE_START_CMD, isCheckIsPlaying = false)
+                delay(POLL_INTERVAL_MS)
+                continue
+            }
+
+            if (versionTooLow) {
+                if (updateAttempted) {
+                    // Already tried once; avoid an infinite update loop.
+                    ShowMessage("AI插件更新后版本仍然过低，请手动更新")
+                    return false
+                }
+                ShowMessage("AI插件版本过低，正在尝试自动下载更新")
+                updateAttempted = true
+                if (!downloadAndInstallPlugin()) {
+                    ShowMessage("AI插件自动更新失败，请手动下载安装最新版")
+                    return false
+                }
+                // Reset the polling timer so the full window is available after the update.
+                startTime = System.currentTimeMillis()
                 RunShell.runNoOutput(SERVICE_START_CMD, isCheckIsPlaying = false)
                 delay(POLL_INTERVAL_MS)
             }

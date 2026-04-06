@@ -20,7 +20,9 @@ import com.coc.zkqcode.jar.code.universal.smalltools.writeGameFiles
 import com.coc.zkqcode.jar.code.universal.smalltools.writeMemory
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
 import com.coc.zkqcode.jar.code.builderbase.others.turnOnClockTower
+import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.mainbase.others.collectClanCastleResources
+import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.ui.schema.Schema
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.currentCoroutineContext
@@ -132,8 +134,8 @@ suspend fun runMainScript() {
 private suspend fun runTestCode() {
     while (true) {
         turnOnClockTower()
-//        ShowMessage(findMultiColors(MyColors.ElectroOwl).toString())
-        delay(1000000)
+//        ShowMessage(findMultiColors(MyColors.ClockTower).toString())
+        delay(1000)
     }
 }
 
