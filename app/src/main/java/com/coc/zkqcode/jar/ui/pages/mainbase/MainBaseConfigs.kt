@@ -196,10 +196,10 @@ fun LazyListScope.MainBaseConfig(
                 }
             }
         }
-    }/*
+    }
         // Helper settings
         item {
-            AnimatedVisibility(visible = isExpanded) {
+            SettingSection(visible = isExpanded) {
                 FlowRow {
                     SettingSwitchIcon(
                         key = "${MAIN_BASE_SETTINGS.HELPER_SETTINGS.key}_c$index",
@@ -216,7 +216,7 @@ fun LazyListScope.MainBaseConfig(
                 }
             }
         }
-
+        /*
         // Clan Games & War
         item {
             AnimatedVisibility(visible = isExpanded) {

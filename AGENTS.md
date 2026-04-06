@@ -22,4 +22,4 @@ For example, instead of using com.coc.zkqcode.jar.code.colorschema.ColorSchema i
 
 When the instructions are unclear, you need to ask the user for clarification. Only proceed after you have understood every detail of the instructions.
 
-You should ALWAYS make a plan, and only proceed after you get explicit permission from the user.
+You should make a plan when the task is complex, and only proceed after you get explicit permission from the user.

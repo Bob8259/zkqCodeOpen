@@ -169,7 +169,7 @@ fun LazyListScope.AccountSettings() {
                         .align(Alignment.CenterVertically)
                 )
                 SmallTextField(
-                    modifier = Modifier.align(Alignment.CenterVertically),
+                    modifier = Modifier.align(Alignment.CenterVertically).padding(end = 4.dp),
                     value = endAccount,
                     onValueChange = { endAccount = it }
                 )
@@ -220,7 +220,7 @@ fun LazyListScope.AccountSettings() {
                 Box(
                     modifier = Modifier
                         .wrapContentSize(Alignment.TopStart)
-                        .align(Alignment.CenterVertically)
+                        .align(Alignment.CenterVertically).padding(end = 4.dp)
                 ) {
                     Button(
                         onClick = {

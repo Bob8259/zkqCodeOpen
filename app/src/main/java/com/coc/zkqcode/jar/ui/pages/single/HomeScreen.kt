@@ -1,5 +1,6 @@
 package com.coc.zkqcode.jar.ui.pages.single
 
+import android.os.Environment
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -22,6 +23,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -30,29 +32,26 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import com.coc.zkqcode.jar.ui.schema.ConfigManager
 import com.coc.zkqcode.core.data.database.GlobalVars
-import com.coc.zkqcode.jar.ui.schema.Schema.GLOBAL_SETTINGS
+import com.coc.zkqcode.core.ui.theme.AppColors
+import com.coc.zkqcode.core.util.basic.RunShell
+import com.coc.zkqcode.core.util.exit.AppExitHelper
+import com.coc.zkqcode.core.util.fileactions.FileHelper
 import com.coc.zkqcode.jar.ui.components.CustomAlertDialog
-import com.coc.zkqcode.jar.ui.components.CustomNotificationWindow
 import com.coc.zkqcode.jar.ui.components.CustomButton
-import com.coc.zkqcode.jar.ui.components.SettingSwitchIcon
+import com.coc.zkqcode.jar.ui.components.CustomNotificationWindow
 import com.coc.zkqcode.jar.ui.components.SettingDropdown
 import com.coc.zkqcode.jar.ui.components.SettingInputRow
 import com.coc.zkqcode.jar.ui.components.SettingSection
-import com.coc.zkqcode.core.ui.theme.AppColors
-import com.coc.zkqcode.core.util.exit.AppExitHelper
-import android.os.Environment
-import androidx.compose.runtime.remember
-import com.coc.zkqcode.core.util.fileactions.FileHelper
-import com.coc.zkqcode.core.util.fileactions.LogHelper.showDebugInfo
+import com.coc.zkqcode.jar.ui.components.SettingSwitchIcon
+import com.coc.zkqcode.jar.ui.schema.ConfigManager
+import com.coc.zkqcode.jar.ui.schema.Schema.GLOBAL_SETTINGS
 import com.coc.zkqcode.statehelper.AppMode
 import com.coc.zkqcode.statehelper.AppStateManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import com.coc.zkqcode.core.util.basic.RunShell
 
 @Composable
 fun HomeScreen(
@@ -195,7 +194,7 @@ fun HomeScreen(
                                     text = if (GlobalVars.isAutoRunEnabled) "${GlobalVars.autoRunTimer}秒后自动运行" else "计时已停止",
                                     style = MaterialTheme.typography.labelMedium,
                                     color = Color.Red,
-                                    modifier = Modifier.padding(top = 8.dp)
+                                    modifier = Modifier.padding(top = 8.dp, end = 6.dp)
                                 )
                                 CustomButton(
                                     text = "修改任意配置停止计时", onClick = { GlobalVars.isAutoRunEnabled = false })

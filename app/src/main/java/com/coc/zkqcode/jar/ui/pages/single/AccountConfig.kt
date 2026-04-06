@@ -28,8 +28,14 @@ fun AccountConfig(
 ) {
     SettingSection {
         Row {
-            SettingSwitchIcon(key = "${ACCOUNT_SETTINGS.ISOPEN.key}${index}")
-            SettingInputRow(key = "${ACCOUNT_SETTINGS.REMARK.key}${index}")
+            // Remove the switch label's extra text offset so it aligns with the remark label.
+            SettingSwitchIcon(key = "${ACCOUNT_SETTINGS.ISOPEN.key}${index}", textTopPadding = 0.dp)
+            // Nudge only the remark label upward because it is centered against a taller text field.
+            SettingInputRow(
+                key = "${ACCOUNT_SETTINGS.REMARK.key}${index}",
+                topPadding = 4.dp,
+                labelVerticalOffset = (-2).dp
+            )
         }
         SettingDropdown(
             key = "${ACCOUNT_SETTINGS.GAME_VERSION.key}${index}",

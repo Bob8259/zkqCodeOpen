@@ -26,7 +26,7 @@ object MainBaseSettings {
     val DONATION_FARMING_STOP_THRESHOLD  = SettingDef("donation_farming_stop_threshold",  "直到资源超过",   "80", "MAIN_BASE_SETTINGS")
     val RESEARCH_SETTING = SettingDef("research_setting", "自动研究", 1, "MAIN_BASE_SETTINGS")
     val RESEARCH_LEVEL = SettingDef("research_level", "研究等级至", "0", "MAIN_BASE_SETTINGS")
-    val COLLECT_CLAN_CASTLE = SettingDef("collect_clan_castle", "领部落城堡资源", 1, "MAIN_BASE_SETTINGS")
+    val COLLECT_CLAN_CASTLE = SettingDef("collect_clan_castle", "领取部落城堡资源", 1, "MAIN_BASE_SETTINGS")
     val LIGHTING_ON_AIR_SWEEPER = SettingDef("lighting_on_air_sweeper", "闪空气炮次数", "2", "MAIN_BASE_SETTINGS")
     val LIGHTING_ON_AIR_DEFENCE = SettingDef("lighting_on_air_defence", "闪火箭次数", "3", "MAIN_BASE_SETTINGS")
     val LIGHTING_ON_MORTAR = SettingDef("lighting_on_mortar", "闪迫击炮次数", "4", "MAIN_BASE_SETTINGS")
@@ -57,7 +57,7 @@ object MainBaseSettings {
     val PLAY_LADDER = SettingDef("play_ladder", "排位对战", 0, "MAIN_BASE_SETTINGS")
     val CHANGE_BASE = SettingDef("change_base", "切换阵型", 1, "MAIN_BASE_SETTINGS")
     val WAIT_FOR_BATTLE = SettingDef("wait_for_battle", "等待对战", 0, "MAIN_BASE_SETTINGS")
-    val HELPER_SETTINGS = SettingDef("helper_settings", "用帮手", 1, "MAIN_BASE_SETTINGS")
+    val HELPER_SETTINGS = SettingDef("helper_settings", "用工人学徒和实验助手", 1, "MAIN_BASE_SETTINGS")
     val UPGRADE_RESEARCH_HELPER = SettingDef("upgrade_research_helper", "升级实验助手", 0, "MAIN_BASE_SETTINGS")
     val UPGRADE_BUILDER_APPRENTICE =
         SettingDef("upgrade_builder_apprentice", "升级工人学徒", 0, "MAIN_BASE_SETTINGS")

@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
@@ -181,7 +182,12 @@ class WindowCenterPositionProvider : PopupPositionProvider {
 
 
 @Composable
-fun SettingInputRow(key: String, afterChange: ((String) -> Unit)? = null) {
+fun SettingInputRow(
+    key: String,
+    topPadding: Dp = 6.dp,
+    labelVerticalOffset: Dp = 0.dp,
+    afterChange: ((String) -> Unit)? = null
+) {
     // Use getOrPut to lazily initialize missing config keys with their Schema defaults
     val state = GlobalVars.configStates.getOrPut(key) {
         mutableStateOf(Schema.getDefaultValue(key))
@@ -189,11 +195,12 @@ fun SettingInputRow(key: String, afterChange: ((String) -> Unit)? = null) {
     val label = Schema.getDisplayName(key)
 
     Row(
-        modifier = Modifier.padding(top = 6.dp)
+        modifier = Modifier.padding(top = topPadding)
     ) {
         Text(
             text = label, modifier = Modifier
                 .padding(end = 8.dp)
+                .offset(y = labelVerticalOffset)
                 .align(Alignment.CenterVertically), style = MaterialTheme.typography.labelMedium
         )
 
@@ -312,7 +319,10 @@ fun CustomButton(
 
 @Composable
 fun SettingSwitchIcon(
-    key: String, explain: String? = null, afterChange: ((Boolean) -> Unit)? = null
+    key: String,
+    explain: String? = null,
+    textTopPadding: Dp = 2.dp,
+    afterChange: ((Boolean) -> Unit)? = null
 ) {
     // If key is absent from configStates, create a new state using the Schema default value
     // and register it so subsequent reads are consistent.
@@ -324,7 +334,7 @@ fun SettingSwitchIcon(
         text = Schema.getDisplayName(key), checkedState = state.value, onCheckStateChange = { checked ->
             state.value = if (checked) "1" else "0"
             afterChange?.invoke(checked)
-        }, explain = explain
+        }, explain = explain, textTopPadding = textTopPadding
     )
 }
 
@@ -378,7 +388,11 @@ fun SettingToggleButton(key: String) {
 // Reordered layout: [Text] [Info Icon] [Toggle Switch]
 @Composable
 private fun CustomSwitch(
-    text: String, checkedState: String, onCheckStateChange: (Boolean) -> Unit, explain: String? = null
+    text: String,
+    checkedState: String,
+    onCheckStateChange: (Boolean) -> Unit,
+    explain: String? = null,
+    textTopPadding: Dp = 2.dp
 ) {
     var showExplanation by remember { mutableStateOf(false) }
     val isChecked = checkedState == "1"
@@ -392,7 +406,9 @@ private fun CustomSwitch(
                 onCheckStateChange(!isChecked)
             }) {
             Text(
-                text = text, modifier = Modifier.padding(top = 2.dp), style = MaterialTheme.typography.labelMedium
+                text = text,
+                modifier = Modifier.padding(top = textTopPadding),
+                style = MaterialTheme.typography.labelMedium
             )
 
             explain?.let {
@@ -424,15 +440,14 @@ private fun CustomSwitch(
             }
         }
 
-        // Scaled-down toggle switch to keep similar row height
+        // Further shrink the toggle to better fit dense setting rows.
         Switch(
             checked = isChecked, onCheckedChange = { checked ->
                 GlobalVars.isAutoRunEnabled = false
                 onCheckStateChange(checked)
             }, modifier = Modifier
-                .height(20.dp)
-                .padding(start = 4.dp)
-                .scale(0.7f), colors = SwitchDefaults.colors(
+                .height(18.dp)
+                .scale(0.6f), colors = SwitchDefaults.colors(
                 checkedTrackColor = AppColors.Azure, checkedThumbColor = Color.White
             )
         )
@@ -505,13 +520,13 @@ fun SettingDropdown(
                 options.forEachIndexed { idx, option ->
                     DropdownMenuItem(
                         text = {
-                        Text(option, style = MaterialTheme.typography.labelMedium)
-                    }, onClick = {
-                        GlobalVars.isAutoRunEnabled = false
-                        state.value = idx.toString()
-                        expanded = false
-                        afterChange?.invoke(idx)
-                    }, modifier = Modifier.height(35.dp) // Slightly increase height for easier clicking
+                            Text(option, style = MaterialTheme.typography.labelMedium)
+                        }, onClick = {
+                            GlobalVars.isAutoRunEnabled = false
+                            state.value = idx.toString()
+                            expanded = false
+                            afterChange?.invoke(idx)
+                        }, modifier = Modifier.height(35.dp) // Slightly increase height for easier clicking
                     )
                 }
             }
