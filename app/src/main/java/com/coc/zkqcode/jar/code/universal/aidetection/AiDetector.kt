@@ -2,15 +2,21 @@ package com.coc.zkqcode.jar.code.universal.aidetection
 
 import android.graphics.Bitmap
 import android.graphics.RectF
+import android.os.Handler
+import android.os.Looper
 import com.coc.zkqcode.core.util.basic.RunShell
 import com.coc.zkqcode.core.util.basic.ShowMessage
+import com.coc.zkqcode.jar.code.universal.smalltools.runGame
 import com.google.gson.Gson
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.ByteArrayOutputStream
+import java.io.File
 import java.util.concurrent.TimeUnit
 
 data class DetectionResult(
@@ -21,28 +27,189 @@ data class DetectionResult(
 
 object AiDetector {
     private const val BASE_URL = "http://localhost:13462"
+    private const val PLUGIN_PACKAGE = "com.coc.zkqyolo"
     private const val SERVICE_START_CMD =
-        "am start-foreground-service -n com.coc.zkqyolo/.service.YoloService"
+        "am start-foreground-service -n $PLUGIN_PACKAGE/.service.YoloService"
+    private const val MAIN_ACTIVITY_CMD = "am start -n $PLUGIN_PACKAGE/.MainActivity"
+    private const val PLUGIN_DOWNLOAD_URL =
+        "https://gitee.com/azikaban/zkqYOLO/releases/download/AIplugin/AI.apk"
+    private const val PLUGIN_DOWNLOAD_DIR = "ai-plugin"
+    private const val PLUGIN_APK_NAME = "AI.apk"
     private const val READY_TIMEOUT_MS = 10_000L
     private const val POLL_INTERVAL_MS = 1000L
+    private const val DOWNLOAD_PROGRESS_INTERVAL_MS = 500L
+    private const val PLUGIN_LAUNCH_WAIT_MS = 4000L
 
     private val client = OkHttpClient.Builder()
         .connectTimeout(3, TimeUnit.SECONDS)
         .readTimeout(30, TimeUnit.SECONDS)
         .build()
 
+    private val downloadClient = OkHttpClient.Builder()
+        .connectTimeout(15, TimeUnit.SECONDS)
+        .readTimeout(2, TimeUnit.MINUTES)
+        .followRedirects(true)
+        .followSslRedirects(true)
+        .build()
+
     private val gson = Gson()
+    private val mainHandler = Handler(Looper.getMainLooper())
+
+    private suspend fun isPluginInstalled(): Boolean {
+        val installed = RunShell.run("pm list packages $PLUGIN_PACKAGE", isCheckIsPlaying = false)
+        return installed.any { it.contains(PLUGIN_PACKAGE) }
+    }
+
+    /**
+     * The jar side does not own a Context directly, so it reuses the application Context
+     * previously stored by ShowMessage and writes the temporary APK into private storage.
+     */
+    private fun getPluginApkFile(): File? {
+        val context = ShowMessage.getContext()
+        if (context == null) {
+            ShowMessage("AI插件安装失败：上下文未初始化")
+            return null
+        }
+        val downloadDir = File(context.filesDir, PLUGIN_DOWNLOAD_DIR)
+        if (!downloadDir.exists() && !downloadDir.mkdirs()) {
+            ShowMessage("AI插件安装失败：无法创建下载目录")
+            return null
+        }
+        return File(downloadDir, PLUGIN_APK_NAME)
+    }
+
+    private fun postMessage(text: String) {
+        mainHandler.post {
+            ShowMessage(text)
+        }
+    }
+
+    /**
+     * Progress updates are throttled to avoid overwhelming the floating message overlay.
+     */
+    private fun formatDownloadProgress(downloaded: Long, total: Long): String {
+        val downloadedMb = downloaded / 1024.0 / 1024.0
+        if (total > 0) {
+            val totalMb = total / 1024.0 / 1024.0
+            val percent = (downloaded * 100 / total).coerceAtMost(100)
+            return "AI插件下载中：$percent% (${String.format("%.2f", downloadedMb)}MB/${String.format("%.2f", totalMb)}MB)"
+        }
+        return "AI插件下载中：${String.format("%.2f", downloadedMb)}MB"
+    }
+
+    private suspend fun downloadPluginApk(targetFile: File): Boolean = withContext(Dispatchers.IO) {
+        try {
+            if (targetFile.exists()) {
+                targetFile.delete()
+            }
+            val request = Request.Builder().url(PLUGIN_DOWNLOAD_URL).get().build()
+            downloadClient.newCall(request).execute().use { response ->
+                if (!response.isSuccessful) {
+                    postMessage("AI插件下载失败：HTTP ${response.code}")
+                    return@withContext false
+                }
+                val body = response.body
+                val totalBytes = body.contentLength()
+                body.byteStream().use { input ->
+                    targetFile.outputStream().use { output ->
+                        val buffer = ByteArray(8192)
+                        var totalBytesRead = 0L
+                        var lastProgressTime = 0L
+                        var bytesRead: Int
+                        while (input.read(buffer).also { bytesRead = it } != -1) {
+                            output.write(buffer, 0, bytesRead)
+                            totalBytesRead += bytesRead
+                            val now = System.currentTimeMillis()
+                            if (now - lastProgressTime >= DOWNLOAD_PROGRESS_INTERVAL_MS) {
+                                lastProgressTime = now
+                                postMessage(formatDownloadProgress(totalBytesRead, totalBytes))
+                            }
+                        }
+                        output.flush()
+                        postMessage(formatDownloadProgress(totalBytesRead, totalBytes))
+                    }
+                }
+            }
+            true
+        } catch (e: Exception) {
+            if (targetFile.exists()) {
+                targetFile.delete()
+            }
+            postMessage("AI插件下载失败：${e.message}")
+            false
+        }
+    }
+
+    private suspend fun installPlugin(apkFile: File): Boolean {
+        val installResult = RunShell.run(
+            "pm install -r \"${apkFile.absolutePath}\"",
+            isCheckIsPlaying = false
+        )
+        if (installResult.any { it.contains("Success", ignoreCase = true) }) {
+            return true
+        }
+        val errorMessage = installResult.joinToString("\n").ifBlank { "未返回安装结果" }
+        ShowMessage("AI插件安装失败：$errorMessage")
+        return false
+    }
+
+    private suspend fun launchPluginMainActivity(): Boolean {
+        val launchResult = RunShell.run(MAIN_ACTIVITY_CMD, isCheckIsPlaying = false)
+        val hasError = launchResult.any {
+            it.contains("Error", ignoreCase = true) || it.contains("Exception", ignoreCase = true)
+        }
+        if (hasError) {
+            val errorMessage = launchResult.joinToString("\n").ifBlank { "未返回启动结果" }
+            ShowMessage("AI插件启动失败：$errorMessage")
+            return false
+        }
+        return true
+    }
+
+    private suspend fun deletePluginApk(targetFile: File) = withContext(Dispatchers.IO) {
+        if (targetFile.exists()) {
+            targetFile.delete()
+        }
+    }
+
+    /**
+     * The plugin needs one foreground launch on first install so its app-side initialization
+     * can complete before the detector returns to the game and polls the local server again.
+     */
+    private suspend fun ensurePluginInstalled(): Boolean {
+        if (isPluginInstalled()) {
+            return true
+        }
+
+        val apkFile = getPluginApkFile() ?: return false
+        try {
+            ShowMessage("未检测到AI插件，开始自动下载安装")
+            if (!downloadPluginApk(apkFile)) {
+                return false
+            }
+            ShowMessage("AI插件下载完成，开始安装")
+            if (!installPlugin(apkFile)) {
+                return false
+            }
+            ShowMessage("AI插件安装成功，正在启动插件")
+            if (!launchPluginMainActivity()) {
+                return false
+            }
+            delay(PLUGIN_LAUNCH_WAIT_MS)
+            runGame()
+            return true
+        } finally {
+            deletePluginApk(apkFile)
+        }
+    }
 
     /**
      * Polls /status every ~1 second, restarting the service each iteration if unreachable.
      * Returns true once the server responds, or false after 10 seconds.
-     * Returns false immediately if the external AI detection plugin is not installed.
+     * Downloads and installs the external AI plugin automatically when it is missing.
      */
     private suspend fun ensureServerReady(): Boolean {
-        // Check whether the external AI detection plugin is installed before attempting to start.
-        val installed = RunShell.run("pm list packages com.coc.zkqyolo", isCheckIsPlaying = false)
-        if (installed.none { it.contains("com.coc.zkqyolo") }) {
-            ShowMessage("AI插件未安装，请去网盘手动下载后，才能使用AI功能")
+        if (!ensurePluginInstalled()) {
             return false
         }
 
@@ -57,7 +224,7 @@ object AiDetector {
                         // Verify the plugin version meets the minimum requirement.
                         val ver = status.version.toDoubleOrNull() ?: 0.0
                         if (ver < 1.01) {
-                            ShowMessage("AI插件版本过低，请手动下载最新版")
+                            ShowMessage("AI插件版本过低，请下载安装最新版")
                             return false
                         }
                         return true
@@ -69,7 +236,7 @@ object AiDetector {
                 delay(POLL_INTERVAL_MS)
             }
         }
-        ShowMessage("AI插件启动失败，请确保手动安装并启动")
+        ShowMessage("AI插件启动失败，请检查插件是否安装成功并已正常启动")
         return false
     }
 
