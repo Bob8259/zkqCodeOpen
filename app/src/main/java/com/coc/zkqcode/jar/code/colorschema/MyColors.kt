@@ -56,6 +56,9 @@ object MyColors : IUIColors by UIColors, IFeatureColors by FeatureColors, IMainB
     val ClockTower = ColorSchema.parse(
         221, 491, 1078, 633, "FFFBFF", "5|0|FFF1FF,10|0|0EB0D7,15|0|FFF0FF,20|0|FFFFFF,0|13|FFF4FF,5|13|FFFCFF,10|13|131314,15|13|FEEFFE,20|13|FFF8FF", 0, 0.9, "免费提速"
     )
+    val SmallGemIcon = ColorSchema.parse(
+        0, 0, 0, 0, "86FBE2", "0|2|91FEE6,-2|3|91FDE2,-4|1|7DF6DA,-4|-3|41C583,0|-3|4DDDA9,4|-2|8AFFED,4|1|79FCDF,3|4|74FAD4,1|5|73F8CD", 0, 0.9
+    )
 
     // Main Base Collect Resource Colors
     val MainBaseCollectElixir1 = ColorSchema.parse(
