@@ -20,23 +20,41 @@ import com.coc.zkqcode.jar.code.universal.smalltools.writeMemory
 import com.coc.zkqcode.jar.ui.schema.Schema
 
 suspend fun upgradeGearsAndPets(): Boolean {
-    if (!getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.UPGRADE_ALL_GEAR.key) && !getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.UPGRADE_WERA_GEAR.key) && !getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.UPGRADE_PETS.key)) return true
+    val shouldUpgradeGears = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.UPGRADE_ALL_GEAR.key) ||
+        getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.UPGRADE_WERA_GEAR.key)
+    val shouldUpgradePets = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.UPGRADE_PETS.key)
 
-    val storageKey = StorageKeys.withAccountNumber(
-        StorageKeys.UPGRADE_GEARS_AND_PETS, InGamesVars.currentAccountNumber
+    if (!shouldUpgradeGears && !shouldUpgradePets) return true
+
+    val gearStorageKey = StorageKeys.withAccountNumber(
+        StorageKeys.UPGRADE_GEARS, InGamesVars.currentAccountNumber
     )
 
-    // Guard: only attempt gear upgrade once per 8 hours (480 minutes)
-    if (!checkMemoryFile(storageKey, 480)) {
-        ShowMessage("账号${InGamesVars.currentAccountNumber}，该账号8小时内已检测装备和战宠升级")
-//        return true
+    // Guard only gear checks so pets can still be upgraded during the cooldown window.
+    val canUpgradeGears = if (shouldUpgradeGears) {
+        if (!checkMemoryFile(gearStorageKey, 480)) {
+            ShowMessage("账号${InGamesVars.currentAccountNumber}，该账号8小时内已检测装备升级")
+            false
+        } else {
+            true
+        }
+    } else {
+        false
     }
 
-    ShowMessage("准备升级装备和战宠")
-    val result: Boolean = withHeroHall { upgradeGearsAction() }
+    val actionName = when {
+        canUpgradeGears && shouldUpgradePets -> "装备和战宠"
+        canUpgradeGears -> "装备"
+        shouldUpgradePets -> "战宠"
+        else -> return true
+    }
+    ShowMessage("准备升级$actionName")
+    val result: Boolean = withHeroHall { upgradeGearsAction(canUpgradeGears, shouldUpgradePets) }
 
-    // Always record completion and return to main screen
-    writeMemory(storageKey, (System.currentTimeMillis() / 60_000).toString())
+    // Record only gear checks so the cooldown never blocks pet upgrades.
+    if (canUpgradeGears) {
+        writeMemory(gearStorageKey, (System.currentTimeMillis() / 60_000).toString())
+    }
     return result
 }
 
@@ -104,8 +122,8 @@ private suspend fun checkPets() {
     }
 }
 
-private suspend fun upgradeGearsAction() {
-    if (getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.UPGRADE_WERA_GEAR.key) || getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.UPGRADE_ALL_GEAR.key)) {
+private suspend fun upgradeGearsAction(shouldUpgradeGears: Boolean, shouldUpgradePets: Boolean) {
+    if (shouldUpgradeGears) {
         TouchActions.tap(685, 590, delayTime = 600)//Open Smith
         val upgradeGear = findMultiColorsUntil(schemas = listOf(MyColors.UpgradeGearArrow, MyColors.NewGear), duration = 800)
         if (upgradeGear != null) {
@@ -142,7 +160,7 @@ private suspend fun upgradeGearsAction() {
         }
         backToHeroHall()
     }
-    if (getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.UPGRADE_PETS.key)) {
+    if (shouldUpgradePets) {
         val petsIcon = findMultiColors(MyColors.PetsIconInHeroHall)
         if (petsIcon != null) {
             TouchActions.tap(petsIcon.x, petsIcon.y, delayTime = 500)
