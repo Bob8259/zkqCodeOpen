@@ -21,7 +21,7 @@ import com.coc.zkqcode.jar.ui.schema.Schema
 
 suspend fun upgradeGearsAndPets(): Boolean {
     val shouldUpgradeGears = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.UPGRADE_ALL_GEAR.key) ||
-        getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.UPGRADE_WERA_GEAR.key)
+            getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.UPGRADE_WERA_GEAR.key)
     val shouldUpgradePets = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.UPGRADE_PETS.key)
 
     if (!shouldUpgradeGears && !shouldUpgradePets) return true
@@ -164,6 +164,10 @@ private suspend fun upgradeGearsAction(shouldUpgradeGears: Boolean, shouldUpgrad
         val petsIcon = findMultiColors(MyColors.PetsIconInHeroHall)
         if (petsIcon != null) {
             TouchActions.tap(petsIcon.x, petsIcon.y, delayTime = 500)
+            val outerPetIcon = findMultiColorsUntil(schemas = listOf(MyColors.PetShopIcon, MyColors.PetShopIcon2), duration = 300)
+            if (outerPetIcon != null) {
+                TouchActions.tap(outerPetIcon.x, outerPetIcon.y, delayTime = 500)
+            }
             val petsShopBanner = findMultiColorsUntil(schemas = listOf(MyColors.PetsShopInnerBanner), duration = 1000)
             if (petsShopBanner != null) {
                 ShowMessage("已进入宠物店")

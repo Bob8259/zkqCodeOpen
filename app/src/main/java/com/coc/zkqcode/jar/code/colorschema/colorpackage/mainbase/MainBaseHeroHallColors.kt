@@ -7,6 +7,8 @@ import com.coc.zkqcode.jar.code.colorschema.ColorSchema
 interface IMainBaseHeroHallColors {
     val OpenHeroHall: ColorSchema
     val OpenClanCastle: ColorSchema
+    val PetShopIcon: ColorSchema
+    val PetShopIcon2: ColorSchema
     val RedExclamationMark: ColorSchema
     val PlaceBannerButton: ColorSchema
     val UpgradeGearArrow: ColorSchema
@@ -38,6 +40,14 @@ object MainBaseHeroHallColors : IMainBaseHeroHallColors {
     // Clan castle entry button shown from the hero hall area
     override val OpenClanCastle = ColorSchema.parse(
         196, 509, 1082, 628, "497CB2", "9|0|6DC7E5,18|0|3D404F,27|0|3DAFD1,36|0|4B7DB6,0|21|4579AE,9|21|3699C7,18|21|141A20,27|21|86D9F3,36|21|4678AF", 0, 0.9, "检测宝库"
+    )
+    // Direct pet shop entry button variant shown near the hero hall area
+    override val PetShopIcon = ColorSchema.parse(
+        162, 495, 1106, 627, "45C1DE", "7|0|36B5DA,15|0|1B85AE,23|0|38B2CF,30|0|2A9FC3,0|15|2EACD4,7|15|42BEDB,15|15|3EB9D7,23|15|39B2D1,30|15|279ABF", 0, 0.9, "直接开启宠物店按钮1"
+    )
+    // Alternate direct pet shop entry button variant
+    override val PetShopIcon2 = ColorSchema.parse(
+        190, 540, 1090, 626, "45C1DD", "5|0|55D0ED,11|0|1981AD,16|0|39B3D2,21|0|2393BA,0|11|3CBDDF,5|11|42BEDC,11|11|3EB9D7,16|11|3AB3D2,21|11|2392B7", 0, 0.9, "直接开启宠物店按钮2"
     )
     // Red indicator shown when a hero banner can be placed
     override val RedExclamationMark = ColorSchema.parse(
