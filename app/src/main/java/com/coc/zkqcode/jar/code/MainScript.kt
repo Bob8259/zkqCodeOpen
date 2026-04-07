@@ -22,6 +22,7 @@ import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
 import com.coc.zkqcode.jar.code.builderbase.others.turnOnClockTower
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.mainbase.others.collectClanCastleResources
+import com.coc.zkqcode.jar.code.mainbase.others.useHelpers
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.ui.schema.Schema
 import kotlinx.coroutines.CompletableDeferred
@@ -133,8 +134,8 @@ suspend fun runMainScript() {
 
 private suspend fun runTestCode() {
     while (true) {
-        enterMainScreen()
-//        ShowMessage(findMultiColors(MyColors.ClockTower).toString())
+        useHelpers()
+//        ShowMessage(findMultiColors(MyColors.InnerResearchHelper).toString())
         delay(1000)
     }
 }

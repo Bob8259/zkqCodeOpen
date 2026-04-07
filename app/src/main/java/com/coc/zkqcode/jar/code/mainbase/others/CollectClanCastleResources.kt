@@ -27,7 +27,7 @@ suspend fun collectClanCastleResources(): Boolean {
         ShowMessage("账号${InGamesVars.currentAccountNumber}，该账号今日已检测城堡资源")
         return true
     }
-
+    ShowMessage("账号${InGamesVars.currentAccountNumber}，正在检测城堡资源")
     clickRightBottom(1)
     zoomSmallMainBase()
 

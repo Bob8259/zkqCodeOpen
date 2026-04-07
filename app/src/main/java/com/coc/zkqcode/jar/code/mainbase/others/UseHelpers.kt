@@ -1,11 +1,17 @@
 package com.coc.zkqcode.jar.code.mainbase.others
 
 import com.coc.zkqcode.core.util.basic.ShowMessage
+import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.core.util.touchactions.TouchActions.swipe
+import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.InGamesVars
 import com.coc.zkqcode.jar.code.universal.aidetection.tiledAiDetect
+import com.coc.zkqcode.jar.code.universal.buildings.BaseType
+import com.coc.zkqcode.jar.code.universal.buildings.WorkerAndResearch
 import com.coc.zkqcode.jar.code.universal.clickRightBottom
+import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
+import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.smalltools.StorageKeys
 import com.coc.zkqcode.jar.code.universal.smalltools.checkMemoryFile
@@ -24,9 +30,11 @@ suspend fun useHelpers(): Boolean {
         ShowMessage("账号${InGamesVars.currentAccountNumber}，该账号今日已检测助手")
         return true
     }
-
+    ShowMessage("账号${InGamesVars.currentAccountNumber}，正在检测助手")
     clickRightBottom(1)
     zoomSmallMainBase()
+    val workerNumber = WorkerAndResearch.detectWorkerNumber(BaseType.Main)
+    val isUpgradeHelper = workerNumber.total >= 5
 
     // Scan the current view first, then retry once after swiping upward.
     suspend fun scanAndTapHelpers(): Boolean {
@@ -36,10 +44,14 @@ suspend fun useHelpers(): Boolean {
         for (detection in scan) {
             val box = detection.boundingBox
             TouchActions.tap(box.centerX().toInt(), box.centerY().toInt(), delayTime = 500)
-            // Follow-up helper actions are intentionally left blank for now.
-            writeMemory(storageKey, (System.currentTimeMillis() / 60_000).toString())
-            clickRightBottom(1)
-            return true
+            val openHelperHut = findMultiColorsUntil(schemas = listOf(MyColors.BuilderHelperIcon, MyColors.ResearchHelperIcon), duration = 200)
+            if (openHelperHut != null) {
+                TouchActions.tap(openHelperHut.x, openHelperHut.y, delayTime = 500)
+                checkResearchHelper(isUpgradeHelper)
+                writeMemory(storageKey, (System.currentTimeMillis() / 60_000).toString())
+                clickRightBottom(1)
+                return true
+            }
         }
         return false
     }
@@ -49,4 +61,60 @@ suspend fun useHelpers(): Boolean {
         scanAndTapHelpers()
     }
     return enterMainScreen()
+}
+
+private suspend fun clickLeisure() {
+    TouchActions.tap(1070, 625, delayTime = 200)//空闲中
+}
+
+private suspend fun checkResearchHelper(isUpgradeHelper: Boolean) {
+    repeat(15) {
+        val middleGreen = findMultiColors(MyColors.MiddleGreenButton)
+        if (middleGreen != null) {
+            TouchActions.tap(middleGreen.x, middleGreen.y, delayTime = 200)
+        }
+        val innerResearchHelper = findMultiColors(MyColors.InnerResearchHelper)
+        if (innerResearchHelper != null) {
+            TouchActions.tap(innerResearchHelper.x, innerResearchHelper.y, delayTime = 400)
+            val lockedResearchHelper = findMultiColors(MyColors.LockedResearchHelper)
+            if (lockedResearchHelper != null) {
+                TouchActions.tap(801, 623, delayTime = 200)
+                clickLeisure()
+            }
+            if (isUpgradeHelper && getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.UPGRADE_RESEARCH_HELPER.key)) {
+                ShowMessage("已勾选升级研究助手")
+                TouchActions.tap(801, 623, delayTime = 200)
+                TouchActions.tap(801, 623, delayTime = 200)
+                clickLeisure()
+            }
+            assignHelper()
+        }
+        val lockedBuilderHelper = findMultiColors(MyColors.LockedBuilderHelper)
+        if (lockedBuilderHelper != null && isUpgradeHelper && getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.UPGRADE_BUILDER_APPRENTICE.key)) {
+            ShowMessage("已勾选升级工人助手")
+            TouchActions.tap(lockedBuilderHelper.x, lockedBuilderHelper.y, delayTime = 400)
+            TouchActions.tap(801, 623, delayTime = 200)
+            TouchActions.tap(801, 623, delayTime = 200)
+            clickLeisure()
+        } else if (lockedBuilderHelper != null) {
+            return
+        }
+        val innerBuilderHelper = findMultiColors(MyColors.InnerBuilderHelper)
+        if (innerBuilderHelper != null) {
+            TouchActions.tap(innerBuilderHelper.x, innerBuilderHelper.y, delayTime = 400)
+            assignHelper()
+            return
+        }
+        delayWithMultiplier(200)
+    }
+}
+
+private suspend fun assignHelper() {
+    val assignHelper = findMultiColors(MyColors.AssignHelper)
+    if (assignHelper != null) {
+        TouchActions.tap(assignHelper.x, assignHelper.y, delayTime = 400)
+        TouchActions.tap(408, 473, delayTime = 200)//Continuously assign
+        TouchActions.tap(641, 536)
+        clickLeisure()
+    }
 }

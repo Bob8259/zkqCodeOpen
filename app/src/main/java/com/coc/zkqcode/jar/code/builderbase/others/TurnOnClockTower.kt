@@ -29,10 +29,10 @@ suspend fun turnOnClockTower(): Boolean {
 
     // Guard the Clock Tower check so each account only scans once every twenty-two hours.
     if (!checkMemoryFile(storageKey, 1320)) {
-        ShowMessage("22小时内已开启过时光钟楼，暂不检测")
+        ShowMessage("账号${InGamesVars.currentAccountNumber},22小时内已开启过时光钟楼，暂不检测")
         return true
     }
-
+    ShowMessage("账号${InGamesVars.currentAccountNumber}，正在检测时光钟楼")
     clickRightBottom(1)
     zoomSmallBuilderBase()
 
