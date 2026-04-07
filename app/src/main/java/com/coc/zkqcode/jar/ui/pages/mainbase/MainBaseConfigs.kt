@@ -204,7 +204,14 @@ fun LazyListScope.MainBaseConfig(
                 FlowRow {
                     SettingSwitchIcon(
                         key = "${MAIN_BASE_SETTINGS.HELPER_SETTINGS.key}_c$index",
-                        explain = "勾选后，会自动用实验助手以及建筑工人学徒。"
+                        explain = "勾选后，会自动用实验助手以及建筑工人学徒。",
+                        afterChange = { checked ->
+                            // Keep helper upgrade toggles consistent with the master helper switch.
+                            if (!checked) {
+                                GlobalVars.configStates["${MAIN_BASE_SETTINGS.UPGRADE_RESEARCH_HELPER.key}_c$index"]?.value = "0"
+                                GlobalVars.configStates["${MAIN_BASE_SETTINGS.UPGRADE_BUILDER_APPRENTICE.key}_c$index"]?.value = "0"
+                            }
+                        }
                     )
                     SettingSwitchIcon(
                         key = "${MAIN_BASE_SETTINGS.UPGRADE_RESEARCH_HELPER.key}_c$index",

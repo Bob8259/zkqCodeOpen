@@ -103,6 +103,9 @@ private suspend fun checkResearchHelper(isUpgradeHelper: Boolean) {
         if (innerBuilderHelper != null) {
             TouchActions.tap(innerBuilderHelper.x, innerBuilderHelper.y, delayTime = 400)
             assignHelper()
+            TouchActions.tap(801, 623, delayTime = 200)
+            TouchActions.tap(801, 623, delayTime = 200)
+            clickLeisure()
             return
         }
         delayWithMultiplier(200)
