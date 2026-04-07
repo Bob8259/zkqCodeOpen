@@ -82,7 +82,7 @@ private suspend fun checkResearchHelper(isUpgradeHelper: Boolean) {
                 clickLeisure()
             }
             if (isUpgradeHelper && getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.UPGRADE_RESEARCH_HELPER.key)) {
-                ShowMessage("已勾选升级研究助手")
+                ShowMessage("已勾选升级实验助手")
                 TouchActions.tap(801, 623, delayTime = 200)
                 TouchActions.tap(801, 623, delayTime = 200)
                 clickLeisure()

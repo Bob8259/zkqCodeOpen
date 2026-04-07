@@ -207,11 +207,11 @@ fun LazyListScope.MainBaseConfig(
                     )
                     SettingSwitchIcon(
                         key = "${MAIN_BASE_SETTINGS.UPGRADE_RESEARCH_HELPER.key}_c$index",
-                        explain = "升级实验助手的优先级高于购买建筑工人和升级工人学徒，请谨慎勾选！"
+                        explain = "升级实验助手的优先级低于购买新建筑工人，但高于升级工人学徒。"
                     )
                     SettingSwitchIcon(
                         key = "${MAIN_BASE_SETTINGS.UPGRADE_BUILDER_APPRENTICE.key}_c$index",
-                        explain = "升级工人学徒的优先级高于购买建筑工人，请谨慎勾选！"
+                        explain = "升级工人学徒的优先级低于购买新建筑工人和升级实验助手。"
                     )
                 }
             }

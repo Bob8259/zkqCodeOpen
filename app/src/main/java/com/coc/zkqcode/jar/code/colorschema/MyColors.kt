@@ -54,7 +54,7 @@ object MyColors : IUIColors by UIColors, IFeatureColors by FeatureColors, IMainB
     IMainBaseAttackColors by MainBaseAttackColors, IMainBaseClanColors by MainBaseClanColors, IMainBaseHeroHallColors by MainBaseHeroHallColors, IMainBaseSmallTutorialColors by MainBaseSmallTutorialColors {
     //Main Base Helper Colors
     val ResearchHelperIcon = ColorSchema.parse(
-        171, 492, 1054, 631, "353F5C", "5|0|48547E,11|0|374570,16|0|333F5F,21|0|6686CF,0|21|CEBFC8,5|21|32416B,11|21|6E89BC,16|21|435379,21|21|4E669E", 0, 0.9, "研究助手外部按钮"
+        171, 492, 1054, 631, "353F5C", "5|0|48547E,11|0|374570,16|0|333F5F,21|0|6686CF,0|21|CEBFC8,5|21|32416B,11|21|6E89BC,16|21|435379,21|21|4E669E", 0, 0.9, "实验助手外部按钮"
     )
     val BuilderHelperIcon = ColorSchema.parse(
         171, 492, 1054, 631, "6FB9F3", "6|2|5A9DD2,16|4|9EA4B5,24|5|6EB1E8,25|17|2A4AA0,17|24|85A0ED,12|18|ABD4FF,7|29|88B2EF,10|32|8FBCF0,21|32|95C3F5", 0, 0.9, "工人助手外部按钮"
