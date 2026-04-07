@@ -180,7 +180,6 @@ class WindowCenterPositionProvider : PopupPositionProvider {
     }
 }
 
-
 @Composable
 fun SettingInputRow(
     key: String,
@@ -195,7 +194,9 @@ fun SettingInputRow(
     val label = Schema.getDisplayName(key)
 
     Row(
-        modifier = Modifier.padding(top = topPadding)
+        modifier = Modifier
+            .padding(top = topPadding),
+        verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
             text = label, modifier = Modifier
@@ -233,7 +234,9 @@ fun SettingInputRowWithSuffix(key: String, suffix: String, afterChange: ((String
     val label = Schema.getDisplayName(key)
 
     Row(
-        modifier = Modifier.padding(top = 6.dp), verticalAlignment = Alignment.CenterVertically
+        modifier = Modifier
+            .padding(top = 6.dp),
+        verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
             text = label, modifier = Modifier.padding(end = 8.dp), style = MaterialTheme.typography.labelMedium
@@ -321,7 +324,7 @@ fun CustomButton(
 fun SettingSwitchIcon(
     key: String,
     explain: String? = null,
-    textTopPadding: Dp = 2.dp,
+    textTopPadding: Dp = 0.dp,
     afterChange: ((Boolean) -> Unit)? = null
 ) {
     // If key is absent from configStates, create a new state using the Schema default value
@@ -392,13 +395,15 @@ private fun CustomSwitch(
     checkedState: String,
     onCheckStateChange: (Boolean) -> Unit,
     explain: String? = null,
-    textTopPadding: Dp = 2.dp
+    textTopPadding: Dp = 0.dp
 ) {
     var showExplanation by remember { mutableStateOf(false) }
     val isChecked = checkedState == "1"
 
     Row(
-        modifier = Modifier.padding(top = 4.dp), verticalAlignment = Alignment.CenterVertically
+        modifier = Modifier
+            .padding(top = 6.dp),
+        verticalAlignment = Alignment.CenterVertically
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically, modifier = Modifier.clickable {

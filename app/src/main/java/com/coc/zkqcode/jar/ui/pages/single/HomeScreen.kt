@@ -215,11 +215,14 @@ fun HomeScreen(
                                     onSaveSuccess()
                                 })
                             }
-                            FlowRow {
+                            // Center mixed-height setting items within each FlowRow line so
+                            // switch labels and dropdown labels stay aligned after wrapping.
+                            FlowRow(
+                                itemVerticalAlignment = Alignment.CenterVertically
+                            ) {
                                 SettingInputRow(key = GLOBAL_SETTINGS.DELAY_MULTIPLIER.key)
                                 SettingInputRow(key = GLOBAL_SETTINGS.ENTER_GAME_TIMER.key)
                                 SettingSwitchIcon(key = GLOBAL_SETTINGS.RECORD_PROGRESS.key)
-
 
                                 SettingDropdown(
                                     key = GLOBAL_SETTINGS.AUTO_UPDATE.key,
@@ -236,9 +239,8 @@ fun HomeScreen(
                                         }
                                     }
                                 )
-                                Column(Modifier.padding(top = 6.dp)) {
-                                    SettingInputRow(key = GLOBAL_SETTINGS.DEVICE_REMARK.key)
-                                }
+                                SettingInputRow(key = GLOBAL_SETTINGS.DEVICE_REMARK.key)
+
                             }
                             FlowRow {
                                 CustomButton(
