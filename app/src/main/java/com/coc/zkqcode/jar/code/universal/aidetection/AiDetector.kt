@@ -17,6 +17,7 @@ import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.ByteArrayOutputStream
 import java.io.File
+import java.util.Locale
 import java.util.concurrent.TimeUnit
 
 data class DetectionResult(
@@ -92,9 +93,9 @@ object AiDetector {
         if (total > 0) {
             val totalMb = total / 1024.0 / 1024.0
             val percent = (downloaded * 100 / total).coerceAtMost(100)
-            return "AI插件下载中：$percent% (${String.format("%.2f", downloadedMb)}MB/${String.format("%.2f", totalMb)}MB)"
+            return "AI插件下载中：$percent% (${String.format(Locale.US, "%.2f", downloadedMb)}MB/${String.format(Locale.US, "%.2f", totalMb)}MB)"
         }
-        return "AI插件下载中：${String.format("%.2f", downloadedMb)}MB"
+        return "AI插件下载中：${String.format(Locale.US, "%.2f", downloadedMb)}MB"
     }
 
     private suspend fun downloadPluginApk(targetFile: File): Boolean = withContext(Dispatchers.IO) {
@@ -307,7 +308,7 @@ object AiDetector {
         distanceThreshold: Double = 5.0
     ): List<DetectionResult> {
         if (!ensureServerReady()) return emptyList()
-
+        ShowMessage("AI检测中，请耐心等待。\n检测速度取决于设备性能，低性能设备可能需要5-10秒。")
         val stream = ByteArrayOutputStream()
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
         val imageBytes = stream.toByteArray()
@@ -323,7 +324,7 @@ object AiDetector {
             // Surface HTTP errors with status code and body for easier debugging.
             if (!response.isSuccessful) {
                 ShowMessage("检测请求失败: HTTP ${response.code}, $responseBody")
-                return@detect emptyList()
+                return emptyList()
             }
 
             val parsed = gson.fromJson(responseBody, DetectResponse::class.java)
