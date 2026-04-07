@@ -29,6 +29,10 @@ interface IUIColors {
     val ArrowPointingDown: ColorSchema
     val DailyLoginReward: ColorSchema
     val BuilderBaseStarBonus: ColorSchema
+    val SmallGemIcon: ColorSchema
+    val PassSkinAd: ColorSchema
+    val PassAwardAd: ColorSchema
+    val ReturnTask: ColorSchema
     val MiddleGreenButton: ColorSchema
     val ExclusiveGift: ColorSchema
     val MorePointCoupon: ColorSchema
@@ -113,6 +117,23 @@ object UIColors : IUIColors {
     )
     override val BuilderBaseStarBonus = ColorSchema.parse(
         541, 522, 739, 606, "82E8B8", "39|0|82E8B8,79|0|82E8B8,119|0|82E8B8,158|0|82E8B8,0|42|3AD38A,39|42|3AD38A,79|42|3AD38A,119|42|3AD38A,158|42|3AD38A", 0, 0.9, "夜世界胜利之星"
+    )
+
+    // Small gem icon used across popup and shop UIs
+    override val SmallGemIcon = ColorSchema.parse(
+        0, 0, 0, 0, "86FBE2", "0|2|91FEE6,-2|3|91FDE2,-4|1|7DF6DA,-4|-3|41C583,0|-3|4DDDA9,4|-2|8AFFED,4|1|79FCDF,3|4|74FAD4,1|5|73F8CD", 0, 0.9
+    )
+    // Golden pass skin advertisement entry
+    override val PassSkinAd = ColorSchema.parse(
+        1164, 67, 1209, 116, "8C85FF", "9|0|FFFFFF,18|0|353535,27|0|FFFFFF,36|0|8D85FF,0|25|0D0D1B,9|25|FAF7F7,18|25|1310B2,27|25|CBCACA,36|25|1210EA", 0, 0.9, "令牌皮肤广告"
+    )
+    // Golden pass reward advertisement page marker
+    override val PassAwardAd = ColorSchema.parse(
+        1213, 34, 1250, 70, "8E86FF", "7|0|FFFFFF,15|0|212121,22|0|FFFFFF,29|0|8E86FF,0|18|1511EC,7|18|FAF6F6,15|18|0D0D0D,22|18|F8F8F8,29|18|1511EC", 0, 0.9, "令牌奖励页面"
+    )
+    // Return task panel marker on the event page
+    override val ReturnTask = ColorSchema.parse(
+        62, 490, 1272, 649, "CD8C4A", "4|0|CE8C4B,10|2|C68A48,16|4|C08746,24|-2|D59351,1148|-76|FFFFFF,1156|-74|FFFFFF,1148|-58|FFFFFF,1149|-61|FFFFFF,1152|-65|FFFFFF", 0, 0.9, "回归任务"
     )
 
     // Middle green confirmation button (e.g. events and helper tutorials)

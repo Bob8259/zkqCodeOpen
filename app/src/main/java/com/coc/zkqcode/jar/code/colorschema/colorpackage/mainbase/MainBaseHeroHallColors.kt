@@ -6,6 +6,7 @@ import com.coc.zkqcode.jar.code.colorschema.ColorSchema
 
 interface IMainBaseHeroHallColors {
     val OpenHeroHall: ColorSchema
+    val OpenClanCastle: ColorSchema
     val RedExclamationMark: ColorSchema
     val PlaceBannerButton: ColorSchema
     val UpgradeGearArrow: ColorSchema
@@ -33,6 +34,10 @@ object MainBaseHeroHallColors : IMainBaseHeroHallColors {
     // Hero hall entry icon used to open the management page
     override val OpenHeroHall = ColorSchema.parse(
         160, 490, 1120, 630, "4EB7F9", "7|0|5FC5FD,14|0|98EBFF,20|0|F9FFFF,27|0|2D5B89,0|17|0E90D2,7|17|3EB6F2,14|17|51BCF2,20|17|4C8DBD,27|17|0E75AA", 0, 0.9, "英雄殿堂标志"
+    )
+    // Clan castle entry button shown from the hero hall area
+    override val OpenClanCastle = ColorSchema.parse(
+        196, 509, 1082, 628, "497CB2", "9|0|6DC7E5,18|0|3D404F,27|0|3DAFD1,36|0|4B7DB6,0|21|4579AE,9|21|3699C7,18|21|141A20,27|21|86D9F3,36|21|4678AF", 0, 0.9, "检测宝库"
     )
     // Red indicator shown when a hero banner can be placed
     override val RedExclamationMark = ColorSchema.parse(
