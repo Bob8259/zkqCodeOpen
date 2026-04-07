@@ -11,6 +11,7 @@ import com.coc.zkqcode.jar.code.mainbase.herohall.upgradeGearsAndPets
 import com.coc.zkqcode.jar.code.mainbase.others.mainBaseCheckTutorials
 import com.coc.zkqcode.jar.code.mainbase.others.mainBaseCollectResources
 import com.coc.zkqcode.jar.code.mainbase.others.mainBaseRemoveObstacles
+import com.coc.zkqcode.jar.code.mainbase.others.useHelpers
 import com.coc.zkqcode.jar.code.mainbase.others.zoomSmallMainBase
 import com.coc.zkqcode.jar.code.mainbase.research.mainBaseResearch
 import com.coc.zkqcode.jar.code.universal.buildings.BaseType
@@ -35,5 +36,6 @@ suspend fun playMainBase(): Boolean {
     if (!placeHeroBanners()) return false
     if (!mainBaseCheckTutorials()) return false
     if (!upgradeGearsAndPets()) return false
+    if (!useHelpers()) return false
     return true
 }

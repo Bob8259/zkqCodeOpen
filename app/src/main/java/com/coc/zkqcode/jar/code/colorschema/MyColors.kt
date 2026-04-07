@@ -52,5 +52,10 @@ object MyColors : IUIColors by UIColors, IFeatureColors by FeatureColors, IMainB
     IBuilderBaseUpgradeColors by BuilderBaseUpgradeColors, IBuilderBaseClockTowerColors by BuilderBaseClockTowerColors, IBuilderBaseResearchColors by BuilderBaseResearchColors,
     IBuilderBaseAttackColors by BuilderBaseAttackColors, IUniversalUpgradeColors by UniversalUpgradeColors, IMainBaseUpgradeColors by MainBaseUpgradeColors, IMainBaseResearchColors by MainBaseResearchColors,
     IMainBaseResearchLevelColors by MainBaseResearchLevelColors, IMainBaseResourcesColors by MainBaseResourcesColors, IClanCapitalTutorialColors by ClanCapitalTutorialColors,
-    IMainBaseAttackColors by MainBaseAttackColors, IMainBaseClanColors by MainBaseClanColors, IMainBaseHelperColors by MainBaseHelperColors,
-    IMainBaseHeroHallColors by MainBaseHeroHallColors, IMainBaseSmallTutorialColors by MainBaseSmallTutorialColors
+    IMainBaseAttackColors by MainBaseAttackColors, IMainBaseClanColors by MainBaseClanColors, IMainBaseHelperColors by MainBaseHelperColors, IMainBaseHeroHallColors by MainBaseHeroHallColors,
+    IMainBaseSmallTutorialColors by MainBaseSmallTutorialColors {
+    // Main Base Magic Item Colors
+    val MagicItemIcon = ColorSchema.parse(
+        167, 502, 1124, 628, "2B2E66", "13|0|6FA7D9,26|0|89BEEB,38|0|B8D7D3,51|0|BEDDD8,0|21|282C60,13|21|9BD5FF,26|21|89BDEA,38|21|DF8442,51|21|FBA05D", 0, 0.9, "魔法道具图标"
+    )
+}

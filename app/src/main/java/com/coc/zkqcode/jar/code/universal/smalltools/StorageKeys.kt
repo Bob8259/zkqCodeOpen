@@ -20,6 +20,7 @@ object StorageKeys {
     const val JOIN_CLAN = "JoinClan"
     const val PLACE_HERO_BANNERS = "PlaceHeroBanners"
     const val COLLECT_CLAN_CASTLE_RESOURCES = "CollectClanCastleResources"
+    const val USE_MAGIC_ITEMS = "UseMagicItems"
     const val USE_HELPERS = "UseHelpers"
     const val UPGRADE_GEARS = "UpgradeGears"
 

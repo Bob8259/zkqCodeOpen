@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.ui.Modifier
@@ -246,12 +247,13 @@ fun LazyListScope.MainBaseConfig(
                 }
             }
         }
-
+        */
         // Shop purchases
         item {
-            AnimatedVisibility(visible = isExpanded) {
+            SettingSection(visible = isExpanded) {
                 Column {
                     FlowRow {
+                        /*
                         listOf(
                             MAIN_BASE_SETTINGS.BUY_STAR_ORE_WITH_RAID_MEDAL,
                             MAIN_BASE_SETTINGS.BUY_CLOCK_TOWER_POTION_WITH_RAID_MEDAL,
@@ -273,6 +275,17 @@ fun LazyListScope.MainBaseConfig(
                         ).forEach { setting ->
                             SettingSwitchIcon(key = "${setting.key}_c$index")
                         }
+                        */
+                        listOf(
+                            MAIN_BASE_SETTINGS.USE_RESEARCH_POTION,
+                            MAIN_BASE_SETTINGS.SELL_TRAINING_POTION,
+                            MAIN_BASE_SETTINGS.USE_CLOCK_TOWER_POTION,
+                            MAIN_BASE_SETTINGS.SELL_CLOCK_TOWER_POTION,
+                            MAIN_BASE_SETTINGS.USE_BUILDER_POTION,
+                            MAIN_BASE_SETTINGS.SELL_RING_OF_WALL
+                        ).forEach { setting ->
+                            SettingSwitchIcon(key = "${setting.key}_c$index")
+                        }
                     }
 
                     HorizontalDivider(
@@ -282,7 +295,7 @@ fun LazyListScope.MainBaseConfig(
                     )
                 }
             }
-        } */
+        }
 
     // Gear & Rewards
     item {
@@ -315,10 +328,13 @@ fun LazyListScope.MainBaseConfig(
                 SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.CLAIM_FREE_SHOP_REWARDS.key}_c$index")
                 */
                 SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.CLAIM_ACHIEVEMENT_GEMS.key}_c$index")/*
-                SettingSwitchIcon(
-                    key = "${MAIN_BASE_SETTINGS.USE_TEMP_ITEMS.key}_c$index",
-                    explain = "勾选此选项后，辅助会使用研究浓汤和建筑工人大餐。并且为了防止重复使用导致道具失效，每次只会使用一个道具。"
-                ) */
+                // USE_TEMP_ITEMS is intentionally detached from magic-item handling.
+                // Magic-item logic now follows the dedicated potion/ring switches only.
+                // SettingSwitchIcon(
+                //     key = "${MAIN_BASE_SETTINGS.USE_TEMP_ITEMS.key}_c$index",
+                //     explain = "勾选此选项后，辅助会使用研究浓汤和建筑工人大餐。并且为了防止重复使用导致道具失效，每次只会使用一个道具。"
+                // )
+                */
             }
         }
     }

@@ -23,6 +23,7 @@ import com.coc.zkqcode.jar.code.builderbase.others.turnOnClockTower
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.mainbase.others.collectClanCastleResources
 import com.coc.zkqcode.jar.code.mainbase.others.useHelpers
+import com.coc.zkqcode.jar.code.mainbase.others.useMagicItems
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.ui.schema.Schema
 import kotlinx.coroutines.CompletableDeferred
@@ -81,7 +82,7 @@ suspend fun runMainScript() {
     var lastUpdateCheckTime = System.currentTimeMillis()
     var nextUpdateInterval = (2 * 3600_000L) + (Math.random() * 3600_000L).toLong()
     while (currentCoroutineContext().isActive) {
-//        runTestCode()
+        runTestCode()
 
         displayAds()
         RunShell.runNoOutput("am kill-all")//clean up memory
@@ -134,7 +135,7 @@ suspend fun runMainScript() {
 
 private suspend fun runTestCode() {
     while (true) {
-        useHelpers()
+        useMagicItems()
 //        ShowMessage(findMultiColors(MyColors.InnerResearchHelper).toString())
         delay(1000)
     }
