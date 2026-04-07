@@ -287,12 +287,6 @@ fun LazyListScope.MainBaseConfig(
                             SettingSwitchIcon(key = "${setting.key}_c$index")
                         }
                     }
-
-                    HorizontalDivider(
-                        modifier = Modifier.padding(top = 6.dp),
-                        thickness = 1.dp,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 1f)
-                    )
                 }
             }
         }
