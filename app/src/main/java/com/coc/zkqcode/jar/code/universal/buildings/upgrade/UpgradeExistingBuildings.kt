@@ -18,6 +18,7 @@ import com.coc.zkqcode.jar.code.universal.recognizer.recognizeResources
 import com.coc.zkqcode.jar.code.universal.recognizer.recognizeUpgradeResources
 import com.coc.zkqcode.jar.code.universal.smalltools.getBooleanConfigRuntime
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
+import com.coc.zkqcode.jar.code.universal.buildings.tapGoldBar
 import com.coc.zkqcode.jar.code.universal.smalltools.getConfigRuntime
 import com.coc.zkqcode.jar.ui.schema.Schema
 import com.coc.zkqcode.jar.ui.schema.details.BuilderBaseBuildings
@@ -158,8 +159,7 @@ private suspend fun upgradeWalls(currentBase: BaseType, wallType: WallType): Loo
         WallType.Elixir -> "圣水"
     }
     ShowMessage("刷墙类型：$wallTypeName")
-    TouchActions.tap(1230, 40, delayTime = 500)//Tap gold bar
-    TouchActions.tap(1230, 40, delayTime = 500)//Close distractions
+    tapGoldBar()
     val isBatchUpgrade = if (currentBase == BaseType.Main) {
         getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.BATCH_WALL_UPGRADE_SETTINGS.key)
     } else {
@@ -213,7 +213,7 @@ private suspend fun upgradeWalls(currentBase: BaseType, wallType: WallType): Loo
             val usableResource = currentResource - targetResource
             val upgradableNumber = if (wallCost > 0) kotlin.math.ceil(usableResource / wallCost).toInt().coerceAtLeast(0) else 0
             ShowMessage("升级单个城墙花费：$wallCost\n当前资源数量：${currentResource}，当前资源百分比：${currentPercent}\n可升级数量：$upgradableNumber")
-            TouchActions.tap(1130, 54, delayTime = 500)
+            tapGoldBar()
             val upgradeCrossMark = findMultiColorsUntil(schemas = listOf(MyColors.UpgradeWallCrossMark), duration = 1000)
             if (upgradeCrossMark != null) {
                 TouchActions.tap(upgradeCrossMark.x, upgradeCrossMark.y, delayTime = 500)
@@ -312,7 +312,7 @@ private suspend fun upgradeHero(building: String): LoopAction {
 
 // Handles the regular building upgrade flow; returns LoopAction to control the caller's loop
 private suspend fun upgradeBuilding(building: String, currentBase: BaseType, attempt: Int): LoopAction {
-    TouchActions.tap(1233, 37)// tap gold to close worker list
+    tapGoldBar()
     // Check for the upgrade action (Hammer icon)
     val hammer = findMultiColorsUntil(schemas = listOf(MyColors.UpgradeHammer), duration = 1000) ?: return LoopAction.Continue // Should not happen if build was found, but be safe
 
@@ -345,7 +345,7 @@ private suspend fun upgradeBuilding(building: String, currentBase: BaseType, att
             return LoopAction.Break
         }
     }
-    clickRightBottom(2)
+    tapGoldBar()
     ShowMessage("升级成功: $building (第 $attempt 个)")
     return LoopAction.Proceed
 }

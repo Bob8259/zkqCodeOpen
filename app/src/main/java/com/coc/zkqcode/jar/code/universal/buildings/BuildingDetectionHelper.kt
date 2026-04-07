@@ -1,6 +1,7 @@
 package com.coc.zkqcode.jar.code.universal.buildings
 
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
+import com.coc.zkqcode.core.util.touchactions.TouchActions
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
@@ -315,4 +316,8 @@ fun levenshteinDistance(s1: String, s2: String): Int {
         }
     }
     return dp[s2.length]
+}
+
+suspend fun tapGoldBar() {
+    TouchActions.tap(1235, 35)
 }
