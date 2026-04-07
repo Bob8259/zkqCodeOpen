@@ -306,7 +306,7 @@ fun HomeScreen(
                 .fillMaxWidth()
                 .padding(bottom = 4.dp)
         ) {
-            Row {
+            Row(modifier = Modifier.padding(start = 6.dp)) {
                 CustomButton(
                     text = "保存并运行", onClick = {
                         saveAndSetPlaying(true)

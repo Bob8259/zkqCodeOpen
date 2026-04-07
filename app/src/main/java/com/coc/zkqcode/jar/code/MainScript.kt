@@ -133,7 +133,7 @@ suspend fun runMainScript() {
 
 private suspend fun runTestCode() {
     while (true) {
-        turnOnClockTower()
+        enterMainScreen()
 //        ShowMessage(findMultiColors(MyColors.ClockTower).toString())
         delay(1000)
     }

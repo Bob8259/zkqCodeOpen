@@ -74,4 +74,14 @@ object MyColors : IUIColors by UIColors, IFeatureColors by FeatureColors, IMainB
         115, 85, 1130, 610, "0DD0FF", "1|2|09C8FF,-3|0|4AE3FF,-3|-3|49EFFF,2|-3|1AE9FF,3|0|16DCFF,-3|4|03BAF2,-13|-8|B9DCD7,10|-9|B9DCD7,10|9|83C0B7", 0, 0.92
     )
 
+    //UI Colors
+    val PassSkinAd = ColorSchema.parse(
+        1164, 67, 1209, 116, "8C85FF", "9|0|FFFFFF,18|0|353535,27|0|FFFFFF,36|0|8D85FF,0|25|0D0D1B,9|25|FAF7F7,18|25|1310B2,27|25|CBCACA,36|25|1210EA", 0, 0.9, "令牌皮肤广告"
+    )
+    val PassAwardAd = ColorSchema.parse(
+        1213, 34, 1250, 70, "8E86FF", "7|0|FFFFFF,15|0|212121,22|0|FFFFFF,29|0|8E86FF,0|18|1511EC,7|18|FAF6F6,15|18|0D0D0D,22|18|F8F8F8,29|18|1511EC", 0, 0.9, "令牌奖励页面"
+    )
+    val ReturnTask = ColorSchema.parse(
+        62, 490, 1272, 649, "DD9653", "10|2|D89551,16|5|CE8F4E,22|7|C88D4D,1153|-71|FFFFFF,-2|81|363636,16|83|343434,1158|-56|FFFFFF,1141|-71|FFFFFF,1143|-53|FFFFFF", 0, 0.9, "回归任务"
+    )
 }

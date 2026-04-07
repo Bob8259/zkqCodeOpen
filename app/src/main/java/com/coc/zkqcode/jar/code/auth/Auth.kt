@@ -8,9 +8,12 @@ import com.coc.zkqcode.core.util.crypto.solvePoW
 import com.coc.zkqcode.jar.ui.schema.Schema.GLOBAL_SETTINGS
 import com.coc.zkqcode.nativehelper.RustTools
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
+import java.net.SocketTimeoutException
+import kotlin.random.Random
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -28,6 +31,23 @@ private val httpClient = OkHttpClient()
 
 // Dedicated client with short timeouts for network time fetching
 private val timeClient = OkHttpClient.Builder().connectTimeout(5, TimeUnit.SECONDS).readTimeout(5, TimeUnit.SECONDS).build()
+
+/**
+ * Retries [action] indefinitely on connection timeout (SocketTimeoutException),
+ * waiting a random delay between 2–5 seconds between attempts and showing a message.
+ * Any other exception is rethrown immediately.
+ */
+private suspend fun <T> retryOnTimeout(action: suspend () -> T): T {
+    while (true) {
+        try {
+            return action()
+        } catch (_: SocketTimeoutException) {
+            val delayMs = Random.nextLong(2000L, 5001L)
+            ShowMessage("连接超时，${delayMs / 1000}秒后重试...")
+            delay(delayMs)
+        }
+    }
+}
 
 // Fetch epoch millis from QQ video checktime API (returns seconds, multiply by 1000)
 private suspend fun fetchTimestampFromQQ(): Long? = withContext(Dispatchers.IO) {
@@ -122,31 +142,6 @@ suspend fun userAuth() {
         // Retrieve last_time from native Rust storage (auto-initializes on first call)
         val lastTime = RustTools.getLastTime()
 
-        val powNonce = try {
-            val challengeRequest = Request.Builder().url("${baseUrl}api/pow/challenge").get().build()
-            val challengeResponse = withContext(Dispatchers.IO) {
-                httpClient.newCall(challengeRequest).execute().use { response ->
-                    if (!response.isSuccessful) {
-                        throw IllegalStateException("PoW challenge failed: ${response.code}")
-                    }
-                    response.body.string()
-                }
-            }
-            JSONObject(challengeResponse).getString("nonce")
-        } catch (_: Exception) {
-            // Flag ad display on PoW challenge failure
-            GlobalVars.isShowAd = true
-            return
-        }
-
-        val powSalt = try {
-            solvePoW(powNonce)
-        } catch (_: Exception) {
-            // Flag ad display on PoW solve failure
-            GlobalVars.isShowAd = true
-            return
-        }
-
         val payload = "email=${urlEncode(email)}" + "&password=${urlEncode(password)}" + "&timestamp=$timestamp" + "&last_time=$lastTime"
 
         val encryptionParts = try {
@@ -162,22 +157,35 @@ suspend fun userAuth() {
             return
         }
 
-        val postData = "public_key=${encryptionParts[0]}" + "&nonce=${encryptionParts[1]}" + "&data=${encryptionParts[2]}" + "&pow_nonce=$powNonce" + "&pow_salt=$powSalt"
+        // A PoW challenge is only valid for 20 s, so fetch a fresh one for every deduct attempt.
+        // The entire challenge→solve→deduct sequence is retried together on connection timeout.
+        val (responseCode, responseBody) = try {
+            retryOnTimeout {
+                // Fetch a fresh PoW challenge and parse the nonce in one step
+                val powNonce = withContext(Dispatchers.IO) {
+                    httpClient.newCall(
+                        Request.Builder().url("${baseUrl}api/pow/challenge").get().build()
+                    ).execute().use { response ->
+                        if (!response.isSuccessful) throw IllegalStateException("PoW challenge failed: ${response.code}")
+                        JSONObject(response.body.string()).getString("nonce")
+                    }
+                }
 
-        val responseCode: Int
-        val responseBody: String
-        try {
-            val requestBody = postData.toRequestBody("application/x-www-form-urlencoded".toMediaTypeOrNull())
-            val deductRequest = Request.Builder().url("${baseUrl}api/mobile-deduct").post(requestBody).build()
-            val response = withContext(Dispatchers.IO) {
-                httpClient.newCall(deductRequest).execute()
-            }
-            response.use {
-                responseCode = it.code
-                responseBody = it.body.string()
+                // Solve the PoW locally
+                val powSalt = solvePoW(powNonce)
+
+                // Build and send the deduct request with the fresh PoW
+                val postData = "public_key=${encryptionParts[0]}" + "&nonce=${encryptionParts[1]}" + "&data=${encryptionParts[2]}" + "&pow_nonce=$powNonce" + "&pow_salt=$powSalt"
+                withContext(Dispatchers.IO) {
+                    httpClient.newCall(
+                        Request.Builder().url("${baseUrl}api/mobile-deduct")
+                            .post(postData.toRequestBody("application/x-www-form-urlencoded".toMediaTypeOrNull()))
+                            .build()
+                    ).execute().use { Pair(it.code, it.body.string()) }
+                }
             }
         } catch (_: Exception) {
-            // Flag ad display on deduct request failure
+            // Flag ad display on PoW challenge or deduct request failure
             GlobalVars.isShowAd = true
             return
         }

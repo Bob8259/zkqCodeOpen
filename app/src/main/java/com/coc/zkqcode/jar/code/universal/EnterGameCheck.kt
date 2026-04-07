@@ -3,9 +3,12 @@ package com.coc.zkqcode.jar.code.universal
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.core.util.basic.ShowMessage
+import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
 import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.MyColors
+import com.coc.zkqcode.jar.code.mainbase.attack.mainBaseDeployTroops
+import com.coc.zkqcode.jar.code.mainbase.others.zoomSmallMainBase
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.smalltools.checkReconnections
 import com.coc.zkqcode.jar.code.universal.smalltools.getBooleanConfigRuntime
@@ -99,6 +102,8 @@ private suspend fun closeAdvertisements() {
         MyColors.MiddleGreenButton,
         MyColors.ExclusiveGift,
         MyColors.MorePointCoupon,
+        MyColors.PassSkinAd,
+        MyColors.PassAwardAd
     )
 
     // 3. Iterate through schemas
@@ -124,6 +129,11 @@ private suspend fun closeAdvertisements() {
             TouchActions.tap(946, 601, delayTime = 300)
         }
 
+    }
+    findMultiColors(byteBuffer = screenBuffer, schema = MyColors.ReturnTask, increment = 1)?.let {
+        ShowMessage("检测到回归教程")
+        zoomSmallMainBase()
+        mainBaseDeployTroops()
     }
     findMultiColors(byteBuffer = screenBuffer, schema = MyColors.TencentChildProtection, increment = 1)?.let {
         TouchActions.tap(1011, 87, delayTime = 500)

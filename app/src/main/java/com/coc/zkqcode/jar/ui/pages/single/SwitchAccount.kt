@@ -20,6 +20,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -123,12 +124,15 @@ fun SwitchAccount(onClose: () -> Unit) {
                         accountNumber = (current + 1).toString()
                     })
                 }
-                // Account Selection Row
+                // Match the compact input row sizing used by ExtractGameSaveContent.
                 Row(
-                    verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(vertical = 8.dp), horizontalArrangement = Arrangement.Center
+                    verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(top = 8.dp), horizontalArrangement = Arrangement.Center
                 ) {
                     Text(
-                        text = "切换到第", modifier = Modifier.padding(horizontal = 8.dp), color = Color.Black
+                        text = "切换到第",
+                        modifier = Modifier.padding(end = 8.dp),
+                        color = Color.Black,
+                        style = MaterialTheme.typography.labelMedium
                     )
 
                     BasicTextField(
@@ -138,29 +142,25 @@ fun SwitchAccount(onClose: () -> Unit) {
                                 accountNumber = newValue.filter { it.isDigit() }
                             }
                         }, modifier = Modifier
-                            .width(60.dp)
+                            .width(48.dp)
                             .background(
                                 color = Color.White, shape = RoundedCornerShape(4.dp)
                             )
                             .border(1.dp, Color.Gray, RoundedCornerShape(4.dp))
                             .padding(4.dp)
-                            .height(24.dp), // Adjust height to match typical text field
+                            .align(Alignment.CenterVertically),
                         singleLine = true
                     )
 
                     Text(
-                        text = "个账号", modifier = Modifier.padding(horizontal = 8.dp), color = Color.Black
+                        text = "个账号",
+                        modifier = Modifier.padding(start = 8.dp),
+                        color = Color.Black,
+                        style = MaterialTheme.typography.labelMedium
                     )
                 }
             }
             FlowRow(horizontalArrangement = Arrangement.Center) {
-                HorizontalDivider(
-                    modifier = Modifier.padding(vertical = 8.dp), thickness = 1.dp, color = Color.Gray
-                )
-                ExtractGameSaveContent()
-                HorizontalDivider(
-                    modifier = Modifier.padding(vertical = 8.dp), thickness = 1.dp, color = Color.Gray
-                )
                 Row {
                     // Confirm Button aligned to start
                     CustomButton(
@@ -235,6 +235,10 @@ fun SwitchAccount(onClose: () -> Unit) {
                             }
                         })
                 }
+                HorizontalDivider(
+                    modifier = Modifier.padding(vertical = 8.dp), thickness = 1.dp, color = Color.Gray
+                )
+                ExtractGameSaveContent()
             }
         }
     }
