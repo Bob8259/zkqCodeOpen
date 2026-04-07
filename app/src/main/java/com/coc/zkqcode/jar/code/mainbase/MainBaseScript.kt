@@ -8,6 +8,7 @@ import com.coc.zkqcode.jar.code.mainbase.clan.joinClan
 import com.coc.zkqcode.jar.code.mainbase.clan.requestReinforcements
 import com.coc.zkqcode.jar.code.mainbase.herohall.placeHeroBanners
 import com.coc.zkqcode.jar.code.mainbase.herohall.upgradeGearsAndPets
+import com.coc.zkqcode.jar.code.mainbase.others.collectClanCastleResources
 import com.coc.zkqcode.jar.code.mainbase.others.mainBaseCheckTutorials
 import com.coc.zkqcode.jar.code.mainbase.others.mainBaseCollectResources
 import com.coc.zkqcode.jar.code.mainbase.others.mainBaseRemoveObstacles
@@ -36,6 +37,7 @@ suspend fun playMainBase(): Boolean {
     if (!placeHeroBanners()) return false
     if (!mainBaseCheckTutorials()) return false
     if (!upgradeGearsAndPets()) return false
+    if (!collectClanCastleResources()) return false
     if (!useHelpers()) return false
     return true
 }

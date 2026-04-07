@@ -45,7 +45,7 @@ suspend fun useMagicItems(): Boolean {
     // Scan the current view first, then retry once after swiping upward.
     suspend fun scanAndTapMagicItems(): Boolean {
         val scan = tiledAiDetect(
-            modelName = "building-detect", callerTag = "UseMagicItems", classIndex = 0
+            modelName = "building-detect", callerTag = "UseMagicItems", classIndex = 4
         )
         for (detection in scan) {
             val box = detection.boundingBox
