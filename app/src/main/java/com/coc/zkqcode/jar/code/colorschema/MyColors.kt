@@ -61,6 +61,9 @@ object MyColors : IUIColors by UIColors, IFeatureColors by FeatureColors, IMainB
     val MagicItemIcon2 = ColorSchema.parse(
         190, 513, 1106, 631, "2E316C", "13|0|76ADDF,27|0|90C7F4,41|0|C1DEDB,54|0|868684,0|17|2E3163,13|17|93CFFC,27|17|8DC3F0,41|17|EF9553,54|17|FA9B56", 0, 0.9, "魔法物品按钮7按钮"
     )
+    val MagicItemIcon3 = ColorSchema.parse(
+        179, 525, 1104, 631, "2B37BA", "10|0|9AD3FF,20|0|719BC5,29|0|BBD5D2,39|0|B3A8A3,0|17|2531B4,10|17|99D2FE,20|17|5A7BA3,29|17|D17028,39|17|FDA362", 0, 0.9, "魔法物品按钮8按钮"
+    )
     val BuilderPotion = ColorSchema.parse(
         280, 170, 1000, 520, "E4B749", "13|3|C19832,13|18|C29734,39|-19|7DD7F6,36|-15|7DD7F6,34|-6|7DD7F5,2|-46|9AD7FF,8|-55|95D0FF,13|-51|92CCFD,13|-34|394B59", 0, 0.9, "工人药水"
     )

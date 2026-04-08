@@ -25,6 +25,7 @@ import com.coc.zkqcode.jar.code.mainbase.others.collectClanCastleResources
 import com.coc.zkqcode.jar.code.mainbase.others.useHelpers
 import com.coc.zkqcode.jar.code.mainbase.others.useMagicItems
 import com.coc.zkqcode.jar.code.universal.buildings.BaseType
+import com.coc.zkqcode.jar.code.universal.buildings.upgrade.detectInstantBuildCost
 import com.coc.zkqcode.jar.code.universal.buildings.upgrade.upgradeBuildings
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.recognizer.recognizeUpgradeResources
@@ -85,7 +86,7 @@ suspend fun runMainScript() {
     var lastUpdateCheckTime = System.currentTimeMillis()
     var nextUpdateInterval = (2 * 3600_000L) + (Math.random() * 3600_000L).toLong()
     while (currentCoroutineContext().isActive) {
-        runTestCode()
+//        runTestCode()
 
         displayAds()
         RunShell.runNoOutput("am kill-all")//clean up memory
@@ -138,7 +139,7 @@ suspend fun runMainScript() {
 private suspend fun runTestCode() {
     while (true) {
 //        upgradeBuildings(BaseType.Main)
-        ShowMessage(recognizeUpgradeResources(BaseType.Main).toString())
+        ShowMessage(detectInstantBuildCost().toString())
 //        ShowMessage(findMultiColors(MyColors.InnerResearchHelper).toString())
         delay(1000)
     }

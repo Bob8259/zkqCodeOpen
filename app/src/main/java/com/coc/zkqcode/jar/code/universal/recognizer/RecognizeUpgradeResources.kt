@@ -1,5 +1,8 @@
 package com.coc.zkqcode.jar.code.universal.recognizer
 
+import android.graphics.Bitmap
+import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
+import com.coc.zkqcode.jar.code.universal.aidetection.AiDetector
 import com.coc.zkqcode.jar.code.universal.buildings.BaseType
 
 /**
@@ -17,16 +20,38 @@ suspend fun recognizeUpgradeResources(currentBase: BaseType): Int {
         BaseType.Main -> listOf(750, 620, 950, 655)
         BaseType.Builder -> listOf(540, 595, 695, 665)
     }
+    val width = endX - startX
+    val height = endY - startY
 
-    val results = TextRecognizer.recognize(
-        startX = startX, startY = startY,
-        endX = endX, endY = endY,
-        useChinese = false,
-        applyPreprocess = true,
-        threshold = 190,
-    )
+    // Capture the screen first so the number can be recognized from the cropped bitmap.
+    val screenBuffer = ScreenCaptureManager.capture(asBitmap = true) as? Bitmap ?: return 0
 
-    // Join all recognized text lines and extract the numeric value
-    val combinedText = results.joinToString("") { it.text }
-    return extractValue(combinedText)
+    // Return 0 when the crop area is invalid or outside the current screen bounds.
+    if (startX < 0 || startY < 0 || endX > screenBuffer.width || endY > screenBuffer.height) {
+        return 0
+    }
+
+    val cropBitmap = Bitmap.createBitmap(screenBuffer, startX, startY, width, height)
+
+    // Return 0 when the AI model cannot be prepared for numeric detection.
+    if (!AiDetector.loadWeights("numbers")) return 0
+    try {
+        val detections = AiDetector.detect(
+            bitmap = cropBitmap,
+            clearWeightsAfter = false,
+            threshold = 0.3f
+        )
+
+        // Return 0 explicitly when no digits are detected in the target area.
+        if (detections.isEmpty()) return 0
+
+        // Sort detections from left to right before combining them into a number string.
+        val result = detections.sortedBy { it.boundingBox.centerX() }
+            .joinToString("") { detection -> detection.classIndex.toString() }
+
+        return result.toIntOrNull() ?: 0
+    } finally {
+        // Always clear the model weights after detection to avoid leaking resources.
+        AiDetector.clearWeights()
+    }
 }
