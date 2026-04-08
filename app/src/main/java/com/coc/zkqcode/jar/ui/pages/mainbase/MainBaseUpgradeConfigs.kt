@@ -65,6 +65,11 @@ fun MainBaseUpgradeConfigs(index: Int, onNavigatePriority: (Int) -> Unit = {}) {
                 }
             }
         }
+        // Keep paired fallback options adjacent because they share the same row pattern.
         InputRowWithCheckBox(checkBoxKey = "${MAIN_BASE_SETTINGS.INSTANT_UPGRADE.key}_c$index", inputKey = "${MAIN_BASE_SETTINGS.INSTANT_UPGRADE_THRESHOLD.key}_c$index")
+        InputRowWithCheckBox(
+            checkBoxKey = "${MAIN_BASE_SETTINGS.UPGRADE_ANY_BUILDING_AFTER_CONSECUTIVE_FAILURES.key}_c$index",
+            inputKey = "${MAIN_BASE_SETTINGS.UPGRADE_ANY_BUILDING_AFTER_CONSECUTIVE_FAILURES_THRESHOLD.key}_c$index"
+        )
     }
 }

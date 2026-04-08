@@ -40,6 +40,13 @@ object MainBaseSettings {
     val WALL_UPGRADE_SETTINGS = SettingDef("wall_upgrade_settings", "升级城墙", 1, "MAIN_BASE_SETTINGS")
     val INSTANT_UPGRADE = SettingDef("instant_upgrade", "用宝石升级消耗低于", 0, "MAIN_BASE_SETTINGS")
     val INSTANT_UPGRADE_THRESHOLD = SettingDef("instant_upgrade_threshold", "宝石的建筑", "3", "MAIN_BASE_SETTINGS")
+    // Fallback trigger after repeated upgrade failures.
+    val UPGRADE_ANY_BUILDING_AFTER_CONSECUTIVE_FAILURES = SettingDef(
+        "upgrade_any_building_after_consecutive_failures", "连续升级失败", 0, "MAIN_BASE_SETTINGS"
+    )
+    val UPGRADE_ANY_BUILDING_AFTER_CONSECUTIVE_FAILURES_THRESHOLD = SettingDef(
+        "upgrade_any_building_after_consecutive_failures_threshold", "次后，升级任意建筑", "3", "MAIN_BASE_SETTINGS"
+    )
 
     val BATCH_WALL_UPGRADE_SETTINGS =
         SettingDef("batch_wall_upgrade_settings", "批量升级城墙", 1, "MAIN_BASE_SETTINGS")
@@ -159,6 +166,8 @@ object MainBaseSettings {
         WALL_UPGRADE_SETTINGS,
         INSTANT_UPGRADE,
         INSTANT_UPGRADE_THRESHOLD,
+        UPGRADE_ANY_BUILDING_AFTER_CONSECUTIVE_FAILURES,
+        UPGRADE_ANY_BUILDING_AFTER_CONSECUTIVE_FAILURES_THRESHOLD,
         BATCH_WALL_UPGRADE_SETTINGS,
         SAVE_WORKER,
         BUILDING_CONVERSION_SETTINGS,

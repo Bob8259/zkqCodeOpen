@@ -24,6 +24,8 @@ import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.mainbase.others.collectClanCastleResources
 import com.coc.zkqcode.jar.code.mainbase.others.useHelpers
 import com.coc.zkqcode.jar.code.mainbase.others.useMagicItems
+import com.coc.zkqcode.jar.code.universal.buildings.BaseType
+import com.coc.zkqcode.jar.code.universal.buildings.upgrade.upgradeBuildings
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.ui.schema.Schema
 import kotlinx.coroutines.CompletableDeferred
@@ -135,7 +137,7 @@ suspend fun runMainScript() {
 
 private suspend fun runTestCode() {
     while (true) {
-        useMagicItems()
+        upgradeBuildings(BaseType.Main)
 //        ShowMessage(findMultiColors(MyColors.InnerResearchHelper).toString())
         delay(1000)
     }
