@@ -20,10 +20,10 @@ suspend fun useMagicItems(): Boolean {
     // Only the explicit magic-item toggles should enable this flow.
     val shouldUseMagicItems = listOf(
         Schema.MAIN_BASE_SETTINGS.USE_RESEARCH_POTION.key,
-        Schema.MAIN_BASE_SETTINGS.SELL_TRAINING_POTION.key,
         Schema.MAIN_BASE_SETTINGS.USE_CLOCK_TOWER_POTION.key,
-        Schema.MAIN_BASE_SETTINGS.SELL_CLOCK_TOWER_POTION.key,
         Schema.MAIN_BASE_SETTINGS.USE_BUILDER_POTION.key,
+        Schema.MAIN_BASE_SETTINGS.SELL_TRAINING_POTION.key,
+        Schema.MAIN_BASE_SETTINGS.SELL_CLOCK_TOWER_POTION.key,
         Schema.MAIN_BASE_SETTINGS.SELL_RING_OF_WALL.key
     ).any { configKey ->
         getBooleanConfigRuntime(configKey)
@@ -52,9 +52,9 @@ suspend fun useMagicItems(): Boolean {
             TouchActions.tap(box.centerX().toInt(), box.centerY().toInt(), delayTime = 500)
             val magicItemIcon = findMultiColors(MyColors.MagicItemIcon)
             if (magicItemIcon != null) {
-                TouchActions.tap(magicItemIcon.x, magicItemIcon.y, delayTime = 500)
+                TouchActions.tap(magicItemIcon.x, magicItemIcon.y, delayTime = 800)
                 // Record memory immediately after the magic item entry is opened.
-                delayWithMultiplier(100000)
+
                 writeMemory(storageKey, (System.currentTimeMillis() / 60_000).toString())
                 clickRightBottom(1)
                 return true
@@ -68,4 +68,9 @@ suspend fun useMagicItems(): Boolean {
         scanAndTapMagicItems()
     }
     return enterMainScreen()
+}
+
+private suspend fun checkMagicItems(){
+
+
 }

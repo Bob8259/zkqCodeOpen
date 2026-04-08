@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -182,10 +183,7 @@ class WindowCenterPositionProvider : PopupPositionProvider {
 
 @Composable
 fun SettingInputRow(
-    key: String,
-    topPadding: Dp = 6.dp,
-    labelVerticalOffset: Dp = 0.dp,
-    afterChange: ((String) -> Unit)? = null
+    key: String, topPadding: Dp = 6.dp, labelVerticalOffset: Dp = 0.dp, afterChange: ((String) -> Unit)? = null
 ) {
     // Use getOrPut to lazily initialize missing config keys with their Schema defaults
     val state = GlobalVars.configStates.getOrPut(key) {
@@ -194,9 +192,7 @@ fun SettingInputRow(
     val label = Schema.getDisplayName(key)
 
     Row(
-        modifier = Modifier
-            .padding(top = topPadding),
-        verticalAlignment = Alignment.CenterVertically
+        modifier = Modifier.padding(top = topPadding), verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
             text = label, modifier = Modifier
@@ -234,9 +230,7 @@ fun SettingInputRowWithSuffix(key: String, suffix: String, afterChange: ((String
     val label = Schema.getDisplayName(key)
 
     Row(
-        modifier = Modifier
-            .padding(top = 6.dp),
-        verticalAlignment = Alignment.CenterVertically
+        modifier = Modifier.padding(top = 6.dp), verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
             text = label, modifier = Modifier.padding(end = 8.dp), style = MaterialTheme.typography.labelMedium
@@ -322,10 +316,7 @@ fun CustomButton(
 
 @Composable
 fun SettingSwitchIcon(
-    key: String,
-    explain: String? = null,
-    textTopPadding: Dp = 0.dp,
-    afterChange: ((Boolean) -> Unit)? = null
+    key: String, explain: String? = null, textTopPadding: Dp = 0.dp, afterChange: ((Boolean) -> Unit)? = null
 ) {
     // If key is absent from configStates, create a new state using the Schema default value
     // and register it so subsequent reads are consistent.
@@ -388,32 +379,39 @@ fun SettingToggleButton(key: String) {
     }
 }
 
-// Reordered layout: [Text] [Info Icon] [Toggle Switch]
+// Shared switch row that always places the toggle before the label content.
 @Composable
 private fun CustomSwitch(
-    text: String,
-    checkedState: String,
-    onCheckStateChange: (Boolean) -> Unit,
-    explain: String? = null,
-    textTopPadding: Dp = 0.dp
+    text: String, checkedState: String, onCheckStateChange: (Boolean) -> Unit, explain: String? = null, textTopPadding: Dp = 0.dp
 ) {
     var showExplanation by remember { mutableStateOf(false) }
     val isChecked = checkedState == "1"
-
     Row(
-        modifier = Modifier
-            .padding(top = 6.dp),
-        verticalAlignment = Alignment.CenterVertically
+        modifier = Modifier.padding(top = 6.dp), verticalAlignment = Alignment.CenterVertically
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically, modifier = Modifier.clickable {
+        // Keep the compact toggle first so all setting rows share the same visual order.
+        Switch(
+            checked = isChecked, onCheckedChange = { checked ->
                 GlobalVars.isAutoRunEnabled = false
-                onCheckStateChange(!isChecked)
-            }) {
+                onCheckStateChange(checked)
+            }, modifier = Modifier
+                .height(18.dp)
+                .scale(0.6f)
+                .requiredWidth(34.dp), colors = SwitchDefaults.colors(
+                checkedTrackColor = AppColors.Azure, checkedThumbColor = Color.White
+            )
+        )
+        // Inline the label row so the full switch layout stays in one place.
+        Row(
+            verticalAlignment = Alignment.CenterVertically, modifier = Modifier
+                .padding(end = 4.dp)
+                .clickable {
+                    GlobalVars.isAutoRunEnabled = false
+                    onCheckStateChange(!isChecked)
+                }
+        ) {
             Text(
-                text = text,
-                modifier = Modifier.padding(top = textTopPadding),
-                style = MaterialTheme.typography.labelMedium
+                text = text, modifier = Modifier.padding(top = textTopPadding), style = MaterialTheme.typography.labelMedium
             )
 
             explain?.let {
@@ -444,18 +442,6 @@ private fun CustomSwitch(
                 }
             }
         }
-
-        // Further shrink the toggle to better fit dense setting rows.
-        Switch(
-            checked = isChecked, onCheckedChange = { checked ->
-                GlobalVars.isAutoRunEnabled = false
-                onCheckStateChange(checked)
-            }, modifier = Modifier
-                .height(18.dp)
-                .scale(0.6f), colors = SwitchDefaults.colors(
-                checkedTrackColor = AppColors.Azure, checkedThumbColor = Color.White
-            )
-        )
     }
 }
 
@@ -525,13 +511,13 @@ fun SettingDropdown(
                 options.forEachIndexed { idx, option ->
                     DropdownMenuItem(
                         text = {
-                            Text(option, style = MaterialTheme.typography.labelMedium)
-                        }, onClick = {
-                            GlobalVars.isAutoRunEnabled = false
-                            state.value = idx.toString()
-                            expanded = false
-                            afterChange?.invoke(idx)
-                        }, modifier = Modifier.height(35.dp) // Slightly increase height for easier clicking
+                        Text(option, style = MaterialTheme.typography.labelMedium)
+                    }, onClick = {
+                        GlobalVars.isAutoRunEnabled = false
+                        state.value = idx.toString()
+                        expanded = false
+                        afterChange?.invoke(idx)
+                    }, modifier = Modifier.height(35.dp) // Slightly increase height for easier clicking
                     )
                 }
             }

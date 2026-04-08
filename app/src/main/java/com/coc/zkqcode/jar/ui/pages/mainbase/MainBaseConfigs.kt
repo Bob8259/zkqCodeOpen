@@ -285,10 +285,10 @@ fun LazyListScope.MainBaseConfig(
                         */
                         listOf(
                             MAIN_BASE_SETTINGS.USE_RESEARCH_POTION,
-                            MAIN_BASE_SETTINGS.SELL_TRAINING_POTION,
-                            MAIN_BASE_SETTINGS.USE_CLOCK_TOWER_POTION,
-                            MAIN_BASE_SETTINGS.SELL_CLOCK_TOWER_POTION,
                             MAIN_BASE_SETTINGS.USE_BUILDER_POTION,
+                            MAIN_BASE_SETTINGS.USE_CLOCK_TOWER_POTION,
+                            MAIN_BASE_SETTINGS.SELL_TRAINING_POTION,
+                            MAIN_BASE_SETTINGS.SELL_CLOCK_TOWER_POTION,
                             MAIN_BASE_SETTINGS.SELL_RING_OF_WALL
                         ).forEach { setting ->
                             SettingSwitchIcon(key = "${setting.key}_c$index")

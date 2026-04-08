@@ -32,7 +32,6 @@
 - 发起联赛（START_LEAGUE_SETTINGS）
 - 发起都城突袭（START_RAID）
 - 商店购买相关（突袭币、联赛币、活动币购买各种药水/矿石/戒指等）
-- 用研究药水、卖训练药水、用钟楼药水、卖钟楼药水、用工人药水、卖壁垒之戒
 - 领限时活动奖励（CLAIM_TIMED_REWARDS）
 - 领令牌奖励（CLAIM_TOKEN_REWARDS）
 - 领都城币（CLAIM_CAPITAL_GOLD）
