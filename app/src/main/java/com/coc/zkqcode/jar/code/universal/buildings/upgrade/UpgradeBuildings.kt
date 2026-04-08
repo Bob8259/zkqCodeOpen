@@ -137,7 +137,8 @@ private suspend fun buildOneNewBuildings(currentBase: BaseType): Boolean {
 
     // 3. Determine building type (Wall vs. Others) before UI state changes
     val isWall = findMultiColorsUntil(schemas = listOf(MyColors.BuilderBaseWallInShop, MyColors.MainBaseWallInShop), duration = 100) != null
-    TouchActions.tap(shopArrow.x - 50, shopArrow.y + 50, delayTime = 1500)
+    // Builder Base needs a longer wait for the shop panel to settle, Main Base can continue sooner.
+    TouchActions.tap(shopArrow.x - 50, shopArrow.y + 50, delayTime = if (currentBase == BaseType.Builder) 1500 else 500)
 
     // 4. Locate the confirmation button (Green Tick)
     var targetTick = if (currentBase == BaseType.Main) mainBaseFindBuildButton(type = BuildButtonType.Tick) else builderBaseFindBuildButton(type = BuildButtonType.Tick)

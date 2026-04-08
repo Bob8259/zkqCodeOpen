@@ -78,11 +78,24 @@ suspend fun upgradeAllExistingBuildings(buildings: List<String>, currentBase: Ba
         "弓箭女皇",
         "大守护者",
         "飞盾战神",
+        "亡灵王子",
         "飞龙公爵",
         "多管迫击炮",
         "城墙"
     )
     val orderedList = if (skipOrdering) buildings else getOrderedList(buildings, currentBase)
+    val isFallbackEnabled = currentBase == BaseType.Main && getBooleanConfigRuntime(
+        Schema.MAIN_BASE_SETTINGS.UPGRADE_ANY_BUILDING_AFTER_CONSECUTIVE_FAILURES.key
+    )
+    val fallbackThreshold = if (isFallbackEnabled) {
+        getConfigRuntime(
+            Schema.MAIN_BASE_SETTINGS.UPGRADE_ANY_BUILDING_AFTER_CONSECUTIVE_FAILURES_THRESHOLD.key
+        ).toIntOrNull() ?: logAndRestart("${Schema.MAIN_BASE_SETTINGS.UPGRADE_ANY_BUILDING_AFTER_CONSECUTIVE_FAILURES_THRESHOLD.displayName} 必须是数字，请检查配置")
+    } else {
+        0
+    }
+    val fallbackEnabledBuildings = orderedList.filter { it != "城墙" }.toSet()
+    var consecutiveFailureCount = 0
     for (building in orderedList) {
         val maxAttempts = if (building in uniqueBuildings) 1 else 6
 
@@ -103,7 +116,9 @@ suspend fun upgradeAllExistingBuildings(buildings: List<String>, currentBase: Ba
 
             TouchActions.tap(worker.x, worker.y, delayTime = 500)
 
-            // Locate the specific building in the UI
+            // Locate the specific building in the UI.
+            // Only count consecutive failures when the requested building cannot be found.
+            var selectedBuilding = building
             if (skipOrdering) {
                 if (!findSpecificBuilding(building, true)) {
                     // Wall not found; clean up UI and signal caller to stop its upgrade loop
@@ -112,18 +127,50 @@ suspend fun upgradeAllExistingBuildings(buildings: List<String>, currentBase: Ba
                     return UpgradeResult.StopLoop
                 }
             } else {
-                if (!findSpecificBuilding(building)) {
-                    clickRightBottom(1)
-                    break // Not found this building anymore, go to next building type
+                val shouldUseFallback = isFallbackEnabled && building != "城墙" && consecutiveFailureCount >= fallbackThreshold
+
+                if (shouldUseFallback) {
+                    val fallbackBuilding = findFirstEnabledExistingBuilding(fallbackEnabledBuildings)
+                    if (fallbackBuilding != null) {
+                        consecutiveFailureCount = 0
+                        selectedBuilding = fallbackBuilding
+                    } else {
+                        consecutiveFailureCount++
+                        clickRightBottom(1)
+                        break
+                    }
+                } else if (!findSpecificBuilding(building)) {
+                    if (building != "城墙") {
+                        consecutiveFailureCount++
+                        if (consecutiveFailureCount >= fallbackThreshold && isFallbackEnabled) {
+                            val fallbackBuilding = findFirstEnabledExistingBuilding(fallbackEnabledBuildings)
+                            if (fallbackBuilding != null) {
+                                consecutiveFailureCount = 0
+                                selectedBuilding = fallbackBuilding
+                            } else {
+                                clickRightBottom(1)
+                                break
+                            }
+                        } else {
+                            clickRightBottom(1)
+                            break
+                        }
+                    } else {
+                        clickRightBottom(1)
+                        break // Not found this building anymore, go to next building type
+                    }
+                } else {
+                    consecutiveFailureCount = 0
+                    selectedBuilding = building
                 }
             }
             // Dispatch to the appropriate upgrade handler
             val heroes = setOf(
-                "野蛮人之王", "弓箭女皇", "大守护者", "飞盾战神", "飞龙公爵"
+                "野蛮人之王", "弓箭女皇", "亡灵王子", "大守护者", "飞盾战神", "飞龙公爵"
             )
-            val action = when (building) {
+            val action = when (selectedBuilding) {
                 in heroes -> {
-                    upgradeHero(building)
+                    upgradeHero(selectedBuilding)
                 }
 
                 "城墙" -> {
@@ -131,7 +178,7 @@ suspend fun upgradeAllExistingBuildings(buildings: List<String>, currentBase: Ba
                 }
 
                 else -> {
-                    upgradeBuilding(building, currentBase, attempt)
+                    upgradeBuilding(selectedBuilding, currentBase, attempt)
                 }
             }
             when (action) {
@@ -273,7 +320,7 @@ private suspend fun upgradeHero(building: String): LoopAction {
         // Calculate the search area based on hero position
         // Base area for 野蛮人之王: x1=55, y1=500, x2=240, y2=530
         // Each subsequent hero shifts by 228 on x-axis
-        val heroIndex = listOf("野蛮人之王", "弓箭女皇", "大守护者", "飞盾战神").indexOf(building)
+        val heroIndex = listOf("野蛮人之王", "弓箭女皇", "亡灵王子", "大守护者", "飞盾战神").indexOf(building)
         ShowMessage("升级英雄：$building，序号$heroIndex")
         val x1 = 55 + heroIndex * 228
         val x2 = 240 + heroIndex * 228
@@ -366,6 +413,22 @@ private suspend fun findSpecificBuilding(buildingName: String, excludeNewBuildin
         }
     })
     return found
+}
+
+private suspend fun findFirstEnabledExistingBuilding(enabledBuildings: Set<String>): String? {
+    var selectedBuilding: String? = null
+    iterateBuilderBaseBuildingUpgradeList(excludeNewBuildings = true, onDetect = { result ->
+        val building = result.buildings.firstOrNull { it.name in enabledBuildings && it.name != "城墙" }
+        if (building != null) {
+            ShowMessage("连续失败过多，改为升级${building.name}")
+            TouchActions.tap(building.x + 20, building.y + 20, delayTime = 1000)
+            selectedBuilding = building.name
+            true
+        } else {
+            false
+        }
+    })
+    return selectedBuilding
 }
 
 

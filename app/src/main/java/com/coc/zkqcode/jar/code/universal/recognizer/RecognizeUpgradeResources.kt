@@ -14,7 +14,7 @@ import com.coc.zkqcode.jar.code.universal.buildings.BaseType
 suspend fun recognizeUpgradeResources(currentBase: BaseType): Int {
     // Select detection area based on base type
     val (startX, startY, endX, endY) = when (currentBase) {
-        BaseType.Main -> listOf(800, 620, 950, 655)
+        BaseType.Main -> listOf(750, 620, 950, 655)
         BaseType.Builder -> listOf(540, 595, 695, 665)
     }
 
@@ -23,7 +23,7 @@ suspend fun recognizeUpgradeResources(currentBase: BaseType): Int {
         endX = endX, endY = endY,
         useChinese = false,
         applyPreprocess = true,
-        threshold = 230,
+        threshold = 190,
     )
 
     // Join all recognized text lines and extract the numeric value

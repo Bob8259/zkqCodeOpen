@@ -114,6 +114,13 @@ val ALL_BUILDINGS = listOf(
 )
 
 /**
+ * OCR labels that help locate sections in the upgrade list but are not buildings.
+ */
+private val SPECIAL_OCR_LABELS = listOf(
+    "建议升级"
+)
+
+/**
  * Counts pixels of a target color within a specified rectangle in a capture result.
  */
 fun countPixelsInArea(
@@ -266,35 +273,42 @@ fun cleanBuildingName(raw: String): String {
         return name
     }
 
-    // C. Fuzzy matching logic
-    if (name.length >= 3) {
-        var bestMatch: String? = null
-        var minDistance = Int.MAX_VALUE
+    // Check special OCR labels before buildings so section markers are normalized early.
+    findBestFuzzyMatch(name, SPECIAL_OCR_LABELS)?.let { return it }
 
-        for (building in ALL_BUILDINGS) {
-            if (abs(name.length - building.length) > 1) continue
+    // Match building names last to avoid treating section labels as real buildings.
+    findBestFuzzyMatch(name, ALL_BUILDINGS)?.let { return it }
 
-            val distance = levenshteinDistance(name, building)
-            if (distance < minDistance) {
-                minDistance = distance
-                bestMatch = building
-            }
-        }
+    return name
+}
 
-        bestMatch?.let {
-            val maxLength = max(name.length, it.length)
-            val maxAllowedDistance = (maxLength * 2.0 / 3.0).toInt()
+/**
+ * Finds the closest fuzzy match from the provided OCR target list.
+ */
+private fun findBestFuzzyMatch(name: String, candidates: List<String>): String? {
+    if (name.length < 3) return null
 
-            // "英雄殿堂" requires a stricter match (at most 1 edit out of 4 chars)
-            val effectiveMaxDistance = if (it == "英雄殿堂") 1 else maxAllowedDistance
+    var bestMatch: String? = null
+    var minDistance = Int.MAX_VALUE
 
-            if (minDistance <= effectiveMaxDistance) {
-                return it
-            }
+    for (candidate in candidates) {
+        if (abs(name.length - candidate.length) > 1) continue
+
+        val distance = levenshteinDistance(name, candidate)
+        if (distance < minDistance) {
+            minDistance = distance
+            bestMatch = candidate
         }
     }
 
-    return name
+    return bestMatch?.takeIf { candidate ->
+        val maxLength = max(name.length, candidate.length)
+        val maxAllowedDistance = (maxLength * 2.0 / 3.0).toInt()
+
+        // "英雄殿堂" requires a stricter match because OCR often confuses it with other labels.
+        val effectiveMaxDistance = if (candidate == "英雄殿堂") 1 else maxAllowedDistance
+        minDistance <= effectiveMaxDistance
+    }
 }
 
 /**

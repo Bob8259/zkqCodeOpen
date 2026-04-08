@@ -5,6 +5,7 @@ import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
 import com.coc.zkqcode.core.util.touchactions.TouchActions
+import com.coc.zkqcode.jar.code.universal.InGamesVars
 import com.coc.zkqcode.jar.code.universal.recognizer.TextRecognizer
 
 /**
@@ -37,7 +38,7 @@ suspend fun detectBuildingList(excludeNewBuildings: Boolean = false): BuildingDe
             "${item.text}($x,$y)"
         }
     }
-    ShowMessage("原始检测结果：\n$rawSummary")
+    ShowMessage("账号${InGamesVars.currentAccountNumber}，原始检测结果：\n$rawSummary")
     // Take a screenshot for color checking (needed for post-process and later filtering)
     val screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult ?: logAndRestart("failed to take screenshot at building detection")
 
@@ -55,7 +56,6 @@ suspend fun detectBuildingList(excludeNewBuildings: Boolean = false): BuildingDe
             item
         }
     }
-
     // If "建议升级" is detected, only keep results below it (greater y)
     val upgradeY = processedResults.mapNotNull { item ->
         val pos = item.position ?: return@mapNotNull null

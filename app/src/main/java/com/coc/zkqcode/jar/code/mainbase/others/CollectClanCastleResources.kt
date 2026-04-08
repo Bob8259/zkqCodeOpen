@@ -8,6 +8,7 @@ import com.coc.zkqcode.jar.code.universal.InGamesVars
 import com.coc.zkqcode.jar.code.universal.aidetection.tiledAiDetect
 import com.coc.zkqcode.jar.code.universal.clickRightBottom
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
+import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.smalltools.StorageKeys
 import com.coc.zkqcode.jar.code.universal.smalltools.checkMemoryFile
@@ -39,7 +40,7 @@ suspend fun collectClanCastleResources(): Boolean {
         for (detection in scan) {
             val box = detection.boundingBox
             TouchActions.tap(box.centerX().toInt(), box.centerY().toInt(), delayTime = 500)
-            val openClanCastle = findMultiColors(MyColors.OpenClanCastle)
+            val openClanCastle = findMultiColorsUntil(schemas = listOf(MyColors.OpenClanCastle, MyColors.OpenClanCastle2, MyColors.OpenClanCastle3), duration = 200)
             if (openClanCastle != null) {
                 TouchActions.tap(openClanCastle.x, openClanCastle.y, delayTime = 500)
                 TouchActions.tap(653, 504, delayTime = 300)//Collect

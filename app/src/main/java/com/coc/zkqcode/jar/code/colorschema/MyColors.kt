@@ -82,4 +82,12 @@ object MyColors : IUIColors by UIColors, IFeatureColors by FeatureColors, IMainB
     val SellPotionButton = ColorSchema.parse(
         299, 548, 530, 623, "221EF7", "46|0|221EF7,93|0|221EF7,139|0|221EF7,185|0|221EF7,0|37|221EF7,46|37|221EF7,93|37|221EF7,139|37|221EF7,185|37|221EF7", 0, 0.9
     )
+
+    // Main Base Hero Hall Color
+    val OpenClanCastle2 = ColorSchema.parse(
+        174, 548, 1113, 628, "4778AD", "7|0|5FAFD5,14|0|3C4050,20|0|3DAFD1,27|0|4B7DB5,0|15|4374A9,7|15|297E9B,14|15|377590,20|15|78CEEB,27|15|4577AD", 0, 0.9, "领取宝库按钮10按钮"
+    )
+    val OpenClanCastle3 = ColorSchema.parse(
+        173, 526, 1091, 628, "2F557B", "8|0|437A93,17|0|3297B2,25|0|44BFE7,33|0|19374A,0|19|406CA0,8|19|3698C3,17|19|1A191C,25|19|3799C3,33|19|406C9F", 0, 0.9, "领取宝库按钮8按钮"
+    )
 }

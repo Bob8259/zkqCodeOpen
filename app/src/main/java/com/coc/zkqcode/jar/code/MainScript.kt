@@ -27,6 +27,7 @@ import com.coc.zkqcode.jar.code.mainbase.others.useMagicItems
 import com.coc.zkqcode.jar.code.universal.buildings.BaseType
 import com.coc.zkqcode.jar.code.universal.buildings.upgrade.upgradeBuildings
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
+import com.coc.zkqcode.jar.code.universal.recognizer.recognizeUpgradeResources
 import com.coc.zkqcode.jar.ui.schema.Schema
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.currentCoroutineContext
@@ -88,7 +89,6 @@ suspend fun runMainScript() {
 
         displayAds()
         RunShell.runNoOutput("am kill-all")//clean up memory
-        // Use labeled block to skip remaining steps on failure
         run stepBlock@{
             if (!writeGameFiles()) {
                 delayWithMultiplier(2000)
@@ -137,7 +137,8 @@ suspend fun runMainScript() {
 
 private suspend fun runTestCode() {
     while (true) {
-        upgradeBuildings(BaseType.Main)
+//        upgradeBuildings(BaseType.Main)
+        ShowMessage(recognizeUpgradeResources(BaseType.Main).toString())
 //        ShowMessage(findMultiColors(MyColors.InnerResearchHelper).toString())
         delay(1000)
     }
