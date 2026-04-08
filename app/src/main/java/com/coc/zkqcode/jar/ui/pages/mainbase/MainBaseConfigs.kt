@@ -266,7 +266,7 @@ fun LazyListScope.MainBaseConfig(
                             MAIN_BASE_SETTINGS.BUY_CLOCK_TOWER_POTION_WITH_RAID_MEDAL,
                             MAIN_BASE_SETTINGS.BUY_RING_OF_WALL_WITH_RAID_MEDAL,
                             MAIN_BASE_SETTINGS.BUY_RESEARCH_POTION_WITH_RAID_MEDAL,
-                            MAIN_BASE_SETTINGS.BUY_TRAINING_POTION_WITH_RAID_MEDAL,
+                            MAIN_BASE_SETTINGS.BUY_RESOURCE_POTION_WITH_RAID_MEDAL,
                             MAIN_BASE_SETTINGS.BUY_RESEARCH_POTION_WITH_LEAGUE_MEDAL,
                             MAIN_BASE_SETTINGS.BUY_BUILDER_POTION_WITH_LEAGUE_MEDAL,
                             MAIN_BASE_SETTINGS.BUY_STAR_ORE_WITH_EVENT_MEDAL,
@@ -274,7 +274,7 @@ fun LazyListScope.MainBaseConfig(
                             MAIN_BASE_SETTINGS.BUY_NEW_EQUIPMENT_WITH_EVENT_MEDAL,
                             MAIN_BASE_SETTINGS.BUY_RESEARCH_POTION_WITH_EVENT_MEDAL,
                             MAIN_BASE_SETTINGS.USE_RESEARCH_POTION,
-                            MAIN_BASE_SETTINGS.SELL_TRAINING_POTION,
+                            MAIN_BASE_SETTINGS.SELL_RESOURCE_POTION,
                             MAIN_BASE_SETTINGS.USE_CLOCK_TOWER_POTION,
                             MAIN_BASE_SETTINGS.SELL_CLOCK_TOWER_POTION,
                             MAIN_BASE_SETTINGS.USE_BUILDER_POTION,
@@ -287,7 +287,7 @@ fun LazyListScope.MainBaseConfig(
                             MAIN_BASE_SETTINGS.USE_RESEARCH_POTION,
                             MAIN_BASE_SETTINGS.USE_BUILDER_POTION,
                             MAIN_BASE_SETTINGS.USE_CLOCK_TOWER_POTION,
-                            MAIN_BASE_SETTINGS.SELL_TRAINING_POTION,
+                            MAIN_BASE_SETTINGS.SELL_RESOURCE_POTION,
                             MAIN_BASE_SETTINGS.SELL_CLOCK_TOWER_POTION,
                             MAIN_BASE_SETTINGS.SELL_RING_OF_WALL
                         ).forEach { setting ->

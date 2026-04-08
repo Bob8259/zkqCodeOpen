@@ -65,7 +65,6 @@ suspend fun upgradeBuildings(currentBase: BaseType): Boolean {
                     val info = buildings.chunked(4).joinToString("\n") { chunk ->
                         chunk.joinToString(" ") { it.name }
                     }
-                    ShowMessage("检测到 ${buildings.size} 个建筑:\n$info")
                 }
                 isNewBuildingDetected
             })

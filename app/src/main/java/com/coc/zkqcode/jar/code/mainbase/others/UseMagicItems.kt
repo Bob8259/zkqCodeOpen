@@ -3,12 +3,13 @@ package com.coc.zkqcode.jar.code.mainbase.others
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.touchactions.TouchActions
-import com.coc.zkqcode.core.util.touchactions.TouchActions.swipe
+import com.coc.zkqcode.jar.code.colorschema.ColorSchema
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.InGamesVars
 import com.coc.zkqcode.jar.code.universal.aidetection.tiledAiDetect
 import com.coc.zkqcode.jar.code.universal.clickRightBottom
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
+import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.smalltools.StorageKeys
 import com.coc.zkqcode.jar.code.universal.smalltools.checkMemoryFile
@@ -20,10 +21,9 @@ suspend fun useMagicItems(): Boolean {
     // Only the explicit magic-item toggles should enable this flow.
     val shouldUseMagicItems = listOf(
         Schema.MAIN_BASE_SETTINGS.USE_RESEARCH_POTION.key,
-        Schema.MAIN_BASE_SETTINGS.USE_CLOCK_TOWER_POTION.key,
         Schema.MAIN_BASE_SETTINGS.USE_BUILDER_POTION.key,
-        Schema.MAIN_BASE_SETTINGS.SELL_TRAINING_POTION.key,
         Schema.MAIN_BASE_SETTINGS.SELL_CLOCK_TOWER_POTION.key,
+        Schema.MAIN_BASE_SETTINGS.SELL_RESOURCE_POTION.key,
         Schema.MAIN_BASE_SETTINGS.SELL_RING_OF_WALL.key
     ).any { configKey ->
         getBooleanConfigRuntime(configKey)
@@ -39,7 +39,6 @@ suspend fun useMagicItems(): Boolean {
         return true
     }
     ShowMessage("账号${InGamesVars.currentAccountNumber}，正在检测魔法物品")
-    clickRightBottom(1)
     zoomSmallMainBase()
 
     // Scan the current view first, then retry once after swiping upward.
@@ -50,11 +49,15 @@ suspend fun useMagicItems(): Boolean {
         for (detection in scan) {
             val box = detection.boundingBox
             TouchActions.tap(box.centerX().toInt(), box.centerY().toInt(), delayTime = 500)
-            val magicItemIcon = findMultiColors(MyColors.MagicItemIcon)
+            val magicItemIcon = findMultiColorsUntil(schemas = listOf(MyColors.MagicItemIcon, MyColors.MagicItemIcon2), duration = 200)
             if (magicItemIcon != null) {
                 TouchActions.tap(magicItemIcon.x, magicItemIcon.y, delayTime = 800)
                 // Record memory immediately after the magic item entry is opened.
-
+                repeat(3) {
+                    checkMagicItems()
+                    TouchActions.swipe(640, 440, 640, 180)
+                    delayWithMultiplier(200)
+                }
                 writeMemory(storageKey, (System.currentTimeMillis() / 60_000).toString())
                 clickRightBottom(1)
                 return true
@@ -64,13 +67,52 @@ suspend fun useMagicItems(): Boolean {
     }
 
     if (!scanAndTapMagicItems()) {
-        swipe(900, 130, 0, 720)
+        TouchActions.swipe(900, 130, 0, 720)
         scanAndTapMagicItems()
     }
     return enterMainScreen()
 }
 
-private suspend fun checkMagicItems(){
+private suspend fun checkMagicItems() {
+    suspend fun handleMagicItem(configKey: String, colorSchema: ColorSchema, action: suspend () -> Unit) {
+        if (!getBooleanConfigRuntime(configKey)) return
+        val itemPosition = findMultiColors(colorSchema)
+        if (itemPosition != null) {
+            TouchActions.tap(itemPosition.x, itemPosition.y, delayTime = 200)
+            action()
+        }
+    }
 
+    // Each configured item uses the same interaction pattern after its icon is found.
+    handleMagicItem(Schema.MAIN_BASE_SETTINGS.USE_RESEARCH_POTION.key, MyColors.ResearchPotion) {
+        usePotion()
+    }
+    handleMagicItem(Schema.MAIN_BASE_SETTINGS.USE_BUILDER_POTION.key, MyColors.BuilderPotion) {
+        usePotion()
+    }
+    handleMagicItem(Schema.MAIN_BASE_SETTINGS.SELL_RESOURCE_POTION.key, MyColors.ResourcePotion) {
+        sellPotion()
+    }
+    handleMagicItem(Schema.MAIN_BASE_SETTINGS.SELL_CLOCK_TOWER_POTION.key, MyColors.ClockTowerPotion) {
+        sellPotion()
+    }
+    handleMagicItem(Schema.MAIN_BASE_SETTINGS.SELL_RING_OF_WALL.key, MyColors.WallRings) {
+        sellPotion()
+    }
+}
 
+private suspend fun usePotion() {
+    val usePotionButton = findMultiColorsUntil(schemas = listOf(MyColors.UsePotionButton), duration = 600)
+    if (usePotionButton != null) {
+        TouchActions.tap(usePotionButton.x, usePotionButton.y, delayTime = 500)
+        TouchActions.tap(630, 445, delayTime = 600)
+    }
+}
+
+private suspend fun sellPotion() {
+    val sellPotionButton = findMultiColorsUntil(schemas = listOf(MyColors.SellPotionButton), duration = 600)
+    if (sellPotionButton != null) {
+        TouchActions.tap(sellPotionButton.x, sellPotionButton.y, delayTime = 500)
+        TouchActions.tap(775, 515, delayTime = 600)
+    }
 }

@@ -83,8 +83,8 @@ object MainBaseSettings {
     val BUY_RESEARCH_POTION_WITH_RAID_MEDAL = SettingDef(
         "buy_research_potion_with_raid_medal", "突袭币买研究药水", 0, "MAIN_BASE_SETTINGS"
     )
-    val BUY_TRAINING_POTION_WITH_RAID_MEDAL = SettingDef(
-        "buy_training_potion_with_raid_medal", "突袭币买训练药水", 0, "MAIN_BASE_SETTINGS"
+    val BUY_RESOURCE_POTION_WITH_RAID_MEDAL = SettingDef(
+        "buy_resource_potion_with_raid_medal", "突袭币买资源药水", 0, "MAIN_BASE_SETTINGS"
     )
     val BUY_RESEARCH_POTION_WITH_LEAGUE_MEDAL = SettingDef(
         "buy_research_potion_with_league_medal", "联赛币买研究药水", 0, "MAIN_BASE_SETTINGS"
@@ -104,7 +104,7 @@ object MainBaseSettings {
         "buy_research_potion_with_event_medal", "活动币买研究药水", 0, "MAIN_BASE_SETTINGS"
     )
     val USE_RESEARCH_POTION = SettingDef("use_research_potion", "用研究药水", 0, "MAIN_BASE_SETTINGS")
-    val SELL_TRAINING_POTION = SettingDef("sell_training_potion", "卖训练药水", 0, "MAIN_BASE_SETTINGS")
+    val SELL_RESOURCE_POTION = SettingDef("sell_resource_potion", "卖资源药水", 0, "MAIN_BASE_SETTINGS")
     val USE_CLOCK_TOWER_POTION = SettingDef("use_clock_tower_potion", "用钟楼药水", 0, "MAIN_BASE_SETTINGS")
     val SELL_CLOCK_TOWER_POTION = SettingDef("sell_clock_tower_potion", "卖钟楼药水", 0, "MAIN_BASE_SETTINGS")
     val USE_BUILDER_POTION = SettingDef("use_builder_potion", "用工人药水", 0, "MAIN_BASE_SETTINGS")
@@ -185,7 +185,7 @@ object MainBaseSettings {
         BUY_CLOCK_TOWER_POTION_WITH_RAID_MEDAL,
         BUY_RING_OF_WALL_WITH_RAID_MEDAL,
         BUY_RESEARCH_POTION_WITH_RAID_MEDAL,
-        BUY_TRAINING_POTION_WITH_RAID_MEDAL,
+        BUY_RESOURCE_POTION_WITH_RAID_MEDAL,
         BUY_RESEARCH_POTION_WITH_LEAGUE_MEDAL,
         BUY_BUILDER_POTION_WITH_LEAGUE_MEDAL,
         BUY_STAR_ORE_WITH_EVENT_MEDAL,
@@ -193,7 +193,7 @@ object MainBaseSettings {
         BUY_NEW_EQUIPMENT_WITH_EVENT_MEDAL,
         BUY_RESEARCH_POTION_WITH_EVENT_MEDAL,
         USE_RESEARCH_POTION,
-        SELL_TRAINING_POTION,
+        SELL_RESOURCE_POTION,
         USE_CLOCK_TOWER_POTION,
         SELL_CLOCK_TOWER_POTION,
         USE_BUILDER_POTION,

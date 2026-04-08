@@ -37,10 +37,9 @@ suspend fun detectBuildingList(excludeNewBuildings: Boolean = false): BuildingDe
             "${item.text}($x,$y)"
         }
     }
-
+    ShowMessage("原始检测结果：\n$rawSummary")
     // Take a screenshot for color checking (needed for post-process and later filtering)
-    val screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult
-        ?: logAndRestart("failed to take screenshot at building detection")
+    val screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult ?: logAndRestart("failed to take screenshot at building detection")
 
     // Post-process: Check for green indicator (new building marker)
     // If green pixels > 40 in area (x-15, y-3, x, y+20), add "新" prefix
@@ -50,7 +49,7 @@ suspend fun detectBuildingList(excludeNewBuildings: Boolean = false): BuildingDe
         val y = pos.top + startY
 
         val greenCount = countGreenPixelsInArea(screenBuffer, x - 15, y - 3, x, y + 20)
-        if (greenCount >20 && !item.text.startsWith("新")) {
+        if (greenCount > 20 && !item.text.startsWith("新")) {
             item.copy(text = "新${item.text}")
         } else {
             item
@@ -114,8 +113,7 @@ suspend fun detectBuildingList(excludeNewBuildings: Boolean = false): BuildingDe
  * If [onDetect] returns true, the iteration stops immediately.
  */
 suspend fun iterateBuilderBaseBuildingUpgradeList(
-    excludeNewBuildings: Boolean = false,
-    onDetect: suspend (BuildingDetectionResult) -> Boolean
+    excludeNewBuildings: Boolean = false, onDetect: suspend (BuildingDetectionResult) -> Boolean
 ) {
     var previousBuildingNames: List<String>? = null
     loop@ for (i in 1..12) {

@@ -13,6 +13,7 @@ import com.coc.zkqcode.jar.code.mainbase.others.mainBaseCheckTutorials
 import com.coc.zkqcode.jar.code.mainbase.others.mainBaseCollectResources
 import com.coc.zkqcode.jar.code.mainbase.others.mainBaseRemoveObstacles
 import com.coc.zkqcode.jar.code.mainbase.others.useHelpers
+import com.coc.zkqcode.jar.code.mainbase.others.useMagicItems
 import com.coc.zkqcode.jar.code.mainbase.others.zoomSmallMainBase
 import com.coc.zkqcode.jar.code.mainbase.research.mainBaseResearch
 import com.coc.zkqcode.jar.code.universal.buildings.BaseType
@@ -39,5 +40,6 @@ suspend fun playMainBase(): Boolean {
     if (!upgradeGearsAndPets()) return false
     if (!collectClanCastleResources()) return false
     if (!useHelpers()) return false
+    if (!useMagicItems()) return false
     return true
 }
