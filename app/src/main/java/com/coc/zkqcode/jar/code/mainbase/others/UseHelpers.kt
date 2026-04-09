@@ -44,7 +44,7 @@ suspend fun useHelpers(): Boolean {
         for (detection in scan) {
             val box = detection.boundingBox
             TouchActions.tap(box.centerX().toInt(), box.centerY().toInt(), delayTime = 500)
-            val openHelperHut = findMultiColorsUntil(schemas = listOf(MyColors.BuilderHelperIcon, MyColors.ResearchHelperIcon), duration = 200)
+            val openHelperHut = findMultiColorsUntil(schemas = listOf(MyColors.BuilderHelperIcon, MyColors.ResearchHelperIcon, MyColors.ResearchHelperIcon2), duration = 200)
             if (openHelperHut != null) {
                 TouchActions.tap(openHelperHut.x, openHelperHut.y, delayTime = 500)
                 checkResearchHelper(isUpgradeHelper)
