@@ -5,6 +5,7 @@ import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
 import com.coc.zkqcode.core.util.touchactions.TouchActions
+import com.coc.zkqcode.jar.code.colorschema.ColorSchema
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.GameVersion
 import com.coc.zkqcode.jar.code.universal.InGamesVars
@@ -68,6 +69,18 @@ suspend fun donateToClan(): Boolean {
         }
         val donationButton = findMultiColors(MyColors.DonationButton, byteBuffer = screenBuffer, increment = 1)
         if (donationButton != null) {
+            // Check if a troop config castle icon is present to the left of the donation button.
+            // Its presence means this is a troop configuration row (not a real donation request) — skip it.
+            val castleIconSchema = ColorSchema.rescope(
+                MyColors.TroopConfigCastleIcon,
+                x1 = donationButton.x - 200, y1 = donationButton.y - 30,
+                x2 = donationButton.x - 90,  y2 = donationButton.y + 40
+            )
+            val castleIcon = findMultiColors(schema = castleIconSchema, byteBuffer = screenBuffer, increment = 1)
+            if (castleIcon != null) {
+                // This is a troop config row, not a real donation request — skip
+                continue
+            }
             TouchActions.tap(donationButton.x, donationButton.y, delayTime = 500)
             donateActions()
             TouchActions.swipe(1155, 237, -500, 250, delayTime = 100)//Swipe troops
@@ -75,6 +88,7 @@ suspend fun donateToClan(): Boolean {
             donateActions()
             clickRightBottom(1)
             continue
+
         } else {
             val previousDonation = findMultiColors(MyColors.PreviousDonation, byteBuffer = screenBuffer, increment = 1)
             if (previousDonation != null) {

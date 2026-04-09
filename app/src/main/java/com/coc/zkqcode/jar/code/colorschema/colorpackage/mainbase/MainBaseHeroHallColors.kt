@@ -30,6 +30,11 @@ interface IMainBaseHeroHallColors {
     val GreedyRaven: ColorSchema
     val ConfirmUpgradePet: ColorSchema
     val AlreadyBeingUpgraded: ColorSchema
+
+    // Clan castle button variants shown after opening hero hall area
+    val OpenClanCastle2: ColorSchema
+    val OpenClanCastle3: ColorSchema
+    val OpenClanCastle4: ColorSchema
 }
 
 object MainBaseHeroHallColors : IMainBaseHeroHallColors {
@@ -132,5 +137,18 @@ object MainBaseHeroHallColors : IMainBaseHeroHallColors {
     // Banner shown when another pet upgrade is already running
     override val AlreadyBeingUpgraded = ColorSchema.parse(
         1018, 165, 1052, 326, "7AF7DB", "3|0|81F9DE,7|0|88FDE5,10|0|8DFEEA,13|0|94FFEF,0|9|99FFE7,3|9|6DF3C4,7|9|87FCDD,10|9|7BFBD9,13|9|76FCD9", 0, 0.9, "已有战宠升级中"
+    )
+
+    // Clan castle collect button variant 2 shown near hero hall
+    override val OpenClanCastle2 = ColorSchema.parse(
+        174, 548, 1113, 628, "4778AD", "7|0|5FAFD5,14|0|3C4050,20|0|3DAFD1,27|0|4B7DB5,0|15|4374A9,7|15|297E9B,14|15|377590,20|15|78CEEB,27|15|4577AD", 0, 0.9, "领取宝库按钮10按钮"
+    )
+    // Clan castle collect button variant 3 shown near hero hall
+    override val OpenClanCastle3 = ColorSchema.parse(
+        173, 526, 1091, 628, "2F557B", "8|0|437A93,17|0|3297B2,25|0|44BFE7,33|0|19374A,0|19|406CA0,8|19|3698C3,17|19|1A191C,25|19|3799C3,33|19|406C9F", 0, 0.9, "领取宝库按钮8按钮"
+    )
+    // Clan castle collect button variant 4 shown near hero hall
+    override val OpenClanCastle4 = ColorSchema.parse(
+        174, 562, 1119, 627, "1E303F", "6|0|1A252B,12|0|186267,18|0|42B3DB,24|0|395478,0|14|4173A7,6|14|3698C3,12|14|69DCFF,18|14|3698C3,24|14|4373A7", 0, 0.9, "领取宝库按钮12按钮"
     )
 }

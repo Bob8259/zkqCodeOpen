@@ -49,6 +49,9 @@ interface IMainBaseAttackColors {
     val SpecialTroopColorAtDeploymentBar: ColorSchema
     val WaitForBattle: ColorSchema
     val BattlePage: ColorSchema
+
+    // Indicates the player cannot attack (e.g. shield active or not enough trophies)
+    val CanNotAttack: ColorSchema
 }
 
 object MainBaseAttackColors : IMainBaseAttackColors {
@@ -201,5 +204,10 @@ object MainBaseAttackColors : IMainBaseAttackColors {
     )
     override val BattlePage = ColorSchema.parse(
         92, 198, 712, 455, "83BEFF", "23|0|A5BECF,46|0|4C3D57,68|0|29478F,91|0|5567A5,0|30|7B7C7C,23|30|254154,46|30|61B2FD,68|30|76BBFD,91|30|485992", 0, 0.9, "对战页面"
+    )
+
+    // Detected when the attack button is greyed out and unavailable
+    override val CanNotAttack = ColorSchema.parse(
+        550, 262, 750, 444, "ABAFEB", "0|2|ADB1ED,0|5|ADB2EF,7|-8|1872AE,4|-21|083454,-3|3|A9AEEA,13|7|B2B6F3,2|-12|1B567F,7|-33|EBF0F2,5|-36|C3CBCE", 0, 0.95, "无法进攻"
     )
 }

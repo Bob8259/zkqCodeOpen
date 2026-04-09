@@ -124,15 +124,15 @@ suspend fun iterateBuilderBaseBuildingUpgradeList(
         val currentBuildingNames = result.buildings.map { it.name }.sorted()
         if (previousBuildingNames != null && currentBuildingNames == previousBuildingNames) {
             repeat(2) {
-                TouchActions.swipe(666, 170, 666, 300, delayTime = 600)
-                delayWithMultiplier(200)
+                TouchActions.swipe(666, 170, 666, 300, delayTime = 200)
+                delayWithMultiplier(100)
                 val extraResult = detectBuildingList(excludeNewBuildings)
                 if (onDetect(extraResult)) return
             }
             break@loop
         }
         previousBuildingNames = currentBuildingNames
-        TouchActions.swipe(666, 500, 666, 120, delayTime = 600)
-        delayWithMultiplier(200)
+        TouchActions.swipe(666, 500, 666, 120, delayTime = 200)
+        delayWithMultiplier(100)
     }
 }
