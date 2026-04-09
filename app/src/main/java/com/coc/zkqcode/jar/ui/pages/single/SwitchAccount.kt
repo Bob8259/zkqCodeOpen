@@ -100,7 +100,10 @@ fun SwitchAccount(onClose: () -> Unit) {
                     text = "Image 'switch_explain.png' not found", color = Color.Red, modifier = Modifier.padding(bottom = 8.dp)
                 )
             }
-
+            HorizontalDivider(
+                modifier = Modifier.padding(vertical = 8.dp), thickness = 1.dp, color = Color.Gray
+            )
+            ExtractGameSaveContent()
             // Divider
             HorizontalDivider(
                 modifier = Modifier.padding(vertical = 8.dp), thickness = 1.dp, color = Color.Gray
@@ -233,10 +236,7 @@ fun SwitchAccount(onClose: () -> Unit) {
                             }
                         })
                 }
-                HorizontalDivider(
-                    modifier = Modifier.padding(vertical = 8.dp), thickness = 1.dp, color = Color.Gray
-                )
-                ExtractGameSaveContent()
+
             }
         }
     }

@@ -38,7 +38,8 @@ suspend fun detectBuildingList(excludeNewBuildings: Boolean = false): BuildingDe
             "${item.text}($x,$y)"
         }
     }
-    ShowMessage("账号${InGamesVars.currentAccountNumber}，原始检测结果：\n$rawSummary")
+    // Keep the debug message short so it stays readable in logs.
+    ShowMessage("账号${InGamesVars.currentAccountNumber}，原始检测结果：\n${rawSummary.take(50)}")
     // Take a screenshot for color checking (needed for post-process and later filtering)
     val screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult ?: logAndRestart("failed to take screenshot at building detection")
 
