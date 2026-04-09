@@ -57,7 +57,7 @@ suspend fun enterMainScreen(isDoubleCheck: Boolean = false): Boolean {
 
             // Click right bottom roughly every 5 seconds
             if (clickRightBottomCounter++ >= 4) {
-                clickRightBottom(5)
+                clickRightBottom(10)
                 clickRightBottomCounter = 0
             }
 

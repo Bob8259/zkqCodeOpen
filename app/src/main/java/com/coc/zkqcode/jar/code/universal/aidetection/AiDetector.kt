@@ -57,7 +57,7 @@ object AiDetector {
     private val mainHandler = Handler(Looper.getMainLooper())
 
     private suspend fun isPluginInstalled(): Boolean {
-        val installed = RunShell.run("pm list packages $PLUGIN_PACKAGE", isCheckIsPlaying = false)
+        val installed = RunShell.run("pm list packages $PLUGIN_PACKAGE", checkIsPlaying = false)
         return installed.any { it.contains(PLUGIN_PACKAGE) }
     }
 
@@ -144,7 +144,7 @@ object AiDetector {
     private suspend fun installPlugin(apkFile: File): Boolean {
         val installResult = RunShell.run(
             "pm install -r \"${apkFile.absolutePath}\"",
-            isCheckIsPlaying = false
+            checkIsPlaying = false
         )
         if (installResult.any { it.contains("Success", ignoreCase = true) }) {
             return true
@@ -155,7 +155,7 @@ object AiDetector {
     }
 
     private suspend fun launchPluginMainActivity(): Boolean {
-        val launchResult = RunShell.run(MAIN_ACTIVITY_CMD, isCheckIsPlaying = false)
+        val launchResult = RunShell.run(MAIN_ACTIVITY_CMD, checkIsPlaying = false)
         val hasError = launchResult.any {
             it.contains("Error", ignoreCase = true) || it.contains("Exception", ignoreCase = true)
         }
@@ -244,7 +244,7 @@ object AiDetector {
                 }
             } catch (_: Exception) {
                 // If the service is unreachable, try starting it again and wait briefly.
-                RunShell.runNoOutput(SERVICE_START_CMD, isCheckIsPlaying = false)
+                RunShell.runNoOutput(SERVICE_START_CMD, checkIsPlaying = false)
                 delay(POLL_INTERVAL_MS)
                 continue
             }
@@ -263,7 +263,7 @@ object AiDetector {
                 }
                 // Reset the polling timer so the full window is available after the update.
                 startTime = System.currentTimeMillis()
-                RunShell.runNoOutput(SERVICE_START_CMD, isCheckIsPlaying = false)
+                RunShell.runNoOutput(SERVICE_START_CMD, checkIsPlaying = false)
                 delay(POLL_INTERVAL_MS)
             }
         }

@@ -3,7 +3,9 @@ package com.coc.zkqcode.jar.code.universal.smalltools
 import android.annotation.SuppressLint
 import android.os.Environment
 import com.coc.zkqcode.core.data.database.GlobalVars
+import com.coc.zkqcode.core.util.basic.RunShell
 import com.coc.zkqcode.core.util.basic.ShowMessage
+import com.coc.zkqcode.core.util.fileactions.FileHelper
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
 import com.coc.zkqcode.jar.code.universal.GameVersion
 import com.coc.zkqcode.jar.code.universal.InGamesVars
@@ -27,6 +29,84 @@ fun getGameFilePath(): String {
         // PRIVATE and any future versions do not have a configured save path
         else -> ""
     }
+}
+
+// Wrap content as a shell-safe single-quoted literal so printf can write it exactly.
+private fun toSingleQuotedShellLiteral(content: String): String {
+    return "'${content.replace("'", "'\"'\"'")}'"
+}
+
+// Resolve the selected data-number slot and write only its raw content into loginData/data.txt.
+@SuppressLint("SdCardPath")
+suspend fun writeDataNumberFile(slot: String): Boolean {
+    // Only reset CN shared preferences here so data-number login keeps other app data intact.
+    RunShell.runNoOutput("rm -rf \"/data/data/${GameVersion.CN.packageName}/shared_prefs\"/*", false)
+    val trimmedSlot = slot.trim()
+    if (trimmedSlot.isEmpty()) {
+        ShowMessage("数据号序号不能为空\n即将跳过当前账号")
+        return false
+    }
+
+    val sdPath = Environment.getExternalStorageDirectory().path
+    val loginDataDir = "$sdPath/loginData"
+    val dataJsonPath = "$loginDataDir/data.json"
+    val dataTxtPath = "$loginDataDir/data.txt"
+
+    if (!FileHelper.checkExists(dataJsonPath)) {
+        ShowMessage("数据号文件不存在：$dataJsonPath\n即将跳过当前账号")
+        return false
+    }
+
+    val dataJson = FileHelper.readJson(dataJsonPath)
+    if (dataJson == null) {
+        ShowMessage("数据号文件格式无效：$dataJsonPath\n即将跳过当前账号")
+        return false
+    }
+
+    if (!dataJson.has(trimmedSlot)) {
+        ShowMessage("数据号不存在：$trimmedSlot\n即将跳过当前账号")
+        return false
+    }
+
+    val contentElement = dataJson.get(trimmedSlot)
+    if (contentElement == null || contentElement.isJsonNull) {
+        ShowMessage("数据号内容无效：$trimmedSlot\n即将跳过当前账号")
+        return false
+    }
+
+    val dataContent = contentElement.asString
+    if (dataContent.isBlank()) {
+        ShowMessage("数据号内容为空：$trimmedSlot\n即将跳过当前账号")
+        return false
+    }
+
+    val shellContent = toSingleQuotedShellLiteral(dataContent)
+    val writeResult = RunShell.runAndGetFirst(
+        """
+        mkdir -p "$loginDataDir" &&
+        printf %s $shellContent > "$dataTxtPath" &&
+        echo success || echo failure
+        """.trimIndent(), false
+    )
+    if (writeResult != "success") {
+        ShowMessage("写入数据号失败：$dataTxtPath\n即将跳过当前账号")
+        return false
+    }
+    return true
+}
+
+// Read the current account's configured data-number slot, then launch the bot-only post-login flow.
+private suspend fun writeCurrentAccountDataNumberFile(): Boolean {
+    val accountIndex = InGamesVars.currentAccountNumber
+    val slotKey = "${ACCOUNT_SETTINGS.DATA_CONTENT.key}$accountIndex"
+    val slot = getConfigOrStop(slotKey).trim()
+    if (slot.isEmpty()) {
+        ShowMessage("数据号序号不能为空：$slotKey\n即将跳过当前账号")
+        return false
+    }
+    if (!writeDataNumberFile(slot)) return false
+    launchGameAndHandleDataNumberLogin(GameVersion.CN)
+    return true
 }
 
 /**
@@ -68,13 +148,17 @@ suspend fun writeGameFilesCore(
  */
 suspend fun writeGameFiles(): Boolean {
     val startMethod = getConfigOrStop("${ACCOUNT_SETTINGS.START_METHOD.key}${InGamesVars.currentAccountNumber}").toIntOrNull() ?: logAndRestart("${ACCOUNT_SETTINGS.START_METHOD.displayName} 必须是数字，请检查配置")
-    if (startMethod != 0) return true
     killGame()
-    val savePathName = getGameFilePath()
-    val version = InGamesVars.currentGameVersion
-
-    // Versions without a configured save folder (e.g. PRIVATE) have nothing to write
-    if (version.folderName.isEmpty()) return true
-
-    return writeGameFilesCore(version.packageName, savePathName, version.folderName, version.subDirs)
+    return when (startMethod) {
+        0 -> {
+            val savePathName = getGameFilePath()
+            val version = InGamesVars.currentGameVersion
+            // Versions without a configured save folder (e.g. PRIVATE) have nothing to write
+            if (version.folderName.isEmpty()) return true
+            writeGameFilesCore(version.packageName, savePathName, version.folderName, version.subDirs)
+        }
+        1 -> true
+        2 -> writeCurrentAccountDataNumberFile()
+        else -> logAndRestart("${ACCOUNT_SETTINGS.START_METHOD.displayName} 配置错误：$startMethod")
+    }
 }

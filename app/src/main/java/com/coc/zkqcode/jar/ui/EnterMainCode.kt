@@ -70,44 +70,39 @@ class EnterMainCode : MainCode {
                 SwitchAccount(onClose = onClose)
                 return
             }
+
             AppMode.BugReport -> {
                 BugReport(onClose = onClose)
                 return
             }
+
             AppMode.Main -> {
                 val navController = rememberNavController()
                 NavHost(navController = navController, startDestination = "home") {
                     composable("home") {
-                        HomeScreen(
-                            onSaveSuccess = onClose,
-                            onNavigatePriority = { index ->
-                                navController.navigate("priority/$index")
-                            },
-                            onNavigateBuilderBasePriority = { index ->
-                                navController.navigate("builder_base_priority/$index")
-                            }
-                        )
+                        HomeScreen(onSaveSuccess = onClose, onNavigatePriority = { index ->
+                            navController.navigate("priority/$index")
+                        }, onNavigateBuilderBasePriority = { index ->
+                            navController.navigate("builder_base_priority/$index")
+                        })
                     }
                     composable("priority/{index}") { backStackEntry ->
                         val index = backStackEntry.arguments?.getString("index")?.toIntOrNull() ?: 1
                         MainBaseUpgradePriority(
-                            index = index,
-                            onSaveSuccess = {
+                            index = index, onSaveSuccess = {
                                 navController.popBackStack()
-                            }
-                        )
+                            })
                     }
                     composable("builder_base_priority/{index}") { backStackEntry ->
                         val index = backStackEntry.arguments?.getString("index")?.toIntOrNull() ?: 1
                         BuilderBaseUpgradePriority(
-                            index = index,
-                            onSaveSuccess = {
+                            index = index, onSaveSuccess = {
                                 navController.popBackStack()
-                            }
-                        )
+                            })
                     }
                 }
             }
+
             else -> {}
         }
     }
@@ -127,7 +122,7 @@ private fun ConfigLoadingScreen() {
             countdown--
         }
         // Skip waitForPlay check — force-stop should execute immediately
-        RunShell.runNoOutput("am force-stop com.coc.zkqcode >>/dev/null 2>&1", isCheckIsPlaying = false)
+        RunShell.runNoOutput("am force-stop com.coc.zkqcode >>/dev/null 2>&1", checkIsPlaying = false)
     }
 
     val scope = rememberCoroutineScope()
@@ -135,13 +130,11 @@ private fun ConfigLoadingScreen() {
     Column {
         Text("正在初始化配置文件...\n若长时间卡在此界面，将在 $countdown 秒后自动重启。")
         CustomButton(
-            text = "点击此处手动关闭辅助",
-            onClick = {
+            text = "点击此处手动关闭辅助", onClick = {
                 // Launch on IO dispatcher to avoid blocking the main thread (ANR)
                 scope.launch(Dispatchers.IO) {
-                    RunShell.runNoOutput("am force-stop com.coc.zkqcode >>/dev/null 2>&1", isCheckIsPlaying = false)
+                    RunShell.runNoOutput("am force-stop com.coc.zkqcode >>/dev/null 2>&1", checkIsPlaying = false)
                 }
-            }
-        )
+            })
     }
 }

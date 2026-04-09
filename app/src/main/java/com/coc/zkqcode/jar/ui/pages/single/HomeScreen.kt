@@ -376,7 +376,7 @@ fun HomeScreen(
                             val sdPath = Environment.getExternalStorageDirectory().path
                             withContext(Dispatchers.IO) {
                                 RunShell.runNoOutput(
-                                    "rm -rf $sdPath/zkqFiles", isCheckIsPlaying = false
+                                    "rm -rf $sdPath/zkqFiles", checkIsPlaying = false
                                 )
                             }
                             AppExitHelper.exitApplication(context)

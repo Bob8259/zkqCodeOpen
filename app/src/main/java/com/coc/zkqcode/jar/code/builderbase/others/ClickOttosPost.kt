@@ -39,7 +39,12 @@ suspend fun clickOttosOutPost(): Boolean {
     repeat(5) {
         val arrow = findMultiColorsUntil(schemas = listOf(MyColors.OrangeTutorialArrow), duration = 500)
         if (arrow != null) {
-            TouchActions.tap(arrow.x + 20, arrow.y + 100)
+            // Tap a small grid around the detected arrow to improve hit accuracy.
+            for (tapX in arrow.x..arrow.x + 40 step 15) {
+                for (tapY in arrow.y + 20..arrow.y + 120 step 15) {
+                    TouchActions.tap(tapX, tapY, delayTime = 50)
+                }
+            }
             delayWithMultiplier(10)
             clickRightBottom(1)
             delayWithMultiplier(50)

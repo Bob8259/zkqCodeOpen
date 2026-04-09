@@ -38,6 +38,7 @@ import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.util.basic.RunShell
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.jar.code.universal.GameVersion
+import com.coc.zkqcode.jar.code.universal.smalltools.writeDataNumberFile
 import com.coc.zkqcode.jar.code.universal.smalltools.writeGameFilesCore
 import com.coc.zkqcode.jar.ui.components.CustomButton
 import com.coc.zkqcode.jar.ui.components.SettingDropdown
@@ -110,7 +111,7 @@ fun SwitchAccount(onClose: () -> Unit) {
             FlowRow {
                 SettingDropdown(
                     key = GLOBAL_SETTINGS.SWITCH_ACCOUNT_VERSION.key,
-                    options = listOf("国服", "国际服")
+                    options = listOf("国服", "国际服", "数据号")
                 )
                 Row {
                     CustomButton(text = "▼", onClick = {
@@ -174,25 +175,30 @@ fun SwitchAccount(onClose: () -> Unit) {
                             val savePathName = accountNumber.ifEmpty { "1" }
                             val versionKey = GLOBAL_SETTINGS.SWITCH_ACCOUNT_VERSION.key
                             val versionId = (GlobalVars.configStates[versionKey]?.value ?: "0").toIntOrNull() ?: 0
-                            val gameVersion = GameVersion.fromId(versionId)
+                            val launchVersion = if (versionId == 2) GameVersion.CN else GameVersion.fromId(versionId)
 
-                            // Force-stop before writing to avoid file-in-use conflicts
-                            RunShell.runNoOutput("am force-stop ${gameVersion.packageName}", false)
-                            val success = writeGameFilesCore(
-                                packageName = gameVersion.packageName,
-                                savePathName = savePathName,
-                                folderName = gameVersion.folderName,
-                                subDirs = gameVersion.subDirs,
-                                killGame = false
-                            )
+                            // Data-number mode only prepares the login data here; the post-launch bot loop is not used in manual switching.
+                            val success = if (versionId == 2) {
+                                RunShell.runNoOutput("am force-stop ${launchVersion.packageName}", false)
+                                writeDataNumberFile(savePathName)
+                            } else {
+                                // Force-stop before writing to avoid file-in-use conflicts.
+                                RunShell.runNoOutput("am force-stop ${launchVersion.packageName}", false)
+                                writeGameFilesCore(
+                                    packageName = launchVersion.packageName,
+                                    savePathName = savePathName,
+                                    folderName = launchVersion.folderName,
+                                    subDirs = launchVersion.subDirs,
+                                    killGame = false
+                                )
+                            }
                             if (!success) {
                                 GlobalVars.isSwitchingAccount = false
                                 return@launch
                             }
-                            // Launch the game after write completes
-                            RunShell.runNoOutput("monkey -p ${gameVersion.packageName} -c android.intent.category.LAUNCHER 1", false)
-                            RunShell.runNoOutput("am start -n ${gameVersion.launchComponent}", false)
-
+                            // Launch the corresponding game after the switch completes.
+                            RunShell.runNoOutput("monkey -p ${launchVersion.packageName} -c android.intent.category.LAUNCHER 1", false)
+                            RunShell.runNoOutput("am start -n ${launchVersion.launchComponent}", false)
                             GlobalVars.isSwitchingAccount = false
                             AppStateManager.setMode(AppMode.Run)
                             GlobalVars.isPlaying.value = false

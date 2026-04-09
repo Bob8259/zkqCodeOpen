@@ -136,7 +136,7 @@ object TouchActions {
         isJitter: Boolean = true
     ) {
         waitForPlay()
-        val actualDuration = duration ?: Random.nextLong(300, 401)
+        val actualDuration = duration ?: Random.nextLong(100, 201)
         val delayMultiplier = getDelayMultiplier()
 
         touchDown(x1.toFloat(), y1.toFloat(), 1)

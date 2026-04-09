@@ -60,6 +60,15 @@ object MyColors : IUIColors by UIColors, IFeatureColors by FeatureColors, IMainB
     val BackToCamp = ColorSchema.parse(
         58, 597, 102, 644, "10135B", "9|0|80A3EA,18|0|6682B6,27|0|7FA2E6,36|0|293265,0|23|2540A8,9|23|718BFD,18|23|7996FE,27|23|86A6FE,36|23|637AAE", 0, 0.9, "回营"
     )
+    val AgreeTerms = ColorSchema.parse(
+        260, 470, 299, 509, "ACBAC2", "8|0|ACBAC2,16|0|ACBAC2,23|0|ACBAC2,31|0|ACBAC2,0|19|ACBAC2,8|19|ACBAC2,16|19|ACBAC2,23|19|ACBAC2,31|19|ACBAC2", 0, 0.9, "同意条款"
+    )
+    val AgreePrivacy = ColorSchema.parse(
+        184, 598, 593, 653, "67E2BF", "82|0|67E2BF,208|5|5CDCB3,245|0|67E2BF,327|0|67E2BF,0|27|21B76E,82|27|21B76E,164|27|21B76E,245|27|21B76E,327|27|21B76E", 0, 0.9, "同意隐私"
+    )
+    val LogIn = ColorSchema.parse(
+        663, 406, 879, 451, "FFFFFF", "-4|-8|261CE8,-1|-28|000000,27|-23|EDCD62,57|-16|E4C357,60|7|A77019,164|-23|EDCD62,182|-17|E6C459,178|4|B3791C,155|2|BB7E1E", 0, 0.9, "登录"
+    )
 
     //Main Base Clan Colors
     val TroopConfigCastleIcon = ColorSchema.parse(

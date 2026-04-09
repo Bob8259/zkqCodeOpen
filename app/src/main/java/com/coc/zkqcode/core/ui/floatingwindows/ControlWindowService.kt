@@ -117,12 +117,12 @@ class ControlWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner 
                 try {
                     val current = RunShell.runAndGetFirst(
                         "cat /proc/$pid/oom_score_adj",
-                        isCheckIsPlaying = false
+                        checkIsPlaying = false
                     )
                     if (current.trim() != "-1000") {
                         RunShell.runNoOutput(
                             "echo -1000 > /proc/$pid/oom_score_adj",
-                            isCheckIsPlaying = false
+                            checkIsPlaying = false
                         )
                     }
                 } catch (_: Exception) { }

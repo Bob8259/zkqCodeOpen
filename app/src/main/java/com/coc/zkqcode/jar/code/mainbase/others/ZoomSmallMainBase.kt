@@ -11,17 +11,18 @@ suspend fun zoomSmallMainBase(isForBuild: Boolean = false, isForAttack: Boolean 
     clickRightBottom(1)
     delayWithMultiplier(50)
     pinchIn(141, 423, 1052, 352, 638, 365)
-    delayWithMultiplier(200)
+    clickRightBottom(1)
+    delayWithMultiplier(50)
     if (isForAttack) {
         repeat(2) {
-            swipe(911, 134, 0, 720)
+            swipe(911, 134, 0, 720, delayTime = 100)
         }
     } else {
-        swipe(218, 523, 939, 162)
+        swipe(218, 523, 939, 162, delayTime = 100)
     }
     if (isForBuild) {
-        delayWithMultiplier(200)
+        delayWithMultiplier(100)
         clickRightBottom(1)
-        swipe(690, 550, 590, 710, delayTime = 600)
+        swipe(690, 550, 590, 710, delayTime = 500)
     }
 }
