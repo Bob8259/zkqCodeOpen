@@ -161,82 +161,83 @@ fun SwitchAccount(onClose: () -> Unit) {
                     )
                 }
             }
-            FlowRow(horizontalArrangement = Arrangement.Center) {
-                Row {
-                    // Confirm Button aligned to start
-                    CustomButton(
-                        text = "确认切号", onClick = {
-                            scope.launch(Dispatchers.IO) {
-                                GlobalVars.isSwitchingAccount = true
-                                GlobalVars.updateWindowPosition = true
-                                val accNum = accountNumber.ifEmpty { "1" }
-                                // Use SWITCH_ACCOUNT_VERSION dropdown to determine game version directly
-                                val versionKey = GLOBAL_SETTINGS.SWITCH_ACCOUNT_VERSION.key
-                                val versionStr = GlobalVars.configStates[versionKey]?.value ?: "0"
-                                val version = versionStr.toIntOrNull() ?: 0
-                                val sdPath = Environment.getExternalStorageDirectory().path
-                                // Use accountNumber directly as the save path name
-                                val savePathName = accNum
+            // Keep the action buttons centered within the dialog content area.
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                CustomButton(
+                    text = "确认切号", onClick = {
+                        scope.launch(Dispatchers.IO) {
+                            GlobalVars.isSwitchingAccount = true
+                            GlobalVars.updateWindowPosition = true
+                            val accNum = accountNumber.ifEmpty { "1" }
+                            // Use SWITCH_ACCOUNT_VERSION dropdown to determine game version directly
+                            val versionKey = GLOBAL_SETTINGS.SWITCH_ACCOUNT_VERSION.key
+                            val versionStr = GlobalVars.configStates[versionKey]?.value ?: "0"
+                            val version = versionStr.toIntOrNull() ?: 0
+                            val sdPath = Environment.getExternalStorageDirectory().path
+                            // Use accountNumber directly as the save path name
+                            val savePathName = accNum
 
-                                if (version == 0) {
-                                    // CN Version
-                                    val sourceDir = "$sdPath/zkqFiles/zkqCNGameSave/$savePathName"
-                                    // Check existence
-                                    if (!Shell.cmd("[ -d \"$sourceDir\" ]").exec().isSuccess) {
-                                        ShowMessage("存档文件不存在！\n请仔细检查存档路径以及游戏版本！")
-                                        GlobalVars.isSwitchingAccount = false
-                                        return@launch
-                                    }
-
-                                    // Force-stop before writing to avoid file-in-use conflicts
-                                    RunShell.runNoOutput("am force-stop com.tencent.tmgp.supercell.clashofclans", false)
-                                    writeGameFilesCore(
-                                        packageName = "com.tencent.tmgp.supercell.clashofclans", savePathName = savePathName, folderName = "zkqCNGameSave", subDirs = listOf("shared_prefs", "databases"), killGame = false
-                                    )
-                                    // Launch the game after write completes
-                                    RunShell.runNoOutput("monkey -p com.tencent.tmgp.supercell.clashofclans -c android.intent.category.LAUNCHER 1", false)
-                                    RunShell.runNoOutput("am start -n com.tencent.tmgp.supercell.clashofclans/com.supercell.titan.tencent.GameAppTencent", false)
-                                } else {
-                                    // Global Version
-                                    val sourceDir = "$sdPath/zkqFiles/zkqGlobalGameSave/$savePathName"
-
-                                    // Check existence
-                                    if (!Shell.cmd("[ -d \"$sourceDir\" ]").exec().isSuccess) {
-                                        ShowMessage("存档文件不存在！\n请仔细检查存档路径以及游戏版本！")
-                                        GlobalVars.isSwitchingAccount = false
-                                        return@launch
-                                    }
-
-                                    // Force-stop before writing to avoid file-in-use conflicts
-                                    RunShell.runNoOutput("am force-stop com.supercell.clashofclans", false)
-                                    writeGameFilesCore(
-                                        packageName = "com.supercell.clashofclans", savePathName = savePathName, folderName = "zkqGlobalGameSave", subDirs = listOf("shared_prefs"), killGame = false
-                                    )
-                                    // Launch the game after write completes
-                                    RunShell.runNoOutput("monkey -p com.supercell.clashofclans -c android.intent.category.LAUNCHER 1", false)
-                                    RunShell.runNoOutput("am start -n com.supercell.clashofclans/com.supercell.titan.GameApp", false)
+                            if (version == 0) {
+                                // CN Version
+                                val sourceDir = "$sdPath/zkqFiles/zkqCNGameSave/$savePathName"
+                                // Check existence
+                                if (!Shell.cmd("[ -d \"$sourceDir\" ]").exec().isSuccess) {
+                                    ShowMessage("存档文件不存在！\n请仔细检查存档路径以及游戏版本！")
+                                    GlobalVars.isSwitchingAccount = false
+                                    return@launch
                                 }
-                                GlobalVars.isSwitchingAccount = false
-                                AppStateManager.setMode(AppMode.Run) //just to close the ui
-                                GlobalVars.isPlaying.value = false
-                                GlobalVars.updateWindowPosition = true
-                                withContext(Dispatchers.Main) {
-                                    ShowMessage("切号完成", false)
-                                    onClose()
+
+                                // Force-stop before writing to avoid file-in-use conflicts
+                                RunShell.runNoOutput("am force-stop com.tencent.tmgp.supercell.clashofclans", false)
+                                writeGameFilesCore(
+                                    packageName = "com.tencent.tmgp.supercell.clashofclans", savePathName = savePathName, folderName = "zkqCNGameSave", subDirs = listOf("shared_prefs", "databases"), killGame = false
+                                )
+                                // Launch the game after write completes
+                                RunShell.runNoOutput("monkey -p com.tencent.tmgp.supercell.clashofclans -c android.intent.category.LAUNCHER 1", false)
+                                RunShell.runNoOutput("am start -n com.tencent.tmgp.supercell.clashofclans/com.supercell.titan.tencent.GameAppTencent", false)
+                            } else {
+                                // Global Version
+                                val sourceDir = "$sdPath/zkqFiles/zkqGlobalGameSave/$savePathName"
+
+                                // Check existence
+                                if (!Shell.cmd("[ -d \"$sourceDir\" ]").exec().isSuccess) {
+                                    ShowMessage("存档文件不存在！\n请仔细检查存档路径以及游戏版本！")
+                                    GlobalVars.isSwitchingAccount = false
+                                    return@launch
                                 }
+
+                                // Force-stop before writing to avoid file-in-use conflicts
+                                RunShell.runNoOutput("am force-stop com.supercell.clashofclans", false)
+                                writeGameFilesCore(
+                                    packageName = "com.supercell.clashofclans", savePathName = savePathName, folderName = "zkqGlobalGameSave", subDirs = listOf("shared_prefs"), killGame = false
+                                )
+                                // Launch the game after write completes
+                                RunShell.runNoOutput("monkey -p com.supercell.clashofclans -c android.intent.category.LAUNCHER 1", false)
+                                RunShell.runNoOutput("am start -n com.supercell.clashofclans/com.supercell.titan.GameApp", false)
                             }
-                        })
-                    CustomButton(
-                        text = "关闭窗口", onClick = {
+                            GlobalVars.isSwitchingAccount = false
                             AppStateManager.setMode(AppMode.Run) //just to close the ui
                             GlobalVars.isPlaying.value = false
                             GlobalVars.updateWindowPosition = true
-                            scope.launch {
+                            withContext(Dispatchers.Main) {
+                                ShowMessage("切号完成", false)
                                 onClose()
                             }
-                        })
-                }
-
+                        }
+                    })
+                CustomButton(
+                    text = "关闭窗口", onClick = {
+                        AppStateManager.setMode(AppMode.Run) //just to close the ui
+                        GlobalVars.isPlaying.value = false
+                        GlobalVars.updateWindowPosition = true
+                        scope.launch {
+                            onClose()
+                        }
+                    })
             }
         }
     }
