@@ -40,7 +40,7 @@ suspend fun collectClanCastleResources(): Boolean {
         for (detection in scan) {
             val box = detection.boundingBox
             TouchActions.tap(box.centerX().toInt(), box.centerY().toInt(), delayTime = 500)
-            val openClanCastle = findMultiColorsUntil(schemas = listOf(MyColors.OpenClanCastle, MyColors.OpenClanCastle2, MyColors.OpenClanCastle3), duration = 200)
+            val openClanCastle = findMultiColorsUntil(schemas = listOf(MyColors.OpenClanCastle, MyColors.OpenClanCastle2, MyColors.OpenClanCastle3, MyColors.OpenClanCastle4), duration = 200)
             if (openClanCastle != null) {
                 TouchActions.tap(openClanCastle.x, openClanCastle.y, delayTime = 500)
                 TouchActions.tap(653, 504, delayTime = 300)//Collect

@@ -93,4 +93,13 @@ object MyColors : IUIColors by UIColors, IFeatureColors by FeatureColors, IMainB
     val OpenClanCastle3 = ColorSchema.parse(
         173, 526, 1091, 628, "2F557B", "8|0|437A93,17|0|3297B2,25|0|44BFE7,33|0|19374A,0|19|406CA0,8|19|3698C3,17|19|1A191C,25|19|3799C3,33|19|406C9F", 0, 0.9, "领取宝库按钮8按钮"
     )
+    val OpenClanCastle4 = ColorSchema.parse(
+        174, 562, 1119, 627, "1E303F", "6|0|1A252B,12|0|186267,18|0|42B3DB,24|0|395478,0|14|4173A7,6|14|3698C3,12|14|69DCFF,18|14|3698C3,24|14|4373A7", 0, 0.9, "领取宝库按钮12按钮"
+    )
+
+    // Main Base Attack Color
+    val CanNotAttack = ColorSchema.parse(
+        550, 262, 750, 444, "ABAFEB", "0|2|ADB1ED,0|5|ADB2EF,7|-8|1872AE,4|-21|083454,-3|3|A9AEEA,13|7|B2B6F3,2|-12|1B567F,7|-33|EBF0F2,5|-36|C3CBCE", 0, 0.95, "无法进攻"
+    )
+
 }

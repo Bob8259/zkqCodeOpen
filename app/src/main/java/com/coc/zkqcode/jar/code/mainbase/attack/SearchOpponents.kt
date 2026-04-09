@@ -109,6 +109,10 @@ suspend fun searchOpponentsAndDeployTroops(): Boolean {
                 if (!getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.WAIT_FOR_BATTLE.key)) return false
             }
         }
+        val canNotAttack = findMultiColors(schema = MyColors.CanNotAttack)
+        if (canNotAttack != null) {
+            return false
+        }
         val villagerSpeaking = findMultiColors(schema = MyColors.SpeakingVillager)
         val setBaseIcon = findMultiColors(schema = MyColors.SetBaseIcon)
         if (villagerSpeaking != null || setBaseIcon != null) {
