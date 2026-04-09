@@ -332,6 +332,8 @@ fun levenshteinDistance(s1: String, s2: String): Int {
     return dp[s2.length]
 }
 
-suspend fun tapGoldBar() {
-    TouchActions.tap(1235, 35)
+suspend fun tapGoldBar(times: Int = 1) {
+    repeat(times) {
+        TouchActions.tap(1235, 35, delayTime = 50)
+    }
 }

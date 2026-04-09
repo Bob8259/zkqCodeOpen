@@ -37,7 +37,7 @@ suspend fun clickOttosOutPost(): Boolean {
     }
     swipe(269, 139, 1021, 502, delayTime = 800)
     repeat(5) {
-        val arrow = findMultiColorsUntil(schemas = listOf(MyColors.OrangeTutorialArrow), duration = 500)
+        val arrow = findMultiColorsUntil(schemas = listOf(MyColors.OrangeTutorialArrow), duration = 500, increment = 1)
         if (arrow != null) {
             // Tap a small grid around the detected arrow to improve hit accuracy.
             for (tapX in arrow.x..arrow.x + 40 step 15) {

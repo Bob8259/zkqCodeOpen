@@ -206,7 +206,7 @@ private suspend fun upgradeWalls(currentBase: BaseType, wallType: WallType): Loo
         WallType.Elixir -> "圣水"
     }
     ShowMessage("刷墙类型：$wallTypeName")
-    tapGoldBar()
+    tapGoldBar(2)
     val isBatchUpgrade = if (currentBase == BaseType.Main) {
         getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.BATCH_WALL_UPGRADE_SETTINGS.key)
     } else {
