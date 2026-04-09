@@ -73,12 +73,8 @@ suspend fun writeGameFiles(): Boolean {
     val savePathName = getGameFilePath()
     val version = InGamesVars.currentGameVersion
 
-    val (folderName, subDirs) = when (version) {
-        GameVersion.CN -> "zkqCNGameSave" to listOf("shared_prefs", "databases")
-        GameVersion.GLOBAL -> "zkqGlobalGameSave" to listOf("shared_prefs")
-        // nothing to write
-        else -> return true
-    }
+    // Versions without a configured save folder (e.g. PRIVATE) have nothing to write
+    if (version.folderName.isEmpty()) return true
 
-    return writeGameFilesCore(version.packageName, savePathName, folderName, subDirs)
+    return writeGameFilesCore(version.packageName, savePathName, version.folderName, version.subDirs)
 }

@@ -14,42 +14,37 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.material3.Text
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.coc.zkqcode.jar.ui.components.CustomButton
 import com.coc.zkqcode.jar.ui.components.CustomNotificationWindow
 import com.coc.zkqcode.jar.ui.components.SettingDropdown
 import com.coc.zkqcode.jar.ui.components.SettingSection
 import com.coc.zkqcode.core.data.database.GlobalVars
+import com.coc.zkqcode.core.util.basic.RunShell
+import com.coc.zkqcode.core.util.fileactions.FileHelper
+import com.coc.zkqcode.jar.code.universal.GameVersion
 import com.coc.zkqcode.jar.ui.components.SettingInputRow
 import com.coc.zkqcode.jar.ui.schema.Schema
 import com.coc.zkqcode.jar.ui.schema.Schema.GLOBAL_SETTINGS
+import com.google.gson.JsonObject
 import com.topjohnwu.superuser.Shell
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 /**
- * Game version enum
- * Centralized management of config keys, package names, folder names and subdirectories to extract for different versions (CN/Global)
+ * Game variant enum that delegates package/folder/subDir metadata to [GameVersion],
+ * keeping only the UI setting key specific to the extract page.
  */
 private enum class GameVariant(
     val settingKey: String,
-    val folderName: String,
-    val packageName: String,
-    val targetSubDirs: List<String>
+    val gameVersion: GameVersion
 ) {
-    CN(
-        settingKey = GLOBAL_SETTINGS.EXTRACT_CN.key,
-        folderName = "zkqCNGameSave",
-        packageName = "com.tencent.tmgp.supercell.clashofclans",
-        targetSubDirs = listOf("shared_prefs", "databases")
-    ),
-    GLOBAL(
-        settingKey = GLOBAL_SETTINGS.EXTRACT_GLOBAL.key,
-        folderName = "zkqGlobalGameSave",
-        packageName = "com.supercell.clashofclans",
-        targetSubDirs = listOf("shared_prefs")
-    )
+    CN(settingKey = GLOBAL_SETTINGS.EXTRACT_CN.key, gameVersion = GameVersion.CN),
+    GLOBAL(settingKey = GLOBAL_SETTINGS.EXTRACT_GLOBAL.key, gameVersion = GameVersion.GLOBAL)
 }
 
 fun LazyListScope.ExtractGameSave() {
@@ -81,9 +76,7 @@ fun ExtractGameSaveContent() {
             val suffix = GlobalVars.configStates[variant.settingKey]!!.value
             val sdPath = Environment.getExternalStorageDirectory().path
 
-            // [Modification] Base directory added a layer of zkqFiles
-            // Path becomes: /sdcard/zkqFiles/zkqCNGameSave
-            val gameRootDir = "$sdPath/zkqFiles/${variant.folderName}"
+            val gameRootDir = "$sdPath/zkqFiles/${variant.gameVersion.folderName}"
 
             // Specific path for this save (e.g., /sdcard/zkqFiles/zkqCNGameSave/001)
             val targetSaveDir = "$gameRootDir/$suffix"
@@ -104,16 +97,11 @@ fun ExtractGameSaveContent() {
             // Create directory for this save
             Shell.cmd("mkdir -p \"$targetSaveDir\"").exec()
 
-            // 3. Iterate and copy directories
-            variant.targetSubDirs.forEach { dir ->
+            // Iterate and copy each subdirectory from game data into the save location
+            variant.gameVersion.subDirs.forEach { dir ->
                 val destPath = "$targetSaveDir/$dir"
-                // Create target subdirectory
-                Shell.cmd("mkdir -p \"$destPath\"").exec()
-
-                // 使用 Root 权限复制文件
-                // 路径加引号防止空格问题
-                val cmd = "cp -r /data/data/${variant.packageName}/$dir/* \"$destPath\""
-                Shell.cmd(cmd).exec()
+                RunShell.runNoOutput("mkdir -p \"$destPath\"", false)
+                RunShell.runNoOutput("cp -r /data/data/${variant.gameVersion.packageName}/$dir/* \"$destPath\"", false)
             }
 
             showMsg("提取成功！")
@@ -131,8 +119,7 @@ fun ExtractGameSaveContent() {
             }
 
             val sdPath = Environment.getExternalStorageDirectory().path
-            // 【修改点】删除路径也同步增加 zkqFiles
-            val targetPath = "$sdPath/zkqFiles/${variant.folderName}/$suffix"
+            val targetPath = "$sdPath/zkqFiles/${variant.gameVersion.folderName}/$suffix"
 
             // 使用 Shell 检查目录是否存在
             val checkExistCmd = "[ -d \"$targetPath\" ]"
@@ -154,6 +141,64 @@ fun ExtractGameSaveContent() {
         }
     }
 
+    // Save the data-number entry into /loginData/data.json
+    fun performSaveDataNumber() {
+        coroutineScope.launch(Dispatchers.IO) {
+            val slot = GlobalVars.configStates[GLOBAL_SETTINGS.EXTRACT_DATA_NUMBER.key]!!.value.trim()
+            val content = GlobalVars.configStates[GLOBAL_SETTINGS.EXTRACT_DATA_CONTENT.key]!!.value.trim()
+
+            if (slot.isEmpty()) {
+                showMsg("错误：序号不能为空")
+                return@launch
+            }
+            if (content.isEmpty()) {
+                showMsg("错误：数据号内容不能为空")
+                return@launch
+            }
+
+            val sdPath = Environment.getExternalStorageDirectory().path
+            val dataPath = "$sdPath/loginData/data.json"
+
+            // Read existing JSON, or start with an empty object
+            val json = FileHelper.readJson(dataPath) ?: JsonObject()
+            json.addProperty(slot, content)
+
+            val success = FileHelper.writeJson(dataPath, json.toString())
+            showMsg(if (success) "保存成功！" else "保存失败，请检查权限")
+        }
+    }
+
+    // Delete the selected data-number entry from /loginData/data.json
+    fun performDeleteDataNumber() {
+        coroutineScope.launch(Dispatchers.IO) {
+            val slot = GlobalVars.configStates[GLOBAL_SETTINGS.EXTRACT_DATA_NUMBER.key]!!.value.trim()
+
+            if (slot.isEmpty()) {
+                showMsg("错误：序号不能为空")
+                return@launch
+            }
+
+            val sdPath = Environment.getExternalStorageDirectory().path
+            val dataPath = "$sdPath/loginData/data.json"
+
+            val json = FileHelper.readJson(dataPath)
+            if (json == null || !json.has(slot)) {
+                showMsg("删除失败，该序号数据不存在")
+                return@launch
+            }
+
+            json.remove(slot)
+
+            val success = if (json.size() == 0) {
+                // No entries left; remove the file entirely
+                FileHelper.deleteJson(dataPath)
+            } else {
+                FileHelper.writeJson(dataPath, json.toString())
+            }
+            showMsg(if (success) "删除成功！" else "删除失败，请检查权限")
+        }
+    }
+
     // Initialize and subscribe to version selector state so parent recomposes on change
     val versionState = GlobalVars.configStates.getOrPut(GLOBAL_SETTINGS.EXTRACT_VERSION.key) {
         mutableStateOf(Schema.getDefaultValue(GLOBAL_SETTINGS.EXTRACT_VERSION.key))
@@ -165,15 +210,34 @@ fun ExtractGameSaveContent() {
         // Dropdown to switch between CN and Global versions
         SettingDropdown(
             key = GLOBAL_SETTINGS.EXTRACT_VERSION.key,
-            options = listOf("国服", "国际服")
+            options = listOf("国服", "国际服", "数据号")
         )
 
-        // Only show the section for the currently selected variant
+        // Show section content based on the selected index
         SettingSection {
-            GameConfigSection(
-                variant = selectedVariant,
-                onExtract = { performExtract(selectedVariant) },
-                onDelete = { performDelete(selectedVariant) }
+            if (selectedIndex == 2) {
+                // For "数据号" mode, show the slot selector and data content inputs plus action buttons
+                SettingInputRow(key = GLOBAL_SETTINGS.EXTRACT_DATA_NUMBER.key)
+                SettingInputRow(key = GLOBAL_SETTINGS.EXTRACT_DATA_CONTENT.key)
+                Row {
+                    CustomButton(text = "保存数据", onClick = { performSaveDataNumber() })
+                    CustomButton(text = "删除数据", onClick = { performDeleteDataNumber() })
+                }
+            } else {
+                GameConfigSection(
+                    variant = selectedVariant,
+                    onExtract = { performExtract(selectedVariant) },
+                    onDelete = { performDelete(selectedVariant) }
+                )
+            }
+        }
+        // Show disclaimer when "数据号" (index 2) is selected
+        if (selectedIndex == 2) {
+            Text(
+                text = "数据号功能源自第三方代码，与紫孔雀作者无关。该功能仅供学习研究使用，禁止用于其他用途。数据号以明文方式保存，请自行确保信息安全。",
+                color = Color.Red,
+                fontSize = 11.sp,
+                modifier = Modifier.padding(top = 6.dp, start = 4.dp, end = 4.dp)
             )
         }
     }

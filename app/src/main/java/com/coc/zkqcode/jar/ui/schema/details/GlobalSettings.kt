@@ -10,6 +10,8 @@ object GlobalSettings {
     val SWITCH_ACCOUNT_VERSION = SettingDef("switch_account_version", "切号版本选择", "0", "GLOBAL_SETTINGS")
     val EXTRACT_CN = SettingDef("extract_cn", "提取国服存档到此序号", "1", "GLOBAL_SETTINGS")
     val EXTRACT_GLOBAL = SettingDef("extract_global", "提取国际服存档到此序号", "1", "GLOBAL_SETTINGS")
+    val EXTRACT_DATA_NUMBER = SettingDef("extract_data_number", "保存数据号到此序号", "1", "GLOBAL_SETTINGS")
+    val EXTRACT_DATA_CONTENT = SettingDef("extract_data_content", "数据号内容", "", "GLOBAL_SETTINGS")
 
     val EMAIL = SettingDef("email", "邮箱", "free@zkq", "GLOBAL_SETTINGS")
     val PASSWORD = SettingDef("password", "密码", "free_for_testing", "GLOBAL_SETTINGS")
@@ -38,6 +40,8 @@ object GlobalSettings {
         SWITCH_ACCOUNT_VERSION,
         EXTRACT_CN,
         EXTRACT_GLOBAL,
+        EXTRACT_DATA_NUMBER,
+        EXTRACT_DATA_CONTENT,
         EMAIL,
         PASSWORD,
         ENTER_GAME_TIMER,

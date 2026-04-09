@@ -2,7 +2,6 @@ package com.coc.zkqcode.jar.ui.pages.single
 
 import android.content.Context
 import android.graphics.BitmapFactory
-import android.os.Environment
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -38,13 +37,13 @@ import androidx.core.content.edit
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.util.basic.RunShell
 import com.coc.zkqcode.core.util.basic.ShowMessage
+import com.coc.zkqcode.jar.code.universal.GameVersion
 import com.coc.zkqcode.jar.code.universal.smalltools.writeGameFilesCore
 import com.coc.zkqcode.jar.ui.components.CustomButton
 import com.coc.zkqcode.jar.ui.components.SettingDropdown
 import com.coc.zkqcode.jar.ui.schema.Schema.GLOBAL_SETTINGS
 import com.coc.zkqcode.statehelper.AppMode
 import com.coc.zkqcode.statehelper.AppStateManager
-import com.topjohnwu.superuser.Shell
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -172,55 +171,30 @@ fun SwitchAccount(onClose: () -> Unit) {
                         scope.launch(Dispatchers.IO) {
                             GlobalVars.isSwitchingAccount = true
                             GlobalVars.updateWindowPosition = true
-                            val accNum = accountNumber.ifEmpty { "1" }
-                            // Use SWITCH_ACCOUNT_VERSION dropdown to determine game version directly
+                            val savePathName = accountNumber.ifEmpty { "1" }
                             val versionKey = GLOBAL_SETTINGS.SWITCH_ACCOUNT_VERSION.key
-                            val versionStr = GlobalVars.configStates[versionKey]?.value ?: "0"
-                            val version = versionStr.toIntOrNull() ?: 0
-                            val sdPath = Environment.getExternalStorageDirectory().path
-                            // Use accountNumber directly as the save path name
-                            val savePathName = accNum
+                            val versionId = (GlobalVars.configStates[versionKey]?.value ?: "0").toIntOrNull() ?: 0
+                            val gameVersion = GameVersion.fromId(versionId)
 
-                            if (version == 0) {
-                                // CN Version
-                                val sourceDir = "$sdPath/zkqFiles/zkqCNGameSave/$savePathName"
-                                // Check existence
-                                if (!Shell.cmd("[ -d \"$sourceDir\" ]").exec().isSuccess) {
-                                    ShowMessage("存档文件不存在！\n请仔细检查存档路径以及游戏版本！")
-                                    GlobalVars.isSwitchingAccount = false
-                                    return@launch
-                                }
-
-                                // Force-stop before writing to avoid file-in-use conflicts
-                                RunShell.runNoOutput("am force-stop com.tencent.tmgp.supercell.clashofclans", false)
-                                writeGameFilesCore(
-                                    packageName = "com.tencent.tmgp.supercell.clashofclans", savePathName = savePathName, folderName = "zkqCNGameSave", subDirs = listOf("shared_prefs", "databases"), killGame = false
-                                )
-                                // Launch the game after write completes
-                                RunShell.runNoOutput("monkey -p com.tencent.tmgp.supercell.clashofclans -c android.intent.category.LAUNCHER 1", false)
-                                RunShell.runNoOutput("am start -n com.tencent.tmgp.supercell.clashofclans/com.supercell.titan.tencent.GameAppTencent", false)
-                            } else {
-                                // Global Version
-                                val sourceDir = "$sdPath/zkqFiles/zkqGlobalGameSave/$savePathName"
-
-                                // Check existence
-                                if (!Shell.cmd("[ -d \"$sourceDir\" ]").exec().isSuccess) {
-                                    ShowMessage("存档文件不存在！\n请仔细检查存档路径以及游戏版本！")
-                                    GlobalVars.isSwitchingAccount = false
-                                    return@launch
-                                }
-
-                                // Force-stop before writing to avoid file-in-use conflicts
-                                RunShell.runNoOutput("am force-stop com.supercell.clashofclans", false)
-                                writeGameFilesCore(
-                                    packageName = "com.supercell.clashofclans", savePathName = savePathName, folderName = "zkqGlobalGameSave", subDirs = listOf("shared_prefs"), killGame = false
-                                )
-                                // Launch the game after write completes
-                                RunShell.runNoOutput("monkey -p com.supercell.clashofclans -c android.intent.category.LAUNCHER 1", false)
-                                RunShell.runNoOutput("am start -n com.supercell.clashofclans/com.supercell.titan.GameApp", false)
+                            // Force-stop before writing to avoid file-in-use conflicts
+                            RunShell.runNoOutput("am force-stop ${gameVersion.packageName}", false)
+                            val success = writeGameFilesCore(
+                                packageName = gameVersion.packageName,
+                                savePathName = savePathName,
+                                folderName = gameVersion.folderName,
+                                subDirs = gameVersion.subDirs,
+                                killGame = false
+                            )
+                            if (!success) {
+                                GlobalVars.isSwitchingAccount = false
+                                return@launch
                             }
+                            // Launch the game after write completes
+                            RunShell.runNoOutput("monkey -p ${gameVersion.packageName} -c android.intent.category.LAUNCHER 1", false)
+                            RunShell.runNoOutput("am start -n ${gameVersion.launchComponent}", false)
+
                             GlobalVars.isSwitchingAccount = false
-                            AppStateManager.setMode(AppMode.Run) //just to close the ui
+                            AppStateManager.setMode(AppMode.Run)
                             GlobalVars.isPlaying.value = false
                             GlobalVars.updateWindowPosition = true
                             withContext(Dispatchers.Main) {
