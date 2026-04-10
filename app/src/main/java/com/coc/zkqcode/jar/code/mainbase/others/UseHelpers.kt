@@ -75,7 +75,7 @@ private suspend fun checkResearchHelper(isUpgradeHelper: Boolean) {
         }
         val innerResearchHelper = findMultiColors(MyColors.InnerResearchHelper)
         if (innerResearchHelper != null) {
-            TouchActions.tap(innerResearchHelper.x, innerResearchHelper.y, delayTime = 400)
+            TouchActions.tap(innerResearchHelper.x, innerResearchHelper.y)
             val lockedResearchHelper = findMultiColors(MyColors.LockedResearchHelper)
             if (lockedResearchHelper != null) {
                 TouchActions.tap(801, 623, delayTime = 200)
@@ -92,7 +92,7 @@ private suspend fun checkResearchHelper(isUpgradeHelper: Boolean) {
         val lockedBuilderHelper = findMultiColors(MyColors.LockedBuilderHelper)
         if (lockedBuilderHelper != null && isUpgradeHelper && getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.UPGRADE_BUILDER_APPRENTICE.key)) {
             ShowMessage("已勾选升级工人助手")
-            TouchActions.tap(lockedBuilderHelper.x, lockedBuilderHelper.y, delayTime = 400)
+            TouchActions.tap(lockedBuilderHelper.x, lockedBuilderHelper.y)
             TouchActions.tap(801, 623, delayTime = 200)
             TouchActions.tap(801, 623, delayTime = 200)
             clickLeisure()
@@ -101,7 +101,7 @@ private suspend fun checkResearchHelper(isUpgradeHelper: Boolean) {
         }
         val innerBuilderHelper = findMultiColors(MyColors.InnerBuilderHelper)
         if (innerBuilderHelper != null) {
-            TouchActions.tap(innerBuilderHelper.x, innerBuilderHelper.y, delayTime = 400)
+            TouchActions.tap(innerBuilderHelper.x, innerBuilderHelper.y)
             assignHelper()
             clickLeisure()
             return
@@ -113,7 +113,7 @@ private suspend fun checkResearchHelper(isUpgradeHelper: Boolean) {
 private suspend fun assignHelper() {
     val assignHelper = findMultiColors(MyColors.AssignHelper)
     if (assignHelper != null) {
-        TouchActions.tap(assignHelper.x, assignHelper.y, delayTime = 400)
+        TouchActions.tap(assignHelper.x, assignHelper.y)
         TouchActions.tap(408, 473, delayTime = 200)//Continuously assign
         TouchActions.tap(641, 536)
         clickLeisure()

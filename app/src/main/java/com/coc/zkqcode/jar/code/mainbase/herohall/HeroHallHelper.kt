@@ -40,7 +40,7 @@ suspend fun openHeroHall(x: Int, y: Int): Boolean {
     TouchActions.tap(x, y, delayTime = 300)
     val openHeroHallIcon = findMultiColorsUntil(schemas = listOf(MyColors.OpenHeroHall, MyColors.OpenHeroHall2), duration = 500)
     if (openHeroHallIcon != null) {
-        TouchActions.tap(openHeroHallIcon.x, openHeroHallIcon.y, delayTime = 600)
+        TouchActions.tap(openHeroHallIcon.x, openHeroHallIcon.y)
         return true
     }
     return false

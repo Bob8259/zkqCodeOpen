@@ -21,11 +21,11 @@ suspend fun builderBaseResearch(): Boolean {
         val research = findMultiColors(schema = MyColors.ResearchIcon, increment = 1)
             ?: findMultiColors(schema = MyColors.ResearchIcon2, increment = 1)
         if (research != null) {
-            TouchActions.tap(research.x, research.y, delayTime = 600)
+            TouchActions.tap(research.x, research.y)
             TouchActions.tap(research.x, research.y + 130)//Open research tab
             val backArrow = findMultiColorsUntil(schemas = listOf(MyColors.BuilderResearchBackArrow), duration = 1000, increment = 1)
             if (backArrow != null) {
-                TouchActions.tap(backArrow.x, backArrow.y, delayTime = 600)
+                TouchActions.tap(backArrow.x, backArrow.y)
                 builderBaseCheckAllResearch()
             }
         }

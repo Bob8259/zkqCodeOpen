@@ -169,7 +169,7 @@ private suspend fun deployAndExit() {
     val exitButton = findMultiColorsUntil(schemas = listOf(MyColors.ExitBattleButton), duration = 2000)
     if (exitButton != null) {
         TouchActions.tap(exitButton.x, exitButton.y, delayTime = 200)
-        TouchActions.tap(775, 470, delayTime = 400)//Confirm exit
+        TouchActions.tap(775, 470)//Confirm exit
     }
 }
 
@@ -286,7 +286,7 @@ private suspend fun builderBaseTrainTroops() {
     }
 
     // Enter training menu
-    TouchActions.tap(trainingButton.x, trainingButton.y, delayTime = 400)
+    TouchActions.tap(trainingButton.x, trainingButton.y)
 
     // Clear existing troops if the clear button is present
     val cleanTroops = findMultiColorsUntil(schemas = listOf(MyColors.RedCleanButton), duration = 1000)

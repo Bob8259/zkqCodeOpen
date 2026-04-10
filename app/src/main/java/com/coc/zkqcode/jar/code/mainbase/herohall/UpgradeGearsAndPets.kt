@@ -124,7 +124,7 @@ private suspend fun checkPets() {
 
 private suspend fun upgradeGearsAction(shouldUpgradeGears: Boolean, shouldUpgradePets: Boolean) {
     if (shouldUpgradeGears) {
-        TouchActions.tap(685, 590, delayTime = 600)//Open Smith
+        TouchActions.tap(685, 590)//Open Smith
         val upgradeGear = findMultiColorsUntil(schemas = listOf(MyColors.UpgradeGearArrow, MyColors.NewGear), duration = 800)
         if (upgradeGear != null) {
             TouchActions.tap(upgradeGear.x, upgradeGear.y)

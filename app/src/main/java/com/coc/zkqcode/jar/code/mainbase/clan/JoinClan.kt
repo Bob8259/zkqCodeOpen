@@ -30,12 +30,12 @@ suspend fun joinClan(): Boolean {
     if (targetTAG.isBlank()) {
         val notJoinClan = findMultiColors(schema = MyColors.NotJoinClanFlag)
         if (notJoinClan != null) {
-            TouchActions.tap(53, 42, delayTime = 600)//open profile page
-            TouchActions.tap(754, 55, delayTime = 600)//join clan page
+            TouchActions.tap(53, 42)//open profile page
+            TouchActions.tap(754, 55)//join clan page
             val searchResult = findMultiColorsUntil(schemas = listOf(MyColors.SearchOptions, MyColors.ApplyClanSetting), duration = 6000)
             if (searchResult != null) {
                 repeat(3) {
-                    TouchActions.tap(728, 551, delayTime = 600)
+                    TouchActions.tap(728, 551)
                 }
             }
         }

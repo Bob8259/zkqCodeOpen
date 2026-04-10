@@ -105,7 +105,7 @@ private suspend fun usePotion() {
     val usePotionButton = findMultiColorsUntil(schemas = listOf(MyColors.UsePotionButton), duration = 600)
     if (usePotionButton != null) {
         TouchActions.tap(usePotionButton.x, usePotionButton.y)
-        TouchActions.tap(630, 445, delayTime = 600)
+        TouchActions.tap(630, 445)
     }
 }
 
@@ -113,6 +113,6 @@ private suspend fun sellPotion() {
     val sellPotionButton = findMultiColorsUntil(schemas = listOf(MyColors.SellPotionButton), duration = 600)
     if (sellPotionButton != null) {
         TouchActions.tap(sellPotionButton.x, sellPotionButton.y)
-        TouchActions.tap(775, 515, delayTime = 600)
+        TouchActions.tap(775, 515)
     }
 }
