@@ -22,7 +22,7 @@ suspend fun collectBuilderBaseResources(): Boolean {
             TouchActions.tap(tx, ty, isJitter = false)
             val collectButton = findMultiColorsUntil(schemas = listOf(MyColors.CannotCollectExilerCart, MyColors.CollectExilerCart), duration = 200)
             if (collectButton != null) {
-                TouchActions.tap(collectButton.x, collectButton.y)
+                TouchActions.tap(collectButton.x, collectButton.y, delayTime = 50)
                 clickRightBottom(1)
                 break@outerLoop
             }

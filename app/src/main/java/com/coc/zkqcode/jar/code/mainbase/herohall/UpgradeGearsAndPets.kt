@@ -103,7 +103,7 @@ private suspend fun checkPets() {
                     continue
                 }
 
-                TouchActions.tap(result.x, result.y, delayTime = 500)
+                TouchActions.tap(result.x, result.y)
                 val confirmUpgrade = findMultiColorsUntil(schemas = listOf(MyColors.ConfirmUpgradePet), duration = 1000)
                 if (confirmUpgrade == null) {
                     ShowMessage("账号${InGamesVars.currentAccountNumber}，跳过 ${pet.displayName}: 无法升级")
@@ -127,7 +127,7 @@ private suspend fun upgradeGearsAction(shouldUpgradeGears: Boolean, shouldUpgrad
         TouchActions.tap(685, 590, delayTime = 600)//Open Smith
         val upgradeGear = findMultiColorsUntil(schemas = listOf(MyColors.UpgradeGearArrow, MyColors.NewGear), duration = 800)
         if (upgradeGear != null) {
-            TouchActions.tap(upgradeGear.x, upgradeGear.y, delayTime = 500)
+            TouchActions.tap(upgradeGear.x, upgradeGear.y)
             repeat(2) { TouchActions.tap(1130, 640, delayTime = 300) }
             TouchActions.tap(1220, 635, delayTime = 300)
         }
@@ -142,7 +142,7 @@ private suspend fun upgradeGearsAction(shouldUpgradeGears: Boolean, shouldUpgrad
                         schemas = listOf(firstRowArrow, firstRowNewGear, secondRowArrow, secondRowNewGear), duration = 800
                     )
                     if (gear != null) {
-                        TouchActions.tap(gear.x, gear.y, delayTime = 500)
+                        TouchActions.tap(gear.x, gear.y)
                         repeat(2) { TouchActions.tap(1130, 640, delayTime = 300) }
                         TouchActions.tap(1220, 635, delayTime = 300)
                         return true
@@ -163,10 +163,10 @@ private suspend fun upgradeGearsAction(shouldUpgradeGears: Boolean, shouldUpgrad
     if (shouldUpgradePets) {
         val petsIcon = findMultiColors(MyColors.PetsIconInHeroHall)
         if (petsIcon != null) {
-            TouchActions.tap(petsIcon.x, petsIcon.y, delayTime = 500)
+            TouchActions.tap(petsIcon.x, petsIcon.y)
             val outerPetIcon = findMultiColorsUntil(schemas = listOf(MyColors.PetShopIcon, MyColors.PetShopIcon2), duration = 300)
             if (outerPetIcon != null) {
-                TouchActions.tap(outerPetIcon.x, outerPetIcon.y, delayTime = 500)
+                TouchActions.tap(outerPetIcon.x, outerPetIcon.y)
             }
             val petsShopBanner = findMultiColorsUntil(schemas = listOf(MyColors.PetsShopInnerBanner), duration = 1000)
             if (petsShopBanner != null) {

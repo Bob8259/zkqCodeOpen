@@ -28,7 +28,7 @@ suspend fun mainBaseTrainTroops(): Boolean {
         // Open training menu
         var point = findMultiColorsUntil(schemas = listOf(MyColors.TrainTroops), duration = 1500)
         if (point != null) {
-            TouchActions.tap(point.x, point.y, delayTime = 500)
+            TouchActions.tap(point.x, point.y)
         } else {
             ShowMessage("账号${InGamesVars.currentAccountNumber}，训练部队失败")
             GlobalVars.absorbEdge = 0
@@ -49,7 +49,7 @@ suspend fun mainBaseTrainTroops(): Boolean {
             TouchActions.tap(point.x, point.y)
             delayWithMultiplier(500)
             findMultiColorsUntil(schemas = listOf(MyColors.MiddleGreenYes), duration = 1500)?.let {
-                TouchActions.tap(it.x, it.y, delayTime = 500)
+                TouchActions.tap(it.x, it.y)
             }
         }
 
@@ -84,7 +84,7 @@ suspend fun mainBaseTrainTroops(): Boolean {
             TouchActions.tap(point.x, point.y)
             delayWithMultiplier(500)
             findMultiColorsUntil(schemas = listOf(MyColors.MiddleGreenYes), duration = 1500)?.let {
-                TouchActions.tap(it.x, it.y, delayTime = 500)
+                TouchActions.tap(it.x, it.y)
             }
         }
 
@@ -105,7 +105,7 @@ suspend fun mainBaseTrainTroops(): Boolean {
             TouchActions.tap(point.x, point.y)
             delayWithMultiplier(500)
             findMultiColorsUntil(schemas = listOf(MyColors.MiddleGreenYes), duration = 1500)?.let {
-                TouchActions.tap(it.x, it.y, delayTime = 500)
+                TouchActions.tap(it.x, it.y)
             }
         }
 

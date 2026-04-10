@@ -43,7 +43,7 @@ suspend fun turnOnClockTower(): Boolean {
         )
         for (detection in scan) {
             val box = detection.boundingBox
-            TouchActions.tap(box.centerX().toInt(), box.centerY().toInt(), delayTime = 500)
+            TouchActions.tap(box.centerX().toInt(), box.centerY().toInt())
             val screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult ?: logAndRestart("in turnOnClockTower, screen capture failed.")
             val freeSpeedUp = findMultiColors(schema = MyColors.ClockTower, byteBuffer = screenBuffer)
             if (freeSpeedUp != null) {

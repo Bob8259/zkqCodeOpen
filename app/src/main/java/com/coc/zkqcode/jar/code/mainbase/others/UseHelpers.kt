@@ -43,10 +43,10 @@ suspend fun useHelpers(): Boolean {
         )
         for (detection in scan) {
             val box = detection.boundingBox
-            TouchActions.tap(box.centerX().toInt(), box.centerY().toInt(), delayTime = 500)
+            TouchActions.tap(box.centerX().toInt(), box.centerY().toInt())
             val openHelperHut = findMultiColorsUntil(schemas = listOf(MyColors.BuilderHelperIcon, MyColors.ResearchHelperIcon, MyColors.ResearchHelperIcon2), duration = 200)
             if (openHelperHut != null) {
-                TouchActions.tap(openHelperHut.x, openHelperHut.y, delayTime = 500)
+                TouchActions.tap(openHelperHut.x, openHelperHut.y)
                 checkResearchHelper(isUpgradeHelper)
                 writeMemory(storageKey, (System.currentTimeMillis() / 60_000).toString())
                 clickRightBottom(1)

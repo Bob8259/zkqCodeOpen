@@ -16,7 +16,7 @@ suspend fun builderBaseFindNewBuildings(currentBase: BaseType): Boolean {
             findMultiColorsUntil(schemas = listOf(MyColors.MainBaseWorker, MyColors.MainBaseWorker2, MyColors.MainBaseWorker3), duration = 1000)
     }
     if (worker != null) {
-        TouchActions.tap(worker.x, worker.y, delayTime = 500)
+        TouchActions.tap(worker.x, worker.y)
         var found = false
         iterateBuilderBaseBuildingUpgradeList(onDetect = { result ->
             val buildings = result.buildings

@@ -9,6 +9,7 @@ import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
 import com.coc.zkqcode.jar.code.auth.displayAds
 import com.coc.zkqcode.jar.code.auth.userAuth
 import com.coc.zkqcode.jar.code.builderbase.playBuilderBase
+import com.coc.zkqcode.jar.code.clancapital.clanCapitalTrainTroops
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.mainbase.playMainBase
 import com.coc.zkqcode.jar.code.universal.GameVersion
@@ -78,7 +79,7 @@ suspend fun runMainScript() {
     var lastUpdateCheckTime = System.currentTimeMillis()
     var nextUpdateInterval = (2 * 3600_000L) + (Math.random() * 3600_000L).toLong()
     while (currentCoroutineContext().isActive) {
-//        runTestCode()
+        runTestCode()
 
         displayAds()
         RunShell.runNoOutput("am kill-all")//clean up memory
@@ -131,8 +132,7 @@ suspend fun runMainScript() {
 
 private suspend fun runTestCode() {
     while (true) {
-//        upgradeBuildings(BaseType.Main)
-//        ShowMessage(detectInstantBuildCost().toString())
+        clanCapitalTrainTroops()
         ShowMessage(findMultiColors(MyColors.DonationButton, increment = 1).toString())
         delay(1000)
     }

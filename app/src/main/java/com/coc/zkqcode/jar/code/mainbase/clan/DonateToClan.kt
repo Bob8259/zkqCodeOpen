@@ -24,8 +24,7 @@ import com.coc.zkqcode.jar.ui.schema.Schema
 suspend fun donateToClan(): Boolean {
     val notJoinClan = findMultiColors(schema = MyColors.NotJoinClanFlag, increment = 1)
     if (notJoinClan != null) return true
-    val isDonateEnabled = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.DONATION_SETTING.key)
-    if (!isDonateEnabled) return true
+    if (!getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.DONATION_SETTING.key)) return true
     val donationTimeInterval =
         getConfigRuntime(Schema.MAIN_BASE_SETTINGS.DONATION_DETECT_INTERVAL.key).toIntOrNull() ?: logAndRestart("${Schema.MAIN_BASE_SETTINGS.DONATION_DETECT_INTERVAL.displayName} 必须是数字，请检查配置")
     // Clamp lowerThreshold to a minimum of 25
@@ -52,19 +51,19 @@ suspend fun donateToClan(): Boolean {
         val clanChat = findMultiColors(schema = MyColors.ClanChatIcon, byteBuffer = screenBuffer, increment = 1)
         if (clanChat != null) {
             // Tap the clan chat icon to open the chat panel
-            TouchActions.tap(clanChat.x, clanChat.y, delayTime = 500)
+            TouchActions.tap(clanChat.x, clanChat.y)
             if (InGamesVars.currentGameVersion == GameVersion.CN) {
                 TouchActions.tap(523, 239, delayTime = 200)
                 TouchActions.tap(152, 88, delayTime = 200)
             } else {
                 TouchActions.tap(523, 98, delayTime = 300)//Global version chat area
             }
-            TouchActions.tap(40, 608, delayTime = 500)//Goto bottom
+            TouchActions.tap(40, 608)//Goto bottom
             continue
         }
         val iUnderstandButton = findMultiColors(schema = MyColors.IUnderstand, byteBuffer = screenBuffer, increment = 1)
         if (iUnderstandButton != null) {
-            TouchActions.tap(iUnderstandButton.x, iUnderstandButton.y, delayTime = 500)
+            TouchActions.tap(iUnderstandButton.x, iUnderstandButton.y)
             continue
         }
         val donationButton = findMultiColors(MyColors.DonationButton, byteBuffer = screenBuffer, increment = 1)
@@ -81,7 +80,7 @@ suspend fun donateToClan(): Boolean {
                 // This is a troop config row, not a real donation request — skip
                 continue
             }
-            TouchActions.tap(donationButton.x, donationButton.y, delayTime = 500)
+            TouchActions.tap(donationButton.x, donationButton.y)
             donateActions()
             TouchActions.swipe(1155, 237, -500, 250, delayTime = 100)//Swipe troops
             TouchActions.swipe(1155, 480, -500, 480, delayTime = 100)//Spells
@@ -92,7 +91,7 @@ suspend fun donateToClan(): Boolean {
         } else {
             val previousDonation = findMultiColors(MyColors.PreviousDonation, byteBuffer = screenBuffer, increment = 1)
             if (previousDonation != null) {
-                TouchActions.tap(previousDonation.x, previousDonation.y, delayTime = 500)
+                TouchActions.tap(previousDonation.x, previousDonation.y)
                 continue
             }
         }

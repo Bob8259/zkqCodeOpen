@@ -48,7 +48,7 @@ suspend fun upgradeBuildings(currentBase: BaseType): Boolean {
             BaseType.Main -> findMultiColorsUntil(schemas = listOf(MyColors.MainBaseWorker, MyColors.MainBaseWorker2, MyColors.MainBaseWorker3), duration = 1000)
         }
         if (worker != null) {
-            TouchActions.tap(worker.x, worker.y, delayTime = 500)
+            TouchActions.tap(worker.x, worker.y)
             iterateBuilderBaseBuildingUpgradeList(onDetect = { result ->
                 val buildings = result.buildings
                 if (buildings.isEmpty()) {
@@ -163,7 +163,7 @@ private suspend fun buildOneNewBuildings(currentBase: BaseType): Boolean {
                 if (currentTick != null) {
                     ShowMessage("点击第 $i 次绿色按钮：${currentTick.x}, ${currentTick.y}")
                     if (i > 1) zoomOrNot = true
-                    TouchActions.tap(currentTick.x, currentTick.y, delayTime = 500)
+                    TouchActions.tap(currentTick.x, currentTick.y)
                     if (currentBase == BaseType.Main && getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.INSTANT_UPGRADE.key)) {
                         val gemCost = detectInstantBuildCost()
                         val costThreshold = getConfigRuntime(Schema.MAIN_BASE_SETTINGS.INSTANT_UPGRADE_THRESHOLD.key).toIntOrNull()
@@ -174,8 +174,8 @@ private suspend fun buildOneNewBuildings(currentBase: BaseType): Boolean {
                                 schemas = listOf(MyColors.UpgradeGemIcon, MyColors.UpgradeGemIcon2, MyColors.UpgradeGemIcon3), duration = 500
                             )
                             if (upgradeGemIcon != null) {
-                                TouchActions.tap(upgradeGemIcon.x, upgradeGemIcon.y, delayTime = 500)
-                                TouchActions.tap(638, 456, delayTime = 500)
+                                TouchActions.tap(upgradeGemIcon.x, upgradeGemIcon.y)
+                                TouchActions.tap(638, 456)
                             }
                         }
                     }

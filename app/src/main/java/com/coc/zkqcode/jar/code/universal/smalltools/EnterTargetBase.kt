@@ -105,7 +105,7 @@ suspend fun enterBuilderBase(isCheck: Boolean): Boolean {
                         while (System.currentTimeMillis() - boatSearchStartTime < 1000L) {
                             val boatPoint = findMultiColors(schema = MyColors.RebuildBoat)
                             if (boatPoint != null) {
-                                TouchActions.tap(boatPoint.x, boatPoint.y, delayTime = 500)
+                                TouchActions.tap(boatPoint.x, boatPoint.y)
                                 AllTutorials.allBaseTutorial()
                                 break
                             }

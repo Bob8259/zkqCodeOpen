@@ -17,7 +17,7 @@ suspend fun requestReinforcements(): Boolean {
     val clanChat = findMultiColors(MyColors.ClanChatIcon)
     if (clanChat != null) {
         // Tap the clan chat icon to open the chat panel
-        TouchActions.tap(clanChat.x, clanChat.y, delayTime = 500)
+        TouchActions.tap(clanChat.x, clanChat.y)
         if (InGamesVars.currentGameVersion == GameVersion.CN) {
             TouchActions.tap(523, 239, delayTime = 200)
             TouchActions.tap(152, 88, delayTime = 200)
@@ -27,17 +27,18 @@ suspend fun requestReinforcements(): Boolean {
         for (i in 1..5) {
             val iUnderstandButton = findMultiColors(MyColors.IUnderstand)
             if (iUnderstandButton != null) {
-                TouchActions.tap(iUnderstandButton.x, iUnderstandButton.y, delayTime = 500)
+                TouchActions.tap(iUnderstandButton.x, iUnderstandButton.y)
                 continue
             }
             val requestReinforcement = findMultiColors(MyColors.RequestReinforcement)
             if (requestReinforcement != null) {
-                TouchActions.tap(requestReinforcement.x, requestReinforcement.y, delayTime = 500)
-                TouchActions.tap(780, 490, delayTime = 500)
+                TouchActions.tap(requestReinforcement.x, requestReinforcement.y)
+                TouchActions.tap(780, 490)
                 break
             }
             delayWithMultiplier(200)
         }
     }
-    return enterMainScreen()
+    return if (getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.DONATION_SETTING.key)) true
+    else enterMainScreen()
 }

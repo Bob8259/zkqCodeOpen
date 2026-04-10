@@ -46,7 +46,7 @@ suspend fun removeAllBuildings() {
 
         // Post-action delays and fixed-coordinate taps to finalize state
         delayWithMultiplier(500)
-        TouchActions.tap(1005, 265, delayTime = 500)
+        TouchActions.tap(1005, 265)
     }
 
 }

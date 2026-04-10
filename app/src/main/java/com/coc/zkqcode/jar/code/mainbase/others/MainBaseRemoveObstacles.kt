@@ -33,7 +33,7 @@ suspend fun mainBaseRemoveObstacles(): Boolean {
     removeObstacles()
     enhanceRemoveObstacles()
     removeLowerObstacles()
-    TouchActions.swipe(981, 86, 290, 470, delayTime = 500)
+    TouchActions.swipe(981, 86, 290, 470)
     removeObstacles()
     enhanceRemoveObstacles()
     writeMemory(storageKey, (System.currentTimeMillis() / 60_000).toString())

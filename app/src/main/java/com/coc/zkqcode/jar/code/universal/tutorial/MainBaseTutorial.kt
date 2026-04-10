@@ -35,20 +35,20 @@ suspend fun mainBaseTutorial(): Boolean {
     // 1. Process standard priority schemas (Find -> Tap)
     prioritySchemas.forEach { schema ->
         findMultiColors(byteBuffer = screenBuffer, schema = schema, increment = 1)?.let { point ->
-            TouchActions.tap(point.x, point.y, delayTime = 500)
+            TouchActions.tap(point.x, point.y)
         }
     }
 
     // Speaking Villager sequence
     findMultiColors(schema = MyColors.SpeakingVillager, increment = 1)?.let {
         delayWithMultiplier(600)
-        TouchActions.tap(it.x, it.y, delayTime = 500)
+        TouchActions.tap(it.x, it.y)
     }
     findMultiColors(schema = MyColors.UpgradeTHArrow, increment = 1)?.let {
-        TouchActions.tap(it.x + 50, it.y + 100, delayTime = 500)
+        TouchActions.tap(it.x + 50, it.y + 100)
         val upgradeHammer = findMultiColorsUntil(schemas = listOf(MyColors.UpgradeHammer), duration = 500, increment = 1)
         if (upgradeHammer != null) {
-            TouchActions.tap(720, 570, delayTime = 500)
+            TouchActions.tap(720, 570)
         } else {
             val isSpeedUp = getStaticConfig(Schema.GLOBAL_SETTINGS.CREATE_GEM_BUILD.key) == "1"
             if (isSpeedUp) {
@@ -64,19 +64,19 @@ suspend fun mainBaseTutorial(): Boolean {
     }
     // Important Notice tap
     findMultiColors(schema = MyColors.ImportantNotice, increment = 1)?.let {
-        TouchActions.tap(344, 510, delayTime = 500)
+        TouchActions.tap(344, 510)
     }
     findMultiColors(schema = MyColors.ImportantNoticeOnCloudPhone, increment = 1)?.let {
-        TouchActions.tap(344, 510, delayTime = 500)
+        TouchActions.tap(344, 510)
     }
     findMultiColors(schema = MyColors.AttackMap, increment = 1)?.let {
         if (findMultiColors(schema = MyColors.TrainTroops, increment = 1) == null && findMultiColors(schema = MyColors.ShopAfterTutorial, increment = 1) == null) {
-            TouchActions.tap(it.x, it.y, delayTime = 500)
+            TouchActions.tap(it.x, it.y)
         }
     }
     // Building logic with Gem speed-up check
     findMultiColors(schema = MyColors.TutorialBuildClick, increment = 1)?.let { point ->
-        TouchActions.tap(point.x, point.y, delayTime = 500)
+        TouchActions.tap(point.x, point.y)
         val isSpeedUp = getStaticConfig(Schema.GLOBAL_SETTINGS.CREATE_GEM_BUILD.key) == "1"
         if (isSpeedUp) {
             TouchActions.tap(643, 556) // Use gem to speed up
@@ -87,7 +87,7 @@ suspend fun mainBaseTutorial(): Boolean {
     findMultiColors(schema = MyColors.EnterAge, increment = 1)?.let {
         val sequence = listOf(640 to 347, 640 to 347, 773 to 546)
         sequence.forEach { (x, y) ->
-            TouchActions.tap(x, y, delayTime = 500)
+            TouchActions.tap(x, y)
         }
     }
 
@@ -100,7 +100,7 @@ suspend fun mainBaseTutorial(): Boolean {
 
     // Dynamic Offset for Inner Shop
     findMultiColors(schema = MyColors.ShopInnerArrow, increment = 1)?.let {
-        TouchActions.tap(it.x - 100, it.y + 50, delayTime = 500)
+        TouchActions.tap(it.x - 100, it.y + 50)
 
     }
 
@@ -128,7 +128,7 @@ suspend fun mainBaseTutorial(): Boolean {
         }
     }
     findMultiColors(schema = MyColors.TutorialUpgradeTownHall, increment = 1)?.let {
-        TouchActions.tap(it.x, it.y, delayTime = 500)
+        TouchActions.tap(it.x, it.y)
         val isSpeedUp = getStaticConfig(Schema.GLOBAL_SETTINGS.CREATE_GEM_BUILD.key) == "1"
         if (isSpeedUp) {
             TouchActions.tap(708, 549) // Use gem to speed up

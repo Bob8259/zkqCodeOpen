@@ -98,7 +98,7 @@ suspend fun searchOpponentsAndDeployTroops(): Boolean {
     while (System.currentTimeMillis() - battleStartTime < SEARCH_TIMEOUT_MS) {
         val battleIcon = findMultiColorsUntil(schemas = listOf(MyColors.TrainTroops), duration = 500)
         if (battleIcon != null) {
-            TouchActions.tap(83, 631, delayTime = 500)
+            TouchActions.tap(83, 631)
         }
         // Detect attack cooldown screen; abort search so mainBaseAttack() can skip battle logic
         val battlePage = findMultiColors(MyColors.BattlePage)
@@ -120,11 +120,11 @@ suspend fun searchOpponentsAndDeployTroops(): Boolean {
         }
         val searchOpponents = findMultiColors(schema = MyColors.SearchOpponents)
         if (searchOpponents != null) {
-            TouchActions.tap(searchOpponents.x, searchOpponents.y, delayTime = 500)
+            TouchActions.tap(searchOpponents.x, searchOpponents.y)
         }
         val attackButton = findMultiColors(schema = MyColors.AttackButton)
         if (attackButton != null) {
-            TouchActions.tap(attackButton.x, attackButton.y, delayTime = 500)
+            TouchActions.tap(attackButton.x, attackButton.y)
         }
         val insufficientGold = findMultiColors(schema = MyColors.InsufficientGold)
         if (insufficientGold != null) {
@@ -200,23 +200,23 @@ private suspend fun mainBaseBattleTutorial(): Boolean {
     while (System.currentTimeMillis() - startTime < TUTORIAL_TIMEOUT_MS) {
         val villagerSpeaking = findMultiColors(schema = MyColors.SpeakingVillager)
         if (villagerSpeaking != null) {
-            TouchActions.tap(villagerSpeaking.x, villagerSpeaking.y, delayTime = 500)
+            TouchActions.tap(villagerSpeaking.x, villagerSpeaking.y)
         }
         val setBaseIcon = findMultiColors(schema = MyColors.SetBaseIcon)
         if (setBaseIcon != null) {
-            TouchActions.tap(557, 159, delayTime = 500)
+            TouchActions.tap(557, 159)
         }
         val innerSetBaseIcon = findMultiColors(schema = MyColors.InnerSetBase)
         if (innerSetBaseIcon != null) {
-            TouchActions.tap(590, 293, delayTime = 500)
-            TouchActions.tap(844, 290, delayTime = 500)
-            TouchActions.tap(1085, 283, delayTime = 500)//Try three bases.
+            TouchActions.tap(590, 293)
+            TouchActions.tap(844, 290)
+            TouchActions.tap(1085, 283)//Try three bases.
             delayWithMultiplier(200)
             TouchActions.tap(593, 591, delayTime = 1200)//Add backups
             TouchActions.swipe(1210, 562, -1000, 559)
             delayWithMultiplier(400)
             TouchActions.tap(150, 494, delayTime = 200)//Furnace
-            TouchActions.tap(150, 494, delayTime = 500)
+            TouchActions.tap(150, 494)
             TouchActions.swipe(86, 562, 2500, 500)
             delayWithMultiplier(400)
             // Repeatedly find and tap the archer training icon

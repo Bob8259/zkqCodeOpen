@@ -51,7 +51,7 @@ suspend fun builderBaseCheckAllResearch() {
                 val insufficient = findMultiColors(schema = ColorSchema.rescope(MyColors.BuilderResearchInsufficientResources, resX1, y1, x1, y2), increment = 1)
                 if (insufficient == null) {
                     ShowMessage("账号${InGamesVars.currentAccountNumber}，开始研究 ${troop.displayName}")
-                    TouchActions.tap(elixirIcon.x, elixirIcon.y, delayTime = 500)
+                    TouchActions.tap(elixirIcon.x, elixirIcon.y)
                     TouchActions.tap(955, 610, delayTime = 200)
                     clickRightBottom(2)
                     return

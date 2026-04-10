@@ -29,7 +29,7 @@ private suspend fun goldMineAndElixirCollector() {
             val resource = findMultiColors(schema = schema, byteBuffer = capturedScreen)
             if (resource != null) {
                 // Use existing TouchActions implementation to interact with the resource coordinates
-                TouchActions.tap(resource.x, resource.y)
+                TouchActions.tap(resource.x, resource.y, delayTime = 50)
                 capturedScreen = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult
             }
         }

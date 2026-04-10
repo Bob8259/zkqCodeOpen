@@ -55,7 +55,7 @@ suspend fun builderBaseRemoveObstacles(): Boolean {
     if (worker.total == 2) {
         ShowMessage("账号${InGamesVars.currentAccountNumber}，当前已解锁第二区域")
         swipe(672, 160, 1206, 430, 700)
-        TouchActions.tap(1228, 316, delayTime = 500)
+        TouchActions.tap(1228, 316)
         removeAllBuildings()
         removeObstacles()
         swipe(867, 163, 1211, 460, 700)

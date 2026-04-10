@@ -121,7 +121,7 @@ private suspend fun closeAdvertisements() {
     }
     // Reuse screenBuffer for remaining checks; refresh after each tap
     findMultiColors(byteBuffer = screenBuffer, schema = MyColors.UpgradeTHArrow, increment = 1)?.let {
-        TouchActions.tap(it.x + 50, it.y + 100, delayTime = 500)
+        TouchActions.tap(it.x + 50, it.y + 100)
         screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult ?: logAndRestart("failed to take screenshot at close advertisement")
     }
     findMultiColors(byteBuffer = screenBuffer, schema = MyColors.CollectElixirCartTutorial, increment = 1)?.let {
@@ -137,7 +137,7 @@ private suspend fun closeAdvertisements() {
         mainBaseDeployTroops()
     }
     findMultiColors(byteBuffer = screenBuffer, schema = MyColors.TencentChildProtection, increment = 1)?.let {
-        TouchActions.tap(1011, 87, delayTime = 500)
+        TouchActions.tap(1011, 87)
         screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult ?: logAndRestart("failed to take screenshot at close advertisement")
     }
     findMultiColors(byteBuffer = screenBuffer, schema = MyColors.DailyLoginReward, increment = 1)?.let {
@@ -161,7 +161,7 @@ private suspend fun closeAdvertisements() {
         screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult ?: logAndRestart("failed to take screenshot at close advertisement")
     }
     findMultiColors(byteBuffer = screenBuffer, schema = MyColors.CancelEditMode, increment = 1)?.let {
-        TouchActions.tap(it.x, it.y, delayTime = 500)
+        TouchActions.tap(it.x, it.y)
         TouchActions.tap(788, 464)
         screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult ?: logAndRestart("failed to take screenshot at close advertisement")
     }

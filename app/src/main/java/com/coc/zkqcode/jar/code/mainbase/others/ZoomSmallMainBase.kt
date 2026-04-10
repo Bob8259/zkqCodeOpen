@@ -23,6 +23,6 @@ suspend fun zoomSmallMainBase(isForBuild: Boolean = false, isForAttack: Boolean 
     if (isForBuild) {
         delayWithMultiplier(100)
         clickRightBottom(1)
-        swipe(690, 550, 590, 710, delayTime = 500)
+        swipe(690, 550, 590, 710)
     }
 }

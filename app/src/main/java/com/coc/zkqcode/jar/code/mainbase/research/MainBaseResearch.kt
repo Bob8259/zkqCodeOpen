@@ -51,12 +51,12 @@ suspend fun mainBaseResearch(): Boolean {
     if (getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.RESEARCH_SETTING.key) && WorkerAndResearch.detectResearch(BaseType.Main)) {
         val researchIcon = findMultiColorsUntil(schemas = listOf(MyColors.ResearchIcon, MyColors.ResearchIcon2), duration = 1000, increment = 1)
         if (researchIcon != null) {
-            TouchActions.tap(researchIcon.x + 20, researchIcon.y, delayTime = 500)
+            TouchActions.tap(researchIcon.x + 20, researchIcon.y)
             // Find white number indicating available research and tap it
             val whiteNumber = findMultiColorsUntil(schemas = listOf(MyColors.WhiteNumberColor), duration = 1000, increment = 1)
             if (whiteNumber != null) {
                 TouchActions.tap(whiteNumber.x, whiteNumber.y, delayTime = 800)
-                TouchActions.tap(1130, 55, delayTime = 500)
+                TouchActions.tap(1130, 55)
                 TouchActions.swipe(240, 500, 4000, 500)
                 delayWithMultiplier(300)
                 findAllResearchItems()
@@ -150,8 +150,8 @@ private suspend fun findAllResearchItems() {
                     }
 
                     ShowMessage("账号${InGamesVars.currentAccountNumber}，找到研究项目: ${schema.name}, 等级$detectedLevel, 目标等级$targetLevel")
-                    TouchActions.tap(result.x, result.y, delayTime = 500)
-                    TouchActions.tap(894, 617, delayTime = 500)
+                    TouchActions.tap(result.x, result.y)
+                    TouchActions.tap(894, 617)
                     clickRightBottom(3)
                     return
                 }
@@ -159,7 +159,7 @@ private suspend fun findAllResearchItems() {
         }
 
         // No enabled item found on current screen, swipe to see more items
-        TouchActions.swipe(860, 500, 400, 500, delayTime = 500)
+        TouchActions.swipe(860, 500, 400, 500)
         delayWithMultiplier(300)
     }
 

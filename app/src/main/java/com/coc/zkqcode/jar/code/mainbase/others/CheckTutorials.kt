@@ -61,7 +61,7 @@ private suspend fun handleTutorialArrowIfNeeded() {
 private suspend fun clanCastleTutorialHelper() {
     val clanCastle = findMultiColors(MyColors.ClanCastleAddReinforcement)
     if (clanCastle != null) {
-        TouchActions.tap(clanCastle.x, clanCastle.y, delayTime = 500)
+        TouchActions.tap(clanCastle.x, clanCastle.y)
     }
     repeat(10) {
         TouchActions.tap(900, 130, delayTime = 50)//Edit troop. To skip tutorial.
@@ -81,11 +81,11 @@ private suspend fun petsTutorial() {
         ShowMessage("宠物店教程中，若${remainingSeconds}秒后未完成则强制退出")
         val petsTutorial = findMultiColors(MyColors.OuterPetIcon)
         if (petsTutorial != null) {
-            TouchActions.tap(petsTutorial.x, petsTutorial.y, delayTime = 500)
+            TouchActions.tap(petsTutorial.x, petsTutorial.y)
         }
         val speakingVillager = findMultiColorsUntil(schemas = listOf(MyColors.SpeakingVillager, MyColors.SpeakingVillager2), duration = 200)
         if (speakingVillager != null) {
-            TouchActions.tap(speakingVillager.x, speakingVillager.y, delayTime = 500)
+            TouchActions.tap(speakingVillager.x, speakingVillager.y)
         }
         val innerBanner = findMultiColors(MyColors.PetsShopInnerBanner)
         if (innerBanner != null) {

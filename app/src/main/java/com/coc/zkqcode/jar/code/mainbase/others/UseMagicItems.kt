@@ -48,7 +48,7 @@ suspend fun useMagicItems(): Boolean {
         )
         for (detection in scan) {
             val box = detection.boundingBox
-            TouchActions.tap(box.centerX().toInt(), box.centerY().toInt(), delayTime = 500)
+            TouchActions.tap(box.centerX().toInt(), box.centerY().toInt())
             val magicItemIcon = findMultiColorsUntil(schemas = listOf(MyColors.MagicItemIcon, MyColors.MagicItemIcon2, MyColors.MagicItemIcon3), duration = 200)
             if (magicItemIcon != null) {
                 TouchActions.tap(magicItemIcon.x, magicItemIcon.y, delayTime = 800)
@@ -104,7 +104,7 @@ private suspend fun checkMagicItems() {
 private suspend fun usePotion() {
     val usePotionButton = findMultiColorsUntil(schemas = listOf(MyColors.UsePotionButton), duration = 600)
     if (usePotionButton != null) {
-        TouchActions.tap(usePotionButton.x, usePotionButton.y, delayTime = 500)
+        TouchActions.tap(usePotionButton.x, usePotionButton.y)
         TouchActions.tap(630, 445, delayTime = 600)
     }
 }
@@ -112,7 +112,7 @@ private suspend fun usePotion() {
 private suspend fun sellPotion() {
     val sellPotionButton = findMultiColorsUntil(schemas = listOf(MyColors.SellPotionButton), duration = 600)
     if (sellPotionButton != null) {
-        TouchActions.tap(sellPotionButton.x, sellPotionButton.y, delayTime = 500)
+        TouchActions.tap(sellPotionButton.x, sellPotionButton.y)
         TouchActions.tap(775, 515, delayTime = 600)
     }
 }

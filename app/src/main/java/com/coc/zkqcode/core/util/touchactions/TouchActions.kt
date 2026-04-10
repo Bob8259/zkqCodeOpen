@@ -294,7 +294,7 @@ object TouchActions {
         x: Int,
         y: Int,
         isJitter: Boolean = true,
-        delayTime: Int = 10
+        delayTime: Int = 500
     ) {
         waitForPlay()
         val delayMultiplier = getDelayMultiplier()

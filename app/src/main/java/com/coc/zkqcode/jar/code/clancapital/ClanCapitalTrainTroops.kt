@@ -7,7 +7,7 @@ import com.coc.zkqcode.jar.code.mainbase.others.zoomSmallMainBase
 import com.coc.zkqcode.jar.code.universal.clickRightBottom
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 
-suspend fun clanCapitalTrainTroops(): Boolean {
+suspend fun clanCapitalTrainTroops() {
     zoomSmallMainBase()
     clickRightBottom(1)
     TouchActions.tap(443, 582, delayTime = 800)
@@ -44,6 +44,8 @@ suspend fun clanCapitalTrainTroops(): Boolean {
                 TouchActions.tap(781, 476)//飞艇
             }
         }
+        TouchActions.tap(870, 230)
+        TouchActions.tap(1120, 35)
     }
-    return true
+
 }

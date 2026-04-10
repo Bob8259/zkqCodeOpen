@@ -57,7 +57,7 @@ suspend fun joinClan(): Boolean {
             val joinClanButton = findMultiColors(schema = MyColors.JoinClanButton)
             if (joinClanButton != null) {
                 setZKQInputMethod()
-                TouchActions.tap(joinClanButton.x, joinClanButton.y, delayTime = 500)
+                TouchActions.tap(joinClanButton.x, joinClanButton.y)
                 TouchActions.tap(642, 165, delayTime = 300)//input message
                 if (!clanCode.isBlank())
                     ZKQInputMethodService.instance?.inputText(clanCode) ?: logAndRestart("获取输入法失败")

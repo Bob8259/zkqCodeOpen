@@ -114,7 +114,7 @@ suspend fun upgradeAllExistingBuildings(buildings: List<String>, currentBase: Ba
                 return if (enterMainScreen()) UpgradeResult.Success else UpgradeResult.Failure
             }
 
-            TouchActions.tap(worker.x, worker.y, delayTime = 500)
+            TouchActions.tap(worker.x, worker.y)
 
             // Locate the specific building in the UI.
             // Only count consecutive failures when the requested building cannot be found.
@@ -235,7 +235,7 @@ private suspend fun upgradeWalls(currentBase: BaseType, wallType: WallType): Loo
     }
     val resources = recognizeResources()
     val currentResourcePercentage = calculateResourcesPercentage(currentBase)
-    TouchActions.tap(hammer.x, hammer.y, delayTime = 500)
+    TouchActions.tap(hammer.x, hammer.y)
     // Check for resource availability immediately after clicking upgrade
     if (findMultiColors(schema = if (currentBase == BaseType.Main) MyColors.MainBaseInsufficientResources else MyColors.BuilderBaseInsufficientResources) != null) {
         clickRightBottom(1)
@@ -245,7 +245,7 @@ private suspend fun upgradeWalls(currentBase: BaseType, wallType: WallType): Loo
         if ((wallType == WallType.Gold && resources.gold < 10000) || (wallType == WallType.Elixir && resources.elixir < 10000)) {
             // Insufficient resources for batch upgrade, show detected values and fall back to normal upgrade
             ShowMessage("批量刷墙资源不足（金币: ${resources.gold}, 圣水: ${resources.elixir}），回退到普通刷墙")
-            TouchActions.tap(980, 635, delayTime = 500)
+            TouchActions.tap(980, 635)
             return LoopAction.Proceed
         } else {
             val wallCost = recognizeUpgradeResources(currentBase)
@@ -263,7 +263,7 @@ private suspend fun upgradeWalls(currentBase: BaseType, wallType: WallType): Loo
             tapGoldBar()
             val upgradeCrossMark = findMultiColorsUntil(schemas = listOf(MyColors.UpgradeWallCrossMark), duration = 1000)
             if (upgradeCrossMark != null) {
-                TouchActions.tap(upgradeCrossMark.x, upgradeCrossMark.y, delayTime = 500)
+                TouchActions.tap(upgradeCrossMark.x, upgradeCrossMark.y)
                 val upgrade10WallsGreenCrossMark = findMultiColorsUntil(schemas = listOf(MyColors.Upgrade10WallsGreenCrossMark), duration = 1000)
                 // Rescope to the right of the "10 walls" mark if found, otherwise use the original schema
                 val greenCrossMarkSchema = if (upgrade10WallsGreenCrossMark != null) {
@@ -281,7 +281,7 @@ private suspend fun upgradeWalls(currentBase: BaseType, wallType: WallType): Loo
                     val cancelButton = findMultiColorsUntil(schemas = listOf(MyColors.CancelUpgradeWall), duration = 500)
                     if (cancelButton != null) {//Sometimes, when clicking the green button, the buttons will change, and may wrongly click upgrade button.
                         //So, we need to check it and cancel the upgrade.
-                        TouchActions.tap(cancelButton.x, cancelButton.y, delayTime = 500)
+                        TouchActions.tap(cancelButton.x, cancelButton.y)
                     }
                 }
 
@@ -296,19 +296,19 @@ private suspend fun upgradeWalls(currentBase: BaseType, wallType: WallType): Loo
 
                 if (doubleHammer != null) {
 
-                    TouchActions.tap(doubleHammer.x, doubleHammer.y, delayTime = 500)
+                    TouchActions.tap(doubleHammer.x, doubleHammer.y)
                     TouchActions.tap(882, 440, delayTime = 300)
                     //Just in case there is only one wall can be upgraded, we need to click the normal upgrade button again
-                    if (currentBase == BaseType.Main) TouchActions.tap(980, 635, delayTime = 500)
-                    else if (currentBase == BaseType.Builder) TouchActions.tap(640, 640, delayTime = 500)
+                    if (currentBase == BaseType.Main) TouchActions.tap(980, 635)
+                    else if (currentBase == BaseType.Builder) TouchActions.tap(640, 640)
                     clickRightBottom(1)
                     return LoopAction.Proceed
                 }
             }
         }
     } else {
-        if (currentBase == BaseType.Main) TouchActions.tap(980, 635, delayTime = 500)
-        else if (currentBase == BaseType.Builder) TouchActions.tap(640, 640, delayTime = 500)
+        if (currentBase == BaseType.Main) TouchActions.tap(980, 635)
+        else if (currentBase == BaseType.Builder) TouchActions.tap(640, 640)
         return LoopAction.Proceed
     }
     return LoopAction.Proceed
@@ -334,9 +334,9 @@ private suspend fun upgradeHero(building: String): LoopAction {
             ShowMessage("${building}资源不足，跳过")
             return LoopAction.Break
         }
-        TouchActions.tap(x1 + 100, 500, delayTime = 500)//Upgrade Hero
+        TouchActions.tap(x1 + 100, 500)//Upgrade Hero
         ShowMessage("等待结束")
-        TouchActions.tap(902, 626, delayTime = 500)
+        TouchActions.tap(902, 626)
         clickRightBottom(times = 3, delayTime = 200)
     } else {
         // The unique logic for Dragon Duke
@@ -350,8 +350,8 @@ private suspend fun upgradeHero(building: String): LoopAction {
             ShowMessage("${building}资源不足，跳过")
             return LoopAction.Break
         }
-        TouchActions.tap(1020 + 100, 480, delayTime = 500)//Upgrade Hero
-        TouchActions.tap(902, 626, delayTime = 500)
+        TouchActions.tap(1020 + 100, 480)//Upgrade Hero
+        TouchActions.tap(902, 626)
         clickRightBottom(times = 3, delayTime = 200)
     }
     return LoopAction.Proceed
@@ -364,7 +364,7 @@ private suspend fun upgradeBuilding(building: String, currentBase: BaseType, att
     val hammer = findMultiColorsUntil(schemas = listOf(MyColors.UpgradeHammer), duration = 1000) ?: return LoopAction.Break
     // Sometimes the ML Kit might wrongly find a building that is already being upgraded. So we need to break.
 
-    TouchActions.tap(hammer.x, hammer.y, delayTime = 500)
+    TouchActions.tap(hammer.x, hammer.y)
 
     // Check for resource availability immediately after clicking upgrade
     if (findMultiColors(schema = if (currentBase == BaseType.Main) MyColors.MainBaseInsufficientResources else MyColors.BuilderBaseInsufficientResources) != null) {
@@ -374,14 +374,14 @@ private suspend fun upgradeBuilding(building: String, currentBase: BaseType, att
 
     // Successful upgrade flow
     TouchActions.tap(633, 631) // normal upgrade or unlock new buildings
-    TouchActions.tap(982, 634, delayTime = 500)// machines
+    TouchActions.tap(982, 634)// machines
     if (building == "大本营") {
-        TouchActions.tap(748, 621, delayTime = 500)//before upgrade
+        TouchActions.tap(748, 621)//before upgrade
         zoomSmallMainBase()
         var greenTick = mainBaseFindBuildButton(type = BuildButtonType.Tick, duration = 800)
         if (greenTick != null) {
             ShowMessage("合并天鹰火炮")
-            TouchActions.tap(greenTick.x, greenTick.y, delayTime = 500)
+            TouchActions.tap(greenTick.x, greenTick.y)
             return LoopAction.Break
         }
         TouchActions.swipe(922, 202, 298, 505)
@@ -389,7 +389,7 @@ private suspend fun upgradeBuilding(building: String, currentBase: BaseType, att
         greenTick = mainBaseFindBuildButton(type = BuildButtonType.Tick, duration = 800)
         if (greenTick != null) {
             ShowMessage("合并天鹰火炮")
-            TouchActions.tap(greenTick.x, greenTick.y, delayTime = 500)
+            TouchActions.tap(greenTick.x, greenTick.y)
             return LoopAction.Break
         }
     }

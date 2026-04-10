@@ -291,7 +291,7 @@ private suspend fun builderBaseTrainTroops() {
     // Clear existing troops if the clear button is present
     val cleanTroops = findMultiColorsUntil(schemas = listOf(MyColors.RedCleanButton), duration = 1000)
     if (cleanTroops != null) {
-        TouchActions.tap(cleanTroops.x, cleanTroops.y, delayTime = 500)
+        TouchActions.tap(cleanTroops.x, cleanTroops.y)
     }
 
     // Identify troop type and train

@@ -224,12 +224,11 @@ fun LazyListScope.MainBaseConfig(
                 }
             }
         }
-        /*
         // Clan Games & War
         item {
-            AnimatedVisibility(visible = isExpanded) {
+            SettingSection(visible = isExpanded) {
                 Column {
-                    FlowRow {
+                    FlowRow { /*
                         SettingSwitchIcon(
                             key = "${MAIN_BASE_SETTINGS.DO_CLAN_GAMES.key}_c$index",
                             explain = "勾选后，辅助会接取小部分夜世界任务，例如夜世界摧毁率等。注意重点是\"小部分\"，也就是说并不是所有任务都可以接取，并且只会接取夜世界任务！若没有任务可接取，则会放弃第一个任务。接取任务后，会自动打夜世界。"
@@ -243,18 +242,20 @@ fun LazyListScope.MainBaseConfig(
                             key = "${MAIN_BASE_SETTINGS.PLAY_LEAGUE.key}_c$index",
                             explain = "勾选后，会进攻最后一位没有被部落成员进攻过的对手。胜率较低，容易黑三，建议谨慎勾选。"
                         )
+                        */
                         SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.PLAY_RAID.key}_c$index")
                     }
 
                     FlowRow {
+                        /*
                         SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.START_CLAN_WAR_SETTINGS.key}_c$index")
                         SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.START_LEAGUE_SETTINGS.key}_c$index")
                         SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.START_RAID.key}_c$index")
+                        */
                     }
                 }
             }
         }
-        */
         // Shop purchases
         item {
             SettingSection(visible = isExpanded) {
