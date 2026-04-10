@@ -1,8 +1,8 @@
-# AI Detection Inference Service for Android
+# ZKQyolo — AI Detector Inference Service for Android
 
-**Version:** 1.01
+**Version:** 1.03
 
-An Android app that runs a local HTTP server exposing AI-based object detection inference. The app launches a foreground service on startup, making the detection API available to other apps or automation tools on the device via `http://localhost:13462`.
+An Android app that runs a local HTTP server exposing AI detector inference. The app launches a foreground service on startup, making the detection API available to other apps or automation tools on the device via `http://localhost:13462`.
 
 ---
 
@@ -18,7 +18,7 @@ An Android app that runs a local HTTP server exposing AI-based object detection 
 ## Quick Start
 
 1. Install the APK on the target device.
-2. Launch the app once so the foreground service starts automatically.
+2. Launch the app once — the foreground service starts automatically.
 3. The HTTP server is now listening on **port 13462**.
 4. Load a model, then send images for detection.
 
@@ -27,7 +27,7 @@ An Android app that runs a local HTTP server exposing AI-based object detection 
 curl http://localhost:13462/status
 
 # Load a model (modelType is required)
-curl -X POST http://localhost:13462/load -d '{"modelType":"walls-detect"}'
+curl -X POST http://localhost:13462/load -d '{"modelType":"capital-building-detect"}'
 
 # Run detection on an image
 curl -X POST http://localhost:13462/detect \
@@ -45,17 +45,20 @@ adb shell am start-foreground-service -n com.coc.zkqyolo/.service.YoloService
 ## Supported Models
 
 Models are loaded by passing a `modelType` string to the `/load` endpoint.
+All detector models are expected to be bundled in the APK assets directory.
 
 | `modelType` value | Model file | Source |
 |---|---|---|
 | `"walls-detect"` | `walls_detector.tflite` | Bundled in assets |
 | `"numbers"` | `numbers_detector.tflite` | Bundled in assets |
 | `"building-detect"` | `my_building_detector.tflite` | Bundled in assets |
-| `"remove-obstacle"` | `obstacles_detector.tflite` | App private files dir (`filesDir/assets/`) |
+| `"capital-building-detect"` | `capital_building_detector.tflite` | Bundled in assets |
+| `"remove-obstacle"` | `obstacles_detector.tflite` | Bundled in assets |
 
 > **Note:** `modelType` is required. Omitting it or passing an unrecognized value will result in an error.
+> If a model asset has not been packaged under `app/src/main/assets`, `/load` will fail with a missing-asset error.
 
-The detector dynamically reads the model's input and output tensor shapes, so any compatible object-detection TFLite model with output shape `[1, N, 6]` (where each detection is `[x1, y1, x2, y2, score, classIndex]`) will work.
+The detector dynamically reads the model's input/output tensor shapes, so any compatible object-detection TFLite model with output shape `[1, N, 6]` (where each detection is `[x1, y1, x2, y2, score, classIndex]`) will work.
 
 ---
 
@@ -74,7 +77,7 @@ Health check. Returns the server status, version, and current model state.
 ```json
 {
   "status": "running",
-  "version": "1.01",
+  "version": "1.03",
   "modelLoaded": true,
   "modelType": "walls-detect"
 }
@@ -111,13 +114,13 @@ Load model weights into the TFLite interpreter. If the same model type is alread
 { "success": true }
 ```
 
-**Error response (400) - missing or invalid `modelType`:**
+**Error response (400) — missing or invalid `modelType`:**
 
 ```json
-{ "success": false, "error": "\"modelType\" is required. Valid types: walls-detect, numbers, building-detect, remove-obstacle" }
+{ "success": false, "error": "\"modelType\" is required. Valid types: walls-detect, numbers, building-detect, capital-building-detect, remove-obstacle" }
 ```
 
-**Error response (500) - model failed to load:**
+**Error response (500) — model failed to load:**
 
 ```json
 { "success": false, "error": "..." }
@@ -131,7 +134,7 @@ Run object detection on a posted image. A model **must** be loaded first via `/l
 
 **Request:**
 
-- **Body:** Raw image bytes (PNG, JPEG, etc. - any format decodable by `BitmapFactory`).
+- **Body:** Raw image bytes (PNG, JPEG, etc. — any format decodable by `BitmapFactory`).
 - **Content-Type:** `application/octet-stream` (or any; the server reads raw bytes).
 - **Content-Length:** Must be set and non-zero.
 
@@ -172,14 +175,14 @@ Content-Length: 54321
 |---|---|---|
 | `x1`, `y1` | float | Top-left corner of the bounding box (in original image pixel coordinates). |
 | `x2`, `y2` | float | Bottom-right corner of the bounding box. |
-| `score` | float | Detection confidence (0-1). |
+| `score` | float | Detection confidence (0–1). |
 | `classIndex` | int | Predicted class index. |
 
 **Error responses:**
 
 | Status | Condition |
 |---|---|
-| 400 | No model loaded - call `/load` first. |
+| 400 | No model loaded — call `/load` first. |
 | 400 | Empty request body. |
 | 400 | Image bytes could not be decoded. |
 
@@ -213,7 +216,7 @@ r = requests.get(f"{BASE}/status")
 print(r.json())
 
 # Load a model
-requests.post(f"{BASE}/load", json={"modelType": "walls-detect"})
+requests.post(f"{BASE}/load", json={"modelType": "capital-building-detect"})
 
 # Detect objects in a screenshot
 with open("screenshot.png", "rb") as f:
@@ -242,3 +245,4 @@ curl -X POST http://localhost:13462/detect \
   -H "Content-Type: application/octet-stream" \
   --data-binary @image.png
 ```
+

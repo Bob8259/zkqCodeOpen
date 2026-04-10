@@ -9,6 +9,7 @@ import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
 import com.coc.zkqcode.jar.code.auth.displayAds
 import com.coc.zkqcode.jar.code.auth.userAuth
 import com.coc.zkqcode.jar.code.builderbase.playBuilderBase
+import com.coc.zkqcode.jar.code.clancapital.clanCapitalAttack
 import com.coc.zkqcode.jar.code.clancapital.clanCapitalTrainTroops
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.mainbase.playMainBase
@@ -132,9 +133,9 @@ suspend fun runMainScript() {
 
 private suspend fun runTestCode() {
     while (true) {
-        clanCapitalTrainTroops()
-        ShowMessage(findMultiColors(MyColors.DonationButton, increment = 1).toString())
-        delay(1000)
+        clanCapitalAttack()
+//        ShowMessage(findMultiColors(MyColors.DonationButton, increment = 1).toString())
+        delay(1000000)
     }
 }
 

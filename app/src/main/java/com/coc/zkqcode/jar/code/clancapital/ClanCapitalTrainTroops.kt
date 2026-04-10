@@ -27,10 +27,10 @@ suspend fun clanCapitalTrainTroops() {
         repeat(3) {
             TouchActions.tap(634, 473)
         }//治疗法术
-        repeat(5) {
+        repeat(7) {
             TouchActions.tap(777, 480)//雷电法术
         }
-        repeat(10) {
+        repeat(12) {
             TouchActions.tap(355, 620)//矿工
         }
         TouchActions.swipe(143, 682, 924, 584)
