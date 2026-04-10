@@ -91,6 +91,7 @@ suspend fun runMainScript() {
 
         displayAds()
         RunShell.runNoOutput("am kill-all")//clean up memory
+        RunShell.runNoOutput("input keyevent 3")//back to home
         run stepBlock@{
             if (!writeGameFiles()) {
                 delayWithMultiplier(2000)
