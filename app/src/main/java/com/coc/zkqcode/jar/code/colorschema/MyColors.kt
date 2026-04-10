@@ -74,4 +74,12 @@ object MyColors : IUIColors by UIColors, IFeatureColors by FeatureColors, IMainB
     val TroopConfigCastleIcon = ColorSchema.parse(
         0, 0, 0, 0, "4B596D", "3|0|6D7C8E,7|0|495568,11|0|485465,14|0|495565,0|11|282F40,3|11|1D2026,7|11|1F2023,11|11|232326,14|11|8E9BA6", 0, 0.9
     )
+
+    // Clan Capital Colors
+    val TrashBin = ColorSchema.parse(
+        479, 275, 533, 332, "7B76FF", "11|0|FFFFFF,22|0|FFFFFF,33|0|FFFFFF,44|0|7C77FF,0|29|1814E3,11|29|EBEBEB,22|29|EEEEEE,33|29|D2D2D2,44|29|1814E3", 0, 0.9, "都城配兵垃圾桶"
+    )
+    val CapitalBarbarian = ColorSchema.parse(
+        176, 424, 265, 517, "7CBAFE", "18|0|73B6EF,36|0|A097A5,53|0|0D14A4,71|0|6C87EC,0|47|3C3E61,18|47|818EC5,36|47|587FC0,53|47|6D9CEE,71|47|6B77A0", 0, 0.9, "都城野蛮人"
+    )
 }
