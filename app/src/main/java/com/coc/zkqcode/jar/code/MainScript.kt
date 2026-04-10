@@ -80,7 +80,7 @@ suspend fun runMainScript() {
     var lastUpdateCheckTime = System.currentTimeMillis()
     var nextUpdateInterval = (2 * 3600_000L) + (Math.random() * 3600_000L).toLong()
     while (currentCoroutineContext().isActive) {
-        runTestCode()
+//        runTestCode()
 
         displayAds()
         RunShell.runNoOutput("am kill-all")//clean up memory
@@ -134,8 +134,8 @@ suspend fun runMainScript() {
 private suspend fun runTestCode() {
     while (true) {
         clanCapitalAttack()
-//        ShowMessage(findMultiColors(MyColors.DonationButton, increment = 1).toString())
-        delay(1000000)
+//        ShowMessage(findMultiColors(MyColors.SpellColorAtDeploymentBar, increment = 1).toString())
+        delay(1000)
     }
 }
 

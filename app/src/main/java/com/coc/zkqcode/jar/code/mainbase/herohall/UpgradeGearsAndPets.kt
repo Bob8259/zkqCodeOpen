@@ -104,7 +104,7 @@ private suspend fun checkPets() {
                 }
 
                 TouchActions.tap(result.x, result.y)
-                val confirmUpgrade = findMultiColorsUntil(schemas = listOf(MyColors.ConfirmUpgradePet), duration = 1000)
+                val confirmUpgrade = findMultiColorsUntil(schemas = listOf(MyColors.ConfirmUpgradePet), duration = 400)
                 if (confirmUpgrade == null) {
                     ShowMessage("账号${InGamesVars.currentAccountNumber}，跳过 ${pet.displayName}: 无法升级")
                     continue

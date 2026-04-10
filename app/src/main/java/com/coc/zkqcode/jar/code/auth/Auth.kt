@@ -42,7 +42,7 @@ private suspend fun <T> retryOnTimeout(action: suspend () -> T): T {
         try {
             return action()
         } catch (_: SocketTimeoutException) {
-            val delayMs = Random.nextLong(2000L, 5001L)
+            val delayMs = Random.nextLong(1000L, 3001L)
             ShowMessage("连接超时，${delayMs / 1000}秒后重试...")
             delay(delayMs)
         }
