@@ -16,8 +16,8 @@ object ServerHelper {
 
         client.newWebSocket(request, object : WebSocketListener() {
             override fun onOpen(webSocket: WebSocket, response: Response) {
-                // 发送一条测试消息
-                webSocket.send("""{"actionType": "system_action", "subAction": "read"}""")
+                // Send a connection test ping to verify the server is responsive
+                webSocket.send("""{"actionType": "connection_test"}""")
             }
 
             override fun onMessage(webSocket: WebSocket, text: String) {
