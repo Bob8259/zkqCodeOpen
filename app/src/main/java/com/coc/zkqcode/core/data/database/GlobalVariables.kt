@@ -17,9 +17,6 @@ object GlobalVars {
     var pluginUI: MainCode? = null
 
     @Volatile
-    var serverPath: String = ""
-
-    @Volatile
     var isConfigLoaded: Boolean = false
 
     @Volatile

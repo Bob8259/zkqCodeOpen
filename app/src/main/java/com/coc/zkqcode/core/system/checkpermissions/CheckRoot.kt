@@ -88,10 +88,6 @@ fun CheckRootScreen() {
         }
 
         RootStatus.SERVER_ERROR -> {
-            // Run the shell-based diagnostic test and show its result via ShowMessage
-            LaunchedEffect(Unit) {
-                ServerHelper.testConnectionViaShell()
-            }
             FullScreenMessage("连接到Root服务器失败")
         }
 

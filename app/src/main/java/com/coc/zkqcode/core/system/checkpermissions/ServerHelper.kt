@@ -30,7 +30,7 @@ object ServerHelper {
             }
         })
 
-        return withTimeoutOrNull(10000) { // 最多等待10秒
+        return withTimeoutOrNull(8000) { // 最多等待8秒
             deferred.await()
         }
     }
