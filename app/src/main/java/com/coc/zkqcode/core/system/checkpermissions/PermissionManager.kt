@@ -3,6 +3,8 @@ package com.coc.zkqcode.core.system.checkpermissions
 import android.content.Context
 import android.provider.Settings
 import androidx.core.app.NotificationManagerCompat
+import com.coc.zkqcode.core.data.database.GlobalVars
+import com.coc.zkqcode.core.data.database.ServerConnectionMethod
 import com.coc.zkqcode.core.system.daemon.ServerManager
 import com.topjohnwu.superuser.Shell
 import kotlinx.coroutines.Dispatchers
@@ -55,11 +57,13 @@ object PermissionManager {
                     onStatusChange(RootStatus.WAITING_FOR_SERVER)
                 }
 
-                var response: String? = null
+                GlobalVars.serverConnectionMethod = null
+                var responseMethod: ServerConnectionMethod? = null
                 var attempts = 0
-                while (response == null && attempts < 10) {
-                    response = ServerHelper.waitForServerResponse()
-                    if (response == null) {
+                while (responseMethod == null && attempts < 10) {
+                    responseMethod = ServerHelper.waitForServerResponse()
+                    LogHelper.showDebugInfo("connection method: $responseMethod")
+                    if (responseMethod == null) {
                         LogHelper.showDebugInfo("Server not responding, retrying... (Attempt ${attempts + 1})")
                         ServerManager.startServer(context)
                         delay(1000)
@@ -67,7 +71,7 @@ object PermissionManager {
                     }
                 }
 
-                if (response == null) {
+                if (responseMethod == null) {
                     return@withContext RootStatus.SERVER_ERROR
                 }
             }

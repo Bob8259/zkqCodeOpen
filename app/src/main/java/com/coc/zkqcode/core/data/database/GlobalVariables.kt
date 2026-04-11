@@ -20,6 +20,9 @@ object GlobalVars {
     var isConfigLoaded: Boolean = false
 
     @Volatile
+    var serverConnectionMethod: ServerConnectionMethod? = null
+
+    @Volatile
     var defaultInputMethod: String? = null
 
     @Volatile

@@ -11,23 +11,25 @@ object InitConfigs {
         val shouldCallback: Boolean = false
     )
 
-    fun sendStartupRequests(serverConnection: ServerConnection, baseDir: String, configPath: String) {
-        // Initial check for directory
-        serverConnection.sendAction(
+    fun buildStartupActions(baseDir: String, configPath: String): List<Map<String, String>> {
+        return listOf(
             mapOf(
                 "actionType" to "file_action",
                 "subAction" to "check_exists",
                 "path" to baseDir
-            )
-        )
-        // Try to read existing config
-        serverConnection.sendAction(
+            ),
             mapOf(
                 "actionType" to "file_action",
                 "subAction" to "read",
                 "path" to configPath
             )
         )
+    }
+
+    fun sendStartupRequests(serverConnection: ServerConnection, baseDir: String, configPath: String) {
+        buildStartupActions(baseDir, configPath).forEach { action ->
+            serverConnection.sendAction(action)
+        }
     }
 
     fun handleStartupResponse(response: JsonObject, gson: Gson): InitResult {
