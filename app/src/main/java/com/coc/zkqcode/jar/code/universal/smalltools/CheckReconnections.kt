@@ -13,7 +13,6 @@ import com.coc.zkqcode.jar.code.universal.InGamesVars
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.ui.schema.Schema
 import kotlinx.coroutines.delay
-import kotlin.math.log
 
 
 suspend fun checkReconnections(): Boolean {
@@ -40,6 +39,7 @@ suspend fun checkReconnections(): Boolean {
                 delayWithMultiplier(200)
                 return@any true // Not enough white pixels, skip this time
             }
+            ShowMessage("检测到重连")
             // Retrieve the configuration state for the specific account
             val configKey = Schema.GLOBAL_SETTINGS.AFTER_KICK_OPTION.key
             val action = GlobalVars.configStates[configKey]?.value?.toInt() ?: logAndRestart("Can not get $configKey")

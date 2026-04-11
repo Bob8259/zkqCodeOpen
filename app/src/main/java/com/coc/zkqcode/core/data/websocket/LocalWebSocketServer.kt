@@ -6,13 +6,11 @@ import com.google.gson.JsonObject
 import io.ktor.server.application.install
 import io.ktor.server.cio.CIO
 import io.ktor.server.engine.embeddedServer
-import io.ktor.server.engine.stop
 import io.ktor.server.routing.routing
 import io.ktor.server.websocket.WebSockets
 import io.ktor.server.websocket.webSocket
 import io.ktor.websocket.Frame
 import io.ktor.websocket.WebSocketSession
-import io.ktor.websocket.close
 import io.ktor.websocket.readText
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.sync.Mutex
@@ -105,7 +103,7 @@ class LocalWebSocketServer {
             }
             showDebugInfo("LocalWebSocketServer: client ready")
             true
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             showDebugInfo("LocalWebSocketServer: client did not connect within ${timeoutMs}ms")
             false
         }
@@ -139,9 +137,6 @@ class LocalWebSocketServer {
             }
         }
     }
-
-    /** Whether a client is currently connected. */
-    fun isClientConnected(): Boolean = clientSession != null
 
     /** Gracefully shut down the Ktor server. */
     fun stopServer() {

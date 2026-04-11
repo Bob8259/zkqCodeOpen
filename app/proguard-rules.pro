@@ -27,7 +27,7 @@
 
 
 # ==========================================================
-# 1. 保护你自己的所有代码 (保持现状)
+# 1. Keep all app source code
 # ==========================================================
 -keep class com.coc.zkqcode.interfaces.** { *; }
 -keep class com.coc.zkqcode.core.** { *; }
@@ -36,22 +36,22 @@
 -keep class com.coc.zkqcode.MainActivity { *; }
 
 # ==========================================================
-# 2. Google ML Kit 专用规则 (解决找不到类的问题)
+# 2. Google ML Kit rules (fix missing class errors)
 # ==========================================================
-# 保持 ML Kit 文本识别的所有类及其成员
+# Keep all ML Kit text recognition classes and members
 -keep class com.google.mlkit.vision.text.** { *; }
 -keep class com.google.mlkit.common.** { *; }
 
-# 保持 Google API 和 GMS 相关内部调用 (ML Kit 依赖这些进行模型加载)
+# Keep Google API and GMS internal calls (required by ML Kit for model loading)
 -keep class com.google.android.gms.common.** { *; }
 -keep class com.google.android.gms.tasks.** { *; }
 -keep class com.google.android.gms.internal.mlkit_vision_text_common.** { *; }
 
-# 如果你使用了分块加载模型，建议加上这个
+# Keep common ML Kit vision classes (required for chunked model loading)
 -keep class com.google.mlkit.vision.common.** { *; }
 
 # ==========================================================
-# 3. 基础第三方库保护
+# 3. Third-party library keep rules
 # ==========================================================
 -keep class androidx.compose.** { *; }
 -keep class androidx.navigation.** { *; }
@@ -62,27 +62,33 @@
 -keep class com.topjohnwu.superuser.** { *; }
 
 # ==========================================================
-# 4. Kotlin 运行时与协程 (关键，因为你的报错涉及 Dispatcher)
+# 4. Kotlin runtime and coroutines (required to avoid Dispatcher errors)
 # ==========================================================
 -keep class kotlin.** { *; }
 -keep class kotlinx.** { *; }
 -keepattributes Signature, InnerClasses, EnclosingMethod, *Annotation*, Exceptions
 
 # ==========================================================
-# 5. TensorFlow Lite 专用规则
+# 5. TensorFlow Lite rules
 # ==========================================================
 
-# 保持 TFLite 核心库的所有类及其成员 (防止 JNI 调用失败)
+# Keep all TFLite core classes and members (prevents JNI call failures)
 -keep class org.tensorflow.lite.** { *; }
 
-# 保持 TFLite Support 库 (如果你使用了 Interpreter, TensorBuffer, ImageProcessor 等)
+# Keep TFLite Support library (Interpreter, TensorBuffer, ImageProcessor, etc.)
 -keep class org.tensorflow.lite.support.** { *; }
 
-# 特别保护 Native 方法，因为 TFLite 严重依赖 C++ 底层实现
+# Keep native methods, as TFLite relies heavily on C++ native implementations
 -keepclasseswithmembernames class * {
     native <methods>;
 }
 
-# 预防元数据解析错误 (如果你的模型包含 Metadata)
+# Prevent metadata parsing errors (for models that include Metadata)
 -keepattributes RuntimeVisibleAnnotations, RuntimeInvisibleAnnotations
 -keep class org.tensorflow.lite.annotations.** { *; }
+
+# ==========================================================
+# 6. Suppress warnings for JVM-only classes referenced transitively by dependencies
+# ==========================================================
+-dontwarn java.lang.management.ManagementFactory
+-dontwarn java.lang.management.RuntimeMXBean
