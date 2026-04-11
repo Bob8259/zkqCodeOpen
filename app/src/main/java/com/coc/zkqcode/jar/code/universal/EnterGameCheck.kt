@@ -104,7 +104,8 @@ private suspend fun closeAdvertisements() {
         MyColors.MorePointCoupon,
         MyColors.PassSkinAd,
         MyColors.PassAwardAd,
-        MyColors.BackToCamp
+        MyColors.BackToCamp,
+        MyColors.SkinAd
     )
 
     // 3. Iterate through schemas

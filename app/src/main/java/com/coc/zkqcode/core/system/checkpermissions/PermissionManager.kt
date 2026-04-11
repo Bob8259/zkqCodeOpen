@@ -62,7 +62,7 @@ object PermissionManager {
                 var attempts = 0
                 while (responseMethod == null && attempts < 10) {
                     responseMethod = ServerHelper.waitForServerResponse()
-                    LogHelper.showDebugInfo("connection method: $responseMethod")
+                    LogHelper.showDebugInfo("Connection method: $responseMethod")
                     if (responseMethod == null) {
                         LogHelper.showDebugInfo("Server not responding, retrying... (Attempt ${attempts + 1})")
                         ServerManager.startServer(context)

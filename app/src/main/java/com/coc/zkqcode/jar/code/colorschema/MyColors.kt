@@ -1,5 +1,6 @@
 package com.coc.zkqcode.jar.code.colorschema
 
+import android.provider.CalendarContract
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.builderbase.BuilderBaseAttackColors
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.builderbase.BuilderBaseClockTowerColors
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.FeatureColors
@@ -68,6 +69,9 @@ object MyColors : IUIColors by UIColors, IFeatureColors by FeatureColors, IMainB
     )
     val LogIn = ColorSchema.parse(
         663, 406, 879, 451, "FFFFFF", "-4|-8|261CE8,-1|-28|000000,27|-23|EDCD62,57|-16|E4C357,60|7|A77019,164|-23|EDCD62,182|-17|E6C459,178|4|B3791C,155|2|BB7E1E", 0, 0.9, "登录"
+    )
+    val SkinAd = ColorSchema.parse(
+        1167, 39, 1203, 77, "6761B8", "7|0|FFFFFF,14|0|FFFFFF,21|0|FFFFFF,28|0|8C84FF,0|19|3D3D3D,7|19|F9F7F7,14|19|0D0D0D,21|19|F9F9F9,28|19|1511EB", 0, 0.9, "皮肤广告"
     )
 
     //Main Base Clan Colors

@@ -1,6 +1,7 @@
 package com.coc.zkqcode.core.util.touchactions
 
 import com.coc.zkqcode.core.data.database.GlobalVars
+import com.coc.zkqcode.core.data.database.ServerConnectionMethod
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.basic.waitForPlay
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
@@ -206,9 +207,15 @@ object TouchActions {
         val delayMultiplier = GlobalVars.configStates["delay_multiplier"]?.value?.toFloat()
             ?: logAndRestart("Failed to get delayMultiplier at performMove")
 
+        // curl/wget transports are slower; reduce step count by 30% to lower command overhead.
+        val isSlowTransport = GlobalVars.serverConnectionMethod == ServerConnectionMethod.LIBSU_CURL
+                || GlobalVars.serverConnectionMethod == ServerConnectionMethod.LIBSU_WGET
+
         if (!isJitter) {
+            // Non-websocket transports are slower, so a larger step interval reduces command overhead.
             val stepInterval = 10L
-            val steps = maxOf(1, (duration / stepInterval).toInt())
+            val rawSteps = maxOf(1, (duration / stepInterval).toInt())
+            val steps = if (isSlowTransport) maxOf(1, (rawSteps * 0.5f).toInt()) else rawSteps
             for (i in 1..steps) {
                 val t = i.toFloat() / steps
                 pointers.forEach { p ->
@@ -227,9 +234,10 @@ object TouchActions {
         val dy = refP.toY - refP.fromY
         val totalDistance = sqrt(dx * dx + dy * dy).toDouble()
 
-        // steps = distance / random(30..35)
+        // steps = distance / random(10..20)
         val stepDivisor = Random.nextInt(10, 20)
-        val steps = maxOf(3, (totalDistance / stepDivisor).toInt())
+        val rawSteps = maxOf(3, (totalDistance / stepDivisor).toInt())
+        val steps = if (isSlowTransport) maxOf(1, (rawSteps * 0.5f).toInt()) else rawSteps
         val avgDelay = duration.toFloat() / steps
 
         class PointerState(
@@ -299,11 +307,18 @@ object TouchActions {
         waitForPlay()
         val delayMultiplier = getDelayMultiplier()
 
+        // curl/wget transports are slower; reduce post-tap delay to avoid unnecessary wait time.
+        val isSlowTransport = GlobalVars.serverConnectionMethod == ServerConnectionMethod.LIBSU_CURL
+                || GlobalVars.serverConnectionMethod == ServerConnectionMethod.LIBSU_WGET
+        val effectiveDelayTime = if (isSlowTransport) maxOf(0, delayTime - 20) else delayTime
+
         touchDown(x.toFloat(), y.toFloat(), 1)
         try {
-            // Random delay
-            val randomDelay = Random.nextLong(20, 31)
-            delay((randomDelay * delayMultiplier).toLong())
+            // Random delay; skipped on slow transports to reduce overhead.
+            if (!isSlowTransport) {
+                val randomDelay = Random.nextLong(20, 31)
+                delay((randomDelay * delayMultiplier).toLong())
+            }
 
             if (isJitter) {
                 val offsetX = Random.nextInt(-3, 4)
@@ -313,7 +328,7 @@ object TouchActions {
         } finally {
             withContext(NonCancellable) {
                 touchUp(1)
-                delayWithMultiplier(delayTime)
+                delayWithMultiplier(effectiveDelayTime)
             }
         }
     }

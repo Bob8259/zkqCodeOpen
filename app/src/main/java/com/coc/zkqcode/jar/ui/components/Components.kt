@@ -269,29 +269,27 @@ fun CustomButton(
 ) {
 
     var showExplanation by remember { mutableStateOf(false) }
-    Row {
+    Row(modifier = Modifier.padding(top = marginTop, bottom = marginBottom, end = 8.dp)) {
         Button(
             onClick = {
                 GlobalVars.isAutoRunEnabled = false
                 onClick()
-            }, modifier = Modifier
-                .padding(top = marginTop, bottom = marginBottom, end = 8.dp)
-                .height(32.dp), shape = RoundedCornerShape(8.dp), enabled = enable, colors = ButtonDefaults.buttonColors(
+            }, modifier = Modifier.height(32.dp), shape = RoundedCornerShape(8.dp), enabled = enable, colors = ButtonDefaults.buttonColors(
                 containerColor = AppColors.Azure
             )
         ) {
             Text(text, style = MaterialTheme.typography.labelMedium)
         }
-        Column(Modifier.padding(top = 14.dp)) {
+        Column(Modifier.padding(top = 8.dp)) {
             explain?.let {
                 Icon(
                     imageVector = Icons.Default.Info,
                     contentDescription = "Notes",
                     modifier = Modifier
                         .height(18.dp)
-                        .clickable { showExplanation = true }
-                        .padding(top = 2.dp),
-                    tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
+                        .clickable { showExplanation = true },
+                    tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                )
 
                 if (showExplanation) {
                     CustomAlertDialog(onDismissRequest = { showExplanation = false }, title = {
@@ -408,8 +406,7 @@ private fun CustomSwitch(
                 .clickable {
                     GlobalVars.isAutoRunEnabled = false
                     onCheckStateChange(!isChecked)
-                }
-        ) {
+                }) {
             Text(
                 text = text, modifier = Modifier.padding(top = textTopPadding), style = MaterialTheme.typography.labelMedium
             )
@@ -511,13 +508,13 @@ fun SettingDropdown(
                 options.forEachIndexed { idx, option ->
                     DropdownMenuItem(
                         text = {
-                        Text(option, style = MaterialTheme.typography.labelMedium)
-                    }, onClick = {
-                        GlobalVars.isAutoRunEnabled = false
-                        state.value = idx.toString()
-                        expanded = false
-                        afterChange?.invoke(idx)
-                    }, modifier = Modifier.height(35.dp) // Slightly increase height for easier clicking
+                            Text(option, style = MaterialTheme.typography.labelMedium)
+                        }, onClick = {
+                            GlobalVars.isAutoRunEnabled = false
+                            state.value = idx.toString()
+                            expanded = false
+                            afterChange?.invoke(idx)
+                        }, modifier = Modifier.height(35.dp) // Slightly increase height for easier clicking
                     )
                 }
             }
