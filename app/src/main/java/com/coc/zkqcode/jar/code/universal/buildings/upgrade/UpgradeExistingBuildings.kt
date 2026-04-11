@@ -421,7 +421,7 @@ private suspend fun findFirstEnabledExistingBuilding(enabledBuildings: Set<Strin
         val building = result.buildings.firstOrNull { it.name in enabledBuildings && it.name != "城墙" }
         if (building != null) {
             ShowMessage("连续失败过多，改为升级${building.name}")
-            TouchActions.tap(building.x + 20, building.y + 20, delayTime = 1000)
+            TouchActions.tap(building.x + 20, building.y + 5, delayTime = 1000)
             selectedBuilding = building.name
             true
         } else {

@@ -5,6 +5,7 @@ import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.core.util.basic.RunShell
 import com.coc.zkqcode.core.util.basic.ShowMessage
+import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
 import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.MyColors
@@ -12,6 +13,7 @@ import com.coc.zkqcode.jar.code.universal.InGamesVars
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.ui.schema.Schema
 import kotlinx.coroutines.delay
+import kotlin.math.log
 
 
 suspend fun checkReconnections(): Boolean {
@@ -23,22 +25,26 @@ suspend fun checkReconnections(): Boolean {
     val homeSchemas = listOf(
         MyColors.Reconnection, MyColors.ReconnectionOnCloudPhone, MyColors.RatingOnCloudPhone, MyColors.RatingOnCloudPhone2
     )
-    val screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult ?: return true
+    var screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult ?: logAndRestart("failed to take screenshot at reconnection check")
     // 3. Run the check and capture the result
     // We return the result of 'any' to determine if a reconnection event occurred.
     return homeSchemas.any { schema ->
         val match = findMultiColors(byteBuffer = screenBuffer, schema = schema)
         if (match != null) {
             // Count white pixels in the confirmation area; skip this iteration if insufficient
+            delayWithMultiplier(200)
+            screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult ?: logAndRestart("failed to take screenshot at reconnection check")
             val whiteCount = countWhitePixels(screenBuffer, 270, 230, 1010, 430)
-            if (whiteCount <= 100) {
+            if (whiteCount <= 200) {
+                ShowMessage("检测到假重连")
+                delayWithMultiplier(200)
                 return@any true // Not enough white pixels, skip this time
             }
             // Retrieve the configuration state for the specific account
             val configKey = Schema.GLOBAL_SETTINGS.AFTER_KICK_OPTION.key
             val action = GlobalVars.configStates[configKey]?.value?.toInt() ?: logAndRestart("Can not get $configKey")
             // 4. Implement logic based on the action value
-            ShowMessage("检测到重连")
+
             when (action) {
                 0 -> {
                     // Action: Tap the "Reload" button
