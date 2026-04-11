@@ -19,15 +19,14 @@ import com.coc.zkqcode.jar.ui.schema.Schema
 
 suspend fun builderBaseRemoveObstacles(): Boolean {
     if (!getBooleanConfigRuntime(Schema.BUILDER_BASE_SETTINGS.BUILDER_BASE_REMOVE_OBSTACLES.key)) return true
-    val worker = WorkerAndResearch.detectWorkerNumber(BaseType.Builder)
-    val resources = recognizeResources()
     val storageKey = StorageKeys.withAccountNumber(StorageKeys.BUILDER_BASE_REMOVE_OBSTACLES, InGamesVars.currentAccountNumber)
     // Skip if obstacle removal was done within 24 hours
     if (!checkMemoryFile(storageKey, 1440)) {
         ShowMessage("账号${InGamesVars.currentAccountNumber}，今天已移除障碍物，暂不移除")
         return true
     }
-
+    val worker = WorkerAndResearch.detectWorkerNumber(BaseType.Builder)
+    val resources = recognizeResources()
     // Resource threshold check
     if (worker.total == 2) {
         if (resources.gold < 600000 || resources.elixir < 600000) {
