@@ -3,22 +3,21 @@ package com.coc.zkqcode.core.system.daemon
 import android.app.Notification
 import android.app.Service
 import android.content.Intent
+import android.os.Environment
 import android.os.IBinder
 import com.coc.zkqcode.MainActivity
-import com.coc.zkqcode.core.data.websocket.ServerActions
 import com.coc.zkqcode.core.ui.floatingwindows.NotificationHelper
-import com.coc.zkqcode.core.data.websocket.ServerConnection
+import com.coc.zkqcode.core.util.basic.RunShell
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import java.net.InetSocketAddress
-import java.net.Socket
-//Used for start on deivce boot
+import org.json.JSONObject
+
+// Used for auto-start handling after device boot.
 class DaemonService : Service() {
 
     private val scope = CoroutineScope(Dispatchers.IO)
-    private var serverActions: ServerActions? = null
+    private val configPath = "${Environment.getExternalStorageDirectory().path}/zkqFiles/zkq_config.json"
 
     override fun onCreate() {
         super.onCreate()
@@ -28,63 +27,33 @@ class DaemonService : Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         scope.launch {
-            // 1. Initialize Shell
-            println("start daemon service")
-            
-            // 2. Ensure Server is Running
-            // Try to start server multiple times if needed, or ensuring it's up
-            ServerManager.startServer(this@DaemonService)
-
-            // 3. Wait for Server Port to be Open
-            if (waitForServerPort(6839, 15000)) {
-                 println("Server port is open, connecting...")
-                 
-                 // 4. Connect to WebSocket & Read Config
-                val serverConnection = ServerConnection("ws://localhost:6839/zkq")
-                serverActions = ServerActions(serverConnection) {
-                    // Callback when config is loaded
-                    val configJson = serverActions?.configJson
-                    if (configJson != null) {
-                        val autoStart = if (configJson.has("auto_start")) {
-                            try {
-                                configJson.get("auto_start").asInt
-                            } catch (_: Exception) {
-                                0
-                            }
-                        } else {
-                            0 
-                        }
-
-                        if (autoStart == 1) {
-                             val i = Intent(this@DaemonService, MainActivity::class.java)
-                             i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                             startActivity(i)
-                        }
-                    }
-                    stopSelf() // Work done
+            // Read the config directly through libsu so boot handling does not depend on the websocket server.
+            if (readAutoStartValue() == 1) {
+                val launchIntent = Intent(this@DaemonService, MainActivity::class.java).apply {
+                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 }
-            } else {
-                println("Server failed to start within timeout.")
-                stopSelf()
+                startActivity(launchIntent)
             }
+            stopSelf()
         }
         return START_NOT_STICKY
     }
 
-    private suspend fun waitForServerPort(port: Int, timeoutMs: Long): Boolean {
-        val startTime = System.currentTimeMillis()
-        while (System.currentTimeMillis() - startTime < timeoutMs) {
-            try {
-                val socket = Socket()
-                socket.connect(InetSocketAddress("localhost", port), 200)
-                socket.close()
-                return true
-            } catch (_: Exception) {
-                // Ignore and retry
-                delay(500)
+    private suspend fun readAutoStartValue(): Int {
+        return try {
+            val configContent = RunShell.run(
+                """if [ -f "$configPath" ]; then cat "$configPath"; fi""",
+                checkIsPlaying = false
+            ).joinToString("\n").trim()
+
+            if (configContent.isBlank()) {
+                0
+            } else {
+                JSONObject(configContent).optInt("auto_start", 0)
             }
+        } catch (_: Exception) {
+            0
         }
-        return false
     }
 
     override fun onBind(intent: Intent?): IBinder? {
