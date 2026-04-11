@@ -1,12 +1,3 @@
-This part is about repo links
-```
-git remote -v //view current repo
-//push to repo
-git push open main --force 
-//see logs
-adb -s emulator-5562 logcat zkq_debug:V *:S
-```
-
 This documentation of the server. 
 URL: localhost:6839
 Connect to the server via WebSocket **or** plain HTTP GET.
@@ -273,3 +264,130 @@ GET /zkq?actionType=file_action&subAction=rename&path=%2Fdata%2F...%2Fold_name.t
 - The response format is identical to the WebSocket interface (`{"status":"success","data":"..."}` or `{"status":"error","message":"..."}`).
 - Touch actions always return `{"status":"success","data":"null"}`.
 - Query parameter names map 1-to-1 to the JSON field names described in sections 1–3.
+
+---
+
+## 5. Client Mode (app_process)
+
+When launched via `app_process`, the app runs the embedded WebSocket/HTTP server **and** simultaneously connects as a WebSocket client to `ws://localhost:16839/zkq`. The standard entry point is `com.coc.zkqserver.ShellServer`.
+
+### Launch Command
+
+```sh
+CLASSPATH=/data/local/tmp/zkqserver.apk app_process /data/local/tmp com.coc.zkqserver.ShellServer
+```
+
+A client-only entry point (no embedded server) is also available at `com.coc.zkqserver.AppProcessClient` if needed.
+
+### Connection Behavior
+
+- On startup, the client attempts to connect to `ws://localhost:16839/zkq`.
+- If the connection fails for any reason, it waits **2 seconds** and retries. This loop runs indefinitely until a connection is established.
+- Reconnection follows the same retry policy if the server drops the connection.
+
+### Announcement Message
+
+Immediately after the **first** successful connection, the client sends the following message to the server:
+
+```json
+{
+  "actionType": "client_connected",
+  "message": "ZKQserver connected"
+}
+```
+
+No announcement is sent on subsequent reconnections.
+
+### Receiving Actions from the Server
+
+The server sends JSON text frames to the client over the WebSocket connection. The client reads the `actionType` field and dispatches accordingly. Every handled message produces a JSON response that is sent back to the server over the same connection.
+
+| `actionType` | Returns response? |
+| --- | --- |
+| `connection_test` | Yes |
+| `file_action` | Yes |
+| `touch_action` (or any other value) | Yes |
+
+#### connection_test
+
+```json
+{ "actionType": "connection_test" }
+```
+
+Response:
+
+```json
+{ "status": "success", "data": "connected" }
+```
+
+#### file_action
+
+The server sends any of the file sub-actions defined in section 2. Examples:
+
+```json
+{ "actionType": "file_action", "subAction": "read", "path": "/data/local/tmp/example.txt" }
+```
+
+```json
+{ "actionType": "file_action", "subAction": "write", "path": "/data/local/tmp/example.txt", "content": "hello" }
+```
+
+```json
+{ "actionType": "file_action", "subAction": "create", "path": "/data/local/tmp/new.txt" }
+```
+
+```json
+{ "actionType": "file_action", "subAction": "delete", "path": "/data/local/tmp/old.txt" }
+```
+
+```json
+{ "actionType": "file_action", "subAction": "check_exists", "path": "/data/local/tmp/file.txt" }
+```
+
+```json
+{ "actionType": "file_action", "subAction": "copy", "path": "/data/local/tmp/src.txt", "destPath": "/data/local/tmp/dst.txt" }
+```
+
+```json
+{ "actionType": "file_action", "subAction": "rename", "path": "/data/local/tmp/old.txt", "newPath": "/data/local/tmp/new.txt" }
+```
+
+See section 2 for the full field reference and expected responses.
+
+#### touch_action
+
+The server sends any of the touch sub-actions defined in section 1. Examples:
+
+```json
+{ "actionType": "touch_action", "subAction": "touchdown", "x": 500.0, "y": 800.0, "id": 1 }
+```
+
+```json
+{ "actionType": "touch_action", "subAction": "touchmove", "x": 520.0, "y": 820.0, "id": 1 }
+```
+
+```json
+{ "actionType": "touch_action", "subAction": "touchup", "id": 1 }
+```
+
+Response for all touch sub-actions:
+
+```json
+{ "status": "success", "data": "null" }
+```
+
+See section 1 for the full field reference.
+
+### Response Format
+
+Responses follow the same format as the server API (see section 0):
+
+```json
+{ "status": "success", "data": "..." }
+```
+
+or
+
+```json
+{ "status": "error", "message": "..." }
+```

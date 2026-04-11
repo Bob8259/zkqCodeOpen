@@ -15,6 +15,7 @@ gson = "2.13.2"
 webkit = "1.15.0"
 timber = "5.0.1"
 text-recognition-chinese = "16.0.1"
+ktor = "3.4.2"
 
 
 
@@ -44,6 +45,9 @@ androidx-navigation-compose = { group = "androidx.navigation", name = "navigatio
 timber = { group = "com.jakewharton.timber", name = "timber", version.ref = "timber" }
 mlkit-text-recognition-chinese = { group = "com.google.mlkit", name = "text-recognition-chinese", version.ref = "text-recognition-chinese" }
 mlkit-text-recognition = { group = "com.google.mlkit", name = "text-recognition", version = "16.0.1" }
+ktor-server-core = { group = "io.ktor", name = "ktor-server-core", version.ref = "ktor" }
+ktor-server-cio = { group = "io.ktor", name = "ktor-server-cio", version.ref = "ktor" }
+ktor-server-websockets = { group = "io.ktor", name = "ktor-server-websockets", version.ref = "ktor" }
 
 
 

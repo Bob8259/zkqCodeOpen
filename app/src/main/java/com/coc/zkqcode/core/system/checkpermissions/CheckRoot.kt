@@ -28,10 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.coc.zkqcode.MainActivity
 import com.coc.zkqcode.core.data.database.GlobalVars
-import com.coc.zkqcode.core.data.database.ServerConnectionMethod
 import com.coc.zkqcode.core.data.websocket.ServerActions
-import com.coc.zkqcode.core.data.websocket.ServerConnection
-import com.coc.zkqcode.core.data.websocket.ServerTransportHelper
 import com.coc.zkqcode.core.ui.floatingwindows.UIWindowService
 import com.coc.zkqcode.core.ui.localcomponents.LocalCustomButton
 import com.coc.zkqcode.statehelper.AppMode
@@ -105,12 +102,8 @@ fun CheckRootScreen() {
                 }
 
                 if (GlobalVars.serverActions == null) {
-                    val serverConnection = if (GlobalVars.serverConnectionMethod == ServerConnectionMethod.WEBSOCKET) {
-                        ServerConnection(ServerTransportHelper.WEBSOCKET_URL)
-                    } else {
-                        null
-                    }
-                    GlobalVars.serverActions = ServerActions(serverConnection)
+                    // Pass the local WS server instance established by ServerHelper (may be null for shell fallback)
+                    GlobalVars.serverActions = ServerActions(ServerHelper.localServer)
                 }
 
                 // Start the floating window service AFTER serverActions is ready

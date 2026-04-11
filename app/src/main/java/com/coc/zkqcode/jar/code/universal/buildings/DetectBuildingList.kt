@@ -133,6 +133,6 @@ suspend fun iterateBuilderBaseBuildingUpgradeList(
         }
         previousBuildingNames = currentBuildingNames
         TouchActions.swipe(666, 500, 666, 120, delayTime = 200)
-        delayWithMultiplier(100)
+        delayWithMultiplier(300)
     }
 }

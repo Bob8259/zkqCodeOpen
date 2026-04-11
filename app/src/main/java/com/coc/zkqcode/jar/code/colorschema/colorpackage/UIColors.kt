@@ -8,6 +8,7 @@ interface IUIColors {
     val Reconnection: ColorSchema
     val ReconnectionOnCloudPhone: ColorSchema
     val RatingOnCloudPhone: ColorSchema
+    val RatingOnCloudPhone2: ColorSchema
     val GreenConfirm: ColorSchema
     val CNAd: ColorSchema
     val ClanChat: ColorSchema
@@ -49,6 +50,9 @@ object UIColors : IUIColors {
     )
     override val RatingOnCloudPhone = ColorSchema.parse(
         249, 206, 1035, 522, "424242", "157|0|424242,314|0|424242,471|0|424242,628|0|424242,0|158|424242,157|158|424242,314|158|424242,471|158|424242,628|158|424242", 0, 0.99, "云手机打分提示"
+    )
+    override val RatingOnCloudPhone2 = ColorSchema.parse(
+        264, 215, 1014, 506, "424242", "150|0|424242,300|0|424242,450|0|424242,600|0|424242,0|145|424242,150|145|424242,300|145|424242,450|145|424242,600|145|424242", 0, 0.97, "云手机打分提示2"
     )
     override val GreenConfirm = ColorSchema.parse(
         577, 564, 731, 642, "7AF1D2", "25|-3|7FF3D7,45|-4|81F4D9,60|-4|81F4D9,66|5|70ECC8,67|17|53DFAB,67|23|2CCD84,45|35|30BA71,22|33|2FBF76,-1|26|2CCC83", 0, 0.9, "绿色确认"
@@ -123,14 +127,17 @@ object UIColors : IUIColors {
     override val SmallGemIcon = ColorSchema.parse(
         0, 0, 0, 0, "86FBE2", "0|2|91FEE6,-2|3|91FDE2,-4|1|7DF6DA,-4|-3|41C583,0|-3|4DDDA9,4|-2|8AFFED,4|1|79FCDF,3|4|74FAD4,1|5|73F8CD", 0, 0.9
     )
+
     // Golden pass skin advertisement entry
     override val PassSkinAd = ColorSchema.parse(
         1164, 67, 1209, 116, "8C85FF", "9|0|FFFFFF,18|0|353535,27|0|FFFFFF,36|0|8D85FF,0|25|0D0D1B,9|25|FAF7F7,18|25|1310B2,27|25|CBCACA,36|25|1210EA", 0, 0.9, "令牌皮肤广告"
     )
+
     // Golden pass reward advertisement page marker
     override val PassAwardAd = ColorSchema.parse(
         1213, 34, 1250, 70, "8E86FF", "7|0|FFFFFF,15|0|212121,22|0|FFFFFF,29|0|8E86FF,0|18|1511EC,7|18|FAF6F6,15|18|0D0D0D,22|18|F8F8F8,29|18|1511EC", 0, 0.9, "令牌奖励页面"
     )
+
     // Return task panel marker on the event page
     override val ReturnTask = ColorSchema.parse(
         62, 490, 1272, 649, "CD8C4A", "4|0|CE8C4B,10|2|C68A48,16|4|C08746,24|-2|D59351,1148|-76|FFFFFF,1156|-74|FFFFFF,1148|-58|FFFFFF,1149|-61|FFFFFF,1152|-65|FFFFFF", 0, 0.9, "回归任务"

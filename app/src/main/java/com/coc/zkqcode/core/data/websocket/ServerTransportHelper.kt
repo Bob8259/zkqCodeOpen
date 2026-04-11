@@ -9,10 +9,9 @@ import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 
 /**
- * Shared helpers for addressing the local server through either WebSocket or shell-backed HTTP.
+ * Shared helpers for addressing the local server through shell-backed HTTP (curl/wget).
  */
 object ServerTransportHelper {
-    const val WEBSOCKET_URL = "ws://localhost:6839/zkq"
     const val HTTP_URL = "http://localhost:6839/zkq"
 
     private val gson = Gson()
@@ -68,8 +67,8 @@ object ServerTransportHelper {
                 "curl -g -sS --max-time 2 '$escapedUrl'"
             ServerConnectionMethod.LIBSU_WGET ->
                 "wget -q -T 2 -O - '$escapedUrl'"
-            ServerConnectionMethod.WEBSOCKET ->
-                error("WebSocket transport cannot execute shell HTTP requests.")
+            ServerConnectionMethod.LOCAL_WS_SERVER ->
+                error("Local WS server transport cannot execute shell HTTP requests.")
         }
     }
 

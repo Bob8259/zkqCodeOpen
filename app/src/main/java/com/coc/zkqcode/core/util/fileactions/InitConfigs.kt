@@ -1,6 +1,5 @@
 package com.coc.zkqcode.core.util.fileactions
 
-import com.coc.zkqcode.core.data.websocket.ServerConnection
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 
@@ -24,12 +23,6 @@ object InitConfigs {
                 "path" to configPath
             )
         )
-    }
-
-    fun sendStartupRequests(serverConnection: ServerConnection, baseDir: String, configPath: String) {
-        buildStartupActions(baseDir, configPath).forEach { action ->
-            serverConnection.sendAction(action)
-        }
     }
 
     fun handleStartupResponse(response: JsonObject, gson: Gson): InitResult {

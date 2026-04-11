@@ -2,22 +2,25 @@ package com.coc.zkqcode.core.system.checkpermissions
 
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.data.database.ServerConnectionMethod
+import com.coc.zkqcode.core.data.websocket.LocalWebSocketServer
 import com.coc.zkqcode.core.data.websocket.ServerTransportHelper
-import kotlinx.coroutines.CompletableDeferred
+import com.coc.zkqcode.core.util.fileactions.LogHelper.showDebugInfo
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.withTimeoutOrNull
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.Response
-import okhttp3.WebSocket
-import okhttp3.WebSocketListener
 
 object ServerHelper {
+    // Retained so CheckRoot can pass it to ServerActions after connection is established
+    var localServer: LocalWebSocketServer? = null
+        private set
+
     suspend fun waitForServerResponse(): ServerConnectionMethod? {
-        tryWebSocketConnection()?.let { method ->
+        tryLocalServerConnection()?.let { method ->
             GlobalVars.serverConnectionMethod = method
             return method
         }
+
+        // Local WS server failed; stop it before falling back to shell HTTP
+        localServer?.stopServer()
+        localServer = null
 
         tryShellConnectionFallback()?.let { method ->
             GlobalVars.serverConnectionMethod = method
@@ -28,42 +31,18 @@ object ServerHelper {
         return null
     }
 
-    private suspend fun tryWebSocketConnection(): ServerConnectionMethod? {
-        val client = OkHttpClient()
-        val endTime = System.currentTimeMillis() + 8000L
+    /**
+     * Start an embedded WebSocket server on port 16839 and wait up to 10 seconds
+     * for the app_process client to connect and send its announcement.
+     */
+    private suspend fun tryLocalServerConnection(): ServerConnectionMethod? {
+        val server = LocalWebSocketServer()
+        localServer = server
 
-        // Retry within the 8-second window because OkHttp fires onFailure immediately
-        // when the server is not yet listening (connection refused).
-        while (System.currentTimeMillis() < endTime) {
-            val remaining = endTime - System.currentTimeMillis()
-            if (remaining <= 0) break
-
-            val deferred = CompletableDeferred<String?>()
-            val request = Request.Builder().url(ServerTransportHelper.WEBSOCKET_URL).build()
-            val webSocket = client.newWebSocket(request, object : WebSocketListener() {
-                override fun onOpen(webSocket: WebSocket, response: Response) {
-                    webSocket.send("""{"actionType": "connection_test"}""")
-                }
-
-                override fun onMessage(webSocket: WebSocket, text: String) {
-                    deferred.complete(text)
-                    webSocket.close(1000, "Done")
-                }
-
-                override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
-                    deferred.complete(null)
-                }
-            })
-
-            val response = withTimeoutOrNull(remaining) {
-                deferred.await()
-            }
-            webSocket.cancel()
-
-            if (response != null) {
-                return ServerConnectionMethod.WEBSOCKET
-            }
-            delay(500)
+        val connected = server.startAndAwaitClient(timeoutMs = 10_000L)
+        if (connected) {
+            showDebugInfo("Local WS server connection established")
+            return ServerConnectionMethod.LOCAL_WS_SERVER
         }
         return null
     }

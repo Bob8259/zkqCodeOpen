@@ -6,6 +6,7 @@ import androidx.core.app.NotificationManagerCompat
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.data.database.ServerConnectionMethod
 import com.coc.zkqcode.core.system.daemon.ServerManager
+import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.topjohnwu.superuser.Shell
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
