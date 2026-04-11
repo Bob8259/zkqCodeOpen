@@ -101,7 +101,7 @@ private suspend fun realAttack(mode: String, battleNumber: Int = 1, battleTimes:
         }
         val remainingMin = (8 * 60 * 1000L - elapsed) / 60000.0
         accountLog("对战中，第${battleNumber}/${battleTimes}局\n若${"%.1f".format(remainingMin)}分钟内未完成对战，则强制重启")
-
+        if (!checkReconnections()) return false
         // Capture a single screenshot and reuse it for all state checks in this iteration
         val capturedScreen = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult
 
@@ -110,7 +110,6 @@ private suspend fun realAttack(mode: String, battleNumber: Int = 1, battleTimes:
             TouchActions.tap(85, 640, delayTime = 800)
             continue // State matched, skip remaining checks
         }
-        if (!checkReconnections()) return false
         val builderBaseStarBonus = findMultiColors(byteBuffer = capturedScreen, schema = MyColors.BuilderBaseStarBonus)
         if (builderBaseStarBonus != null) {
             TouchActions.tap(builderBaseStarBonus.x + 10, builderBaseStarBonus.y + 10, delayTime = 200)

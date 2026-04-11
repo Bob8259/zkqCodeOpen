@@ -16,76 +16,72 @@ import kotlinx.coroutines.delay
 
 
 suspend fun checkReconnections(): Boolean {
-    // 1. Capture the screen and cast safely
-
     checkPrivacy()
 
-    // 2. Define the schemas to check against
     val homeSchemas = listOf(
         MyColors.Reconnection, MyColors.ReconnectionOnCloudPhone, MyColors.RatingOnCloudPhone, MyColors.RatingOnCloudPhone2
     )
-    var screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult ?: logAndRestart("failed to take screenshot at reconnection check")
-    // 3. Run the check and capture the result
-    // We return the result of 'any' to determine if a reconnection event occurred.
-    return homeSchemas.any { schema ->
+    var screenBuffer = captureOrRestart()
+
+    // Set to true when action == 1; deferred outside the lambda to avoid non-local return issues
+    var needReturnFalse = false
+
+    val found = homeSchemas.any { schema ->
         val match = findMultiColors(byteBuffer = screenBuffer, schema = schema)
         if (match != null) {
-            // Count white pixels in the confirmation area; skip this iteration if insufficient
+            // Re-capture and count white pixels to reject false positives
             delayWithMultiplier(200)
-            screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult ?: logAndRestart("failed to take screenshot at reconnection check")
-            val whiteCount = countWhitePixels(screenBuffer, 270, 230, 1010, 430)
+            screenBuffer = captureOrRestart()
+            val whiteCount = countWhitePixels(screenBuffer)
             if (whiteCount <= 200) {
                 ShowMessage("检测到假重连")
                 delayWithMultiplier(200)
-                return@any true // Not enough white pixels, skip this time
+                return@any false // Not enough white pixels, continue checking remaining schemas
             }
             ShowMessage("检测到重连")
-            // Retrieve the configuration state for the specific account
             val configKey = Schema.GLOBAL_SETTINGS.AFTER_KICK_OPTION.key
             val action = GlobalVars.configStates[configKey]?.value?.toInt() ?: logAndRestart("Can not get $configKey")
-            // 4. Implement logic based on the action value
-
             when (action) {
                 0 -> {
-                    // Action: Tap the "Reload" button
+                    // Tap the reload button, rating notification, and tutorial confirm
                     TouchActions.tap(379, 458)
-                    TouchActions.tap(793, 459)//Rating Notification
-                    TouchActions.tap(338, 511)//Tutorial "Confirm" button
+                    TouchActions.tap(793, 459)
+                    TouchActions.tap(338, 511)
                 }
-
-                1 -> {
-                    // Action: Signal a need to switch accounts
-                    // By returning false here, we tell the caller the check 'failed' or needs a different flow
-                    return false
-                }
-
-                2 -> {
-                    // Action: Wait/Idle
-                    delay(1000)
-                }
+                1 -> needReturnFalse = true // Signal caller to switch accounts
+                2 -> delay(1000)            // Wait/Idle
             }
-            true // Match found and handled
+            true
         } else {
-            true// No match for this schema
+            false // No match for this schema, continue checking the remaining ones
         }
     }
 
+    if (needReturnFalse) return false
 
+//    if (!found) {
+//        ShowMessage("未找到重连")
+//        delayWithMultiplier(1000)
+//    }
+
+    return true
 }
 
+private suspend fun captureOrRestart(): ScreenCaptureManager.CaptureResult =
+    ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult
+        ?: logAndRestart("failed to take screenshot at reconnection check")
+
 /**
- * Counts pixels in the given region where R, G, B are all greater than 235 (white).
+ * Counts pixels in the confirmation area (270,230)→(1010,430) where R,G,B > 235 (white).
  * Uses absolute ByteBuffer.get(index) so it is position-independent.
  */
-private fun countWhitePixels(
-    screenBuffer: ScreenCaptureManager.CaptureResult, x1: Int, y1: Int, x2: Int, y2: Int
-): Int {
+private fun countWhitePixels(screenBuffer: ScreenCaptureManager.CaptureResult): Int {
     val buf = screenBuffer.buffer
     val pixelStride = screenBuffer.pixelStride
     val rowStride = screenBuffer.rowStride
     var count = 0
-    for (y in y1 until y2) {
-        for (x in x1 until x2) {
+    for (y in 230 until 430) {
+        for (x in 270 until 1010) {
             val offset = y * rowStride + x * pixelStride
             val r = buf.get(offset).toInt() and 0xFF
             val g = buf.get(offset + 1).toInt() and 0xFF

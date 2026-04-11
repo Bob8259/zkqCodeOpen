@@ -130,7 +130,7 @@ suspend fun searchOpponentsAndDeployTroops(): Boolean {
         if (insufficientGold != null) {
             break
         }
-        if (!checkReconnections()) return false
+
         val nextOpponent = findMultiColors(schema = MyColors.NextOpponent)
         if (nextOpponent != null) {
             searchTimes++
@@ -190,6 +190,7 @@ suspend fun searchOpponentsAndDeployTroops(): Boolean {
         }
         val remainingMinutes = (SEARCH_TIMEOUT_MS - (System.currentTimeMillis() - battleStartTime)) / 60000.0
         ShowMessage("账号${InGamesVars.currentAccountNumber}，搜索中... ${"%.1f".format(remainingMinutes)}分钟后强制退出")
+        if (!checkReconnections()) return false
         delayWithMultiplier(100)
     }
     return battleStarted
