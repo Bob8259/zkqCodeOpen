@@ -25,13 +25,20 @@ suspend fun clanCapitalTrainTroops(): Boolean {
     }
 
     if (!enterClanCapital()) return enterMainScreen()
+    if (findMultiColors(MyColors.ZeroAttackTimes) != null) {
+        // No attack times remaining; record the timestamp so the guard activates next cycle
+        writeMemory(storageKey, (System.currentTimeMillis() / 60_000).toString())
+        ShowMessage("账号${InGamesVars.currentAccountNumber}，都城攻击次数已用完")
+        if (!enterMainScreen()) return false
+    }
     val trainTroopButton = findMultiColorsUntil(schemas = listOf(MyColors.TrainTroops), duration = 1000)
     if (trainTroopButton != null) {
         TouchActions.tap(trainTroopButton.x, trainTroopButton.y)
     }
-    val trashBinButton = findMultiColorsUntil(schemas = listOf(MyColors.TrashBin), duration = 300)
+    var isTrainingSuccess = false
+    val trashBinButton = findMultiColorsUntil(schemas = listOf(MyColors.CapitalTrainTroopPage), duration = 300)
     if (trashBinButton != null) {
-        TouchActions.tap(trashBinButton.x, trashBinButton.y)
+        TouchActions.tap(505, 300)
         TouchActions.swipe(925, 580, 0, 680)
         delayWithMultiplier(300)
         TouchActions.tap(780, 615, delayTime = 50)//冰霜法术
@@ -44,13 +51,19 @@ suspend fun clanCapitalTrainTroops(): Boolean {
         repeat(7) {
             TouchActions.tap(780, 480, delayTime = 50)//雷电法术
         }
-        repeat(12) {
-            TouchActions.tap(355, 620, delayTime = 50)//矿工
+        val capitalMiner = findMultiColors(MyColors.CapitalMiner)
+        if (capitalMiner != null) {
+            isTrainingSuccess = true
+            repeat(12) {
+                TouchActions.tap(capitalMiner.x, capitalMiner.y, delayTime = 50)
+            }
         }
+
         TouchActions.swipe(140, 680, 1200, 580)
         delayWithMultiplier(300)
         var capitalBarbarianButton = findMultiColors(MyColors.CapitalBarbarian)
         if (capitalBarbarianButton != null) {
+            isTrainingSuccess = true
             repeat(5) {
                 capitalBarbarianButton = findMultiColors(MyColors.CapitalBarbarian)
                 // Snapshot into a val so the smart cast holds inside the lambda
@@ -72,5 +85,5 @@ suspend fun clanCapitalTrainTroops(): Boolean {
         ShowMessage("账号${InGamesVars.currentAccountNumber}，都城部队训练成功，已记录时间")
         TouchActions.tap(1120, 35)
     }
-    return true
+    return isTrainingSuccess
 }

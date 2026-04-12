@@ -1,26 +1,26 @@
 package com.coc.zkqcode.jar.code.clancapital
 
 import android.graphics.Bitmap
+import androidx.core.graphics.get
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.MyColors
+import com.coc.zkqcode.jar.code.mainbase.others.zoomSmallMainBase
+import com.coc.zkqcode.jar.code.universal.InGamesVars
 import com.coc.zkqcode.jar.code.universal.aidetection.DetectionResult
 import com.coc.zkqcode.jar.code.universal.aidetection.tiledAiDetect
-import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
-import com.coc.zkqcode.jar.code.mainbase.others.zoomSmallMainBase
+import com.coc.zkqcode.jar.code.universal.clickRightBottom
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
-import com.coc.zkqcode.jar.code.universal.InGamesVars
+import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.smalltools.StorageKeys
-import com.coc.zkqcode.jar.code.universal.smalltools.checkMemoryFile
+import com.coc.zkqcode.jar.code.universal.smalltools.enterMainBase
 import com.coc.zkqcode.jar.code.universal.smalltools.killGame
 import com.coc.zkqcode.jar.code.universal.smalltools.runGame
 import com.coc.zkqcode.jar.code.universal.smalltools.writeMemory
-import kotlinx.coroutines.delay
 import kotlin.random.Random
-import androidx.core.graphics.get
 
 enum class CapitalState {
     NoAttack, Error, Normal
@@ -31,20 +31,22 @@ suspend fun clanCapitalAttack(): CapitalState {
         StorageKeys.CLAN_CAPITAL_ATTACK, InGamesVars.currentAccountNumber
     )
 
-    // Guard: skip if the last attack was less than 3 days (4320 minutes) ago
-    if (!checkMemoryFile(storageKey, 4320)) {
-        ShowMessage("账号${InGamesVars.currentAccountNumber}，3天内已参与过都城攻击")
-        return CapitalState.Normal
-    }
-
     if (!enterClanCapital()) return CapitalState.Error
     if (findMultiColors(MyColors.ZeroAttackTimes) != null) {
         // No attack times remaining; record the timestamp so the guard activates next cycle
         writeMemory(storageKey, (System.currentTimeMillis() / 60_000).toString())
         ShowMessage("账号${InGamesVars.currentAccountNumber}，都城攻击次数已用完")
-        if (!enterClanCapital()) return CapitalState.Error
+        if (!enterMainScreen()) return CapitalState.Error
     }
     if (findAttackTarget()) {
+        val endBattleButton = findMultiColorsUntil(schemas = listOf(MyColors.EndBattle), duration = 10000)
+        if (endBattleButton == null) {
+            ShowMessage("未找到结束战斗按钮")
+            killGame()
+            delayWithMultiplier(1000)
+            runGame()
+            if (!enterClanCapital()) return CapitalState.Error
+        }
         deployClanCapitalTroopsAndSpells()
         killGame()
         delayWithMultiplier(1000)
@@ -55,6 +57,7 @@ suspend fun clanCapitalAttack(): CapitalState {
     return if (!enterClanCapital()) CapitalState.Error
     else CapitalState.Normal
 }
+
 
 suspend fun findAttackTarget(): Boolean {
     val deadline = System.currentTimeMillis() + 10_000L
@@ -85,6 +88,7 @@ suspend fun findAttackTarget(): Boolean {
     // threshold, which indicates the district still has open territory to attack.
     for (district in CAPITAL_DISTRICTS) {
         val whiteCount = countBrightPixels(bitmap, district)
+        clickRightBottom(1)
         if (whiteCount < WHITE_PIXEL_ATTACK_THRESHOLD) {
             val centerX = (district.x1 + district.x2) / 2
             val centerY = (district.y1 + district.y2) / 2
@@ -121,7 +125,7 @@ private suspend fun zoomSmallClanCapital() {
 
 private suspend fun deployTroops() {
     TouchActions.swipe(1070, 530, 0, 0)
-    repeat(8) {
+    repeat(15) {
         val troop = findMultiColorsUntil(schemas = listOf(MyColors.TroopColorAtDeploymentBar), duration = 100)
         if (troop != null) {
             TouchActions.tap(troop.x, troop.y)
@@ -154,6 +158,7 @@ private suspend fun deployTroops() {
                 }
                 y += step
             }
+
         }
     }
 }

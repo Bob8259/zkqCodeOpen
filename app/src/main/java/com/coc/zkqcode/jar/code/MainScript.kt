@@ -138,7 +138,7 @@ private suspend fun runTestCode() {
     while (true) {
         playClanCapital()
 //        ShowMessage(findMultiColors(MyColors.SpellColorAtDeploymentBar, increment = 1).toString())
-        delay(1000)
+        delay(1000000)
     }
 }
 

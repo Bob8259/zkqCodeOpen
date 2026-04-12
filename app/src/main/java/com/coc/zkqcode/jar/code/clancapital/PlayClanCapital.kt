@@ -4,10 +4,13 @@ import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.mainbase.others.zoomSmallMainBase
+import com.coc.zkqcode.jar.code.universal.InGamesVars
 import com.coc.zkqcode.jar.code.universal.clickRightBottom
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
+import com.coc.zkqcode.jar.code.universal.smalltools.StorageKeys
+import com.coc.zkqcode.jar.code.universal.smalltools.checkMemoryFile
 import java.util.Calendar
 
 suspend fun playClanCapital(): Boolean {
@@ -16,10 +19,21 @@ suspend fun playClanCapital(): Boolean {
         ShowMessage("当前不在都城突袭时间段，跳过都城对战")
         return true
     }
-    if (!clanCapitalTrainTroops()) return false
-    repeat(6) {
+    if (!clanCapitalTrainTroops()) {
+        ShowMessage("都城练兵失败，尝试返回主世界")
+        return enterMainScreen()
+    }
+    // Guard: skip if the last attack was less than 3 days (4320 minutes) ago
+    val storageKey = StorageKeys.withAccountNumber(
+        StorageKeys.CLAN_CAPITAL_ATTACK, InGamesVars.currentAccountNumber
+    )
+    if (!checkMemoryFile(storageKey, 4320)) {
+        return enterMainScreen()
+    }
+    for (i in 0 until 6) {
         val attackState = clanCapitalAttack()
         if (attackState == CapitalState.Error) return false
+        if (attackState == CapitalState.NoAttack) break
     }
     return enterMainScreen()
 }
@@ -46,5 +60,9 @@ suspend fun enterClanCapital(): Boolean {
     zoomSmallMainBase()
     clickRightBottom(1)
     TouchActions.tap(443, 582, delayTime = 800)
+    val nextRaid = findMultiColors(MyColors.NextRaid)
+    if (nextRaid != null) {
+        TouchActions.tap(nextRaid.x, nextRaid.y)
+    }
     return findMultiColorsUntil(schemas = listOf(MyColors.CapitalCoin), duration = 500) != null
 }

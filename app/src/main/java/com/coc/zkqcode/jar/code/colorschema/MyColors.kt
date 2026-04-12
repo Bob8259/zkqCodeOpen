@@ -1,6 +1,5 @@
 package com.coc.zkqcode.jar.code.colorschema
 
-import androidx.compose.ui.graphics.Color
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.FeatureColors
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.IFeatureColors
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.IUIColors
@@ -73,6 +72,12 @@ object MyColors : IUIColors by UIColors, IFeatureColors by FeatureColors, IMainB
     val SkinAd = ColorSchema.parse(
         1167, 39, 1203, 77, "6761B8", "7|0|FFFFFF,14|0|FFFFFF,21|0|FFFFFF,28|0|8C84FF,0|19|3D3D3D,7|19|F9F7F7,14|19|0D0D0D,21|19|F9F9F9,28|19|1511EB", 0, 0.9, "皮肤广告"
     )
+    val CapitalBackToCamp = ColorSchema.parse(
+        32, 589, 134, 686, "C2D7DC", "21|0|ADDEFF,41|0|86A9F6,61|0|53537C,82|0|C2D7DC,0|49|A9C5CC,21|49|A3BFC9,41|49|B0B7B9,61|49|A3BEC4,82|49|A9C5CC", 0, 0.9, "都城回营"
+    )
+    val CapitalAirShip = ColorSchema.parse(
+        64, 589, 124, 613, "385CBF", "12|0|365975,24|0|2A4567,36|0|355DAA,48|0|3860C3,0|12|2A396D,12|12|242A5B,24|12|2E4F5F,36|12|39618D,48|12|2F388E", 0, 0.9, "都城飞艇"
+    )
 
     //Main Base Clan Colors
     val TroopConfigCastleIcon = ColorSchema.parse(
@@ -80,9 +85,6 @@ object MyColors : IUIColors by UIColors, IFeatureColors by FeatureColors, IMainB
     )
 
     // Clan Capital Colors
-    val TrashBin = ColorSchema.parse(
-        479, 275, 533, 332, "7B76FF", "11|0|FFFFFF,22|0|FFFFFF,33|0|FFFFFF,44|0|7C77FF,0|29|1814E3,11|29|EBEBEB,22|29|EEEEEE,33|29|D2D2D2,44|29|1814E3", 0, 0.9, "都城配兵垃圾桶"
-    )
     val CapitalBarbarian = ColorSchema.parse(
         176, 424, 265, 517, "7CBAFE", "18|0|73B6EF,36|0|A097A5,53|0|0D14A4,71|0|6C87EC,0|47|3C3E61,18|47|818EC5,36|47|587FC0,53|47|6D9CEE,71|47|6B77A0", 0, 0.9, "都城野蛮人"
     )
@@ -100,5 +102,14 @@ object MyColors : IUIColors by UIColors, IFeatureColors by FeatureColors, IMainB
     )
     val RaidRedAttackButton = ColorSchema.parse(
         705, 619, 807, 658, "8380FF", "21|0|827FFF,41|0|8380FF,61|0|8280FF,82|0|827FFF,0|19|221EF7,21|19|221EF7,41|19|1D1AB9,61|19|221EF7,82|19|221EF7", 0, 0.9, "都城红色进攻按钮"
+    )
+    val NextRaid = ColorSchema.parse(
+        1066, 63, 1102, 101, "8D8FF3", "7|0|FFFFFF,14|0|21222D,21|0|FFFFFF,28|0|8C8FF3,0|19|2722EF,7|19|F8F8F8,14|19|17171D,21|19|FFFFFF,28|19|2722EF", 0, 0.9, "下次突袭"
+    )
+    val CapitalMiner = ColorSchema.parse(
+        133, 394, 1143, 694, "0F5590", "8|0|1D4A9C,17|0|1F4DA2,25|0|466692,33|0|35557B,0|29|4F698E,8|29|335F8C,17|29|3E6794,25|29|85A2E1,33|29|95B5FD", 0, 0.9, "都城矿工"
+    )
+    val CapitalTrainTroopPage = ColorSchema.parse(
+        569, 267, 935, 347, "8B85FF", "15|0|8B85FF,39|0|8B85FF,79|6|7E79FF,96|10|7570FF,207|4|7AF1D2,231|4|7AF1D2,267|4|7AF1D2,283|8|74EECC,284|18|60E5B8", 0, 0.9, "练兵界面确认和取消"
     )
 }

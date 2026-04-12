@@ -17,7 +17,6 @@ import com.coc.zkqcode.jar.code.universal.smalltools.killGame
 import com.coc.zkqcode.jar.code.universal.smalltools.runGame
 import com.coc.zkqcode.jar.code.universal.tutorial.AllTutorials
 import com.coc.zkqcode.jar.ui.schema.Schema
-import kotlinx.coroutines.delay
 
 
 /**
@@ -45,8 +44,8 @@ suspend fun enterMainScreen(isDoubleCheck: Boolean = false): Boolean {
                     ShowMessage("已进入主界面")
                     return true
                 }
-                if (InGamesVars.currentGameVersion == GameVersion.CN) delay(1500)
-                else delay(800)
+                if (InGamesVars.currentGameVersion == GameVersion.CN) delayWithMultiplier(1500)
+                else delayWithMultiplier(800)
                 if (isInHomePage()) {
                     return true
                 }
@@ -64,7 +63,7 @@ suspend fun enterMainScreen(isDoubleCheck: Boolean = false): Boolean {
             if (AllTutorials.checkIsInTutorial(mainBaseTutorialElements)) mainBaseTutorialElements++
         }
         // 4. Wait before checking again to save CPU cycles
-        delay(1000)
+        delayWithMultiplier(1000)
     }
 
     // Return false if the loop finishes without finding the main screen
@@ -105,7 +104,9 @@ private suspend fun closeAdvertisements() {
         MyColors.PassSkinAd,
         MyColors.PassAwardAd,
         MyColors.BackToCamp,
-        MyColors.SkinAd
+        MyColors.SkinAd,
+        MyColors.CapitalBackToCamp,
+        MyColors.CapitalAirShip
     )
 
     // 3. Iterate through schemas
