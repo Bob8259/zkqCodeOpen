@@ -2,6 +2,7 @@ package com.coc.zkqcode.jar.code.universal.buildings
 
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.core.util.touchactions.TouchActions
+import com.coc.zkqcode.jar.ui.schema.details.MainBaseBuildings
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
@@ -29,89 +30,12 @@ data class BuildingDetectionResult(
 )
 
 /**
- * List of benchmark buildings
+ * List of benchmark buildings for OCR matching.
+ * Derived from MainBaseBuildings schema so that adding a building there
+ * automatically includes it here. "城墙" is the only extra entry needed
+ * for detection that has no upgrade schema entry.
  */
-val ALL_BUILDINGS = listOf(
-    "城墙",
-    "加农炮",
-    "箭塔",
-    "迫击炮",
-    "防空火箭",
-    "法师塔",
-    "空气炮",
-    "特斯拉电磁塔",
-    "炸弹塔",
-    "十字连弩",
-    "地狱之塔",
-    "天鹰火炮",
-    "投石炮",
-    "建筑工人小屋",
-    "法术塔",
-    "擎天巨柱",
-    "跳弹加农炮",
-    "多人箭塔",
-    "火焰喷射器",
-    "复合机械塔",
-    "超级法师塔",
-    "复仇之塔",
-    "隐形炸弹",
-    "隐形弹簧",
-    "空中炸弹",
-    "巨型炸弹",
-    "搜空地雷",
-    "骷髅陷阱",
-    "飓风陷阱",
-    "终极炸弹",
-    "金矿",
-    "圣水收集器",
-    "暗黑重油钻井",
-    "储金罐",
-    "圣水瓶",
-    "暗黑重油罐",
-    "部落城堡",
-    "兵营",
-    "训练营",
-    "暗黑训练营",
-    "实验室",
-    "法术工厂",
-    "暗黑法术工厂",
-    "攻城机器工坊",
-    "战宠小屋",
-    "铁匠铺",
-    "英雄殿堂",
-    "巨型特斯拉电磁塔",
-    "巨型地狱之塔",
-    "地狱火炮",
-    "建筑大师大本营",
-    "大本营",
-    "奥仔哨站",
-    "双管加农炮",
-    "防空火炮",
-    "撼地巨石",
-    "守卫岗哨",
-    "空中炸弹发射器",
-    "多管迫击炮",
-    "熔岩火炮",
-    "巨型加农炮",
-    "超级特斯拉电磁塔",
-    "熔岩发射器",
-    "弹射陷阱",
-    "地雷",
-    "巨型地雷",
-    "宝石矿井",
-    "建筑大师训练营",
-    "星空实验室",
-    "预备营",
-    "治疗小屋",
-    "时光钟楼",
-    "战争机器",
-    "战斗直升机",
-    "大守护者",
-    "弓箭女皇",
-    "野蛮人之王",
-    "飞盾战神",
-    "亡灵王子",
-)
+val ALL_BUILDINGS = MainBaseBuildings.all.map { it.displayName } + listOf("城墙")
 
 /**
  * OCR labels that help locate sections in the upgrade list but are not buildings.

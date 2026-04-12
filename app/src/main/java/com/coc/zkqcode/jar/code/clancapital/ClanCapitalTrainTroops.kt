@@ -6,11 +6,17 @@ import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.mainbase.others.zoomSmallMainBase
 import com.coc.zkqcode.jar.code.universal.clickRightBottom
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
+import com.coc.zkqcode.jar.code.universal.enterMainScreen
 
-suspend fun clanCapitalTrainTroops() {
+suspend fun enterClanCapital(): Boolean {
     zoomSmallMainBase()
     clickRightBottom(1)
     TouchActions.tap(443, 582, delayTime = 800)
+    return findMultiColorsUntil(schemas = listOf(MyColors.CapitalCoin), duration = 500) != null
+}
+
+suspend fun clanCapitalTrainTroops(): Boolean {
+    if (!enterClanCapital()) return enterMainScreen()
     val trainTroopButton = findMultiColorsUntil(schemas = listOf(MyColors.TrainTroops), duration = 1000)
     if (trainTroopButton != null) {
         TouchActions.tap(trainTroopButton.x, trainTroopButton.y, delayTime = 300)
@@ -47,5 +53,5 @@ suspend fun clanCapitalTrainTroops() {
         TouchActions.tap(870, 230)
         TouchActions.tap(1120, 35)
     }
-
+    return true
 }

@@ -86,4 +86,7 @@ object MyColors : IUIColors by UIColors, IFeatureColors by FeatureColors, IMainB
     val CapitalBarbarian = ColorSchema.parse(
         176, 424, 265, 517, "7CBAFE", "18|0|73B6EF,36|0|A097A5,53|0|0D14A4,71|0|6C87EC,0|47|3C3E61,18|47|818EC5,36|47|587FC0,53|47|6D9CEE,71|47|6B77A0", 0, 0.9, "都城野蛮人"
     )
+    val CapitalCoin = ColorSchema.parse(
+        1190, 18, 1264, 72, "E418BB", "-5|0|FF55F0,1|0|E418BB,5|0|D42FA6,3|-2|FB93DA,-9|-10|6CFFFF,-5|-9|68F4FF,3|-8|1BBDFA,-9|13|C53497,-20|8|0DD9FF", 0, 0.9, "都城币"
+    )
 }

@@ -133,8 +133,6 @@ fun LazyListScope.MainBaseConfig(
             FlowRow {
                 SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.DONATION_SETTING.key}_c$index")
                 SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.REQUEST_REINFORCEMENT_SETTING.key}_c$index")
-                SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.RESEARCH_SETTING.key}_c$index")
-
             }
 
             AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.DONATION_SETTING.key}_c$index"]?.value == "1") {
@@ -154,6 +152,7 @@ fun LazyListScope.MainBaseConfig(
                 }
             }
             SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.COLLECT_CLAN_CASTLE.key}_c$index")
+            SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.RESEARCH_SETTING.key}_c$index")
             AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.RESEARCH_SETTING.key}_c$index"]?.value == "1") {
                 MainBaseResearchConfigs(index)
             }
@@ -198,37 +197,37 @@ fun LazyListScope.MainBaseConfig(
             }
         }
     }
-        // Helper settings
-        item {
-            SettingSection(visible = isExpanded) {
-                FlowRow {
-                    SettingSwitchIcon(
-                        key = "${MAIN_BASE_SETTINGS.HELPER_SETTINGS.key}_c$index",
-                        explain = "勾选后，会自动用实验助手以及建筑工人学徒。",
-                        afterChange = { checked ->
-                            // Keep helper upgrade toggles consistent with the master helper switch.
-                            if (!checked) {
-                                GlobalVars.configStates["${MAIN_BASE_SETTINGS.UPGRADE_RESEARCH_HELPER.key}_c$index"]?.value = "0"
-                                GlobalVars.configStates["${MAIN_BASE_SETTINGS.UPGRADE_BUILDER_APPRENTICE.key}_c$index"]?.value = "0"
-                            }
+    // Helper settings
+    item {
+        SettingSection(visible = isExpanded) {
+            FlowRow {
+                SettingSwitchIcon(
+                    key = "${MAIN_BASE_SETTINGS.HELPER_SETTINGS.key}_c$index",
+                    explain = "勾选后，会自动用实验助手以及建筑工人学徒。",
+                    afterChange = { checked ->
+                        // Keep helper upgrade toggles consistent with the master helper switch.
+                        if (!checked) {
+                            GlobalVars.configStates["${MAIN_BASE_SETTINGS.UPGRADE_RESEARCH_HELPER.key}_c$index"]?.value = "0"
+                            GlobalVars.configStates["${MAIN_BASE_SETTINGS.UPGRADE_BUILDER_APPRENTICE.key}_c$index"]?.value = "0"
                         }
-                    )
-                    SettingSwitchIcon(
-                        key = "${MAIN_BASE_SETTINGS.UPGRADE_RESEARCH_HELPER.key}_c$index",
-                        explain = "升级实验助手的优先级低于购买新建筑工人，但高于升级工人学徒。"
-                    )
-                    SettingSwitchIcon(
-                        key = "${MAIN_BASE_SETTINGS.UPGRADE_BUILDER_APPRENTICE.key}_c$index",
-                        explain = "升级工人学徒的优先级低于购买新建筑工人和升级实验助手。"
-                    )
-                }
+                    }
+                )
+                SettingSwitchIcon(
+                    key = "${MAIN_BASE_SETTINGS.UPGRADE_RESEARCH_HELPER.key}_c$index",
+                    explain = "升级实验助手的优先级低于购买新建筑工人，但高于升级工人学徒。"
+                )
+                SettingSwitchIcon(
+                    key = "${MAIN_BASE_SETTINGS.UPGRADE_BUILDER_APPRENTICE.key}_c$index",
+                    explain = "升级工人学徒的优先级低于购买新建筑工人和升级实验助手。"
+                )
             }
         }
-        // Clan Games & War
-        item {
-            SettingSection(visible = isExpanded) {
-                Column {
-                    FlowRow { /*
+    }
+    // Clan Games & War
+    item {
+        SettingSection(visible = isExpanded) {
+            Column {
+                FlowRow { /*
                         SettingSwitchIcon(
                             key = "${MAIN_BASE_SETTINGS.DO_CLAN_GAMES.key}_c$index",
                             explain = "勾选后，辅助会接取小部分夜世界任务，例如夜世界摧毁率等。注意重点是\"小部分\"，也就是说并不是所有任务都可以接取，并且只会接取夜世界任务！若没有任务可接取，则会放弃第一个任务。接取任务后，会自动打夜世界。"
@@ -243,61 +242,61 @@ fun LazyListScope.MainBaseConfig(
                             explain = "勾选后，会进攻最后一位没有被部落成员进攻过的对手。胜率较低，容易黑三，建议谨慎勾选。"
                         )
                         */
-                        SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.PLAY_RAID.key}_c$index")
-                    }
+                    SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.PLAY_RAID.key}_c$index")
+                }
 
-                    FlowRow {
-                        /*
-                        SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.START_CLAN_WAR_SETTINGS.key}_c$index")
-                        SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.START_LEAGUE_SETTINGS.key}_c$index")
-                        SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.START_RAID.key}_c$index")
-                        */
+                FlowRow {
+                    /*
+                    SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.START_CLAN_WAR_SETTINGS.key}_c$index")
+                    SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.START_LEAGUE_SETTINGS.key}_c$index")
+                    SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.START_RAID.key}_c$index")
+                    */
+                }
+            }
+        }
+    }
+    // Shop purchases
+    item {
+        SettingSection(visible = isExpanded) {
+            Column {
+                FlowRow {
+                    /*
+                    listOf(
+                        MAIN_BASE_SETTINGS.BUY_STAR_ORE_WITH_RAID_MEDAL,
+                        MAIN_BASE_SETTINGS.BUY_CLOCK_TOWER_POTION_WITH_RAID_MEDAL,
+                        MAIN_BASE_SETTINGS.BUY_RING_OF_WALL_WITH_RAID_MEDAL,
+                        MAIN_BASE_SETTINGS.BUY_RESEARCH_POTION_WITH_RAID_MEDAL,
+                        MAIN_BASE_SETTINGS.BUY_RESOURCE_POTION_WITH_RAID_MEDAL,
+                        MAIN_BASE_SETTINGS.BUY_RESEARCH_POTION_WITH_LEAGUE_MEDAL,
+                        MAIN_BASE_SETTINGS.BUY_BUILDER_POTION_WITH_LEAGUE_MEDAL,
+                        MAIN_BASE_SETTINGS.BUY_STAR_ORE_WITH_EVENT_MEDAL,
+                        MAIN_BASE_SETTINGS.BUY_BUILDER_POTION_WITH_EVENT_MEDAL,
+                        MAIN_BASE_SETTINGS.BUY_NEW_EQUIPMENT_WITH_EVENT_MEDAL,
+                        MAIN_BASE_SETTINGS.BUY_RESEARCH_POTION_WITH_EVENT_MEDAL,
+                        MAIN_BASE_SETTINGS.USE_RESEARCH_POTION,
+                        MAIN_BASE_SETTINGS.SELL_RESOURCE_POTION,
+                        MAIN_BASE_SETTINGS.USE_CLOCK_TOWER_POTION,
+                        MAIN_BASE_SETTINGS.SELL_CLOCK_TOWER_POTION,
+                        MAIN_BASE_SETTINGS.USE_BUILDER_POTION,
+                        MAIN_BASE_SETTINGS.SELL_RING_OF_WALL
+                    ).forEach { setting ->
+                        SettingSwitchIcon(key = "${setting.key}_c$index")
+                    }
+                    */
+                    listOf(
+                        MAIN_BASE_SETTINGS.USE_RESEARCH_POTION,
+                        MAIN_BASE_SETTINGS.USE_BUILDER_POTION,
+                        MAIN_BASE_SETTINGS.USE_CLOCK_TOWER_POTION,
+                        MAIN_BASE_SETTINGS.SELL_RESOURCE_POTION,
+                        MAIN_BASE_SETTINGS.SELL_CLOCK_TOWER_POTION,
+                        MAIN_BASE_SETTINGS.SELL_RING_OF_WALL
+                    ).forEach { setting ->
+                        SettingSwitchIcon(key = "${setting.key}_c$index")
                     }
                 }
             }
         }
-        // Shop purchases
-        item {
-            SettingSection(visible = isExpanded) {
-                Column {
-                    FlowRow {
-                        /*
-                        listOf(
-                            MAIN_BASE_SETTINGS.BUY_STAR_ORE_WITH_RAID_MEDAL,
-                            MAIN_BASE_SETTINGS.BUY_CLOCK_TOWER_POTION_WITH_RAID_MEDAL,
-                            MAIN_BASE_SETTINGS.BUY_RING_OF_WALL_WITH_RAID_MEDAL,
-                            MAIN_BASE_SETTINGS.BUY_RESEARCH_POTION_WITH_RAID_MEDAL,
-                            MAIN_BASE_SETTINGS.BUY_RESOURCE_POTION_WITH_RAID_MEDAL,
-                            MAIN_BASE_SETTINGS.BUY_RESEARCH_POTION_WITH_LEAGUE_MEDAL,
-                            MAIN_BASE_SETTINGS.BUY_BUILDER_POTION_WITH_LEAGUE_MEDAL,
-                            MAIN_BASE_SETTINGS.BUY_STAR_ORE_WITH_EVENT_MEDAL,
-                            MAIN_BASE_SETTINGS.BUY_BUILDER_POTION_WITH_EVENT_MEDAL,
-                            MAIN_BASE_SETTINGS.BUY_NEW_EQUIPMENT_WITH_EVENT_MEDAL,
-                            MAIN_BASE_SETTINGS.BUY_RESEARCH_POTION_WITH_EVENT_MEDAL,
-                            MAIN_BASE_SETTINGS.USE_RESEARCH_POTION,
-                            MAIN_BASE_SETTINGS.SELL_RESOURCE_POTION,
-                            MAIN_BASE_SETTINGS.USE_CLOCK_TOWER_POTION,
-                            MAIN_BASE_SETTINGS.SELL_CLOCK_TOWER_POTION,
-                            MAIN_BASE_SETTINGS.USE_BUILDER_POTION,
-                            MAIN_BASE_SETTINGS.SELL_RING_OF_WALL
-                        ).forEach { setting ->
-                            SettingSwitchIcon(key = "${setting.key}_c$index")
-                        }
-                        */
-                        listOf(
-                            MAIN_BASE_SETTINGS.USE_RESEARCH_POTION,
-                            MAIN_BASE_SETTINGS.USE_BUILDER_POTION,
-                            MAIN_BASE_SETTINGS.USE_CLOCK_TOWER_POTION,
-                            MAIN_BASE_SETTINGS.SELL_RESOURCE_POTION,
-                            MAIN_BASE_SETTINGS.SELL_CLOCK_TOWER_POTION,
-                            MAIN_BASE_SETTINGS.SELL_RING_OF_WALL
-                        ).forEach { setting ->
-                            SettingSwitchIcon(key = "${setting.key}_c$index")
-                        }
-                    }
-                }
-            }
-        }
+    }
 
     // Gear & Rewards
     item {
