@@ -3,7 +3,10 @@
 package com.coc.zkqcode.jar.ui
 
 import android.content.Context
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -127,7 +130,7 @@ private fun ConfigLoadingScreen() {
 
     val scope = rememberCoroutineScope()
 
-    Column {
+    Column(modifier = Modifier.background(Color.White)) {
         Text("正在初始化配置文件...\n若长时间卡在此界面，将在 $countdown 秒后自动重启。")
         CustomButton(
             text = "点击此处手动关闭辅助", onClick = {

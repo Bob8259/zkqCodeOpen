@@ -30,12 +30,11 @@ class Loadjar(private val context: Context) {
     @Composable
     fun LoadAndShowUI(loadStatus: String, onClose: () -> Unit) {
         if (loadStatus == "Plugin loaded successfully") {
-            // Load the UI from jar with a white background
-            Column(modifier = Modifier.background(Color.White)) {
+            Column() {
                 pluginUI?.ShowMainUI(context, onClose)
             }
         } else {
-            Column(modifier = Modifier.background(Color.White)) {
+            Column() {
                 Text(text = loadStatus)
                 Button(onClick = {
                     AppStateManager.setMode(AppMode.Run)

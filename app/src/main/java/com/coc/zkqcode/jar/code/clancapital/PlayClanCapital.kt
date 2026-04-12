@@ -59,7 +59,8 @@ suspend fun enterClanCapital(): Boolean {
     if (findMultiColors(MyColors.CapitalCoin) != null) return true
     zoomSmallMainBase()
     clickRightBottom(1)
-    TouchActions.tap(443, 582, delayTime = 800)
+    TouchActions.tap(495, 560, delayTime = 10)
+    TouchActions.tap(445, 580, delayTime = 800)
     val nextRaid = findMultiColors(MyColors.NextRaid)
     if (nextRaid != null) {
         TouchActions.tap(nextRaid.x, nextRaid.y)

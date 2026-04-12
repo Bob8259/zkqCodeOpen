@@ -61,11 +61,11 @@ suspend fun clanCapitalTrainTroops(): Boolean {
 
         TouchActions.swipe(140, 680, 1200, 580)
         delayWithMultiplier(300)
-        var capitalBarbarianButton = findMultiColors(MyColors.CapitalBarbarian)
+        var capitalBarbarianButton = findMultiColorsUntil(schemas = listOf(MyColors.CapitalBarbarian, MyColors.CapitalBarbarian2), duration = 200)
         if (capitalBarbarianButton != null) {
             isTrainingSuccess = true
             repeat(5) {
-                capitalBarbarianButton = findMultiColors(MyColors.CapitalBarbarian)
+                capitalBarbarianButton = findMultiColorsUntil(schemas = listOf(MyColors.CapitalBarbarian, MyColors.CapitalBarbarian2), duration = 200)
                 // Snapshot into a val so the smart cast holds inside the lambda
                 val capitalBarbarianSnapshot = capitalBarbarianButton
                 if (capitalBarbarianSnapshot != null) {
