@@ -133,6 +133,7 @@ fun LazyListScope.MainBaseConfig(
             FlowRow {
                 SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.DONATION_SETTING.key}_c$index")
                 SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.REQUEST_REINFORCEMENT_SETTING.key}_c$index")
+                SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.COLLECT_CLAN_CASTLE.key}_c$index")
             }
 
             AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.DONATION_SETTING.key}_c$index"]?.value == "1") {
@@ -151,14 +152,20 @@ fun LazyListScope.MainBaseConfig(
                     }
                 }
             }
-            SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.COLLECT_CLAN_CASTLE.key}_c$index")
-            SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.RESEARCH_SETTING.key}_c$index")
-            AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.RESEARCH_SETTING.key}_c$index"]?.value == "1") {
-                MainBaseResearchConfigs(index)
+
+
+        }
+    }
+    item {
+        SettingSection(visible = isExpanded) {
+            Column {
+                SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.RESEARCH_SETTING.key}_c$index")
+                AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.RESEARCH_SETTING.key}_c$index"]?.value == "1") {
+                    MainBaseResearchConfigs(index)
+                }
             }
         }
     }
-
     // Building & Wall settings
     item {
         SettingSection(visible = isExpanded) {
@@ -202,23 +209,18 @@ fun LazyListScope.MainBaseConfig(
         SettingSection(visible = isExpanded) {
             FlowRow {
                 SettingSwitchIcon(
-                    key = "${MAIN_BASE_SETTINGS.HELPER_SETTINGS.key}_c$index",
-                    explain = "勾选后，会自动用实验助手以及建筑工人学徒。",
-                    afterChange = { checked ->
+                    key = "${MAIN_BASE_SETTINGS.HELPER_SETTINGS.key}_c$index", explain = "勾选后，会自动用实验助手以及建筑工人学徒。", afterChange = { checked ->
                         // Keep helper upgrade toggles consistent with the master helper switch.
                         if (!checked) {
                             GlobalVars.configStates["${MAIN_BASE_SETTINGS.UPGRADE_RESEARCH_HELPER.key}_c$index"]?.value = "0"
                             GlobalVars.configStates["${MAIN_BASE_SETTINGS.UPGRADE_BUILDER_APPRENTICE.key}_c$index"]?.value = "0"
                         }
-                    }
+                    })
+                SettingSwitchIcon(
+                    key = "${MAIN_BASE_SETTINGS.UPGRADE_RESEARCH_HELPER.key}_c$index", explain = "升级实验助手的优先级低于购买新建筑工人，但高于升级工人学徒。"
                 )
                 SettingSwitchIcon(
-                    key = "${MAIN_BASE_SETTINGS.UPGRADE_RESEARCH_HELPER.key}_c$index",
-                    explain = "升级实验助手的优先级低于购买新建筑工人，但高于升级工人学徒。"
-                )
-                SettingSwitchIcon(
-                    key = "${MAIN_BASE_SETTINGS.UPGRADE_BUILDER_APPRENTICE.key}_c$index",
-                    explain = "升级工人学徒的优先级低于购买新建筑工人和升级实验助手。"
+                    key = "${MAIN_BASE_SETTINGS.UPGRADE_BUILDER_APPRENTICE.key}_c$index", explain = "升级工人学徒的优先级低于购买新建筑工人和升级实验助手。"
                 )
             }
         }
