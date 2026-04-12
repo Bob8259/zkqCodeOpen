@@ -54,7 +54,7 @@ suspend fun clanCapitalAttack(): CapitalState {
     } else {
         return CapitalState.NoAttack
     }
-    return if (!enterClanCapital()) CapitalState.Error
+    return if (!enterMainScreen()) CapitalState.Error
     else CapitalState.Normal
 }
 
@@ -96,7 +96,7 @@ suspend fun findAttackTarget(): Boolean {
             val tapY = minOf(centerY + 80, 719)
             ShowMessage("找到可攻击区域: ${district.name}, 点击 (${centerX - 80}, $tapY)")
             TouchActions.tap(centerX - 80, tapY)
-            val raidButton = findMultiColorsUntil(schemas = listOf(MyColors.RaidRedAttackButton), duration = 1000)
+            val raidButton = findMultiColorsUntil(schemas = listOf(MyColors.RaidRedAttackButton), duration = 300)
             if (raidButton != null) {
                 TouchActions.tap(raidButton.x, raidButton.y)
                 TouchActions.tap(1060, 400)//Attack
@@ -131,9 +131,9 @@ private suspend fun deployTroops() {
             TouchActions.tap(troop.x, troop.y)
             // Scan the trapezoidal deployment bar area row by row with a random step size.
             // The convex quad vertices in clockwise order:
-            //   A(205,480) → B(280,560) → D(710,250) → C(615,160) → A
+            //   A(205,480) → B(360,560) → D(710,250) → C(615,160) → A
             val trapEdges = listOf(
-                Pair(Pair(205, 480), Pair(280, 560)), Pair(Pair(280, 560), Pair(710, 250)), Pair(Pair(710, 250), Pair(615, 160)), Pair(Pair(615, 160), Pair(205, 480))
+                Pair(Pair(205, 480), Pair(360, 560)), Pair(Pair(360, 560), Pair(710, 250)), Pair(Pair(710, 250), Pair(615, 160)), Pair(Pair(615, 160), Pair(205, 480))
             )
             val step = Random.nextInt(40, 81)
             var y = 160
@@ -152,7 +152,7 @@ private suspend fun deployTroops() {
                     var x = xIntersections.min().toInt()
                     val xMax = xIntersections.max().toInt()
                     while (x <= xMax) {
-                        TouchActions.tap(x, y, delayTime = 100)
+                        TouchActions.tap(x, y, delayTime = Random.nextInt(150, 250))
                         x += step
                     }
                 }
@@ -251,7 +251,6 @@ private data class CapitalDistrict(
  * whether a district still has destructible buildings to attack.
  */
 private val CAPITAL_DISTRICTS = listOf(
-    CapitalDistrict(660, 208, 678, 230, "都城之巅"),
     CapitalDistrict(829, 343, 850, 370, "野蛮人兵营"),
     CapitalDistrict(662, 420, 682, 444, "法师山谷"),
     CapitalDistrict(954, 515, 972, 537, "飞龙悬崖"),
@@ -260,6 +259,7 @@ private val CAPITAL_DISTRICTS = listOf(
     CapitalDistrict(364, 670, 383, 691, "戈仑石场"),
     CapitalDistrict(616, 709, 638, 719, "骷髅公园"),
     CapitalDistrict(894, 706, 921, 719, "哥布林矿井"),
+    CapitalDistrict(660, 208, 678, 230, "都城之巅"),
 )
 
 /** Districts whose bright-pixel count is below this value are considered attackable. */

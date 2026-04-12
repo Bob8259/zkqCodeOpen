@@ -78,6 +78,9 @@ object MyColors : IUIColors by UIColors, IFeatureColors by FeatureColors, IMainB
     val CapitalAirShip = ColorSchema.parse(
         64, 589, 124, 613, "385CBF", "12|0|365975,24|0|2A4567,36|0|355DAA,48|0|3860C3,0|12|2A396D,12|12|242A5B,24|12|2E4F5F,36|12|39618D,48|12|2F388E", 0, 0.9, "都城飞艇"
     )
+    val CapitalAirShip2 = ColorSchema.parse(
+        60, 573, 113, 596, "4475AE", "11|0|2B4760,22|0|38557D,32|0|265AA9,43|0|3A61C5,0|11|325794,11|11|192F31,22|11|213636,32|11|305585,43|11|2E408F", 0, 0.9, "都城飞船2"
+    )
 
     //Main Base Clan Colors
     val TroopConfigCastleIcon = ColorSchema.parse(
