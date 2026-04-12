@@ -22,8 +22,11 @@ import kotlinx.coroutines.delay
 import kotlin.random.Random
 import androidx.core.graphics.get
 
+enum class CapitalState {
+    NoAttack, Error, Normal
+}
 
-suspend fun clanCapitalAttack(): Boolean {
+suspend fun clanCapitalAttack(): CapitalState {
     val storageKey = StorageKeys.withAccountNumber(
         StorageKeys.CLAN_CAPITAL_ATTACK, InGamesVars.currentAccountNumber
     )
@@ -31,20 +34,26 @@ suspend fun clanCapitalAttack(): Boolean {
     // Guard: skip if the last attack was less than 3 days (4320 minutes) ago
     if (!checkMemoryFile(storageKey, 4320)) {
         ShowMessage("账号${InGamesVars.currentAccountNumber}，3天内已参与过都城攻击")
-        return true
+        return CapitalState.Normal
     }
 
-    if (!enterClanCapital()) return enterMainScreen()
+    if (!enterClanCapital()) return CapitalState.Error
     if (findMultiColors(MyColors.ZeroAttackTimes) != null) {
         // No attack times remaining; record the timestamp so the guard activates next cycle
         writeMemory(storageKey, (System.currentTimeMillis() / 60_000).toString())
         ShowMessage("账号${InGamesVars.currentAccountNumber}，都城攻击次数已用完")
-        return enterMainScreen()
+        if (!enterClanCapital()) return CapitalState.Error
     }
     if (findAttackTarget()) {
         deployClanCapitalTroopsAndSpells()
+        killGame()
+        delayWithMultiplier(1000)
+        runGame()
+    } else {
+        return CapitalState.NoAttack
     }
-    return enterMainScreen()
+    return if (!enterClanCapital()) CapitalState.Error
+    else CapitalState.Normal
 }
 
 suspend fun findAttackTarget(): Boolean {
@@ -101,9 +110,6 @@ private suspend fun deployClanCapitalTroopsAndSpells() {
     delayWithMultiplier(200)
     deploySpells()
     deployTroops()
-    killGame()
-    delayWithMultiplier(1000)
-    runGame()
 }
 
 private suspend fun zoomSmallClanCapital() {

@@ -4,15 +4,13 @@ import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.MyColors
-import com.coc.zkqcode.jar.code.mainbase.others.zoomSmallMainBase
 import com.coc.zkqcode.jar.code.universal.InGamesVars
-import com.coc.zkqcode.jar.code.universal.clickRightBottom
+import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.smalltools.StorageKeys
 import com.coc.zkqcode.jar.code.universal.smalltools.checkMemoryFile
 import com.coc.zkqcode.jar.code.universal.smalltools.writeMemory
-
 
 
 suspend fun clanCapitalTrainTroops(): Boolean {
@@ -29,41 +27,49 @@ suspend fun clanCapitalTrainTroops(): Boolean {
     if (!enterClanCapital()) return enterMainScreen()
     val trainTroopButton = findMultiColorsUntil(schemas = listOf(MyColors.TrainTroops), duration = 1000)
     if (trainTroopButton != null) {
-        TouchActions.tap(trainTroopButton.x, trainTroopButton.y, delayTime = 300)
+        TouchActions.tap(trainTroopButton.x, trainTroopButton.y)
     }
     val trashBinButton = findMultiColorsUntil(schemas = listOf(MyColors.TrashBin), duration = 300)
     if (trashBinButton != null) {
-        TouchActions.tap(trashBinButton.x, trashBinButton.y, delayTime = 300)
-        TouchActions.swipe(924, 584, 143, 682)
+        TouchActions.tap(trashBinButton.x, trashBinButton.y)
+        TouchActions.swipe(925, 580, 0, 680)
         delayWithMultiplier(300)
-        TouchActions.tap(782, 614)//冰霜法术
+        TouchActions.tap(780, 615, delayTime = 50)//冰霜法术
         repeat(2) {
-            TouchActions.tap(943, 611)
+            TouchActions.tap(940, 610, delayTime = 50)
         }//骷髅法术
         repeat(3) {
-            TouchActions.tap(634, 473)
+            TouchActions.tap(635, 470, delayTime = 50)
         }//治疗法术
         repeat(7) {
-            TouchActions.tap(777, 480)//雷电法术
+            TouchActions.tap(780, 480, delayTime = 50)//雷电法术
         }
         repeat(12) {
-            TouchActions.tap(355, 620)//矿工
+            TouchActions.tap(355, 620, delayTime = 50)//矿工
         }
-        TouchActions.swipe(143, 682, 924, 584)
+        TouchActions.swipe(140, 680, 1200, 580)
         delayWithMultiplier(300)
-        val capitalBarbarianButton = findMultiColorsUntil(schemas = listOf(MyColors.CapitalBarbarian), duration = 300)
+        var capitalBarbarianButton = findMultiColors(MyColors.CapitalBarbarian)
         if (capitalBarbarianButton != null) {
-            repeat(20) {
-                TouchActions.tap(capitalBarbarianButton.x, capitalBarbarianButton.y)//野蛮人
+            repeat(5) {
+                capitalBarbarianButton = findMultiColors(MyColors.CapitalBarbarian)
+                // Snapshot into a val so the smart cast holds inside the lambda
+                val capitalBarbarianSnapshot = capitalBarbarianButton
+                if (capitalBarbarianSnapshot != null) {
+                    repeat(10) {
+                        TouchActions.tap(capitalBarbarianSnapshot.x, capitalBarbarianSnapshot.y, delayTime = 30)//野蛮人
+                    }
+                    delayWithMultiplier(300)
+                }
             }
             repeat(2) {
-                TouchActions.tap(781, 476)//飞艇
+                TouchActions.tap(781, 476, delayTime = 30)//飞艇
             }
         }
-        TouchActions.tap(870, 230)
+        TouchActions.tap(870, 300, delayTime = 800)
         // Record the training timestamp (in minutes) after confirming the troop selection
         writeMemory(storageKey, (System.currentTimeMillis() / 60_000).toString())
-        ShowMessage("账号${InGamesVars.currentAccountNumber}，首都部队训练成功，已记录时间")
+        ShowMessage("账号${InGamesVars.currentAccountNumber}，都城部队训练成功，已记录时间")
         TouchActions.tap(1120, 35)
     }
     return true
