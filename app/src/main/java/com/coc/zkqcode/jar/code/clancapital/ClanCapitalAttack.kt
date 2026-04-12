@@ -16,7 +16,6 @@ import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.smalltools.StorageKeys
-import com.coc.zkqcode.jar.code.universal.smalltools.enterMainBase
 import com.coc.zkqcode.jar.code.universal.smalltools.killGame
 import com.coc.zkqcode.jar.code.universal.smalltools.runGame
 import com.coc.zkqcode.jar.code.universal.smalltools.writeMemory
@@ -100,7 +99,7 @@ suspend fun findAttackTarget(): Boolean {
             if (raidButton != null) {
                 TouchActions.tap(raidButton.x, raidButton.y)
                 TouchActions.tap(1060, 400)//Attack
-
+                TouchActions.tap(770, 460)//Full Madel
                 return true
             }
         }
@@ -170,7 +169,7 @@ private suspend fun deploySpells() {
     )
 
     val plannedTargets = if (detections.isEmpty()) {
-        // Use a stable fallback center point so the existing spell deployment logic still runs.
+        // Use a stable fallback centre point so the existing spell deployment logic still runs.
         ShowMessage("部落都城未检测到可攻击目标，使用默认落点")
         listOf(PlannedClanCapitalTarget(x = 660, y = 280))
     } else {
