@@ -249,7 +249,7 @@ fun HomeScreen(
                                     explain = "辅助会记住账号信息，例如记住当前账号是否已完成突袭，是否已完成部落竞赛等等。如果换号后不清空记忆，那么辅助就会保留先前账号错误的记忆，进而可能发生某些异常操作。"
                                 )
                                 CustomButton(
-                                    text = "清除全部数据", onClick = { cleanAllData() }, explain = "点击后将删除所有数据，包括辅助设置，保存的账号信息，数据号信息等等，用于保护用户隐私。"
+                                    text = "清除全部数据", onClick = { cleanAllData() }
                                 )
                             }
                             Text(
@@ -376,7 +376,7 @@ fun HomeScreen(
                             val sdPath = Environment.getExternalStorageDirectory().path
                             withContext(Dispatchers.IO) {
                                 RunShell.runNoOutput(
-                                    "rm -rf $sdPath/zkqFiles", checkIsPlaying = false
+                                    "rm -rf $sdPath/zkqFiles && rm -rf $sdPath/loginData", checkIsPlaying = false
                                 )
                             }
                             AppExitHelper.exitApplication(context)
