@@ -11,9 +11,12 @@ import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.smalltools.StorageKeys
 import com.coc.zkqcode.jar.code.universal.smalltools.checkMemoryFile
+import com.coc.zkqcode.jar.code.universal.smalltools.getBooleanConfigRuntime
+import com.coc.zkqcode.jar.ui.schema.Schema
 import java.util.Calendar
 
 suspend fun playClanCapital(): Boolean {
+    if (!getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.PLAY_RAID.key)) return true
     // All clan capital actions are only relevant during raid weekend
     if (!isWithinRaidWeekend()) {
         ShowMessage("当前不在都城突袭时间段，跳过都城对战")
@@ -60,6 +63,7 @@ suspend fun enterClanCapital(): Boolean {
     zoomSmallMainBase()
     clickRightBottom(1)
     TouchActions.tap(495, 560, delayTime = 10)
+    TouchActions.tap(540, 560, delayTime = 10)
     TouchActions.tap(445, 580, delayTime = 800)
     val nextRaid = findMultiColors(MyColors.NextRaid)
     if (nextRaid != null) {
