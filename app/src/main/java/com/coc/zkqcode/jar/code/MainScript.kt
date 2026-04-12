@@ -12,6 +12,7 @@ import com.coc.zkqcode.jar.code.auth.userAuth
 import com.coc.zkqcode.jar.code.builderbase.playBuilderBase
 import com.coc.zkqcode.jar.code.clancapital.clanCapitalAttack
 import com.coc.zkqcode.jar.code.clancapital.clanCapitalTrainTroops
+import com.coc.zkqcode.jar.code.clancapital.findAttackTarget
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.mainbase.playMainBase
 import com.coc.zkqcode.jar.code.universal.GameVersion
@@ -134,8 +135,8 @@ suspend fun runMainScript() {
 
 private suspend fun runTestCode() {
     while (true) {
-//        clanCapitalAttack()
-        TouchActions.swipe(300, 500, 300, 1500)
+//        findAttackTarget()
+        TouchActions.tap(590, 740)
 //        ShowMessage(findMultiColors(MyColors.SpellColorAtDeploymentBar, increment = 1).toString())
         delay(1000)
     }

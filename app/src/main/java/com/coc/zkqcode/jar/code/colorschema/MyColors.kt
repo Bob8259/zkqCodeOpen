@@ -1,5 +1,6 @@
 package com.coc.zkqcode.jar.code.colorschema
 
+import androidx.compose.ui.graphics.Color
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.FeatureColors
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.IFeatureColors
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.IUIColors
@@ -96,5 +97,8 @@ object MyColors : IUIColors by UIColors, IFeatureColors by FeatureColors, IMainB
     )
     val RaidMap = ColorSchema.parse(
         1135, 570, 1260, 705, "CCE4E5", "-3|21|C9E2E4,-6|48|AAC6CD,-6|66|A8C4CC,43|12|FFE5B4,83|-4|CDE5E6,87|11|CAE3E4,91|36|ACC8CF,91|45|ABC6CE,87|51|AAC6CD", 0, 0.9, "突袭地图按钮"
+    )
+    val RaidRedAttackButton = ColorSchema.parse(
+        705, 619, 807, 658, "8380FF", "21|0|827FFF,41|0|8380FF,61|0|8280FF,82|0|827FFF,0|19|221EF7,21|19|221EF7,41|19|1D1AB9,61|19|221EF7,82|19|221EF7", 0, 0.9, "都城红色进攻按钮"
     )
 }

@@ -1,5 +1,7 @@
 package com.coc.zkqcode.jar.code.clancapital
 
+import android.graphics.Bitmap
+import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.touchactions.TouchActions
@@ -18,6 +20,7 @@ import com.coc.zkqcode.jar.code.universal.smalltools.runGame
 import com.coc.zkqcode.jar.code.universal.smalltools.writeMemory
 import kotlinx.coroutines.delay
 import kotlin.random.Random
+import androidx.core.graphics.get
 
 
 suspend fun clanCapitalAttack(): Boolean {
@@ -45,19 +48,52 @@ suspend fun clanCapitalAttack(): Boolean {
 }
 
 suspend fun findAttackTarget(): Boolean {
-    while (true) {
+    val deadline = System.currentTimeMillis() + 10_000L
+    while (System.currentTimeMillis() < deadline) {
         if (findMultiColors(MyColors.RaidInformation) != null) {
             break
         }
+        ShowMessage("进入突袭地图中...")
         val raidMap = findMultiColors(MyColors.RaidMap)
         if (raidMap != null) {
             TouchActions.tap(raidMap.x, raidMap.y)
         }
+        delayWithMultiplier(300)
+    }
+    if (findMultiColors(MyColors.RaidInformation) == null) {
+        ShowMessage("超时：未找到RaidInformation，退出攻击")
+        return false
     }
     TouchActions.swipe(300, 500, 300, 1500)
-    delayWithMultiplier(200)
-    
-    return true
+    delayWithMultiplier(400)
+    // Capture a fresh screenshot to analyse which districts are available to attack.
+    val bitmap = ScreenCaptureManager.capture(asBitmap = true) as? Bitmap ?: run {
+        ShowMessage("截图失败，无法分析都城区域")
+        return false
+    }
+
+    // Iterate districts in order and tap the first one whose white-pixel count is below the
+    // threshold, which indicates the district still has open territory to attack.
+    for (district in CAPITAL_DISTRICTS) {
+        val whiteCount = countBrightPixels(bitmap, district)
+        if (whiteCount < WHITE_PIXEL_ATTACK_THRESHOLD) {
+            val centerX = (district.x1 + district.x2) / 2
+            val centerY = (district.y1 + district.y2) / 2
+            // Offset per design: shift left 80px and down 80px to land on the entry button. Y is capped at 719.
+            val tapY = minOf(centerY + 80, 719)
+            ShowMessage("找到可攻击区域: ${district.name}, 点击 (${centerX - 80}, $tapY)")
+            TouchActions.tap(centerX - 80, tapY)
+            val raidButton = findMultiColorsUntil(schemas = listOf(MyColors.RaidRedAttackButton), duration = 1000)
+            if (raidButton != null) {
+                TouchActions.tap(raidButton.x, raidButton.y)
+                TouchActions.tap(1060, 400)//Attack
+                return true
+            }
+        }
+    }
+
+    ShowMessage("未找到可攻击的都城区域")
+    return false
 }
 
 private suspend fun deployClanCapitalTroopsAndSpells() {
@@ -189,3 +225,54 @@ private fun isTooClose(
 }
 
 private const val TAPPED_TARGET_MIN_DISTANCE = 56f
+
+// ---------------------------------------------------------------------------
+// District availability detection
+// ---------------------------------------------------------------------------
+
+/** Represents a named screen region that maps to one clan capital district. */
+private data class CapitalDistrict(
+    val x1: Int, val y1: Int, val x2: Int, val y2: Int, val name: String
+)
+
+/**
+ * Screen regions (in game-pixel coordinates) whose white-pixel density reveals
+ * whether a district still has destructible buildings to attack.
+ */
+private val CAPITAL_DISTRICTS = listOf(
+    CapitalDistrict(660, 208, 678, 230, "都城之巅"),
+    CapitalDistrict(829, 343, 850, 370, "野蛮人兵营"),
+    CapitalDistrict(662, 420, 682, 444, "法师山谷"),
+    CapitalDistrict(954, 515, 972, 537, "飞龙悬崖"),
+    CapitalDistrict(520, 555, 536, 577, "气球环礁"),
+    CapitalDistrict(773, 582, 791, 606, "建筑工人工坊"),
+    CapitalDistrict(364, 670, 383, 691, "戈仑石场"),
+    CapitalDistrict(616, 709, 638, 719, "骷髅公园"),
+    CapitalDistrict(894, 706, 921, 719, "哥布林矿井"),
+)
+
+/** Districts whose bright-pixel count is below this value are considered attackable. */
+private const val WHITE_PIXEL_ATTACK_THRESHOLD = 60
+
+/** Luminance value above which a pixel is treated as "white / bright". */
+private const val BRIGHTNESS_THRESHOLD = 250.0
+
+/**
+ * Counts pixels in [district] whose luminance (standard ITU-R BT.601 formula) exceeds
+ * [BRIGHTNESS_THRESHOLD], indicating a near-white colour associated with UI elements
+ * that are present when a district still has structures standing.
+ */
+private fun countBrightPixels(bitmap: Bitmap, district: CapitalDistrict): Int {
+    var count = 0
+    for (y in district.y1 until district.y2) {
+        for (x in district.x1 until district.x2) {
+            val pixel = bitmap[x, y]
+            val r = (pixel shr 16) and 0xFF
+            val g = (pixel shr 8) and 0xFF
+            val b = pixel and 0xFF
+            val brightness = 0.299 * r + 0.587 * g + 0.114 * b
+            if (brightness > BRIGHTNESS_THRESHOLD) count++
+        }
+    }
+    return count
+}
