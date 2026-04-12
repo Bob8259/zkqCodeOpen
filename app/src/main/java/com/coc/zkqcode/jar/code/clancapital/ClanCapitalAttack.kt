@@ -8,11 +8,59 @@ import com.coc.zkqcode.jar.code.universal.aidetection.DetectionResult
 import com.coc.zkqcode.jar.code.universal.aidetection.tiledAiDetect
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.mainbase.others.zoomSmallMainBase
+import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
+import com.coc.zkqcode.jar.code.universal.InGamesVars
+import com.coc.zkqcode.jar.code.universal.enterMainScreen
+import com.coc.zkqcode.jar.code.universal.smalltools.StorageKeys
+import com.coc.zkqcode.jar.code.universal.smalltools.checkMemoryFile
 import com.coc.zkqcode.jar.code.universal.smalltools.killGame
 import com.coc.zkqcode.jar.code.universal.smalltools.runGame
+import com.coc.zkqcode.jar.code.universal.smalltools.writeMemory
+import kotlinx.coroutines.delay
 import kotlin.random.Random
 
-suspend fun clanCapitalAttack() {
+
+suspend fun clanCapitalAttack(): Boolean {
+    val storageKey = StorageKeys.withAccountNumber(
+        StorageKeys.CLAN_CAPITAL_ATTACK, InGamesVars.currentAccountNumber
+    )
+
+    // Guard: skip if the last attack was less than 3 days (4320 minutes) ago
+    if (!checkMemoryFile(storageKey, 4320)) {
+        ShowMessage("账号${InGamesVars.currentAccountNumber}，3天内已参与过都城攻击")
+        return true
+    }
+
+    if (!enterClanCapital()) return enterMainScreen()
+    if (findMultiColors(MyColors.ZeroAttackTimes) != null) {
+        // No attack times remaining; record the timestamp so the guard activates next cycle
+        writeMemory(storageKey, (System.currentTimeMillis() / 60_000).toString())
+        ShowMessage("账号${InGamesVars.currentAccountNumber}，都城攻击次数已用完")
+        return enterMainScreen()
+    }
+    if (findAttackTarget()) {
+        deployClanCapitalTroopsAndSpells()
+    }
+    return enterMainScreen()
+}
+
+suspend fun findAttackTarget(): Boolean {
+    while (true) {
+        if (findMultiColors(MyColors.RaidInformation) != null) {
+            break
+        }
+        val raidMap = findMultiColors(MyColors.RaidMap)
+        if (raidMap != null) {
+            TouchActions.tap(raidMap.x, raidMap.y)
+        }
+    }
+    TouchActions.swipe(300, 500, 300, 1500)
+    delayWithMultiplier(200)
+    
+    return true
+}
+
+private suspend fun deployClanCapitalTroopsAndSpells() {
     zoomSmallClanCapital()
     delayWithMultiplier(200)
     deploySpells()
@@ -21,7 +69,6 @@ suspend fun clanCapitalAttack() {
     delayWithMultiplier(1000)
     runGame()
 }
-
 
 private suspend fun zoomSmallClanCapital() {
     // Start from the same stable zoomed-out view used by other main-base automation flows.
@@ -40,10 +87,7 @@ private suspend fun deployTroops() {
             // The convex quad vertices in clockwise order:
             //   A(205,480) → B(280,560) → D(710,250) → C(615,160) → A
             val trapEdges = listOf(
-                Pair(Pair(205, 480), Pair(280, 560)),
-                Pair(Pair(280, 560), Pair(710, 250)),
-                Pair(Pair(710, 250), Pair(615, 160)),
-                Pair(Pair(615, 160), Pair(205, 480))
+                Pair(Pair(205, 480), Pair(280, 560)), Pair(Pair(280, 560), Pair(710, 250)), Pair(Pair(710, 250), Pair(615, 160)), Pair(Pair(615, 160), Pair(205, 480))
             )
             val step = Random.nextInt(40, 81)
             var y = 160

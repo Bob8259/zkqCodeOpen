@@ -1,25 +1,24 @@
-Project Context & Architecture
-Type: Android Automation Software.
-Stack: Kotlin, Jetpack Compose.
-Architecture: The app functions as a host loader. It dynamically builds and loads logic from a specific source directory. This app will be run at Root envrionment. For all UI, try to use the componenets under app\src\main\java\com\coc\zkqcode\utils\components\Components.kt. 
+The application consists of a host loader and a JAR module. Logic is dynamically loaded from the source path: app/src/main/java/com/coc/zkqcode/jar. You must treat this directory as an independent module intended for JAR packaging. The application operates within a Root environment.
 
-When writing UI, if the UI has a key in Schema.kt, then you should display Schema.GLOBAL_SETTINGS.first { it.key == key }.displayName, instead of displaying hardcoded text.
+UI Implementation Rules:
 
-Critical Directory Rules
-Dynamic Source Path: app/src/main/java/com/coc/zkqcode/jar
-Behavior: Treat all files in this directory as a standalone module. They are packed into a JAR and loaded dynamically at runtime.
+Use the predefined components located at: app/src/main/java/com/coc/zkqcode/utils/components/Components.kt. 
 
-I/O & Networking Constraints
-Required I/O Method: All file reading and writing that are not in private path must be routed through the WebSocket server.
-Server Address: ws://localhost:6839/zkq
+Do not use hardcoded text for UI elements that exist in Schema.kt. Instead, retrieve the display name using: Schema.GLOBAL_SETTINGS.first { it.key == key }.displayName.
 
-When adding debug information, you should use ShowMessage, which can be imported from com.coc.zkqcode.core.util.basic.ShowMessage.
+I/O and Networking Constraints:
+All JSON file reading and writing operations performed outside of the application's private path must be routed through the WebSocket server.
 
-When modify the code, you should add appropriate comments. Write all comments in English, but for other content (e.g. debug information, variable names or display information) can be written in Chinese.
+Technical Standards:
 
-When importing a class/object/function or others, you should import the full package name, and only use the last name inside the code.
-For example, instead of using com.coc.zkqcode.jar.code.colorschema.ColorSchema in the code, you should import it as import com.coc.zkqcode.jar.code.colorschema.ColorSchema. Then, you can use ColorSchema in the code as ColorSchema.
+Debugging: Use the ShowMessage utility for all debug information. It must be imported from: com.coc.zkqcode.core.util.basic.ShowMessage.
 
-When the instructions are unclear, you need to ask the user for clarification. Only proceed after you have understood every detail of the instructions.
+Import Style: Use full package names in the import statements at the top of the file. Within the code body, use only the simple class name (e.g., import com.coc.zkqcode.jar.Example; then use Example).
 
-You should make a plan when the task is complex, and only proceed after you get explicit permission from the user.
+Language: Write all code comments in English. However, debug messages, and UI display strings can be written in both English and Chinese.
+
+Procedural Requirements:
+
+Clarity: If any instruction is unclear or ambiguous, you must ask for clarification. Do not proceed until you have a full understanding of the task.
+
+Planning: For complex tasks, you are required to generate a development plan. You may only begin coding after receiving explicit permission from the user.

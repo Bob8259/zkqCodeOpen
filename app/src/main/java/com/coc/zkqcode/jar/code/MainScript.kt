@@ -6,6 +6,7 @@ import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.basic.waitForPlay
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
+import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.jar.code.auth.displayAds
 import com.coc.zkqcode.jar.code.auth.userAuth
 import com.coc.zkqcode.jar.code.builderbase.playBuilderBase
@@ -133,7 +134,8 @@ suspend fun runMainScript() {
 
 private suspend fun runTestCode() {
     while (true) {
-        clanCapitalAttack()
+//        clanCapitalAttack()
+        TouchActions.swipe(300, 500, 300, 1500)
 //        ShowMessage(findMultiColors(MyColors.SpellColorAtDeploymentBar, increment = 1).toString())
         delay(1000)
     }

@@ -83,6 +83,6 @@ private suspend fun removeLowerObstacles() {
 private suspend fun performRemoveSequence() {
     TouchActions.tap(616, 488, delayTime = 50)
     repeat(2) {
-        TouchActions.tap(14, 558)
+        TouchActions.tap(14, 558, delayTime = 10)
     }
 }

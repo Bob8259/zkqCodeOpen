@@ -1,54 +1,53 @@
 package com.coc.zkqcode.jar.code.colorschema
 
-import android.provider.CalendarContract
+import com.coc.zkqcode.jar.code.colorschema.colorpackage.FeatureColors
+import com.coc.zkqcode.jar.code.colorschema.colorpackage.IFeatureColors
+import com.coc.zkqcode.jar.code.colorschema.colorpackage.IUIColors
+import com.coc.zkqcode.jar.code.colorschema.colorpackage.IUniversalUpgradeColors
+import com.coc.zkqcode.jar.code.colorschema.colorpackage.UIColors
+import com.coc.zkqcode.jar.code.colorschema.colorpackage.UniversalUpgradeColors
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.builderbase.BuilderBaseAttackColors
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.builderbase.BuilderBaseClockTowerColors
-import com.coc.zkqcode.jar.code.colorschema.colorpackage.FeatureColors
+import com.coc.zkqcode.jar.code.colorschema.colorpackage.builderbase.BuilderBaseObstaclesRemovalColors
+import com.coc.zkqcode.jar.code.colorschema.colorpackage.builderbase.BuilderBaseResearchColors
+import com.coc.zkqcode.jar.code.colorschema.colorpackage.builderbase.BuilderBaseResourcesColors
+import com.coc.zkqcode.jar.code.colorschema.colorpackage.builderbase.BuilderBaseTrainingColors
+import com.coc.zkqcode.jar.code.colorschema.colorpackage.builderbase.BuilderBaseTutorial
+import com.coc.zkqcode.jar.code.colorschema.colorpackage.builderbase.BuilderBaseUpgradeColors
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.builderbase.IBuilderBaseAttackColors
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.builderbase.IBuilderBaseClockTowerColors
-import com.coc.zkqcode.jar.code.colorschema.colorpackage.IFeatureColors
-import com.coc.zkqcode.jar.code.colorschema.colorpackage.mainbase.IMainBaseTraining
-import com.coc.zkqcode.jar.code.colorschema.colorpackage.mainbase.IMainBaseTutorial
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.builderbase.IBuilderBaseObstaclesRemovalColors
-import com.coc.zkqcode.jar.code.colorschema.colorpackage.builderbase.BuilderBaseResearchColors
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.builderbase.IBuilderBaseResearchColors
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.builderbase.IBuilderBaseResourcesColors
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.builderbase.IBuilderBaseTrainingColors
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.builderbase.IBuilderBaseTutorial
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.builderbase.IBuilderBaseUpgradeColors
-import com.coc.zkqcode.jar.code.colorschema.colorpackage.IUIColors
-import com.coc.zkqcode.jar.code.colorschema.colorpackage.mainbase.MainBaseTraining
-import com.coc.zkqcode.jar.code.colorschema.colorpackage.mainbase.MainBaseTutorial
-import com.coc.zkqcode.jar.code.colorschema.colorpackage.builderbase.BuilderBaseObstaclesRemovalColors
-import com.coc.zkqcode.jar.code.colorschema.colorpackage.builderbase.BuilderBaseResourcesColors
-import com.coc.zkqcode.jar.code.colorschema.colorpackage.builderbase.BuilderBaseTrainingColors
-import com.coc.zkqcode.jar.code.colorschema.colorpackage.builderbase.BuilderBaseTutorial
-import com.coc.zkqcode.jar.code.colorschema.colorpackage.builderbase.BuilderBaseUpgradeColors
-import com.coc.zkqcode.jar.code.colorschema.colorpackage.UIColors
-import com.coc.zkqcode.jar.code.colorschema.colorpackage.IUniversalUpgradeColors
-import com.coc.zkqcode.jar.code.colorschema.colorpackage.UniversalUpgradeColors
-import com.coc.zkqcode.jar.code.colorschema.colorpackage.mainbase.IMainBaseUpgradeColors
-import com.coc.zkqcode.jar.code.colorschema.colorpackage.mainbase.MainBaseUpgradeColors
-import com.coc.zkqcode.jar.code.colorschema.colorpackage.mainbase.IMainBaseResearchColors
-import com.coc.zkqcode.jar.code.colorschema.colorpackage.mainbase.MainBaseResearchColors
-import com.coc.zkqcode.jar.code.colorschema.colorpackage.mainbase.IMainBaseResearchLevelColors
-import com.coc.zkqcode.jar.code.colorschema.colorpackage.mainbase.MainBaseResearchLevelColors
-import com.coc.zkqcode.jar.code.colorschema.colorpackage.mainbase.IMainBaseAttackColors
-import com.coc.zkqcode.jar.code.colorschema.colorpackage.mainbase.MainBaseAttackColors
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.clancapital.ClanCapitalTutorialColors
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.clancapital.IClanCapitalTutorialColors
+import com.coc.zkqcode.jar.code.colorschema.colorpackage.mainbase.IMainBaseAttackColors
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.mainbase.IMainBaseClanColors
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.mainbase.IMainBaseHelperColors
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.mainbase.IMainBaseHeroHallColors
+import com.coc.zkqcode.jar.code.colorschema.colorpackage.mainbase.IMainBaseMagicItemColors
+import com.coc.zkqcode.jar.code.colorschema.colorpackage.mainbase.IMainBaseResearchColors
+import com.coc.zkqcode.jar.code.colorschema.colorpackage.mainbase.IMainBaseResearchLevelColors
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.mainbase.IMainBaseResourcesColors
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.mainbase.IMainBaseSmallTutorialColors
+import com.coc.zkqcode.jar.code.colorschema.colorpackage.mainbase.IMainBaseTraining
+import com.coc.zkqcode.jar.code.colorschema.colorpackage.mainbase.IMainBaseTutorial
+import com.coc.zkqcode.jar.code.colorschema.colorpackage.mainbase.IMainBaseUpgradeColors
+import com.coc.zkqcode.jar.code.colorschema.colorpackage.mainbase.MainBaseAttackColors
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.mainbase.MainBaseClanColors
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.mainbase.MainBaseHelperColors
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.mainbase.MainBaseHeroHallColors
+import com.coc.zkqcode.jar.code.colorschema.colorpackage.mainbase.MainBaseMagicItemColors
+import com.coc.zkqcode.jar.code.colorschema.colorpackage.mainbase.MainBaseResearchColors
+import com.coc.zkqcode.jar.code.colorschema.colorpackage.mainbase.MainBaseResearchLevelColors
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.mainbase.MainBaseResourcesColors
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.mainbase.MainBaseSmallTutorialColors
-import com.coc.zkqcode.jar.code.colorschema.colorpackage.mainbase.IMainBaseMagicItemColors
-import com.coc.zkqcode.jar.code.colorschema.colorpackage.mainbase.MainBaseMagicItemColors
+import com.coc.zkqcode.jar.code.colorschema.colorpackage.mainbase.MainBaseTraining
+import com.coc.zkqcode.jar.code.colorschema.colorpackage.mainbase.MainBaseTutorial
+import com.coc.zkqcode.jar.code.colorschema.colorpackage.mainbase.MainBaseUpgradeColors
 
 object MyColors : IUIColors by UIColors, IFeatureColors by FeatureColors, IMainBaseTutorial by MainBaseTutorial, IBuilderBaseTutorial by BuilderBaseTutorial, IMainBaseTraining by MainBaseTraining,
     IBuilderBaseResourcesColors by BuilderBaseResourcesColors, IBuilderBaseObstaclesRemovalColors by BuilderBaseObstaclesRemovalColors, IBuilderBaseTrainingColors by BuilderBaseTrainingColors,
@@ -88,5 +87,14 @@ object MyColors : IUIColors by UIColors, IFeatureColors by FeatureColors, IMainB
     )
     val CapitalCoin = ColorSchema.parse(
         1190, 18, 1264, 72, "E418BB", "-5|0|FF55F0,1|0|E418BB,5|0|D42FA6,3|-2|FB93DA,-9|-10|6CFFFF,-5|-9|68F4FF,3|-8|1BBDFA,-9|13|C53497,-20|8|0DD9FF", 0, 0.9, "都城币"
+    )
+    val ZeroAttackTimes = ColorSchema.parse(
+        1165, 545, 1200, 580, "FFFFFF", "-5|0|2126CF,7|2|2127D2,14|1|FFFFFF,17|1|2126CF,5|14|2129DC,5|-12|221DBA,8|-12|221DBA,7|-8|FFFFFF,7|7|FFFFFF", 0, 0.9, "无进攻机会"
+    )
+    val RaidInformation = ColorSchema.parse(
+        1130, 575, 1265, 705, "F2BF6C", "-1|17|EFBC6C,-1|35|E99D2F,-2|51|E4972E,89|0|F2BF6C,92|7|F2BE6C,89|45|E69A2F,90|63|DF922E,42|1|FFFFFF,43|11|FFFFFF", 0, 0.9, "蓝色突袭信息按钮"
+    )
+    val RaidMap = ColorSchema.parse(
+        1135, 570, 1260, 705, "CCE4E5", "-3|21|C9E2E4,-6|48|AAC6CD,-6|66|A8C4CC,43|12|FFE5B4,83|-4|CDE5E6,87|11|CAE3E4,91|36|ACC8CF,91|45|ABC6CE,87|51|AAC6CD", 0, 0.9, "突袭地图按钮"
     )
 }

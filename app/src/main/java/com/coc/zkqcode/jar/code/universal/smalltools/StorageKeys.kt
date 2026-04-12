@@ -23,6 +23,8 @@ object StorageKeys {
     const val USE_MAGIC_ITEMS = "UseMagicItems"
     const val USE_HELPERS = "UseHelpers"
     const val UPGRADE_GEARS = "UpgradeGears"
+    const val CLAN_CAPITAL_TRAIN_TROOPS = "ClanCapitalTrainTroops"
+    const val CLAN_CAPITAL_ATTACK = "ClanCapitalAttack"
 
     // Per-account keys for dynamic adjustment resource thresholds
     const val DYNAMIC_GOLD = "DynamicGold"

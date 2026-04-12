@@ -1,7 +1,9 @@
 package com.coc.zkqcode.jar.code.mainbase
 
 
+import com.coc.zkqcode.jar.code.clancapital.clanCapitalAttack
 import com.coc.zkqcode.jar.code.clancapital.clanCapitalTrainTroops
+import com.coc.zkqcode.jar.code.clancapital.playClanCapital
 import com.coc.zkqcode.jar.code.mainbase.attack.mainBaseAttack
 import com.coc.zkqcode.jar.code.mainbase.attack.mainBaseTrainTroops
 import com.coc.zkqcode.jar.code.mainbase.clan.donateToClan
@@ -24,7 +26,7 @@ import com.coc.zkqcode.jar.code.universal.smalltools.enterMainBase
 
 suspend fun playMainBase(): Boolean {
     if (!enterMainBase()) return false
-    if(!clanCapitalTrainTroops()) return false
+    if (!playClanCapital()) return false
     if (!mainBaseCollectResources()) return false
     if (!mainBaseTrainTroops()) return false
     if (!mainBaseAttack()) return false
