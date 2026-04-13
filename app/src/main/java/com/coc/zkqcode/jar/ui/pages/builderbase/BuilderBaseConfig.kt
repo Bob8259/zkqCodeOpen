@@ -28,13 +28,15 @@ fun LazyListScope.BuilderBaseConfig(
 ) {
     // Header
     item {
-        FlowRow {
-            Text(
-                text = "以下是夜世界设置", fontSize = 15.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(10.dp), textAlign = TextAlign.Start
-            )
-            CustomButton(
-                onClick = onToggleExpanded, text = if (isExpanded) "▼ 缩起夜世界设置" else "▶ 展开夜世界设置"
-            )
+        SettingSection {
+            FlowRow {
+                Text(
+                    text = "以下是夜世界设置", fontSize = 15.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(10.dp), textAlign = TextAlign.Start
+                )
+                CustomButton(
+                    onClick = onToggleExpanded, text = if (isExpanded) "▼ 缩起夜世界设置" else "▶ 展开夜世界设置"
+                )
+            }
         }
     }
 

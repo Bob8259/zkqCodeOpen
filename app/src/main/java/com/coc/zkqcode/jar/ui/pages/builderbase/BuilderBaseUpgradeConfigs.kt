@@ -16,7 +16,7 @@ import kotlin.collections.set
 @Composable
 fun BuilderBaseUpgradeConfigs(index: Int, onNavigatePriority: (Int) -> Unit = {}){
     val items = Schema.BUILDER_BASE_BUILDINGS.all
-    val isExpanded = remember { mutableStateOf(true) }
+    val isExpanded = remember { mutableStateOf(false) }
 
     // 一键全选
     val selectAll = {
@@ -47,7 +47,7 @@ fun BuilderBaseUpgradeConfigs(index: Int, onNavigatePriority: (Int) -> Unit = {}
         Row {
             CustomButton(text = "一键全选", onClick = selectAll)
             CustomButton(text = "一键反选", onClick = invertSelection)
-            CustomButton(text = if (isExpanded.value) "缩起" else "展开", onClick = { isExpanded.value = !isExpanded.value })
+            CustomButton(text = if (isExpanded.value) "缩起列表" else "展开列表", onClick = { isExpanded.value = !isExpanded.value })
         }
 
         AnimatedVisibility(visible = isExpanded.value) {

@@ -16,7 +16,7 @@ import kotlin.collections.set
 @Composable
 fun BuilderBaseResearchConfigs(index: Int) {
     val items = BUILDER_BASE_TROOPS.all
-    val isExpanded = remember { mutableStateOf(true) }
+    val isExpanded = remember { mutableStateOf(false) }
 
     // 一键全选
     val selectAll = {
@@ -48,7 +48,7 @@ fun BuilderBaseResearchConfigs(index: Int) {
             CustomButton(text = "一键全选", onClick = selectAll)
             CustomButton(text = "一键反选", onClick = invertSelection)
             CustomButton(
-                text = if (isExpanded.value) "缩起" else "展开",
+                text = if (isExpanded.value) "缩起列表" else "展开列表",
                 onClick = { isExpanded.value = !isExpanded.value })
         }
 

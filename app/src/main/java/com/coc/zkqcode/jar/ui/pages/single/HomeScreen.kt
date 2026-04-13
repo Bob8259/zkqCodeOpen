@@ -96,7 +96,7 @@ fun HomeScreen(
     val builderBaseExpandedStates = androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateMapOf<Int, Boolean>() }
 
     val configCount = configCountStr.toIntOrNull() ?: 1
-    val tabs = listOf("主页设置", "账号设置", "提取存档", "配置文件")
+    val tabs = listOf("主页设置", "账号设置", "提取存档", "配置文件", "特殊设置")
 
     val lazyListState = rememberLazyListState()
     val scope = rememberCoroutineScope()
@@ -278,11 +278,6 @@ fun HomeScreen(
                             )
                         }
                     }
-                    item {
-                        SettingSection {
-                            BatchCreateAccount()
-                        }
-                    }
                 }
 
                 1 -> {
@@ -324,6 +319,14 @@ fun HomeScreen(
                             onNavigateBuilderBasePriority = onNavigateBuilderBasePriority,
                             onScrollToBottom = scrollToBottom
                         )
+                    }
+                }
+
+                4 -> {
+                    item {
+                        SettingSection {
+                            BatchCreateAccount()
+                        }
                     }
                 }
             }

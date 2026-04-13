@@ -18,7 +18,7 @@ import com.coc.zkqcode.jar.ui.schema.Schema.MAIN_BASE_SETTINGS
 fun MainBaseUpgradeConfigs(index: Int, onNavigatePriority: (Int) -> Unit = {}) {
     val items = MAIN_BASE_BUILDINGS.all
 
-    val isExpanded = rememberSaveable { mutableStateOf(true) }
+    val isExpanded = rememberSaveable { mutableStateOf(false) }
 
     // 一键全选
     val selectAll = {
@@ -49,7 +49,7 @@ fun MainBaseUpgradeConfigs(index: Int, onNavigatePriority: (Int) -> Unit = {}) {
         Row {
             CustomButton(text = "一键全选", onClick = selectAll)
             CustomButton(text = "一键反选", onClick = invertSelection)
-            CustomButton(text = if (isExpanded.value) "缩起" else "展开", onClick = { isExpanded.value = !isExpanded.value })
+            CustomButton(text = if (isExpanded.value) "缩起列表" else "展开列表", onClick = { isExpanded.value = !isExpanded.value })
         }
 
         AnimatedVisibility(visible = isExpanded.value) {
