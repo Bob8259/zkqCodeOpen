@@ -10,6 +10,7 @@ import androidx.compose.runtime.remember
 import com.coc.zkqcode.jar.ui.components.CustomButton
 import com.coc.zkqcode.jar.ui.components.SettingToggleButton
 import com.coc.zkqcode.core.data.database.GlobalVars
+import com.coc.zkqcode.jar.ui.theme.AppColors
 import com.coc.zkqcode.jar.ui.schema.Schema.BUILDER_BASE_TROOPS
 import kotlin.collections.set
 
@@ -49,7 +50,8 @@ fun BuilderBaseResearchConfigs(index: Int) {
             CustomButton(text = "一键反选", onClick = invertSelection)
             CustomButton(
                 text = if (isExpanded.value) "缩起列表" else "展开列表",
-                onClick = { isExpanded.value = !isExpanded.value })
+                onClick = { isExpanded.value = !isExpanded.value },
+                containerColor = AppColors.Teal)
         }
 
         AnimatedVisibility(visible = isExpanded.value) {

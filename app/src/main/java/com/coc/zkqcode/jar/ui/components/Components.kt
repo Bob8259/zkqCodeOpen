@@ -55,7 +55,7 @@ import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupPositionProvider
 import androidx.compose.ui.window.PopupProperties
 import com.coc.zkqcode.core.data.database.GlobalVars
-import com.coc.zkqcode.core.ui.theme.AppColors
+import com.coc.zkqcode.jar.ui.theme.AppColors
 import com.coc.zkqcode.jar.ui.schema.Schema
 import kotlinx.coroutines.delay
 
@@ -266,6 +266,7 @@ fun CustomButton(
     explain: String? = null,
     marginTop: Dp = 6.dp,
     marginBottom: Dp = 0.dp,
+    containerColor: Color = AppColors.Azure,
 ) {
 
     var showExplanation by remember { mutableStateOf(false) }
@@ -275,7 +276,7 @@ fun CustomButton(
                 GlobalVars.isAutoRunEnabled = false
                 onClick()
             }, modifier = Modifier.height(32.dp), shape = RoundedCornerShape(8.dp), enabled = enable, colors = ButtonDefaults.buttonColors(
-                containerColor = AppColors.Azure
+                containerColor = containerColor
             )
         ) {
             Text(text, style = MaterialTheme.typography.labelMedium)
@@ -329,6 +330,9 @@ fun SettingSwitchIcon(
         }, explain = explain, textTopPadding = textTopPadding
     )
 }
+
+// Teal accent for collapse/expand buttons to distinguish from action buttons
+val CollapseTeal = Color(0xFF00897B)
 
 // Lighter blue for research/building toggle buttons to distinguish from action buttons
 private val ToggleButtonBlue = Color(0xFF0084BF)

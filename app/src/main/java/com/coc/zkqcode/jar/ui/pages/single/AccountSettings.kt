@@ -37,7 +37,7 @@ import androidx.compose.ui.unit.dp
 import com.coc.zkqcode.jar.ui.components.CustomButton
 import com.coc.zkqcode.jar.ui.components.SettingSection
 import com.coc.zkqcode.core.data.database.GlobalVars
-import com.coc.zkqcode.core.ui.theme.AppColors
+import com.coc.zkqcode.jar.ui.theme.AppColors
 import com.coc.zkqcode.jar.ui.components.SettingInputRow
 import com.coc.zkqcode.jar.ui.schema.Schema.ACCOUNT_SETTINGS
 import com.coc.zkqcode.jar.ui.schema.Schema.GLOBAL_SETTINGS

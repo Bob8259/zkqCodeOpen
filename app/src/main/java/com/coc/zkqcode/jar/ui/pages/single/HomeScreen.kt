@@ -34,7 +34,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.coc.zkqcode.core.data.database.GlobalVars
-import com.coc.zkqcode.core.ui.theme.AppColors
+import com.coc.zkqcode.jar.ui.theme.AppColors
 import com.coc.zkqcode.core.util.basic.RunShell
 import com.coc.zkqcode.core.util.exit.AppExitHelper
 import com.coc.zkqcode.core.util.fileactions.FileHelper

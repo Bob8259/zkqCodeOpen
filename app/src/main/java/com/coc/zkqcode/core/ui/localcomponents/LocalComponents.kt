@@ -26,7 +26,7 @@ import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupPositionProvider
 import androidx.compose.ui.window.PopupProperties
 import com.coc.zkqcode.core.data.database.GlobalVars
-import com.coc.zkqcode.core.ui.theme.AppColors
+import androidx.compose.ui.graphics.Color
 import kotlinx.coroutines.delay
 
 @Composable
@@ -138,7 +138,7 @@ fun LocalCustomButton(
             shape = RoundedCornerShape(8.dp),
             enabled = enable,
             colors = ButtonDefaults.buttonColors(
-                containerColor = AppColors.Azure
+                containerColor = Color(0xFF2196F3)
             )
         ) {
             Text(text, style = MaterialTheme.typography.labelMedium)
