@@ -39,7 +39,6 @@ fun ConfigFileGrid(
     onConfigSelected: (Int) -> Unit
 ) {
     val items = (1..configCount).toList()
-    val rowCount = (items.size + 2) / 3
 
     SettingSection {
         Column {
@@ -63,15 +62,19 @@ fun ConfigFileGrid(
                 color = Color.Gray
             )
             BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
-                val cellWidth = min(maxWidth / 3, 120.dp)
-                val gridHeight = (rowCount * 56).dp
+                val spacing = 8.dp
+                val cellWidth = min((maxWidth - spacing * 2) / 3, 120.dp)
+                val columnsCount = maxOf(1, ((maxWidth.value + spacing.value) / (cellWidth.value + spacing.value)).toInt())
+                val actualRowCount = (items.size + columnsCount - 1) / columnsCount
+                val gridHeight = (actualRowCount * 56).dp
+                
                 LazyVerticalGrid(
                     columns = GridCells.Adaptive(minSize = cellWidth),
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(gridHeight),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                    horizontalArrangement = Arrangement.spacedBy(spacing),
+                    verticalArrangement = Arrangement.spacedBy(spacing)
                 ) {
                     items(items) { i ->
                         Box(
