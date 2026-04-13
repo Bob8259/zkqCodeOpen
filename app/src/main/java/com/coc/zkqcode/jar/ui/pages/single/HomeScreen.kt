@@ -81,14 +81,21 @@ fun HomeScreen(
 
 
     var selectedTabIndex by rememberSaveable { mutableIntStateOf(0) }
+    var selectedConfigIndex by rememberSaveable { mutableStateOf<Int?>(null) }
 
-    // Hoisted expansion states keyed by tab index
-    // Hoisted expansion states keyed by tab index
+    // Reset config sub-navigation when switching away from the config tab
+    LaunchedEffect(selectedTabIndex) {
+        if (selectedTabIndex != 3) {
+            selectedConfigIndex = null
+        }
+    }
+
+    // Hoisted expansion states keyed by config index (1-based)
     val mainBaseExpandedStates = androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateMapOf<Int, Boolean>() }
     val builderBaseExpandedStates = androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateMapOf<Int, Boolean>() }
 
     val configCount = configCountStr.toIntOrNull() ?: 1
-    val tabs = listOf("主页设置", "账号设置", "提取存档") + List(configCount) { "配置文件${it + 1}" }
+    val tabs = listOf("主页设置", "账号设置", "提取存档", "配置文件")
 
     val lazyListState = rememberLazyListState()
     val scope = rememberCoroutineScope()
@@ -276,27 +283,44 @@ fun HomeScreen(
                     ExtractGameSave()
                 }
 
-                else -> {
-                    // Pass the 1-based index (selectedTabIndex) to MainBaseConfig
+                3 -> {
+                    val cfgIdx = selectedConfigIndex
+                    if (cfgIdx == null) {
+                        // Show grid of config files
+                        item {
+                            ConfigFileGrid(
+                                configCount = configCount,
+                                onConfigSelected = { selectedConfigIndex = it }
+                            )
+                        }
+                    } else {
+                        // Back button to return to grid
+                        item {
+                            com.coc.zkqcode.jar.ui.components.CustomButton(
+                                text = "◀ 返回配置列表",
+                                onClick = { selectedConfigIndex = null }
+                            )
+                        }
 
-                    // State hoisting for expansion
-                    val currentMainExpanded = mainBaseExpandedStates[selectedTabIndex] ?: true
-                    val currentBuilderBaseExpanded = builderBaseExpandedStates[selectedTabIndex] ?: true
+                        // State hoisting for expansion keyed by config index
+                        val currentMainExpanded = mainBaseExpandedStates[cfgIdx] ?: true
+                        val currentBuilderBaseExpanded = builderBaseExpandedStates[cfgIdx] ?: true
 
-                    GameConfig(
-                        index = selectedTabIndex - 2,
-                        isMainExpanded = currentMainExpanded,
-                        onToggleMainExpanded = { mainBaseExpandedStates[selectedTabIndex] = !currentMainExpanded },
-                        isBuilderBaseExpanded = currentBuilderBaseExpanded,
-                        onToggleBuilderBaseExpanded = {
-                            val newExpanded = !currentBuilderBaseExpanded
-                            builderBaseExpandedStates[selectedTabIndex] = newExpanded
-                            if (newExpanded) scrollToBottom()
-                        },
-                        onNavigatePriority = onNavigatePriority,
-                        onNavigateBuilderBasePriority = onNavigateBuilderBasePriority,
-                        onScrollToBottom = scrollToBottom
-                    )
+                        GameConfig(
+                            index = cfgIdx,
+                            isMainExpanded = currentMainExpanded,
+                            onToggleMainExpanded = { mainBaseExpandedStates[cfgIdx] = !currentMainExpanded },
+                            isBuilderBaseExpanded = currentBuilderBaseExpanded,
+                            onToggleBuilderBaseExpanded = {
+                                val newExpanded = !currentBuilderBaseExpanded
+                                builderBaseExpandedStates[cfgIdx] = newExpanded
+                                if (newExpanded) scrollToBottom()
+                            },
+                            onNavigatePriority = onNavigatePriority,
+                            onNavigateBuilderBasePriority = onNavigateBuilderBasePriority,
+                            onScrollToBottom = scrollToBottom
+                        )
+                    }
                 }
             }
         }

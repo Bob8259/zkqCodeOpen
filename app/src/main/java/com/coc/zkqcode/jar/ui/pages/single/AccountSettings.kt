@@ -95,15 +95,6 @@ fun LazyListScope.AccountSettings() {
     item {
         SettingSection {
             SettingInputRow(
-                key = GLOBAL_SETTINGS.CONFIG_COUNT.key,
-                afterChange = { newValue ->
-                    val newCount = newValue.toIntOrNull()
-                    if (newCount != null) {
-                        ConfigManager.expandProfileConfigs(newCount)
-                    }
-                }
-            )
-            SettingInputRow(
                 key = GLOBAL_SETTINGS.ACCOUNT_COUNT.key,
                 afterChange = { newValue ->
                     val newCount = newValue.toIntOrNull()
