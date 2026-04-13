@@ -25,7 +25,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.min
 import com.coc.zkqcode.jar.ui.theme.AppColors
 import com.coc.zkqcode.jar.ui.components.SettingInputRow
 import com.coc.zkqcode.jar.ui.components.SettingSection
@@ -64,12 +63,14 @@ fun ConfigFileGrid(
             BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
                 val spacing = 8.dp
                 val cellWidth = 110.dp
-                val columnsCount = maxOf(1, ((maxWidth.value + spacing.value) / (cellWidth.value + spacing.value)).toInt())
+                val columnsCount = maxOf(1, ((maxWidth + spacing) / (cellWidth + spacing)).toInt())
                 val actualRowCount = (items.size + columnsCount - 1) / columnsCount
-                val gridHeight = (actualRowCount * 56).dp
+                val itemHeight = 48.dp
+                val gridHeight = itemHeight * actualRowCount + spacing * (actualRowCount - 1).coerceAtLeast(0)
                 
                 LazyVerticalGrid(
                     columns = GridCells.Adaptive(minSize = cellWidth),
+                    userScrollEnabled = false,
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(gridHeight),
@@ -79,10 +80,11 @@ fun ConfigFileGrid(
                     items(items) { i ->
                         Box(
                             modifier = Modifier
+                                .height(itemHeight)
                                 .clip(RoundedCornerShape(8.dp))
                                 .background(AppColors.PrimaryLight)
                                 .clickable { onConfigSelected(i) }
-                                .padding(horizontal = 8.dp, vertical = 12.dp),
+                                .padding(horizontal = 8.dp),
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
