@@ -27,15 +27,14 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.coc.zkqcode.jar.ui.components.CustomButton
 import com.coc.zkqcode.core.data.database.GlobalVars
-import com.coc.zkqcode.jar.ui.theme.AppColors
-import com.coc.zkqcode.jar.ui.schema.Schema
 import com.coc.zkqcode.core.ui.reorderable.ReorderableItem
 import com.coc.zkqcode.core.ui.reorderable.rememberReorderableLazyGridState
+import com.coc.zkqcode.jar.ui.components.CustomButton
+import com.coc.zkqcode.jar.ui.schema.Schema
+import com.coc.zkqcode.jar.ui.theme.AppColors
 import kotlinx.coroutines.launch
 
 @Composable

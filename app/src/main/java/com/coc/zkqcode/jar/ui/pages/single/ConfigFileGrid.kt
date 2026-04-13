@@ -4,12 +4,15 @@ package com.coc.zkqcode.jar.ui.pages.single
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -32,6 +35,10 @@ fun ConfigFileGrid(
     configCount: Int,
     onConfigSelected: (Int) -> Unit
 ) {
+    val items = (1..configCount).toList()
+    val rowCount = (items.size + 3) / 4
+    val gridHeight = (rowCount * 56).dp
+
     SettingSection {
         Column {
             SettingInputRow(
@@ -44,19 +51,21 @@ fun ConfigFileGrid(
                 },
             )
             Text(
-                text = "点击方格调整配置文件。调整完成后，回到“账号设置”，给每个账号分配所需的配置文件。",
+                text = "点击方格调整配置文件。调整完成后，回到\"账号设置\"，给每个账号分配所需的配置文件。",
                 style = MaterialTheme.typography.labelSmall,
                 color = Color.Gray
             )
-            FlowRow(
+            LazyVerticalGrid(
+                columns = GridCells.Adaptive(minSize = 90.dp),
                 modifier = Modifier
                     .fillMaxWidth()
+                    .height(gridHeight),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                for (i in 1..configCount) {
+                items(items) { i ->
                     Box(
                         modifier = Modifier
-                            .padding(end = 8.dp, top = 8.dp)
-                            .widthIn(min = 90.dp)
                             .clip(RoundedCornerShape(8.dp))
                             .background(AppColors.PrimaryLight)
                             .clickable { onConfigSelected(i) }

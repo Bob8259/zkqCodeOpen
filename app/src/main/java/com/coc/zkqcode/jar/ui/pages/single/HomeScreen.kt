@@ -23,7 +23,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.PrimaryScrollableTabRow
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -37,16 +36,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.jar.ui.theme.AppColors
-import com.coc.zkqcode.core.util.basic.RunShell
-import com.coc.zkqcode.core.util.exit.AppExitHelper
 import com.coc.zkqcode.core.util.fileactions.FileHelper
-import com.coc.zkqcode.jar.ui.components.CustomAlertDialog
 import com.coc.zkqcode.jar.ui.components.CustomButton
-import com.coc.zkqcode.jar.ui.components.CustomNotificationWindow
 import com.coc.zkqcode.jar.ui.components.SettingDropdown
 import com.coc.zkqcode.jar.ui.components.SettingInputRow
 import com.coc.zkqcode.jar.ui.components.SettingSection
@@ -55,10 +49,8 @@ import com.coc.zkqcode.jar.ui.schema.ConfigManager
 import com.coc.zkqcode.jar.ui.schema.Schema.GLOBAL_SETTINGS
 import com.coc.zkqcode.statehelper.AppMode
 import com.coc.zkqcode.statehelper.AppStateManager
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 @Composable
 fun HomeScreen(
@@ -150,8 +142,6 @@ fun HomeScreen(
         }
     }
 
-    // Exit Confirmation Dialog State
-    var showExitConfirmation by rememberSaveable { mutableStateOf(false) }
     // Clean All Data Confirmation Dialogue State
     var showCleanAllConfirmation by rememberSaveable { mutableStateOf(false) }
 
@@ -395,98 +385,16 @@ fun HomeScreen(
             }
         }
 
-        // 3. Bottom fixed button area
-        val context = LocalContext.current
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 4.dp)
-        ) {
-            Row(modifier = Modifier.padding(start = 6.dp)) {
-                CustomButton(
-                    text = "保存并运行", onClick = {
-                        saveAndSetPlaying(true)
-                    })
-                CustomButton(
-                    text = "保存并暂停", onClick = {
-                        saveAndSetPlaying(false)
-                    })
-                CustomButton(
-                    text = "保存并退出", onClick = {
-                        showExitConfirmation = true
-                    })
-            }
-
-        }
-
-        if (showExitConfirmation) {
-            CustomAlertDialog(onDismissRequest = { showExitConfirmation = false }, title = {
-                Text(
-                    text = "退出提示", style = MaterialTheme.typography.titleMedium
-                )
-            }, text = {
-                Text(
-                    text = "确认要退出吗？", style = MaterialTheme.typography.bodyMedium
-                )
-            }, confirmButton = {
-                Row {
-                    TextButton(onClick = { showExitConfirmation = false }) {
-                        Text("取消")
-                    }
-                    TextButton(onClick = {
-                        showExitConfirmation = false
-                        AppStateManager.setMode(AppMode.Run)
-                        scope.launch {
-                            ConfigManager.saveAndRun {
-                                AppExitHelper.exitApplication(context)
-                            }
-                        }
-                    }) {
-                        Text("确认")
-                    }
-                }
-            })
-        }
-
-        // Confirmation dialog for clearing all data
-        if (showCleanAllConfirmation) {
-            CustomAlertDialog(onDismissRequest = { showCleanAllConfirmation = false }, title = {
-                Text(
-                    text = "清除全部数据", style = MaterialTheme.typography.titleMedium
-                )
-            }, text = {
-                Text(
-                    text = "确认要删除所有数据吗？\n此操作不可撤销，将删除辅助设置、账号信息等全部数据。\n\n清除数据后，辅助将自动关闭，请手动重启辅助。", style = MaterialTheme.typography.bodyMedium
-                )
-            }, confirmButton = {
-                Row {
-                    TextButton(onClick = { showCleanAllConfirmation = false }) {
-                        Text("取消")
-                    }
-                    TextButton(onClick = {
-                        showCleanAllConfirmation = false
-                        // Delete all data files and exit immediately without saving GlobalVars
-                        scope.launch {
-                            val sdPath = Environment.getExternalStorageDirectory().path
-                            withContext(Dispatchers.IO) {
-                                RunShell.runNoOutput(
-                                    "rm -rf $sdPath/zkqFiles && rm -rf $sdPath/loginData", checkIsPlaying = false
-                                )
-                            }
-                            AppExitHelper.exitApplication(context)
-                        }
-                    }) {
-                        Text("确认")
-                    }
-                }
-            })
-        }
-
-        // Floating notification overlay, auto-dismissed after 1200ms
-        if (showNotification) {
-            CustomNotificationWindow(
-                message = notificationMessage, onDismissRequest = { })
-        }
+        // 3. Bottom fixed button area + dialogs + notification
+        HomeScreenBottomBar(
+            scope = scope,
+            saveAndSetPlaying = saveAndSetPlaying,
+            showNotification = showNotification,
+            notificationMessage = notificationMessage,
+            onDismissNotification = {},
+            showCleanAllConfirmation = showCleanAllConfirmation,
+            onDismissCleanAll = { showCleanAllConfirmation = false }
+        )
     }
 
 }

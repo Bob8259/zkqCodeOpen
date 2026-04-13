@@ -26,8 +26,6 @@ import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -180,6 +178,20 @@ class WindowCenterPositionProvider : PopupPositionProvider {
         return IntOffset(
             windowCenter.x - popupContentSize.width / 2, windowCenter.y - popupContentSize.height / 2
         )
+    }
+}
+
+// Positions a popup directly below its anchor, aligned to the anchor's left edge.
+class BelowAnchorPositionProvider : PopupPositionProvider {
+    override fun calculatePosition(
+        anchorBounds: IntRect,
+        windowSize: IntSize,
+        layoutDirection: LayoutDirection,
+        popupContentSize: IntSize
+    ): IntOffset {
+        val x = anchorBounds.left.coerceAtMost(windowSize.width - popupContentSize.width)
+        val y = anchorBounds.bottom
+        return IntOffset(x, y)
     }
 }
 
@@ -473,10 +485,8 @@ fun SettingDropdown(
     }
     val label = Schema.getDisplayName(key)
 
-    // 2. Internal UI state
     var expanded by remember { mutableStateOf(false) }
 
-    // 3. Data conversion logic
     val selectedIndex = state.value.toIntOrNull() ?: 0
     val selectedOption = options.getOrElse(selectedIndex) { options.getOrNull(0) ?: "" }
 
@@ -490,7 +500,7 @@ fun SettingDropdown(
         )
 
         Box(modifier = Modifier.wrapContentSize(Alignment.TopStart)) {
-            // Dropdown trigger button
+            // Trigger button
             Button(
                 onClick = {
                     GlobalVars.isAutoRunEnabled = false
@@ -505,20 +515,62 @@ fun SettingDropdown(
                 Icon(Icons.Default.ArrowDropDown, contentDescription = null)
             }
 
-            // Dropdown menu
-            DropdownMenu(
-                expanded = expanded, onDismissRequest = { expanded = false }) {
-                options.forEachIndexed { idx, option ->
-                    DropdownMenuItem(
-                        text = {
-                            Text(option, style = MaterialTheme.typography.labelMedium)
-                        }, onClick = {
-                            GlobalVars.isAutoRunEnabled = false
-                            state.value = idx.toString()
-                            expanded = false
-                            afterChange?.invoke(idx)
-                        }, modifier = Modifier.height(35.dp) // Slightly increase height for easier clicking
-                    )
+            // Modern popup panel with blue rounded-square option cards, anchored below the trigger
+            if (expanded) {
+                Popup(
+                    popupPositionProvider = BelowAnchorPositionProvider(),
+                    onDismissRequest = { expanded = false },
+                    properties = PopupProperties(focusable = true)
+                ) {
+                    Surface(
+                        shape = RoundedCornerShape(12.dp),
+                        color = AppColors.CardBg,
+                        shadowElevation = 8.dp,
+                        modifier = Modifier.padding(4.dp)
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .padding(8.dp)
+                                .heightIn(max = 320.dp)
+                                .verticalScroll(rememberScrollState()),
+                            verticalArrangement = Arrangement.spacedBy(6.dp)
+                        ) {
+                            options.forEachIndexed { idx, option ->
+                                val isSelected = idx == selectedIndex
+                                val cardBg = if (isSelected)
+                                    AppColors.Primary
+                                else
+                                    AppColors.PrimaryLight.copy(alpha = 0.10f)
+                                val cardBorder = if (isSelected)
+                                    AppColors.Primary
+                                else
+                                    AppColors.PrimaryLight
+                                val textColor = if (isSelected)
+                                    Color.White
+                                else
+                                    AppColors.TextPrimary
+
+                                Box(
+                                    modifier = Modifier
+                                        .background(cardBg, RoundedCornerShape(8.dp))
+                                        .border(1.dp, cardBorder, RoundedCornerShape(8.dp))
+                                        .clickable {
+                                            GlobalVars.isAutoRunEnabled = false
+                                            state.value = idx.toString()
+                                            expanded = false
+                                            afterChange?.invoke(idx)
+                                        }
+                                        .padding(horizontal = 16.dp, vertical = 8.dp)
+                                ) {
+                                    Text(
+                                        text = option,
+                                        color = textColor,
+                                        style = MaterialTheme.typography.labelMedium
+                                    )
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
