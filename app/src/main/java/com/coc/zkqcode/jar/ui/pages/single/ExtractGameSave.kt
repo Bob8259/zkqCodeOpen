@@ -207,14 +207,13 @@ fun ExtractGameSaveContent() {
     val selectedVariant = GameVariant.entries.getOrElse(selectedIndex) { GameVariant.CN }
 
     Column(modifier = Modifier.padding(6.dp)) {
-        // Dropdown to switch between CN and Global versions
-        SettingDropdown(
-            key = GLOBAL_SETTINGS.EXTRACT_VERSION.key,
-            options = listOf("国服", "国际服", "数据号")
-        )
-
         // Show section content based on the selected index
         SettingSection {
+            // Dropdown to switch between CN and Global versions
+            SettingDropdown(
+                key = GLOBAL_SETTINGS.EXTRACT_VERSION.key,
+                options = listOf("国服", "国际服", "数据号")
+            )
             if (selectedIndex == 2) {
                 // For "数据号" mode, show the slot selector and data content inputs plus action buttons
                 SettingInputRow(key = GLOBAL_SETTINGS.EXTRACT_DATA_NUMBER.key)

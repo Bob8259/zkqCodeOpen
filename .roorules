@@ -1,1 +1,3 @@
 Always swith to Architecture mode first if you a given a new task.
+
+The commands tools has a probelm with output decoding. So, if you want to see the result of a command, you should always store the output in a tempory file, and delete the file later.
