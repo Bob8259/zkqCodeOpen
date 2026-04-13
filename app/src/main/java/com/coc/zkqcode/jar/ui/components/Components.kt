@@ -23,7 +23,6 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -122,20 +121,39 @@ fun CustomAlertDialog(
         Surface(
             modifier = Modifier
                 .wrapContentSize()
-                .padding(16.dp), shape = RoundedCornerShape(28.dp), color = MaterialTheme.colorScheme.surface, shadowElevation = 6.dp
+                .padding(16.dp),
+            shape = RoundedCornerShape(12.dp),
+            color = Color(0xFFE8EAED),
+            shadowElevation = 8.dp
         ) {
-            Column(modifier = Modifier.padding(24.dp)) {
+            Column {
+                // Orange gradient header for 注意事项 warning style
                 title?.let {
-                    Box(modifier = Modifier.padding(bottom = 16.dp)) {
+                    val gradient = Brush.horizontalGradient(
+                        colors = listOf(Color(0xFFf9a825), Color(0xFFfbbc05))
+                    )
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(gradient)
+                            .padding(horizontal = 16.dp, vertical = 12.dp)
+                    ) {
                         it()
                     }
                 }
+                // Body content
                 text?.let {
-                    Box(modifier = Modifier.padding(bottom = 24.dp)) {
+                    Box(modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)) {
                         it()
                     }
                 }
-                Row(modifier = Modifier.align(Alignment.End)) {
+                // Confirm button row
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 12.dp, vertical = 8.dp),
+                    horizontalArrangement = Arrangement.End
+                ) {
                     confirmButton()
                 }
             }
@@ -297,19 +315,18 @@ fun CustomButton(
         }
         Column(Modifier.padding(top = 8.dp)) {
             explain?.let {
-                Icon(
-                    imageVector = Icons.Default.Info,
-                    contentDescription = "Notes",
+                Text(
+                    text = "\u2139\uFE0F",
                     modifier = Modifier
                         .height(18.dp)
                         .clickable { showExplanation = true },
-                    tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                    style = MaterialTheme.typography.labelMedium
                 )
 
                 if (showExplanation) {
                     CustomAlertDialog(onDismissRequest = { showExplanation = false }, title = {
                         Text(
-                            text = "注意事项", style = MaterialTheme.typography.titleMedium
+                            text = "注意事项", style = MaterialTheme.typography.titleMedium, color = Color.White
                         )
                     }, text = {
                         Text(
@@ -427,19 +444,19 @@ private fun CustomSwitch(
             )
 
             explain?.let {
-                Icon(
-                    imageVector = Icons.Default.Info,
-                    contentDescription = "注意事项",
+                Text(
+                    text = "\u2139\uFE0F",
                     modifier = Modifier
                         .height(18.dp)
                         .clickable { showExplanation = true }
                         .padding(end = 2.dp),
-                    tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
+                    style = MaterialTheme.typography.labelMedium
+                )
 
                 if (showExplanation) {
                     CustomAlertDialog(onDismissRequest = { showExplanation = false }, title = {
                         Text(
-                            text = "注意事项", style = MaterialTheme.typography.titleMedium
+                            text = "注意事项", style = MaterialTheme.typography.titleMedium, color = Color.White
                         )
                     }, text = {
                         Text(

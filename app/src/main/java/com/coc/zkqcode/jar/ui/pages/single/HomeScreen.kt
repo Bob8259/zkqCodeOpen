@@ -4,7 +4,6 @@ import android.os.Environment
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,8 +15,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.PrimaryScrollableTabRow
@@ -25,6 +24,7 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -99,9 +99,29 @@ fun HomeScreen(
     val configCount = configCountStr.toIntOrNull() ?: 1
     val tabs = listOf("主页设置", "账号设置", "提取存档", "配置文件", "特殊设置")
 
+    val sectionItems = listOf(
+        "⚔️ 核心对战" to 0,
+        "🔬 自动研究" to 5,
+        "🏗️ 自动建造" to 7,
+        "🐾 战宠设置" to 9,
+        "🌙 夜世界" to 15
+    )
+
     val lazyListState = rememberLazyListState()
-    val outlineScrollState = rememberScrollState()
+    val chipListState = rememberLazyListState()
     val scope = rememberCoroutineScope()
+
+    val activeSectionIndex by remember {
+        derivedStateOf {
+            val firstVisible = lazyListState.firstVisibleItemIndex
+            sectionItems.indexOfLast { (_, itemIndex) -> itemIndex <= firstVisible }
+                .coerceAtLeast(0)
+        }
+    }
+
+    LaunchedEffect(activeSectionIndex) {
+        chipListState.animateScrollToItem(activeSectionIndex)
+    }
     val scrollToBottom: () -> Unit = {
         scope.launch {
             // Small delay to let AnimatedVisibility content measure
@@ -196,41 +216,38 @@ fun HomeScreen(
                     onClick = { selectedConfigIndex = null },
                     marginTop = 0.dp
                 )
-                // Scrollable section outline chips
-                // Section banner item indices within the LazyColumn (GameConfig emits items in this order)
-                val sectionItems = listOf(
-                    "⚔️ 核心对战" to 0,
-                    "🔬 自动研究" to 5,
-                    "🏗️ 自动建造" to 7,
-                    "🐾 战宠设置" to 9,
-                    "🌙 夜世界" to 15
-                )
-                Row(
-                    modifier = Modifier
-                        .weight(1f)
-                        .horizontalScroll(outlineScrollState),
+                // Scrollable section outline chips — synced with lazyListState scroll position
+                LazyRow(
+                    state = chipListState,
+                    modifier = Modifier.weight(1f),
                     horizontalArrangement = Arrangement.spacedBy(6.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    sectionItems.forEach { (label, itemIndex) ->
-                        Box(
-                            modifier = Modifier
-                                .clip(RoundedCornerShape(16.dp))
-                                .background(AppColors.Primary.copy(alpha = 0.12f))
-                                .border(1.dp, AppColors.Primary.copy(alpha = 0.4f), RoundedCornerShape(16.dp))
-                                .clickable {
-                                    scope.launch {
-                                        lazyListState.animateScrollToItem(itemIndex)
+                    sectionItems.forEachIndexed { chipIndex, (label, itemIndex) ->
+                        item {
+                            val isActive = chipIndex == activeSectionIndex
+                            Box(
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(16.dp))
+                                    .background(
+                                        if (isActive) AppColors.Primary
+                                        else AppColors.Primary.copy(alpha = 0.12f)
+                                    )
+                                    .border(1.dp, AppColors.Primary.copy(alpha = 0.4f), RoundedCornerShape(16.dp))
+                                    .clickable {
+                                        scope.launch {
+                                            lazyListState.animateScrollToItem(itemIndex)
+                                        }
                                     }
-                                }
-                                .padding(horizontal = 12.dp, vertical = 6.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text = label,
-                                style = MaterialTheme.typography.labelMedium,
-                                color = AppColors.Primary
-                            )
+                                    .padding(horizontal = 12.dp, vertical = 6.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = label,
+                                    style = MaterialTheme.typography.labelMedium,
+                                    color = if (isActive) Color.White else AppColors.Primary
+                                )
+                            }
                         }
                     }
                 }

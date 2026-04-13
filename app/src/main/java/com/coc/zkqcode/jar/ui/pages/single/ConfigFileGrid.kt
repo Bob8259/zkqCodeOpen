@@ -67,7 +67,7 @@ fun ConfigFileGrid(
                 val actualRowCount = (items.size + columnsCount - 1) / columnsCount
                 val itemHeight = 48.dp
                 val gridHeight = itemHeight * actualRowCount + spacing * (actualRowCount - 1).coerceAtLeast(0)
-                
+
                 LazyVerticalGrid(
                     columns = GridCells.Adaptive(minSize = cellWidth),
                     userScrollEnabled = false,
