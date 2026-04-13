@@ -42,17 +42,16 @@ fun ConfigFileGrid(
                     if (newCount != null) {
                         ConfigManager.expandProfileConfigs(newCount)
                     }
-                }
+                },
             )
             FlowRow(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(8.dp)
             ) {
                 for (i in 1..configCount) {
                     Box(
                         modifier = Modifier
-                            .padding(4.dp)
+                            .padding(end = 8.dp, top = 8.dp)
                             .widthIn(min = 90.dp)
                             .clip(RoundedCornerShape(8.dp))
                             .background(AppColors.Azure)
