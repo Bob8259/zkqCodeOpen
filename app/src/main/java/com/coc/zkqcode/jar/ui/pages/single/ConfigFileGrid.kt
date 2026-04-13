@@ -63,7 +63,7 @@ fun ConfigFileGrid(
             )
             BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
                 val spacing = 8.dp
-                val cellWidth = min((maxWidth - spacing * 2) / 3, 120.dp)
+                val cellWidth = 110.dp
                 val columnsCount = maxOf(1, ((maxWidth.value + spacing.value) / (cellWidth.value + spacing.value)).toInt())
                 val actualRowCount = (items.size + columnsCount - 1) / columnsCount
                 val gridHeight = (actualRowCount * 56).dp
@@ -82,7 +82,7 @@ fun ConfigFileGrid(
                                 .clip(RoundedCornerShape(8.dp))
                                 .background(AppColors.PrimaryLight)
                                 .clickable { onConfigSelected(i) }
-                                .padding(horizontal = 16.dp, vertical = 12.dp),
+                                .padding(horizontal = 8.dp, vertical = 12.dp),
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
