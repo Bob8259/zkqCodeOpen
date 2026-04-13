@@ -1,5 +1,5 @@
 You MUST always swith to Architecture mode first if you a given a new task.
 
-The commands tools has a probelm with output decoding. So, if you want to see the result of a command, you should always store the output in a tempory file, and delete the file later.
+The commands tools has a probelm with output decoding. So, if you want to see the result of a command, you should always store the output in a tempory file, and you MUST delete the file later.
 
 You should always ask wheter the user is content about your plan, and only switch to Code Mode after receiving explict consent. NEVER swith to the Code Mode by yourself.

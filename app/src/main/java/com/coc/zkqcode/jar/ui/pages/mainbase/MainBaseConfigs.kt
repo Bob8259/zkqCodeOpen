@@ -16,7 +16,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.coc.zkqcode.core.data.database.GlobalVars
-import com.coc.zkqcode.jar.ui.components.CustomButton
+import com.coc.zkqcode.jar.ui.components.SectionBanner
 import com.coc.zkqcode.jar.ui.components.SettingSwitchIcon
 import com.coc.zkqcode.jar.ui.components.SettingDropdown
 import com.coc.zkqcode.jar.ui.components.SettingInputRow
@@ -25,20 +25,24 @@ import com.coc.zkqcode.jar.ui.components.SettingSection
 import com.coc.zkqcode.jar.ui.schema.Schema.MAIN_BASE_SETTINGS
 
 fun LazyListScope.MainBaseConfig(
-    index: Int, isExpanded: Boolean, onToggleExpanded: () -> Unit, onNavigatePriority: (Int) -> Unit = {}
+    index: Int,
+    isExpanded: Boolean,
+    onToggleExpanded: () -> Unit,
+    isResearchExpanded: Boolean,
+    onToggleResearch: () -> Unit,
+    isBuildExpanded: Boolean,
+    onToggleBuild: () -> Unit,
+    isPetExpanded: Boolean,
+    onTogglePet: () -> Unit,
+    onNavigatePriority: (Int) -> Unit = {}
 ) {
-    // Header
+    // ⚔️ Banner — 核心对战设置（主世界）
     item {
-        SettingSection {
-            FlowRow {
-                Text(
-                    text = "以下是主世界设置", fontSize = 15.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(10.dp), textAlign = TextAlign.Start
-                )
-                CustomButton(
-                    onClick = onToggleExpanded, text = if (isExpanded) "▼ 缩起主世界设置" else "▶ 展开主世界设置"
-                )
-            }
-        }
+        SectionBanner(
+            title = "⚔️ 核心对战设置（主世界）",
+            isExpanded = isExpanded,
+            onClick = onToggleExpanded
+        )
     }
 
     // Attack & Resource requirements
@@ -64,17 +68,11 @@ fun LazyListScope.MainBaseConfig(
                     key = "${MAIN_BASE_SETTINGS.DYNAMIC_ADJUSTMENT.key}_c$index", explain = "勾选后，辅助会跳过前两个搜到的目标，并且会根据所有搜索到的目标的可获得资源的平均值来搜鱼要求。"
                 )
                 SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.STOP_BATTLE_AFTER_FULL_RESOURCES.key}_c$index")
-
-                /*SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.STOP_BATTLE_WHEN_NO_STAR.key}_c$index")
-                 SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.PLAY_LADDER.key}_c$index")
-                 AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.PLAY_LADDER.key}_c$index"]?.value == "1") {
-                     SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.CHANGE_BASE.key}_c$index")
-                 } */
             }
         }
     }
 
-    // Battle behavior options
+    // Battle behaviour options
     item {
         SettingSection(visible = isExpanded) {
             FlowRow {
@@ -87,47 +85,9 @@ fun LazyListScope.MainBaseConfig(
                 SettingSwitchIcon(
                     key = "${MAIN_BASE_SETTINGS.MANUAL_TRAINING.key}_c$index", explain = "勾选后，辅助将不会进入配兵页面，请手动配兵。\n\n注意：辅助不会自动开启超级兵。"
                 )
-//                SettingSwitchIcon(
-//                    key = "${MAIN_BASE_SETTINGS.CHANGE_HEROES.key}_c$index",
-//                    explain = "勾选后，辅助会随机更换英雄，宠物以及装备。可能影响到升级穿戴装备的功能，请谨慎勾选。"
-//                )
             }
         }
     }
-
-    // AI deploy & Tactics
-    /* item {
-        AnimatedVisibility(visible = isExpanded) {
-            Column {
-                AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.AI_DEPLOY_TROOPS.key}_c$index"]?.value == "0") {
-                    SettingDropdown(
-                        key = "${MAIN_BASE_SETTINGS.TACTICS_MODE.key}_c$index",
-                        options = listOf("一马当先", "两面夹击", "四面楚歌")
-                    )
-                }
-
-                SettingSwitchIcon(
-                    key = "${MAIN_BASE_SETTINGS.AI_DEPLOY_TROOPS.key}_c$index",
-                    explain = "勾选后，需配合AI下兵插件才能正常使用。建议使用前仔细阅读官网教程。"
-                )
-
-                AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.AI_DEPLOY_TROOPS.key}_c$index"]?.value == "1") {
-                    Column {
-                        SettingInputRow(key = "${MAIN_BASE_SETTINGS.LIGHTING_ON_AIR_SWEEPER.key}_c$index")
-                        SettingInputRow(key = "${MAIN_BASE_SETTINGS.LIGHTING_ON_AIR_DEFENCE.key}_c$index")
-                        SettingInputRow(key = "${MAIN_BASE_SETTINGS.LIGHTING_ON_WIZARD_TOWER.key}_c$index")
-                        SettingInputRow(key = "${MAIN_BASE_SETTINGS.LIGHTING_ON_MORTAR.key}_c$index")
-                    }
-                }
-
-                HorizontalDivider(
-                    modifier = Modifier.padding(top = 6.dp),
-                    thickness = 1.dp,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 1f)
-                )
-            }
-        }
-    } */
 
     // Donation & Research toggle
     item {
@@ -141,7 +101,6 @@ fun LazyListScope.MainBaseConfig(
             AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.DONATION_SETTING.key}_c$index"]?.value == "1") {
                 Column {
                     FlowRow {
-                        // Resource farming trigger: detect interval, start threshold, stop threshold
                         SettingInputRowWithSuffix(
                             key = "${MAIN_BASE_SETTINGS.DONATION_DETECT_INTERVAL.key}_c$index", suffix = "秒钟"
                         )
@@ -154,12 +113,20 @@ fun LazyListScope.MainBaseConfig(
                     }
                 }
             }
-
-
         }
     }
+
+    // 🔬 Banner — 自动研究设置
     item {
-        SettingSection(visible = isExpanded) {
+        SectionBanner(
+            title = "🔬 自动研究设置",
+            isExpanded = isResearchExpanded,
+            onClick = onToggleResearch
+        )
+    }
+
+    item {
+        SettingSection(visible = isResearchExpanded) {
             Column {
                 SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.RESEARCH_SETTING.key}_c$index")
                 AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.RESEARCH_SETTING.key}_c$index"]?.value == "1") {
@@ -168,17 +135,22 @@ fun LazyListScope.MainBaseConfig(
             }
         }
     }
-    // Building & Wall settings
+
+    // 🏗️ Banner — 自动建造设置（主世界）
     item {
-        SettingSection(visible = isExpanded) {
+        SectionBanner(
+            title = "🏗️ 自动建造设置（主世界）",
+            isExpanded = isBuildExpanded,
+            onClick = onToggleBuild
+        )
+    }
+
+    item {
+        SettingSection(visible = isBuildExpanded) {
             FlowRow {
                 SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.BUILD_SETTING.key}_c$index")
                 SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.WALL_UPGRADE_SETTINGS.key}_c$index")
-                SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.SAVE_WORKER.key}_c$index")/* SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.BUILDING_CONVERSION_SETTINGS.key}_c$index")
-                SettingSwitchIcon(
-                    key = "${MAIN_BASE_SETTINGS.UPGRADE_AFTER_FAIL_WALL_UPGRADE.key}_c$index",
-                    explain = "勾选后，若主世界无城墙可升级，则会将所有工人用于建造。"
-                ) */
+                SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.SAVE_WORKER.key}_c$index")
             }
 
             AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.WALL_UPGRADE_SETTINGS.key}_c$index"]?.value == "1") {
@@ -194,9 +166,18 @@ fun LazyListScope.MainBaseConfig(
         }
     }
 
+    // 🐾 Banner — 战宠&其他发展设置
+    item {
+        SectionBanner(
+            title = "🐾 战宠&其他发展设置",
+            isExpanded = isPetExpanded,
+            onClick = onTogglePet
+        )
+    }
+
     // Pet upgrades
     item {
-        SettingSection(visible = isExpanded) {
+        SettingSection(visible = isPetExpanded) {
             Column {
                 SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.UPGRADE_PETS.key}_c$index")
 
@@ -206,13 +187,13 @@ fun LazyListScope.MainBaseConfig(
             }
         }
     }
+
     // Helper settings
     item {
-        SettingSection(visible = isExpanded) {
+        SettingSection(visible = isPetExpanded) {
             FlowRow {
                 SettingSwitchIcon(
                     key = "${MAIN_BASE_SETTINGS.HELPER_SETTINGS.key}_c$index", explain = "勾选后，会自动用实验助手以及建筑工人学徒。", afterChange = { checked ->
-                        // Keep helper upgrade toggles consistent with the master helper switch.
                         if (!checked) {
                             GlobalVars.configStates["${MAIN_BASE_SETTINGS.UPGRADE_RESEARCH_HELPER.key}_c$index"]?.value = "0"
                             GlobalVars.configStates["${MAIN_BASE_SETTINGS.UPGRADE_BUILDER_APPRENTICE.key}_c$index"]?.value = "0"
@@ -227,66 +208,25 @@ fun LazyListScope.MainBaseConfig(
             }
         }
     }
+
     // Clan Games & War
     item {
-        SettingSection(visible = isExpanded) {
+        SettingSection(visible = isPetExpanded) {
             Column {
-                FlowRow { /*
-                        SettingSwitchIcon(
-                            key = "${MAIN_BASE_SETTINGS.DO_CLAN_GAMES.key}_c$index",
-                            explain = "勾选后，辅助会接取小部分夜世界任务，例如夜世界摧毁率等。注意重点是\"小部分\"，也就是说并不是所有任务都可以接取，并且只会接取夜世界任务！若没有任务可接取，则会放弃第一个任务。接取任务后，会自动打夜世界。"
-                        )
-                        SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.CLAIM_CLAN_GAME_REWARDS.key}_c$index")
-                        SettingSwitchIcon(
-                            key = "${MAIN_BASE_SETTINGS.PLAY_CLAN_WAR.key}_c$index",
-                            explain = "勾选后，部落战会进攻推荐对手。胜率较低，容易黑三，建议谨慎勾选。"
-                        )
-                        SettingSwitchIcon(
-                            key = "${MAIN_BASE_SETTINGS.PLAY_LEAGUE.key}_c$index",
-                            explain = "勾选后，会进攻最后一位没有被部落成员进攻过的对手。胜率较低，容易黑三，建议谨慎勾选。"
-                        )
-                        */
+                FlowRow {
                     SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.PLAY_RAID.key}_c$index")
                 }
 
-                FlowRow {
-                    /*
-                    SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.START_CLAN_WAR_SETTINGS.key}_c$index")
-                    SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.START_LEAGUE_SETTINGS.key}_c$index")
-                    SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.START_RAID.key}_c$index")
-                    */
-                }
+                FlowRow {}
             }
         }
     }
+
     // Shop purchases
     item {
-        SettingSection(visible = isExpanded) {
+        SettingSection(visible = isPetExpanded) {
             Column {
                 FlowRow {
-                    /*
-                    listOf(
-                        MAIN_BASE_SETTINGS.BUY_STAR_ORE_WITH_RAID_MEDAL,
-                        MAIN_BASE_SETTINGS.BUY_CLOCK_TOWER_POTION_WITH_RAID_MEDAL,
-                        MAIN_BASE_SETTINGS.BUY_RING_OF_WALL_WITH_RAID_MEDAL,
-                        MAIN_BASE_SETTINGS.BUY_RESEARCH_POTION_WITH_RAID_MEDAL,
-                        MAIN_BASE_SETTINGS.BUY_RESOURCE_POTION_WITH_RAID_MEDAL,
-                        MAIN_BASE_SETTINGS.BUY_RESEARCH_POTION_WITH_LEAGUE_MEDAL,
-                        MAIN_BASE_SETTINGS.BUY_BUILDER_POTION_WITH_LEAGUE_MEDAL,
-                        MAIN_BASE_SETTINGS.BUY_STAR_ORE_WITH_EVENT_MEDAL,
-                        MAIN_BASE_SETTINGS.BUY_BUILDER_POTION_WITH_EVENT_MEDAL,
-                        MAIN_BASE_SETTINGS.BUY_NEW_EQUIPMENT_WITH_EVENT_MEDAL,
-                        MAIN_BASE_SETTINGS.BUY_RESEARCH_POTION_WITH_EVENT_MEDAL,
-                        MAIN_BASE_SETTINGS.USE_RESEARCH_POTION,
-                        MAIN_BASE_SETTINGS.SELL_RESOURCE_POTION,
-                        MAIN_BASE_SETTINGS.USE_CLOCK_TOWER_POTION,
-                        MAIN_BASE_SETTINGS.SELL_CLOCK_TOWER_POTION,
-                        MAIN_BASE_SETTINGS.USE_BUILDER_POTION,
-                        MAIN_BASE_SETTINGS.SELL_RING_OF_WALL
-                    ).forEach { setting ->
-                        SettingSwitchIcon(key = "${setting.key}_c$index")
-                    }
-                    */
                     listOf(
                         MAIN_BASE_SETTINGS.USE_RESEARCH_POTION,
                         MAIN_BASE_SETTINGS.USE_BUILDER_POTION,
@@ -304,12 +244,11 @@ fun LazyListScope.MainBaseConfig(
 
     // Gear & Rewards
     item {
-        SettingSection(visible = isExpanded) {
+        SettingSection(visible = isPetExpanded) {
             FlowRow {
                 SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.UPGRADE_WERA_GEAR.key}_c$index")
                 SettingSwitchIcon(
                     key = "${MAIN_BASE_SETTINGS.UPGRADE_ALL_GEAR.key}_c$index", explain = "勾选后，辅助也会自动升级穿戴的装备。",
-                    // Keep the base wearable gear toggle aligned with "upgrade all gear".
                     afterChange = { checked ->
                         if (checked) {
                             GlobalVars.configStates["${MAIN_BASE_SETTINGS.UPGRADE_WERA_GEAR.key}_c$index"]?.value = "1"
@@ -322,31 +261,14 @@ fun LazyListScope.MainBaseConfig(
                     SettingSwitchIcon(
                         key = "${MAIN_BASE_SETTINGS.REMOVE_OBSTACLES_ENHANCEMENT.key}_c$index", explain = "勾选后，移除障碍物时增加随机点击，增大移除稀有物品的概率。\n适合批量挂小号时开启，防止地图建造空间不足。"
                     )
-                }/* SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.CLAIM_TIMED_REWARDS.key}_c$index")
-                SettingSwitchIcon(
-                    key = "${MAIN_BASE_SETTINGS.CLAIM_TOKEN_REWARDS.key}_c$index",
-                    explain = "仅在资源全满后才会领取"
-                )
-
-                SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.CLAIM_CAPITAL_GOLD.key}_c$index")
-                SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.DONATE_CAPITAL_GOLD.key}_c$index")
-                SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.CLAIM_FREE_SHOP_REWARDS.key}_c$index")
-                */
-                SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.CLAIM_ACHIEVEMENT_GEMS.key}_c$index")/*
-                // USE_TEMP_ITEMS is intentionally detached from magic-item handling.
-                // Magic-item logic now follows the dedicated potion/ring switches only.
-                // SettingSwitchIcon(
-                //     key = "${MAIN_BASE_SETTINGS.USE_TEMP_ITEMS.key}_c$index",
-                //     explain = "勾选此选项后，辅助会使用研究浓汤和建筑工人大餐。并且为了防止重复使用导致道具失效，每次只会使用一个道具。"
-                // )
-                */
+                }
+                SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.CLAIM_ACHIEVEMENT_GEMS.key}_c$index")
             }
         }
     }
 
-
     item {
-        SettingSection(visible = isExpanded) {
+        SettingSection(visible = isPetExpanded) {
             Column {
                 SettingSwitchIcon(
                     key = "${MAIN_BASE_SETTINGS.AUTO_JOIN_CLAN.key}_c$index",
@@ -360,29 +282,5 @@ fun LazyListScope.MainBaseConfig(
                 }
             }
         }
-    }/* // Clan join
-    // Consecutive clans & Invite
-    item {
-        AnimatedVisibility(visible = isExpanded) {
-            Column {
-                FlowRow {
-                    SettingSwitchIcon(
-                        key = "${MAIN_BASE_SETTINGS.CREATE_CONSECUTIVE_CLANS.key}_c$index",
-                        explain = "勾选此选项后，当金币大于总容量80-85%后，辅助将反复创建部落，直到部落标签出现大于或等于用户设定的连续数字或字母为止，或直到金币消耗完为止。\n\n注意：\n必须先建造部落城堡，才能勾选此项，否则会出现异常。\n部分设备使用此功能后，需要手动切换输入法。具体切换方法请参考官网教程。\n部分云手机不支持读取剪贴板，建议在电脑模拟器里使用本功能。"
-                    )
-                    SettingSwitchIcon(
-                        key = "${MAIN_BASE_SETTINGS.INVITE_PLAYERS.key}_c$index",
-                        explain = "勾选此选项后，辅助将会从公告栏邀请玩家加入部落。\n\n注意：单次邀请耗时约1小时。\n请先加入部落后再开启本功能。\n请确保账号拥有邀请玩家的权限。"
-                    )
-                }
-
-                AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.CREATE_CONSECUTIVE_CLANS.key}_c$index"]?.value == "1") {
-                    Column {
-                        SettingInputRow(key = "${MAIN_BASE_SETTINGS.CLAN_NAME.key}_c$index")
-                        SettingInputRow(key = "${MAIN_BASE_SETTINGS.CONSECUTIVE_COUNT.key}_c$index")
-                    }
-                }
-            }
-        }
-    } */
+    }
 }

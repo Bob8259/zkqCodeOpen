@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -17,6 +18,7 @@ import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -331,9 +333,6 @@ fun SettingSwitchIcon(
     )
 }
 
-// Teal accent for collapse/expand buttons to distinguish from action buttons
-val CollapseTeal = AppColors.Success
-
 // Lighter blue for research/building toggle buttons to distinguish from action buttons
 private val ToggleButtonBlue = AppColors.PrimaryLight
 
@@ -523,5 +522,40 @@ fun SettingDropdown(
                 }
             }
         }
+    }
+}
+
+// Full-width clickable blue gradient banner, matching the HTML .module-header style.
+// Used as the collapse/expand toggle for each named section.
+@Composable
+fun SectionBanner(
+    title: String,
+    isExpanded: Boolean,
+    onClick: () -> Unit
+) {
+    val gradient = Brush.horizontalGradient(
+        colors = listOf(AppColors.PrimaryLight, AppColors.Primary)
+    )
+    val shape = RoundedCornerShape(10.dp)
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 4.dp, vertical = 4.dp)
+            .background(gradient, shape)
+            .clickable { onClick() }
+            .padding(horizontal = 16.dp, vertical = 14.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = title,
+            color = Color.White,
+            style = MaterialTheme.typography.titleSmall
+        )
+        Text(
+            text = if (isExpanded) "▼" else "▶",
+            color = Color.White,
+            style = MaterialTheme.typography.titleSmall
+        )
     }
 }

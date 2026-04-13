@@ -10,6 +10,12 @@ fun LazyListScope.GameConfig(
     index: Int,
     isMainExpanded: Boolean,
     onToggleMainExpanded: () -> Unit,
+    isResearchExpanded: Boolean,
+    onToggleResearch: () -> Unit,
+    isBuildExpanded: Boolean,
+    onToggleBuild: () -> Unit,
+    isPetExpanded: Boolean,
+    onTogglePet: () -> Unit,
     isBuilderBaseExpanded: Boolean,
     onToggleBuilderBaseExpanded: () -> Unit,
     onNavigatePriority: (Int) -> Unit = {},
@@ -21,6 +27,12 @@ fun LazyListScope.GameConfig(
         index = index,
         isExpanded = isMainExpanded,
         onToggleExpanded = onToggleMainExpanded,
+        isResearchExpanded = isResearchExpanded,
+        onToggleResearch = onToggleResearch,
+        isBuildExpanded = isBuildExpanded,
+        onToggleBuild = onToggleBuild,
+        isPetExpanded = isPetExpanded,
+        onTogglePet = onTogglePet,
         onNavigatePriority = onNavigatePriority
     )
     BuilderBaseConfig(

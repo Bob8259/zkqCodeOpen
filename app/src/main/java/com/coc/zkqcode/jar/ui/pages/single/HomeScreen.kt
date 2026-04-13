@@ -2,6 +2,9 @@ package com.coc.zkqcode.jar.ui.pages.single
 
 import android.os.Environment
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,6 +17,8 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.PrimaryScrollableTabRow
 import androidx.compose.material3.Tab
@@ -30,6 +35,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -93,6 +99,9 @@ fun HomeScreen(
 
     // Hoisted expansion states keyed by config index (1-based)
     val mainBaseExpandedStates = androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateMapOf<Int, Boolean>() }
+    val researchExpandedStates = androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateMapOf<Int, Boolean>() }
+    val buildExpandedStates = androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateMapOf<Int, Boolean>() }
+    val petExpandedStates = androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateMapOf<Int, Boolean>() }
     val builderBaseExpandedStates = androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateMapOf<Int, Boolean>() }
 
     val configCount = configCountStr.toIntOrNull() ?: 1
@@ -182,14 +191,59 @@ fun HomeScreen(
             }
         }
 
-        // Back button pinned above the list when a config file is selected
+        // Back button + section outline pinned above the list when a config file is selected
         if (selectedTabIndex == 3 && selectedConfigIndex != null) {
-            Box(modifier = Modifier.padding(start = 4.dp)) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 4.dp, end = 4.dp, top = 4.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                // Back button — fixed, does not scroll
                 CustomButton(
                     text = "◀ 返回",
                     onClick = { selectedConfigIndex = null },
-                    marginTop = 6.dp
+                    marginTop = 0.dp
                 )
+                // Scrollable section outline chips
+                val outlineScrollState = rememberScrollState()
+                // Section banner item indices within the LazyColumn (GameConfig emits items in this order)
+                val sectionItems = listOf(
+                    "⚔️ 核心对战" to 0,
+                    "🔬 自动研究" to 5,
+                    "🏗️ 自动建造" to 7,
+                    "🐾 战宠设置" to 9,
+                    "🌙 夜世界" to 15
+                )
+                Row(
+                    modifier = Modifier
+                        .weight(1f)
+                        .horizontalScroll(outlineScrollState),
+                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    sectionItems.forEach { (label, itemIndex) ->
+                        Box(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(16.dp))
+                                .background(AppColors.Primary.copy(alpha = 0.12f))
+                                .border(1.dp, AppColors.Primary.copy(alpha = 0.4f), RoundedCornerShape(16.dp))
+                                .clickable {
+                                    scope.launch {
+                                        lazyListState.animateScrollToItem(itemIndex)
+                                    }
+                                }
+                                .padding(horizontal = 12.dp, vertical = 6.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = label,
+                                style = MaterialTheme.typography.labelMedium,
+                                color = AppColors.Primary
+                            )
+                        }
+                    }
+                }
             }
         }
 
@@ -303,12 +357,21 @@ fun HomeScreen(
                     } else {
                         // State hoisting for expansion keyed by config index
                         val currentMainExpanded = mainBaseExpandedStates[cfgIdx] ?: true
+                        val currentResearchExpanded = researchExpandedStates[cfgIdx] ?: true
+                        val currentBuildExpanded = buildExpandedStates[cfgIdx] ?: true
+                        val currentPetExpanded = petExpandedStates[cfgIdx] ?: true
                         val currentBuilderBaseExpanded = builderBaseExpandedStates[cfgIdx] ?: true
 
                         GameConfig(
                             index = cfgIdx,
                             isMainExpanded = currentMainExpanded,
                             onToggleMainExpanded = { mainBaseExpandedStates[cfgIdx] = !currentMainExpanded },
+                            isResearchExpanded = currentResearchExpanded,
+                            onToggleResearch = { researchExpandedStates[cfgIdx] = !currentResearchExpanded },
+                            isBuildExpanded = currentBuildExpanded,
+                            onToggleBuild = { buildExpandedStates[cfgIdx] = !currentBuildExpanded },
+                            isPetExpanded = currentPetExpanded,
+                            onTogglePet = { petExpandedStates[cfgIdx] = !currentPetExpanded },
                             isBuilderBaseExpanded = currentBuilderBaseExpanded,
                             onToggleBuilderBaseExpanded = {
                                 val newExpanded = !currentBuilderBaseExpanded

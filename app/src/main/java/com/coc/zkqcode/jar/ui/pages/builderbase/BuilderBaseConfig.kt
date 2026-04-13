@@ -15,7 +15,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.coc.zkqcode.jar.ui.components.CustomButton
+import com.coc.zkqcode.jar.ui.components.SectionBanner
 import com.coc.zkqcode.jar.ui.components.SettingSwitchIcon
 import com.coc.zkqcode.jar.ui.components.SettingSection
 import com.coc.zkqcode.core.data.database.GlobalVars
@@ -26,18 +26,13 @@ fun LazyListScope.BuilderBaseConfig(
     index: Int, isExpanded: Boolean, onToggleExpanded: () -> Unit, onNavigateBuilderBasePriority: (Int) -> Unit = {},
     onScrollToBottom: () -> Unit = {}
 ) {
-    // Header
+    // 🌙 Banner — 夜世界专属设置
     item {
-        SettingSection {
-            FlowRow {
-                Text(
-                    text = "以下是夜世界设置", fontSize = 15.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(10.dp), textAlign = TextAlign.Start
-                )
-                CustomButton(
-                    onClick = onToggleExpanded, text = if (isExpanded) "▼ 缩起夜世界设置" else "▶ 展开夜世界设置"
-                )
-            }
-        }
+        SectionBanner(
+            title = "🌙 夜世界专属设置",
+            isExpanded = isExpanded,
+            onClick = onToggleExpanded
+        )
     }
 
     // NO_BUILDER_BASE toggle
