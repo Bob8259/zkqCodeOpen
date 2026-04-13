@@ -24,7 +24,6 @@ import com.coc.zkqcode.core.ui.theme.AppColors
 import com.coc.zkqcode.jar.ui.components.SettingInputRow
 import com.coc.zkqcode.jar.ui.components.SettingSection
 import com.coc.zkqcode.jar.ui.schema.ConfigManager
-import com.coc.zkqcode.jar.ui.schema.Schema
 import com.coc.zkqcode.jar.ui.schema.Schema.GLOBAL_SETTINGS
 
 // Grid of clickable cards for each config file
@@ -44,6 +43,11 @@ fun ConfigFileGrid(
                     }
                 },
             )
+            Text(
+                text = "点击方格调整配置文件。调整完成后，回到“账号设置”，给每个账号分配所需的配置文件。",
+                style = MaterialTheme.typography.labelSmall,
+                color = Color.Gray
+            )
             FlowRow(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -60,8 +64,7 @@ fun ConfigFileGrid(
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = Schema.getDisplayName(GLOBAL_SETTINGS.CONFIG_COUNT.key)
-                                .let { base -> "$base$i" },
+                            text = "配置文件$i",
                             style = MaterialTheme.typography.labelLarge,
                             fontWeight = FontWeight.Medium,
                             color = Color.White

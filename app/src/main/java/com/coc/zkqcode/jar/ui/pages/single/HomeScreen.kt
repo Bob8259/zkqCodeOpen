@@ -3,6 +3,7 @@ package com.coc.zkqcode.jar.ui.pages.single
 import android.os.Environment
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
@@ -141,7 +142,7 @@ fun HomeScreen(
 
     // Exit Confirmation Dialog State
     var showExitConfirmation by rememberSaveable { mutableStateOf(false) }
-    // Clean All Data Confirmation Dialog State
+    // Clean All Data Confirmation Dialogue State
     var showCleanAllConfirmation by rememberSaveable { mutableStateOf(false) }
 
     val cleanAllData = {
@@ -178,6 +179,17 @@ fun HomeScreen(
                             text = title, style = MaterialTheme.typography.labelLarge, modifier = Modifier.padding(horizontal = 5.dp, vertical = 5.dp)
                         )
                     })
+            }
+        }
+
+        // Back button pinned above the list when a config file is selected
+        if (selectedTabIndex == 3 && selectedConfigIndex != null) {
+            Box(modifier = Modifier.padding(start = 4.dp)) {
+                CustomButton(
+                    text = "◀ 返回配置列表",
+                    onClick = { selectedConfigIndex = null },
+                    marginTop = 6.dp
+                )
             }
         }
 
@@ -222,7 +234,7 @@ fun HomeScreen(
                                     onSaveSuccess()
                                 })
                             }
-                            // Center mixed-height setting items within each FlowRow line so
+                            // Centre mixed-height setting items within each FlowRow line so
                             // switch labels and dropdown labels stay aligned after wrapping.
                             FlowRow(
                                 itemVerticalAlignment = Alignment.CenterVertically
@@ -294,14 +306,6 @@ fun HomeScreen(
                             )
                         }
                     } else {
-                        // Back button to return to grid
-                        item {
-                            com.coc.zkqcode.jar.ui.components.CustomButton(
-                                text = "◀ 返回配置列表",
-                                onClick = { selectedConfigIndex = null }
-                            )
-                        }
-
                         // State hoisting for expansion keyed by config index
                         val currentMainExpanded = mainBaseExpandedStates[cfgIdx] ?: true
                         val currentBuilderBaseExpanded = builderBaseExpandedStates[cfgIdx] ?: true
