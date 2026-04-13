@@ -60,7 +60,7 @@ fun ExtractGameSaveContent() {
     var dialogMessage by remember { mutableStateOf("") }
     val coroutineScope = rememberCoroutineScope()
 
-    // Generic function to show dialog, auto-dismiss after 2 seconds
+    // Generic function to show dialogue, auto-dismiss after 2 seconds
     fun showMsg(msg: String) {
         dialogMessage = msg
         showDialog = true

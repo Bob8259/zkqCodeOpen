@@ -23,9 +23,6 @@ object AppColors {
     // Light grey borders and inactive states
     val Border = Color(0xFFdadce0)
 
-    // Legacy aliases — kept for any external references not yet migrated
-    @Deprecated("Use PrimaryLight", ReplaceWith("PrimaryLight"))
-    val Azure = PrimaryLight
-    @Deprecated("Use Success", ReplaceWith("Success"))
+    // Teal is actively used across config pages as the expand/collapse button color
     val Teal = Success
 }

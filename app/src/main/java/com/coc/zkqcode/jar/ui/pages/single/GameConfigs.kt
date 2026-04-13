@@ -1,12 +1,10 @@
-@file:Suppress("FunctionName")
-
 package com.coc.zkqcode.jar.ui.pages.single
 
 import androidx.compose.foundation.lazy.LazyListScope
-import com.coc.zkqcode.jar.ui.pages.builderbase.BuilderBaseConfig
-import com.coc.zkqcode.jar.ui.pages.mainbase.MainBaseConfig
+import com.coc.zkqcode.jar.ui.pages.builderbase.builderBaseConfig
+import com.coc.zkqcode.jar.ui.pages.mainbase.mainBaseConfig
 
-fun LazyListScope.GameConfig(
+fun LazyListScope.gameConfig(
     index: Int,
     isMainExpanded: Boolean,
     onToggleMainExpanded: () -> Unit,
@@ -23,7 +21,7 @@ fun LazyListScope.GameConfig(
     onScrollToBottom: () -> Unit = {}
 ) {
 
-    MainBaseConfig(
+    mainBaseConfig(
         index = index,
         isExpanded = isMainExpanded,
         onToggleExpanded = onToggleMainExpanded,
@@ -35,7 +33,7 @@ fun LazyListScope.GameConfig(
         onTogglePet = onTogglePet,
         onNavigatePriority = onNavigatePriority
     )
-    BuilderBaseConfig(
+    builderBaseConfig(
         index = index,
         isExpanded = isBuilderBaseExpanded,
         onToggleExpanded = onToggleBuilderBaseExpanded,

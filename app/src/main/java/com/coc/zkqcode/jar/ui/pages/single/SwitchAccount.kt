@@ -161,7 +161,7 @@ fun SwitchAccount(onClose: () -> Unit) {
                     )
                 }
             }
-            // Keep the action buttons centered within the dialog content area.
+            // Keep the action buttons centered within the dialogue content area.
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center,

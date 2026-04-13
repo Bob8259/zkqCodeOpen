@@ -91,7 +91,7 @@ private fun SmallTextField(
     )
 }
 
-fun LazyListScope.AccountSettings() {
+fun LazyListScope.accountSettings() {
     item {
         SettingSection {
             SettingInputRow(

@@ -108,6 +108,7 @@ fun HomeScreen(
     val tabs = listOf("主页设置", "账号设置", "提取存档", "配置文件", "特殊设置")
 
     val lazyListState = rememberLazyListState()
+    val outlineScrollState = rememberScrollState()
     val scope = rememberCoroutineScope()
     val scrollToBottom: () -> Unit = {
         scope.launch {
@@ -206,7 +207,6 @@ fun HomeScreen(
                     marginTop = 0.dp
                 )
                 // Scrollable section outline chips
-                val outlineScrollState = rememberScrollState()
                 // Section banner item indices within the LazyColumn (GameConfig emits items in this order)
                 val sectionItems = listOf(
                     "⚔️ 核心对战" to 0,
@@ -336,7 +336,7 @@ fun HomeScreen(
 
                 1 -> {
                     // Display account configurations based on account_count
-                    AccountSettings()
+                    accountSettings()
                 }
 
                 2 -> {
@@ -362,7 +362,7 @@ fun HomeScreen(
                         val currentPetExpanded = petExpandedStates[cfgIdx] ?: true
                         val currentBuilderBaseExpanded = builderBaseExpandedStates[cfgIdx] ?: true
 
-                        GameConfig(
+                        gameConfig(
                             index = cfgIdx,
                             isMainExpanded = currentMainExpanded,
                             onToggleMainExpanded = { mainBaseExpandedStates[cfgIdx] = !currentMainExpanded },

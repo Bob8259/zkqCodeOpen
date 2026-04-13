@@ -1,30 +1,20 @@
-@file:Suppress("FunctionName")
-
 package com.coc.zkqcode.jar.ui.pages.mainbase
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListScope
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.jar.ui.components.SectionBanner
-import com.coc.zkqcode.jar.ui.components.SettingSwitchIcon
-import com.coc.zkqcode.jar.ui.components.SettingDropdown
 import com.coc.zkqcode.jar.ui.components.SettingInputRow
 import com.coc.zkqcode.jar.ui.components.SettingInputRowWithSuffix
 import com.coc.zkqcode.jar.ui.components.SettingSection
+import com.coc.zkqcode.jar.ui.components.SettingSwitchIcon
 import com.coc.zkqcode.jar.ui.schema.Schema.MAIN_BASE_SETTINGS
 
-fun LazyListScope.MainBaseConfig(
+fun LazyListScope.mainBaseConfig(
     index: Int,
     isExpanded: Boolean,
     onToggleExpanded: () -> Unit,
