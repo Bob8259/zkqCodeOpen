@@ -99,7 +99,12 @@ fun LazyListScope.accountSettings() {
                 afterChange = { newValue ->
                     val newCount = newValue.toIntOrNull()
                     if (newCount != null) {
-                        ConfigManager.expandAccountConfigs(newCount)
+                        // Clamp to max 5000
+                        val clamped = newCount.coerceAtMost(5000)
+                        if (clamped != newCount) {
+                            GlobalVars.configStates[GLOBAL_SETTINGS.ACCOUNT_COUNT.key]?.value = clamped.toString()
+                        }
+                        ConfigManager.expandAccountConfigs(clamped)
                     }
                 }
             )

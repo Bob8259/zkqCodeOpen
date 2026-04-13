@@ -13,8 +13,8 @@ object ConfigManager {
      * Initializes all config states from the provided ServerActions.
      */
     fun initializeAllConfigs(actions: ServerActions) {
-        val accountCount = actions.getValue("account_count")?.toIntOrNull() ?: 3
-        val configCount = actions.getValue("config_count")?.toIntOrNull() ?: 3
+        val accountCount = (actions.getValue("account_count")?.toIntOrNull() ?: 3).coerceAtMost(5000)
+        val configCount = (actions.getValue("config_count")?.toIntOrNull() ?: 3).coerceAtMost(100)
 
         SchemaRegistry.ALL_MODULES.forEach { module ->
             when (module.scope) {
@@ -100,8 +100,8 @@ object ConfigManager {
         val accountCountStr = GlobalVars.configStates["account_count"]?.value ?: "3"
         val configCountStr = GlobalVars.configStates["config_count"]?.value ?: "3"
 
-        val accountCount = accountCountStr.toIntOrNull() ?: 3
-        val configCount = configCountStr.toIntOrNull() ?: 3
+        val accountCount = (accountCountStr.toIntOrNull() ?: 3).coerceAtMost(5000)
+        val configCount = (configCountStr.toIntOrNull() ?: 3).coerceAtMost(100)
 
         SchemaExporter.saveSchemaViaServer(
             baseDir,

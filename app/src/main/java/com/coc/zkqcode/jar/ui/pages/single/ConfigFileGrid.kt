@@ -6,6 +6,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -22,7 +23,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.min
 import com.coc.zkqcode.jar.ui.theme.AppColors
 import com.coc.zkqcode.jar.ui.components.SettingInputRow
 import com.coc.zkqcode.jar.ui.components.SettingSection
@@ -36,8 +39,7 @@ fun ConfigFileGrid(
     onConfigSelected: (Int) -> Unit
 ) {
     val items = (1..configCount).toList()
-    val rowCount = (items.size + 3) / 4
-    val gridHeight = (rowCount * 56).dp
+    val rowCount = (items.size + 2) / 3
 
     SettingSection {
         Column {
@@ -46,7 +48,12 @@ fun ConfigFileGrid(
                 afterChange = { newValue ->
                     val newCount = newValue.toIntOrNull()
                     if (newCount != null) {
-                        ConfigManager.expandProfileConfigs(newCount)
+                        // Clamp to max 100
+                        val clamped = newCount.coerceAtMost(100)
+                        if (clamped != newCount) {
+                            com.coc.zkqcode.core.data.database.GlobalVars.configStates[GLOBAL_SETTINGS.CONFIG_COUNT.key]?.value = clamped.toString()
+                        }
+                        ConfigManager.expandProfileConfigs(clamped)
                     }
                 },
             )
@@ -55,29 +62,36 @@ fun ConfigFileGrid(
                 style = MaterialTheme.typography.labelSmall,
                 color = Color.Gray
             )
-            LazyVerticalGrid(
-                columns = GridCells.Adaptive(minSize = 90.dp),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(gridHeight),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                items(items) { i ->
-                    Box(
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(8.dp))
-                            .background(AppColors.PrimaryLight)
-                            .clickable { onConfigSelected(i) }
-                            .padding(horizontal = 16.dp, vertical = 12.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = "配置文件$i",
-                            style = MaterialTheme.typography.labelLarge,
-                            fontWeight = FontWeight.Medium,
-                            color = Color.White
-                        )
+            BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
+                val cellWidth = min(maxWidth / 3, 120.dp)
+                val gridHeight = (rowCount * 56).dp
+                LazyVerticalGrid(
+                    columns = GridCells.Adaptive(minSize = cellWidth),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(gridHeight),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    items(items) { i ->
+                        Box(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(8.dp))
+                                .background(AppColors.PrimaryLight)
+                                .clickable { onConfigSelected(i) }
+                                .padding(horizontal = 16.dp, vertical = 12.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = "配置文件$i",
+                                style = MaterialTheme.typography.labelLarge,
+                                fontWeight = FontWeight.Medium,
+                                color = Color.White,
+                                maxLines = 1,
+                                softWrap = false,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        }
                     }
                 }
             }
