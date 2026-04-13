@@ -186,7 +186,7 @@ fun HomeScreen(
         if (selectedTabIndex == 3 && selectedConfigIndex != null) {
             Box(modifier = Modifier.padding(start = 4.dp)) {
                 CustomButton(
-                    text = "◀ 返回配置列表",
+                    text = "◀ 返回",
                     onClick = { selectedConfigIndex = null },
                     marginTop = 6.dp
                 )
