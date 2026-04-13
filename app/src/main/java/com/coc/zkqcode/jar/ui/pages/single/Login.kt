@@ -29,6 +29,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import com.coc.zkqcode.jar.ui.theme.AppColors
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -255,7 +256,7 @@ fun LoginScreen(onAdFreeClick: () -> Unit = {}) {
                 Text(
                     text = gemInfo,
                     style = MaterialTheme.typography.labelMedium,
-                    color = if (gemInfo.contains("成功")) Color(0xFF2196F3) else Color.Red
+                    color = if (gemInfo.contains("成功")) AppColors.PrimaryLight else Color.Red
                 )
             }
         }
@@ -274,10 +275,10 @@ fun LoginScreen(onAdFreeClick: () -> Unit = {}) {
                 value = GlobalVars.configStates[GLOBAL_SETTINGS.PASSWORD.key]!!.value,
                 modifier = Modifier
                     .background(
-                        color = Color.White,
-                        shape = RoundedCornerShape(4.dp)
-                    )
-                    .border(1.dp, Color.Gray, RoundedCornerShape(4.dp))
+                            color = AppColors.CardBg,
+                            shape = RoundedCornerShape(4.dp)
+                        )
+                        .border(1.dp, AppColors.Border, RoundedCornerShape(4.dp))
                     .padding(4.dp)
                     .align(Alignment.CenterVertically)
                     .heightIn(max = 120.dp),

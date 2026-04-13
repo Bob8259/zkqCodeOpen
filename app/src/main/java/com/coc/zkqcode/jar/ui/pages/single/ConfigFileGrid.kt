@@ -58,7 +58,7 @@ fun ConfigFileGrid(
                             .padding(end = 8.dp, top = 8.dp)
                             .widthIn(min = 90.dp)
                             .clip(RoundedCornerShape(8.dp))
-                            .background(AppColors.Azure)
+                            .background(AppColors.PrimaryLight)
                             .clickable { onConfigSelected(i) }
                             .padding(horizontal = 16.dp, vertical = 12.dp),
                         contentAlignment = Alignment.Center

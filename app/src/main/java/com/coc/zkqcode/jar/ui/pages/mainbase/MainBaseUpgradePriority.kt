@@ -32,6 +32,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.coc.zkqcode.jar.ui.components.CustomButton
 import com.coc.zkqcode.core.data.database.GlobalVars
+import com.coc.zkqcode.jar.ui.theme.AppColors
 import com.coc.zkqcode.jar.ui.schema.Schema
 import com.coc.zkqcode.core.ui.reorderable.ReorderableItem
 import com.coc.zkqcode.core.ui.reorderable.rememberReorderableLazyGridState
@@ -74,7 +75,7 @@ fun MainBaseUpgradePriority(index: Int, onSaveSuccess: () -> Unit) {
         modifier = Modifier
             .fillMaxSize()
             .padding(10.dp)
-            .background(Color(0xFFF2F3F5))
+            .background(AppColors.Background)
     ) {
         Text(
             text = "拖动铅笔符号调整优先度，越靠上，越靠左表示优先度越高。",

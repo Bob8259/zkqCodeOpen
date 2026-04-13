@@ -221,7 +221,7 @@ fun LazyListScope.AccountSettings() {
                         shape = RoundedCornerShape(8.dp),
                         modifier = Modifier.height(30.dp),
                         contentPadding = PaddingValues(horizontal = 12.dp, vertical = 0.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = AppColors.Azure)
+                        colors = ButtonDefaults.buttonColors(containerColor = AppColors.Primary)
                     ) {
                         Text(verOptions[selectedVerIndex], style = MaterialTheme.typography.labelMedium)
                         Icon(Icons.Default.ArrowDropDown, contentDescription = null)

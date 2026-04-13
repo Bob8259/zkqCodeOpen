@@ -93,9 +93,9 @@ fun InputRowWithCheckBox(
             }, modifier = Modifier
                 .padding(end = 6.dp, top = 6.dp, start = 6.dp)
                 .background(
-                    color = Color.White, shape = RoundedCornerShape(4.dp)
+                    color = AppColors.CardBg, shape = RoundedCornerShape(4.dp)
                 )
-                .border(1.dp, Color.Gray, RoundedCornerShape(4.dp))
+                .border(1.dp, AppColors.Border, RoundedCornerShape(4.dp))
                 .padding(4.dp)
                 .align(Alignment.CenterVertically)
                 .heightIn(max = 120.dp)
@@ -209,9 +209,9 @@ fun SettingInputRow(
             }, modifier = Modifier
                 .padding(end = 16.dp)
                 .background(
-                    color = Color.White, shape = RoundedCornerShape(4.dp)
+                    color = AppColors.CardBg, shape = RoundedCornerShape(4.dp)
                 )
-                .border(1.dp, Color.Gray, RoundedCornerShape(4.dp))
+                .border(1.dp, AppColors.Border, RoundedCornerShape(4.dp))
                 .padding(4.dp)
                 .align(Alignment.CenterVertically)
                 .heightIn(max = 120.dp)
@@ -244,9 +244,9 @@ fun SettingInputRowWithSuffix(key: String, suffix: String, afterChange: ((String
             }, modifier = Modifier
                 .padding(end = 6.dp)
                 .background(
-                    color = Color.White, shape = RoundedCornerShape(4.dp)
+                    color = AppColors.CardBg, shape = RoundedCornerShape(4.dp)
                 )
-                .border(1.dp, Color.Gray, RoundedCornerShape(4.dp))
+                .border(1.dp, AppColors.Border, RoundedCornerShape(4.dp))
                 .padding(4.dp)
                 .heightIn(max = 120.dp)
                 .verticalScroll(rememberScrollState())
@@ -266,7 +266,7 @@ fun CustomButton(
     explain: String? = null,
     marginTop: Dp = 6.dp,
     marginBottom: Dp = 0.dp,
-    containerColor: Color = AppColors.Azure,
+    containerColor: Color = AppColors.Primary,
 ) {
 
     var showExplanation by remember { mutableStateOf(false) }
@@ -332,16 +332,16 @@ fun SettingSwitchIcon(
 }
 
 // Teal accent for collapse/expand buttons to distinguish from action buttons
-val CollapseTeal = Color(0xFF00897B)
+val CollapseTeal = AppColors.Success
 
 // Lighter blue for research/building toggle buttons to distinguish from action buttons
-private val ToggleButtonBlue = Color(0xFF0084BF)
+private val ToggleButtonBlue = AppColors.PrimaryLight
 
 // Selected toggle buttons keep white text on blue backgrounds
 private val EnabledSettingToggleTextColor = Color(0xFFFFFFFF)
 
 // Unselected toggle buttons use black text for clearer contrast
-private val DisabledSettingToggleTextColor = Color(0xFF000000)
+private val DisabledSettingToggleTextColor = AppColors.TextPrimary
 
 // Single toggle text button for research/building item lists
 @Composable
@@ -400,7 +400,7 @@ private fun CustomSwitch(
                 .height(18.dp)
                 .scale(0.6f)
                 .requiredWidth(34.dp), colors = SwitchDefaults.colors(
-                checkedTrackColor = AppColors.Azure, checkedThumbColor = Color.White
+                checkedTrackColor = AppColors.Success, checkedThumbColor = Color.White
             )
         )
         // Inline the label row so the full switch layout stays in one place.
@@ -455,7 +455,7 @@ fun SettingSection(
         Surface(
             modifier = modifier
                 .fillMaxWidth()
-                .padding(vertical = 4.dp), shape = RoundedCornerShape(12.dp), color = Color.White, shadowElevation = 8.dp, tonalElevation = 5.dp
+                .padding(vertical = 4.dp), shape = RoundedCornerShape(12.dp), color = AppColors.CardBg, shadowElevation = 8.dp, tonalElevation = 5.dp
         ) {
             Column(modifier = Modifier.padding(horizontal = 10.dp, vertical = 8.dp)) {
                 content()
@@ -500,7 +500,7 @@ fun SettingDropdown(
                 shape = RoundedCornerShape(8.dp),
                 modifier = Modifier.height(30.dp),
                 contentPadding = PaddingValues(horizontal = 12.dp, vertical = 0.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = AppColors.Azure)
+                colors = ButtonDefaults.buttonColors(containerColor = AppColors.Primary)
             ) {
                 Text(selectedOption, style = MaterialTheme.typography.labelMedium)
                 Icon(Icons.Default.ArrowDropDown, contentDescription = null)

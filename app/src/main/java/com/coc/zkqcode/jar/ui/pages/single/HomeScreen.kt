@@ -71,7 +71,7 @@ fun HomeScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color(0xFFF2F3F5))
+                .background(AppColors.Background)
                 .padding(16.dp), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(text = "正在初始化配置...", color = Color.Gray)
@@ -163,11 +163,11 @@ fun HomeScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFF2F3F5))
+            .background(AppColors.Background)
     ) {
         // 1. Top Tab bar
         PrimaryScrollableTabRow(
-            selectedTabIndex = selectedTabIndex, edgePadding = 0.dp, minTabWidth = 0.dp, containerColor = AppColors.Azure
+            selectedTabIndex = selectedTabIndex, edgePadding = 0.dp, minTabWidth = 0.dp, containerColor = AppColors.Primary
         ) {
             tabs.forEachIndexed { index, title ->
                 Tab(

@@ -2,8 +2,30 @@ package com.coc.zkqcode.jar.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-// App-wide custom colors (jar module)
+// App-wide custom colors (jar module) — Google Material-inspired palette
 object AppColors {
-    val Azure = Color(0xFF2196F3) // 天蓝色
-    val Teal = Color(0xFF00897B)  // 青色 (teal) — used for collapse/expand buttons
+    // Primary interactive blue — buttons, links, active states
+    val Primary = Color(0xFF1a73e8)
+    // Lighter blue — hover states, gradients, toggle buttons, config cards
+    val PrimaryLight = Color(0xFF4285f4)
+    // Green — toggle ON state, collapse/expand buttons
+    val Success = Color(0xFF34a853)
+    // Red — destructive actions
+    val Danger = Color(0xFFea4335)
+    // Light grey page background
+    val Background = Color(0xFFF8F9FA)
+    // White card surfaces
+    val CardBg = Color(0xFFFFFFFF)
+    // Near-black body text
+    val TextPrimary = Color(0xFF202124)
+    // Grey secondary/hint text
+    val TextSecondary = Color(0xFF5f6368)
+    // Light grey borders and inactive states
+    val Border = Color(0xFFdadce0)
+
+    // Legacy aliases — kept for any external references not yet migrated
+    @Deprecated("Use PrimaryLight", ReplaceWith("PrimaryLight"))
+    val Azure = PrimaryLight
+    @Deprecated("Use Success", ReplaceWith("Success"))
+    val Teal = Success
 }
