@@ -11,12 +11,12 @@ fun getConfigRuntime(configName: String): String {
         "1"
     } else {
         GlobalVars.configStates["account_config${InGamesVars.currentAccountNumber}"]?.value ?: logAndRestart(
-            "Can not get the config number for account ${InGamesVars.currentAccountNumber}"
+            "Can not get the config number for account ${InGamesVars.currentAccountNumber}",
+            isShow = false
         )
     }
-    // Fall back to the schema default when the runtime state has not been initialized yet.
     val result = GlobalVars.configStates["${configName}_c$configNumber"]?.value
-        ?: Schema.getDefaultValue("${configName}_c$configNumber")
+        ?: logAndRestart("Can not get config value for ${configName}_c$configNumber", isShow = false)
     return result
 }
 
