@@ -21,7 +21,7 @@ suspend fun mainBaseCheckTutorials(): Boolean {
         return true
     }
 
-    ShowMessage("准备检测常见教程")
+    AccountMessage("准备检测常见教程")
     zoomSmallMainBase()
 
     // Check the current view first, then scan the lower area after swiping.
@@ -78,7 +78,7 @@ private suspend fun petsTutorial() {
             return
         }
         val remainingSeconds = (timeoutMillis - (System.currentTimeMillis() - startTime)) / 1000
-        ShowMessage("宠物店教程中，若${remainingSeconds}秒后未完成则强制退出")
+        AccountMessage("宠物店教程中，若${remainingSeconds}秒后未完成则强制退出")
         val petsTutorial = findMultiColors(MyColors.OuterPetIcon)
         if (petsTutorial != null) {
             TouchActions.tap(petsTutorial.x, petsTutorial.y)

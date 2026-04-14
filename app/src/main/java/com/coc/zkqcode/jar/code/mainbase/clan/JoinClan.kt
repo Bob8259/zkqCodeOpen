@@ -47,7 +47,7 @@ suspend fun joinClan(): Boolean {
             return true
         }
 
-        ShowMessage("正在加入部落: $targetTAG")
+        AccountMessage("正在加入部落: $targetTAG")
         // Open the clan profile via deep link using the correct package name for the current game version
         RunShell.runNoOutput(
             "am start -a android.intent.action.VIEW -d 'clashofclans://action=OpenClanProfile&tag=$targetTAG' -p ${InGamesVars.currentGameVersion.packageName}"

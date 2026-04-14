@@ -28,7 +28,7 @@ suspend fun placeHeroBanners(): Boolean {
         AccountMessage("该账号今日已检测战旗")
         return true
     }
-    ShowMessage("准备检测是否卡战旗")
+    AccountMessage("准备检测是否卡战旗")
     val result = withHeroHall { placeHeroBannerAction() }
 
     // Always record completion and return to main screen
@@ -52,7 +52,7 @@ private suspend fun placeHeroBannerAction() {
         // Locate the confirmation button (Green Tick).
         var targetTick = mainBaseFindBuildButton(type = BuildButtonType.Tick)
         if (targetTick == null) {
-            ShowMessage("建造失败，尝试寻找空位")
+            AccountMessage("建造失败，尝试寻找空位")
             val redCross = mainBaseFindBuildButton(type = BuildButtonType.Cross)
             if (redCross != null) {
                 val centerX = redCross.x + 20
@@ -62,7 +62,7 @@ private suspend fun placeHeroBannerAction() {
                 zoomSmallMainBase(isForBuild = true)
                 targetTick = tryToFindBuildPosition(BaseType.Main)
             } else {
-                ShowMessage("未找到红色叉，错误截图已保存到/sdcard/zkqFiles/bugReporter\n请将截图反馈给作者")
+                AccountMessage("未找到红色叉，错误截图已保存到/sdcard/zkqFiles/bugReporter\n请将截图反馈给作者")
                 BugReporter.takeScreenshot("Red_Cross_Not_Found")
                 killGame()
                 clickRightBottom(1)
@@ -71,11 +71,11 @@ private suspend fun placeHeroBannerAction() {
         }
 
         if (targetTick != null) {
-            ShowMessage("放战旗成功")
+            AccountMessage("放战旗成功")
             TouchActions.tap(targetTick.x, targetTick.y, delayTime = 300)
         }
     } else {
-        ShowMessage("未检测到放战旗按钮")
+        AccountMessage("未检测到放战旗按钮")
         clickRightBottom(1)
     }
 }

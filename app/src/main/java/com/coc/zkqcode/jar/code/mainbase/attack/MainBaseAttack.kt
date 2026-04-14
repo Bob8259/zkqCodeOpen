@@ -23,7 +23,7 @@ suspend fun mainBaseAttack(): Boolean {
     val startTime = System.currentTimeMillis()
     val isRestartGame = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.RESTART_GAME.key)
     if (isRestartGame) {
-        ShowMessage("部署完成，准备重启游戏")
+        AccountMessage("部署完成，准备重启游戏")
         killGame()
         delayWithMultiplier(1000)
         runGame()

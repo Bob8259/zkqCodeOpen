@@ -2,9 +2,6 @@ package com.coc.zkqcode.jar.code.builderbase.others
 
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
-import kotlin.math.max
-import kotlin.math.min
-import kotlinx.coroutines.delay
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
 import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.core.util.touchactions.TouchActions.swipe
@@ -22,6 +19,8 @@ import com.coc.zkqcode.jar.code.universal.smalltools.checkMemoryFile
 import com.coc.zkqcode.jar.code.universal.smalltools.getBooleanConfigRuntime
 import com.coc.zkqcode.jar.code.universal.smalltools.writeMemory
 import com.coc.zkqcode.jar.ui.schema.Schema
+import kotlin.math.max
+import kotlin.math.min
 
 suspend fun turnOnClockTower(): Boolean {
     if (!getBooleanConfigRuntime(Schema.BUILDER_BASE_SETTINGS.BUILDER_BASE_ENABLE_CLOCK_TOWER.key)) return true
@@ -57,19 +56,19 @@ suspend fun turnOnClockTower(): Boolean {
                 val gemFound = findMultiColors(schema = gemIconSchema, byteBuffer = screenBuffer)
                 delayWithMultiplier(50)
                 if (gemFound != null) {
-                    ShowMessage("检测到宝石图标，暂无免费提速机会 (位置: ${gemFound.x},${gemFound.y})")
+                    AccountMessage("检测到宝石图标，暂无免费提速机会 (位置: ${gemFound.x},${gemFound.y})")
                     clickRightBottom(1)
                     return true
                 }
                 TouchActions.tap(freeSpeedUp.x, freeSpeedUp.y, delayTime = 800)
 
-                // Double-check the dialog after tapping to avoid consuming gems when free boost is unavailable.
+                // Double-check the dialogue after tapping to avoid consuming gems when free boost is unavailable.
                 val dialogScreenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult ?: logAndRestart("in turnOnClockTower, second screen capture failed.")
                 val dialogWhitePixelCount = countPixelsInArea(
                     result = dialogScreenBuffer, x1 = 515, y1 = 445, x2 = 759, y2 = 510, targetColor = 0xFFFFFF
                 )
                 if (dialogWhitePixelCount > 30) {
-                    ShowMessage("暂无免费提速机会")
+                    AccountMessage("暂无免费提速机会")
                     clickRightBottom(1)
                     return true
                 }

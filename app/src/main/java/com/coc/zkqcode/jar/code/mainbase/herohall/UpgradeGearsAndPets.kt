@@ -48,7 +48,7 @@ suspend fun upgradeGearsAndPets(): Boolean {
         shouldUpgradePets -> "战宠"
         else -> return true
     }
-    ShowMessage("准备升级$actionName")
+    AccountMessage("准备升级$actionName")
     val result: Boolean = withHeroHall { upgradeGearsAction(canUpgradeGears, shouldUpgradePets) }
 
     // Record only gear checks so the cooldown never blocks pet upgrades.
@@ -170,7 +170,7 @@ private suspend fun upgradeGearsAction(shouldUpgradeGears: Boolean, shouldUpgrad
             }
             val petsShopBanner = findMultiColorsUntil(schemas = listOf(MyColors.PetsShopInnerBanner), duration = 1000)
             if (petsShopBanner != null) {
-                ShowMessage("已进入宠物店")
+                AccountMessage("已进入宠物店")
                 delayWithMultiplier(200)
                 val alreadyBeingUpgraded = findMultiColors(MyColors.AlreadyBeingUpgraded)
                 if (alreadyBeingUpgraded == null) checkPets()

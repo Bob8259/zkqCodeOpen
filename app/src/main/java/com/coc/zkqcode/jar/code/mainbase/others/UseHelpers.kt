@@ -82,7 +82,7 @@ private suspend fun checkResearchHelper(isUpgradeHelper: Boolean) {
                 clickLeisure()
             }
             if (isUpgradeHelper && getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.UPGRADE_RESEARCH_HELPER.key)) {
-                ShowMessage("已勾选升级实验助手")
+                AccountMessage("已勾选升级实验助手")
                 TouchActions.tap(801, 623, delayTime = 200)
                 TouchActions.tap(801, 623, delayTime = 200)
                 clickLeisure()
@@ -91,7 +91,7 @@ private suspend fun checkResearchHelper(isUpgradeHelper: Boolean) {
         }
         val lockedBuilderHelper = findMultiColors(MyColors.LockedBuilderHelper)
         if (lockedBuilderHelper != null && isUpgradeHelper && getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.UPGRADE_BUILDER_APPRENTICE.key)) {
-            ShowMessage("已勾选升级工人助手")
+            AccountMessage("已勾选升级工人助手")
             TouchActions.tap(lockedBuilderHelper.x, lockedBuilderHelper.y)
             TouchActions.tap(801, 623, delayTime = 200)
             TouchActions.tap(801, 623, delayTime = 200)

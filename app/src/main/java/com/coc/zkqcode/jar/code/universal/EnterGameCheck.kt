@@ -40,7 +40,7 @@ suspend fun enterMainScreen(isDoubleCheck: Boolean = false): Boolean {
         } else {
             if (isInHomePage()) {
                 if (!isDoubleCheck) {
-                    ShowMessage("已进入主界面")
+                    AccountMessage("已进入主界面")
                     return true
                 }
                 if (InGamesVars.currentGameVersion == GameVersion.CN) delayWithMultiplier(1500)
@@ -134,7 +134,7 @@ private suspend fun closeAdvertisements() {
 
     }
     findMultiColors(byteBuffer = screenBuffer, schema = MyColors.ReturnTask, increment = 1)?.let {
-        ShowMessage("检测到回归教程")
+        AccountMessage("检测到回归教程")
         zoomSmallMainBase()
         mainBaseDeployTroops()
     }

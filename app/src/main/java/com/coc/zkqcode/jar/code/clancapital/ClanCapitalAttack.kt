@@ -40,7 +40,7 @@ suspend fun clanCapitalAttack(): CapitalState {
     if (findAttackTarget()) {
         val endBattleButton = findMultiColorsUntil(schemas = listOf(MyColors.EndBattle), duration = 10000)
         if (endBattleButton == null) {
-            ShowMessage("未找到结束战斗按钮")
+            AccountMessage("未找到结束战斗按钮")
             killGame()
             delayWithMultiplier(1000)
             runGame()
@@ -64,7 +64,7 @@ suspend fun findAttackTarget(): Boolean {
         if (findMultiColors(MyColors.RaidInformation) != null) {
             break
         }
-        ShowMessage("进入突袭地图中...")
+        AccountMessage("进入突袭地图中...")
         val raidMap = findMultiColors(MyColors.RaidMap)
         if (raidMap != null) {
             TouchActions.tap(raidMap.x, raidMap.y)
@@ -72,14 +72,14 @@ suspend fun findAttackTarget(): Boolean {
         delayWithMultiplier(300)
     }
     if (findMultiColors(MyColors.RaidInformation) == null) {
-        ShowMessage("超时：未找到RaidInformation，退出攻击")
+        AccountMessage("超时：未找到RaidInformation，退出攻击")
         return false
     }
     TouchActions.swipe(300, 500, 300, 1500)
     delayWithMultiplier(400)
     // Capture a fresh screenshot to analyse which districts are available to attack.
     val bitmap = ScreenCaptureManager.capture(asBitmap = true) as? Bitmap ?: run {
-        ShowMessage("截图失败，无法分析都城区域")
+        AccountMessage("截图失败，无法分析都城区域")
         return false
     }
 
@@ -93,7 +93,7 @@ suspend fun findAttackTarget(): Boolean {
             val centerY = (district.y1 + district.y2) / 2
             // Offset per design: shift left 80px and down 80px to land on the entry button. Y is capped at 719.
             val tapY = minOf(centerY + 80, 719)
-            ShowMessage("找到可攻击区域: ${district.name}, 点击 (${centerX - 80}, $tapY)")
+            AccountMessage("找到可攻击区域: ${district.name}, 点击 (${centerX - 80}, $tapY)")
             TouchActions.tap(centerX - 80, tapY)
             val raidButton = findMultiColorsUntil(schemas = listOf(MyColors.RaidRedAttackButton), duration = 300)
             if (raidButton != null) {
@@ -105,7 +105,7 @@ suspend fun findAttackTarget(): Boolean {
         }
     }
 
-    ShowMessage("未找到可攻击的都城区域")
+    AccountMessage("未找到可攻击的都城区域")
     return false
 }
 
@@ -170,14 +170,14 @@ private suspend fun deploySpells() {
 
     val plannedTargets = if (detections.isEmpty()) {
         // Use a stable fallback centre point so the existing spell deployment logic still runs.
-        ShowMessage("部落都城未检测到可攻击目标，使用默认落点")
+        AccountMessage("部落都城未检测到可攻击目标，使用默认落点")
         listOf(PlannedClanCapitalTarget(x = 660, y = 280))
     } else {
         planClanCapitalTargets(detections)
     }
 
     if (plannedTargets.isEmpty()) {
-        ShowMessage("部落都城检测结果已去重后为空")
+        AccountMessage("部落都城检测结果已去重后为空")
         return
     }
 

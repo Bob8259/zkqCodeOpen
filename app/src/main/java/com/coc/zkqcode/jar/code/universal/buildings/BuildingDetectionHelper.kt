@@ -158,6 +158,7 @@ fun cleanBuildingName(raw: String): String {
         "炸弹培" to "炸弹塔",
         "十字连學" to "十字连弩",
         "十字達弩" to "十字连弩",
+        "十字连達弩" to "十字连弩",
         "暗果重油罐" to "暗黑重油罐",
         "铁匠镇" to "铁匠铺",
         "宝石矿共" to "宝石矿井",
