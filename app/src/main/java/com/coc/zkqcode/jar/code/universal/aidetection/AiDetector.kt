@@ -6,6 +6,7 @@ import android.os.Handler
 import android.os.Looper
 import com.coc.zkqcode.core.util.basic.RunShell
 import com.coc.zkqcode.core.util.basic.ShowMessage
+import com.coc.zkqcode.jar.code.universal.AccountMessage
 import com.coc.zkqcode.jar.code.universal.smalltools.runGame
 import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
@@ -68,12 +69,12 @@ object AiDetector {
     private fun getPluginApkFile(): File? {
         val context = ShowMessage.getContext()
         if (context == null) {
-            ShowMessage("AI插件安装失败：上下文未初始化")
+            AccountMessage("AI插件安装失败：上下文未初始化")
             return null
         }
         val downloadDir = File(context.filesDir, PLUGIN_DOWNLOAD_DIR)
         if (!downloadDir.exists() && !downloadDir.mkdirs()) {
-            ShowMessage("AI插件安装失败：无法创建下载目录")
+            AccountMessage("AI插件安装失败：无法创建下载目录")
             return null
         }
         return File(downloadDir, PLUGIN_APK_NAME)
@@ -81,7 +82,7 @@ object AiDetector {
 
     private fun postMessage(text: String) {
         mainHandler.post {
-            ShowMessage(text)
+            AccountMessage(text)
         }
     }
 
@@ -150,7 +151,7 @@ object AiDetector {
             return true
         }
         val errorMessage = installResult.joinToString("\n").ifBlank { "未返回安装结果" }
-        ShowMessage("AI插件安装失败：$errorMessage")
+        AccountMessage("AI插件安装失败：$errorMessage")
         return false
     }
 
@@ -161,7 +162,7 @@ object AiDetector {
         }
         if (hasError) {
             val errorMessage = launchResult.joinToString("\n").ifBlank { "未返回启动结果" }
-            ShowMessage("AI插件启动失败：$errorMessage")
+            AccountMessage("AI插件启动失败：$errorMessage")
             return false
         }
         return true
@@ -185,11 +186,11 @@ object AiDetector {
             if (!downloadPluginApk(apkFile)) {
                 return false
             }
-            ShowMessage("AI插件下载完成，开始安装")
+            AccountMessage("AI插件下载完成，开始安装")
             if (!installPlugin(apkFile)) {
                 return false
             }
-            ShowMessage("AI插件安装成功，正在启动插件")
+            AccountMessage("AI插件安装成功，正在启动插件")
             if (!launchPluginMainActivity()) {
                 return false
             }
@@ -208,7 +209,7 @@ object AiDetector {
         if (isPluginInstalled()) {
             return true
         }
-        ShowMessage("未检测到AI插件，开始自动下载安装")
+        AccountMessage("未检测到AI插件，开始自动下载安装")
         return downloadAndInstallPlugin()
     }
 
@@ -252,13 +253,13 @@ object AiDetector {
             if (versionTooLow) {
                 if (updateAttempted) {
                     // Already tried once; avoid an infinite update loop.
-                    ShowMessage("AI插件更新后版本仍然过低，请手动更新")
+                    AccountMessage("AI插件更新后版本仍然过低，请手动更新")
                     return false
                 }
-                ShowMessage("AI插件版本过低，正在尝试自动下载更新")
+                AccountMessage("AI插件版本过低，正在尝试自动下载更新")
                 updateAttempted = true
                 if (!downloadAndInstallPlugin()) {
-                    ShowMessage("AI插件自动更新失败，请手动下载安装最新版")
+                    AccountMessage("AI插件自动更新失败，请手动下载安装最新版")
                     return false
                 }
                 // Reset the polling timer so the full window is available after the update.
@@ -267,7 +268,7 @@ object AiDetector {
                 delay(POLL_INTERVAL_MS)
             }
         }
-        ShowMessage("AI插件启动失败，请检查插件是否安装成功并已正常启动")
+        AccountMessage("AI插件启动失败，请检查插件是否安装成功并已正常启动")
         return false
     }
 
@@ -283,7 +284,7 @@ object AiDetector {
         return try {
             client.newCall(request).execute().use { response ->
                 if (!response.isSuccessful) {
-                    ShowMessage("模型加载失败: HTTP ${response.code}")
+                    AccountMessage("模型加载失败: HTTP ${response.code}")
                     return false
                 }
                 val responseBody = response.body.string()
@@ -291,12 +292,12 @@ object AiDetector {
                 if (parsed.success) {
                     true
                 } else {
-                    ShowMessage("模型加载失败: ${parsed.error ?: "未知错误"}")
+                    AccountMessage("模型加载失败: ${parsed.error ?: "未知错误"}")
                     false
                 }
             }
         } catch (e: Exception) {
-            ShowMessage("模型加载异常: ${e.message}")
+            AccountMessage("模型加载异常: ${e.message}")
             false
         }
     }
@@ -308,7 +309,7 @@ object AiDetector {
         distanceThreshold: Double = 5.0
     ): List<DetectionResult> {
         if (!ensureServerReady()) return emptyList()
-        ShowMessage("AI检测中，请耐心等待。\n检测速度取决于设备性能，低性能设备可能需要5-10秒。")
+        AccountMessage("AI检测中，请耐心等待。\n检测速度取决于设备性能，低性能设备可能需要5-10秒。")
         val stream = ByteArrayOutputStream()
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
         val imageBytes = stream.toByteArray()
@@ -323,7 +324,7 @@ object AiDetector {
 
             // Surface HTTP errors with status code and body for easier debugging.
             if (!response.isSuccessful) {
-                ShowMessage("检测请求失败: HTTP ${response.code}, $responseBody")
+                AccountMessage("检测请求失败: HTTP ${response.code}, $responseBody")
                 return emptyList()
             }
 
@@ -336,7 +337,7 @@ object AiDetector {
                 )
             }
         } catch (e: Exception) {
-            ShowMessage("检测异常: ${e.message}")
+            AccountMessage("检测异常: ${e.message}")
             emptyList()
         } finally {
             if (clearWeightsAfter) {

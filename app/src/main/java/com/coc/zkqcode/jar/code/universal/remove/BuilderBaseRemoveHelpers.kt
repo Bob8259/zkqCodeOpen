@@ -1,6 +1,6 @@
 package com.coc.zkqcode.jar.code.universal.remove
 
-import com.coc.zkqcode.core.util.basic.ShowMessage
+import com.coc.zkqcode.jar.code.universal.AccountMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.MyColors
@@ -60,7 +60,7 @@ suspend fun removeObstacles() {
         val box = obstacle.boundingBox
         val centerX = box.centerX().toInt()
         val centerY = box.centerY().toInt()
-        ShowMessage("x: $centerX, y: $centerY")
+        AccountMessage("x: $centerX, y: $centerY")
         TouchActions.tap(centerX, centerY, delayTime = 120)
         // Tap confirmation/action button
         TouchActions.tap(616, 488, delayTime = 100)

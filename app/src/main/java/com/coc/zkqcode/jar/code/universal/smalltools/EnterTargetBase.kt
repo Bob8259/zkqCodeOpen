@@ -1,6 +1,6 @@
 package com.coc.zkqcode.jar.code.universal.smalltools
 
-import com.coc.zkqcode.core.util.basic.ShowMessage
+import com.coc.zkqcode.jar.code.universal.AccountMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.core.util.touchactions.TouchActions
@@ -22,13 +22,13 @@ suspend fun enterMainBase(): Boolean {
     while (System.currentTimeMillis() - loopStart < 30_000L) {
         val workers = findMultiColorsUntil(schemas = listOf(MyColors.MainBaseWorker, MyColors.MainBaseWorker2, MyColors.MainBaseWorker3, MyColors.GoblinWorker, MyColors.GoblinResearcher), duration = 200)
         if (workers != null) {
-            ShowMessage("已进入主世界")
+            AccountMessage("已进入主世界")
             clickRightBottom(1)
             delayWithMultiplier(200)
             return true
         }
         val remaining = (30_000L - (System.currentTimeMillis() - loopStart)) / 1000.0
-        ShowMessage("尝试进入主世界中，剩余${"%.1f".format(remaining)}秒后退出\n请手动给主世界和夜世界切换默认场景")
+        AccountMessage("尝试进入主世界中，剩余${"%.1f".format(remaining)}秒后退出\n请手动给主世界和夜世界切换默认场景")
         val builderBaseStarBonus = findMultiColors(schema = MyColors.BuilderBaseStarBonus)
         if (builderBaseStarBonus != null) {
             TouchActions.tap(builderBaseStarBonus.x + 10, builderBaseStarBonus.y + 10, delayTime = 200)
@@ -62,10 +62,10 @@ suspend fun enterBuilderBase(isCheck: Boolean): Boolean {
         val remaining = (30_000L - (System.currentTimeMillis() - loopStart)) / 1000.0
         // 1. Check for Builder Base success indicator
         if (findMultiColorsUntil(schemas = listOf(MyColors.BuilderBaseWorker, MyColors.BuilderBaseWorker2), duration = 200) != null) {
-            ShowMessage("已进入夜世界")
+            AccountMessage("已进入夜世界")
             return true
         }
-        ShowMessage("尝试进入夜世界中，剩余${"%.1f".format(remaining)}秒后退出\n请手动给主世界和夜世界切换默认场景")
+        AccountMessage("尝试进入夜世界中，剩余${"%.1f".format(remaining)}秒后退出\n请手动给主世界和夜世界切换默认场景")
         // Ensure consistent view before attempting interaction
         zoomSmallMainBase()
         clickRightBottom(1)
@@ -86,7 +86,7 @@ suspend fun enterBuilderBase(isCheck: Boolean): Boolean {
                 while (System.currentTimeMillis() - loopStartTime < checkDuration) {
                     // 1. Check for Builder Base success indicator
                     if (findMultiColorsUntil(schemas = listOf(MyColors.BuilderBaseWorker, MyColors.BuilderBaseWorker2), duration = 200) != null) {
-                        ShowMessage("已进入夜世界")
+                        AccountMessage("已进入夜世界")
                         return true
                     }
 

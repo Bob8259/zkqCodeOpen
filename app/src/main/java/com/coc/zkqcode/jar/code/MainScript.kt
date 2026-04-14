@@ -2,7 +2,7 @@ package com.coc.zkqcode.jar.code
 
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.util.basic.RunShell
-import com.coc.zkqcode.core.util.basic.ShowMessage
+import com.coc.zkqcode.jar.code.universal.AccountMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.basic.waitForPlay
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
@@ -36,7 +36,7 @@ import kotlinx.coroutines.isActive
 
 suspend fun runMainScript() {
     waitForPlay()
-    ShowMessage("检测到设置已更新\n即将重新运行")
+    AccountMessage("检测到设置已更新\n即将重新运行")
     delay(200)
     userAuth()
     // Read hot update preference and emit signal if "OnStart" mode is selected
@@ -96,16 +96,16 @@ suspend fun runMainScript() {
             }
 
             if (!enterMainScreen(true)) {
-                ShowMessage("进入游戏失败")
+                AccountMessage("进入游戏失败")
                 return@stepBlock
             }
 
             if (!playBuilderBase()) {
-                ShowMessage("夜世界对战完成，准备进入主世界")
+                AccountMessage("夜世界对战完成，准备进入主世界")
                 return@stepBlock
             }
             if (!playMainBase()) {
-                ShowMessage("主世界对战完成，准备切换账号")
+                AccountMessage("主世界对战完成，准备切换账号")
                 return@stepBlock
             }
         }
@@ -139,7 +139,7 @@ private suspend fun runTestCode() {
     while (true) {
         checkReconnections()
 //        ShowMessage(findMultiColors(MyColors.SpellColorAtDeploymentBar, increment = 1).toString())
-        ShowMessage("测试代码结束")
+        AccountMessage("测试代码结束")
         delay(1000)
     }
 }
@@ -163,7 +163,7 @@ private suspend fun findAndActivateAccount(
     }
     if (found == null) {
         while (currentCoroutineContext().isActive) {
-            ShowMessage("当前未开启任何账号\n请勾选要开启的账号。")
+            AccountMessage("当前未开启任何账号\n请勾选要开启的账号。")
             delay(2500)
         }
     }

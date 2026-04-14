@@ -2,7 +2,7 @@ package com.coc.zkqcode.jar.code.auth
 
 import com.coc.zkqcode.BuildConfig
 import com.coc.zkqcode.core.data.database.GlobalVars
-import com.coc.zkqcode.core.util.basic.ShowMessage
+import com.coc.zkqcode.jar.code.universal.AccountMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.crypto.solvePoW
 import com.coc.zkqcode.jar.ui.schema.Schema.GLOBAL_SETTINGS
@@ -43,7 +43,7 @@ private suspend fun <T> retryOnTimeout(action: suspend () -> T): T {
             return action()
         } catch (_: SocketTimeoutException) {
             val delayMs = Random.nextLong(1000L, 3001L)
-            ShowMessage("连接超时，${delayMs / 1000}秒后重试...")
+            AccountMessage("连接超时，${delayMs / 1000}秒后重试...")
             delay(delayMs)
         }
     }
@@ -128,7 +128,7 @@ suspend fun userAuth() {
             GlobalVars.isShowAd = true
             return
         }
-        ShowMessage("准备连接服务器")
+        AccountMessage("准备连接服务器")
         val email = GlobalVars.configStates[GLOBAL_SETTINGS.EMAIL.key]?.value.orEmpty()
         val password = GlobalVars.configStates[GLOBAL_SETTINGS.PASSWORD.key]?.value.orEmpty()
         if (email.isBlank() || password.isBlank()) {
@@ -192,7 +192,7 @@ suspend fun userAuth() {
 
         if (responseCode != 200) {
             // Flag ad display on non-200 deduct response
-            ShowMessage("登录失败，错误信息：$responseBody")
+            AccountMessage("登录失败，错误信息：$responseBody")
             delayWithMultiplier(2000)
             if (responseBody.contains("密码错误")) {
                 GlobalVars.serverActions?.writeToConfigFile("gem_count", "0")

@@ -3,7 +3,7 @@ package com.coc.zkqcode.jar.code.universal.create
 import android.annotation.SuppressLint
 import android.os.Environment
 import com.coc.zkqcode.core.util.basic.RunShell
-import com.coc.zkqcode.core.util.basic.ShowMessage
+import com.coc.zkqcode.jar.code.universal.AccountMessage
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
 import com.coc.zkqcode.jar.code.auth.displayAds
 import com.coc.zkqcode.jar.code.universal.GameVersion
@@ -45,14 +45,14 @@ suspend fun batchCreateAccounts() {
                 // Run through the tutorial; returns true when completed successfully
                 tutorialPassed = AllTutorials.allBaseTutorial()
                 if (!tutorialPassed) {
-                    ShowMessage("账号$i 教程未完成，正在重试...")
+                    AccountMessage("账号$i 教程未完成，正在重试...")
                 }
             }
 
             // Extract game files to the save directory
             Shell.cmd("mkdir -p \"$path/shared_prefs\"").exec()
             Shell.cmd("cp -r /data/data/$globalPackageName/shared_prefs/* \"$path/shared_prefs/\"").exec()
-            ShowMessage("账号$i 创建成功，存档已保存至 $path")
+            AccountMessage("账号$i 创建成功，存档已保存至 $path")
         }
     }
 }

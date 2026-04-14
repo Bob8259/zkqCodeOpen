@@ -32,7 +32,7 @@ import androidx.compose.ui.unit.dp
 import com.coc.zkqcode.BuildConfig
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
-import com.coc.zkqcode.core.util.basic.ShowMessage
+import com.coc.zkqcode.jar.code.universal.AccountMessage
 import com.coc.zkqcode.jar.ui.components.CustomButton
 import com.coc.zkqcode.statehelper.AppMode
 import com.coc.zkqcode.statehelper.AppStateManager
@@ -114,7 +114,7 @@ fun BugReport(onClose: () -> Unit) {
                         scope.launch {
                             try {
                                 // Wait for the transparent recomposition to render
-                                ShowMessage("截屏中，请耐心等待")
+                                AccountMessage("截屏中，请耐心等待")
                                 delay(300)
                                 val sanitizedName =
                                     if (nameToSubmit.endsWith(".png")) nameToSubmit else "$nameToSubmit.png"

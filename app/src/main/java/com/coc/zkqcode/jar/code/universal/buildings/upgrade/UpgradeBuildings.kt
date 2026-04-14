@@ -2,7 +2,7 @@ package com.coc.zkqcode.jar.code.universal.buildings.upgrade
 
 import android.graphics.Bitmap
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
-import com.coc.zkqcode.core.util.basic.ShowMessage
+import com.coc.zkqcode.jar.code.universal.AccountMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
 import com.coc.zkqcode.core.util.touchactions.TouchActions
@@ -52,7 +52,7 @@ suspend fun upgradeBuildings(currentBase: BaseType): Boolean {
             iterateBuilderBaseBuildingUpgradeList(onDetect = { result ->
                 val buildings = result.buildings
                 if (buildings.isEmpty()) {
-                    ShowMessage("未检测到可升级建筑")
+                    AccountMessage("未检测到可升级建筑")
                 } else {
                     buildings.forEach { building ->
                         if (upgradableBuildingsMap.containsKey(building.name)) {
@@ -67,7 +67,7 @@ suspend fun upgradeBuildings(currentBase: BaseType): Boolean {
             })
             val upgradableList = upgradableBuildingsMap.filter { it.value }.keys.toList()
             val summary = upgradableList.joinToString("\n")
-            ShowMessage("所有可升级建筑: $summary")
+            AccountMessage("所有可升级建筑: $summary")
             if (isNewBuildingDetected) {
                 if (!buildAllNewBuildings(currentBase)) return false
                 upgradeBuildings(currentBase)
@@ -89,7 +89,7 @@ suspend fun buildAllNewBuildings(currentBase: BaseType): Boolean {
         if (elapsedTime > timeoutMillis) {
             break
         }
-        ShowMessage("建造中，剩余${"%.2f".format(remainingMinutes)}分钟后强制退出")
+        AccountMessage("建造中，剩余${"%.2f".format(remainingMinutes)}分钟后强制退出")
         if (!checkContinueBuild(currentBase)) {
             break
         }
@@ -110,7 +110,7 @@ suspend fun checkContinueBuild(currentBase: BaseType, isWallUpgrade: Boolean = f
     }
     val baseName = if (isBuilder) "夜世界" else "主世界"
     // 2. Log the worker status (Keep original Chinese strings for display)
-    ShowMessage("${baseName}工人数量：${workerNumber.available}/${workerNumber.total}")
+    AccountMessage("${baseName}工人数量：${workerNumber.available}/${workerNumber.total}")
     // 3. Evaluate the exit condition:
     // No workers available OR exactly one worker available while "Save Worker" config is enabled.
     // When isWallUpgrade is true, skip the save-worker check since the saved worker is reserved for walls.
@@ -122,7 +122,7 @@ suspend fun checkContinueBuild(currentBase: BaseType, isWallUpgrade: Boolean = f
 //For other functions, return false usually means fails to go back to main screen.
 //But for this function, false means no new buildings.
 private suspend fun buildOneNewBuildings(currentBase: BaseType): Boolean {
-    ShowMessage("准备建造新建筑")
+    AccountMessage("准备建造新建筑")
     clickRightBottom(1)
     if (zoomOrNot) {
         if (currentBase == BaseType.Builder) zoomSmallBuilderBase(isForBuild = true)
@@ -145,7 +145,7 @@ private suspend fun buildOneNewBuildings(currentBase: BaseType): Boolean {
 
     // 5. If initial tick is missing, attempt to find a new position via the Red Cross
     if (targetTick == null) {
-        ShowMessage("建造失败，尝试寻找空位")
+        AccountMessage("建造失败，尝试寻找空位")
         targetTick = tryToFindBuildPosition(currentBase)
     }
 
@@ -161,14 +161,14 @@ private suspend fun buildOneNewBuildings(currentBase: BaseType): Boolean {
             for (i in 1..5) {
                 val currentTick = if (currentBase == BaseType.Main) mainBaseFindBuildButton(type = BuildButtonType.Tick, duration = 500) else builderBaseFindBuildButton(type = BuildButtonType.Tick, duration = 500)
                 if (currentTick != null) {
-                    ShowMessage("点击第 $i 次绿色按钮：${currentTick.x}, ${currentTick.y}")
+                    AccountMessage("点击第 $i 次绿色按钮：${currentTick.x}, ${currentTick.y}")
                     if (i > 1) zoomOrNot = true
                     TouchActions.tap(currentTick.x, currentTick.y)
                     if (currentBase == BaseType.Main && getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.INSTANT_UPGRADE.key)) {
                         val gemCost = detectInstantBuildCost()
                         val costThreshold = getConfigRuntime(Schema.MAIN_BASE_SETTINGS.INSTANT_UPGRADE_THRESHOLD.key).toIntOrNull()
                             ?: logAndRestart("${Schema.MAIN_BASE_SETTINGS.INSTANT_UPGRADE_THRESHOLD.displayName} 必须是数字，请检查配置")
-                        ShowMessage("检测到的宝石消耗数量: $gemCost\n设置的宝石消耗限额: $costThreshold")
+                        AccountMessage("检测到的宝石消耗数量: $gemCost\n设置的宝石消耗限额: $costThreshold")
                         if (gemCost != null && gemCost <= costThreshold) {
                             val upgradeGemIcon = findMultiColorsUntil(
                                 schemas = listOf(MyColors.UpgradeGemIcon, MyColors.UpgradeGemIcon2, MyColors.UpgradeGemIcon3), duration = 500
@@ -231,7 +231,7 @@ private suspend fun tryToBatchBuildWalls(x: Int, y: Int, currentBase: BaseType) 
         if (batchBuildWallsArrow != null) {
             val arrowX = batchBuildWallsArrow.boundingBox.centerX().toInt()
             val arrowY = batchBuildWallsArrow.boundingBox.centerY().toInt()
-            ShowMessage("批量建造箭头：$arrowX, $arrowY")
+            AccountMessage("批量建造箭头：$arrowX, $arrowY")
             val targetCenterY = if (shouldSwipe) centerY - 150 else centerY
             val dx = arrowX - centerX
             val dy = arrowY - targetCenterY

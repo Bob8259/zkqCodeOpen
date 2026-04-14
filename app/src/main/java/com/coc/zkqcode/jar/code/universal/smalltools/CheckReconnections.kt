@@ -4,7 +4,7 @@ import android.os.Environment
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.core.util.basic.RunShell
-import com.coc.zkqcode.core.util.basic.ShowMessage
+import com.coc.zkqcode.jar.code.universal.AccountMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
 import com.coc.zkqcode.core.util.touchactions.TouchActions
@@ -34,11 +34,11 @@ suspend fun checkReconnections(): Boolean {
             screenBuffer = captureOrRestart()
             val whiteCount = countWhitePixels(screenBuffer)
             if (whiteCount <= 200) {
-                ShowMessage("检测到假重连")
+                AccountMessage("检测到假重连")
                 delayWithMultiplier(200)
                 return@any false // Not enough white pixels, continue checking remaining schemas
             }
-            ShowMessage("检测到重连")
+            AccountMessage("检测到重连")
             val configKey = Schema.GLOBAL_SETTINGS.AFTER_KICK_OPTION.key
             val action = GlobalVars.configStates[configKey]?.value?.toInt() ?: logAndRestart("Can not get $configKey")
             when (action) {

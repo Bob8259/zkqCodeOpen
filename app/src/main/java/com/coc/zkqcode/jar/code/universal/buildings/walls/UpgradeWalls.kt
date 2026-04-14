@@ -12,7 +12,7 @@ import com.coc.zkqcode.jar.code.universal.smalltools.getBooleanConfigRuntime
 import com.coc.zkqcode.jar.code.universal.smalltools.getConfigRuntime
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
 import com.coc.zkqcode.jar.ui.schema.Schema
-import com.coc.zkqcode.core.util.basic.ShowMessage
+import com.coc.zkqcode.jar.code.universal.AccountMessage
 import kotlin.math.roundToInt
 
 suspend fun upgradeWalls(currentBase: BaseType): Boolean {
@@ -44,7 +44,7 @@ suspend fun upgradeWalls(currentBase: BaseType): Boolean {
     // 1. Gold Upgrade Loop
     while (System.currentTimeMillis() - startTime < timeoutMs) {
         val currentResourcePercentage = calculateResourcesPercentage(currentBase)
-        ShowMessage("当前金币百分比${currentResourcePercentage.gold}\n设置阈值${thresholds}")
+        AccountMessage("当前金币百分比${currentResourcePercentage.gold}\n设置阈值${thresholds}")
         
         if (currentResourcePercentage.gold < thresholds) break
         
@@ -59,7 +59,7 @@ suspend fun upgradeWalls(currentBase: BaseType): Boolean {
     // 2. Elixir Upgrade Loop
     while (System.currentTimeMillis() - startTime < timeoutMs) {
         val currentResourcePercentage = calculateResourcesPercentage(currentBase)
-        ShowMessage("当前圣水百分比${currentResourcePercentage.elixir}\n设置阈值${thresholds}")
+        AccountMessage("当前圣水百分比${currentResourcePercentage.elixir}\n设置阈值${thresholds}")
         
         if (currentResourcePercentage.elixir < thresholds) break
         

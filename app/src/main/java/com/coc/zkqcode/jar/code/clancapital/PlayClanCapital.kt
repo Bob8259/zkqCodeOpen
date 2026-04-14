@@ -1,6 +1,6 @@
 package com.coc.zkqcode.jar.code.clancapital
 
-import com.coc.zkqcode.core.util.basic.ShowMessage
+import com.coc.zkqcode.jar.code.universal.AccountMessage
 import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.mainbase.others.zoomSmallMainBase
@@ -19,11 +19,11 @@ suspend fun playClanCapital(): Boolean {
     if (!getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.PLAY_RAID.key)) return true
     // All clan capital actions are only relevant during raid weekend
     if (!isWithinRaidWeekend()) {
-        ShowMessage("当前不在都城突袭时间段，跳过都城对战")
+        AccountMessage("当前不在都城突袭时间段，跳过都城对战")
         return true
     }
     if (!clanCapitalTrainTroops()) {
-        ShowMessage("都城练兵失败，尝试返回主世界")
+        AccountMessage("都城练兵失败，尝试返回主世界")
         return enterMainScreen()
     }
     // Guard: skip if the last attack was less than 3 days (4320 minutes) ago

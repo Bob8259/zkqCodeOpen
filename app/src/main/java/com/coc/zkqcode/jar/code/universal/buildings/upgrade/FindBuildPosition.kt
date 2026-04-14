@@ -2,7 +2,7 @@ package com.coc.zkqcode.jar.code.universal.buildings.upgrade
 
 import android.graphics.Point
 import com.coc.zkqcode.jar.code.universal.buildings.BaseType
-import com.coc.zkqcode.core.util.basic.ShowMessage
+import com.coc.zkqcode.jar.code.universal.AccountMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.bugreporter.BugReporter
 import com.coc.zkqcode.core.util.touchactions.TouchActions
@@ -55,7 +55,7 @@ suspend fun tryToFindBuildPosition(baseType: BaseType): Point? {
             }
         }
     } else {
-        ShowMessage("未找到红色叉，错误截图已保存到/sdcard/zkqFiles/bugReporter\n请将截图反馈给作者")
+        AccountMessage("未找到红色叉，错误截图已保存到/sdcard/zkqFiles/bugReporter\n请将截图反馈给作者")
         BugReporter.takeScreenshot("Red_Cross_Not_Found")
         killGame()
         clickRightBottom(1)

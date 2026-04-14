@@ -1,7 +1,7 @@
 package com.coc.zkqcode.jar.code.universal.smalltools
 
 import com.coc.zkqcode.core.util.basic.RunShell
-import com.coc.zkqcode.core.util.basic.ShowMessage
+import com.coc.zkqcode.jar.code.universal.AccountMessage
 import com.coc.zkqcode.jar.code.universal.InGamesVars
 
 suspend fun isGameAtFront(): Boolean {
@@ -18,7 +18,7 @@ suspend fun isGameAtFront(): Boolean {
     if (frontApp.contains(InGamesVars.currentGameVersion.packageName)) {
         return true
     } else {
-        ShowMessage("当前前台应用${frontApp}")
+        AccountMessage("当前前台应用${frontApp}")
         return false
     }
 }
