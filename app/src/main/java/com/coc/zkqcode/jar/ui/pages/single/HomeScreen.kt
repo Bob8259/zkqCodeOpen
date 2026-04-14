@@ -100,11 +100,11 @@ fun HomeScreen(
     val tabs = listOf("主页设置", "账号设置", "提取存档", "配置文件", "特殊设置")
 
     val sectionItems = listOf(
-        "⚔️ 核心对战" to 0,
-        "🔬 自动研究" to 5,
-        "🏗️ 自动建造" to 7,
-        "🐾 战宠设置" to 9,
-        "🌙 夜世界" to 15
+        "核心对战" to 0,
+        "自动研究" to 5,
+        "自动建造" to 7,
+        "战宠设置" to 9,
+        "夜世界" to 15
     )
 
     val lazyListState = rememberLazyListState()

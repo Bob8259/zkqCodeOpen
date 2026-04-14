@@ -156,10 +156,10 @@ fun LazyListScope.mainBaseConfig(
         }
     }
 
-    // 🐾 Banner — 战宠&其他发展设置
+    // 🐾 Banner — 战宠&其他设置
     item {
         SectionBanner(
-            title = "🐾 战宠&其他发展设置",
+            title = "🐾 战宠&其他设置",
             isExpanded = isPetExpanded,
             onClick = onTogglePet
         )

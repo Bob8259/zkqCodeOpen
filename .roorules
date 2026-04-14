@@ -2,3 +2,4 @@ You MUST always swith to Architecture mode first for any tasks. You MUST always 
 
 The commands tools has a probelm with output decoding. So, if you want to see the result of a command, you should always store the output in a tempory file, and you MUST delete the file later.
 
+Rememmber: you MUST always swith to Architecture mode to make a plan for any tasks.
