@@ -94,17 +94,13 @@ fun HomeScreen(
     val researchExpandedStates = androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateMapOf<Int, Boolean>() }
     val buildExpandedStates = androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateMapOf<Int, Boolean>() }
     val petExpandedStates = androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateMapOf<Int, Boolean>() }
+    val clanExpandedStates = androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateMapOf<Int, Boolean>() }
     val builderBaseExpandedStates = androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateMapOf<Int, Boolean>() }
 
     val configCount = configCountStr.toIntOrNull() ?: 1
     val tabs = listOf("主页设置", "账号设置", "提取存档", "配置文件", "特殊设置")
-
     val sectionItems = listOf(
-        "核心对战" to 0,
-        "自动研究" to 5,
-        "自动建造" to 7,
-        "战宠设置" to 9,
-        "夜世界" to 15
+        "核心对战" to 0, "部落设置" to 4, "自动研究" to 6, "自动建造" to 8, "战宠设置" to 10, "夜世界" to 16
     )
 
     val lazyListState = rememberLazyListState()
@@ -114,8 +110,7 @@ fun HomeScreen(
     val activeSectionIndex by remember {
         derivedStateOf {
             val firstVisible = lazyListState.firstVisibleItemIndex
-            sectionItems.indexOfLast { (_, itemIndex) -> itemIndex <= firstVisible }
-                .coerceAtLeast(0)
+            sectionItems.indexOfLast { (_, itemIndex) -> itemIndex <= firstVisible }.coerceAtLeast(0)
         }
     }
 
@@ -207,21 +202,15 @@ fun HomeScreen(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = 4.dp, end = 4.dp, top = 4.dp),
-                verticalAlignment = Alignment.CenterVertically
+                    .padding(start = 4.dp, end = 4.dp, top = 4.dp), verticalAlignment = Alignment.CenterVertically
             ) {
                 // Back button — fixed, does not scroll
                 CustomButton(
-                    text = "◀ 返回",
-                    onClick = { selectedConfigIndex = null },
-                    marginTop = 0.dp
+                    text = "◀ 返回", onClick = { selectedConfigIndex = null }, marginTop = 0.dp
                 )
                 // Scrollable section outline chips — synced with lazyListState scroll position
                 LazyRow(
-                    state = chipListState,
-                    modifier = Modifier.weight(1f),
-                    horizontalArrangement = Arrangement.spacedBy(6.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                    state = chipListState, modifier = Modifier.weight(1f), horizontalArrangement = Arrangement.spacedBy(6.dp), verticalAlignment = Alignment.CenterVertically
                 ) {
                     sectionItems.forEachIndexed { chipIndex, (label, itemIndex) ->
                         item {
@@ -239,13 +228,9 @@ fun HomeScreen(
                                             lazyListState.animateScrollToItem(itemIndex)
                                         }
                                     }
-                                    .padding(horizontal = 12.dp, vertical = 6.dp),
-                                contentAlignment = Alignment.Center
-                            ) {
+                                    .padding(horizontal = 12.dp, vertical = 6.dp), contentAlignment = Alignment.Center) {
                                 Text(
-                                    text = label,
-                                    style = MaterialTheme.typography.labelMedium,
-                                    color = if (isActive) Color.White else AppColors.Primary
+                                    text = label, style = MaterialTheme.typography.labelMedium, color = if (isActive) Color.White else AppColors.Primary
                                 )
                             }
                         }
@@ -305,20 +290,17 @@ fun HomeScreen(
                                 SettingSwitchIcon(key = GLOBAL_SETTINGS.RECORD_PROGRESS.key)
 
                                 SettingDropdown(
-                                    key = GLOBAL_SETTINGS.AUTO_UPDATE.key,
-                                    options = listOf("关闭自动更新", "仅启动时更新", "实时自动更新")
+                                    key = GLOBAL_SETTINGS.AUTO_UPDATE.key, options = listOf("关闭自动更新", "仅启动时更新", "实时自动更新")
                                 )
                                 SettingSwitchIcon(key = GLOBAL_SETTINGS.AUTO_START.key)
                                 SettingDropdown(
-                                    key = GLOBAL_SETTINGS.AFTER_KICK_OPTION.key,
-                                    options = listOf("立刻重连", "切换账号", "原地等待"),
+                                    key = GLOBAL_SETTINGS.AFTER_KICK_OPTION.key, options = listOf("立刻重连", "切换账号", "原地等待"),
                                     // Disable batch create when dropdown is not "立刻重连" (index 0)
                                     afterChange = { selectedIndex ->
                                         if (selectedIndex != 0) {
                                             GlobalVars.configStates[GLOBAL_SETTINGS.BATCH_CREATE_ACCOUNT.key]?.value = "0"
                                         }
-                                    }
-                                )
+                                    })
                                 SettingInputRow(key = GLOBAL_SETTINGS.DEVICE_REMARK.key)
 
                             }
@@ -329,8 +311,7 @@ fun HomeScreen(
                                     explain = "辅助会记住账号信息，例如记住当前账号是否已完成突袭，是否已完成部落竞赛等等。如果换号后不清空记忆，那么辅助就会保留先前账号错误的记忆，进而可能发生某些异常操作。"
                                 )
                                 CustomButton(
-                                    text = "清除全部数据", onClick = { cleanAllData() }
-                                )
+                                    text = "清除全部数据", onClick = { cleanAllData() })
                             }
                             Text(
                                 text = "换机或设备到期前必须清空全部数据！部分云机在设备到期后不会清空用户数据，严重威胁隐私安全！",
@@ -357,13 +338,12 @@ fun HomeScreen(
                         // Show grid of config files
                         item {
                             ConfigFileGrid(
-                                configCount = configCount,
-                                onConfigSelected = { selectedConfigIndex = it }
-                            )
+                                configCount = configCount, onConfigSelected = { selectedConfigIndex = it })
                         }
                     } else {
                         // State hoisting for expansion keyed by config index
                         val currentMainExpanded = mainBaseExpandedStates[cfgIdx] ?: true
+                        val currentClanExpanded = clanExpandedStates[cfgIdx] ?: true
                         val currentResearchExpanded = researchExpandedStates[cfgIdx] ?: true
                         val currentBuildExpanded = buildExpandedStates[cfgIdx] ?: true
                         val currentPetExpanded = petExpandedStates[cfgIdx] ?: true
@@ -373,6 +353,8 @@ fun HomeScreen(
                             index = cfgIdx,
                             isMainExpanded = currentMainExpanded,
                             onToggleMainExpanded = { mainBaseExpandedStates[cfgIdx] = !currentMainExpanded },
+                            isClanExpanded = currentClanExpanded,
+                            onToggleClan = { clanExpandedStates[cfgIdx] = !currentClanExpanded },
                             isResearchExpanded = currentResearchExpanded,
                             onToggleResearch = { researchExpandedStates[cfgIdx] = !currentResearchExpanded },
                             isBuildExpanded = currentBuildExpanded,
@@ -410,8 +392,7 @@ fun HomeScreen(
             notificationMessage = notificationMessage,
             onDismissNotification = {},
             showCleanAllConfirmation = showCleanAllConfirmation,
-            onDismissCleanAll = { showCleanAllConfirmation = false }
-        )
+            onDismissCleanAll = { showCleanAllConfirmation = false })
     }
 
 }

@@ -18,6 +18,8 @@ fun LazyListScope.mainBaseConfig(
     index: Int,
     isExpanded: Boolean,
     onToggleExpanded: () -> Unit,
+    isClanExpanded: Boolean,
+    onToggleClan: () -> Unit,
     isResearchExpanded: Boolean,
     onToggleResearch: () -> Unit,
     isBuildExpanded: Boolean,
@@ -79,9 +81,18 @@ fun LazyListScope.mainBaseConfig(
         }
     }
 
-    // Donation & Research toggle
+        // Banner — 部落设置
     item {
-        SettingSection(visible = isExpanded) {
+        SectionBanner(
+            title = "部落设置",
+            isExpanded = isClanExpanded,
+            onClick = onToggleClan
+        )
+    }
+
+    // Clan settings content
+    item {
+        SettingSection(visible = isClanExpanded) {
             FlowRow {
                 SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.DONATION_SETTING.key}_c$index")
                 SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.REQUEST_REINFORCEMENT_SETTING.key}_c$index")
@@ -103,10 +114,23 @@ fun LazyListScope.mainBaseConfig(
                     }
                 }
             }
+
+            Column {
+                SettingSwitchIcon(
+                    key = "${MAIN_BASE_SETTINGS.AUTO_JOIN_CLAN.key}_c$index",
+                    explain = "勾选此选项后，辅助会自动加部落。若未指定标签，则只有无部落时才加部落。若指定标签，则每天检测一次当前是否加入指定部落。注意：需先建造部落城堡才能使用此功能。"
+                )
+                AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.AUTO_JOIN_CLAN.key}_c$index"]?.value == "1") {
+                    Column {
+                        SettingInputRow(key = "${MAIN_BASE_SETTINGS.CLAN_TAG.key}_c$index")
+                        SettingInputRow(key = "${MAIN_BASE_SETTINGS.CLAN_JOIN_MESSAGE.key}_c$index")
+                    }
+                }
+            }
         }
     }
 
-    // 🔬 Banner — 自动研究设置
+    // Banner — 自动研究设置
     item {
         SectionBanner(
             title = "🔬 自动研究设置",
@@ -257,20 +281,4 @@ fun LazyListScope.mainBaseConfig(
         }
     }
 
-    item {
-        SettingSection(visible = isPetExpanded) {
-            Column {
-                SettingSwitchIcon(
-                    key = "${MAIN_BASE_SETTINGS.AUTO_JOIN_CLAN.key}_c$index",
-                    explain = "勾选此选项后，辅助会自动加部落。若未指定标签，则只有无部落时才加部落。若指定标签，则每天检测一次当前是否加入指定部落。注意：需先建造部落城堡才能使用此功能。"
-                )
-                AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.AUTO_JOIN_CLAN.key}_c$index"]?.value == "1") {
-                    Column {
-                        SettingInputRow(key = "${MAIN_BASE_SETTINGS.CLAN_TAG.key}_c$index")
-                        SettingInputRow(key = "${MAIN_BASE_SETTINGS.CLAN_JOIN_MESSAGE.key}_c$index")
-                    }
-                }
-            }
-        }
     }
-}

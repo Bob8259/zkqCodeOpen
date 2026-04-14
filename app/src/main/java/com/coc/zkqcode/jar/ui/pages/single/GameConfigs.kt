@@ -8,6 +8,8 @@ fun LazyListScope.gameConfig(
     index: Int,
     isMainExpanded: Boolean,
     onToggleMainExpanded: () -> Unit,
+    isClanExpanded: Boolean,
+    onToggleClan: () -> Unit,
     isResearchExpanded: Boolean,
     onToggleResearch: () -> Unit,
     isBuildExpanded: Boolean,
@@ -21,10 +23,12 @@ fun LazyListScope.gameConfig(
     onScrollToBottom: () -> Unit = {}
 ) {
 
-    mainBaseConfig(
+        mainBaseConfig(
         index = index,
         isExpanded = isMainExpanded,
         onToggleExpanded = onToggleMainExpanded,
+        isClanExpanded = isClanExpanded,
+        onToggleClan = onToggleClan,
         isResearchExpanded = isResearchExpanded,
         onToggleResearch = onToggleResearch,
         isBuildExpanded = isBuildExpanded,
