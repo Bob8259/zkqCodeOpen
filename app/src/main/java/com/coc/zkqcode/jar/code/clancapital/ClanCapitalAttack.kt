@@ -176,11 +176,6 @@ private suspend fun deploySpells() {
         planClanCapitalTargets(detections)
     }
 
-    if (plannedTargets.isEmpty()) {
-        AccountMessage("部落都城检测结果已去重后为空")
-        return
-    }
-
     for (target in plannedTargets) {
         repeat(5) {
             val spell = findMultiColorsUntil(schemas = listOf(MyColors.SpellColorAtDeploymentBar), duration = 100) ?: return

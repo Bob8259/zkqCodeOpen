@@ -30,7 +30,7 @@ enum class WallType {
     Gold, Elixir
 }
 
-// Result type for upgradeAllExistingBuildings to signal caller loop behavior
+// Result type for upgradeAllExistingBuildings to signal caller loop behaviour
 enum class UpgradeResult {
     Success,   // Upgrade cycle completed normally (equivalent to old true)
     Failure,   // Navigation/screen failure (equivalent to old false)
@@ -157,7 +157,7 @@ suspend fun upgradeAllExistingBuildings(buildings: List<String>, currentBase: Ba
                         }
                     } else {
                         clickRightBottom(1)
-                        break // Not found this building anymore, go to next building type
+                        break // Not found this building any more, go to next building type
                     }
                 } else {
                     consecutiveFailureCount = 0
@@ -219,7 +219,7 @@ private suspend fun upgradeWalls(currentBase: BaseType, wallType: WallType): Loo
     )
     val hammer = findMultiColorsUntil(schemas = listOf(hammerSchema), duration = 1000) ?: return LoopAction.Continue
     if (wallType == WallType.Elixir) {
-        // Select elixir icon color based on base type
+        // Select elixir icon colour based on base type
         val elixirIconBase = if (currentBase == BaseType.Builder) MyColors.builderBaseSmallElixirUpgradeIcon else MyColors.smallElixirUpgradeIcon
         // Rescope search area for elixir upgrade icon relative to hammer position
         val elixirIconSchema = ColorSchema.rescope(
@@ -325,7 +325,7 @@ private suspend fun upgradeHero(building: String): LoopAction {
         val x1 = 55 + heroIndex * 228
         val x2 = 240 + heroIndex * 228
 
-        // Create a ColorSchema with the same color pattern but different search area
+        // Create a ColorSchema with the same colour pattern but different search area
         val heroInsufficientResources = ColorSchema.parse(
             x1, 500, x2, 530, "7F88FF", "1|0|7F88FF,2|0|7F88FF,3|0|7F88FF,3|1|7F88FF,2|1|7F88FF,0|1|7F88FF,0|1|7F88FF,0|2|7F88FF,1|2|7F88FF", 0, 0.97, "${building}资源不足"
         )
