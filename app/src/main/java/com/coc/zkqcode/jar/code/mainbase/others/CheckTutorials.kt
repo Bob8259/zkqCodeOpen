@@ -1,10 +1,10 @@
 package com.coc.zkqcode.jar.code.mainbase.others
 
-import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.core.util.touchactions.TouchActions.swipe
 import com.coc.zkqcode.jar.code.colorschema.MyColors
+import com.coc.zkqcode.jar.code.universal.AccountMessage
 import com.coc.zkqcode.jar.code.universal.InGamesVars
 import com.coc.zkqcode.jar.code.universal.clickRightBottom
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
@@ -17,7 +17,7 @@ import com.coc.zkqcode.jar.code.universal.smalltools.writeMemory
 suspend fun mainBaseCheckTutorials(): Boolean {
     val storageKey = StorageKeys.withAccountNumber(StorageKeys.MAIN_BASE_CHECK_TUTORIALS, InGamesVars.currentAccountNumber)
     if (!checkMemoryFile(storageKey, 1440)) {
-        ShowMessage("账号${InGamesVars.currentAccountNumber}，今天已检查常见教程")
+        AccountMessage("今天已检查常见教程")
         return true
     }
 

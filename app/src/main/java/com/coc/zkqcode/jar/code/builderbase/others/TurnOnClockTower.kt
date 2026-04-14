@@ -1,7 +1,6 @@
 package com.coc.zkqcode.jar.code.builderbase.others
 
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
-import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import kotlin.math.max
 import kotlin.math.min
@@ -11,6 +10,7 @@ import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.core.util.touchactions.TouchActions.swipe
 import com.coc.zkqcode.jar.code.colorschema.ColorSchema
 import com.coc.zkqcode.jar.code.colorschema.MyColors
+import com.coc.zkqcode.jar.code.universal.AccountMessage
 import com.coc.zkqcode.jar.code.universal.InGamesVars
 import com.coc.zkqcode.jar.code.universal.aidetection.tiledAiDetect
 import com.coc.zkqcode.jar.code.universal.buildings.countPixelsInArea
@@ -29,10 +29,10 @@ suspend fun turnOnClockTower(): Boolean {
 
     // Guard the Clock Tower check so each account only scans once every twenty-two hours.
     if (!checkMemoryFile(storageKey, 1320)) {
-        ShowMessage("账号${InGamesVars.currentAccountNumber},22小时内已开启过时光钟楼，暂不检测")
+        AccountMessage("22小时内已开启过时光钟楼，暂不检测")
         return true
     }
-    ShowMessage("账号${InGamesVars.currentAccountNumber}，正在检测时光钟楼")
+    AccountMessage("正在检测时光钟楼")
     clickRightBottom(1)
     zoomSmallBuilderBase()
 

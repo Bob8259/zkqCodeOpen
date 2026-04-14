@@ -22,6 +22,7 @@ import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.create.batchCreateAccounts
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.smalltools.StorageKeys
+import com.coc.zkqcode.jar.code.universal.smalltools.checkReconnections
 import com.coc.zkqcode.jar.code.universal.smalltools.getConfigOrStop
 import com.coc.zkqcode.jar.code.universal.smalltools.readMemory
 import com.coc.zkqcode.jar.code.universal.smalltools.writeGameFiles
@@ -136,10 +137,10 @@ suspend fun runMainScript() {
 
 private suspend fun runTestCode() {
     while (true) {
-        playClanCapital()
+        checkReconnections()
 //        ShowMessage(findMultiColors(MyColors.SpellColorAtDeploymentBar, increment = 1).toString())
         ShowMessage("测试代码结束")
-        delay(1000000)
+        delay(1000)
     }
 }
 

@@ -1,7 +1,6 @@
 package com.coc.zkqcode.jar.code.mainbase.herohall
 
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
-import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
 import com.coc.zkqcode.core.util.touchactions.TouchActions
@@ -9,6 +8,7 @@ import com.coc.zkqcode.jar.code.colorschema.ColorSchema
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.mainbase.MainBaseResearchColors
 import com.coc.zkqcode.jar.ui.schema.details.MainBasePets
+import com.coc.zkqcode.jar.code.universal.AccountMessage
 import com.coc.zkqcode.jar.code.universal.InGamesVars
 import com.coc.zkqcode.jar.code.universal.clickRightBottom
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
@@ -33,7 +33,7 @@ suspend fun upgradeGearsAndPets(): Boolean {
     // Guard only gear checks so pets can still be upgraded during the cooldown window.
     val canUpgradeGears = if (shouldUpgradeGears) {
         if (!checkMemoryFile(gearStorageKey, 480)) {
-            ShowMessage("账号${InGamesVars.currentAccountNumber}，该账号8小时内已检测装备升级")
+            AccountMessage("该账号8小时内已检测装备升级")
             false
         } else {
             true
@@ -77,11 +77,11 @@ private suspend fun checkPets() {
     val enabledPets = petColorMap.filter { getBooleanConfigRuntime(it.first.key) }
 
     if (enabledPets.isEmpty()) {
-        ShowMessage("账号${InGamesVars.currentAccountNumber}，没有启用的战宠")
+        AccountMessage("没有启用的战宠")
         return
     }
 
-    ShowMessage("账号${InGamesVars.currentAccountNumber}，已启用 ${enabledPets.size} 个战宠")
+    AccountMessage("已启用 ${enabledPets.size} 个战宠")
 
     repeat(3) {
         val screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult ?: logAndRestart("checkPets: Screen Capture Failed.")
@@ -99,18 +99,18 @@ private suspend fun checkPets() {
                 )
 
                 if (findMultiColors(byteBuffer = screenBuffer, schema = insufficientSchema, increment = 1) != null) {
-                    ShowMessage("账号${InGamesVars.currentAccountNumber}，跳过 ${pet.displayName}: 资源不足")
+                    AccountMessage("跳过 ${pet.displayName}: 资源不足")
                     continue
                 }
 
                 TouchActions.tap(result.x, result.y)
                 val confirmUpgrade = findMultiColorsUntil(schemas = listOf(MyColors.ConfirmUpgradePet), duration = 400)
                 if (confirmUpgrade == null) {
-                    ShowMessage("账号${InGamesVars.currentAccountNumber}，跳过 ${pet.displayName}: 无法升级")
+                    AccountMessage("跳过 ${pet.displayName}: 无法升级")
                     continue
                 }
 
-                ShowMessage("账号${InGamesVars.currentAccountNumber}，升级 ${pet.displayName}")
+                AccountMessage("升级 ${pet.displayName}")
                 TouchActions.tap(confirmUpgrade.x, confirmUpgrade.y)
                 clickRightBottom(1)
                 return

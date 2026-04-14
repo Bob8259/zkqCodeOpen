@@ -1,13 +1,13 @@
 package com.coc.zkqcode.jar.code.builderbase.others
 
-import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.core.util.touchactions.TouchActions.pinchIn
 import com.coc.zkqcode.core.util.touchactions.TouchActions.swipe
 import com.coc.zkqcode.jar.code.colorschema.MyColors
-import com.coc.zkqcode.jar.code.universal.buildings.BaseType
+import com.coc.zkqcode.jar.code.universal.AccountMessage
 import com.coc.zkqcode.jar.code.universal.InGamesVars
+import com.coc.zkqcode.jar.code.universal.buildings.BaseType
 import com.coc.zkqcode.jar.code.universal.buildings.WorkerAndResearch
 import com.coc.zkqcode.jar.code.universal.clickRightBottom
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
@@ -21,10 +21,10 @@ suspend fun clickOttosOutPost(): Boolean {
 
     // Skip if already checked within 24 hours
     if (!checkMemoryFile(storageKey, 1440)) {
-        ShowMessage("账号${InGamesVars.currentAccountNumber}，今日已检测奥仔哨站，暂不点击")
+        AccountMessage("今日已检测奥仔哨站，暂不点击")
         return true
     }
-    ShowMessage("账号${InGamesVars.currentAccountNumber}，准备检测奥仔哨站")
+    AccountMessage("准备检测奥仔哨站")
     val worker = WorkerAndResearch.detectWorkerNumber(BaseType.Builder)
     if (worker.total < 2) {
         writeMemory(storageKey, (System.currentTimeMillis() / 60_000).toString())

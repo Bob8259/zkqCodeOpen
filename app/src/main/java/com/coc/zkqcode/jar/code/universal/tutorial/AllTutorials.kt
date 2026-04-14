@@ -1,12 +1,12 @@
 package com.coc.zkqcode.jar.code.universal.tutorial
 
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
-import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.core.util.fileactions.LogHelper
 import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.MyColors
+import com.coc.zkqcode.jar.code.universal.AccountMessage
 import com.coc.zkqcode.jar.code.universal.InGamesVars
 import com.coc.zkqcode.jar.code.universal.smalltools.checkReconnections
 import kotlinx.coroutines.currentCoroutineContext
@@ -25,7 +25,7 @@ object AllTutorials {
             if (elapsed >= durationMillis) return false
 
             val remainingSeconds = ((durationMillis - elapsed) / 1000).toInt()
-            ShowMessage("账户${InGamesVars.currentAccountNumber}\n教程中，还剩${remainingSeconds}秒")
+            AccountMessage("教程中，还剩${remainingSeconds}秒")
 
             if (mainBaseTutorial()) return true
             if (builderBaseTutorial()) return true

@@ -2,7 +2,6 @@ package com.coc.zkqcode.jar.code.universal
 
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
-import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
 import com.coc.zkqcode.core.util.touchactions.TouchActions
@@ -51,7 +50,7 @@ suspend fun enterMainScreen(isDoubleCheck: Boolean = false): Boolean {
                 }
             }
             if (!checkReconnections()) return false
-            ShowMessage("账号${InGamesVars.currentAccountNumber}，倒计时${((timeoutMillis - System.currentTimeMillis() + startTime) / 1000).toInt()}秒")
+            AccountMessage("倒计时${((timeoutMillis - System.currentTimeMillis() + startTime) / 1000).toInt()}秒")
             closeAdvertisements()
 
             // Click right bottom roughly every 5 seconds

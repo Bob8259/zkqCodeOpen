@@ -1,10 +1,10 @@
 package com.coc.zkqcode.jar.code.mainbase.others
 
-import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.core.util.touchactions.TouchActions.swipe
 import com.coc.zkqcode.jar.code.colorschema.MyColors
+import com.coc.zkqcode.jar.code.universal.AccountMessage
 import com.coc.zkqcode.jar.code.universal.InGamesVars
 import com.coc.zkqcode.jar.code.universal.aidetection.tiledAiDetect
 import com.coc.zkqcode.jar.code.universal.buildings.BaseType
@@ -27,10 +27,10 @@ suspend fun useHelpers(): Boolean {
 
     // Guard the helper scan so each account only retries every 22 hours after a successful tap.
     if (!checkMemoryFile(storageKey, 1320)) {
-        ShowMessage("账号${InGamesVars.currentAccountNumber}，该账号今日已检测助手")
+        AccountMessage("该账号今日已检测助手")
         return true
     }
-    ShowMessage("账号${InGamesVars.currentAccountNumber}，正在检测助手")
+    AccountMessage("正在检测助手")
     clickRightBottom(1)
     zoomSmallMainBase()
     val workerNumber = WorkerAndResearch.detectWorkerNumber(BaseType.Main)

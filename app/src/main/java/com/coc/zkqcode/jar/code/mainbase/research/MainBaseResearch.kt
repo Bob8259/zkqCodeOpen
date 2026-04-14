@@ -1,7 +1,7 @@
 package com.coc.zkqcode.jar.code.mainbase.research
 
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
-import com.coc.zkqcode.core.util.basic.ShowMessage
+import com.coc.zkqcode.jar.code.universal.AccountMessage
 import com.coc.zkqcode.jar.code.universal.InGamesVars
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
@@ -78,11 +78,11 @@ private suspend fun findAllResearchItems() {
     }
 
     if (enabledResearchColors.isEmpty()) {
-        ShowMessage("账号${InGamesVars.currentAccountNumber}，没有启用的研究项目")
+        AccountMessage("没有启用的研究项目")
         return
     }
 
-    ShowMessage("账号${InGamesVars.currentAccountNumber}，已启用 ${enabledResearchColors.size} 个研究项目")
+    AccountMessage("已启用 ${enabledResearchColors.size} 个研究项目")
     repeat(8) {
         // Capture screenshot for searching
         val screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult
@@ -103,7 +103,7 @@ private suspend fun findAllResearchItems() {
                 )
 
                 if (findMultiColors(byteBuffer = screenBuffer, schema = insufficientSchema, increment = 1) != null) {
-                    ShowMessage("账号${InGamesVars.currentAccountNumber}，跳过 ${schema.name}: 资源不足")
+                    AccountMessage("跳过 ${schema.name}: 资源不足")
                     continue
                 }
 
@@ -139,17 +139,17 @@ private suspend fun findAllResearchItems() {
 
                     // Skip items with unknown level (cannot determine if upgrade is needed)
                     if (detectedLevel == null) {
-                        ShowMessage("账号${InGamesVars.currentAccountNumber}，跳过 ${schema.name}: 未知等级，无法判断是否需要升级")
+                        AccountMessage("跳过 ${schema.name}: 未知等级，无法判断是否需要升级")
                         continue
                     }
 
                     // Skip items already at or above the target level
                     if (detectedLevel >= targetLevel) {
-                        ShowMessage("账号${InGamesVars.currentAccountNumber}，跳过 ${schema.name}: 当前等级$detectedLevel >= 目标等级$targetLevel (最大等级$maxLevel - $researchLevelOffset)")
+                        AccountMessage("跳过 ${schema.name}: 当前等级$detectedLevel >= 目标等级$targetLevel (最大等级$maxLevel - $researchLevelOffset)")
                         continue
                     }
 
-                    ShowMessage("账号${InGamesVars.currentAccountNumber}，找到研究项目: ${schema.name}, 等级$detectedLevel, 目标等级$targetLevel")
+                    AccountMessage("找到研究项目: ${schema.name}, 等级$detectedLevel, 目标等级$targetLevel")
                     TouchActions.tap(result.x, result.y)
                     TouchActions.tap(894, 617)
                     clickRightBottom(3)
@@ -163,6 +163,6 @@ private suspend fun findAllResearchItems() {
         delayWithMultiplier(300)
     }
 
-    ShowMessage("账号${InGamesVars.currentAccountNumber}，未找到任何已启用的研究项目")
+    AccountMessage("未找到任何已启用的研究项目")
     clickRightBottom(3)
 }

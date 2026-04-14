@@ -3,11 +3,11 @@ package com.coc.zkqcode.jar.code.clancapital
 import android.graphics.Bitmap
 import androidx.core.graphics.get
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
-import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.mainbase.others.zoomSmallMainBase
+import com.coc.zkqcode.jar.code.universal.AccountMessage
 import com.coc.zkqcode.jar.code.universal.InGamesVars
 import com.coc.zkqcode.jar.code.universal.aidetection.DetectionResult
 import com.coc.zkqcode.jar.code.universal.aidetection.tiledAiDetect
@@ -34,7 +34,7 @@ suspend fun clanCapitalAttack(): CapitalState {
     if (findMultiColors(MyColors.ZeroAttackTimes) != null) {
         // No attack times remaining; record the timestamp so the guard activates next cycle
         writeMemory(storageKey, (System.currentTimeMillis() / 60_000).toString())
-        ShowMessage("账号${InGamesVars.currentAccountNumber}，都城攻击次数已用完")
+        AccountMessage("都城攻击次数已用完")
         if (!enterMainScreen()) return CapitalState.Error
     }
     if (findAttackTarget()) {

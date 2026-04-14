@@ -1,12 +1,12 @@
 package com.coc.zkqcode.jar.code.mainbase.attack
 
 import com.coc.zkqcode.core.data.database.GlobalVars
-import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.MyColors
+import com.coc.zkqcode.jar.code.universal.AccountMessage
 import com.coc.zkqcode.jar.code.universal.InGamesVars
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.smalltools.StorageKeys
@@ -22,7 +22,7 @@ suspend fun mainBaseTrainTroops(): Boolean {
     val storageKey = StorageKeys.withAccountNumber(StorageKeys.MAIN_BASE_TRAIN_TROOPS, InGamesVars.currentAccountNumber)
 
     if (checkMemoryFile(storageKey, 1440)) {
-        ShowMessage("账号${InGamesVars.currentAccountNumber}，准备训练部队")
+        AccountMessage("准备训练部队")
         GlobalVars.absorbEdge = 1
 
         // Open training menu
@@ -30,7 +30,7 @@ suspend fun mainBaseTrainTroops(): Boolean {
         if (point != null) {
             TouchActions.tap(point.x, point.y)
         } else {
-            ShowMessage("账号${InGamesVars.currentAccountNumber}，训练部队失败")
+            AccountMessage("训练部队失败")
             GlobalVars.absorbEdge = 0
             return enterMainScreen()
         }
@@ -38,7 +38,7 @@ suspend fun mainBaseTrainTroops(): Boolean {
         // Verify training page
         point = findMultiColorsUntil(schemas = listOf(MyColors.AttackInTrainingPage, MyColors.AttackInTrainingPage2, MyColors.AttackInTrainingPage3), duration = 1500)
         if (point == null) {
-            ShowMessage("账号${InGamesVars.currentAccountNumber}，未找到训练标志")
+            AccountMessage("未找到训练标志")
             GlobalVars.absorbEdge = 0
             return enterMainScreen()
         }
@@ -126,7 +126,7 @@ suspend fun mainBaseTrainTroops(): Boolean {
         GlobalVars.absorbEdge = 0
         return enterMainScreen()
     } else {
-        ShowMessage("账号${InGamesVars.currentAccountNumber}，该账号今日已练兵")
+        AccountMessage("该账号今日已练兵")
         return true
     }
 }

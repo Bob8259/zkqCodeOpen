@@ -1,10 +1,10 @@
 package com.coc.zkqcode.jar.code.mainbase.attack
 
-import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.fileactions.LogHelper
-import com.coc.zkqcode.jar.code.universal.InGamesVars
 import com.coc.zkqcode.core.util.touchactions.TouchActions
+import com.coc.zkqcode.jar.code.universal.AccountMessage
+import com.coc.zkqcode.jar.code.universal.InGamesVars
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
@@ -40,10 +40,10 @@ suspend fun mainBaseAttack(): Boolean {
             // Show remaining minutes with 1 decimal place
             val remainingMinutes = (maxDurationMs - elapsed) / 60000.0
 
-            ShowMessage("账号${InGamesVars.currentAccountNumber}，对战中，${"%.1f".format(remainingMinutes)}分钟后强制退出对战")
+            AccountMessage("对战中，${"%.1f".format(remainingMinutes)}分钟后强制退出对战")
             val endBattleButton = findMultiColors(schema = MyColors.EndBattle)
             if (endBattleButton == null) {
-                ShowMessage("账号${InGamesVars.currentAccountNumber}，未找到放弃按钮，对战结束")
+                AccountMessage("未找到放弃按钮，对战结束")
                 delayWithMultiplier(1000)
                 TouchActions.tap(640, 610, delayTime = 1500)
                 break

@@ -2,11 +2,11 @@ package com.coc.zkqcode.jar.code.mainbase.clan
 
 import com.coc.zkqcode.core.system.inputmethod.ZKQInputMethodService
 import com.coc.zkqcode.core.util.basic.RunShell
-import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
 import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.MyColors
+import com.coc.zkqcode.jar.code.universal.AccountMessage
 import com.coc.zkqcode.jar.code.universal.InGamesVars
 import com.coc.zkqcode.jar.code.universal.clickRightBottom
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
@@ -43,7 +43,7 @@ suspend fun joinClan(): Boolean {
         // Once-per-day guard: skip if already checked within 24 hours for this account
         val storageKey = StorageKeys.withAccountNumber(StorageKeys.JOIN_CLAN, InGamesVars.currentAccountNumber)
         if (!checkMemoryFile(storageKey, 1440)) {
-            ShowMessage("账号${InGamesVars.currentAccountNumber}，今日已检测加入部落，暂不重复执行")
+            AccountMessage("今日已检测加入部落，暂不重复执行")
             return true
         }
 

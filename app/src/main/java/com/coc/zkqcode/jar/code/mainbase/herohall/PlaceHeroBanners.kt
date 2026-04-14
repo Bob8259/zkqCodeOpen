@@ -1,11 +1,11 @@
 package com.coc.zkqcode.jar.code.mainbase.herohall
 
-import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.bugreporter.BugReporter
 import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.mainbase.others.zoomSmallMainBase
 import com.coc.zkqcode.jar.code.mainbase.upgrade.mainBaseFindBuildButton
+import com.coc.zkqcode.jar.code.universal.AccountMessage
 import com.coc.zkqcode.jar.code.universal.InGamesVars
 import com.coc.zkqcode.jar.code.universal.buildings.BaseType
 import com.coc.zkqcode.jar.code.universal.buildings.upgrade.BuildButtonType
@@ -25,7 +25,7 @@ suspend fun placeHeroBanners(): Boolean {
 
     // Guard: only attempt banner placement once per day (1440 minutes)
     if (!checkMemoryFile(storageKey, 1440)) {
-        ShowMessage("账号${InGamesVars.currentAccountNumber}，该账号今日已检测战旗")
+        AccountMessage("该账号今日已检测战旗")
         return true
     }
     ShowMessage("准备检测是否卡战旗")

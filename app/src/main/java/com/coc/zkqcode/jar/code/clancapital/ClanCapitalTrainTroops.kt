@@ -1,9 +1,9 @@
 package com.coc.zkqcode.jar.code.clancapital
 
-import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.MyColors
+import com.coc.zkqcode.jar.code.universal.AccountMessage
 import com.coc.zkqcode.jar.code.universal.InGamesVars
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
@@ -20,7 +20,7 @@ suspend fun clanCapitalTrainTroops(): Boolean {
 
     // Guard: skip training if the last training was less than 3 days (4320 minutes) ago
     if (!checkMemoryFile(storageKey, 4320)) {
-        ShowMessage("账号${InGamesVars.currentAccountNumber}，3天内已训练过都城部队")
+        AccountMessage("3天内已训练过都城部队")
         return true
     }
 
@@ -28,7 +28,7 @@ suspend fun clanCapitalTrainTroops(): Boolean {
     if (findMultiColors(MyColors.ZeroAttackTimes) != null) {
         // No attack times remaining; record the timestamp so the guard activates next cycle
         writeMemory(storageKey, (System.currentTimeMillis() / 60_000).toString())
-        ShowMessage("账号${InGamesVars.currentAccountNumber}，都城攻击次数已用完")
+        AccountMessage("都城攻击次数已用完")
         if (!enterMainScreen()) return false
     }
     val trainTroopButton = findMultiColorsUntil(schemas = listOf(MyColors.TrainTroops), duration = 1000)
@@ -82,7 +82,7 @@ suspend fun clanCapitalTrainTroops(): Boolean {
         TouchActions.tap(870, 300, delayTime = 800)
         // Record the training timestamp (in minutes) after confirming the troop selection
         writeMemory(storageKey, (System.currentTimeMillis() / 60_000).toString())
-        ShowMessage("账号${InGamesVars.currentAccountNumber}，都城部队训练成功，已记录时间")
+        AccountMessage("都城部队训练成功，已记录时间")
         TouchActions.tap(1120, 35)
     }
     return isTrainingSuccess
