@@ -1,6 +1,7 @@
 package com.coc.zkqcode.jar.ui.components
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredWidth
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -43,6 +45,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.PathFillType
+import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
@@ -58,6 +64,80 @@ import com.coc.zkqcode.jar.ui.theme.AppColors
 import com.coc.zkqcode.jar.ui.schema.Schema
 import kotlinx.coroutines.delay
 
+
+// Hardcoded SVG info icon (circle with question mark), sourced from SVG Repo.
+// viewBox: 0 0 496.158 496.158
+private val InfoSvgIcon: ImageVector by lazy {
+    ImageVector.Builder(
+        name = "InfoIcon",
+        defaultWidth = 18.dp,
+        defaultHeight = 18.dp,
+        viewportWidth = 496.158f,
+        viewportHeight = 496.158f
+    ).apply {
+        // Cyan/teal circle background
+        path(
+            fill = SolidColor(Color(0xFF25B7D3)),
+            fillAlpha = 1f,
+            pathFillType = PathFillType.NonZero
+        ) {
+            moveTo(496.158f, 248.085f)
+            curveTo(496.158f, 111.063f, 385.089f, 0.003f, 248.083f, 0.003f)
+            curveTo(111.07f, 0.003f, 0f, 111.063f, 0f, 248.085f)
+            curveTo(0f, 385.086f, 111.07f, 496.155f, 248.083f, 496.155f)
+            curveTo(385.089f, 496.155f, 496.158f, 385.086f, 496.158f, 248.085f)
+            close()
+        }
+        // White question mark shape
+        path(
+            fill = SolidColor(Color(0xFFFFFFFF)),
+            fillAlpha = 1f,
+            pathFillType = PathFillType.NonZero
+        ) {
+            moveTo(138.216f, 173.592f)
+            curveTo(138.216f, 159.677f, 142.683f, 145.577f, 151.619f, 131.295f)
+            curveTo(160.552f, 117.013f, 173.592f, 105.185f, 190.730f, 95.809f)
+            curveTo(207.869f, 86.436f, 227.864f, 81.747f, 250.715f, 81.747f)
+            curveTo(271.953f, 81.747f, 290.705f, 85.668f, 306.965f, 93.502f)
+            curveTo(323.225f, 101.340f, 335.783f, 111.997f, 344.648f, 125.472f)
+            curveTo(353.509f, 138.951f, 357.941f, 153.597f, 357.941f, 169.417f)
+            curveTo(357.941f, 181.869f, 355.414f, 192.784f, 350.360f, 202.156f)
+            curveTo(345.306f, 211.532f, 339.298f, 219.625f, 332.342f, 226.435f)
+            curveTo(325.383f, 233.247f, 312.896f, 244.710f, 294.879f, 260.823f)
+            curveTo(289.898f, 265.365f, 285.904f, 269.358f, 282.904f, 272.799f)
+            curveTo(279.900f, 276.242f, 277.665f, 279.391f, 276.202f, 282.246f)
+            curveTo(274.736f, 285.103f, 273.599f, 287.959f, 272.796f, 290.816f)
+            curveTo(271.989f, 293.671f, 270.781f, 298.691f, 269.171f, 305.867f)
+            curveTo(266.387f, 321.103f, 257.670f, 328.719f, 243.024f, 328.719f)
+            curveTo(235.406f, 328.719f, 228.996f, 326.230f, 223.798f, 321.248f)
+            curveTo(218.597f, 316.269f, 215.998f, 308.871f, 215.998f, 299.056f)
+            curveTo(215.998f, 286.751f, 217.900f, 276.094f, 221.711f, 267.086f)
+            curveTo(225.519f, 258.076f, 230.572f, 250.166f, 236.872f, 243.356f)
+            curveTo(243.168f, 236.544f, 251.666f, 228.452f, 262.360f, 219.076f)
+            curveTo(271.733f, 210.874f, 278.510f, 204.684f, 282.685f, 200.509f)
+            curveTo(286.860f, 196.334f, 290.375f, 191.686f, 293.232f, 186.556f)
+            curveTo(296.088f, 181.430f, 297.517f, 175.865f, 297.517f, 169.857f)
+            curveTo(297.517f, 158.139f, 293.157f, 148.252f, 284.443f, 140.194f)
+            curveTo(275.726f, 132.140f, 264.482f, 128.109f, 250.715f, 128.109f)
+            curveTo(234.599f, 128.109f, 222.734f, 132.174f, 215.119f, 140.304f)
+            curveTo(207.501f, 148.434f, 201.057f, 160.409f, 195.783f, 176.229f)
+            curveTo(190.802f, 192.784f, 181.353f, 201.058f, 167.438f, 201.058f)
+            curveTo(159.232f, 201.058f, 152.311f, 198.167f, 146.674f, 192.379f)
+            curveTo(141.035f, 186.593f, 138.216f, 180.331f, 138.216f, 173.592f)
+            close()
+            moveTo(245.442f, 414.412f)
+            curveTo(236.505f, 414.412f, 228.705f, 411.517f, 222.041f, 405.732f)
+            curveTo(215.374f, 399.948f, 212.043f, 391.855f, 212.043f, 381.453f)
+            curveTo(212.043f, 372.224f, 215.263f, 364.462f, 221.711f, 358.162f)
+            curveTo(228.155f, 351.865f, 236.065f, 348.714f, 245.441f, 348.714f)
+            curveTo(254.670f, 348.714f, 262.432f, 351.865f, 268.732f, 358.162f)
+            curveTo(275.028f, 364.462f, 278.180f, 372.224f, 278.180f, 381.453f)
+            curveTo(278.180f, 391.708f, 274.884f, 399.765f, 268.292f, 405.623f)
+            curveTo(261.700f, 411.481f, 254.084f, 414.412f, 245.442f, 414.412f)
+            close()
+        }
+    }.build()
+}
 
 @Composable
 fun InputRowWithCheckBox(
@@ -315,12 +395,12 @@ fun CustomButton(
         }
         Column(Modifier.padding(top = 8.dp)) {
             explain?.let {
-                Text(
-                    text = "\u2139\uFE0F",
+                Image(
+                    imageVector = InfoSvgIcon,
+                    contentDescription = "info",
                     modifier = Modifier
-                        .height(18.dp)
-                        .clickable { showExplanation = true },
-                    style = MaterialTheme.typography.labelMedium
+                        .size(16.dp)
+                        .clickable { showExplanation = true }
                 )
 
                 if (showExplanation) {
@@ -444,13 +524,13 @@ private fun CustomSwitch(
             )
 
             explain?.let {
-                Text(
-                    text = "\u2139\uFE0F",
+                Image(
+                    imageVector = InfoSvgIcon,
+                    contentDescription = "info",
                     modifier = Modifier
-                        .height(18.dp)
+                        .size(16.dp)
                         .clickable { showExplanation = true }
-                        .padding(end = 2.dp),
-                    style = MaterialTheme.typography.labelMedium
+                        .padding(end = 2.dp)
                 )
 
                 if (showExplanation) {
