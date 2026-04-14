@@ -1,8 +1,4 @@
-# 已注释掉的UI内容
-
-## HomeScreen.kt（上号器 / 主页设置）
-
-- 上号器功能（用户手动注释）
+# 待制作的内容
 
 ## MainBaseConfigs.kt（主世界设置）
 
@@ -27,7 +23,6 @@
 - 领竞赛奖励（CLAIM_CLAN_GAME_REWARDS）
 - 打部落战（PLAY_CLAN_WAR）
 - 打联赛（PLAY_LEAGUE）
-- 打都城突袭（PLAY_RAID）
 - 发起部落战（START_CLAN_WAR_SETTINGS）
 - 发起联赛（START_LEAGUE_SETTINGS）
 - 发起都城突袭（START_RAID）
@@ -40,6 +35,10 @@
 - 使用临时物品（USE_TEMP_ITEMS）
 - 创建连号部落（CREATE_CONSECUTIVE_CLANS）及部落名称、连号数量
 - 邀请玩家（INVITE_PLAYERS）
+- 刷经验
 
 ## BuilderBaseConfig.kt（夜世界设置）
 - 接取竞赛后，对战以下局数后切号（SWITCH_ACCOUNT_AFTER_BATTLES_WITH_TASKS）
+
+## 其他
+- 上传云端配置，分享配置
