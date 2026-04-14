@@ -39,7 +39,7 @@ fun LazyListScope.builderBaseConfig(
             }
             SettingSwitchIcon(
                 key = "${BUILDER_BASE_SETTINGS.NO_BUILDER_BASE.key}_c${index}",
-                explain = "勾选后，辅助将完全不会进入夜世界。换言之，夜世界的所有设置都将失效！\n但因为辅助只会接取夜世界竞赛任务，所以如果接取了部落竞赛的任务，那么就算勾选了不打夜世界，辅助也会打夜世界。"
+                explain = "启用后，辅助将不再进入夜世界，夜世界的所有相关设置均会失效。\n但若已接取夜世界的部落竞赛任务，辅助仍会进入夜世界完成该任务。"
             )
         }
     }
@@ -51,7 +51,7 @@ fun LazyListScope.builderBaseConfig(
             Row {
                 SettingSwitchIcon(
                     key = "${BUILDER_BASE_SETTINGS.BUILDER_BASE_FARMING.key}_c${index}",
-                    explain = "辅助会自动配兵，暂不支持手动配兵。若未勾选\u201C上分模式\u201D和\u201C刷圣水车\u201D，辅助就会根据账号的资源数量，智能选择对战模式。"
+                    explain = "辅助将自动完成兵种配置，暂不支持手动配兵。若未启用\u201C上分模式\u201D或\u201C刷圣水车\u201D，辅助将根据当前账号的资源状况智能选择对战模式。"
                 )
                 SettingSwitchIcon(key = "${BUILDER_BASE_SETTINGS.STOP_WHEN_RESOURCE_FULL.key}_c${index}")
             }
@@ -69,7 +69,7 @@ fun LazyListScope.builderBaseConfig(
             Row {
                 SettingSwitchIcon(
                     key = trophyKey,
-                    explain = "勾选后，辅助会使用暗夜女巫进行上分，刷圣水效率会显著降低，请谨慎勾选。不可与\u201C刷圣水车\u201D同时勾选。",
+                    explain = "启用后，辅助将使用暗夜女巫进行上分，圣水获取效率会显著下降，请谨慎启用。此选项不可与\u201C刷圣水车\u201D同时开启。",
                     afterChange = { checked ->
                         if (checked) {
                             GlobalVars.configStates[elixirCartKey]?.value = "0"
@@ -78,7 +78,7 @@ fun LazyListScope.builderBaseConfig(
                 )
                 SettingSwitchIcon(
                     key = elixirCartKey,
-                    explain = "勾选后，夜世界对战时下兵后会立刻投降，因此几乎无法刷金币，请谨慎勾选。不可与\u201C上分模式\u201D同时勾选。",
+                    explain = "启用后，夜世界对战中部署兵种后将立即投降，因此几乎无法获取金币，请谨慎启用。此选项不可与\u201C上分模式\u201D同时开启。",
                     afterChange = { checked ->
                         if (checked) {
                             GlobalVars.configStates[trophyKey]?.value = "0"
@@ -111,7 +111,7 @@ fun LazyListScope.builderBaseConfig(
 
                 SettingSwitchIcon(
                     key = "${BUILDER_BASE_SETTINGS.BUILDER_BASE_REMOVE_OBSTACLES.key}_c${index}",
-                    explain = "若未解锁第二区域，则金水大于30万后生效。\n若解锁了第二区域，则金水大于60万后生效。\n该功能会移除野蛮人雕像，请谨慎使用。"
+                    explain = "若尚未解锁第二区域，当金币或圣水超过30万时生效；\n若已解锁第二区域，当金币或圣水超过60万时生效。\n注意：此功能会移除野蛮人雕像，请谨慎使用。"
                 )
                 SettingSwitchIcon(key = "${BUILDER_BASE_SETTINGS.BUILDER_BASE_SAVE_WORKER.key}_c${index}")
                 // Keep the Clock Tower toggle beside other Builder Base upgrade switches.

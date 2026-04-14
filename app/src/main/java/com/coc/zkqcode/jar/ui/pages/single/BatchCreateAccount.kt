@@ -22,8 +22,8 @@ fun BatchCreateAccount() {
     )
     SettingSwitchIcon(
         key = GLOBAL_SETTINGS.BATCH_CREATE_ACCOUNT.key,
-        explain = "勾选批量创号后，辅助将会先检查游戏存档是否全部存在，如果不存在的话就会创号。若所有游戏存档都存在，辅助将会按照设定的序号运行账号。设定的序号就是游戏存档的序号，并且所有账号都会使用配置1的设定。\n" +
-                "部分云手机在创号时可能会出异常，如果出异常的话请使用模拟器进行创号。开启批量创号后，掉线重连选项必须选择“立即重连”。",
+        explain = "启用批量创号后，辅助将优先检查所有游戏存档是否存在，若存档缺失则自动创建账号；若存档齐全，则按照指定序号依次运行对应账号。序号与游戏存档编号一致，且所有账号均采用配置1的设定。\n" +
+                "部分云手机在创号过程中可能出现异常，建议改用模拟器完成创号操作。启用批量创号时，掉线重连选项须设置为\u201C立即重连\u201D。",
         afterChange = { checked ->
             if (checked) {
                 GlobalVars.configStates[GLOBAL_SETTINGS.AFTER_KICK_OPTION.key]?.value = "0"

@@ -31,9 +31,7 @@ fun LazyListScope.mainBaseConfig(
     // ⚔️ Banner — 核心对战设置（主世界）
     item {
         SectionBanner(
-            title = "⚔️ 核心对战设置（主世界）",
-            isExpanded = isExpanded,
-            onClick = onToggleExpanded
+            title = "⚔️ 核心对战设置（主世界）", isExpanded = isExpanded, onClick = onToggleExpanded
         )
     }
 
@@ -57,7 +55,7 @@ fun LazyListScope.mainBaseConfig(
         SettingSection(visible = isExpanded) {
             FlowRow {
                 SettingSwitchIcon(
-                    key = "${MAIN_BASE_SETTINGS.DYNAMIC_ADJUSTMENT.key}_c$index", explain = "勾选后，辅助会跳过前两个搜到的目标，并且会根据所有搜索到的目标的可获得资源的平均值来搜鱼要求。"
+                    key = "${MAIN_BASE_SETTINGS.DYNAMIC_ADJUSTMENT.key}_c$index", explain = "启用后，辅助将自动跳过前两个搜索目标，并根据所有已搜索目标的可获取资源均值动态调整搜索条件。"
                 )
                 SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.STOP_BATTLE_AFTER_FULL_RESOURCES.key}_c$index")
             }
@@ -69,24 +67,22 @@ fun LazyListScope.mainBaseConfig(
         SettingSection(visible = isExpanded) {
             FlowRow {
                 SettingSwitchIcon(
-                    key = "${MAIN_BASE_SETTINGS.WAIT_FOR_BATTLE.key}_c$index", explain = "勾选后，如果当前处于对战冷却时间，辅助会一直等待到冷却结束。"
+                    key = "${MAIN_BASE_SETTINGS.WAIT_FOR_BATTLE.key}_c$index", explain = "启用后，若当前处于对战冷却期，辅助将持续等待直至冷却结束。"
                 )
                 SettingSwitchIcon(
-                    key = "${MAIN_BASE_SETTINGS.RESTART_GAME.key}_c$index", explain = "勾选后，部署完所有部队后，辅助会重启游戏。仅对主世界对战有效。"
+                    key = "${MAIN_BASE_SETTINGS.RESTART_GAME.key}_c$index", explain = "启用后，辅助将在部署全部部队后自动重启游戏。此功能仅适用于主世界对战。"
                 )
                 SettingSwitchIcon(
-                    key = "${MAIN_BASE_SETTINGS.MANUAL_TRAINING.key}_c$index", explain = "勾选后，辅助将不会进入配兵页面，请手动配兵。\n\n注意：辅助不会自动开启超级兵。"
+                    key = "${MAIN_BASE_SETTINGS.MANUAL_TRAINING.key}_c$index", explain = "启用后，辅助将跳过配兵流程，请自行完成兵种配置。\n\n注意：辅助不会自动开启超级兵种。"
                 )
             }
         }
     }
 
-        // Banner — 部落设置
+    // Banner — 部落设置
     item {
         SectionBanner(
-            title = "部落设置",
-            isExpanded = isClanExpanded,
-            onClick = onToggleClan
+            title = "部落设置", isExpanded = isClanExpanded, onClick = onToggleClan
         )
     }
 
@@ -118,7 +114,7 @@ fun LazyListScope.mainBaseConfig(
             Column {
                 SettingSwitchIcon(
                     key = "${MAIN_BASE_SETTINGS.AUTO_JOIN_CLAN.key}_c$index",
-                    explain = "勾选此选项后，辅助会自动加部落。若未指定标签，则只有无部落时才加部落。若指定标签，则每天检测一次当前是否加入指定部落。注意：需先建造部落城堡才能使用此功能。"
+                    explain = "启用后，辅助将自动申请加入部落。若未指定部落标签，仅在当前无部落时执行加入操作；若已指定标签，则每日检测一次是否已加入目标部落。注意：使用此功能前需先建造部落城堡。"
                 )
                 AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.AUTO_JOIN_CLAN.key}_c$index"]?.value == "1") {
                     Column {
@@ -133,9 +129,7 @@ fun LazyListScope.mainBaseConfig(
     // Banner — 自动研究设置
     item {
         SectionBanner(
-            title = "🔬 自动研究设置",
-            isExpanded = isResearchExpanded,
-            onClick = onToggleResearch
+            title = "🔬 自动研究设置", isExpanded = isResearchExpanded, onClick = onToggleResearch
         )
     }
 
@@ -153,9 +147,7 @@ fun LazyListScope.mainBaseConfig(
     // 🏗️ Banner — 自动建造设置（主世界）
     item {
         SectionBanner(
-            title = "🏗️ 自动建造设置（主世界）",
-            isExpanded = isBuildExpanded,
-            onClick = onToggleBuild
+            title = "🏗️ 自动建造设置（主世界）", isExpanded = isBuildExpanded, onClick = onToggleBuild
         )
     }
 
@@ -169,7 +161,7 @@ fun LazyListScope.mainBaseConfig(
 
             AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.WALL_UPGRADE_SETTINGS.key}_c$index"]?.value == "1") {
                 Column {
-                    SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.BATCH_WALL_UPGRADE_SETTINGS.key}_c$index")
+                    SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.BATCH_WALL_UPGRADE_SETTINGS.key}_c$index", explain = "此功能对已开启月卡（黄金令牌）的账号不生效。")
                     SettingInputRow(key = "${MAIN_BASE_SETTINGS.UPGRADE_WALL_THRESHOLD.key}_c$index")
                 }
             }
@@ -183,9 +175,7 @@ fun LazyListScope.mainBaseConfig(
     // 🐾 Banner — 战宠&其他设置
     item {
         SectionBanner(
-            title = "🐾 战宠&其他设置",
-            isExpanded = isPetExpanded,
-            onClick = onTogglePet
+            title = "🐾 战宠&其他设置", isExpanded = isPetExpanded, onClick = onTogglePet
         )
     }
 
@@ -207,17 +197,17 @@ fun LazyListScope.mainBaseConfig(
         SettingSection(visible = isPetExpanded) {
             FlowRow {
                 SettingSwitchIcon(
-                    key = "${MAIN_BASE_SETTINGS.HELPER_SETTINGS.key}_c$index", explain = "勾选后，会自动用实验助手以及建筑工人学徒。", afterChange = { checked ->
+                    key = "${MAIN_BASE_SETTINGS.HELPER_SETTINGS.key}_c$index", explain = "启用后，辅助将自动使用实验助手及建筑工人学徒。", afterChange = { checked ->
                         if (!checked) {
                             GlobalVars.configStates["${MAIN_BASE_SETTINGS.UPGRADE_RESEARCH_HELPER.key}_c$index"]?.value = "0"
                             GlobalVars.configStates["${MAIN_BASE_SETTINGS.UPGRADE_BUILDER_APPRENTICE.key}_c$index"]?.value = "0"
                         }
                     })
                 SettingSwitchIcon(
-                    key = "${MAIN_BASE_SETTINGS.UPGRADE_RESEARCH_HELPER.key}_c$index", explain = "升级实验助手的优先级低于购买新建筑工人，但高于升级工人学徒。"
+                    key = "${MAIN_BASE_SETTINGS.UPGRADE_RESEARCH_HELPER.key}_c$index", explain = "实验助手的升级优先级低于购买新建筑工人，但高于工人学徒的升级。"
                 )
                 SettingSwitchIcon(
-                    key = "${MAIN_BASE_SETTINGS.UPGRADE_BUILDER_APPRENTICE.key}_c$index", explain = "升级工人学徒的优先级低于购买新建筑工人和升级实验助手。"
+                    key = "${MAIN_BASE_SETTINGS.UPGRADE_BUILDER_APPRENTICE.key}_c$index", explain = "工人学徒的升级优先级低于购买新建筑工人及升级实验助手。"
                 )
             }
         }
@@ -262,18 +252,17 @@ fun LazyListScope.mainBaseConfig(
             FlowRow {
                 SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.UPGRADE_WERA_GEAR.key}_c$index")
                 SettingSwitchIcon(
-                    key = "${MAIN_BASE_SETTINGS.UPGRADE_ALL_GEAR.key}_c$index", explain = "勾选后，辅助也会自动升级穿戴的装备。",
-                    afterChange = { checked ->
+                    key = "${MAIN_BASE_SETTINGS.UPGRADE_ALL_GEAR.key}_c$index", explain = "启用后，辅助将同时自动升级已穿戴的装备。", afterChange = { checked ->
                         if (checked) {
                             GlobalVars.configStates["${MAIN_BASE_SETTINGS.UPGRADE_WERA_GEAR.key}_c$index"]?.value = "1"
                         }
                     })
                 SettingSwitchIcon(
-                    key = "${MAIN_BASE_SETTINGS.REMOVE_OBSTACLES.key}_c$index", explain = "勾选后，当主世界资源金水大于30万时生效。有小概率（约5%）移除稀有物品"
+                    key = "${MAIN_BASE_SETTINGS.REMOVE_OBSTACLES.key}_c$index", explain = "启用后，当主世界金币或圣水超过30万时生效。存在约5%的概率误移除稀有障碍物。"
                 )
                 AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.REMOVE_OBSTACLES.key}_c$index"]?.value == "1") {
                     SettingSwitchIcon(
-                        key = "${MAIN_BASE_SETTINGS.REMOVE_OBSTACLES_ENHANCEMENT.key}_c$index", explain = "勾选后，移除障碍物时增加随机点击，增大移除稀有物品的概率。\n适合批量挂小号时开启，防止地图建造空间不足。"
+                        key = "${MAIN_BASE_SETTINGS.REMOVE_OBSTACLES_ENHANCEMENT.key}_c$index", explain = "启用后，移除障碍物时将增加随机点击操作，以提高移除稀有障碍物的概率。\n建议在批量挂机时开启，可有效防止地图建造空间不足。"
                     )
                 }
                 SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.CLAIM_ACHIEVEMENT_GEMS.key}_c$index")
@@ -281,4 +270,4 @@ fun LazyListScope.mainBaseConfig(
         }
     }
 
-    }
+}
