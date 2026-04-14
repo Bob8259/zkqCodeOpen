@@ -225,7 +225,7 @@ private suspend fun upgradeWalls(currentBase: BaseType, wallType: WallType): Loo
         val elixirIconSchema = ColorSchema.rescope(
             elixirIconBase, hammer.x + 45, hammer.y - 60, hammer.x + 80, hammer.y - 10
         )
-        val smallElixirUpgradeIcon = findMultiColors(schema = elixirIconSchema)
+        val smallElixirUpgradeIcon = findMultiColorsUntil(schema = elixirIconSchema, duration = 400)
         if (smallElixirUpgradeIcon == null) {
             AccountMessage("圣水刷墙失败，未找到圣水升级标志")
             delayWithMultiplier(500)
