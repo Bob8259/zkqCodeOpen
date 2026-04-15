@@ -13,7 +13,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -32,6 +34,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.jar.ui.components.SectionBanner
 import com.coc.zkqcode.jar.ui.components.SettingInputRow
@@ -226,6 +229,12 @@ private fun AccountGroupSelector(accountsKey: String) {
             style = MaterialTheme.typography.labelMedium,
             modifier = Modifier.padding(bottom = 4.dp)
         )
+        Text(
+            text = "长按并横向滑动批量选择账号，不可纵向滑动",
+            style = MaterialTheme.typography.labelSmall,
+            color = Color.Gray,
+            modifier = Modifier.padding(bottom = 4.dp)
+        )
         FlowRow(
             horizontalArrangement = Arrangement.spacedBy(4.dp),
             verticalArrangement = Arrangement.spacedBy(4.dp),
@@ -289,10 +298,11 @@ private fun AccountGroupSelector(accountsKey: String) {
 
                 Box(
                     modifier = Modifier
+                        .width(32.dp)
                         .height(32.dp)
                         .background(bgColor, RoundedCornerShape(8.dp))
                         .border(1.dp, borderColor, RoundedCornerShape(8.dp))
-                        .padding(horizontal = 10.dp)
+                        .padding(horizontal = 4.dp)
                         .onGloballyPositioned { layoutCoordinates ->
                             val posInRoot = layoutCoordinates.positionInRoot()
                             val size = layoutCoordinates.size
@@ -309,7 +319,13 @@ private fun AccountGroupSelector(accountsKey: String) {
                     Text(
                         text = id.toString(),
                         color = textColor,
-                        style = MaterialTheme.typography.labelMedium
+                        style = MaterialTheme.typography.labelMedium,
+                        maxLines = 1,
+                        autoSize = TextAutoSize.StepBased(
+                            minFontSize = 6.sp,
+                            maxFontSize = MaterialTheme.typography.labelMedium.fontSize,
+                            stepSize = 1.sp
+                        )
                     )
                 }
             }
