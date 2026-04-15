@@ -74,6 +74,7 @@ private suspend fun deployHeroes() {
         MyColors.QueenArcher,
         MyColors.QueenArcher2,
         MyColors.QueenArcher3,
+        MyColors.QueenArcher4,
         MyColors.MinionPrince,
         MyColors.MinionPrince2,
         MyColors.GrandWarden,
