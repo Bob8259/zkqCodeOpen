@@ -161,7 +161,7 @@ private suspend fun upgradeGearsAction(shouldUpgradeGears: Boolean, shouldUpgrad
         backToHeroHall()
     }
     if (shouldUpgradePets) {
-        val petsIcon = findMultiColors(MyColors.PetsIconInHeroHall)
+        val petsIcon = findMultiColorsUntil(schemas = listOf(MyColors.PetsIconInHeroHall, MyColors.PetsIconInHeroHall2), duration = 200)
         if (petsIcon != null) {
             TouchActions.tap(petsIcon.x, petsIcon.y)
             val outerPetIcon = findMultiColorsUntil(schemas = listOf(MyColors.PetShopIcon, MyColors.PetShopIcon2), duration = 300)

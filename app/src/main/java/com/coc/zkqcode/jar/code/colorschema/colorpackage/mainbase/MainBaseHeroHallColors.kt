@@ -16,6 +16,7 @@ interface IMainBaseHeroHallColors {
     val NewGear: ColorSchema
     val SmithOreIcon: ColorSchema
     val PetsIconInHeroHall: ColorSchema
+    val PetsIconInHeroHall2: ColorSchema
     val PetsShopInnerBanner: ColorSchema
     val Lassi: ColorSchema
     val ElectroOwl: ColorSchema
@@ -37,6 +38,7 @@ interface IMainBaseHeroHallColors {
     val OpenClanCastle3: ColorSchema
     val OpenClanCastle4: ColorSchema
     val OpenClanCastle5: ColorSchema
+    val OpenClanCastle6: ColorSchema
 }
 
 object MainBaseHeroHallColors : IMainBaseHeroHallColors {
@@ -91,6 +93,9 @@ object MainBaseHeroHallColors : IMainBaseHeroHallColors {
     // Pet icon visible from the hero hall page
     override val PetsIconInHeroHall = ColorSchema.parse(
         758, 586, 786, 605, "45C2DF", "5|0|3DAAC9,11|0|1E8EB9,17|0|1672A0,22|0|289CC2,0|9|39B9DA,5|9|42BEDC,11|9|3DB9D7,17|9|32A9CA,22|9|2AA2C5", 0, 0.9, "英雄殿堂宠物标志"
+    )
+    override val PetsIconInHeroHall2 = ColorSchema.parse(
+        760, 586, 784, 607, "3FB8DB", "5|0|33ACD0,10|0|2190BB,15|0|39B3D3,20|0|259FC2,0|11|2398C6,5|11|43BEDB,10|11|3EBAD8,15|11|38B3D2,20|11|2CA1C1", 0, 0.9, "英雄殿堂宠物标志2"
     )
 
     // Top banner inside the pet shop page
@@ -184,5 +189,8 @@ object MainBaseHeroHallColors : IMainBaseHeroHallColors {
     )
     override val OpenClanCastle5 = ColorSchema.parse(
         210, 502, 1069, 624, "4E7FC5", "11|0|60AFD0,21|0|3A4351,31|0|3EADCE,42|0|5A97D3,0|22|4271A4,11|22|3495C1,21|22|1B1A1E,31|22|2B6780,42|22|406CA1", 0, 0.9, "领取宝库按钮6按钮"
+    )
+    override val OpenClanCastle6 = ColorSchema.parse(
+        172, 564, 1114, 630, "487AB4", "5|0|3CA0C8,10|0|353B4D,15|0|3DABCF,20|0|5695C9,0|11|467AB0,5|11|399FC8,10|11|7EECFF,15|11|3697C6,20|11|3F71A6", 0, 0.9, "领取宝库按钮13按钮"
     )
 }
