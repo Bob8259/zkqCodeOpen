@@ -10,7 +10,7 @@ import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.jar.code.auth.displayAds
 import com.coc.zkqcode.jar.code.colorschema.ColorSchema
 import com.coc.zkqcode.jar.code.colorschema.MyColors
-import com.coc.zkqcode.jar.code.universal.AccountMessage
+import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.jar.code.universal.InGameVars
 import com.coc.zkqcode.jar.code.universal.buildings.BaseType
 import com.coc.zkqcode.jar.code.universal.buildings.walls.calculateResourcesPercentage
@@ -40,13 +40,13 @@ suspend fun builderBaseAttack(): Boolean {
     // 1. Check if Builder Base farming is enabled
     val isEnabled = getBooleanConfigRuntime(Schema.BUILDER_BASE_SETTINGS.BUILDER_BASE_FARMING.key)
     if (!isEnabled) {
-        AccountMessage("未开启打夜世界")
+        accountMessage("未开启打夜世界")
         return true
     }
 
     // 2. Calculate resource percentages using shared utility
     val resourcePercentage = calculateResourcesPercentage(BaseType.Builder)
-    AccountMessage("金币百分比: ${resourcePercentage.gold}%, 圣水百分比: ${resourcePercentage.elixir}%")
+    accountMessage("金币百分比: ${resourcePercentage.gold}%, 圣水百分比: ${resourcePercentage.elixir}%")
     // Consider resource full if percentage >= 96%
     val isGoldFull = resourcePercentage.gold >= 96
     val isExileFull = resourcePercentage.elixir >= 96
@@ -54,17 +54,17 @@ suspend fun builderBaseAttack(): Boolean {
 
     // 3. Determine action based on resource state and settings
     if (isGoldFull && isExileFull && stopIfFull) {
-        AccountMessage("资源已满，停止对战")
+        accountMessage("资源已满，停止对战")
     } else {
         // Evaluate attack strategy
         val attackType = when {
             getBooleanConfigRuntime(Schema.BUILDER_BASE_SETTINGS.TROPHY_PUSHING_MODE.key) -> {
-                AccountMessage("已勾选上分模式")
+                accountMessage("已勾选上分模式")
                 "gold"
             }
 
             getBooleanConfigRuntime(Schema.BUILDER_BASE_SETTINGS.ELIXIR_CART_FARMING.key) -> {
-                AccountMessage("已勾选刷圣水车模式")
+                accountMessage("已勾选刷圣水车模式")
                 "exile"
             }
             // If gold is not full (< 96%), prioritize gold; otherwise, default to exile
@@ -93,11 +93,11 @@ private suspend fun realAttack(mode: String, battleNumber: Int = 1, battleTimes:
     while (true) {
         val elapsed = System.currentTimeMillis() - startTime
         if (elapsed > 8 * 60 * 1000L) {
-            AccountMessage("战斗超过8分钟，强制退出")
+            accountMessage("战斗超过8分钟，强制退出")
             break
         }
         val remainingMin = (8 * 60 * 1000L - elapsed) / 60000.0
-        AccountMessage("夜世界对战中，第${battleNumber}/${battleTimes}局\n若${"%.1f".format(remainingMin)}分钟内未完成对战，则强制重启")
+        accountMessage("夜世界对战中，第${battleNumber}/${battleTimes}局\n若${"%.1f".format(remainingMin)}分钟内未完成对战，则强制重启")
         if (!checkReconnections()) return false
         // Capture a single screenshot and reuse it for all state checks in this iteration
         val capturedScreen = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult
@@ -139,7 +139,7 @@ private suspend fun realAttack(mode: String, battleNumber: Int = 1, battleTimes:
                 delayWithMultiplier(500)
                 isFirstSwitchTroop = false
             } else {
-                AccountMessage("已进入第二区域")
+                accountMessage("已进入第二区域")
                 delayWithMultiplier(2000)
             }
             when (mode) {
@@ -198,7 +198,7 @@ private suspend fun normalBattle(isNormal: Boolean = true) {
     if (!isNormal) return
     val generalTroops = findMultiColorsUntil(schemas = listOf(MyColors.TroopsWithSkills, MyColors.TroopsWithOutSkills), duration = 200)
     if (generalTroops != null) {
-        AccountMessage("准备点击女巫，点击坐标${generalTroops.x + 1}, 610\n当前部署位置${deployPos.first}, ${deployPos.second}")
+        accountMessage("准备点击女巫，点击坐标${generalTroops.x + 1}, 610\n当前部署位置${deployPos.first}, ${deployPos.second}")
         delayWithMultiplier(1500)
         TouchActions.tap(generalTroops.x + 15, 620, delayTime = 200) // Troops
         val nightWitch = findMultiColors(schema = MyColors.NightWitch)
@@ -206,7 +206,7 @@ private suspend fun normalBattle(isNormal: Boolean = true) {
             TouchActions.touchDown((deployPos.first + Random.nextInt(1, 4)).toFloat(), (deployPos.second + Random.nextInt(1, 4)).toFloat(), 1)
             delayWithMultiplier(4000)
             TouchActions.touchUp(1)
-            AccountMessage("等女巫走一会")
+            accountMessage("等女巫走一会")
             delayWithMultiplier(Random.nextInt(5000, 10000))
             repeat(6) {
                 val skillsPos = findMultiColors(
@@ -266,7 +266,7 @@ private suspend fun waitLoop() {
         if (remainingMs <= 0) break
 
         val remainingSeconds = remainingMs / 1000.0
-        AccountMessage("搜索中，剩余 ${"%.1f".format(remainingSeconds)} 秒")
+        accountMessage("搜索中，剩余 ${"%.1f".format(remainingSeconds)} 秒")
         delayWithMultiplier(1000)
     }
     TouchActions.tap(lastPosition.x, lastPosition.y, delayTime = 200)
@@ -277,7 +277,7 @@ private suspend fun builderBaseTrainTroops() {
     val trainingButton = findMultiColorsUntil(schemas = listOf(MyColors.TrainTroops), duration = 1500)
 
     if (trainingButton == null) {
-        AccountMessage("夜世界练兵失败")
+        accountMessage("夜世界练兵失败")
         return
     }
 
@@ -294,11 +294,11 @@ private suspend fun builderBaseTrainTroops() {
     val trainNightWitch = findMultiColors(schema = MyColors.TrainNightWitch)
     if (trainNightWitch != null) {
         // Train Night Witches based on detected location
-        AccountMessage("练暗夜女巫")
+        accountMessage("练暗夜女巫")
         tapRepeat(trainNightWitch.x, trainNightWitch.y)
     } else {
         // Fallback to Barbarians using original hardcoded coordinates
-        AccountMessage("未检测到暗夜女巫，练野蛮人\n（有暗夜女巫后会练暗夜女巫）")
+        accountMessage("未检测到暗夜女巫，练野蛮人\n（有暗夜女巫后会练暗夜女巫）")
         tapRepeat(278, 491)
     }
 

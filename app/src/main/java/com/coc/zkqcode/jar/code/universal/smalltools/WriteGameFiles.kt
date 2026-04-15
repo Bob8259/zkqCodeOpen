@@ -4,7 +4,7 @@ import android.annotation.SuppressLint
 import android.os.Environment
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.util.basic.RunShell
-import com.coc.zkqcode.jar.code.universal.AccountMessage
+import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.core.util.fileactions.FileHelper
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
 import com.coc.zkqcode.jar.code.universal.GameVersion
@@ -43,7 +43,7 @@ suspend fun writeDataNumberFile(slot: String): Boolean {
     RunShell.runNoOutput("rm -rf \"/data/data/${GameVersion.CN.packageName}/shared_prefs\"/*", false)
     val trimmedSlot = slot.trim()
     if (trimmedSlot.isEmpty()) {
-        AccountMessage("数据号序号不能为空\n即将跳过当前账号")
+        accountMessage("数据号序号不能为空\n即将跳过当前账号")
         return false
     }
 
@@ -53,30 +53,30 @@ suspend fun writeDataNumberFile(slot: String): Boolean {
     val dataTxtPath = "$loginDataDir/data.txt"
 
     if (!FileHelper.checkExists(dataJsonPath)) {
-        AccountMessage("数据号文件不存在：$dataJsonPath\n即将跳过当前账号")
+        accountMessage("数据号文件不存在：$dataJsonPath\n即将跳过当前账号")
         return false
     }
 
     val dataJson = FileHelper.readJson(dataJsonPath)
     if (dataJson == null) {
-        AccountMessage("数据号文件格式无效：$dataJsonPath\n即将跳过当前账号")
+        accountMessage("数据号文件格式无效：$dataJsonPath\n即将跳过当前账号")
         return false
     }
 
     if (!dataJson.has(trimmedSlot)) {
-        AccountMessage("数据号不存在：$trimmedSlot\n即将跳过当前账号")
+        accountMessage("数据号不存在：$trimmedSlot\n即将跳过当前账号")
         return false
     }
 
     val contentElement = dataJson.get(trimmedSlot)
     if (contentElement == null || contentElement.isJsonNull) {
-        AccountMessage("数据号内容无效：$trimmedSlot\n即将跳过当前账号")
+        accountMessage("数据号内容无效：$trimmedSlot\n即将跳过当前账号")
         return false
     }
 
     val dataContent = contentElement.asString
     if (dataContent.isBlank()) {
-        AccountMessage("数据号内容为空：$trimmedSlot\n即将跳过当前账号")
+        accountMessage("数据号内容为空：$trimmedSlot\n即将跳过当前账号")
         return false
     }
 
@@ -89,7 +89,7 @@ suspend fun writeDataNumberFile(slot: String): Boolean {
         """.trimIndent(), false
     )
     if (writeResult != "success") {
-        AccountMessage("写入数据号失败：$dataTxtPath\n即将跳过当前账号")
+        accountMessage("写入数据号失败：$dataTxtPath\n即将跳过当前账号")
         return false
     }
     return true
@@ -101,7 +101,7 @@ private suspend fun writeCurrentAccountDataNumberFile(): Boolean {
     val slotKey = "${ACCOUNT_SETTINGS.DATA_CONTENT.key}$accountIndex"
     val slot = getConfigOrStop(slotKey).trim()
     if (slot.isEmpty()) {
-        AccountMessage("数据号序号不能为空：$slotKey\n即将跳过当前账号")
+        accountMessage("数据号序号不能为空：$slotKey\n即将跳过当前账号")
         return false
     }
     if (!writeDataNumberFile(slot)) return false
@@ -128,10 +128,10 @@ suspend fun writeGameFilesCore(
 
     // Verify that the archive directory exists before attempting to write
     if (!Shell.cmd("[ -d \"$sourceDir\" ]").exec().isSuccess) {
-        AccountMessage("存档文件不存在：$sourceDir\n即将跳过当前账号")
+        accountMessage("存档文件不存在：$sourceDir\n即将跳过当前账号")
         return false
     }
-    AccountMessage("写入存档文件中，路径：$sourceDir")
+    accountMessage("写入存档文件中，路径：$sourceDir")
     if (killGame) killGame()
     subDirs.forEach { subDir ->
         val destPath = "/data/data/$packageName/$subDir"

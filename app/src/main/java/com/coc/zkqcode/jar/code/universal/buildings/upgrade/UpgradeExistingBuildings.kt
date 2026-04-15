@@ -1,6 +1,6 @@
 package com.coc.zkqcode.jar.code.universal.buildings.upgrade
 
-import com.coc.zkqcode.jar.code.universal.AccountMessage
+import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.jar.code.universal.buildings.BaseType
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.touchactions.TouchActions
@@ -205,7 +205,7 @@ private suspend fun upgradeWalls(currentBase: BaseType, wallType: WallType): Loo
         WallType.Gold -> "金币"
         WallType.Elixir -> "圣水"
     }
-    AccountMessage("刷墙类型：$wallTypeName")
+    accountMessage("刷墙类型：$wallTypeName")
     tapGoldBar(2)
     val isBatchUpgrade = if (currentBase == BaseType.Main) {
         getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.BATCH_WALL_UPGRADE_SETTINGS.key)
@@ -227,7 +227,7 @@ private suspend fun upgradeWalls(currentBase: BaseType, wallType: WallType): Loo
         )
         val smallElixirUpgradeIcon = findMultiColorsUntil(schemas = listOf(elixirIconSchema), duration = 400)
         if (smallElixirUpgradeIcon == null) {
-            AccountMessage("圣水刷墙失败，未找到圣水升级标志")
+            accountMessage("圣水刷墙失败，未找到圣水升级标志")
             delayWithMultiplier(500)
             // Signal caller to stop its wall-upgrade loop since no elixir walls are available
             return LoopAction.ReturnStop
@@ -244,7 +244,7 @@ private suspend fun upgradeWalls(currentBase: BaseType, wallType: WallType): Loo
     if (isBatchUpgrade) {
         if ((wallType == WallType.Gold && resources.gold < 10000) || (wallType == WallType.Elixir && resources.elixir < 10000)) {
             // Insufficient resources for batch upgrade, show detected values and fall back to normal upgrade
-            AccountMessage("批量刷墙资源不足（金币: ${resources.gold}, 圣水: ${resources.elixir}），回退到普通刷墙")
+            accountMessage("批量刷墙资源不足（金币: ${resources.gold}, 圣水: ${resources.elixir}），回退到普通刷墙")
             TouchActions.tap(980, 635)
             return LoopAction.Proceed
         } else {
@@ -259,7 +259,7 @@ private suspend fun upgradeWalls(currentBase: BaseType, wallType: WallType): Loo
             val targetResource = fullResource * (thresholds / 100.0)
             val usableResource = currentResource - targetResource
             val upgradableNumber = if (wallCost > 0) kotlin.math.ceil(usableResource / wallCost).toInt().coerceAtLeast(0) else 0
-            AccountMessage("升级单个城墙花费：$wallCost\n当前资源数量：${currentResource}，当前资源百分比：${currentPercent}\n可升级数量：$upgradableNumber")
+            accountMessage("升级单个城墙花费：$wallCost\n当前资源数量：${currentResource}，当前资源百分比：${currentPercent}\n可升级数量：$upgradableNumber")
             tapGoldBar()
             val upgradeCrossMark = findMultiColorsUntil(schemas = listOf(MyColors.UpgradeWallCrossMark), duration = 1000)
             if (upgradeCrossMark != null) {
@@ -321,7 +321,7 @@ private suspend fun upgradeHero(building: String): LoopAction {
         // Base area for 野蛮人之王: x1=55, y1=500, x2=240, y2=530
         // Each subsequent hero shifts by 228 on x-axis
         val heroIndex = listOf("野蛮人之王", "弓箭女皇", "亡灵王子", "大守护者", "飞盾战神").indexOf(building)
-        AccountMessage("升级英雄：$building，序号$heroIndex")
+        accountMessage("升级英雄：$building，序号$heroIndex")
         val x1 = 55 + heroIndex * 228
         val x2 = 240 + heroIndex * 228
 
@@ -331,23 +331,23 @@ private suspend fun upgradeHero(building: String): LoopAction {
         )
 
         if (findMultiColors(schema = heroInsufficientResources) != null) {
-            AccountMessage("${building}资源不足，跳过")
+            accountMessage("${building}资源不足，跳过")
             return LoopAction.Break
         }
         TouchActions.tap(x1 + 100, 500)//Upgrade Hero
-        AccountMessage("等待结束")
+        accountMessage("等待结束")
         TouchActions.tap(902, 626)
         clickRightBottom(times = 3, delayTime = 200)
     } else {
         // The unique logic for Dragon Duke
-        AccountMessage("升级英雄：飞龙公爵")
+        accountMessage("升级英雄：飞龙公爵")
         TouchActions.swipe(1189, 354, 120, 345, delayTime = 300)
         delayWithMultiplier(200)
         val heroInsufficientResources = ColorSchema.parse(
             1020, 480, 1230, 530, "7F88FF", "1|0|7F88FF,2|0|7F88FF,3|0|7F88FF,3|1|7F88FF,2|1|7F88FF,0|1|7F88FF,0|1|7F88FF,0|2|7F88FF,1|2|7F88FF", 0, 0.97, "${building}资源不足"
         )
         if (findMultiColors(schema = heroInsufficientResources) != null) {
-            AccountMessage("${building}资源不足，跳过")
+            accountMessage("${building}资源不足，跳过")
             return LoopAction.Break
         }
         TouchActions.tap(1020 + 100, 480)//Upgrade Hero
@@ -380,7 +380,7 @@ private suspend fun upgradeBuilding(building: String, currentBase: BaseType, att
         zoomSmallMainBase()
         var greenTick = mainBaseFindBuildButton(type = BuildButtonType.Tick, duration = 800)
         if (greenTick != null) {
-            AccountMessage("合并天鹰火炮")
+            accountMessage("合并天鹰火炮")
             TouchActions.tap(greenTick.x, greenTick.y)
             return LoopAction.Break
         }
@@ -388,23 +388,23 @@ private suspend fun upgradeBuilding(building: String, currentBase: BaseType, att
         delayWithMultiplier(300)
         greenTick = mainBaseFindBuildButton(type = BuildButtonType.Tick, duration = 800)
         if (greenTick != null) {
-            AccountMessage("合并天鹰火炮")
+            accountMessage("合并天鹰火炮")
             TouchActions.tap(greenTick.x, greenTick.y)
             return LoopAction.Break
         }
     }
     tapGoldBar()
-    AccountMessage("升级成功: $building (第 $attempt 个)")
+    accountMessage("升级成功: $building (第 $attempt 个)")
     return LoopAction.Proceed
 }
 
 private suspend fun findSpecificBuilding(buildingName: String, excludeNewBuildings: Boolean = false): Boolean {
     var found = false
-    AccountMessage("准备寻找$buildingName")
+    accountMessage("准备寻找$buildingName")
     iterateBuilderBaseBuildingUpgradeList(excludeNewBuildings = excludeNewBuildings, onDetect = { result ->
         val building = result.buildings.find { it.name == buildingName }
         if (building != null) {
-            AccountMessage("已找到$buildingName")
+            accountMessage("已找到$buildingName")
             TouchActions.tap(building.x + 20, building.y + 5, delayTime = 1000)
             found = true
             true
@@ -420,7 +420,7 @@ private suspend fun findFirstEnabledExistingBuilding(enabledBuildings: Set<Strin
     iterateBuilderBaseBuildingUpgradeList(excludeNewBuildings = true, onDetect = { result ->
         val building = result.buildings.firstOrNull { it.name in enabledBuildings && it.name != "城墙" }
         if (building != null) {
-            AccountMessage("连续失败过多，改为升级${building.name}")
+            accountMessage("连续失败过多，改为升级${building.name}")
             TouchActions.tap(building.x + 20, building.y + 5, delayTime = 1000)
             selectedBuilding = building.name
             true

@@ -6,7 +6,7 @@ import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.MyColors
-import com.coc.zkqcode.jar.code.universal.AccountMessage
+import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.jar.code.universal.InGameVars
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.smalltools.StorageKeys
@@ -22,7 +22,7 @@ suspend fun mainBaseTrainTroops(): Boolean {
     val storageKey = StorageKeys.withAccountNumber(StorageKeys.MAIN_BASE_TRAIN_TROOPS, InGameVars.currentAccountNumber)
 
     if (checkMemoryFile(storageKey, 1440)) {
-        AccountMessage("准备训练部队")
+        accountMessage("准备训练部队")
         GlobalVars.absorbEdge = 1
 
         // Open training menu
@@ -30,7 +30,7 @@ suspend fun mainBaseTrainTroops(): Boolean {
         if (point != null) {
             TouchActions.tap(point.x, point.y)
         } else {
-            AccountMessage("训练部队失败")
+            accountMessage("训练部队失败")
             GlobalVars.absorbEdge = 0
             return enterMainScreen()
         }
@@ -38,7 +38,7 @@ suspend fun mainBaseTrainTroops(): Boolean {
         // Verify training page
         point = findMultiColorsUntil(schemas = listOf(MyColors.AttackInTrainingPage, MyColors.AttackInTrainingPage2, MyColors.AttackInTrainingPage3), duration = 1500)
         if (point == null) {
-            AccountMessage("未找到训练标志")
+            accountMessage("未找到训练标志")
             GlobalVars.absorbEdge = 0
             return enterMainScreen()
         }
@@ -126,7 +126,7 @@ suspend fun mainBaseTrainTroops(): Boolean {
         GlobalVars.absorbEdge = 0
         return enterMainScreen()
     } else {
-        AccountMessage("该账号今日已练兵")
+        accountMessage("该账号今日已练兵")
         return true
     }
 }

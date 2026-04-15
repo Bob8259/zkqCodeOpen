@@ -6,7 +6,7 @@ import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
 import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.MyColors
-import com.coc.zkqcode.jar.code.universal.AccountMessage
+import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.jar.code.universal.InGameVars
 import com.coc.zkqcode.jar.code.universal.clickRightBottom
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
@@ -43,11 +43,11 @@ suspend fun joinClan(): Boolean {
         // Once-per-day guard: skip if already checked within 24 hours for this account
         val storageKey = StorageKeys.withAccountNumber(StorageKeys.JOIN_CLAN, InGameVars.currentAccountNumber)
         if (!checkMemoryFile(storageKey, 1440)) {
-            AccountMessage("今日已检测加入部落，暂不重复执行")
+            accountMessage("今日已检测加入部落，暂不重复执行")
             return true
         }
 
-        AccountMessage("正在加入部落: $targetTAG")
+        accountMessage("正在加入部落: $targetTAG")
         // Open the clan profile via deep link using the correct package name for the current game version
         RunShell.runNoOutput(
             "am start -a android.intent.action.VIEW -d 'clashofclans://action=OpenClanProfile&tag=$targetTAG' -p ${InGameVars.currentGameVersion.packageName}"

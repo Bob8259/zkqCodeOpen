@@ -4,7 +4,7 @@ import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.core.util.touchactions.TouchActions.swipe
 import com.coc.zkqcode.jar.code.colorschema.MyColors
-import com.coc.zkqcode.jar.code.universal.AccountMessage
+import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.jar.code.universal.InGameVars
 import com.coc.zkqcode.jar.code.universal.clickRightBottom
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
@@ -17,11 +17,11 @@ import com.coc.zkqcode.jar.code.universal.smalltools.writeMemory
 suspend fun mainBaseCheckTutorials(): Boolean {
     val storageKey = StorageKeys.withAccountNumber(StorageKeys.MAIN_BASE_CHECK_TUTORIALS, InGameVars.currentAccountNumber)
     if (!checkMemoryFile(storageKey, 1440)) {
-        AccountMessage("今天已检查常见教程")
+        accountMessage("今天已检查常见教程")
         return true
     }
 
-    AccountMessage("准备检测常见教程")
+    accountMessage("准备检测常见教程")
     zoomSmallMainBase()
 
     // Check the current view first, then scan the lower area after swiping.
@@ -78,7 +78,7 @@ private suspend fun petsTutorial() {
             return
         }
         val remainingSeconds = (timeoutMillis - (System.currentTimeMillis() - startTime)) / 1000
-        AccountMessage("宠物店教程中，若${remainingSeconds}秒后未完成则强制退出")
+        accountMessage("宠物店教程中，若${remainingSeconds}秒后未完成则强制退出")
         val petsTutorial = findMultiColors(MyColors.OuterPetIcon)
         if (petsTutorial != null) {
             TouchActions.tap(petsTutorial.x, petsTutorial.y)

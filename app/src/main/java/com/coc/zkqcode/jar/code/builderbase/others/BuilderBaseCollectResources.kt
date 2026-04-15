@@ -1,7 +1,7 @@
 package com.coc.zkqcode.jar.code.builderbase.others
 
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
-import com.coc.zkqcode.jar.code.universal.AccountMessage
+import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.core.util.touchactions.TouchActions
@@ -11,7 +11,7 @@ import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
 
 suspend fun collectBuilderBaseResources(): Boolean {
-    AccountMessage("收集资源中")
+    accountMessage("收集资源中")
     zoomSmallBuilderBase()
     TouchActions.swipe(587, 420, 587, 700, delayTime = 100)
     goldMineAndElixirCollector()

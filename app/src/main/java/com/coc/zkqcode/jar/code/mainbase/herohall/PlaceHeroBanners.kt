@@ -5,7 +5,7 @@ import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.mainbase.others.zoomSmallMainBase
 import com.coc.zkqcode.jar.code.mainbase.upgrade.mainBaseFindBuildButton
-import com.coc.zkqcode.jar.code.universal.AccountMessage
+import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.jar.code.universal.InGameVars
 import com.coc.zkqcode.jar.code.universal.buildings.BaseType
 import com.coc.zkqcode.jar.code.universal.buildings.upgrade.BuildButtonType
@@ -25,10 +25,10 @@ suspend fun placeHeroBanners(): Boolean {
 
     // Guard: only attempt banner placement once per day (1440 minutes)
     if (!checkMemoryFile(storageKey, 1440)) {
-        AccountMessage("该账号今日已检测战旗")
+        accountMessage("该账号今日已检测战旗")
         return true
     }
-    AccountMessage("准备检测是否卡战旗")
+    accountMessage("准备检测是否卡战旗")
     val result = withHeroHall { placeHeroBannerAction() }
 
     // Always record completion and return to main screen
@@ -52,7 +52,7 @@ private suspend fun placeHeroBannerAction() {
         // Locate the confirmation button (Green Tick).
         var targetTick = mainBaseFindBuildButton(type = BuildButtonType.Tick)
         if (targetTick == null) {
-            AccountMessage("建造失败，尝试寻找空位")
+            accountMessage("建造失败，尝试寻找空位")
             val redCross = mainBaseFindBuildButton(type = BuildButtonType.Cross)
             if (redCross != null) {
                 val centerX = redCross.x + 20
@@ -62,7 +62,7 @@ private suspend fun placeHeroBannerAction() {
                 zoomSmallMainBase(isForBuild = true)
                 targetTick = tryToFindBuildPosition(BaseType.Main)
             } else {
-                AccountMessage("未找到红色叉，错误截图已保存到/sdcard/zkqFiles/bugReporter\n请将截图反馈给作者")
+                accountMessage("未找到红色叉，错误截图已保存到/sdcard/zkqFiles/bugReporter\n请将截图反馈给作者")
                 BugReporter.takeScreenshot("Red_Cross_Not_Found")
                 killGame()
                 clickRightBottom(1)
@@ -71,11 +71,11 @@ private suspend fun placeHeroBannerAction() {
         }
 
         if (targetTick != null) {
-            AccountMessage("放战旗成功")
+            accountMessage("放战旗成功")
             TouchActions.tap(targetTick.x, targetTick.y, delayTime = 300)
         }
     } else {
-        AccountMessage("未检测到放战旗按钮")
+        accountMessage("未检测到放战旗按钮")
         clickRightBottom(1)
     }
 }

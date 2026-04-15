@@ -4,7 +4,7 @@ import android.os.Environment
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.core.util.basic.RunShell
-import com.coc.zkqcode.jar.code.universal.AccountMessage
+import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
 import com.coc.zkqcode.core.util.touchactions.TouchActions
@@ -26,19 +26,19 @@ suspend fun checkReconnections(): Boolean {
     // Set to true when action == 1; deferred outside the lambda to avoid non-local return issues
     var needReturnFalse = false
 
-    val found = homeSchemas.any { schema ->
+    homeSchemas.any { schema ->
         val match = findMultiColors(byteBuffer = screenBuffer, schema = schema)
         if (match != null) {
             // Re-capture and count white pixels to reject false positives
             delayWithMultiplier(200)
             screenBuffer = captureOrRestart()
             val whiteCount = countWhitePixels(screenBuffer)
-            if (whiteCount <= 200) {
-                AccountMessage("检测到假重连")
+            if (whiteCount <= 500) {
+                accountMessage("检测到假重连，白色像素个数$whiteCount")
                 delayWithMultiplier(200)
                 return@any false // Not enough white pixels, continue checking remaining schemas
             }
-            AccountMessage("检测到重连")
+            accountMessage("检测到重连，白色像素个数$whiteCount")
             val configKey = Schema.GLOBAL_SETTINGS.AFTER_KICK_OPTION.key
             val action = GlobalVars.configStates[configKey]?.value?.toInt() ?: logAndRestart("Can not get $configKey")
             when (action) {
@@ -48,6 +48,7 @@ suspend fun checkReconnections(): Boolean {
                     TouchActions.tap(793, 459)
                     TouchActions.tap(338, 511)
                 }
+
                 1 -> needReturnFalse = true // Signal caller to switch accounts
                 2 -> delay(1000)            // Wait/Idle
             }
@@ -57,14 +58,7 @@ suspend fun checkReconnections(): Boolean {
         }
     }
 
-    if (needReturnFalse) return false
-
-//    if (!found) {
-//        ShowMessage("未找到重连")
-//        delayWithMultiplier(1000)
-//    }
-
-    return true
+    return !needReturnFalse
 }
 
 private suspend fun captureOrRestart(): ScreenCaptureManager.CaptureResult =

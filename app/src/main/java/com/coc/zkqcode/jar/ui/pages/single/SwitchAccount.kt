@@ -36,7 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.edit
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.util.basic.RunShell
-import com.coc.zkqcode.jar.code.universal.AccountMessage
+import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.jar.code.universal.GameVersion
 import com.coc.zkqcode.jar.code.universal.smalltools.writeDataNumberFile
 import com.coc.zkqcode.jar.code.universal.smalltools.writeGameFilesCore
@@ -204,7 +204,7 @@ fun SwitchAccount(onClose: () -> Unit) {
                             GlobalVars.isPlaying.value = false
                             GlobalVars.updateWindowPosition = true
                             withContext(Dispatchers.Main) {
-                                AccountMessage("切号完成", false)
+                                accountMessage("切号完成", false)
                                 onClose()
                             }
                         }

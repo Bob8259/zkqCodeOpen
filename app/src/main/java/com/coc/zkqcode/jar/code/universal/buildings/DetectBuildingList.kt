@@ -4,7 +4,7 @@ import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
 import com.coc.zkqcode.core.util.touchactions.TouchActions
-import com.coc.zkqcode.jar.code.universal.AccountMessage
+import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.jar.code.universal.InGameVars
 import com.coc.zkqcode.jar.code.universal.recognizer.TextRecognizer
 
@@ -39,7 +39,7 @@ suspend fun detectBuildingList(excludeNewBuildings: Boolean = false): BuildingDe
         }
     }
     // Keep the debug message short so it stays readable in logs.
-    AccountMessage("原始检测结果：\n${rawSummary.take(150)}")
+    accountMessage("原始检测结果：\n${rawSummary.take(150)}")
     // Take a screenshot for color checking (needed for post-process and later filtering)
     val screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult ?: logAndRestart("failed to take screenshot at building detection")
 

@@ -106,7 +106,7 @@ suspend fun runRandomSchedulingScript() {
         val accounts = getGroupAccounts(config.accountsKey)
 
         if (accounts.isEmpty()) {
-            AccountMessage("${currentGroup.label}没有配置账号，等待下一个时间段...")
+            accountMessage("${currentGroup.label}没有配置账号，等待下一个时间段...")
             // Wait 60s then re-check (time group may have changed)
             delay(60_000L)
             continue
@@ -132,7 +132,7 @@ suspend fun runRandomSchedulingScript() {
                 getIntConfig("${Schema.ACCOUNT_SETTINGS.GAME_VERSION.key}$accountId", 0)
             )
 
-            AccountMessage("随机上号：运行账号 $accountId")
+            accountMessage("随机上号：运行账号 $accountId")
 
             // Record start time and run the account
             val startTime = System.currentTimeMillis()
@@ -146,15 +146,15 @@ suspend fun runRandomSchedulingScript() {
                     return@stepBlock
                 }
                 if (!enterMainScreen(true)) {
-                    AccountMessage("进入游戏失败")
+                    accountMessage("进入游戏失败")
                     return@stepBlock
                 }
                 if (!playBuilderBase()) {
-                    AccountMessage("夜世界对战完成，准备进入主世界")
+                    accountMessage("夜世界对战完成，准备进入主世界")
                     return@stepBlock
                 }
                 if (!playMainBase()) {
-                    AccountMessage("主世界对战完成")
+                    accountMessage("主世界对战完成")
                     return@stepBlock
                 }
             }
@@ -189,7 +189,7 @@ suspend fun runRandomSchedulingScript() {
             // Calculate and wait rest time: total * (100 - ratio) / ratio
             val restMs = calculateRestTimeMs(totalDurationMs, battleRatio)
             val restSeconds = restMs / 1000
-            AccountMessage("账号 $accountId 完成，等待 ${restSeconds}秒 后运行下一个账号")
+            accountMessage("账号 $accountId 完成，等待 ${restSeconds}秒 后运行下一个账号")
             delay(restMs)
         }
 

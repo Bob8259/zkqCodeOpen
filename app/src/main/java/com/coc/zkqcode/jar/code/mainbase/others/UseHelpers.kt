@@ -4,7 +4,7 @@ import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.core.util.touchactions.TouchActions.swipe
 import com.coc.zkqcode.jar.code.colorschema.MyColors
-import com.coc.zkqcode.jar.code.universal.AccountMessage
+import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.jar.code.universal.InGameVars
 import com.coc.zkqcode.jar.code.universal.aidetection.tiledAiDetect
 import com.coc.zkqcode.jar.code.universal.buildings.BaseType
@@ -27,10 +27,10 @@ suspend fun useHelpers(): Boolean {
 
     // Guard the helper scan so each account only retries every 22 hours after a successful tap.
     if (!checkMemoryFile(storageKey, 1320)) {
-        AccountMessage("该账号今日已检测助手")
+        accountMessage("该账号今日已检测助手")
         return true
     }
-    AccountMessage("正在检测助手")
+    accountMessage("正在检测助手")
     clickRightBottom(1)
     zoomSmallMainBase()
     val workerNumber = WorkerAndResearch.detectWorkerNumber(BaseType.Main)
@@ -82,7 +82,7 @@ private suspend fun checkResearchHelper(isUpgradeHelper: Boolean) {
                 clickLeisure()
             }
             if (isUpgradeHelper && getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.UPGRADE_RESEARCH_HELPER.key)) {
-                AccountMessage("已勾选升级实验助手")
+                accountMessage("已勾选升级实验助手")
                 TouchActions.tap(801, 623, delayTime = 200)
                 TouchActions.tap(801, 623, delayTime = 200)
                 clickLeisure()
@@ -91,7 +91,7 @@ private suspend fun checkResearchHelper(isUpgradeHelper: Boolean) {
         }
         val lockedBuilderHelper = findMultiColors(MyColors.LockedBuilderHelper)
         if (lockedBuilderHelper != null && isUpgradeHelper && getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.UPGRADE_BUILDER_APPRENTICE.key)) {
-            AccountMessage("已勾选升级工人助手")
+            accountMessage("已勾选升级工人助手")
             TouchActions.tap(lockedBuilderHelper.x, lockedBuilderHelper.y)
             TouchActions.tap(801, 623, delayTime = 200)
             TouchActions.tap(801, 623, delayTime = 200)

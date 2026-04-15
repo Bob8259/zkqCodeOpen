@@ -1,7 +1,7 @@
 package com.coc.zkqcode.jar.code.universal.smalltools
 
 import com.coc.zkqcode.core.util.basic.RunShell
-import com.coc.zkqcode.jar.code.universal.AccountMessage
+import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.jar.code.universal.InGameVars
 
@@ -13,7 +13,7 @@ suspend fun runGame() {
 
 suspend fun killGame() {
     // Package name is defined in GameVersion enum, keeping version-specific details centralized
-    AccountMessage("准备关闭游戏")
+    accountMessage("准备关闭游戏")
     killApp(InGameVars.currentGameVersion.packageName)
     delayWithMultiplier(500)
 }

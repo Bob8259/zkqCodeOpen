@@ -3,7 +3,7 @@ package com.coc.zkqcode.jar.code.universal.buildings
 import android.graphics.Bitmap
 import androidx.compose.ui.graphics.Color
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
-import com.coc.zkqcode.jar.code.universal.AccountMessage
+import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.core.util.bugreporter.BugReporter
 import com.coc.zkqcode.jar.code.colorschema.ColorSchema
 import com.coc.zkqcode.jar.code.colorschema.MyColors
@@ -67,7 +67,7 @@ object WorkerAndResearch {
             // Fallback: OCR failed, use color-based pattern matching on the preprocessed bitmap
             return detectWorkerByColorMatch(startX, startY, endX, endY)
         }
-        AccountMessage("未检测到${baseName}工人，已将错误截图保存到/sdcard/zkqFiles/bugReporter\n请反馈给作者")
+        accountMessage("未检测到${baseName}工人，已将错误截图保存到/sdcard/zkqFiles/bugReporter\n请反馈给作者")
         BugReporter.takeScreenshot("${bugTag}_Not_Detected")
         return WorkerInfo(0, 0)
     }
@@ -88,7 +88,7 @@ object WorkerAndResearch {
 
         // MainBase-only: goblin researcher pre-check
         if (baseType == BaseType.Main && findMultiColors(schema = MyColors.GoblinResearcher) != null) {
-            AccountMessage("检测到哥布林研究人员，无法进行研究")
+            accountMessage("检测到哥布林研究人员，无法进行研究")
             return false
         }
 
@@ -108,20 +108,20 @@ object WorkerAndResearch {
             val combinedText = results.sortedBy { it.position?.left ?: 0 }.joinToString("") { it.text }
             val researcherInfo = parseWorkerInfo(combinedText)
             if (researcherInfo != WorkerInfo(0, 0)) {
-                AccountMessage("${baseName}研究数量：${researcherInfo.available}/${researcherInfo.total}")
+                accountMessage("${baseName}研究数量：${researcherInfo.available}/${researcherInfo.total}")
                 return researcherInfo.available > 0
             }
 
             // Fallback: OCR failed, use color-based pattern matching
             val fallback = detectWorkerByColorMatch(startX, startY, endX, endY)
             if (fallback != WorkerInfo(0, 0)) {
-                AccountMessage("${baseName}研究数量：${fallback.available}/${fallback.total}")
+                accountMessage("${baseName}研究数量：${fallback.available}/${fallback.total}")
                 return fallback.available > 0
             }
-            AccountMessage("${baseName}研究数量：0/0")
+            accountMessage("${baseName}研究数量：0/0")
             return false
         }
-        AccountMessage("未检测到${baseName}研究，已将错误截图保存到/sdcard/zkqFiles/bugReporter\n请反馈给作者")
+        accountMessage("未检测到${baseName}研究，已将错误截图保存到/sdcard/zkqFiles/bugReporter\n请反馈给作者")
         BugReporter.takeScreenshot("${bugTag}_Not_Detected")
         return false
     }

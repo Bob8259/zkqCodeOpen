@@ -4,7 +4,7 @@ import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.ColorSchema
 import com.coc.zkqcode.jar.code.colorschema.MyColors
-import com.coc.zkqcode.jar.code.universal.AccountMessage
+import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.jar.code.universal.InGameVars
 import com.coc.zkqcode.jar.code.universal.aidetection.tiledAiDetect
 import com.coc.zkqcode.jar.code.universal.clickRightBottom
@@ -35,10 +35,10 @@ suspend fun useMagicItems(): Boolean {
 
     // Guard the magic item check so each account only scans once per day.
     if (!checkMemoryFile(storageKey, 1440)) {
-        AccountMessage("该账号今日已检测魔法物品")
+        accountMessage("该账号今日已检测魔法物品")
         return true
     }
-    AccountMessage("正在检测魔法物品")
+    accountMessage("正在检测魔法物品")
     zoomSmallMainBase()
 
     // Scan the current view first, then retry once after swiping upward.

@@ -4,7 +4,7 @@ import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
 import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.MyColors
-import com.coc.zkqcode.jar.code.universal.AccountMessage
+import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.jar.code.universal.InGameVars
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
@@ -35,7 +35,7 @@ suspend fun searchOpponentsAndDeployTroops(): Boolean {
 
     val darkElixirIcon = findMultiColors(schema = MyColors.DarkElixirIcon)
     if (darkElixirIcon == null) {
-        AccountMessage("暂未解锁暗黑重油")
+        accountMessage("暂未解锁暗黑重油")
         targetDarkElixir = 0
     }
     val isDynamicAdjust = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.DYNAMIC_ADJUSTMENT.key)
@@ -87,7 +87,7 @@ suspend fun searchOpponentsAndDeployTroops(): Boolean {
     if (targetElixir == 0) fullResources.add("圣水")
     if (targetDarkElixir == 0) fullResources.add("黑油")
     if (fullResources.isNotEmpty()) {
-        AccountMessage("${fullResources.joinToString("、")}已满")
+        accountMessage("${fullResources.joinToString("、")}已满")
     }
     if (getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.STOP_BATTLE_AFTER_FULL_RESOURCES.key)) {
         if (targetGold == 0 && targetElixir == 0 && targetDarkElixir == 0) return false
@@ -105,7 +105,7 @@ suspend fun searchOpponentsAndDeployTroops(): Boolean {
         if (battlePage != null) {
             val waitForBattle = findMultiColors(schema = MyColors.WaitForBattle)
             if (waitForBattle != null) {
-                AccountMessage("进攻需等待冷却")
+                accountMessage("进攻需等待冷却")
                 if (!getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.WAIT_FOR_BATTLE.key)) return false
             }
         }
@@ -169,7 +169,7 @@ suspend fun searchOpponentsAndDeployTroops(): Boolean {
                 }
             }
 
-            AccountMessage("搜索次数：$searchTimes\n对手资源：\n${res.gold}金, ${res.elixir}水, ${res.darkElixir}黑\n目标资源：\n${targetGold}金, ${targetElixir}水, ${targetDarkElixir}黑")
+            accountMessage("搜索次数：$searchTimes\n对手资源：\n${res.gold}金, ${res.elixir}水, ${res.darkElixir}黑\n目标资源：\n${targetGold}金, ${targetElixir}水, ${targetDarkElixir}黑")
 
             // Skip the first search result when dynamic adjustment is enabled, so the average has at least one data point
             val meetsCriteria = (!isDynamicAdjust || searchTimes > 2) && res.gold >= targetGold && res.elixir >= targetElixir && res.darkElixir >= targetDarkElixir
@@ -189,7 +189,7 @@ suspend fun searchOpponentsAndDeployTroops(): Boolean {
             }
         }
         val remainingMinutes = (SEARCH_TIMEOUT_MS - (System.currentTimeMillis() - battleStartTime)) / 60000.0
-        AccountMessage("搜索中... ${"%.1f".format(remainingMinutes)}分钟后强制退出")
+        accountMessage("搜索中... ${"%.1f".format(remainingMinutes)}分钟后强制退出")
         if (!checkReconnections()) return false
         delayWithMultiplier(100)
     }

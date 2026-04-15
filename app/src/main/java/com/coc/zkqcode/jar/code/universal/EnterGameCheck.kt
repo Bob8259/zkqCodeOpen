@@ -40,7 +40,7 @@ suspend fun enterMainScreen(isDoubleCheck: Boolean = false): Boolean {
         } else {
             if (isInHomePage()) {
                 if (!isDoubleCheck) {
-                    AccountMessage("已进入主界面")
+                    accountMessage("已进入主界面")
                     return true
                 }
                 if (InGameVars.currentGameVersion == GameVersion.CN) delayWithMultiplier(1500)
@@ -49,13 +49,14 @@ suspend fun enterMainScreen(isDoubleCheck: Boolean = false): Boolean {
                     return true
                 }
             }
-            if (!checkReconnections()) return false
-            AccountMessage("倒计时${((timeoutMillis - System.currentTimeMillis() + startTime) / 1000).toInt()}秒")
+
+            accountMessage("倒计时${((timeoutMillis - System.currentTimeMillis() + startTime) / 1000).toInt()}秒")
             closeAdvertisements()
 
             // Click right bottom roughly every 5 seconds
             if (clickRightBottomCounter++ >= 4) {
                 clickRightBottom(10)
+                if (!checkReconnections()) return false
                 clickRightBottomCounter = 0
             }
 
@@ -134,7 +135,7 @@ private suspend fun closeAdvertisements() {
 
     }
     findMultiColors(byteBuffer = screenBuffer, schema = MyColors.ReturnTask, increment = 1)?.let {
-        AccountMessage("检测到回归教程")
+        accountMessage("检测到回归教程")
         zoomSmallMainBase()
         mainBaseDeployTroops()
     }

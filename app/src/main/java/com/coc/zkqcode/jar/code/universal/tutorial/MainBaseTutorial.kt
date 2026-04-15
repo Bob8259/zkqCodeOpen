@@ -2,7 +2,7 @@ package com.coc.zkqcode.jar.code.universal.tutorial
 
 import com.coc.zkqcode.core.system.inputmethod.ZKQInputMethodService
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
-import com.coc.zkqcode.jar.code.universal.AccountMessage
+import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
@@ -164,7 +164,7 @@ suspend fun mainBaseTutorial(): Boolean {
 
     // Tutorial Conclusion and Cleanup
     findMultiColors(schema = MyColors.TrainTroops, increment = 1)?.let {
-        AccountMessage("教程结束，即将进行首尾工作")
+        accountMessage("教程结束，即将进行首尾工作")
 
         // Worker tap sequence
         TouchActions.tap(598, 43, delayTime = 300)

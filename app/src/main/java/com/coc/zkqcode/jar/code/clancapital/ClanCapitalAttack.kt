@@ -7,7 +7,7 @@ import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.mainbase.others.zoomSmallMainBase
-import com.coc.zkqcode.jar.code.universal.AccountMessage
+import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.jar.code.universal.InGameVars
 import com.coc.zkqcode.jar.code.universal.aidetection.DetectionResult
 import com.coc.zkqcode.jar.code.universal.aidetection.tiledAiDetect
@@ -34,13 +34,13 @@ suspend fun clanCapitalAttack(): CapitalState {
     if (findMultiColors(MyColors.ZeroAttackTimes) != null) {
         // No attack times remaining; record the timestamp so the guard activates next cycle
         writeMemory(storageKey, (System.currentTimeMillis() / 60_000).toString())
-        AccountMessage("都城攻击次数已用完")
+        accountMessage("都城攻击次数已用完")
         if (!enterMainScreen()) return CapitalState.Error
     }
     if (findAttackTarget()) {
         val endBattleButton = findMultiColorsUntil(schemas = listOf(MyColors.EndBattle), duration = 10000)
         if (endBattleButton == null) {
-            AccountMessage("未找到结束战斗按钮")
+            accountMessage("未找到结束战斗按钮")
             killGame()
             delayWithMultiplier(1000)
             runGame()
@@ -64,7 +64,7 @@ suspend fun findAttackTarget(): Boolean {
         if (findMultiColors(MyColors.RaidInformation) != null) {
             break
         }
-        AccountMessage("进入突袭地图中...")
+        accountMessage("进入突袭地图中...")
         val raidMap = findMultiColors(MyColors.RaidMap)
         if (raidMap != null) {
             TouchActions.tap(raidMap.x, raidMap.y)
@@ -72,14 +72,14 @@ suspend fun findAttackTarget(): Boolean {
         delayWithMultiplier(300)
     }
     if (findMultiColors(MyColors.RaidInformation) == null) {
-        AccountMessage("超时：未找到RaidInformation，退出攻击")
+        accountMessage("超时：未找到RaidInformation，退出攻击")
         return false
     }
     TouchActions.swipe(300, 500, 300, 1500)
     delayWithMultiplier(400)
     // Capture a fresh screenshot to analyse which districts are available to attack.
     val bitmap = ScreenCaptureManager.capture(asBitmap = true) as? Bitmap ?: run {
-        AccountMessage("截图失败，无法分析都城区域")
+        accountMessage("截图失败，无法分析都城区域")
         return false
     }
 
@@ -93,7 +93,7 @@ suspend fun findAttackTarget(): Boolean {
             val centerY = (district.y1 + district.y2) / 2
             // Offset per design: shift left 80px and down 80px to land on the entry button. Y is capped at 719.
             val tapY = minOf(centerY + 80, 719)
-            AccountMessage("找到可攻击区域: ${district.name}, 点击 (${centerX - 80}, $tapY)")
+            accountMessage("找到可攻击区域: ${district.name}, 点击 (${centerX - 80}, $tapY)")
             TouchActions.tap(centerX - 80, tapY)
             val raidButton = findMultiColorsUntil(schemas = listOf(MyColors.RaidRedAttackButton), duration = 300)
             if (raidButton != null) {
@@ -105,7 +105,7 @@ suspend fun findAttackTarget(): Boolean {
         }
     }
 
-    AccountMessage("未找到可攻击的都城区域")
+    accountMessage("未找到可攻击的都城区域")
     return false
 }
 
@@ -170,7 +170,7 @@ private suspend fun deploySpells() {
 
     val plannedTargets = if (detections.isEmpty()) {
         // Use a stable fallback centre point so the existing spell deployment logic still runs.
-        AccountMessage("部落都城未检测到可攻击目标，使用默认落点")
+        accountMessage("部落都城未检测到可攻击目标，使用默认落点")
         listOf(PlannedClanCapitalTarget(x = 660, y = 280))
     } else {
         planClanCapitalTargets(detections)

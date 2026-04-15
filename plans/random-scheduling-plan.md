@@ -205,7 +205,7 @@ suspend fun playMainBase(): Boolean {
     val workerInfo = WorkerAndResearch.detectWorkerNumber(BaseType.Main)
     if (workerInfo.available == 0) {
         InGameVars.noWorkerDetected = true
-        AccountMessage("主世界无空闲工人")
+        accountMessage("主世界无空闲工人")
     }
 
     // ... rest of the flow unchanged

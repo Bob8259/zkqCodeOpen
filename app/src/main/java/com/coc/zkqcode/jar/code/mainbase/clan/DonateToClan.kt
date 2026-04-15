@@ -7,7 +7,7 @@ import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.ColorSchema
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.GameVersion
-import com.coc.zkqcode.jar.code.universal.AccountMessage
+import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.jar.code.universal.InGameVars
 import com.coc.zkqcode.jar.code.auth.displayAds
 import com.coc.zkqcode.jar.code.universal.buildings.BaseType
@@ -113,7 +113,7 @@ suspend fun donateToClan(): Boolean {
         val remainingSeconds = (intervalMillis - (System.currentTimeMillis() - startTime)) / 1000
         // Display dark elixir as a percentage when unlocked, or as 未解锁 when the icon is absent
         val darkElixirDisplay = if (darkElixirIcon != null) "暗黑重油：${darkElixirPercentage}%" else "暗黑重油：未解锁"
-        AccountMessage("捐兵检测中，剩余${remainingSeconds}秒结束\n当前资源百分比：\n圣水：${resources.elixir}%\n${darkElixirDisplay}")
+        accountMessage("捐兵检测中，剩余${remainingSeconds}秒结束\n当前资源百分比：\n圣水：${resources.elixir}%\n${darkElixirDisplay}")
 
         // Check whether resources have recovered above the higher threshold
         val isDarkElixirUnlocked = darkElixirIcon != null
@@ -129,7 +129,7 @@ suspend fun donateToClan(): Boolean {
             // the donation loop keeps running normally between battles
             val timeSinceLastBattle = System.currentTimeMillis() - lastBattleTime
             if (timeSinceLastBattle >= 3 * 60 * 1000L) {
-                AccountMessage("资源不足，开始刷资源\n圣水：${resources.elixir}%，暗黑重油：${if (isDarkElixirUnlocked) "$darkElixirPercentage%" else "未解锁"}")
+                accountMessage("资源不足，开始刷资源\n圣水：${resources.elixir}%，暗黑重油：${if (isDarkElixirUnlocked) "$darkElixirPercentage%" else "未解锁"}")
                 if (!enterMainScreen()) return false
                 if (!mainBaseAttack()) return false
                 lastBattleTime = System.currentTimeMillis()

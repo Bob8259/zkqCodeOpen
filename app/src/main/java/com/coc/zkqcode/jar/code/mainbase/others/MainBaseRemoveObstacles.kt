@@ -1,7 +1,7 @@
 package com.coc.zkqcode.jar.code.mainbase.others
 
 import com.coc.zkqcode.core.util.touchactions.TouchActions
-import com.coc.zkqcode.jar.code.universal.AccountMessage
+import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.jar.code.universal.InGameVars
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.recognizer.recognizeResources
@@ -18,16 +18,16 @@ suspend fun mainBaseRemoveObstacles(): Boolean {
     val storageKey = StorageKeys.withAccountNumber(StorageKeys.MAIN_BASE_REMOVE_OBSTACLES, InGameVars.currentAccountNumber)
     // Skip if obstacle removal was done within 24 hours
     if (!checkMemoryFile(storageKey, 1440)) {
-        AccountMessage("今天已移除障碍物，暂不移除")
+        accountMessage("今天已移除障碍物，暂不移除")
         return true
     }
     val resources = recognizeResources()
     if (resources.gold < 300000 || resources.elixir < 300000) {
-        AccountMessage("检测金：${resources.gold}，检测水：${resources.elixir}\n不足30万，暂不移除")
+        accountMessage("检测金：${resources.gold}，检测水：${resources.elixir}\n不足30万，暂不移除")
         writeMemory(storageKey, (System.currentTimeMillis() / 60_000).toString())
         return true
     }
-    AccountMessage("准备移除主世界障碍物")
+    accountMessage("准备移除主世界障碍物")
     enterEditMode()
     zoomSmallMainBase()
     removeObstacles()

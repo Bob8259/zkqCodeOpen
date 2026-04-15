@@ -1,6 +1,6 @@
 package com.coc.zkqcode.jar.code.universal.buildings.upgrade
 
-import com.coc.zkqcode.jar.code.universal.AccountMessage
+import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.buildings.BaseType
@@ -21,12 +21,12 @@ suspend fun builderBaseFindNewBuildings(currentBase: BaseType): Boolean {
         iterateBuilderBaseBuildingUpgradeList(onDetect = { result ->
             val buildings = result.buildings
             if (buildings.isEmpty()) {
-                AccountMessage("未检测到可升级建筑")
+                accountMessage("未检测到可升级建筑")
             } else {
                 val newBuilding = buildings.find { it.name.startsWith("新") }
                 if (newBuilding != null) {
                     if (newBuilding.y > 530) return@iterateBuilderBaseBuildingUpgradeList false
-                    AccountMessage("检测到新建筑: ${newBuilding.name}, x: ${newBuilding.x}, y: ${newBuilding.y}")
+                    accountMessage("检测到新建筑: ${newBuilding.name}, x: ${newBuilding.x}, y: ${newBuilding.y}")
                     TouchActions.tap(newBuilding.x + 20, newBuilding.y + 5, delayTime = 1500)
                     found = true
                     return@iterateBuilderBaseBuildingUpgradeList true

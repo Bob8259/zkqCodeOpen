@@ -1,7 +1,7 @@
 package com.coc.zkqcode.jar.code.mainbase.others
 
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
-import com.coc.zkqcode.jar.code.universal.AccountMessage
+import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.core.util.touchactions.TouchActions.swipe
@@ -11,7 +11,7 @@ import com.coc.zkqcode.jar.code.universal.enterMainScreen
 
 suspend fun mainBaseCollectResources(): Boolean {
     zoomSmallMainBase()
-    AccountMessage("收集资源中")
+    accountMessage("收集资源中")
     goldMineAndElixirCollector()
     swipe(900, 130, 0, 720)
     goldMineAndElixirCollector()

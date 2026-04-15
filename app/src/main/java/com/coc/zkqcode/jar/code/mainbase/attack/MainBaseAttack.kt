@@ -3,7 +3,7 @@ package com.coc.zkqcode.jar.code.mainbase.attack
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.fileactions.LogHelper
 import com.coc.zkqcode.core.util.touchactions.TouchActions
-import com.coc.zkqcode.jar.code.universal.AccountMessage
+import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.jar.code.universal.InGameVars
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
@@ -23,7 +23,7 @@ suspend fun mainBaseAttack(): Boolean {
     val startTime = System.currentTimeMillis()
     val isRestartGame = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.RESTART_GAME.key)
     if (isRestartGame) {
-        AccountMessage("部署完成，准备重启游戏")
+        accountMessage("部署完成，准备重启游戏")
         killGame()
         delayWithMultiplier(1000)
         runGame()
@@ -40,10 +40,10 @@ suspend fun mainBaseAttack(): Boolean {
             // Show remaining minutes with 1 decimal place
             val remainingMinutes = (maxDurationMs - elapsed) / 60000.0
 
-            AccountMessage("主世界对战中，${"%.1f".format(remainingMinutes)}分钟后强制退出对战")
+            accountMessage("主世界对战中，${"%.1f".format(remainingMinutes)}分钟后强制退出对战")
             val endBattleButton = findMultiColors(schema = MyColors.EndBattle)
             if (endBattleButton == null) {
-                AccountMessage("未找到放弃按钮，对战结束")
+                accountMessage("未找到放弃按钮，对战结束")
                 delayWithMultiplier(1000)
                 TouchActions.tap(640, 610, delayTime = 1500)
                 break

@@ -5,7 +5,7 @@ import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.core.util.touchactions.TouchActions.pinchIn
 import com.coc.zkqcode.core.util.touchactions.TouchActions.swipe
 import com.coc.zkqcode.jar.code.colorschema.MyColors
-import com.coc.zkqcode.jar.code.universal.AccountMessage
+import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.jar.code.universal.InGameVars
 import com.coc.zkqcode.jar.code.universal.buildings.BaseType
 import com.coc.zkqcode.jar.code.universal.buildings.WorkerAndResearch
@@ -21,10 +21,10 @@ suspend fun clickOttosOutPost(): Boolean {
 
     // Skip if already checked within 24 hours
     if (!checkMemoryFile(storageKey, 1440)) {
-        AccountMessage("今日已检测奥仔哨站，暂不点击")
+        accountMessage("今日已检测奥仔哨站，暂不点击")
         return true
     }
-    AccountMessage("准备检测奥仔哨站")
+    accountMessage("准备检测奥仔哨站")
     val worker = WorkerAndResearch.detectWorkerNumber(BaseType.Builder)
     if (worker.total < 2) {
         writeMemory(storageKey, (System.currentTimeMillis() / 60_000).toString())

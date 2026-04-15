@@ -1,6 +1,6 @@
 package com.coc.zkqcode.jar.code.mainbase.clan
 
-import com.coc.zkqcode.jar.code.universal.AccountMessage
+import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.MyColors
@@ -13,7 +13,7 @@ import com.coc.zkqcode.jar.ui.schema.Schema
 
 suspend fun requestReinforcements(): Boolean {
     if (!getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.REQUEST_REINFORCEMENT_SETTING.key)) return true
-    AccountMessage("准备请求增援")
+    accountMessage("准备请求增援")
     val clanChat = findMultiColors(MyColors.ClanChatIcon)
     if (clanChat != null) {
         // Tap the clan chat icon to open the chat panel

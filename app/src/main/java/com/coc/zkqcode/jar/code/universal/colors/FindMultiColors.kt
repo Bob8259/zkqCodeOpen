@@ -4,7 +4,7 @@ import android.graphics.Bitmap
 import android.graphics.Point
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.core.data.database.GlobalVars
-import com.coc.zkqcode.jar.code.universal.AccountMessage
+import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.core.util.basic.waitForPlay
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
 import com.coc.zkqcode.jar.code.auth.userAuth
@@ -76,7 +76,7 @@ suspend fun findMultiColors(
                 increment
             )
             if (result != null && result.size == 2) {
-                schema.name?.let { AccountMessage("已找到：$it,坐标：${result[0]}, ${result[1]}") }
+                schema.name?.let { accountMessage("已找到：$it,坐标：${result[0]}, ${result[1]}") }
                 return Point(result[0], result[1])
             }
 
@@ -95,7 +95,7 @@ suspend fun findMultiColors(
                     increment
                 )
                 if (result != null && result.size == 2) {
-                    schema.name?.let { AccountMessage("已找到：$it,坐标：${result[0]}, ${result[1]}") }
+                    schema.name?.let { accountMessage("已找到：$it,坐标：${result[0]}, ${result[1]}") }
                     return Point(result[0], result[1])
                 }
             }

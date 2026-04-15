@@ -3,7 +3,7 @@ package com.coc.zkqcode.jar.code.mainbase.others
 import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.core.util.touchactions.TouchActions.swipe
 import com.coc.zkqcode.jar.code.colorschema.MyColors
-import com.coc.zkqcode.jar.code.universal.AccountMessage
+import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.jar.code.universal.InGameVars
 import com.coc.zkqcode.jar.code.universal.aidetection.tiledAiDetect
 import com.coc.zkqcode.jar.code.universal.clickRightBottom
@@ -24,10 +24,10 @@ suspend fun collectClanCastleResources(): Boolean {
 
     // Guard the clan castle check so each account only scans once per day.
     if (!checkMemoryFile(storageKey, 1440)) {
-        AccountMessage("该账号今日已检测城堡资源")
+        accountMessage("该账号今日已检测城堡资源")
         return true
     }
-    AccountMessage("正在检测城堡资源")
+    accountMessage("正在检测城堡资源")
     clickRightBottom(1)
     zoomSmallMainBase()
 

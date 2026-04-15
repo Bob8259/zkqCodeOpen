@@ -7,7 +7,7 @@ import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.core.util.touchactions.TouchActions.swipe
 import com.coc.zkqcode.jar.code.colorschema.ColorSchema
 import com.coc.zkqcode.jar.code.colorschema.MyColors
-import com.coc.zkqcode.jar.code.universal.AccountMessage
+import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.jar.code.universal.InGameVars
 import com.coc.zkqcode.jar.code.universal.aidetection.tiledAiDetect
 import com.coc.zkqcode.jar.code.universal.buildings.countPixelsInArea
@@ -28,10 +28,10 @@ suspend fun turnOnClockTower(): Boolean {
 
     // Guard the Clock Tower check so each account only scans once every twenty-two hours.
     if (!checkMemoryFile(storageKey, 1320)) {
-        AccountMessage("22小时内已开启过时光钟楼，暂不检测")
+        accountMessage("22小时内已开启过时光钟楼，暂不检测")
         return true
     }
-    AccountMessage("正在检测时光钟楼")
+    accountMessage("正在检测时光钟楼")
     clickRightBottom(1)
     zoomSmallBuilderBase()
 
@@ -56,7 +56,7 @@ suspend fun turnOnClockTower(): Boolean {
                 val gemFound = findMultiColors(schema = gemIconSchema, byteBuffer = screenBuffer)
                 delayWithMultiplier(50)
                 if (gemFound != null) {
-                    AccountMessage("检测到宝石图标，暂无免费提速机会 (位置: ${gemFound.x},${gemFound.y})")
+                    accountMessage("检测到宝石图标，暂无免费提速机会 (位置: ${gemFound.x},${gemFound.y})")
                     clickRightBottom(1)
                     return true
                 }
@@ -68,7 +68,7 @@ suspend fun turnOnClockTower(): Boolean {
                     result = dialogScreenBuffer, x1 = 515, y1 = 445, x2 = 759, y2 = 510, targetColor = 0xFFFFFF
                 )
                 if (dialogWhitePixelCount > 30) {
-                    AccountMessage("暂无免费提速机会")
+                    accountMessage("暂无免费提速机会")
                     clickRightBottom(1)
                     return true
                 }

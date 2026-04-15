@@ -1,5 +1,7 @@
 package com.coc.zkqcode.jar.code.universal
 
+import com.coc.zkqcode.core.util.basic.ShowMessage
+
 /**
  * Represents the target game version/server type, carrying all package and launch metadata.
  * Use [fromId] to convert the integer stored in config to a [GameVersion].
@@ -40,4 +42,8 @@ object InGameVars {
     @Volatile
     var currentGameVersion: GameVersion = GameVersion.CN
     var adTime: Int = 15
+}
+
+fun accountMessage(text: String, isChecking: Boolean = true) {
+    ShowMessage("账号${InGameVars.currentAccountNumber}，$text", isChecking)
 }

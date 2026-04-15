@@ -2,7 +2,7 @@ package com.coc.zkqcode.jar.code
 
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.util.basic.RunShell
-import com.coc.zkqcode.jar.code.universal.AccountMessage
+import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.basic.waitForPlay
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
@@ -11,14 +11,12 @@ import com.coc.zkqcode.jar.code.auth.displayAds
 import com.coc.zkqcode.jar.code.auth.userAuth
 import com.coc.zkqcode.jar.code.builderbase.playBuilderBase
 import com.coc.zkqcode.jar.code.clancapital.clanCapitalAttack
-import com.coc.zkqcode.jar.code.clancapital.clanCapitalTrainTroops
 import com.coc.zkqcode.jar.code.clancapital.findAttackTarget
 import com.coc.zkqcode.jar.code.clancapital.playClanCapital
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.mainbase.playMainBase
 import com.coc.zkqcode.jar.code.universal.GameVersion
 import com.coc.zkqcode.jar.code.universal.InGameVars
-import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.create.batchCreateAccounts
 import com.coc.zkqcode.jar.code.universal.runRandomSchedulingScript
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
@@ -37,7 +35,7 @@ import kotlinx.coroutines.isActive
 
 suspend fun runMainScript() {
     waitForPlay()
-    AccountMessage("检测到设置已更新\n即将重新运行")
+    accountMessage("检测到设置已更新\n即将重新运行")
     delay(200)
     userAuth()
     // Read hot update preference and emit signal if "OnStart" mode is selected
@@ -92,7 +90,7 @@ suspend fun runMainScript() {
     var lastUpdateCheckTime = System.currentTimeMillis()
     var nextUpdateInterval = (2 * 3600_000L) + (Math.random() * 3600_000L).toLong()
     while (currentCoroutineContext().isActive) {
-//        runTestCode()
+        runTestCode()
 
         displayAds()
         RunShell.runNoOutput("am kill-all")//clean up memory
@@ -104,16 +102,16 @@ suspend fun runMainScript() {
             }
 
             if (!enterMainScreen(true)) {
-                AccountMessage("进入游戏失败")
+                accountMessage("进入游戏失败")
                 return@stepBlock
             }
 
             if (!playBuilderBase()) {
-                AccountMessage("夜世界对战完成，准备进入主世界")
+                accountMessage("夜世界对战完成，准备进入主世界")
                 return@stepBlock
             }
             if (!playMainBase()) {
-                AccountMessage("主世界对战完成，准备切换账号")
+                accountMessage("主世界对战完成，准备切换账号")
                 return@stepBlock
             }
         }
@@ -136,8 +134,7 @@ suspend fun runMainScript() {
             GameVersion.GLOBAL
         } else {
             GameVersion.fromId(
-                getConfigOrStop("${Schema.ACCOUNT_SETTINGS.GAME_VERSION.key}${InGameVars.currentAccountNumber}").toIntOrNull()
-                    ?: logAndRestart("${Schema.ACCOUNT_SETTINGS.GAME_VERSION.displayName} 必须是数字，请检查配置")
+                getConfigOrStop("${Schema.ACCOUNT_SETTINGS.GAME_VERSION.key}${InGameVars.currentAccountNumber}").toIntOrNull() ?: logAndRestart("${Schema.ACCOUNT_SETTINGS.GAME_VERSION.displayName} 必须是数字，请检查配置")
             )
         }
     }
@@ -147,7 +144,7 @@ private suspend fun runTestCode() {
     while (true) {
         checkReconnections()
 //        ShowMessage(findMultiColors(MyColors.SpellColorAtDeploymentBar, increment = 1).toString())
-        AccountMessage("测试代码结束")
+        accountMessage("测试代码结束")
         delay(1000)
     }
 }
@@ -171,7 +168,7 @@ private suspend fun findAndActivateAccount(
     }
     if (found == null) {
         while (currentCoroutineContext().isActive) {
-            AccountMessage("当前未开启任何账号\n请勾选要开启的账号。")
+            accountMessage("当前未开启任何账号\n请勾选要开启的账号。")
             delay(2500)
         }
     }
