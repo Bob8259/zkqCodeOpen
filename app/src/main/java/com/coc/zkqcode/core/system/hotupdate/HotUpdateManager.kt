@@ -235,7 +235,7 @@ object HotUpdateManager {
                 if (tempFile.exists()) { tempFile.setWritable(true); tempFile.delete() }
                 throw e
             } catch (e: Exception) {
-                ShowMessage("下载更新失败: 尝试次数 $attempt\n错误信息: ${e.message}")
+                ShowMessage("下载更新失败: 尝试次数 $attempt\n错误信息: ${e.message}\n请确保登录了紫孔雀账号\n(自动更新可免费使用，仅需登录即可)")
                 delay(2000)
                 if (tempFile.exists()) {
                     tempFile.setWritable(true)
