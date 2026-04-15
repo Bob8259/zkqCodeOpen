@@ -10,12 +10,18 @@ import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material3.MaterialTheme
@@ -40,6 +46,7 @@ import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.coc.zkqcode.core.data.database.GlobalVars
+import com.coc.zkqcode.jar.ui.components.CustomButton
 import com.coc.zkqcode.jar.ui.components.SectionBanner
 import com.coc.zkqcode.jar.ui.components.SettingInputRow
 import com.coc.zkqcode.jar.ui.components.SettingSwitchIcon
@@ -111,7 +118,11 @@ fun RandomScheduling(lazyListState: LazyListState? = null) {
         mutableStateOf("0")
     }
     val isEnabled = rsState.value == "1"
-
+    Text(
+        text = "（该功能制作中，未完善，请勿使用）",
+        style = MaterialTheme.typography.labelMedium,
+        modifier = Modifier.padding(bottom = 4.dp)
+    )
     SettingSwitchIcon(
         key = GLOBAL_SETTINGS.RANDOM_SCHEDULING.key,
         explain = "启用随机上号后，脚本将根据当前时间段，从对应组的账号中随机选取顺序依次运行。每个账号运行完毕后，根据设定的概率决定是否继续对战或直接下线，并按对战时间比例计算等待时间后再运行下一个账号。\n\n随机上号与批量创号不能同时启用。",
@@ -145,6 +156,7 @@ private fun TimeGroupSection(title: String, keys: GroupKeys, lazyListState: Lazy
 
         AnimatedVisibility(visible = expanded) {
             Column(modifier = Modifier.padding(horizontal = 4.dp, vertical = 4.dp)) {
+
                 // Battle time ratio
                 SettingInputRow(key = keys.battleRatio, suffix = "%")
 
@@ -237,11 +249,7 @@ private fun AccountGroupSelector(accountsKey: String, lazyListState: LazyListSta
     }
 
     Column(modifier = Modifier.padding(top = 6.dp)) {
-        Text(
-            text = "（该功能制作中，未完善，请勿使用）",
-            style = MaterialTheme.typography.labelMedium,
-            modifier = Modifier.padding(bottom = 4.dp)
-        )
+
         Text(
             text = "选择加入本组的账号：",
             style = MaterialTheme.typography.labelMedium,
@@ -253,177 +261,224 @@ private fun AccountGroupSelector(accountsKey: String, lazyListState: LazyListSta
             color = Color.Gray,
             modifier = Modifier.padding(bottom = 4.dp)
         )
-        FlowRow(
-            horizontalArrangement = Arrangement.spacedBy(4.dp),
-            verticalArrangement = Arrangement.spacedBy(4.dp),
-            modifier = Modifier
-                .onGloballyPositioned { layoutCoordinates ->
-                    val posInRoot = layoutCoordinates.positionInRoot()
-                    flowRowOffset = Offset(posInRoot.x, posInRoot.y)
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier.padding(bottom = 4.dp)
+        ) {
+            CustomButton(
+                text = "一键全选",
+                marginTop = 0.dp,
+                onClick = {
+                    val allIds = (1..accountCount).toList()
+                    accountsState.value = allIds.joinToString(",")
                 }
-                .pointerInput(accountCount) {
-                    // Touch slop in pixels: ~10dp
-                    val slopPx = 10f * density
-                    // Edge zone: 100dp from top/bottom triggers auto-scroll
-                    val edgeZonePx = 100f * density
-                    // Auto-scroll speed: pixels per tick (every 16ms)
-                    val scrollSpeedPx = 12f * density
+            )
+            CustomButton(
+                text = "一键反选",
+                marginTop = 0.dp,
+                onClick = {
+                    val current = parseSelected()
+                    val inverted = (1..accountCount).filter { it !in current }
+                    accountsState.value = inverted.joinToString(",")
+                }
+            )
+        }
+        // Cell size and spacing constants (must match LazyVerticalGrid below)
+        val cellSizeDp = 32.dp
+        val spacingDp = 4.dp
 
-                    // currentDragRootY holds the latest finger Y in root coordinates,
-                    // updated each pointer event so the scroll coroutine always reads fresh data.
-                    var currentDragRootY = 0f
+        BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
+            val columnsCount = maxOf(1, ((maxWidth + spacingDp) / (cellSizeDp + spacingDp)).toInt())
+            val rowCount = (accountCount + columnsCount - 1) / columnsCount
+            val gridHeight = cellSizeDp * rowCount + spacingDp * (rowCount - 1).coerceAtLeast(0)
 
-                    // Starts or stops the auto-scroll coroutine based on drag Y position.
-                    // Returns the active Job (or null if no scroll needed).
-                    fun updateAutoScroll(rootY: Float, currentJob: Job?): Job? {
-                        currentDragRootY = rootY
-                        val inTopZone = rootY < edgeZonePx
-                        val inBottomZone = rootY > screenHeightPx - edgeZonePx
-                        return when {
-                            inBottomZone && lazyListState != null -> {
-                                if (currentJob?.isActive == true) currentJob
-                                else scope.launch {
-                                    while (true) {
-                                        // Re-read latest Y so speed adapts as finger moves deeper
-                                        val y = currentDragRootY
-                                        val depth = ((y - (screenHeightPx - edgeZonePx)) / edgeZonePx).coerceIn(0f, 1f)
-                                        lazyListState.animateScrollBy(scrollSpeedPx * (1f + depth))
-                                    }
-                                }
-                            }
-                            inTopZone && lazyListState != null -> {
-                                if (currentJob?.isActive == true) currentJob
-                                else scope.launch {
-                                    while (true) {
-                                        val y = currentDragRootY
-                                        val depth = ((edgeZonePx - y) / edgeZonePx).coerceIn(0f, 1f)
-                                        lazyListState.animateScrollBy(-scrollSpeedPx * (1f + depth))
-                                    }
-                                }
-                            }
-                            else -> {
-                                currentJob?.cancel()
-                                null
-                            }
-                        }
+            // Wrapping Box carries the onGloballyPositioned + pointerInput so the
+            // LazyVerticalGrid (userScrollEnabled=false) never intercepts gestures.
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(gridHeight)
+                    .onGloballyPositioned { layoutCoordinates ->
+                        val posInRoot = layoutCoordinates.positionInRoot()
+                        flowRowOffset = Offset(posInRoot.x, posInRoot.y)
                     }
+                    .pointerInput(accountCount) {
+                        // Touch slop in pixels: ~10dp
+                        val slopPx = 10f * density
+                        // Edge zone: 100dp from top/bottom triggers auto-scroll
+                        val edgeZonePx = 100f * density
+                        // Auto-scroll speed: pixels per tick (every 16ms)
+                        val scrollSpeedPx = 12f * density
 
-                    awaitEachGesture {
-                        // Wait for initial finger down without consuming
-                        val down = awaitFirstDown(requireUnconsumed = false)
-                        val downPos = down.position
+                        // currentDragRootY holds the latest finger Y in root coordinates,
+                        // updated each pointer event so the scroll coroutine always reads fresh data.
+                        var currentDragRootY = 0f
 
-                        // Long-press detection: wait up to 400ms; if finger moves beyond slop first, abort
-                        val longPressConfirmed = withTimeoutOrNull(400L) {
-                            var moved = false
-                            while (!moved) {
-                                val event = awaitPointerEvent()
-                                val change = event.changes.firstOrNull() ?: break
-                                if (!change.pressed) break
-                                val dx = change.position.x - downPos.x
-                                val dy = change.position.y - downPos.y
-                                if (dx * dx + dy * dy > slopPx * slopPx) {
-                                    moved = true
-                                }
-                            }
-                            // If we exited because of movement, return non-null to signal "moved"
-                            if (moved) Unit else null
-                        }
-
-                        // longPressConfirmed == null means timeout elapsed without movement = long press
-                        if (longPressConfirmed == null) {
-                            // Convert long-press position to root coordinates for hit-testing
-                            val rootX = downPos.x + flowRowOffset.x
-                            val rootY = downPos.y + flowRowOffset.y
-                            val rootPos = Offset(rootX, rootY)
-
-                            val hitId = hitTestBox(rootPos, boxBoundsMap)
-                            if (hitId != null) {
-                                GlobalVars.isAutoRunEnabled = false
-                                val baseSelected = parseSelected()
-                                // Determine drag mode: if pressed box was selected -> deselect mode, else -> select mode
-                                dragSelectMode = hitId !in baseSelected
-                                val initial = baseSelected.toMutableSet()
-                                if (dragSelectMode) initial.add(hitId) else initial.remove(hitId)
-                                isDragging = true
-                                dragPreview = initial
-
-                                var autoScrollJob: Job? = null
-
-                                // Consume subsequent events so scroll doesn't interfere
-                                var currentId = hitId
-                                var event = awaitPointerEvent()
-                                while (event.changes.any { it.pressed }) {
-                                    event.changes.forEach { it.consume() }
-                                    val change = event.changes.firstOrNull()
-                                    if (change != null) {
-                                        val moveRootX = change.position.x + flowRowOffset.x
-                                        val moveRootY = change.position.y + flowRowOffset.y
-                                        val movePos = Offset(moveRootX, moveRootY)
-
-                                        // Update auto-scroll based on current finger Y in root coords
-                                        autoScrollJob = updateAutoScroll(moveRootY, autoScrollJob)
-
-                                        val newId = hitTestBox(movePos, boxBoundsMap)
-                                        if (newId != null && newId != currentId) {
-                                            currentId = newId
-                                            val updated = dragPreview.toMutableSet()
-                                            if (dragSelectMode) updated.add(newId) else updated.remove(newId)
-                                            dragPreview = updated
+                        // Starts or stops the auto-scroll coroutine based on drag Y position.
+                        // Returns the active Job (or null if no scroll needed).
+                        fun updateAutoScroll(rootY: Float, currentJob: Job?): Job? {
+                            currentDragRootY = rootY
+                            val inTopZone = rootY < edgeZonePx
+                            val inBottomZone = rootY > screenHeightPx - edgeZonePx
+                            return when {
+                                inBottomZone && lazyListState != null -> {
+                                    if (currentJob?.isActive == true) currentJob
+                                    else scope.launch {
+                                        while (true) {
+                                            // Re-read latest Y so speed adapts as finger moves deeper
+                                            val y = currentDragRootY
+                                            val depth = ((y - (screenHeightPx - edgeZonePx)) / edgeZonePx).coerceIn(0f, 1f)
+                                            lazyListState.animateScrollBy(scrollSpeedPx * (1f + depth))
                                         }
                                     }
-                                    event = awaitPointerEvent()
                                 }
 
-                                // Drag ended — stop auto-scroll and commit the preview state
-                                autoScrollJob?.cancel()
-                                accountsState.value = dragPreview.sorted().joinToString(",")
-                                isDragging = false
-                                dragPreview = emptySet()
+                                inTopZone && lazyListState != null -> {
+                                    if (currentJob?.isActive == true) currentJob
+                                    else scope.launch {
+                                        while (true) {
+                                            val y = currentDragRootY
+                                            val depth = ((edgeZonePx - y) / edgeZonePx).coerceIn(0f, 1f)
+                                            lazyListState.animateScrollBy(-scrollSpeedPx * (1f + depth))
+                                        }
+                                    }
+                                }
+
+                                else -> {
+                                    currentJob?.cancel()
+                                    null
+                                }
                             }
                         }
-                        // If longPressConfirmed != null (finger moved before 400ms), do nothing —
-                        // events are unconsumed so the parent scroll container handles the swipe
-                    }
-                }
-        ) {
-            for (id in 1..accountCount) {
-                val isSelected = id in displayedSelected
-                val bgColor = if (isSelected) AppColors.Primary else AppColors.Primary.copy(alpha = 0.10f)
-                val borderColor = if (isSelected) AppColors.Primary else AppColors.PrimaryLight
-                val textColor = if (isSelected) Color.White else AppColors.TextPrimary
 
-                Box(
+                        awaitEachGesture {
+                            // Wait for initial finger down without consuming
+                            val down = awaitFirstDown(requireUnconsumed = false)
+                            val downPos = down.position
+
+                            // Long-press detection: wait up to 400ms; if finger moves beyond slop first, abort
+                            val longPressConfirmed = withTimeoutOrNull(400L) {
+                                var moved = false
+                                while (!moved) {
+                                    val event = awaitPointerEvent()
+                                    val change = event.changes.firstOrNull() ?: break
+                                    if (!change.pressed) break
+                                    val dx = change.position.x - downPos.x
+                                    val dy = change.position.y - downPos.y
+                                    if (dx * dx + dy * dy > slopPx * slopPx) {
+                                        moved = true
+                                    }
+                                }
+                                // If we exited because of movement, return non-null to signal "moved"
+                                if (moved) Unit else null
+                            }
+
+                            // longPressConfirmed == null means timeout elapsed without movement = long press
+                            if (longPressConfirmed == null) {
+                                // Convert long-press position to root coordinates for hit-testing
+                                val rootX = downPos.x + flowRowOffset.x
+                                val rootY = downPos.y + flowRowOffset.y
+                                val rootPos = Offset(rootX, rootY)
+
+                                val hitId = hitTestBox(rootPos, boxBoundsMap)
+                                if (hitId != null) {
+                                    GlobalVars.isAutoRunEnabled = false
+                                    val baseSelected = parseSelected()
+                                    // Determine drag mode: if pressed box was selected -> deselect mode, else -> select mode
+                                    dragSelectMode = hitId !in baseSelected
+                                    val initial = baseSelected.toMutableSet()
+                                    if (dragSelectMode) initial.add(hitId) else initial.remove(hitId)
+                                    isDragging = true
+                                    dragPreview = initial
+
+                                    var autoScrollJob: Job? = null
+
+                                    // Consume subsequent events so scroll doesn't interfere
+                                    var currentId = hitId
+                                    var event = awaitPointerEvent()
+                                    while (event.changes.any { it.pressed }) {
+                                        event.changes.forEach { it.consume() }
+                                        val change = event.changes.firstOrNull()
+                                        if (change != null) {
+                                            val moveRootX = change.position.x + flowRowOffset.x
+                                            val moveRootY = change.position.y + flowRowOffset.y
+                                            val movePos = Offset(moveRootX, moveRootY)
+
+                                            // Update auto-scroll based on current finger Y in root coords
+                                            autoScrollJob = updateAutoScroll(moveRootY, autoScrollJob)
+
+                                            val newId = hitTestBox(movePos, boxBoundsMap)
+                                            if (newId != null && newId != currentId) {
+                                                currentId = newId
+                                                val updated = dragPreview.toMutableSet()
+                                                if (dragSelectMode) updated.add(newId) else updated.remove(newId)
+                                                dragPreview = updated
+                                            }
+                                        }
+                                        event = awaitPointerEvent()
+                                    }
+
+                                    // Drag ended — stop auto-scroll and commit the preview state
+                                    autoScrollJob?.cancel()
+                                    accountsState.value = dragPreview.sorted().joinToString(",")
+                                    isDragging = false
+                                    dragPreview = emptySet()
+                                }
+                            }
+                            // If longPressConfirmed != null (finger moved before 400ms), do nothing —
+                            // events are unconsumed so the parent scroll container handles the swipe
+                        }
+                    }
+            ) {
+                val accountIds = remember(accountCount) { (1..accountCount).toList() }
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(columnsCount),
+                    userScrollEnabled = false,
                     modifier = Modifier
-                        .width(32.dp)
-                        .height(32.dp)
-                        .background(bgColor, RoundedCornerShape(8.dp))
-                        .border(1.dp, borderColor, RoundedCornerShape(8.dp))
-                        .padding(horizontal = 4.dp)
-                        .onGloballyPositioned { layoutCoordinates ->
-                            val posInRoot = layoutCoordinates.positionInRoot()
-                            val size = layoutCoordinates.size
-                            boxBoundsMap[id] = Rect(
-                                Offset(posInRoot.x, posInRoot.y),
-                                Size(
-                                    size.width.toFloat(),
-                                    size.height.toFloat()
+                        .fillMaxWidth()
+                        .height(gridHeight),
+                    horizontalArrangement = Arrangement.spacedBy(spacingDp),
+                    verticalArrangement = Arrangement.spacedBy(spacingDp)
+                ) {
+                    items(accountIds, key = { it }) { id ->
+                        val isSelected = id in displayedSelected
+                        val bgColor = if (isSelected) AppColors.Primary else AppColors.Primary.copy(alpha = 0.10f)
+                        val borderColor = if (isSelected) AppColors.Primary else AppColors.PrimaryLight
+                        val textColor = if (isSelected) Color.White else AppColors.TextPrimary
+
+                        Box(
+                            modifier = Modifier
+                                .width(cellSizeDp)
+                                .height(cellSizeDp)
+                                .background(bgColor, RoundedCornerShape(8.dp))
+                                .border(1.dp, borderColor, RoundedCornerShape(8.dp))
+                                .padding(horizontal = 4.dp)
+                                .onGloballyPositioned { layoutCoordinates ->
+                                    val posInRoot = layoutCoordinates.positionInRoot()
+                                    val size = layoutCoordinates.size
+                                    boxBoundsMap[id] = Rect(
+                                        Offset(posInRoot.x, posInRoot.y),
+                                        Size(
+                                            size.width.toFloat(),
+                                            size.height.toFloat()
+                                        )
+                                    )
+                                },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = id.toString(),
+                                color = textColor,
+                                style = MaterialTheme.typography.labelMedium,
+                                maxLines = 1,
+                                autoSize = TextAutoSize.StepBased(
+                                    minFontSize = 6.sp,
+                                    maxFontSize = MaterialTheme.typography.labelMedium.fontSize,
+                                    stepSize = 1.sp
                                 )
                             )
-                        },
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = id.toString(),
-                        color = textColor,
-                        style = MaterialTheme.typography.labelMedium,
-                        maxLines = 1,
-                        autoSize = TextAutoSize.StepBased(
-                            minFontSize = 6.sp,
-                            maxFontSize = MaterialTheme.typography.labelMedium.fontSize,
-                            stepSize = 1.sp
-                        )
-                    )
+                        }
+                    }
                 }
             }
         }
