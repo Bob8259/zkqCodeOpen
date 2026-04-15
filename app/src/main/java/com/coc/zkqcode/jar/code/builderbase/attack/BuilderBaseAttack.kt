@@ -11,7 +11,7 @@ import com.coc.zkqcode.jar.code.auth.displayAds
 import com.coc.zkqcode.jar.code.colorschema.ColorSchema
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.AccountMessage
-import com.coc.zkqcode.jar.code.universal.InGamesVars
+import com.coc.zkqcode.jar.code.universal.InGameVars
 import com.coc.zkqcode.jar.code.universal.buildings.BaseType
 import com.coc.zkqcode.jar.code.universal.buildings.walls.calculateResourcesPercentage
 import com.coc.zkqcode.jar.code.universal.clickRightBottom
@@ -307,7 +307,7 @@ private suspend fun builderBaseTrainTroops() {
 }
 
 suspend fun builderBaseTrainWithConditions(): Boolean {
-    val storageKey = StorageKeys.withAccountNumber(StorageKeys.BUILDER_BASE_TRAIN_TROOPS, InGamesVars.currentAccountNumber)
+    val storageKey = StorageKeys.withAccountNumber(StorageKeys.BUILDER_BASE_TRAIN_TROOPS, InGameVars.currentAccountNumber)
 
     if (checkMemoryFile(storageKey, 1440)) {
         builderBaseTrainTroops()

@@ -4,7 +4,7 @@ import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.core.util.touchactions.TouchActions.swipe
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.AccountMessage
-import com.coc.zkqcode.jar.code.universal.InGamesVars
+import com.coc.zkqcode.jar.code.universal.InGameVars
 import com.coc.zkqcode.jar.code.universal.aidetection.tiledAiDetect
 import com.coc.zkqcode.jar.code.universal.clickRightBottom
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
@@ -19,7 +19,7 @@ import com.coc.zkqcode.jar.ui.schema.Schema
 suspend fun collectClanCastleResources(): Boolean {
     if (!getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.COLLECT_CLAN_CASTLE.key)) return true
     val storageKey = StorageKeys.withAccountNumber(
-        StorageKeys.COLLECT_CLAN_CASTLE_RESOURCES, InGamesVars.currentAccountNumber
+        StorageKeys.COLLECT_CLAN_CASTLE_RESOURCES, InGameVars.currentAccountNumber
     )
 
     // Guard the clan castle check so each account only scans once per day.

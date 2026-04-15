@@ -2,7 +2,7 @@ package com.coc.zkqcode.jar.code.universal.smalltools
 
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
-import com.coc.zkqcode.jar.code.universal.InGamesVars
+import com.coc.zkqcode.jar.code.universal.InGameVars
 import com.coc.zkqcode.jar.ui.schema.Schema
 
 fun getConfigRuntime(configName: String): String {
@@ -10,8 +10,8 @@ fun getConfigRuntime(configName: String): String {
     val configNumber = if (getConfigOrStop(Schema.GLOBAL_SETTINGS.BATCH_CREATE_ACCOUNT.key) == "1") {
         "1"
     } else {
-        GlobalVars.configStates["account_config${InGamesVars.currentAccountNumber}"]?.value ?: logAndRestart(
-            "Can not get the config number for account ${InGamesVars.currentAccountNumber}",
+        GlobalVars.configStates["account_config${InGameVars.currentAccountNumber}"]?.value ?: logAndRestart(
+            "Can not get the config number for account ${InGameVars.currentAccountNumber}",
             isShow = false
         )
     }

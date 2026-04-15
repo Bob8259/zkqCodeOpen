@@ -6,7 +6,7 @@ import com.coc.zkqcode.core.util.touchactions.TouchActions.pinchIn
 import com.coc.zkqcode.core.util.touchactions.TouchActions.swipe
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.AccountMessage
-import com.coc.zkqcode.jar.code.universal.InGamesVars
+import com.coc.zkqcode.jar.code.universal.InGameVars
 import com.coc.zkqcode.jar.code.universal.buildings.BaseType
 import com.coc.zkqcode.jar.code.universal.buildings.WorkerAndResearch
 import com.coc.zkqcode.jar.code.universal.clickRightBottom
@@ -17,7 +17,7 @@ import com.coc.zkqcode.jar.code.universal.smalltools.checkMemoryFile
 import com.coc.zkqcode.jar.code.universal.smalltools.writeMemory
 
 suspend fun clickOttosOutPost(): Boolean {
-    val storageKey = StorageKeys.withAccountNumber(StorageKeys.CLICK_OTTOS_POST, InGamesVars.currentAccountNumber)
+    val storageKey = StorageKeys.withAccountNumber(StorageKeys.CLICK_OTTOS_POST, InGameVars.currentAccountNumber)
 
     // Skip if already checked within 24 hours
     if (!checkMemoryFile(storageKey, 1440)) {

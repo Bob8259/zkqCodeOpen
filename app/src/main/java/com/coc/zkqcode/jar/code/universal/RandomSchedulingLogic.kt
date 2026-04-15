@@ -127,8 +127,8 @@ suspend fun runRandomSchedulingScript() {
             }
 
             // Set current account
-            InGamesVars.currentAccountNumber = accountId
-            InGamesVars.currentGameVersion = GameVersion.fromId(
+            InGameVars.currentAccountNumber = accountId
+            InGameVars.currentGameVersion = GameVersion.fromId(
                 getIntConfig("${Schema.ACCOUNT_SETTINGS.GAME_VERSION.key}$accountId", 0)
             )
 

@@ -4,7 +4,7 @@ import com.coc.zkqcode.jar.code.universal.AccountMessage
 import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.mainbase.others.zoomSmallMainBase
-import com.coc.zkqcode.jar.code.universal.InGamesVars
+import com.coc.zkqcode.jar.code.universal.InGameVars
 import com.coc.zkqcode.jar.code.universal.clickRightBottom
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
@@ -28,7 +28,7 @@ suspend fun playClanCapital(): Boolean {
     }
     // Guard: skip if the last attack was less than 3 days (4320 minutes) ago
     val storageKey = StorageKeys.withAccountNumber(
-        StorageKeys.CLAN_CAPITAL_ATTACK, InGamesVars.currentAccountNumber
+        StorageKeys.CLAN_CAPITAL_ATTACK, InGameVars.currentAccountNumber
     )
     if (!checkMemoryFile(storageKey, 4320)) {
         return enterMainScreen()

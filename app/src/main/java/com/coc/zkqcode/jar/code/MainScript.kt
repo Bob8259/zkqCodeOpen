@@ -17,7 +17,7 @@ import com.coc.zkqcode.jar.code.clancapital.playClanCapital
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.mainbase.playMainBase
 import com.coc.zkqcode.jar.code.universal.GameVersion
-import com.coc.zkqcode.jar.code.universal.InGamesVars
+import com.coc.zkqcode.jar.code.universal.InGameVars
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.create.batchCreateAccounts
 import com.coc.zkqcode.jar.code.universal.runRandomSchedulingScript
@@ -77,16 +77,16 @@ suspend fun runMainScript() {
     val initialSearchOrder = (safeStartAccount..accountTotal) + (accountStart until safeStartAccount)
     val activeAccount = findAndActivateAccount(initialSearchOrder, isBatchCreate) ?: return
     // 3. Execute main logic loop
-    InGamesVars.currentAccountNumber = activeAccount
+    InGameVars.currentAccountNumber = activeAccount
     // In batch-create mode, force GLOBAL version for all accounts
-    InGamesVars.currentGameVersion = if (isBatchCreate) {
+    InGameVars.currentGameVersion = if (isBatchCreate) {
         GameVersion.GLOBAL
     } else {
         GameVersion.fromId(
-            getConfigOrStop("${Schema.ACCOUNT_SETTINGS.GAME_VERSION.key}${InGamesVars.currentAccountNumber}").toIntOrNull() ?: logAndRestart("${Schema.ACCOUNT_SETTINGS.GAME_VERSION.displayName} 必须是数字，请检查配置")
+            getConfigOrStop("${Schema.ACCOUNT_SETTINGS.GAME_VERSION.key}${InGameVars.currentAccountNumber}").toIntOrNull() ?: logAndRestart("${Schema.ACCOUNT_SETTINGS.GAME_VERSION.displayName} 必须是数字，请检查配置")
         )
     }
-    InGamesVars.adTime = 10.coerceAtLeast(accountTotal * 8)
+    InGameVars.adTime = 10.coerceAtLeast(accountTotal * 8)
     batchCreateAccounts()//Create all needed accounts first.
     // Track elapsed time for periodic hot update checks (updateOption 2)
     var lastUpdateCheckTime = System.currentTimeMillis()
@@ -126,17 +126,17 @@ suspend fun runMainScript() {
             lastUpdateCheckTime = System.currentTimeMillis()
             nextUpdateInterval = (2 * 3600_000L) + (Math.random() * 3600_000L).toLong()
         }
-        val searchOrder = ((InGamesVars.currentAccountNumber + 1)..accountTotal) + (accountStart..InGamesVars.currentAccountNumber)
+        val searchOrder = ((InGameVars.currentAccountNumber + 1)..accountTotal) + (accountStart..InGameVars.currentAccountNumber)
         val nextAccount = findAndActivateAccount(searchOrder, isBatchCreate) ?: return
 
-        InGamesVars.currentAccountNumber = nextAccount
+        InGameVars.currentAccountNumber = nextAccount
         writeMemory(StorageKeys.ACCOUNT_NUMBER, nextAccount.toString())
         // In batch-create mode, force GLOBAL version for all accounts
-        InGamesVars.currentGameVersion = if (isBatchCreate) {
+        InGameVars.currentGameVersion = if (isBatchCreate) {
             GameVersion.GLOBAL
         } else {
             GameVersion.fromId(
-                getConfigOrStop("${Schema.ACCOUNT_SETTINGS.GAME_VERSION.key}${InGamesVars.currentAccountNumber}").toIntOrNull()
+                getConfigOrStop("${Schema.ACCOUNT_SETTINGS.GAME_VERSION.key}${InGameVars.currentAccountNumber}").toIntOrNull()
                     ?: logAndRestart("${Schema.ACCOUNT_SETTINGS.GAME_VERSION.displayName} 必须是数字，请检查配置")
             )
         }

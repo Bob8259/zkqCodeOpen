@@ -5,7 +5,7 @@ import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.ColorSchema
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.AccountMessage
-import com.coc.zkqcode.jar.code.universal.InGamesVars
+import com.coc.zkqcode.jar.code.universal.InGameVars
 import com.coc.zkqcode.jar.code.universal.aidetection.tiledAiDetect
 import com.coc.zkqcode.jar.code.universal.clickRightBottom
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
@@ -30,7 +30,7 @@ suspend fun useMagicItems(): Boolean {
     }
     if (!shouldUseMagicItems) return true
     val storageKey = StorageKeys.withAccountNumber(
-        StorageKeys.USE_MAGIC_ITEMS, InGamesVars.currentAccountNumber
+        StorageKeys.USE_MAGIC_ITEMS, InGameVars.currentAccountNumber
     )
 
     // Guard the magic item check so each account only scans once per day.

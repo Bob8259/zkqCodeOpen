@@ -5,7 +5,7 @@ import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.GameVersion
-import com.coc.zkqcode.jar.code.universal.InGamesVars
+import com.coc.zkqcode.jar.code.universal.InGameVars
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.smalltools.getBooleanConfigRuntime
@@ -18,7 +18,7 @@ suspend fun requestReinforcements(): Boolean {
     if (clanChat != null) {
         // Tap the clan chat icon to open the chat panel
         TouchActions.tap(clanChat.x, clanChat.y)
-        if (InGamesVars.currentGameVersion == GameVersion.CN) {
+        if (InGameVars.currentGameVersion == GameVersion.CN) {
             TouchActions.tap(523, 239, delayTime = 200)
             TouchActions.tap(152, 88, delayTime = 200)
         } else {

@@ -5,7 +5,7 @@ import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.ui.floatingwindows.AdItem
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.basic.waitForPlay
-import com.coc.zkqcode.jar.code.universal.InGamesVars
+import com.coc.zkqcode.jar.code.universal.InGameVars
 import com.coc.zkqcode.nativehelper.RustTools
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -48,8 +48,8 @@ suspend fun displayAds() {
             AdItem(content = "测试普通广告", link = null, topAd = 0)
         )
     }
-    ShowMessage.showAdOverlay(adItems, InGamesVars.adTime)
-    delay(InGamesVars.adTime * 1000L)
+    ShowMessage.showAdOverlay(adItems, InGameVars.adTime)
+    delay(InGameVars.adTime * 1000L)
     ShowMessage.dismissAdOverlay()
     RustTools.markAdEnd()
 }

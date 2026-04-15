@@ -9,7 +9,7 @@ import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
 import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.MyColors
-import com.coc.zkqcode.jar.code.universal.InGamesVars
+import com.coc.zkqcode.jar.code.universal.InGameVars
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.ui.schema.Schema
 import kotlinx.coroutines.delay
@@ -107,7 +107,7 @@ suspend fun reExtractGameSavings() {
     val targetSubDirs = listOf("shared_prefs")
 
     // 2. Environment path preparation
-    val suffix = InGamesVars.currentAccountNumber
+    val suffix = InGameVars.currentAccountNumber
     val sdPath = Environment.getExternalStorageDirectory().path
 
     val gameRootDir = "$sdPath/zkqFiles/$folderName"

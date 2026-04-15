@@ -5,7 +5,7 @@ import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.core.util.touchactions.TouchActions.swipe
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.AccountMessage
-import com.coc.zkqcode.jar.code.universal.InGamesVars
+import com.coc.zkqcode.jar.code.universal.InGameVars
 import com.coc.zkqcode.jar.code.universal.aidetection.tiledAiDetect
 import com.coc.zkqcode.jar.code.universal.buildings.BaseType
 import com.coc.zkqcode.jar.code.universal.buildings.WorkerAndResearch
@@ -22,7 +22,7 @@ import com.coc.zkqcode.jar.ui.schema.Schema
 suspend fun useHelpers(): Boolean {
     if (!getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.HELPER_SETTINGS.key)) return true
     val storageKey = StorageKeys.withAccountNumber(
-        StorageKeys.USE_HELPERS, InGamesVars.currentAccountNumber
+        StorageKeys.USE_HELPERS, InGameVars.currentAccountNumber
     )
 
     // Guard the helper scan so each account only retries every 22 hours after a successful tap.

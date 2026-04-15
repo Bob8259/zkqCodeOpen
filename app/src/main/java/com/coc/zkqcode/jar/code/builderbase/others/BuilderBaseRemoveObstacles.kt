@@ -3,7 +3,7 @@ package com.coc.zkqcode.jar.code.builderbase.others
 import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.core.util.touchactions.TouchActions.swipe
 import com.coc.zkqcode.jar.code.universal.AccountMessage
-import com.coc.zkqcode.jar.code.universal.InGamesVars
+import com.coc.zkqcode.jar.code.universal.InGameVars
 import com.coc.zkqcode.jar.code.universal.buildings.BaseType
 import com.coc.zkqcode.jar.code.universal.buildings.WorkerAndResearch
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
@@ -19,7 +19,7 @@ import com.coc.zkqcode.jar.ui.schema.Schema
 
 suspend fun builderBaseRemoveObstacles(): Boolean {
     if (!getBooleanConfigRuntime(Schema.BUILDER_BASE_SETTINGS.BUILDER_BASE_REMOVE_OBSTACLES.key)) return true
-    val storageKey = StorageKeys.withAccountNumber(StorageKeys.BUILDER_BASE_REMOVE_OBSTACLES, InGamesVars.currentAccountNumber)
+    val storageKey = StorageKeys.withAccountNumber(StorageKeys.BUILDER_BASE_REMOVE_OBSTACLES, InGameVars.currentAccountNumber)
     // Skip if obstacle removal was done within 24 hours
     if (!checkMemoryFile(storageKey, 1440)) {
         AccountMessage("今天已移除障碍物，暂不移除")

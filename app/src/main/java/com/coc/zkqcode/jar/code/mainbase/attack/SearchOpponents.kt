@@ -5,7 +5,7 @@ import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
 import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.AccountMessage
-import com.coc.zkqcode.jar.code.universal.InGamesVars
+import com.coc.zkqcode.jar.code.universal.InGameVars
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
@@ -40,9 +40,9 @@ suspend fun searchOpponentsAndDeployTroops(): Boolean {
     }
     val isDynamicAdjust = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.DYNAMIC_ADJUSTMENT.key)
     // Pre-compute per-account memory keys for dynamic adjustment
-    val goldKey = StorageKeys.withAccountNumber(StorageKeys.DYNAMIC_GOLD, InGamesVars.currentAccountNumber)
-    val elixirKey = StorageKeys.withAccountNumber(StorageKeys.DYNAMIC_ELIXIR, InGamesVars.currentAccountNumber)
-    val darkElixirKey = StorageKeys.withAccountNumber(StorageKeys.DYNAMIC_DARK_ELIXIR, InGamesVars.currentAccountNumber)
+    val goldKey = StorageKeys.withAccountNumber(StorageKeys.DYNAMIC_GOLD, InGameVars.currentAccountNumber)
+    val elixirKey = StorageKeys.withAccountNumber(StorageKeys.DYNAMIC_ELIXIR, InGameVars.currentAccountNumber)
+    val darkElixirKey = StorageKeys.withAccountNumber(StorageKeys.DYNAMIC_DARK_ELIXIR, InGameVars.currentAccountNumber)
 
     // Track whether each target was restored from memory (affects running average formula)
     var goldFromMemory = false

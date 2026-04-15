@@ -4,7 +4,7 @@ import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.AccountMessage
-import com.coc.zkqcode.jar.code.universal.InGamesVars
+import com.coc.zkqcode.jar.code.universal.InGameVars
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
@@ -15,7 +15,7 @@ import com.coc.zkqcode.jar.code.universal.smalltools.writeMemory
 
 suspend fun clanCapitalTrainTroops(): Boolean {
     val storageKey = StorageKeys.withAccountNumber(
-        StorageKeys.CLAN_CAPITAL_TRAIN_TROOPS, InGamesVars.currentAccountNumber
+        StorageKeys.CLAN_CAPITAL_TRAIN_TROOPS, InGameVars.currentAccountNumber
     )
 
     // Guard: skip training if the last training was less than 3 days (4320 minutes) ago

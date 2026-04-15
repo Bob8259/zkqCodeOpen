@@ -6,7 +6,7 @@ import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.mainbase.others.zoomSmallMainBase
 import com.coc.zkqcode.jar.code.mainbase.upgrade.mainBaseFindBuildButton
 import com.coc.zkqcode.jar.code.universal.AccountMessage
-import com.coc.zkqcode.jar.code.universal.InGamesVars
+import com.coc.zkqcode.jar.code.universal.InGameVars
 import com.coc.zkqcode.jar.code.universal.buildings.BaseType
 import com.coc.zkqcode.jar.code.universal.buildings.upgrade.BuildButtonType
 import com.coc.zkqcode.jar.code.universal.buildings.upgrade.moveWithDelay
@@ -20,7 +20,7 @@ import com.coc.zkqcode.jar.code.universal.smalltools.writeMemory
 
 suspend fun placeHeroBanners(): Boolean {
     val storageKey = StorageKeys.withAccountNumber(
-        StorageKeys.PLACE_HERO_BANNERS, InGamesVars.currentAccountNumber
+        StorageKeys.PLACE_HERO_BANNERS, InGameVars.currentAccountNumber
     )
 
     // Guard: only attempt banner placement once per day (1440 minutes)

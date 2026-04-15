@@ -8,7 +8,7 @@ import com.coc.zkqcode.core.util.touchactions.TouchActions.swipe
 import com.coc.zkqcode.jar.code.colorschema.ColorSchema
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.AccountMessage
-import com.coc.zkqcode.jar.code.universal.InGamesVars
+import com.coc.zkqcode.jar.code.universal.InGameVars
 import com.coc.zkqcode.jar.code.universal.aidetection.tiledAiDetect
 import com.coc.zkqcode.jar.code.universal.buildings.countPixelsInArea
 import com.coc.zkqcode.jar.code.universal.clickRightBottom
@@ -24,7 +24,7 @@ import kotlin.math.min
 
 suspend fun turnOnClockTower(): Boolean {
     if (!getBooleanConfigRuntime(Schema.BUILDER_BASE_SETTINGS.BUILDER_BASE_ENABLE_CLOCK_TOWER.key)) return true
-    val storageKey = StorageKeys.withAccountNumber(StorageKeys.TURN_ON_CLOCK_TOWER, InGamesVars.currentAccountNumber)
+    val storageKey = StorageKeys.withAccountNumber(StorageKeys.TURN_ON_CLOCK_TOWER, InGameVars.currentAccountNumber)
 
     // Guard the Clock Tower check so each account only scans once every twenty-two hours.
     if (!checkMemoryFile(storageKey, 1320)) {

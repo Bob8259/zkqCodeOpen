@@ -8,7 +8,7 @@ import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
 import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.MyColors
-import com.coc.zkqcode.jar.code.universal.InGamesVars
+import com.coc.zkqcode.jar.code.universal.InGameVars
 import com.coc.zkqcode.jar.code.universal.clickRightBottom
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.smalltools.getStaticConfig
@@ -155,7 +155,7 @@ suspend fun mainBaseTutorial(): Boolean {
         val addSuffix = getStaticConfig(Schema.GLOBAL_SETTINGS.ADD_SUFFIX_SETTING.key) == "1"
 
         if (addSuffix) {
-            gameName += InGamesVars.currentAccountNumber
+            gameName += InGameVars.currentAccountNumber
         }
 
         ZKQInputMethodService.instance?.inputText(gameName) ?: logAndRestart("获取输入法失败")

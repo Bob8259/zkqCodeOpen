@@ -7,7 +7,7 @@ import com.coc.zkqcode.jar.code.universal.AccountMessage
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
 import com.coc.zkqcode.jar.code.auth.displayAds
 import com.coc.zkqcode.jar.code.universal.GameVersion
-import com.coc.zkqcode.jar.code.universal.InGamesVars
+import com.coc.zkqcode.jar.code.universal.InGameVars
 import com.coc.zkqcode.jar.code.universal.smalltools.getConfigOrStop
 import com.coc.zkqcode.jar.code.universal.smalltools.killGame
 import com.coc.zkqcode.jar.code.universal.smalltools.runGame
@@ -29,8 +29,8 @@ suspend fun batchCreateAccounts() {
         if (exists != "true") {
             displayAds()
             // Set game version and account number for AllTutorials display and checkReconnections
-            InGamesVars.currentGameVersion = GameVersion.GLOBAL
-            InGamesVars.currentAccountNumber = i
+            InGameVars.currentGameVersion = GameVersion.GLOBAL
+            InGameVars.currentAccountNumber = i
 
             // Retry indefinitely until the tutorial succeeds
             var tutorialPassed = false

@@ -7,7 +7,7 @@ import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
 import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.AccountMessage
-import com.coc.zkqcode.jar.code.universal.InGamesVars
+import com.coc.zkqcode.jar.code.universal.InGameVars
 import com.coc.zkqcode.jar.code.universal.clickRightBottom
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
@@ -41,7 +41,7 @@ suspend fun joinClan(): Boolean {
         }
     } else {
         // Once-per-day guard: skip if already checked within 24 hours for this account
-        val storageKey = StorageKeys.withAccountNumber(StorageKeys.JOIN_CLAN, InGamesVars.currentAccountNumber)
+        val storageKey = StorageKeys.withAccountNumber(StorageKeys.JOIN_CLAN, InGameVars.currentAccountNumber)
         if (!checkMemoryFile(storageKey, 1440)) {
             AccountMessage("今日已检测加入部落，暂不重复执行")
             return true
@@ -50,7 +50,7 @@ suspend fun joinClan(): Boolean {
         AccountMessage("正在加入部落: $targetTAG")
         // Open the clan profile via deep link using the correct package name for the current game version
         RunShell.runNoOutput(
-            "am start -a android.intent.action.VIEW -d 'clashofclans://action=OpenClanProfile&tag=$targetTAG' -p ${InGamesVars.currentGameVersion.packageName}"
+            "am start -a android.intent.action.VIEW -d 'clashofclans://action=OpenClanProfile&tag=$targetTAG' -p ${InGameVars.currentGameVersion.packageName}"
         )
         val joinOrExitButton = findMultiColorsUntil(schemas = listOf(MyColors.JoinClanButton, MyColors.ExitClanButton), duration = 2000)
         if (joinOrExitButton != null) {

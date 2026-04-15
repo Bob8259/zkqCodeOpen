@@ -33,7 +33,7 @@ enum class GameVersion(
     }
 }
 
-object InGamesVars {
+object InGameVars {
     @Volatile
     var currentAccountNumber: Int = 1
 

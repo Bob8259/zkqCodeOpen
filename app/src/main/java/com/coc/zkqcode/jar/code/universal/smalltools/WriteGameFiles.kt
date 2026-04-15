@@ -8,7 +8,7 @@ import com.coc.zkqcode.jar.code.universal.AccountMessage
 import com.coc.zkqcode.core.util.fileactions.FileHelper
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
 import com.coc.zkqcode.jar.code.universal.GameVersion
-import com.coc.zkqcode.jar.code.universal.InGamesVars
+import com.coc.zkqcode.jar.code.universal.InGameVars
 import com.coc.zkqcode.jar.ui.schema.Schema
 import com.coc.zkqcode.jar.ui.schema.Schema.ACCOUNT_SETTINGS
 import com.topjohnwu.superuser.Shell
@@ -20,10 +20,10 @@ fun getConfigOrStop(key: String): String {
 
 // Returns the save path name (archive folder suffix) for the current account based on its game version
 fun getGameFilePath(): String {
-    val index = InGamesVars.currentAccountNumber
+    val index = InGameVars.currentAccountNumber
     if (getConfigOrStop(Schema.GLOBAL_SETTINGS.BATCH_CREATE_ACCOUNT.key) == "1")
         return index.toString()
-    return when (InGamesVars.currentGameVersion) {
+    return when (InGameVars.currentGameVersion) {
         GameVersion.CN -> getConfigOrStop("${ACCOUNT_SETTINGS.CN_PATH.key}$index")
         GameVersion.GLOBAL -> getConfigOrStop("${ACCOUNT_SETTINGS.GLOBAL_PATH.key}$index")
         // PRIVATE and any future versions do not have a configured save path
@@ -97,7 +97,7 @@ suspend fun writeDataNumberFile(slot: String): Boolean {
 
 // Read the current account's configured data-number slot, then launch the bot-only post-login flow.
 private suspend fun writeCurrentAccountDataNumberFile(): Boolean {
-    val accountIndex = InGamesVars.currentAccountNumber
+    val accountIndex = InGameVars.currentAccountNumber
     val slotKey = "${ACCOUNT_SETTINGS.DATA_CONTENT.key}$accountIndex"
     val slot = getConfigOrStop(slotKey).trim()
     if (slot.isEmpty()) {
@@ -143,16 +143,16 @@ suspend fun writeGameFilesCore(
 }
 
 /**
- * Writes the game save files for the current account (as tracked by [InGamesVars]) back
+ * Writes the game save files for the current account (as tracked by [InGameVars]) back
  * to the game's data directory, then sets permissions to 777.
  */
 suspend fun writeGameFiles(): Boolean {
-    val startMethod = getConfigOrStop("${ACCOUNT_SETTINGS.START_METHOD.key}${InGamesVars.currentAccountNumber}").toIntOrNull() ?: logAndRestart("${ACCOUNT_SETTINGS.START_METHOD.displayName} 必须是数字，请检查配置")
+    val startMethod = getConfigOrStop("${ACCOUNT_SETTINGS.START_METHOD.key}${InGameVars.currentAccountNumber}").toIntOrNull() ?: logAndRestart("${ACCOUNT_SETTINGS.START_METHOD.displayName} 必须是数字，请检查配置")
     killGame()
     return when (startMethod) {
         0 -> {
             val savePathName = getGameFilePath()
-            val version = InGamesVars.currentGameVersion
+            val version = InGameVars.currentGameVersion
             // Versions without a configured save folder (e.g. PRIVATE) have nothing to write
             if (version.folderName.isEmpty()) return true
             writeGameFilesCore(version.packageName, savePathName, version.folderName, version.subDirs)

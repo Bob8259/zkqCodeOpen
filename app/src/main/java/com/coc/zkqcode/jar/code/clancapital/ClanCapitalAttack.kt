@@ -8,7 +8,7 @@ import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.mainbase.others.zoomSmallMainBase
 import com.coc.zkqcode.jar.code.universal.AccountMessage
-import com.coc.zkqcode.jar.code.universal.InGamesVars
+import com.coc.zkqcode.jar.code.universal.InGameVars
 import com.coc.zkqcode.jar.code.universal.aidetection.DetectionResult
 import com.coc.zkqcode.jar.code.universal.aidetection.tiledAiDetect
 import com.coc.zkqcode.jar.code.universal.clickRightBottom
@@ -27,7 +27,7 @@ enum class CapitalState {
 
 suspend fun clanCapitalAttack(): CapitalState {
     val storageKey = StorageKeys.withAccountNumber(
-        StorageKeys.CLAN_CAPITAL_ATTACK, InGamesVars.currentAccountNumber
+        StorageKeys.CLAN_CAPITAL_ATTACK, InGameVars.currentAccountNumber
     )
 
     if (!enterClanCapital()) return CapitalState.Error

@@ -16,8 +16,8 @@ Add a **random account scheduling** system that divides the day into 4 time grou
 - **Battle time ratio** (对战时间比例): `X%` — rest time formula: `actual_battle_time × (100% - X%) / X%`
 - **Probability to stop after config flow** (完成配置文件流程后下线概率): `Y%`
 - **Random continue battle min/max** (随机持续对战时间范围): `min` – `max` minutes
-- **No worker switch** (主世界无工人后下线): toggle — *logic skipped for now*
-- **Full resources switch** (主世界满资源后下线): toggle — *logic skipped for now*
+- **No worker switch** (主世界无工人后下线): toggle — detect `WorkerInfo.available == 0` at start of `playMainBase`
+- **Full resources switch** (主世界满资源后下线): toggle — detect all-resources-full inside `searchOpponentsAndDeployTroops`
 
 ### Account Assignment
 - Each account can be assigned to **one or more** groups
@@ -98,13 +98,13 @@ val RS_CONTINUE_MAX_MORNING = SettingDef("rs_continue_max_morning", "随机持�
 val RS_CONTINUE_MAX_AFTERNOON = SettingDef("rs_continue_max_afternoon", "随机持续对战最长", "25", "GLOBAL_SETTINGS")
 val RS_CONTINUE_MAX_NIGHT = SettingDef("rs_continue_max_night", "随机持续对战最长", "25", "GLOBAL_SETTINGS")
 
-// No worker toggle (logic skipped)
+// No worker toggle
 val RS_NO_WORKER_DAWN = SettingDef("rs_no_worker_dawn", "主世界无工人后下线", 0, "GLOBAL_SETTINGS")
 val RS_NO_WORKER_MORNING = SettingDef("rs_no_worker_morning", "主世界无工人后下线", 0, "GLOBAL_SETTINGS")
 val RS_NO_WORKER_AFTERNOON = SettingDef("rs_no_worker_afternoon", "主世界无工人后下线", 0, "GLOBAL_SETTINGS")
 val RS_NO_WORKER_NIGHT = SettingDef("rs_no_worker_night", "主世界无工人后下线", 0, "GLOBAL_SETTINGS")
 
-// Full resources toggle (logic skipped)
+// Full resources toggle
 val RS_FULL_RES_DAWN = SettingDef("rs_full_res_dawn", "主世界满资源后下线", 0, "GLOBAL_SETTINGS")
 val RS_FULL_RES_MORNING = SettingDef("rs_full_res_morning", "主世界满资源后下线", 0, "GLOBAL_SETTINGS")
 val RS_FULL_RES_AFTERNOON = SettingDef("rs_full_res_afternoon", "主世界满资源后下线", 0, "GLOBAL_SETTINGS")
@@ -173,7 +173,63 @@ In [`BatchCreateAccount.kt`](app/src/main/java/com/coc/zkqcode/jar/ui/pages/sing
 In `RandomScheduling.kt`:
 - When `RANDOM_SCHEDULING` is toggled ON → set `BATCH_CREATE_ACCOUNT` to "0"
 
-### 3.5 New Logic File — [`RandomSchedulingLogic.kt`](app/src/main/java/com/coc/zkqcode/jar/code/universal/RandomSchedulingLogic.kt)
+### 3.5 Modify [`InGamesVars.kt`](app/src/main/java/com/coc/zkqcode/jar/code/universal/InGamesVars.kt)
+
+Add two `@Volatile` flags to `InGameVars`:
+
+```kotlin
+object InGameVars {
+    @Volatile var currentAccountNumber: Int = 1
+    @Volatile var currentGameVersion: GameVersion = GameVersion.CN
+    var adTime: Int = 15
+
+    // Set by playMainBase; read by RandomSchedulingLogic after stepBlock
+    @Volatile var noWorkerDetected: Boolean = false
+    @Volatile var fullResourcesDetected: Boolean = false
+}
+```
+
+Reset both flags to `false` in `RandomSchedulingLogic` **before** each account's `stepBlock` runs, so stale values from a previous account never bleed through.
+
+---
+
+### 3.6 Modify [`MainBaseScript.kt`](app/src/main/java/com/coc/zkqcode/jar/code/mainbase/MainBaseScript.kt)
+
+After `enterMainBase()` succeeds, detect workers and set the flag:
+
+```kotlin
+suspend fun playMainBase(): Boolean {
+    if (!enterMainBase()) return false
+
+    // Detect no-worker condition for random scheduling
+    val workerInfo = WorkerAndResearch.detectWorkerNumber(BaseType.Main)
+    if (workerInfo.available == 0) {
+        InGameVars.noWorkerDetected = true
+        AccountMessage("主世界无空闲工人")
+    }
+
+    // ... rest of the flow unchanged
+}
+```
+
+---
+
+### 3.7 Modify [`SearchOpponents.kt`](app/src/main/java/com/coc/zkqcode/jar/code/mainbase/attack/SearchOpponents.kt)
+
+The color-bar full-resource check already runs at lines 72–93. After the existing `fullResources` list is built, set the flag when all three are full:
+
+```kotlin
+// After the existing fullResources detection block:
+if (targetGold == 0 && targetElixir == 0 && targetDarkElixir == 0) {
+    InGameVars.fullResourcesDetected = true
+}
+```
+
+This is placed **before** the `STOP_BATTLE_AFTER_FULL_RESOURCES` early-return check, so the flag is always set regardless of that per-account setting.
+
+---
+
+### 3.8 New Logic File — [`RandomSchedulingLogic.kt`](app/src/main/java/com/coc/zkqcode/jar/code/universal/RandomSchedulingLogic.kt)
 
 Core scheduling algorithm in `jar/code/universal/RandomSchedulingLogic.kt`.
 
@@ -186,12 +242,14 @@ fun getCurrentTimeGroup(): Int
 // Get account list for a group from config
 fun getGroupAccounts(groupIndex: Int): List<Int>
 
-// Get group settings (ratio, probability, min, max)
+// Get group settings (ratio, probability, min, max, noWorker, fullRes)
 data class GroupSettings(
-    val battleRatio: Int,      // percentage
-    val stopProbability: Int,  // percentage
-    val continueMin: Int,      // minutes
-    val continueMax: Int       // minutes
+    val battleRatio: Int,
+    val stopProbability: Int,
+    val continueMin: Int,
+    val continueMax: Int,
+    val noWorkerSwitch: Boolean,
+    val fullResSwitch: Boolean
 )
 fun getGroupSettings(groupIndex: Int): GroupSettings
 
@@ -208,18 +266,22 @@ suspend fun runRandomSchedulingScript()
 3. If no accounts → wait 60s, re-check (time group might change)
 4. Shuffle accounts randomly
 5. For each account in shuffled list:
-   a. Set `InGamesVars.currentAccountNumber` and `currentGameVersion`
-   b. Record `startTime`
-   c. Execute the standard account flow: `writeGameFiles()` → `enterMainScreen()` → `playBuilderBase()` → `playMainBase()`
-   d. Record `endTime`, calculate `battleDuration = endTime - startTime`
-   e. Random roll against `stopProbability`:
+   a. **Reset** `InGameVars.noWorkerDetected = false` and `InGameVars.fullResourcesDetected = false`
+   b. Set `InGameVars.currentAccountNumber` and `currentGameVersion`
+   c. Record `startTime`
+   d. Execute the standard account flow: `writeGameFiles()` → `enterMainScreen()` → `playBuilderBase()` → `playMainBase()`
+   e. Record `endTime`, calculate `battleDuration = endTime - startTime`
+   f. **Check early-offline conditions** (evaluated after `stepBlock` returns):
+      - If `noWorkerSwitch && InGameVars.noWorkerDetected` → skip rest time, go offline immediately (log reason), continue to next account
+      - If `fullResSwitch && InGameVars.fullResourcesDetected` → skip rest time, go offline immediately (log reason), continue to next account
+   g. Random roll against `stopProbability`:
       - **Stop (Y%)**: Calculate `restTime = battleDuration × (100 - ratio) / ratio`, wait `restTime`
       - **Continue ((100-Y)%)**: Random extra time in `[continueMin, continueMax]` minutes, wait that time. Then calculate `totalDuration = battleDuration + extraTime`, `restTime = totalDuration × (100 - ratio) / ratio`, wait `restTime`
-   f. Before picking next account, check if still in same time group. If not, break and re-evaluate.
+   h. Before picking next account, check if still in same time group. If not, break and re-evaluate.
 6. After all accounts done, if still in same time group → re-shuffle and repeat
 7. If time group changed → go to step 1
 
-### 3.6 Modify [`MainScript.kt`](app/src/main/java/com/coc/zkqcode/jar/code/MainScript.kt)
+### 3.9 Modify [`MainScript.kt`](app/src/main/java/com/coc/zkqcode/jar/code/MainScript.kt)
 
 Add a branch at the top of `runMainScript()` after auth and batch-create check:
 
@@ -253,14 +315,37 @@ flowchart LR
         F[MainScript.kt] -->|checks toggle| B
         F -->|delegates to| G[RandomSchedulingLogic.kt]
         G -->|reads settings| B
-        G -->|sets| H[InGamesVars]
+        G -->|resets and reads| H[InGameVars]
         G -->|calls| I[writeGameFiles / enterMainScreen / playBuilderBase / playMainBase]
+        I -->|sets noWorkerDetected| H
+        I -->|sets fullResourcesDetected| H
     end
 ```
 
 ---
 
-## 5. Edge Cases
+## 5. Early-Offline Decision Flow
+
+```mermaid
+flowchart TD
+    A[stepBlock completes] --> B{noWorkerSwitch enabled?}
+    B -->|Yes| C{InGameVars.noWorkerDetected?}
+    C -->|Yes| D[Log: 主世界无工人，直接下线]
+    D --> E[Skip rest time, next account]
+    C -->|No| F{fullResSwitch enabled?}
+    B -->|No| F
+    F -->|Yes| G{InGameVars.fullResourcesDetected?}
+    G -->|Yes| H[Log: 主世界满资源，直接下线]
+    H --> E
+    G -->|No| I[Normal stop/continue probability roll]
+    F -->|No| I
+    I --> J[Wait rest time]
+    J --> E
+```
+
+---
+
+## 6. Edge Cases
 
 | Scenario | Behavior |
 |----------|----------|
@@ -272,10 +357,14 @@ flowchart LR
 | Battle ratio = 100% | Rest time = 0, proceed immediately |
 | continueMin > continueMax | Swap values or use min as the value |
 | Random scheduling + batch create both enabled | Mutual exclusion prevents this via UI |
+| noWorkerDetected but noWorkerSwitch disabled | Flag is set but ignored; normal rest-time logic applies |
+| fullResourcesDetected but fullResSwitch disabled | Flag is set but ignored; normal rest-time logic applies |
+| Both noWorker and fullRes triggered simultaneously | noWorker check runs first; either condition causes immediate offline |
+| Worker detection fails (returns WorkerInfo 0,0) | available == 0 triggers the flag — acceptable false positive; detection failure is rare |
 
 ---
 
-## 6. Files Summary
+## 7. Files Summary
 
 | File | Action | Description |
 |------|--------|-------------|
@@ -283,5 +372,8 @@ flowchart LR
 | `jar/ui/pages/single/RandomScheduling.kt` | **Create** | New UI composable for random scheduling settings |
 | `jar/ui/pages/single/HomeScreen.kt` | **Modify** | Add RandomScheduling to 特殊设置 tab |
 | `jar/ui/pages/single/BatchCreateAccount.kt` | **Modify** | Add mutual exclusion with random scheduling |
-| `jar/code/universal/RandomSchedulingLogic.kt` | **Create** | Core random scheduling algorithm |
+| `jar/code/universal/InGamesVars.kt` | **Modify** | Add `noWorkerDetected` and `fullResourcesDetected` flags |
+| `jar/code/mainbase/MainBaseScript.kt` | **Modify** | Detect worker count after `enterMainBase()`, set flag |
+| `jar/code/mainbase/attack/SearchOpponents.kt` | **Modify** | Set `fullResourcesDetected` when all resources are full |
+| `jar/code/universal/RandomSchedulingLogic.kt` | **Modify** | Reset flags before stepBlock; check flags after stepBlock for early offline |
 | `jar/code/MainScript.kt` | **Modify** | Branch to random scheduling when enabled |

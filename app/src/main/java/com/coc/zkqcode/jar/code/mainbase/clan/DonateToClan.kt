@@ -8,7 +8,7 @@ import com.coc.zkqcode.jar.code.colorschema.ColorSchema
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.GameVersion
 import com.coc.zkqcode.jar.code.universal.AccountMessage
-import com.coc.zkqcode.jar.code.universal.InGamesVars
+import com.coc.zkqcode.jar.code.universal.InGameVars
 import com.coc.zkqcode.jar.code.auth.displayAds
 import com.coc.zkqcode.jar.code.universal.buildings.BaseType
 import com.coc.zkqcode.jar.code.universal.buildings.walls.calculateResourcesPercentage
@@ -52,7 +52,7 @@ suspend fun donateToClan(): Boolean {
         if (clanChat != null) {
             // Tap the clan chat icon to open the chat panel
             TouchActions.tap(clanChat.x, clanChat.y)
-            if (InGamesVars.currentGameVersion == GameVersion.CN) {
+            if (InGameVars.currentGameVersion == GameVersion.CN) {
                 TouchActions.tap(523, 239, delayTime = 200)
                 TouchActions.tap(152, 88, delayTime = 200)
             } else {
@@ -159,7 +159,7 @@ private suspend fun donateActions() {
                 foundAny = true
                 repeat(3) {
                     // Global version uses a random delay to mimic human input; CN version uses default delay
-                    if (InGamesVars.currentGameVersion == GameVersion.GLOBAL) {
+                    if (InGameVars.currentGameVersion == GameVersion.GLOBAL) {
                         TouchActions.tap(target.x, target.y, delayTime = (20..50).random())
                     } else {
                         TouchActions.tap(target.x, target.y)

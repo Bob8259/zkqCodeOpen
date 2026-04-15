@@ -9,7 +9,7 @@ import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.mainbase.MainBaseResearchColors
 import com.coc.zkqcode.jar.ui.schema.details.MainBasePets
 import com.coc.zkqcode.jar.code.universal.AccountMessage
-import com.coc.zkqcode.jar.code.universal.InGamesVars
+import com.coc.zkqcode.jar.code.universal.InGameVars
 import com.coc.zkqcode.jar.code.universal.clickRightBottom
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
@@ -27,7 +27,7 @@ suspend fun upgradeGearsAndPets(): Boolean {
     if (!shouldUpgradeGears && !shouldUpgradePets) return true
 
     val gearStorageKey = StorageKeys.withAccountNumber(
-        StorageKeys.UPGRADE_GEARS, InGamesVars.currentAccountNumber
+        StorageKeys.UPGRADE_GEARS, InGameVars.currentAccountNumber
     )
 
     // Guard only gear checks so pets can still be upgraded during the cooldown window.
