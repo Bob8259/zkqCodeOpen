@@ -1,10 +1,12 @@
 package com.coc.zkqcode.jar.ui.pages.single
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.coc.zkqcode.jar.ui.components.SettingSwitchIcon
@@ -15,6 +17,11 @@ import com.coc.zkqcode.jar.ui.schema.Schema.GLOBAL_SETTINGS
 
 @Composable
 fun BatchCreateAccount() {
+    val bcaState = GlobalVars.configStates.getOrPut(GLOBAL_SETTINGS.BATCH_CREATE_ACCOUNT.key) {
+        mutableStateOf("0")
+    }
+    val isEnabled = bcaState.value == "1"
+
     Text(
         text = "以下是特殊设置，使用前请仔细看教程。",
         modifier = Modifier.padding(top = 4.dp, bottom = 2.dp),
@@ -32,15 +39,18 @@ fun BatchCreateAccount() {
             }
         }
     )
-    FlowRow {
-        SettingInputRow(key = GLOBAL_SETTINGS.CREATE_START_ID.key)
-        SettingInputRow(key = GLOBAL_SETTINGS.CREATE_END_ID.key)
-        SettingInputRow(key = GLOBAL_SETTINGS.CREATE_PREFIX.key)
-        SettingSwitchIcon(
-            key = GLOBAL_SETTINGS.CREATE_GEM_BUILD.key,
-        )
-        SettingSwitchIcon(
-            key = GLOBAL_SETTINGS.ADD_SUFFIX_SETTING.key,
-        )
+
+    AnimatedVisibility(visible = isEnabled) {
+        FlowRow {
+            SettingInputRow(key = GLOBAL_SETTINGS.CREATE_START_ID.key)
+            SettingInputRow(key = GLOBAL_SETTINGS.CREATE_END_ID.key)
+            SettingInputRow(key = GLOBAL_SETTINGS.CREATE_PREFIX.key)
+            SettingSwitchIcon(
+                key = GLOBAL_SETTINGS.CREATE_GEM_BUILD.key,
+            )
+            SettingSwitchIcon(
+                key = GLOBAL_SETTINGS.ADD_SUFFIX_SETTING.key,
+            )
+        }
     }
 }
