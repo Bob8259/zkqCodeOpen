@@ -5,10 +5,15 @@ import com.coc.zkqcode.BuildConfig
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
@@ -261,7 +266,7 @@ fun LoginScreen(onAdFreeClick: () -> Unit = {}) {
             }
         }
 
-        SettingInputRow(key = GLOBAL_SETTINGS.EMAIL.key)
+        SettingInputRow(key = GLOBAL_SETTINGS.EMAIL.key, minWidth = 120.dp)
         var isPasswordVisible by remember { mutableStateOf(false) }
         Row {
             Text(
@@ -274,19 +279,20 @@ fun LoginScreen(onAdFreeClick: () -> Unit = {}) {
             BasicTextField(
                 value = GlobalVars.configStates[GLOBAL_SETTINGS.PASSWORD.key]!!.value,
                 modifier = Modifier
-                    .background(
-                            color = AppColors.CardBg,
-                            shape = RoundedCornerShape(4.dp)
-                        )
-                        .border(1.dp, AppColors.Border, RoundedCornerShape(4.dp))
-                    .padding(4.dp)
                     .align(Alignment.CenterVertically)
-                    .heightIn(max = 120.dp),
+                    .widthIn(min = 120.dp)
+                    .padding(end = 16.dp)
+                    .widthIn(min = 50.dp)
+                    .width(IntrinsicSize.Min)
+                    .background(color = AppColors.CardBg, shape = RoundedCornerShape(4.dp))
+                    .border(1.dp, AppColors.Border, RoundedCornerShape(4.dp))
+                    .padding(4.dp)
+                    .heightIn(max = 120.dp)
+                    .verticalScroll(rememberScrollState()),
                 onValueChange = {
                     GlobalVars.isAutoRunEnabled = false
                     GlobalVars.configStates[GLOBAL_SETTINGS.PASSWORD.key]!!.value = it
                 },
-                singleLine = true,
                 visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation()
             )
             IconButton(

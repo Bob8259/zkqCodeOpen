@@ -358,6 +358,7 @@ fun SettingInputRow(
     topPadding: Dp = 6.dp,
     labelVerticalOffset: Dp = 0.dp,
     suffix: String? = null,
+    minWidth: Dp? = null,
     afterChange: ((String) -> Unit)? = null
 ) {
     val state = rememberConfigState(key)
@@ -380,7 +381,9 @@ fun SettingInputRow(
                 state.value = newValue
                 afterChange?.invoke(newValue)
             },
-            modifier = Modifier.align(Alignment.CenterVertically),
+            modifier = Modifier
+                .align(Alignment.CenterVertically)
+                .then(if (minWidth != null) Modifier.widthIn(min = minWidth) else Modifier),
             endPadding = if (suffix != null) 2.dp else 16.dp
         )
 
