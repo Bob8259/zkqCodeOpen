@@ -139,17 +139,71 @@ private val InfoSvgIcon: ImageVector by lazy {
     }.build()
 }
 
+// ─── Step 3: Private helper — eliminates repeated getOrPut boilerplate ────────
+private fun rememberConfigState(key: String) =
+    GlobalVars.configStates.getOrPut(key) { mutableStateOf(Schema.getDefaultValue(key)) }
+
+// ─── Step 1: Private composable — eliminates duplicated info-icon + alert block ──
+@Composable
+private fun ExplainIcon(explain: String) {
+    var showExplanation by remember { mutableStateOf(false) }
+    Image(
+        imageVector = InfoSvgIcon,
+        contentDescription = "info",
+        modifier = Modifier
+            .size(18.dp)
+            .clickable { showExplanation = true }
+            .padding(end = 2.dp)
+    )
+    if (showExplanation) {
+        CustomAlertDialog(
+            onDismissRequest = { showExplanation = false },
+            title = {
+                Text(
+                    text = "注意事项",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = Color.White
+                )
+            },
+            text = {
+                Text(text = explain, style = MaterialTheme.typography.bodyMedium)
+            },
+            confirmButton = {
+                TextButton(onClick = { showExplanation = false }) {
+                    Text("明白了")
+                }
+            }
+        )
+    }
+}
+
+// ─── Step 2: Private composable — eliminates repeated BasicTextField modifier chain ──
+@Composable
+private fun StyledBasicTextField(
+    value: String,
+    onValueChange: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    endPadding: Dp = 6.dp
+) {
+    BasicTextField(
+        value = value,
+        onValueChange = onValueChange,
+        modifier = modifier
+            .padding(end = endPadding)
+            .background(color = AppColors.CardBg, shape = RoundedCornerShape(4.dp))
+            .border(1.dp, AppColors.Border, RoundedCornerShape(4.dp))
+            .padding(4.dp)
+            .heightIn(max = 120.dp)
+            .verticalScroll(rememberScrollState())
+    )
+}
+
 @Composable
 fun InputRowWithCheckBox(
     checkBoxKey: String, inputKey: String
 ) {
-    // Use getOrPut to lazily initialize missing config keys with their Schema defaults
-    val checkBoxState = GlobalVars.configStates.getOrPut(checkBoxKey) {
-        mutableStateOf(Schema.getDefaultValue(checkBoxKey))
-    }
-    val inputState = GlobalVars.configStates.getOrPut(inputKey) {
-        mutableStateOf(Schema.getDefaultValue(inputKey))
-    }
+    val checkBoxState = rememberConfigState(checkBoxKey)
+    val inputState = rememberConfigState(inputKey)
 
     val checkBoxLabel = Schema.getDisplayName(checkBoxKey)
     val inputLabel = Schema.getDisplayName(inputKey)
@@ -165,20 +219,16 @@ fun InputRowWithCheckBox(
                 checkBoxState.value = if (checked) "1" else "0"
             },
         )
-        BasicTextField(
-            value = inputState.value, onValueChange = { newValue ->
+        StyledBasicTextField(
+            value = inputState.value,
+            onValueChange = { newValue ->
                 GlobalVars.isAutoRunEnabled = false
                 inputState.value = newValue
-            }, modifier = Modifier
-                .padding(end = 6.dp, top = 6.dp, start = 6.dp)
-                .background(
-                    color = AppColors.CardBg, shape = RoundedCornerShape(4.dp)
-                )
-                .border(1.dp, AppColors.Border, RoundedCornerShape(4.dp))
-                .padding(4.dp)
+            },
+            modifier = Modifier
                 .align(Alignment.CenterVertically)
-                .heightIn(max = 120.dp)
-                .verticalScroll(rememberScrollState())
+                .padding(start = 6.dp, top = 6.dp),
+            endPadding = 6.dp
         )
         if (inputLabel.isNotEmpty()) {
             Text(
@@ -293,14 +343,17 @@ class BelowAnchorPositionProvider : PopupPositionProvider {
     }
 }
 
+// ─── Step 4: Merged SettingInputRow + SettingInputRowWithSuffix ───────────────
+// The optional `suffix` parameter replaces the now-deleted SettingInputRowWithSuffix.
 @Composable
 fun SettingInputRow(
-    key: String, topPadding: Dp = 6.dp, labelVerticalOffset: Dp = 0.dp, afterChange: ((String) -> Unit)? = null
+    key: String,
+    topPadding: Dp = 6.dp,
+    labelVerticalOffset: Dp = 0.dp,
+    suffix: String? = null,
+    afterChange: ((String) -> Unit)? = null
 ) {
-    // Use getOrPut to lazily initialize missing config keys with their Schema defaults
-    val state = GlobalVars.configStates.getOrPut(key) {
-        mutableStateOf(Schema.getDefaultValue(key))
-    }
+    val state = rememberConfigState(key)
     val label = Schema.getDisplayName(key)
 
     Row(
@@ -313,60 +366,22 @@ fun SettingInputRow(
                 .align(Alignment.CenterVertically), style = MaterialTheme.typography.labelMedium
         )
 
-        BasicTextField(
-            value = state.value, onValueChange = { newValue ->
+        StyledBasicTextField(
+            value = state.value,
+            onValueChange = { newValue ->
                 GlobalVars.isAutoRunEnabled = false
                 state.value = newValue
                 afterChange?.invoke(newValue)
-            }, modifier = Modifier
-                .padding(end = 16.dp)
-                .background(
-                    color = AppColors.CardBg, shape = RoundedCornerShape(4.dp)
-                )
-                .border(1.dp, AppColors.Border, RoundedCornerShape(4.dp))
-                .padding(4.dp)
-                .align(Alignment.CenterVertically)
-                .heightIn(max = 120.dp)
-                .verticalScroll(rememberScrollState())
-        )
-    }
-}
-
-// Variant of SettingInputRow that appends a suffix text after the input field,
-// allowing sentence-style labels such as: 持续检测 [xx] 秒钟
-@Composable
-fun SettingInputRowWithSuffix(key: String, suffix: String, afterChange: ((String) -> Unit)? = null) {
-    val state = GlobalVars.configStates.getOrPut(key) {
-        mutableStateOf(Schema.getDefaultValue(key))
-    }
-    val label = Schema.getDisplayName(key)
-
-    Row(
-        modifier = Modifier.padding(top = 6.dp), verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            text = label, modifier = Modifier.padding(end = 8.dp), style = MaterialTheme.typography.labelMedium
+            },
+            modifier = Modifier.align(Alignment.CenterVertically),
+            endPadding = if (suffix != null) 6.dp else 16.dp
         )
 
-        BasicTextField(
-            value = state.value, onValueChange = { newValue ->
-                GlobalVars.isAutoRunEnabled = false
-                state.value = newValue
-                afterChange?.invoke(newValue)
-            }, modifier = Modifier
-                .padding(end = 6.dp)
-                .background(
-                    color = AppColors.CardBg, shape = RoundedCornerShape(4.dp)
-                )
-                .border(1.dp, AppColors.Border, RoundedCornerShape(4.dp))
-                .padding(4.dp)
-                .heightIn(max = 120.dp)
-                .verticalScroll(rememberScrollState())
-        )
-
-        Text(
-            text = suffix, modifier = Modifier.padding(end = 8.dp), style = MaterialTheme.typography.labelMedium
-        )
+        suffix?.let {
+            Text(
+                text = it, modifier = Modifier.padding(end = 8.dp), style = MaterialTheme.typography.labelMedium
+            )
+        }
     }
 }
 
@@ -380,8 +395,6 @@ fun CustomButton(
     marginBottom: Dp = 0.dp,
     containerColor: Color = AppColors.Primary,
 ) {
-
-    var showExplanation by remember { mutableStateOf(false) }
     Row(modifier = Modifier.padding(top = marginTop, bottom = marginBottom, end = 8.dp)) {
         Button(
             onClick = {
@@ -394,32 +407,7 @@ fun CustomButton(
             Text(text, style = MaterialTheme.typography.labelMedium)
         }
         Column(Modifier.padding(top = 8.dp)) {
-            explain?.let {
-                Image(
-                    imageVector = InfoSvgIcon,
-                    contentDescription = "info",
-                    modifier = Modifier
-                        .size(16.dp)
-                        .clickable { showExplanation = true }
-                )
-
-                if (showExplanation) {
-                    CustomAlertDialog(onDismissRequest = { showExplanation = false }, title = {
-                        Text(
-                            text = "注意事项", style = MaterialTheme.typography.titleMedium, color = Color.White
-                        )
-                    }, text = {
-                        Text(
-                            text = explain, style = MaterialTheme.typography.bodyMedium
-                        )
-                    }, confirmButton = {
-                        TextButton(
-                            onClick = { showExplanation = false }) {
-                            Text("明白了")
-                        }
-                    })
-                }
-            }
+            explain?.let { ExplainIcon(it) }
         }
     }
 }
@@ -430,9 +418,7 @@ fun SettingSwitchIcon(
 ) {
     // If key is absent from configStates, create a new state using the Schema default value
     // and register it so subsequent reads are consistent.
-    val state = GlobalVars.configStates.getOrPut(key) {
-        mutableStateOf(Schema.getDefaultValue(key))
-    }
+    val state = rememberConfigState(key)
 
     CustomSwitch(
         text = Schema.getDisplayName(key), checkedState = state.value, onCheckStateChange = { checked ->
@@ -454,9 +440,7 @@ private val DisabledSettingToggleTextColor = AppColors.TextPrimary
 // Single toggle text button for research/building item lists
 @Composable
 fun SettingToggleButton(key: String) {
-    val state = GlobalVars.configStates.getOrPut(key) {
-        mutableStateOf(Schema.getDefaultValue(key))
-    }
+    val state = rememberConfigState(key)
     val label = Schema.getDisplayName(key)
     val isEnabled = state.value == "1"
 
@@ -494,7 +478,6 @@ fun SettingToggleButton(key: String) {
 private fun CustomSwitch(
     text: String, checkedState: String, onCheckStateChange: (Boolean) -> Unit, explain: String? = null, textTopPadding: Dp = 0.dp
 ) {
-    var showExplanation by remember { mutableStateOf(false) }
     val isChecked = checkedState == "1"
     Row(
         modifier = Modifier.padding(top = 6.dp), verticalAlignment = Alignment.CenterVertically
@@ -523,33 +506,7 @@ private fun CustomSwitch(
                 text = text, modifier = Modifier.padding(top = textTopPadding), style = MaterialTheme.typography.labelMedium
             )
 
-            explain?.let {
-                Image(
-                    imageVector = InfoSvgIcon,
-                    contentDescription = "info",
-                    modifier = Modifier
-                        .size(16.dp)
-                        .clickable { showExplanation = true }
-                        .padding(end = 2.dp)
-                )
-
-                if (showExplanation) {
-                    CustomAlertDialog(onDismissRequest = { showExplanation = false }, title = {
-                        Text(
-                            text = "注意事项", style = MaterialTheme.typography.titleMedium, color = Color.White
-                        )
-                    }, text = {
-                        Text(
-                            text = explain, style = MaterialTheme.typography.bodyMedium
-                        )
-                    }, confirmButton = {
-                        TextButton(
-                            onClick = { showExplanation = false }) {
-                            Text("明白了")
-                        }
-                    })
-                }
-            }
+            explain?.let { ExplainIcon(it) }
         }
     }
 }
@@ -576,10 +533,7 @@ fun SettingSection(
 fun SettingDropdown(
     key: String, options: List<String>, afterChange: ((Int) -> Unit)? = null
 ) {
-    // Use getOrPut to lazily initialize missing config keys with their Schema defaults
-    val state = GlobalVars.configStates.getOrPut(key) {
-        mutableStateOf(Schema.getDefaultValue(key))
-    }
+    val state = rememberConfigState(key)
     val label = Schema.getDisplayName(key)
 
     var expanded by remember { mutableStateOf(false) }

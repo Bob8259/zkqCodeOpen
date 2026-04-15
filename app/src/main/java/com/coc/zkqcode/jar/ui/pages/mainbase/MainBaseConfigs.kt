@@ -9,7 +9,6 @@ import androidx.compose.material3.Text
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.jar.ui.components.SectionBanner
 import com.coc.zkqcode.jar.ui.components.SettingInputRow
-import com.coc.zkqcode.jar.ui.components.SettingInputRowWithSuffix
 import com.coc.zkqcode.jar.ui.components.SettingSection
 import com.coc.zkqcode.jar.ui.components.SettingSwitchIcon
 import com.coc.zkqcode.jar.ui.schema.Schema.MAIN_BASE_SETTINGS
@@ -98,13 +97,13 @@ fun LazyListScope.mainBaseConfig(
             AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.DONATION_SETTING.key}_c$index"]?.value == "1") {
                 Column {
                     FlowRow {
-                        SettingInputRowWithSuffix(
+                        SettingInputRow(
                             key = "${MAIN_BASE_SETTINGS.DONATION_DETECT_INTERVAL.key}_c$index", suffix = "秒钟"
                         )
-                        SettingInputRowWithSuffix(
+                        SettingInputRow(
                             key = "${MAIN_BASE_SETTINGS.DONATION_FARMING_START_THRESHOLD.key}_c$index", suffix = "％时开始对战"
                         )
-                        SettingInputRowWithSuffix(
+                        SettingInputRow(
                             key = "${MAIN_BASE_SETTINGS.DONATION_FARMING_STOP_THRESHOLD.key}_c$index", suffix = "％为止"
                         )
                     }
