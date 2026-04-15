@@ -105,10 +105,6 @@ fun LazyListScope.accountSettings() {
                             GlobalVars.configStates[GLOBAL_SETTINGS.ACCOUNT_COUNT.key]?.value = clamped.toString()
                         }
                         ConfigManager.expandAccountConfigs(clamped)
-                        // Disable random scheduling when account count exceeds 300
-                        if (clamped > 300) {
-                            GlobalVars.configStates[GLOBAL_SETTINGS.RANDOM_SCHEDULING.key]?.value = "0"
-                        }
                     }
                 }
             )

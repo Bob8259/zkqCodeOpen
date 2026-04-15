@@ -129,7 +129,7 @@ fun RandomScheduling() {
 
 @Composable
 private fun TimeGroupSection(title: String, keys: GroupKeys) {
-    var expanded by remember { mutableStateOf(true) }
+    var expanded by remember { mutableStateOf(false) }
 
     Column(modifier = Modifier.padding(top = 4.dp)) {
         SectionBanner(title = title, isExpanded = expanded, onClick = { expanded = !expanded })
@@ -181,7 +181,13 @@ private fun AccountGroupSelector(accountsKey: String) {
     var dragPreview by remember { mutableStateOf<Set<Int>>(emptySet()) }
     val displayedSelected = if (isDragging) dragPreview else selectedAccounts
 
-    Column(modifier = Modifier.padding(top = 6.dp)) {
+    Column(
+        modifier = Modifier
+            .padding(top = 6.dp)
+            .padding(horizontal = 6.dp)
+            .border(1.dp, AppColors.PrimaryLight, RoundedCornerShape(12.dp))
+            .padding(8.dp)
+    ) {
         Text(
             text = "选择加入本组的账号：", style = MaterialTheme.typography.labelMedium, modifier = Modifier.padding(bottom = 4.dp)
         )
