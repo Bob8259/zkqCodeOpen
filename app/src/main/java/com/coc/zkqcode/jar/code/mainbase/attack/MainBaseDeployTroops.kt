@@ -1,7 +1,6 @@
 package com.coc.zkqcode.jar.code.mainbase.attack
 
 
-import android.text.method.Touch
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
@@ -60,15 +59,15 @@ private suspend fun deployOthers() {
         val spells = findMultiColorsUntil(schemas = listOf(MyColors.SpellColorAtDeploymentBar), duration = 20)
         if (spells != null) {
             TouchActions.tap(spells.x, spells.y, delayTime = 300)
-            repeat(3) {
-                TouchActions.tap(328, 366, delayTime = 300)
-            }
+            TouchActions.tap(520, 240, delayTime = 300)
+            TouchActions.tap(465, 320, delayTime = 300)
+            TouchActions.tap(370, 355, delayTime = 300)
         }
     }
 }
 
 private suspend fun deployHeroes() {
-    // All 6 hero color schemas to check in the deployment bar
+    // All 6 hero colour schemas to check in the deployment bar
     val heroes = listOf(
         MyColors.KingBarbarian,
         MyColors.QueenArcher,
@@ -94,6 +93,7 @@ private suspend fun deployHeroes() {
             TouchActions.tap(found.x, found.y)
             delayWithMultiplier(300)
             // Tap the deploy zone to place the hero on the battlefield
+            TouchActions.tap(350, 250)
             TouchActions.tap(DRAG_START_X.toInt(), DRAG_START_Y.toInt())
             delayWithMultiplier(300)
         }
@@ -150,7 +150,7 @@ private suspend fun dragUntilDeployed(x: Int, y: Int, dragSweepMs: Int, schemas:
 
         }
     } finally {
-        // Always release the finger, even if canceled
+        // Always release the finger, even if cancelled
         withContext(NonCancellable) {
             TouchActions.touchUp(1)
         }
