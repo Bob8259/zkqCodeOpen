@@ -22,3 +22,5 @@ Procedural Requirements:
 Clarity: If any instruction is unclear or ambiguous, you must ask for clarification. Do not proceed until you have a full understanding of the task.
 
 Planning: For complex tasks, you are required to generate a development plan. You may only begin coding after receiving explicit permission from the user.
+
+Modification: If files are changed during the chat, you should re-read them, and apply new changes based on the new file. Do not revert the changes.

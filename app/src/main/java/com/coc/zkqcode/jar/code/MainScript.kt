@@ -91,30 +91,7 @@ suspend fun runMainScript() {
     var nextUpdateInterval = (2 * 3600_000L) + (Math.random() * 3600_000L).toLong()
     while (currentCoroutineContext().isActive) {
 //        runTestCode()
-
-        displayAds()
-        RunShell.runNoOutput("am kill-all")//clean up memory
-        RunShell.runNoOutput("input keyevent 3")//back to home
-        run stepBlock@{
-            if (!writeGameFiles()) {
-                delayWithMultiplier(2000)
-                return@stepBlock
-            }
-
-            if (!enterMainScreen(true)) {
-                accountMessage("进入游戏失败")
-                return@stepBlock
-            }
-
-            if (!playBuilderBase()) {
-                accountMessage("夜世界对战完成，准备进入主世界")
-                return@stepBlock
-            }
-            if (!playMainBase()) {
-                accountMessage("主世界对战完成，准备切换账号")
-                return@stepBlock
-            }
-        }
+        runAccountStepBlock()
         // Circularly search for the next enabled account, wrapping back to currentAccountNumber (inclusive)
         // Emit hot update signal at safe point, throttled to once every 2-3 hours randomly
         if (updateOption == 2 && System.currentTimeMillis() - lastUpdateCheckTime >= nextUpdateInterval) {
@@ -137,6 +114,33 @@ suspend fun runMainScript() {
                 getConfigOrStop("${Schema.ACCOUNT_SETTINGS.GAME_VERSION.key}${InGameVars.currentAccountNumber}").toIntOrNull() ?: logAndRestart("${Schema.ACCOUNT_SETTINGS.GAME_VERSION.displayName} 必须是数字，请检查配置")
             )
         }
+    }
+}
+
+/**
+ * Shared account step block used by both sequential and random scheduling modes.
+ * Kills background apps, returns to home screen, then runs the full flow:
+ * writeGameFiles → enterMainScreen → playBuilderBase → playMainBase.
+ */
+suspend fun runAccountStepBlock() {
+    displayAds()
+    RunShell.runNoOutput("input keyevent 3")
+    RunShell.runNoOutput("am kill-all")
+    if (!writeGameFiles()) {
+        delayWithMultiplier(2000)
+        return
+    }
+    if (!enterMainScreen(true)) {
+        accountMessage("进入游戏失败")
+        return
+    }
+    if (!playBuilderBase()) {
+        accountMessage("夜世界对战完成，准备进入主世界")
+        return
+    }
+    if (!playMainBase()) {
+        accountMessage("主世界对战完成")
+        return
     }
 }
 

@@ -1,13 +1,9 @@
 package com.coc.zkqcode.jar.code.universal
 
 import com.coc.zkqcode.core.data.database.GlobalVars
-import com.coc.zkqcode.core.util.basic.RunShell
 import com.coc.zkqcode.core.util.basic.ShowMessage
-import com.coc.zkqcode.core.util.basic.delayWithMultiplier
-import com.coc.zkqcode.jar.code.builderbase.playBuilderBase
-import com.coc.zkqcode.jar.code.mainbase.playMainBase
+import com.coc.zkqcode.jar.code.runAccountStepBlock
 import com.coc.zkqcode.jar.code.universal.smalltools.getConfigOrStop
-import com.coc.zkqcode.jar.code.universal.smalltools.writeGameFiles
 import com.coc.zkqcode.jar.ui.schema.Schema
 import com.coc.zkqcode.jar.ui.schema.Schema.GLOBAL_SETTINGS
 import kotlinx.coroutines.currentCoroutineContext
@@ -136,28 +132,7 @@ suspend fun runRandomSchedulingScript() {
 
             // Record start time and run the account
             val startTime = System.currentTimeMillis()
-
-            RunShell.runNoOutput("am kill-all")
-            RunShell.runNoOutput("input keyevent 3")
-
-            run stepBlock@{
-                if (!writeGameFiles()) {
-                    com.coc.zkqcode.core.util.basic.delayWithMultiplier(2000)
-                    return@stepBlock
-                }
-                if (!enterMainScreen(true)) {
-                    accountMessage("进入游戏失败")
-                    return@stepBlock
-                }
-                if (!playBuilderBase()) {
-                    accountMessage("夜世界对战完成，准备进入主世界")
-                    return@stepBlock
-                }
-                if (!playMainBase()) {
-                    accountMessage("主世界对战完成")
-                    return@stepBlock
-                }
-            }
+            runAccountStepBlock()
 
             val battleDurationMs = System.currentTimeMillis() - startTime
 
@@ -176,14 +151,21 @@ suspend fun runRandomSchedulingScript() {
                 totalDurationMs = battleDurationMs
                 ShowMessage("账号 $accountId：完成流程后下线（概率命中）")
             } else {
-                // Continue path: extra random battle time
+                // Continue path: run full step blocks in a loop until extra time expires.
+                // Each stepBlock runs to completion — timeout is only checked between rounds.
                 val safeMin = minOf(continueMin, continueMax)
                 val safeMax = maxOf(continueMin, continueMax)
                 val extraMinutes = if (safeMin == safeMax) safeMin else Random.nextInt(safeMin, safeMax + 1)
                 val extraMs = extraMinutes * 60_000L
                 ShowMessage("账号 $accountId：继续对战 $extraMinutes 分钟")
-                delay(extraMs)
-                totalDurationMs = battleDurationMs + extraMs
+
+                val extraStartTime = System.currentTimeMillis()
+                while (System.currentTimeMillis() - extraStartTime < extraMs
+                    && currentCoroutineContext().isActive) {
+                    runAccountStepBlock()
+                }
+
+                totalDurationMs = battleDurationMs + (System.currentTimeMillis() - extraStartTime)
             }
 
             // Calculate and wait rest time: total * (100 - ratio) / ratio
