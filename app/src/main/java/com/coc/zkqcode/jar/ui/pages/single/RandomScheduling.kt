@@ -1,27 +1,36 @@
+@file:Suppress("AssignedValueIsNeverRead")
+
 package com.coc.zkqcode.jar.ui.pages.single
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.unit.dp
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.jar.ui.components.SectionBanner
@@ -192,11 +201,23 @@ private fun AccountGroupSelector(accountsKey: String) {
             .toSet()
     }
 
-    fun toggleAccount(id: Int) {
-        GlobalVars.isAutoRunEnabled = false
-        val current = parseSelected().toMutableSet()
-        if (id in current) current.remove(id) else current.add(id)
-        accountsState.value = current.sorted().joinToString(",")
+    // Drag-to-select state
+    var isDragging by remember { mutableStateOf(false) }
+    var dragSelectMode by remember { mutableStateOf(true) } // true = select, false = deselect
+    var dragPreview by remember { mutableStateOf<Set<Int>>(emptySet()) }
+    val boxBoundsMap = remember { mutableMapOf<Int, Rect>() }
+    var flowRowOffset by remember { mutableStateOf(Offset.Zero) }
+
+    // Reset drag state when not dragging to keep preview clean
+    val displayedSelected = if (isDragging) dragPreview else parseSelected()
+
+    // Invalidate cached box bounds whenever account count changes
+    SideEffect {
+        if (boxBoundsMap.keys.any { it !in 1..accountCount }) {
+            boxBoundsMap.keys.toList().forEach { key ->
+                if (key !in 1..accountCount) boxBoundsMap.remove(key)
+            }
+        }
     }
 
     Column(modifier = Modifier.padding(top = 6.dp)) {
@@ -207,11 +228,61 @@ private fun AccountGroupSelector(accountsKey: String) {
         )
         FlowRow(
             horizontalArrangement = Arrangement.spacedBy(4.dp),
-            verticalArrangement = Arrangement.spacedBy(4.dp)
+            verticalArrangement = Arrangement.spacedBy(4.dp),
+            modifier = Modifier
+                .onGloballyPositioned { layoutCoordinates ->
+                    val posInRoot = layoutCoordinates.positionInRoot()
+                    flowRowOffset = Offset(posInRoot.x, posInRoot.y)
+                }
+                .pointerInput(accountCount) {
+                    awaitEachGesture {
+                        val down = awaitFirstDown(requireUnconsumed = false)
+                        // Convert local pointer position to root coordinates for hit-testing
+                        val rootX = down.position.x + flowRowOffset.x
+                        val rootY = down.position.y + flowRowOffset.y
+                        val rootPos = Offset(rootX, rootY)
+
+                        // Find which box was pressed
+                        val hitId = hitTestBox(rootPos, boxBoundsMap)
+                        if (hitId != null) {
+                            GlobalVars.isAutoRunEnabled = false
+                            val baseSelected = parseSelected()
+                            // Determine drag mode: if pressed box was selected -> deselect mode, else -> select mode
+                            dragSelectMode = hitId !in baseSelected
+                            val initial = baseSelected.toMutableSet()
+                            if (dragSelectMode) initial.add(hitId) else initial.remove(hitId)
+                            isDragging = true
+                            dragPreview = initial
+
+                            // Track drag movement
+                            var currentId = hitId
+                            do {
+                                val event = awaitPointerEvent()
+                                val change = event.changes.firstOrNull()
+                                if (change != null) {
+                                    val moveRootX = change.position.x + flowRowOffset.x
+                                    val moveRootY = change.position.y + flowRowOffset.y
+                                    val movePos = Offset(moveRootX, moveRootY)
+                                    val newId = hitTestBox(movePos, boxBoundsMap)
+                                    if (newId != null && newId != currentId) {
+                                        currentId = newId
+                                        val updated = dragPreview.toMutableSet()
+                                        if (dragSelectMode) updated.add(newId) else updated.remove(newId)
+                                        dragPreview = updated
+                                    }
+                                }
+                            } while (event.changes.any { it.pressed })
+
+                            // Drag ended — commit the preview state
+                            accountsState.value = dragPreview.sorted().joinToString(",")
+                            isDragging = false
+                            dragPreview = emptySet()
+                        }
+                    }
+                }
         ) {
-            val selected = parseSelected()
             for (id in 1..accountCount) {
-                val isSelected = id in selected
+                val isSelected = id in displayedSelected
                 val bgColor = if (isSelected) AppColors.Primary else AppColors.Primary.copy(alpha = 0.10f)
                 val borderColor = if (isSelected) AppColors.Primary else AppColors.PrimaryLight
                 val textColor = if (isSelected) Color.White else AppColors.TextPrimary
@@ -221,8 +292,18 @@ private fun AccountGroupSelector(accountsKey: String) {
                         .height(32.dp)
                         .background(bgColor, RoundedCornerShape(8.dp))
                         .border(1.dp, borderColor, RoundedCornerShape(8.dp))
-                        .clickable { toggleAccount(id) }
-                        .padding(horizontal = 10.dp),
+                        .padding(horizontal = 10.dp)
+                        .onGloballyPositioned { layoutCoordinates ->
+                            val posInRoot = layoutCoordinates.positionInRoot()
+                            val size = layoutCoordinates.size
+                            boxBoundsMap[id] = Rect(
+                                Offset(posInRoot.x, posInRoot.y),
+                                Size(
+                                    size.width.toFloat(),
+                                    size.height.toFloat()
+                                )
+                            )
+                        },
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
@@ -234,4 +315,19 @@ private fun AccountGroupSelector(accountsKey: String) {
             }
         }
     }
+}
+
+// Hit-test: find which account box (if any) contains the given root-coordinate point
+private fun hitTestBox(
+    rootPosition: Offset,
+    boxBounds: Map<Int, Rect>
+): Int? {
+    for ((id, rect) in boxBounds) {
+        if (rootPosition.x in rect.left..rect.right &&
+            rootPosition.y in rect.top..rect.bottom
+        ) {
+            return id
+        }
+    }
+    return null
 }
