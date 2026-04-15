@@ -5,6 +5,7 @@ package com.coc.zkqcode.jar.ui.pages.single
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.layout.Arrangement
@@ -14,6 +15,7 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material3.MaterialTheme
@@ -23,6 +25,7 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -33,6 +36,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInRoot
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.coc.zkqcode.core.data.database.GlobalVars
@@ -41,6 +45,8 @@ import com.coc.zkqcode.jar.ui.components.SettingInputRow
 import com.coc.zkqcode.jar.ui.components.SettingSwitchIcon
 import com.coc.zkqcode.jar.ui.schema.Schema.GLOBAL_SETTINGS
 import com.coc.zkqcode.jar.ui.theme.AppColors
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 
 // Data class holding the 5 config key names for one time group
 private data class GroupKeys(
@@ -100,7 +106,7 @@ private val GROUP_TITLES = listOf(
 )
 
 @Composable
-fun RandomScheduling() {
+fun RandomScheduling(lazyListState: LazyListState? = null) {
     val rsState = GlobalVars.configStates.getOrPut(GLOBAL_SETTINGS.RANDOM_SCHEDULING.key) {
         mutableStateOf("0")
     }
@@ -122,7 +128,8 @@ fun RandomScheduling() {
             GROUP_KEYS.forEachIndexed { index, keys ->
                 TimeGroupSection(
                     title = GROUP_TITLES[index],
-                    keys = keys
+                    keys = keys,
+                    lazyListState = lazyListState
                 )
             }
         }
@@ -130,7 +137,7 @@ fun RandomScheduling() {
 }
 
 @Composable
-private fun TimeGroupSection(title: String, keys: GroupKeys) {
+private fun TimeGroupSection(title: String, keys: GroupKeys, lazyListState: LazyListState? = null) {
     var expanded by remember { mutableStateOf(true) }
 
     Column(modifier = Modifier.padding(top = 4.dp)) {
@@ -184,14 +191,14 @@ private fun TimeGroupSection(title: String, keys: GroupKeys) {
                 SettingSwitchIcon(key = keys.fullRes)
 
                 // Account selector
-                AccountGroupSelector(accountsKey = keys.accounts)
+                AccountGroupSelector(accountsKey = keys.accounts, lazyListState = lazyListState)
             }
         }
     }
 }
 
 @Composable
-private fun AccountGroupSelector(accountsKey: String) {
+private fun AccountGroupSelector(accountsKey: String, lazyListState: LazyListState? = null) {
     val accountsState = GlobalVars.configStates.getOrPut(accountsKey) { mutableStateOf("") }
     val accountCountStr = GlobalVars.configStates[GLOBAL_SETTINGS.ACCOUNT_COUNT.key]?.value ?: "2"
     val accountCount = accountCountStr.toIntOrNull()?.coerceAtLeast(1) ?: 2
@@ -211,6 +218,12 @@ private fun AccountGroupSelector(accountsKey: String) {
     val boxBoundsMap = remember { mutableMapOf<Int, Rect>() }
     var flowRowOffset by remember { mutableStateOf(Offset.Zero) }
 
+    // Screen height in pixels for edge-zone detection
+    val screenHeightPx = LocalWindowInfo.current.containerSize.height.toFloat()
+
+    // Coroutine scope for auto-scroll
+    val scope = rememberCoroutineScope()
+
     // Reset drag state when not dragging to keep preview clean
     val displayedSelected = if (isDragging) dragPreview else parseSelected()
 
@@ -225,12 +238,17 @@ private fun AccountGroupSelector(accountsKey: String) {
 
     Column(modifier = Modifier.padding(top = 6.dp)) {
         Text(
+            text = "（该功能制作中，未完善，请勿使用）",
+            style = MaterialTheme.typography.labelMedium,
+            modifier = Modifier.padding(bottom = 4.dp)
+        )
+        Text(
             text = "选择加入本组的账号：",
             style = MaterialTheme.typography.labelMedium,
             modifier = Modifier.padding(bottom = 4.dp)
         )
         Text(
-            text = "长按并横向滑动批量选择账号，不可纵向滑动",
+            text = "长按账号后拖动可批量选择，轻扫屏幕可滚动",
             style = MaterialTheme.typography.labelSmall,
             color = Color.Gray,
             modifier = Modifier.padding(bottom = 4.dp)
@@ -244,49 +262,128 @@ private fun AccountGroupSelector(accountsKey: String) {
                     flowRowOffset = Offset(posInRoot.x, posInRoot.y)
                 }
                 .pointerInput(accountCount) {
-                    awaitEachGesture {
-                        val down = awaitFirstDown(requireUnconsumed = false)
-                        // Convert local pointer position to root coordinates for hit-testing
-                        val rootX = down.position.x + flowRowOffset.x
-                        val rootY = down.position.y + flowRowOffset.y
-                        val rootPos = Offset(rootX, rootY)
+                    // Touch slop in pixels: ~10dp
+                    val slopPx = 10f * density
+                    // Edge zone: 100dp from top/bottom triggers auto-scroll
+                    val edgeZonePx = 100f * density
+                    // Auto-scroll speed: pixels per tick (every 16ms)
+                    val scrollSpeedPx = 12f * density
 
-                        // Find which box was pressed
-                        val hitId = hitTestBox(rootPos, boxBoundsMap)
-                        if (hitId != null) {
-                            GlobalVars.isAutoRunEnabled = false
-                            val baseSelected = parseSelected()
-                            // Determine drag mode: if pressed box was selected -> deselect mode, else -> select mode
-                            dragSelectMode = hitId !in baseSelected
-                            val initial = baseSelected.toMutableSet()
-                            if (dragSelectMode) initial.add(hitId) else initial.remove(hitId)
-                            isDragging = true
-                            dragPreview = initial
+                    // currentDragRootY holds the latest finger Y in root coordinates,
+                    // updated each pointer event so the scroll coroutine always reads fresh data.
+                    var currentDragRootY = 0f
 
-                            // Track drag movement
-                            var currentId = hitId
-                            do {
-                                val event = awaitPointerEvent()
-                                val change = event.changes.firstOrNull()
-                                if (change != null) {
-                                    val moveRootX = change.position.x + flowRowOffset.x
-                                    val moveRootY = change.position.y + flowRowOffset.y
-                                    val movePos = Offset(moveRootX, moveRootY)
-                                    val newId = hitTestBox(movePos, boxBoundsMap)
-                                    if (newId != null && newId != currentId) {
-                                        currentId = newId
-                                        val updated = dragPreview.toMutableSet()
-                                        if (dragSelectMode) updated.add(newId) else updated.remove(newId)
-                                        dragPreview = updated
+                    // Starts or stops the auto-scroll coroutine based on drag Y position.
+                    // Returns the active Job (or null if no scroll needed).
+                    fun updateAutoScroll(rootY: Float, currentJob: Job?): Job? {
+                        currentDragRootY = rootY
+                        val inTopZone = rootY < edgeZonePx
+                        val inBottomZone = rootY > screenHeightPx - edgeZonePx
+                        return when {
+                            inBottomZone && lazyListState != null -> {
+                                if (currentJob?.isActive == true) currentJob
+                                else scope.launch {
+                                    while (true) {
+                                        // Re-read latest Y so speed adapts as finger moves deeper
+                                        val y = currentDragRootY
+                                        val depth = ((y - (screenHeightPx - edgeZonePx)) / edgeZonePx).coerceIn(0f, 1f)
+                                        lazyListState.animateScrollBy(scrollSpeedPx * (1f + depth))
                                     }
                                 }
-                            } while (event.changes.any { it.pressed })
-
-                            // Drag ended — commit the preview state
-                            accountsState.value = dragPreview.sorted().joinToString(",")
-                            isDragging = false
-                            dragPreview = emptySet()
+                            }
+                            inTopZone && lazyListState != null -> {
+                                if (currentJob?.isActive == true) currentJob
+                                else scope.launch {
+                                    while (true) {
+                                        val y = currentDragRootY
+                                        val depth = ((edgeZonePx - y) / edgeZonePx).coerceIn(0f, 1f)
+                                        lazyListState.animateScrollBy(-scrollSpeedPx * (1f + depth))
+                                    }
+                                }
+                            }
+                            else -> {
+                                currentJob?.cancel()
+                                null
+                            }
                         }
+                    }
+
+                    awaitEachGesture {
+                        // Wait for initial finger down without consuming
+                        val down = awaitFirstDown(requireUnconsumed = false)
+                        val downPos = down.position
+
+                        // Long-press detection: wait up to 400ms; if finger moves beyond slop first, abort
+                        val longPressConfirmed = withTimeoutOrNull(400L) {
+                            var moved = false
+                            while (!moved) {
+                                val event = awaitPointerEvent()
+                                val change = event.changes.firstOrNull() ?: break
+                                if (!change.pressed) break
+                                val dx = change.position.x - downPos.x
+                                val dy = change.position.y - downPos.y
+                                if (dx * dx + dy * dy > slopPx * slopPx) {
+                                    moved = true
+                                }
+                            }
+                            // If we exited because of movement, return non-null to signal "moved"
+                            if (moved) Unit else null
+                        }
+
+                        // longPressConfirmed == null means timeout elapsed without movement = long press
+                        if (longPressConfirmed == null) {
+                            // Convert long-press position to root coordinates for hit-testing
+                            val rootX = downPos.x + flowRowOffset.x
+                            val rootY = downPos.y + flowRowOffset.y
+                            val rootPos = Offset(rootX, rootY)
+
+                            val hitId = hitTestBox(rootPos, boxBoundsMap)
+                            if (hitId != null) {
+                                GlobalVars.isAutoRunEnabled = false
+                                val baseSelected = parseSelected()
+                                // Determine drag mode: if pressed box was selected -> deselect mode, else -> select mode
+                                dragSelectMode = hitId !in baseSelected
+                                val initial = baseSelected.toMutableSet()
+                                if (dragSelectMode) initial.add(hitId) else initial.remove(hitId)
+                                isDragging = true
+                                dragPreview = initial
+
+                                var autoScrollJob: Job? = null
+
+                                // Consume subsequent events so scroll doesn't interfere
+                                var currentId = hitId
+                                var event = awaitPointerEvent()
+                                while (event.changes.any { it.pressed }) {
+                                    event.changes.forEach { it.consume() }
+                                    val change = event.changes.firstOrNull()
+                                    if (change != null) {
+                                        val moveRootX = change.position.x + flowRowOffset.x
+                                        val moveRootY = change.position.y + flowRowOffset.y
+                                        val movePos = Offset(moveRootX, moveRootY)
+
+                                        // Update auto-scroll based on current finger Y in root coords
+                                        autoScrollJob = updateAutoScroll(moveRootY, autoScrollJob)
+
+                                        val newId = hitTestBox(movePos, boxBoundsMap)
+                                        if (newId != null && newId != currentId) {
+                                            currentId = newId
+                                            val updated = dragPreview.toMutableSet()
+                                            if (dragSelectMode) updated.add(newId) else updated.remove(newId)
+                                            dragPreview = updated
+                                        }
+                                    }
+                                    event = awaitPointerEvent()
+                                }
+
+                                // Drag ended — stop auto-scroll and commit the preview state
+                                autoScrollJob?.cancel()
+                                accountsState.value = dragPreview.sorted().joinToString(",")
+                                isDragging = false
+                                dragPreview = emptySet()
+                            }
+                        }
+                        // If longPressConfirmed != null (finger moved before 400ms), do nothing —
+                        // events are unconsumed so the parent scroll container handles the swipe
                     }
                 }
         ) {

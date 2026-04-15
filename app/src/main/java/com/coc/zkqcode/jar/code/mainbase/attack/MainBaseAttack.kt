@@ -40,7 +40,7 @@ suspend fun mainBaseAttack(): Boolean {
             // Show remaining minutes with 1 decimal place
             val remainingMinutes = (maxDurationMs - elapsed) / 60000.0
 
-            AccountMessage("对战中，${"%.1f".format(remainingMinutes)}分钟后强制退出对战")
+            AccountMessage("主世界对战中，${"%.1f".format(remainingMinutes)}分钟后强制退出对战")
             val endBattleButton = findMultiColors(schema = MyColors.EndBattle)
             if (endBattleButton == null) {
                 AccountMessage("未找到放弃按钮，对战结束")

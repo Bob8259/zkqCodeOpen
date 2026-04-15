@@ -382,7 +382,7 @@ fun HomeScreen(
                     }
                     item {
                         SettingSection {
-                            RandomScheduling()
+                            RandomScheduling(lazyListState = lazyListState)
                         }
                     }
                 }
