@@ -319,10 +319,10 @@ private fun AccountGroupSelector(accountsKey: String, lazyListState: LazyListSta
                     .pointerInput(accountCount) {
                         // Touch slop in pixels: ~10dp
                         val slopPx = 10f * density
-                        // Edge zone: 100dp from top/bottom triggers auto-scroll
-                        val edgeZonePx = 100f * density
+                        // Edge zone: 120dp from top/bottom triggers auto-scroll
+                        val edgeZonePx = 120f * density
                         // Auto-scroll speed: pixels per tick (every 16ms)
-                        val scrollSpeedPx = 12f * density
+                        val scrollSpeedPx = 40f * density
 
                         // currentDragRootY holds the latest finger Y in root coordinates,
                         // updated each pointer event so the scroll coroutine always reads fresh data.
