@@ -20,7 +20,10 @@ class DebugReloadReceiver : BroadcastReceiver() {
         // 1. Stop current bot by setting mode to Main
         AppStateManager.setMode(AppMode.Main)
 
-        // 2. Reload JAR
+        // 2. Reset so EnterMainCode re-runs initializeAllConfigs() with the new JAR's schema
+        GlobalVars.isConfigLoaded = false
+
+        // 3. Reload JAR
         val loader = Loadjar(context)
         loader.startLoading { status ->
             LogHelper.showDebugInfo("DebugReload: $status")

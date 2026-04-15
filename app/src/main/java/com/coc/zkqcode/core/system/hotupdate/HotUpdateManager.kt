@@ -269,6 +269,9 @@ object HotUpdateManager {
         // Reload the new JAR; wrapped in try-catch so a load failure doesn't crash the app
         try {
             ShowMessage("已成功下载新版，正在重启中")
+            // Reset so EnterMainCode re-runs initializeAllConfigs() with the new JAR's schema,
+            // ensuring any newly added config keys are populated before the script runs.
+            GlobalVars.isConfigLoaded = false
             AppStateManager.setMode(AppMode.Main)
             val loader = Loadjar(context)
             loader.startLoading { status ->
