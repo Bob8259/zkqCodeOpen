@@ -19,10 +19,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyGridItemInfo
-import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
@@ -55,7 +53,6 @@ import com.coc.zkqcode.jar.ui.schema.Schema.GLOBAL_SETTINGS
 import com.coc.zkqcode.jar.ui.theme.AppColors
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withTimeoutOrNull
 
 private data class GroupKeys(
     val battleRatio: String,
@@ -114,7 +111,7 @@ private fun stepBasedAutoSize(
 ) = TextAutoSize.StepBased(minFontSize = minFontSize, maxFontSize = maxFontSize, stepSize = 1.sp)
 
 @Composable
-fun RandomScheduling(lazyListState: LazyListState? = null) {
+fun RandomScheduling() {
     val rsState = GlobalVars.configStates.getOrPut(GLOBAL_SETTINGS.RANDOM_SCHEDULING.key) {
         mutableStateOf("0")
     }
@@ -141,8 +138,7 @@ fun RandomScheduling(lazyListState: LazyListState? = null) {
             GROUP_KEYS.forEachIndexed { index, keys ->
                 TimeGroupSection(
                     title = GROUP_TITLES[index],
-                    keys = keys,
-                    lazyListState = lazyListState
+                    keys = keys
                 )
             }
         }
@@ -150,7 +146,7 @@ fun RandomScheduling(lazyListState: LazyListState? = null) {
 }
 
 @Composable
-private fun TimeGroupSection(title: String, keys: GroupKeys, lazyListState: LazyListState? = null) {
+private fun TimeGroupSection(title: String, keys: GroupKeys) {
     var expanded by remember { mutableStateOf(true) }
 
     Column(modifier = Modifier.padding(top = 4.dp)) {
@@ -184,14 +180,14 @@ private fun TimeGroupSection(title: String, keys: GroupKeys, lazyListState: Lazy
 
                 SettingSwitchIcon(key = keys.noWorker)
                 SettingSwitchIcon(key = keys.fullRes)
-                AccountGroupSelector(accountsKey = keys.accounts, lazyListState = lazyListState)
+                AccountGroupSelector(accountsKey = keys.accounts)
             }
         }
     }
 }
 
 @Composable
-private fun AccountGroupSelector(accountsKey: String, lazyListState: LazyListState? = null) {
+private fun AccountGroupSelector(accountsKey: String) {
     val accountsState = GlobalVars.configStates.getOrPut(accountsKey) { mutableStateOf("") }
     val accountCountStr = GlobalVars.configStates[GLOBAL_SETTINGS.ACCOUNT_COUNT.key]?.value ?: "2"
     val accountCount = accountCountStr.toIntOrNull()?.coerceAtLeast(1) ?: 2
