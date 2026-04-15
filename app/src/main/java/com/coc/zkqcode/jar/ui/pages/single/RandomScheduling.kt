@@ -93,7 +93,7 @@ private val GROUP_TITLES = listOf(
     "夜晚组  18:00 - 24:00"
 )
 
-private const val MAX_ACCOUNTS_FOR_RS = 200
+private const val MAX_ACCOUNTS_FOR_RS = 100
 
 // Optimization #2: pure mapping extracted from item lambda
 private fun gameVersionLabel(value: String?): String = when (value) {
@@ -103,7 +103,7 @@ private fun gameVersionLabel(value: String?): String = when (value) {
     else -> ""
 }
 
-// Optimization #3: groups the three color derivations into one call site
+// Optimization #3: groups the three colour derivations into one call site
 private data class AccountCellColors(val bg: Color, val border: Color, val text: Color)
 
 private fun accountCellColors(isSelected: Boolean) = AccountCellColors(
@@ -324,37 +324,43 @@ private fun AccountGroupSelector(accountsKey: String, lazyListState: LazyListSta
                         // Auto-scroll speed: pixels per tick (every 16ms)
                         val scrollSpeedPx = 40f * density
 
-                        // currentDragRootY holds the latest finger Y in root coordinates,
+                        // currentDragRootY/X hold the latest finger position in root coordinates,
                         // updated each pointer event so the scroll coroutine always reads fresh data.
                         var currentDragRootY = 0f
+                        var currentDragRootX = 0f
 
                         // Optimization #5: collapsed symmetric top/bottom scroll branches into one launcher
-                        fun launchScrollJob(direction: Float, depthFn: () -> Float): Job =
+                        // onTick runs after each scroll step so hit-testing works while the finger is stationary
+                        fun launchScrollJob(direction: Float, depthFn: () -> Float, onTick: () -> Unit): Job =
                             scope.launch {
                                 while (true) {
                                     lazyListState!!.animateScrollBy(direction * scrollSpeedPx * (1f + depthFn()))
+                                    onTick()
                                 }
                             }
 
                         // Starts or stops the auto-scroll coroutine based on drag Y position.
+                        // onScrollTick is invoked on each scroll step (used to hit-test while finger is stationary).
                         // Returns the active Job (or null if no scroll needed).
-                        fun updateAutoScroll(rootY: Float, currentJob: Job?): Job? {
+                        fun updateAutoScroll(rootY: Float, currentJob: Job?, onScrollTick: () -> Unit = {}): Job? {
                             currentDragRootY = rootY
                             val inTopZone = rootY < edgeZonePx
                             val inBottomZone = rootY > screenHeightPx - edgeZonePx
                             return when {
                                 inBottomZone && lazyListState != null -> {
                                     if (currentJob?.isActive == true) currentJob
-                                    else launchScrollJob(1f) {
+                                    else launchScrollJob(1f, {
                                         ((currentDragRootY - (screenHeightPx - edgeZonePx)) / edgeZonePx).coerceIn(0f, 1f)
-                                    }
+                                    }, onScrollTick)
                                 }
+
                                 inTopZone && lazyListState != null -> {
                                     if (currentJob?.isActive == true) currentJob
-                                    else launchScrollJob(-1f) {
+                                    else launchScrollJob(-1f, {
                                         ((edgeZonePx - currentDragRootY) / edgeZonePx).coerceIn(0f, 1f)
-                                    }
+                                    }, onScrollTick)
                                 }
+
                                 else -> {
                                     currentJob?.cancel()
                                     null
@@ -403,10 +409,32 @@ private fun AccountGroupSelector(accountsKey: String, lazyListState: LazyListSta
                                     isDragging = true
                                     dragPreview = initial
 
-                                    var autoScrollJob: Job? = null
+                                    // Seed root coords so the tick lambda has valid values from the first scroll step
+                                    currentDragRootX = rootPos.x
+                                    currentDragRootY = rootPos.y
+
+                                    // currentIdHolder[0] is shared between the event loop and the scroll-tick
+                                    // lambda so both always see the latest "last hit" cell.
+                                    val currentIdHolder = intArrayOf(hitId)
+
+                                    // Tick lambda: re-run hit-test at the stationary finger position after
+                                    // each scroll step so cells scrolling under the finger get selected.
+                                    val scrollTickFn: () -> Unit = {
+                                        val tickPos = Offset(currentDragRootX, currentDragRootY)
+                                        val tickId = hitTestBox(tickPos, boxBoundsMap)
+                                        if (tickId != null && tickId != currentIdHolder[0]) {
+                                            currentIdHolder[0] = tickId
+                                            val updated = dragPreview.toMutableSet()
+                                            if (dragSelectMode) updated.add(tickId) else updated.remove(tickId)
+                                            dragPreview = updated
+                                        }
+                                    }
+
+                                    // Immediately start auto-scroll if finger is already in an edge zone,
+                                    // so scrolling begins even if the user never moves their finger.
+                                    var autoScrollJob: Job? = updateAutoScroll(rootPos.y, null, scrollTickFn)
 
                                     // Consume subsequent events so scroll doesn't interfere
-                                    var currentId = hitId
                                     var event = awaitPointerEvent()
                                     while (event.changes.any { it.pressed }) {
                                         event.changes.forEach { it.consume() }
@@ -414,13 +442,14 @@ private fun AccountGroupSelector(accountsKey: String, lazyListState: LazyListSta
                                         if (change != null) {
                                             val movePos = toRootOffset(change.position)
                                             val moveRootY = movePos.y
+                                            currentDragRootX = movePos.x
 
                                             // Update auto-scroll based on current finger Y in root coords
-                                            autoScrollJob = updateAutoScroll(moveRootY, autoScrollJob)
+                                            autoScrollJob = updateAutoScroll(moveRootY, autoScrollJob, scrollTickFn)
 
                                             val newId = hitTestBox(movePos, boxBoundsMap)
-                                            if (newId != null && newId != currentId) {
-                                                currentId = newId
+                                            if (newId != null && newId != currentIdHolder[0]) {
+                                                currentIdHolder[0] = newId
                                                 val updated = dragPreview.toMutableSet()
                                                 if (dragSelectMode) updated.add(newId) else updated.remove(newId)
                                                 dragPreview = updated
