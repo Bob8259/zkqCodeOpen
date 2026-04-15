@@ -112,36 +112,58 @@ private val GROUP_TITLES = listOf(
     "夜晚组  18:00 - 24:00"
 )
 
+private const val MAX_ACCOUNTS_FOR_RS = 200
+
 @Composable
 fun RandomScheduling(lazyListState: LazyListState? = null) {
     val rsState = GlobalVars.configStates.getOrPut(GLOBAL_SETTINGS.RANDOM_SCHEDULING.key) {
         mutableStateOf("0")
     }
+    val accountCountStr = GlobalVars.configStates[GLOBAL_SETTINGS.ACCOUNT_COUNT.key]?.value ?: "2"
+    val accountCount = accountCountStr.toIntOrNull()?.coerceAtLeast(1) ?: 2
+    val tooManyAccounts = accountCount > MAX_ACCOUNTS_FOR_RS
+
+    // If account count exceeds the limit, force-disable the feature
+    if (tooManyAccounts && rsState.value == "1") {
+        rsState.value = "0"
+    }
+
     val isEnabled = rsState.value == "1"
+
     Text(
         text = "（该功能制作中，未完善，请勿使用）",
         style = MaterialTheme.typography.labelMedium,
         modifier = Modifier.padding(bottom = 4.dp)
     )
-    SettingSwitchIcon(
-        key = GLOBAL_SETTINGS.RANDOM_SCHEDULING.key,
-        explain = "启用随机上号后，脚本将根据当前时间段，从对应组的账号中随机选取顺序依次运行。每个账号运行完毕后，根据设定的概率决定是否继续对战或直接下线，并按对战时间比例计算等待时间后再运行下一个账号。\n\n随机上号与批量创号不能同时启用。",
-        afterChange = { checked ->
-            if (checked) {
-                // Mutual exclusion: disable batch create when random scheduling is enabled
-                GlobalVars.configStates[GLOBAL_SETTINGS.BATCH_CREATE_ACCOUNT.key]?.value = "0"
-            }
-        }
-    )
 
-    AnimatedVisibility(visible = isEnabled) {
-        Column {
-            GROUP_KEYS.forEachIndexed { index, keys ->
-                TimeGroupSection(
-                    title = GROUP_TITLES[index],
-                    keys = keys,
-                    lazyListState = lazyListState
-                )
+    if (tooManyAccounts) {
+        Text(
+            text = "账号数量过多，本功能最多支持${MAX_ACCOUNTS_FOR_RS}个账号。请前往“账号设置”页面调整账号数量。",
+            style = MaterialTheme.typography.labelMedium,
+            color = Color.Red,
+            modifier = Modifier.padding(bottom = 4.dp)
+        )
+    } else {
+        SettingSwitchIcon(
+            key = GLOBAL_SETTINGS.RANDOM_SCHEDULING.key,
+            explain = "启用随机上号后，脚本将根据当前时间段，从对应组的账号中随机选取顺序依次运行。每个账号运行完毕后，根据设定的概率决定是否继续对战或直接下线，并按对战时间比例计算等待时间后再运行下一个账号。\n\n随机上号与批量创号不能同时启用。",
+            afterChange = { checked ->
+                if (checked) {
+                    // Mutual exclusion: disable batch create when random scheduling is enabled
+                    GlobalVars.configStates[GLOBAL_SETTINGS.BATCH_CREATE_ACCOUNT.key]?.value = "0"
+                }
+            }
+        )
+
+        AnimatedVisibility(visible = isEnabled) {
+            Column {
+                GROUP_KEYS.forEachIndexed { index, keys ->
+                    TimeGroupSection(
+                        title = GROUP_TITLES[index],
+                        keys = keys,
+                        lazyListState = lazyListState
+                    )
+                }
             }
         }
     }
@@ -249,7 +271,6 @@ private fun AccountGroupSelector(accountsKey: String, lazyListState: LazyListSta
     }
 
     Column(modifier = Modifier.padding(top = 6.dp)) {
-
         Text(
             text = "选择加入本组的账号：",
             style = MaterialTheme.typography.labelMedium,
