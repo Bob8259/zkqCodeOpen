@@ -1,5 +1,6 @@
 package com.coc.zkqcode.core.data.websocket
 
+import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
 import com.coc.zkqcode.core.util.fileactions.LogHelper.showDebugInfo
 import com.google.gson.Gson
 import com.google.gson.JsonObject
@@ -115,8 +116,7 @@ class LocalWebSocketServer {
     suspend fun sendActionSync(action: Any, timeout: Long = 5000L): JsonObject? {
         val session = clientSession
         if (session == null) {
-            showDebugInfo("LocalWebSocketServer: no client session available")
-            return null
+            logAndRestart("LocalWebSocketServer: no client session available", isShow = false)
         }
 
         return actionMutex.withLock {
