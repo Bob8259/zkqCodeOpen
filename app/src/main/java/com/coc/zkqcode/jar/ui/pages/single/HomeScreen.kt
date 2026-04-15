@@ -380,6 +380,11 @@ fun HomeScreen(
                             BatchCreateAccount()
                         }
                     }
+                    item {
+                        SettingSection {
+                            RandomScheduling()
+                        }
+                    }
                 }
             }
         }

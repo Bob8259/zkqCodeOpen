@@ -20,6 +20,7 @@ import com.coc.zkqcode.jar.code.universal.GameVersion
 import com.coc.zkqcode.jar.code.universal.InGamesVars
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.create.batchCreateAccounts
+import com.coc.zkqcode.jar.code.universal.runRandomSchedulingScript
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.smalltools.StorageKeys
 import com.coc.zkqcode.jar.code.universal.smalltools.checkReconnections
@@ -46,7 +47,14 @@ suspend fun runMainScript() {
         GlobalVars.updateCheckSignal.tryEmit(deferred)
         deferred.await()
     }
-    // 1. Initialize/update local memory state
+    // 1. Check if random scheduling mode is enabled — takes over the entire loop
+    val isRandomScheduling = getConfigOrStop(Schema.GLOBAL_SETTINGS.RANDOM_SCHEDULING.key) == "1"
+    if (isRandomScheduling) {
+        runRandomSchedulingScript()
+        return
+    }
+
+    // 2. Initialize/update local memory state
     val isBatchCreate = getConfigOrStop(Schema.GLOBAL_SETTINGS.BATCH_CREATE_ACCOUNT.key) == "1"
 
     val accountTotal: Int = if (isBatchCreate) {

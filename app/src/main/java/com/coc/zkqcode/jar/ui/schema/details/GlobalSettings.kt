@@ -32,6 +32,51 @@ object GlobalSettings {
     val DEVICE_REMARK = SettingDef("device_remark", "设备备注", "", "GLOBAL_SETTINGS")
     val RUNTIME_SCREENSHOT = SettingDef("runtime_screenshot", "运行时截图", 0, "GLOBAL_SETTINGS")
 
+    // ── Random Scheduling (随机上号) ──────────────────────────────────────────
+    val RANDOM_SCHEDULING = SettingDef("random_scheduling", "随机上号", 0, "GLOBAL_SETTINGS")
+
+    // Battle time ratio per group
+    val RS_BATTLE_RATIO_DAWN = SettingDef("rs_battle_ratio_dawn", "对战时间比例", "80", "GLOBAL_SETTINGS")
+    val RS_BATTLE_RATIO_MORNING = SettingDef("rs_battle_ratio_morning", "对战时间比例", "80", "GLOBAL_SETTINGS")
+    val RS_BATTLE_RATIO_AFTERNOON = SettingDef("rs_battle_ratio_afternoon", "对战时间比例", "80", "GLOBAL_SETTINGS")
+    val RS_BATTLE_RATIO_NIGHT = SettingDef("rs_battle_ratio_night", "对战时间比例", "80", "GLOBAL_SETTINGS")
+
+    // Probability to stop after config flow
+    val RS_STOP_PROB_DAWN = SettingDef("rs_stop_prob_dawn", "完成流程下线概率", "50", "GLOBAL_SETTINGS")
+    val RS_STOP_PROB_MORNING = SettingDef("rs_stop_prob_morning", "完成流程下线概率", "50", "GLOBAL_SETTINGS")
+    val RS_STOP_PROB_AFTERNOON = SettingDef("rs_stop_prob_afternoon", "完成流程下线概率", "50", "GLOBAL_SETTINGS")
+    val RS_STOP_PROB_NIGHT = SettingDef("rs_stop_prob_night", "完成流程下线概率", "50", "GLOBAL_SETTINGS")
+
+    // Random continue battle min (minutes)
+    val RS_CONTINUE_MIN_DAWN = SettingDef("rs_continue_min_dawn", "随机持续对战最短", "5", "GLOBAL_SETTINGS")
+    val RS_CONTINUE_MIN_MORNING = SettingDef("rs_continue_min_morning", "随机持续对战最短", "5", "GLOBAL_SETTINGS")
+    val RS_CONTINUE_MIN_AFTERNOON = SettingDef("rs_continue_min_afternoon", "随机持续对战最短", "5", "GLOBAL_SETTINGS")
+    val RS_CONTINUE_MIN_NIGHT = SettingDef("rs_continue_min_night", "随机持续对战最短", "5", "GLOBAL_SETTINGS")
+
+    // Random continue battle max (minutes)
+    val RS_CONTINUE_MAX_DAWN = SettingDef("rs_continue_max_dawn", "随机持续对战最长", "25", "GLOBAL_SETTINGS")
+    val RS_CONTINUE_MAX_MORNING = SettingDef("rs_continue_max_morning", "随机持续对战最长", "25", "GLOBAL_SETTINGS")
+    val RS_CONTINUE_MAX_AFTERNOON = SettingDef("rs_continue_max_afternoon", "随机持续对战最长", "25", "GLOBAL_SETTINGS")
+    val RS_CONTINUE_MAX_NIGHT = SettingDef("rs_continue_max_night", "随机持续对战最长", "25", "GLOBAL_SETTINGS")
+
+    // No worker toggle (logic skipped for now)
+    val RS_NO_WORKER_DAWN = SettingDef("rs_no_worker_dawn", "主世界无工人后提前下线", 0, "GLOBAL_SETTINGS")
+    val RS_NO_WORKER_MORNING = SettingDef("rs_no_worker_morning", "主世界无工人后提前下线", 0, "GLOBAL_SETTINGS")
+    val RS_NO_WORKER_AFTERNOON = SettingDef("rs_no_worker_afternoon", "主世界无工人后提前下线", 0, "GLOBAL_SETTINGS")
+    val RS_NO_WORKER_NIGHT = SettingDef("rs_no_worker_night", "主世界无工人后提前下线", 0, "GLOBAL_SETTINGS")
+
+    // Full resources toggle (logic skipped for now)
+    val RS_FULL_RES_DAWN = SettingDef("rs_full_res_dawn", "主世界满资源后提前下线", 0, "GLOBAL_SETTINGS")
+    val RS_FULL_RES_MORNING = SettingDef("rs_full_res_morning", "主世界满资源后提前下线", 0, "GLOBAL_SETTINGS")
+    val RS_FULL_RES_AFTERNOON = SettingDef("rs_full_res_afternoon", "主世界满资源后提前下线", 0, "GLOBAL_SETTINGS")
+    val RS_FULL_RES_NIGHT = SettingDef("rs_full_res_night", "主世界满资源后提前下线", 0, "GLOBAL_SETTINGS")
+
+    // Account group assignments (comma-separated account IDs)
+    val RS_ACCOUNTS_DAWN = SettingDef("rs_accounts_dawn", "账号列表", "", "GLOBAL_SETTINGS")
+    val RS_ACCOUNTS_MORNING = SettingDef("rs_accounts_morning", "账号列表", "", "GLOBAL_SETTINGS")
+    val RS_ACCOUNTS_AFTERNOON = SettingDef("rs_accounts_afternoon", "账号列表", "", "GLOBAL_SETTINGS")
+    val RS_ACCOUNTS_NIGHT = SettingDef("rs_accounts_night", "账号列表", "", "GLOBAL_SETTINGS")
+
     val all = listOf(
         CONFIG_COUNT,
         ACCOUNT_COUNT,
@@ -57,7 +102,15 @@ object GlobalSettings {
         GEM_COUNT,
         AFTER_KICK_OPTION,
         DEVICE_REMARK,
-        RUNTIME_SCREENSHOT
+        RUNTIME_SCREENSHOT,
+        RANDOM_SCHEDULING,
+        RS_BATTLE_RATIO_DAWN, RS_BATTLE_RATIO_MORNING, RS_BATTLE_RATIO_AFTERNOON, RS_BATTLE_RATIO_NIGHT,
+        RS_STOP_PROB_DAWN, RS_STOP_PROB_MORNING, RS_STOP_PROB_AFTERNOON, RS_STOP_PROB_NIGHT,
+        RS_CONTINUE_MIN_DAWN, RS_CONTINUE_MIN_MORNING, RS_CONTINUE_MIN_AFTERNOON, RS_CONTINUE_MIN_NIGHT,
+        RS_CONTINUE_MAX_DAWN, RS_CONTINUE_MAX_MORNING, RS_CONTINUE_MAX_AFTERNOON, RS_CONTINUE_MAX_NIGHT,
+        RS_NO_WORKER_DAWN, RS_NO_WORKER_MORNING, RS_NO_WORKER_AFTERNOON, RS_NO_WORKER_NIGHT,
+        RS_FULL_RES_DAWN, RS_FULL_RES_MORNING, RS_FULL_RES_AFTERNOON, RS_FULL_RES_NIGHT,
+        RS_ACCOUNTS_DAWN, RS_ACCOUNTS_MORNING, RS_ACCOUNTS_AFTERNOON, RS_ACCOUNTS_NIGHT
     )
 }
 
