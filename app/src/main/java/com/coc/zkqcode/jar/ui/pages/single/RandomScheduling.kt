@@ -5,7 +5,7 @@ package com.coc.zkqcode.jar.ui.pages.single
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.gestures.animateScrollBy
+import androidx.compose.foundation.gestures.scrollBy
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.layout.Arrangement
@@ -52,16 +52,11 @@ import com.coc.zkqcode.jar.ui.schema.Schema.ACCOUNT_SETTINGS
 import com.coc.zkqcode.jar.ui.schema.Schema.GLOBAL_SETTINGS
 import com.coc.zkqcode.jar.ui.theme.AppColors
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 private data class GroupKeys(
-    val battleRatio: String,
-    val stopProb: String,
-    val continueMin: String,
-    val continueMax: String,
-    val noWorker: String,
-    val fullRes: String,
-    val accounts: String
+    val battleRatio: String, val stopProb: String, val continueMin: String, val continueMax: String, val noWorker: String, val fullRes: String, val accounts: String
 )
 
 private fun groupKeysFor(suffix: String) = GroupKeys(
@@ -75,17 +70,11 @@ private fun groupKeysFor(suffix: String) = GroupKeys(
 )
 
 private val GROUP_KEYS = listOf(
-    groupKeysFor("dawn"),
-    groupKeysFor("morning"),
-    groupKeysFor("afternoon"),
-    groupKeysFor("night")
+    groupKeysFor("dawn"), groupKeysFor("morning"), groupKeysFor("afternoon"), groupKeysFor("night")
 )
 
 private val GROUP_TITLES = listOf(
-    "凌晨组  0:00 - 6:00",
-    "上午组  6:00 - 12:00",
-    "下午组  12:00 - 18:00",
-    "夜晚组  18:00 - 24:00"
+    "凌晨组  0:00 - 6:00", "上午组  6:00 - 12:00", "下午组  12:00 - 18:00", "夜晚组  18:00 - 24:00"
 )
 
 private val RS_GRID_MAX_HEIGHT: Dp = 320.dp
@@ -100,14 +89,11 @@ private fun gameVersionLabel(value: String?): String = when (value) {
 private data class AccountCellColors(val bg: Color, val border: Color, val text: Color)
 
 private fun accountCellColors(isSelected: Boolean) = AccountCellColors(
-    bg = if (isSelected) AppColors.Primary else AppColors.Primary.copy(alpha = 0.10f),
-    border = if (isSelected) AppColors.Primary else AppColors.PrimaryLight,
-    text = if (isSelected) Color.White else AppColors.TextPrimary
+    bg = if (isSelected) AppColors.Primary else AppColors.Primary.copy(alpha = 0.10f), border = if (isSelected) AppColors.Primary else AppColors.PrimaryLight, text = if (isSelected) Color.White else AppColors.TextPrimary
 )
 
 private fun stepBasedAutoSize(
-    maxFontSize: TextUnit,
-    minFontSize: TextUnit = 5.sp
+    maxFontSize: TextUnit, minFontSize: TextUnit = 5.sp
 ) = TextAutoSize.StepBased(minFontSize = minFontSize, maxFontSize = maxFontSize, stepSize = 1.sp)
 
 @Composable
@@ -118,9 +104,7 @@ fun RandomScheduling() {
     val isEnabled = rsState.value == "1"
 
     Text(
-        text = "（该功能制作中，未完善，请勿使用）",
-        style = MaterialTheme.typography.labelMedium,
-        modifier = Modifier.padding(bottom = 4.dp)
+        text = "（该功能制作中，未完善，请勿使用）", style = MaterialTheme.typography.labelMedium, modifier = Modifier.padding(bottom = 4.dp)
     )
 
     SettingSwitchIcon(
@@ -130,15 +114,13 @@ fun RandomScheduling() {
             if (checked) {
                 GlobalVars.configStates[GLOBAL_SETTINGS.BATCH_CREATE_ACCOUNT.key]?.value = "0"
             }
-        }
-    )
+        })
 
     AnimatedVisibility(visible = isEnabled) {
         Column {
             GROUP_KEYS.forEachIndexed { index, keys ->
                 TimeGroupSection(
-                    title = GROUP_TITLES[index],
-                    keys = keys
+                    title = GROUP_TITLES[index], keys = keys
                 )
             }
         }
@@ -157,22 +139,18 @@ private fun TimeGroupSection(title: String, keys: GroupKeys) {
                 SettingInputRow(key = keys.battleRatio, suffix = "%")
 
                 FlowRow(
-                    verticalArrangement = Arrangement.Center,
-                    modifier = Modifier.padding(top = 6.dp)
+                    verticalArrangement = Arrangement.Center, modifier = Modifier.padding(top = 6.dp)
                 ) {
                     SettingInputRow(key = keys.stopProb, topPadding = 0.dp, suffix = "%")
                     Text(
-                        text = "剩余概率随机持续对战",
-                        style = MaterialTheme.typography.labelMedium,
-                        modifier = Modifier
+                        text = "剩余概率随机持续对战", style = MaterialTheme.typography.labelMedium, modifier = Modifier
                             .padding(end = 4.dp)
                             .align(Alignment.CenterVertically)
                     )
                 }
 
                 FlowRow(
-                    verticalArrangement = Arrangement.Center,
-                    modifier = Modifier.padding(top = 6.dp)
+                    verticalArrangement = Arrangement.Center, modifier = Modifier.padding(top = 6.dp)
                 ) {
                     SettingInputRow(key = keys.continueMin, topPadding = 0.dp, suffix = "至")
                     SettingInputRow(key = keys.continueMax, topPadding = 0.dp, suffix = "分钟后下线")
@@ -195,10 +173,7 @@ private fun AccountGroupSelector(accountsKey: String) {
     val scope = rememberCoroutineScope()
 
     val selectedAccounts = remember(accountsState.value) {
-        accountsState.value
-            .split(",")
-            .mapNotNull { it.trim().toIntOrNull() }
-            .toSet()
+        accountsState.value.split(",").mapNotNull { it.trim().toIntOrNull() }.toSet()
     }
 
     var isDragging by remember { mutableStateOf(false) }
@@ -208,35 +183,23 @@ private fun AccountGroupSelector(accountsKey: String) {
 
     Column(modifier = Modifier.padding(top = 6.dp)) {
         Text(
-            text = "选择加入本组的账号：",
-            style = MaterialTheme.typography.labelMedium,
-            modifier = Modifier.padding(bottom = 4.dp)
+            text = "选择加入本组的账号：", style = MaterialTheme.typography.labelMedium, modifier = Modifier.padding(bottom = 4.dp)
         )
         Text(
-            text = "长按账号后拖动可批量选择。",
-            style = MaterialTheme.typography.labelSmall,
-            color = Color.Gray,
-            modifier = Modifier.padding(bottom = 4.dp)
+            text = "长按账号后拖动可批量选择。", style = MaterialTheme.typography.labelSmall, color = Color.Gray, modifier = Modifier.padding(bottom = 4.dp)
         )
         Row(
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = Modifier.padding(bottom = 4.dp)
+            horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.padding(bottom = 4.dp)
         ) {
             CustomButton(
-                text = "一键全选",
-                marginTop = 0.dp,
-                onClick = {
+                text = "一键全选", marginTop = 0.dp, onClick = {
                     accountsState.value = (1..accountCount).joinToString(",")
-                }
-            )
+                })
             CustomButton(
-                text = "一键反选",
-                marginTop = 0.dp,
-                onClick = {
+                text = "一键反选", marginTop = 0.dp, onClick = {
                     val inverted = (1..accountCount).filter { it !in selectedAccounts }
                     accountsState.value = inverted.joinToString(",")
-                }
-            )
+                })
         }
 
         val cellSizeDp = 52.dp
@@ -255,7 +218,8 @@ private fun AccountGroupSelector(accountsKey: String) {
                     .pointerInput(accountCount, columnsCount, selectedAccounts) {
                         val slopPx = 10f * density
                         val edgeZonePx = 80f * density
-                        val scrollSpeedPx = 70f * density
+                        val scrollSpeedPx = 6f * density
+                        val maxScrollStepPx = 20f * density
                         var currentPointer = Offset.Zero
 
                         fun hitTestVisibleItem(position: Offset): Int? {
@@ -265,20 +229,27 @@ private fun AccountGroupSelector(accountsKey: String) {
                         }
 
                         fun launchScrollJob(
-                            direction: Float,
-                            depthFn: () -> Float,
-                            onTick: () -> Unit
+                            direction: Float, depthFn: () -> Float, onTick: () -> Unit
                         ): Job = scope.launch {
                             while (true) {
-                                gridState.animateScrollBy(direction * scrollSpeedPx * (1f + depthFn()))
-                                onTick()
+                                val totalScroll = direction * scrollSpeedPx * (1f + depthFn())
+                                var remaining = kotlin.math.abs(totalScroll)
+                                val sign = if (totalScroll >= 0f) 1f else -1f
+
+                                while (remaining > 0f) {
+                                    val step = kotlin.math.min(remaining, maxScrollStepPx)
+                                    val consumed = gridState.scrollBy(sign * step)
+                                    if (consumed == 0f) break
+
+                                    remaining -= kotlin.math.abs(consumed)
+                                    onTick()
+                                }
+                                delay(16L) // yield one frame before next scroll cycle
                             }
                         }
 
                         fun updateAutoScroll(
-                            localY: Float,
-                            currentJob: Job?,
-                            onScrollTick: () -> Unit = {}
+                            localY: Float, currentJob: Job?, onScrollTick: () -> Unit = {}
                         ): Job? {
                             val viewportHeight = size.height.toFloat()
                             val inTopZone = localY < edgeZonePx
@@ -371,8 +342,7 @@ private fun AccountGroupSelector(accountsKey: String) {
                                 }
                             }
                         }
-                    }
-            ) {
+                    }) {
                 val accountIds = remember(accountCount) { (1..accountCount).toList() }
                 LazyVerticalGrid(
                     state = gridState,
@@ -394,27 +364,17 @@ private fun AccountGroupSelector(accountsKey: String) {
                                 .background(colors.bg, RoundedCornerShape(8.dp))
                                 .border(1.dp, colors.border, RoundedCornerShape(8.dp))
                                 .padding(horizontal = 2.dp)
-                                .heightIn(min = cellSizeDp),
-                            contentAlignment = Alignment.Center
+                                .heightIn(min = cellSizeDp), contentAlignment = Alignment.Center
                         ) {
                             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                                 Text(
-                                    text = id.toString(),
-                                    color = colors.text,
-                                    style = MaterialTheme.typography.labelMedium,
-                                    maxLines = 1,
-                                    autoSize = stepBasedAutoSize(
-                                        maxFontSize = MaterialTheme.typography.labelMedium.fontSize,
-                                        minFontSize = 6.sp
+                                    text = id.toString(), color = colors.text, style = MaterialTheme.typography.labelMedium, maxLines = 1, autoSize = stepBasedAutoSize(
+                                        maxFontSize = MaterialTheme.typography.labelMedium.fontSize, minFontSize = 6.sp
                                     )
                                 )
                                 if (versionLabel.isNotEmpty()) {
                                     Text(
-                                        text = versionLabel,
-                                        color = colors.text,
-                                        style = MaterialTheme.typography.labelSmall,
-                                        maxLines = 1,
-                                        autoSize = stepBasedAutoSize(
+                                        text = versionLabel, color = colors.text, style = MaterialTheme.typography.labelSmall, maxLines = 1, autoSize = stepBasedAutoSize(
                                             MaterialTheme.typography.labelSmall.fontSize
                                         )
                                     )
