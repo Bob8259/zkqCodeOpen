@@ -1,3 +1,5 @@
+@file:Suppress("AssignedValueIsNeverRead")
+
 package com.coc.zkqcode.jar.ui.components
 
 import androidx.compose.animation.AnimatedVisibility
@@ -15,7 +17,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.requiredWidth
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
@@ -190,6 +195,8 @@ private fun StyledBasicTextField(
         onValueChange = onValueChange,
         modifier = modifier
             .padding(end = endPadding)
+            .widthIn(min = 50.dp)
+            .width(IntrinsicSize.Min)
             .background(color = AppColors.CardBg, shape = RoundedCornerShape(4.dp))
             .border(1.dp, AppColors.Border, RoundedCornerShape(4.dp))
             .padding(4.dp)
@@ -374,7 +381,7 @@ fun SettingInputRow(
                 afterChange?.invoke(newValue)
             },
             modifier = Modifier.align(Alignment.CenterVertically),
-            endPadding = if (suffix != null) 6.dp else 16.dp
+            endPadding = if (suffix != null) 2.dp else 16.dp
         )
 
         suffix?.let {

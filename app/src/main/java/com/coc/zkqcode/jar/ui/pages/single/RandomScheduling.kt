@@ -50,6 +50,7 @@ import com.coc.zkqcode.jar.ui.components.CustomButton
 import com.coc.zkqcode.jar.ui.components.SectionBanner
 import com.coc.zkqcode.jar.ui.components.SettingInputRow
 import com.coc.zkqcode.jar.ui.components.SettingSwitchIcon
+import com.coc.zkqcode.jar.ui.schema.Schema.ACCOUNT_SETTINGS
 import com.coc.zkqcode.jar.ui.schema.Schema.GLOBAL_SETTINGS
 import com.coc.zkqcode.jar.ui.theme.AppColors
 import kotlinx.coroutines.Job
@@ -188,13 +189,6 @@ private fun TimeGroupSection(title: String, keys: GroupKeys, lazyListState: Lazy
                     modifier = Modifier.padding(top = 6.dp)
                 ) {
                     SettingInputRow(key = keys.stopProb, topPadding = 0.dp, suffix = "%")
-                }
-
-                // Continue battle range row
-                FlowRow(
-                    verticalArrangement = Arrangement.Center,
-                    modifier = Modifier.padding(top = 6.dp)
-                ) {
                     Text(
                         text = "剩余概率随机持续对战",
                         style = MaterialTheme.typography.labelMedium,
@@ -202,22 +196,16 @@ private fun TimeGroupSection(title: String, keys: GroupKeys, lazyListState: Lazy
                             .padding(end = 4.dp)
                             .align(Alignment.CenterVertically)
                     )
-                    SettingInputRow(key = keys.continueMin, topPadding = 0.dp)
-                    Text(
-                        text = "-",
-                        style = MaterialTheme.typography.labelMedium,
-                        modifier = Modifier
-                            .padding(horizontal = 4.dp)
-                            .align(Alignment.CenterVertically)
-                    )
-                    SettingInputRow(key = keys.continueMax, topPadding = 0.dp)
-                    Text(
-                        text = "分钟后下线",
-                        style = MaterialTheme.typography.labelMedium,
-                        modifier = Modifier
-                            .padding(start = 4.dp)
-                            .align(Alignment.CenterVertically)
-                    )
+                }
+
+                // Continue battle range row
+                FlowRow(
+                    verticalArrangement = Arrangement.Center,
+                    modifier = Modifier.padding(top = 6.dp)
+                ) {
+
+                    SettingInputRow(key = keys.continueMin, topPadding = 0.dp, suffix = "至")
+                    SettingInputRow(key = keys.continueMax, topPadding = 0.dp, suffix = "分钟后下线")
                 }
 
                 // No worker / full resources toggles
@@ -277,7 +265,7 @@ private fun AccountGroupSelector(accountsKey: String, lazyListState: LazyListSta
             modifier = Modifier.padding(bottom = 4.dp)
         )
         Text(
-            text = "长按账号后拖动可批量选择，轻扫屏幕可滚动",
+            text = "长按账号后拖动可批量选择。",
             style = MaterialTheme.typography.labelSmall,
             color = Color.Gray,
             modifier = Modifier.padding(bottom = 4.dp)
@@ -305,7 +293,7 @@ private fun AccountGroupSelector(accountsKey: String, lazyListState: LazyListSta
             )
         }
         // Cell size and spacing constants (must match LazyVerticalGrid below)
-        val cellSizeDp = 32.dp
+        val cellSizeDp = 52.dp
         val spacingDp = 4.dp
 
         BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
@@ -466,6 +454,12 @@ private fun AccountGroupSelector(accountsKey: String, lazyListState: LazyListSta
                         val bgColor = if (isSelected) AppColors.Primary else AppColors.Primary.copy(alpha = 0.10f)
                         val borderColor = if (isSelected) AppColors.Primary else AppColors.PrimaryLight
                         val textColor = if (isSelected) Color.White else AppColors.TextPrimary
+                        val versionLabel = when (GlobalVars.configStates["${ACCOUNT_SETTINGS.GAME_VERSION.key}$id"]?.value) {
+                            "0" -> "国服"
+                            "1" -> "国际服"
+                            "2" -> "私服"
+                            else -> ""
+                        }
 
                         Box(
                             modifier = Modifier
@@ -473,7 +467,7 @@ private fun AccountGroupSelector(accountsKey: String, lazyListState: LazyListSta
                                 .height(cellSizeDp)
                                 .background(bgColor, RoundedCornerShape(8.dp))
                                 .border(1.dp, borderColor, RoundedCornerShape(8.dp))
-                                .padding(horizontal = 4.dp)
+                                .padding(horizontal = 2.dp)
                                 .onGloballyPositioned { layoutCoordinates ->
                                     val posInRoot = layoutCoordinates.positionInRoot()
                                     val size = layoutCoordinates.size
@@ -487,17 +481,32 @@ private fun AccountGroupSelector(accountsKey: String, lazyListState: LazyListSta
                                 },
                             contentAlignment = Alignment.Center
                         ) {
-                            Text(
-                                text = id.toString(),
-                                color = textColor,
-                                style = MaterialTheme.typography.labelMedium,
-                                maxLines = 1,
-                                autoSize = TextAutoSize.StepBased(
-                                    minFontSize = 6.sp,
-                                    maxFontSize = MaterialTheme.typography.labelMedium.fontSize,
-                                    stepSize = 1.sp
+                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                Text(
+                                    text = id.toString(),
+                                    color = textColor,
+                                    style = MaterialTheme.typography.labelMedium,
+                                    maxLines = 1,
+                                    autoSize = TextAutoSize.StepBased(
+                                        minFontSize = 6.sp,
+                                        maxFontSize = MaterialTheme.typography.labelMedium.fontSize,
+                                        stepSize = 1.sp
+                                    )
                                 )
-                            )
+                                if (versionLabel.isNotEmpty()) {
+                                    Text(
+                                        text = versionLabel,
+                                        color = textColor,
+                                        style = MaterialTheme.typography.labelSmall,
+                                        maxLines = 1,
+                                        autoSize = TextAutoSize.StepBased(
+                                            minFontSize = 5.sp,
+                                            maxFontSize = MaterialTheme.typography.labelSmall.fontSize,
+                                            stepSize = 1.sp
+                                        )
+                                    )
+                                }
+                            }
                         }
                     }
                 }
