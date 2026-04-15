@@ -43,6 +43,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.platform.LocalWindowInfo
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.coc.zkqcode.core.data.database.GlobalVars
@@ -56,7 +57,7 @@ import com.coc.zkqcode.jar.ui.theme.AppColors
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
-// Data class holding the 5 config key names for one time group
+// Data class holding the config key names for one time group
 private data class GroupKeys(
     val battleRatio: String,
     val stopProb: String,
@@ -67,43 +68,22 @@ private data class GroupKeys(
     val accounts: String
 )
 
+// Optimization #1: factory eliminates 4 identical manual GroupKeys(...) blocks
+private fun groupKeysFor(suffix: String) = GroupKeys(
+    battleRatio = "rs_battle_ratio_$suffix",
+    stopProb = "rs_stop_prob_$suffix",
+    continueMin = "rs_continue_min_$suffix",
+    continueMax = "rs_continue_max_$suffix",
+    noWorker = "rs_no_worker_$suffix",
+    fullRes = "rs_full_res_$suffix",
+    accounts = "rs_accounts_$suffix"
+)
+
 private val GROUP_KEYS = listOf(
-    GroupKeys(
-        battleRatio = GLOBAL_SETTINGS.RS_BATTLE_RATIO_DAWN.key,
-        stopProb = GLOBAL_SETTINGS.RS_STOP_PROB_DAWN.key,
-        continueMin = GLOBAL_SETTINGS.RS_CONTINUE_MIN_DAWN.key,
-        continueMax = GLOBAL_SETTINGS.RS_CONTINUE_MAX_DAWN.key,
-        noWorker = GLOBAL_SETTINGS.RS_NO_WORKER_DAWN.key,
-        fullRes = GLOBAL_SETTINGS.RS_FULL_RES_DAWN.key,
-        accounts = GLOBAL_SETTINGS.RS_ACCOUNTS_DAWN.key
-    ),
-    GroupKeys(
-        battleRatio = GLOBAL_SETTINGS.RS_BATTLE_RATIO_MORNING.key,
-        stopProb = GLOBAL_SETTINGS.RS_STOP_PROB_MORNING.key,
-        continueMin = GLOBAL_SETTINGS.RS_CONTINUE_MIN_MORNING.key,
-        continueMax = GLOBAL_SETTINGS.RS_CONTINUE_MAX_MORNING.key,
-        noWorker = GLOBAL_SETTINGS.RS_NO_WORKER_MORNING.key,
-        fullRes = GLOBAL_SETTINGS.RS_FULL_RES_MORNING.key,
-        accounts = GLOBAL_SETTINGS.RS_ACCOUNTS_MORNING.key
-    ),
-    GroupKeys(
-        battleRatio = GLOBAL_SETTINGS.RS_BATTLE_RATIO_AFTERNOON.key,
-        stopProb = GLOBAL_SETTINGS.RS_STOP_PROB_AFTERNOON.key,
-        continueMin = GLOBAL_SETTINGS.RS_CONTINUE_MIN_AFTERNOON.key,
-        continueMax = GLOBAL_SETTINGS.RS_CONTINUE_MAX_AFTERNOON.key,
-        noWorker = GLOBAL_SETTINGS.RS_NO_WORKER_AFTERNOON.key,
-        fullRes = GLOBAL_SETTINGS.RS_FULL_RES_AFTERNOON.key,
-        accounts = GLOBAL_SETTINGS.RS_ACCOUNTS_AFTERNOON.key
-    ),
-    GroupKeys(
-        battleRatio = GLOBAL_SETTINGS.RS_BATTLE_RATIO_NIGHT.key,
-        stopProb = GLOBAL_SETTINGS.RS_STOP_PROB_NIGHT.key,
-        continueMin = GLOBAL_SETTINGS.RS_CONTINUE_MIN_NIGHT.key,
-        continueMax = GLOBAL_SETTINGS.RS_CONTINUE_MAX_NIGHT.key,
-        noWorker = GLOBAL_SETTINGS.RS_NO_WORKER_NIGHT.key,
-        fullRes = GLOBAL_SETTINGS.RS_FULL_RES_NIGHT.key,
-        accounts = GLOBAL_SETTINGS.RS_ACCOUNTS_NIGHT.key
-    )
+    groupKeysFor("dawn"),
+    groupKeysFor("morning"),
+    groupKeysFor("afternoon"),
+    groupKeysFor("night")
 )
 
 private val GROUP_TITLES = listOf(
@@ -114,6 +94,29 @@ private val GROUP_TITLES = listOf(
 )
 
 private const val MAX_ACCOUNTS_FOR_RS = 200
+
+// Optimization #2: pure mapping extracted from item lambda
+private fun gameVersionLabel(value: String?): String = when (value) {
+    "0" -> "国服"
+    "1" -> "国际服"
+    "2" -> "私服"
+    else -> ""
+}
+
+// Optimization #3: groups the three color derivations into one call site
+private data class AccountCellColors(val bg: Color, val border: Color, val text: Color)
+
+private fun accountCellColors(isSelected: Boolean) = AccountCellColors(
+    bg = if (isSelected) AppColors.Primary else AppColors.Primary.copy(alpha = 0.10f),
+    border = if (isSelected) AppColors.Primary else AppColors.PrimaryLight,
+    text = if (isSelected) Color.White else AppColors.TextPrimary
+)
+
+// Optimization #4: eliminates the two identical TextAutoSize.StepBased(...) constructions
+private fun stepBasedAutoSize(
+    maxFontSize: TextUnit,
+    minFontSize: TextUnit = 5.sp
+) = TextAutoSize.StepBased(minFontSize = minFontSize, maxFontSize = maxFontSize, stepSize = 1.sp)
 
 @Composable
 fun RandomScheduling(lazyListState: LazyListState? = null) {
@@ -225,12 +228,14 @@ private fun AccountGroupSelector(accountsKey: String, lazyListState: LazyListSta
     val accountCountStr = GlobalVars.configStates[GLOBAL_SETTINGS.ACCOUNT_COUNT.key]?.value ?: "2"
     val accountCount = accountCountStr.toIntOrNull()?.coerceAtLeast(1) ?: 2
 
-    // Parse current selected IDs from comma-separated string
-    fun parseSelected(): Set<Int> {
-        return accountsState.value
-            .split(",")
-            .mapNotNull { it.trim().toIntOrNull() }
-            .toSet()
+    // Optimization #7: hoist parseSelected to a remembered lambda — no local fun repeated 3×
+    val parseSelected: () -> Set<Int> = remember(accountsState) {
+        {
+            accountsState.value
+                .split(",")
+                .mapNotNull { it.trim().toIntOrNull() }
+                .toSet()
+        }
     }
 
     // Drag-to-select state
@@ -323,6 +328,14 @@ private fun AccountGroupSelector(accountsKey: String, lazyListState: LazyListSta
                         // updated each pointer event so the scroll coroutine always reads fresh data.
                         var currentDragRootY = 0f
 
+                        // Optimization #5: collapsed symmetric top/bottom scroll branches into one launcher
+                        fun launchScrollJob(direction: Float, depthFn: () -> Float): Job =
+                            scope.launch {
+                                while (true) {
+                                    lazyListState!!.animateScrollBy(direction * scrollSpeedPx * (1f + depthFn()))
+                                }
+                            }
+
                         // Starts or stops the auto-scroll coroutine based on drag Y position.
                         // Returns the active Job (or null if no scroll needed).
                         fun updateAutoScroll(rootY: Float, currentJob: Job?): Job? {
@@ -332,27 +345,16 @@ private fun AccountGroupSelector(accountsKey: String, lazyListState: LazyListSta
                             return when {
                                 inBottomZone && lazyListState != null -> {
                                     if (currentJob?.isActive == true) currentJob
-                                    else scope.launch {
-                                        while (true) {
-                                            // Re-read latest Y so speed adapts as finger moves deeper
-                                            val y = currentDragRootY
-                                            val depth = ((y - (screenHeightPx - edgeZonePx)) / edgeZonePx).coerceIn(0f, 1f)
-                                            lazyListState.animateScrollBy(scrollSpeedPx * (1f + depth))
-                                        }
+                                    else launchScrollJob(1f) {
+                                        ((currentDragRootY - (screenHeightPx - edgeZonePx)) / edgeZonePx).coerceIn(0f, 1f)
                                     }
                                 }
-
                                 inTopZone && lazyListState != null -> {
                                     if (currentJob?.isActive == true) currentJob
-                                    else scope.launch {
-                                        while (true) {
-                                            val y = currentDragRootY
-                                            val depth = ((edgeZonePx - y) / edgeZonePx).coerceIn(0f, 1f)
-                                            lazyListState.animateScrollBy(-scrollSpeedPx * (1f + depth))
-                                        }
+                                    else launchScrollJob(-1f) {
+                                        ((edgeZonePx - currentDragRootY) / edgeZonePx).coerceIn(0f, 1f)
                                     }
                                 }
-
                                 else -> {
                                     currentJob?.cancel()
                                     null
@@ -384,10 +386,11 @@ private fun AccountGroupSelector(accountsKey: String, lazyListState: LazyListSta
 
                             // longPressConfirmed == null means timeout elapsed without movement = long press
                             if (longPressConfirmed == null) {
-                                // Convert long-press position to root coordinates for hit-testing
-                                val rootX = downPos.x + flowRowOffset.x
-                                val rootY = downPos.y + flowRowOffset.y
-                                val rootPos = Offset(rootX, rootY)
+                                // Optimization #6: extracted coordinate conversion to avoid duplication below
+                                fun toRootOffset(pos: Offset) =
+                                    Offset(pos.x + flowRowOffset.x, pos.y + flowRowOffset.y)
+
+                                val rootPos = toRootOffset(downPos)
 
                                 val hitId = hitTestBox(rootPos, boxBoundsMap)
                                 if (hitId != null) {
@@ -409,9 +412,8 @@ private fun AccountGroupSelector(accountsKey: String, lazyListState: LazyListSta
                                         event.changes.forEach { it.consume() }
                                         val change = event.changes.firstOrNull()
                                         if (change != null) {
-                                            val moveRootX = change.position.x + flowRowOffset.x
-                                            val moveRootY = change.position.y + flowRowOffset.y
-                                            val movePos = Offset(moveRootX, moveRootY)
+                                            val movePos = toRootOffset(change.position)
+                                            val moveRootY = movePos.y
 
                                             // Update auto-scroll based on current finger Y in root coords
                                             autoScrollJob = updateAutoScroll(moveRootY, autoScrollJob)
@@ -451,22 +453,17 @@ private fun AccountGroupSelector(accountsKey: String, lazyListState: LazyListSta
                 ) {
                     items(accountIds, key = { it }) { id ->
                         val isSelected = id in displayedSelected
-                        val bgColor = if (isSelected) AppColors.Primary else AppColors.Primary.copy(alpha = 0.10f)
-                        val borderColor = if (isSelected) AppColors.Primary else AppColors.PrimaryLight
-                        val textColor = if (isSelected) Color.White else AppColors.TextPrimary
-                        val versionLabel = when (GlobalVars.configStates["${ACCOUNT_SETTINGS.GAME_VERSION.key}$id"]?.value) {
-                            "0" -> "国服"
-                            "1" -> "国际服"
-                            "2" -> "私服"
-                            else -> ""
-                        }
+                        val colors = accountCellColors(isSelected)   // Optimization #3
+                        val versionLabel = gameVersionLabel(          // Optimization #2
+                            GlobalVars.configStates["${ACCOUNT_SETTINGS.GAME_VERSION.key}$id"]?.value
+                        )
 
                         Box(
                             modifier = Modifier
                                 .width(cellSizeDp)
                                 .height(cellSizeDp)
-                                .background(bgColor, RoundedCornerShape(8.dp))
-                                .border(1.dp, borderColor, RoundedCornerShape(8.dp))
+                                .background(colors.bg, RoundedCornerShape(8.dp))
+                                .border(1.dp, colors.border, RoundedCornerShape(8.dp))
                                 .padding(horizontal = 2.dp)
                                 .onGloballyPositioned { layoutCoordinates ->
                                     val posInRoot = layoutCoordinates.positionInRoot()
@@ -484,25 +481,22 @@ private fun AccountGroupSelector(accountsKey: String, lazyListState: LazyListSta
                             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                                 Text(
                                     text = id.toString(),
-                                    color = textColor,
+                                    color = colors.text,
                                     style = MaterialTheme.typography.labelMedium,
                                     maxLines = 1,
-                                    autoSize = TextAutoSize.StepBased(
-                                        minFontSize = 6.sp,
+                                    autoSize = stepBasedAutoSize(  // Optimization #4
                                         maxFontSize = MaterialTheme.typography.labelMedium.fontSize,
-                                        stepSize = 1.sp
+                                        minFontSize = 6.sp
                                     )
                                 )
                                 if (versionLabel.isNotEmpty()) {
                                     Text(
                                         text = versionLabel,
-                                        color = textColor,
+                                        color = colors.text,
                                         style = MaterialTheme.typography.labelSmall,
                                         maxLines = 1,
-                                        autoSize = TextAutoSize.StepBased(
-                                            minFontSize = 5.sp,
-                                            maxFontSize = MaterialTheme.typography.labelSmall.fontSize,
-                                            stepSize = 1.sp
+                                        autoSize = stepBasedAutoSize(  // Optimization #4
+                                            MaterialTheme.typography.labelSmall.fontSize
                                         )
                                     )
                                 }
