@@ -217,9 +217,8 @@ private fun AccountGroupSelector(accountsKey: String) {
                     .then(if (fullGridHeight < RS_GRID_MAX_HEIGHT) Modifier.heightIn(min = fullGridHeight) else Modifier)
                     .pointerInput(accountCount, columnsCount, selectedAccounts) {
                         val slopPx = 10f * density
-                        val edgeZonePx = 80f * density
-                        val scrollSpeedPx = 6f * density
-                        val maxScrollStepPx = 20f * density
+                        val edgeZonePx = 40f * density
+                        val scrollSpeedPx = 6.5f * density
                         var currentPointer = Offset.Zero
 
                         fun hitTestVisibleItem(position: Offset): Int? {
@@ -232,19 +231,9 @@ private fun AccountGroupSelector(accountsKey: String) {
                             direction: Float, depthFn: () -> Float, onTick: () -> Unit
                         ): Job = scope.launch {
                             while (true) {
-                                val totalScroll = direction * scrollSpeedPx * (1f + depthFn())
-                                var remaining = kotlin.math.abs(totalScroll)
-                                val sign = if (totalScroll >= 0f) 1f else -1f
-
-                                while (remaining > 0f) {
-                                    val step = kotlin.math.min(remaining, maxScrollStepPx)
-                                    val consumed = gridState.scrollBy(sign * step)
-                                    if (consumed == 0f) break
-
-                                    remaining -= kotlin.math.abs(consumed)
-                                    onTick()
-                                }
-                                delay(16L) // yield one frame before next scroll cycle
+                                val consumed = gridState.scrollBy(direction * scrollSpeedPx * (1f + depthFn()))
+                                if (consumed != 0f) onTick()
+                                delay(16L)
                             }
                         }
 
