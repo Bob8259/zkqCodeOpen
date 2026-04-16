@@ -123,7 +123,7 @@ tasks.register<Exec>("buildJar") {
         "${highestBuildTools.absolutePath}/d8.bat"
     } else {
         // Fallback to a known version if auto-detection fails
-        "$sdkDir/build-tools/36.1.0/d8.bat"
+        "$sdkDir/build-tools/37.0.0/d8.bat"
     }
 
     // Use the android platform jar as library reference
@@ -165,7 +165,7 @@ tasks.register<Exec>("buildJar") {
             }
         }
 
-        // Clean old output artifact
+        // Clean old output artefact
         val jarFile = file(outputJar)
         if (jarFile.exists()) jarFile.delete()
 

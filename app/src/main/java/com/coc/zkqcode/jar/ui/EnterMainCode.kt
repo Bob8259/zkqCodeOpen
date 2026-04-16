@@ -4,10 +4,24 @@ package com.coc.zkqcode.jar.ui
 
 import android.content.Context
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.coc.zkqcode.jar.ui.theme.AppColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -130,14 +144,40 @@ private fun ConfigLoadingScreen() {
 
     val scope = rememberCoroutineScope()
 
-    Column(modifier = Modifier.background(Color.White)) {
-        Text("正在初始化配置文件...\n若长时间卡在此界面，将在 $countdown 秒后自动重启。")
-        CustomButton(
-            text = "点击此处手动关闭辅助", onClick = {
-                // Launch on IO dispatcher to avoid blocking the main thread (ANR)
-                scope.launch(Dispatchers.IO) {
-                    RunShell.runNoOutput("am force-stop com.coc.zkqcode >>/dev/null 2>&1", checkIsPlaying = false)
-                }
-            })
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(AppColors.Background),
+        contentAlignment = Alignment.Center
+    ) {
+        Box(
+            modifier = Modifier
+                .padding(horizontal = 32.dp)
+                .clip(RoundedCornerShape(16.dp))
+                .background(AppColors.CardBg)
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
+                modifier = Modifier.padding(horizontal = 24.dp, vertical = 28.dp)
+            ) {
+                Text(
+                    text = "正在初始化配置文件...\n若长时间卡在此界面，将在 $countdown 秒后自动重启。",
+                    textAlign = TextAlign.Center,
+                    fontWeight = FontWeight.Medium,
+                    fontSize = 15.sp,
+                    lineHeight = 24.sp,
+                    color = AppColors.TextPrimary
+                )
+                Spacer(modifier = Modifier.height(20.dp))
+                CustomButton(
+                    text = "点击此处手动关闭辅助", onClick = {
+                        // Launch on IO dispatcher to avoid blocking the main thread (ANR)
+                        scope.launch(Dispatchers.IO) {
+                            RunShell.runNoOutput("am force-stop com.coc.zkqcode >>/dev/null 2>&1", checkIsPlaying = false)
+                        }
+                    })
+            }
+        }
     }
 }

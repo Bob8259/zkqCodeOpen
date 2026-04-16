@@ -33,7 +33,7 @@ fun AccountConfig(
             val isRandomScheduling = GlobalVars.configStates[GLOBAL_SETTINGS.RANDOM_SCHEDULING.key]?.value == "1"
             if (isRandomScheduling) {
                 Text(
-                    text = "当前已开启随机上号，请在右上角前往特殊设置页面->随机上号，通过调整账号分组来控制该账号是否开启",
+                    text = "已开启随机上号，请在右上角前往特殊设置页面->随机上号，通过调整账号分组来控制该账号是否开启",
                     modifier = Modifier.padding(end = 10.dp),
                     style = MaterialTheme.typography.labelMedium,
                     color = Color.Gray
