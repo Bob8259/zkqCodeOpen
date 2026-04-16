@@ -74,17 +74,11 @@ import kotlinx.coroutines.delay
 // viewBox: 0 0 496.158 496.158
 private val InfoSvgIcon: ImageVector by lazy {
     ImageVector.Builder(
-        name = "InfoIcon",
-        defaultWidth = 18.dp,
-        defaultHeight = 18.dp,
-        viewportWidth = 496.158f,
-        viewportHeight = 496.158f
+        name = "InfoIcon", defaultWidth = 18.dp, defaultHeight = 18.dp, viewportWidth = 496.158f, viewportHeight = 496.158f
     ).apply {
         // Cyan/teal circle background
         path(
-            fill = SolidColor(Color(0xFF25B7D3)),
-            fillAlpha = 1f,
-            pathFillType = PathFillType.NonZero
+            fill = SolidColor(Color(0xFF25B7D3)), fillAlpha = 1f, pathFillType = PathFillType.NonZero
         ) {
             moveTo(496.158f, 248.085f)
             curveTo(496.158f, 111.063f, 385.089f, 0.003f, 248.083f, 0.003f)
@@ -95,9 +89,7 @@ private val InfoSvgIcon: ImageVector by lazy {
         }
         // White question mark shape
         path(
-            fill = SolidColor(Color(0xFFFFFFFF)),
-            fillAlpha = 1f,
-            pathFillType = PathFillType.NonZero
+            fill = SolidColor(Color(0xFFFFFFFF)), fillAlpha = 1f, pathFillType = PathFillType.NonZero
         ) {
             moveTo(138.216f, 173.592f)
             curveTo(138.216f, 159.677f, 142.683f, 145.577f, 151.619f, 131.295f)
@@ -145,50 +137,35 @@ private val InfoSvgIcon: ImageVector by lazy {
 }
 
 // ─── Step 3: Private helper — eliminates repeated getOrPut boilerplate ────────
-private fun rememberConfigState(key: String) =
-    GlobalVars.configStates.getOrPut(key) { mutableStateOf(Schema.getDefaultValue(key)) }
+private fun rememberConfigState(key: String) = GlobalVars.configStates.getOrPut(key) { mutableStateOf(Schema.getDefaultValue(key)) }
 
 // ─── Step 1: Private composable — eliminates duplicated info-icon + alert block ──
 @Composable
 private fun ExplainIcon(explain: String) {
     var showExplanation by remember { mutableStateOf(false) }
-    Image(
-        imageVector = InfoSvgIcon,
-        contentDescription = "info",
-        modifier = Modifier
-            .size(18.dp)
-            .clickable { showExplanation = true }
-            .padding(end = 2.dp)
-    )
+    Image(imageVector = InfoSvgIcon, contentDescription = "info", modifier = Modifier
+        .size(18.dp)
+        .clickable { showExplanation = true }
+        .padding(end = 2.dp))
     if (showExplanation) {
-        CustomAlertDialog(
-            onDismissRequest = { showExplanation = false },
-            title = {
-                Text(
-                    text = "注意事项",
-                    style = MaterialTheme.typography.titleMedium,
-                    color = Color.White
-                )
-            },
-            text = {
-                Text(text = explain, style = MaterialTheme.typography.bodyMedium)
-            },
-            confirmButton = {
-                TextButton(onClick = { showExplanation = false }) {
-                    Text("明白了")
-                }
+        CustomAlertDialog(onDismissRequest = { showExplanation = false }, title = {
+            Text(
+                text = "注意事项", style = MaterialTheme.typography.titleMedium, color = Color.White
+            )
+        }, text = {
+            Text(text = explain, style = MaterialTheme.typography.bodyMedium)
+        }, confirmButton = {
+            TextButton(onClick = { showExplanation = false }) {
+                Text("明白了")
             }
-        )
+        })
     }
 }
 
 // ─── Step 2: Private composable — eliminates repeated BasicTextField modifier chain ──
 @Composable
 private fun StyledBasicTextField(
-    value: String,
-    onValueChange: (String) -> Unit,
-    modifier: Modifier = Modifier,
-    endPadding: Dp = 6.dp
+    value: String, onValueChange: (String) -> Unit, modifier: Modifier = Modifier, endPadding: Dp = 6.dp
 ) {
     BasicTextField(
         value = value,
@@ -227,15 +204,12 @@ fun InputRowWithCheckBox(
             },
         )
         StyledBasicTextField(
-            value = inputState.value,
-            onValueChange = { newValue ->
+            value = inputState.value, onValueChange = { newValue ->
                 GlobalVars.isAutoRunEnabled = false
                 inputState.value = newValue
-            },
-            modifier = Modifier
+            }, modifier = Modifier
                 .align(Alignment.CenterVertically)
-                .padding(start = 6.dp, top = 6.dp),
-            endPadding = 6.dp
+                .padding(start = 6.dp, top = 6.dp), endPadding = 6.dp
         )
         if (inputLabel.isNotEmpty()) {
             Text(
@@ -259,10 +233,7 @@ fun CustomAlertDialog(
             modifier = Modifier
                 .wrapContentSize()
                 .padding(16.dp)
-                .border(1.dp, AppColors.GlassBorder, RoundedCornerShape(12.dp)),
-            shape = RoundedCornerShape(12.dp),
-            color = Color(0xFFE8EAED),
-            shadowElevation = 2.dp
+                .border(1.dp, AppColors.GlassBorder, RoundedCornerShape(12.dp)), shape = RoundedCornerShape(12.dp), color = Color(0xFFE8EAED), shadowElevation = 2.dp
         ) {
             Column {
                 // Orange gradient header for 注意事项 warning style
@@ -289,8 +260,7 @@ fun CustomAlertDialog(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 12.dp, vertical = 8.dp),
-                    horizontalArrangement = Arrangement.End
+                        .padding(horizontal = 12.dp, vertical = 8.dp), horizontalArrangement = Arrangement.End
                 ) {
                     confirmButton()
                 }
@@ -340,10 +310,7 @@ class WindowCenterPositionProvider : PopupPositionProvider {
 // Positions a popup directly below its anchor, aligned to the anchor's left edge.
 class BelowAnchorPositionProvider : PopupPositionProvider {
     override fun calculatePosition(
-        anchorBounds: IntRect,
-        windowSize: IntSize,
-        layoutDirection: LayoutDirection,
-        popupContentSize: IntSize
+        anchorBounds: IntRect, windowSize: IntSize, layoutDirection: LayoutDirection, popupContentSize: IntSize
     ): IntOffset {
         val x = anchorBounds.left.coerceAtMost(windowSize.width - popupContentSize.width)
         val y = anchorBounds.bottom
@@ -355,12 +322,7 @@ class BelowAnchorPositionProvider : PopupPositionProvider {
 // The optional `suffix` parameter replaces the now-deleted SettingInputRowWithSuffix.
 @Composable
 fun SettingInputRow(
-    key: String,
-    topPadding: Dp = 6.dp,
-    labelVerticalOffset: Dp = 0.dp,
-    suffix: String? = null,
-    minWidth: Dp? = null,
-    afterChange: ((String) -> Unit)? = null
+    key: String, topPadding: Dp = 6.dp, labelVerticalOffset: Dp = 0.dp, suffix: String? = null, minWidth: Dp? = null, afterChange: ((String) -> Unit)? = null
 ) {
     val state = rememberConfigState(key)
     val label = Schema.getDisplayName(key)
@@ -376,16 +338,13 @@ fun SettingInputRow(
         )
 
         StyledBasicTextField(
-            value = state.value,
-            onValueChange = { newValue ->
+            value = state.value, onValueChange = { newValue ->
                 GlobalVars.isAutoRunEnabled = false
                 state.value = newValue
                 afterChange?.invoke(newValue)
-            },
-            modifier = Modifier
+            }, modifier = Modifier
                 .align(Alignment.CenterVertically)
-                .then(if (minWidth != null) Modifier.widthIn(min = minWidth) else Modifier),
-            endPadding = if (suffix != null) 2.dp else 16.dp
+                .then(if (minWidth != null) Modifier.widthIn(min = minWidth) else Modifier), endPadding = if (suffix != null) 2.dp else 16.dp
         )
 
         suffix?.let {
@@ -533,7 +492,10 @@ fun SettingSection(
                 .fillMaxWidth()
                 .padding(vertical = 4.dp)
                 .border(1.5.dp, AppColors.GlassBorder, RoundedCornerShape(12.dp)),
-            shape = RoundedCornerShape(12.dp), color = AppColors.CardBg, shadowElevation = 0.dp, tonalElevation = 0.dp
+            shape = RoundedCornerShape(12.dp),
+            color = AppColors.CardBg,
+            shadowElevation = 0.dp,
+            tonalElevation = 0.dp
         ) {
             Column(modifier = Modifier.padding(horizontal = 10.dp, vertical = 8.dp)) {
                 content()
@@ -582,54 +544,38 @@ fun SettingDropdown(
             // Modern popup panel with blue rounded-square option cards, anchored below the trigger
             if (expanded) {
                 Popup(
-                    popupPositionProvider = BelowAnchorPositionProvider(),
-                    onDismissRequest = { expanded = false },
-                    properties = PopupProperties(focusable = true)
+                    popupPositionProvider = BelowAnchorPositionProvider(), onDismissRequest = { expanded = false }, properties = PopupProperties(focusable = true)
                 ) {
                     Surface(
-                        shape = RoundedCornerShape(12.dp),
-                        color = AppColors.CardBg,
-                        shadowElevation = 8.dp,
-                        modifier = Modifier.padding(4.dp)
+                        shape = RoundedCornerShape(12.dp), color = AppColors.CardBg, shadowElevation = 8.dp, modifier = Modifier.padding(4.dp)
                     ) {
                         Column(
                             modifier = Modifier
                                 .padding(8.dp)
                                 .heightIn(max = 320.dp)
-                                .verticalScroll(rememberScrollState()),
-                            verticalArrangement = Arrangement.spacedBy(6.dp)
+                                .verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(6.dp)
                         ) {
                             options.forEachIndexed { idx, option ->
                                 val isSelected = idx == selectedIndex
-                                val cardBg = if (isSelected)
-                                    AppColors.Primary
-                                else
-                                    AppColors.PrimaryLight.copy(alpha = 0.10f)
-                                val cardBorder = if (isSelected)
-                                    AppColors.Primary
-                                else
-                                    AppColors.PrimaryLight
-                                val textColor = if (isSelected)
-                                    Color.White
-                                else
-                                    AppColors.TextPrimary
+                                val cardBg = if (isSelected) AppColors.Primary
+                                else AppColors.PrimaryLight.copy(alpha = 0.10f)
+                                val cardBorder = if (isSelected) AppColors.Primary
+                                else AppColors.PrimaryLight
+                                val textColor = if (isSelected) Color.White
+                                else AppColors.TextPrimary
 
-                                Box(
-                                    modifier = Modifier
-                                        .background(cardBg, RoundedCornerShape(8.dp))
-                                        .border(1.dp, cardBorder, RoundedCornerShape(8.dp))
-                                        .clickable {
-                                            GlobalVars.isAutoRunEnabled = false
-                                            state.value = idx.toString()
-                                            expanded = false
-                                            afterChange?.invoke(idx)
-                                        }
-                                        .padding(horizontal = 16.dp, vertical = 8.dp)
-                                ) {
+                                Box(modifier = Modifier
+                                    .background(cardBg, RoundedCornerShape(8.dp))
+                                    .border(1.dp, cardBorder, RoundedCornerShape(8.dp))
+                                    .clickable {
+                                        GlobalVars.isAutoRunEnabled = false
+                                        state.value = idx.toString()
+                                        expanded = false
+                                        afterChange?.invoke(idx)
+                                    }
+                                    .padding(horizontal = 16.dp, vertical = 8.dp)) {
                                     Text(
-                                        text = option,
-                                        color = textColor,
-                                        style = MaterialTheme.typography.labelMedium
+                                        text = option, color = textColor, style = MaterialTheme.typography.labelMedium
                                     )
                                 }
                             }
@@ -645,33 +591,25 @@ fun SettingDropdown(
 // Used as the collapse/expand toggle for each named section.
 @Composable
 fun SectionBanner(
-    title: String,
-    isExpanded: Boolean,
-    onClick: () -> Unit
+    title: String, isExpanded: Boolean, onClick: () -> Unit
 ) {
     val gradient = Brush.horizontalGradient(
-        colors = listOf(AppColors.PrimaryLight, AppColors.Primary)
+        colors = listOf(AppColors.Primary, AppColors.PrimaryLight)
     )
     val shape = RoundedCornerShape(10.dp)
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 4.dp, vertical = 4.dp)
-            .background(gradient, shape)
-            .clickable { onClick() }
-            .padding(horizontal = 16.dp, vertical = 14.dp),
+    Row(modifier = Modifier
+        .fillMaxWidth()
+        .padding(horizontal = 4.dp, vertical = 4.dp)
+        .background(gradient, shape)
+        .clickable { onClick() }
+        .padding(horizontal = 16.dp, vertical = 14.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
+        verticalAlignment = Alignment.CenterVertically) {
         Text(
-            text = title,
-            color = Color.White,
-            style = MaterialTheme.typography.titleSmall
+            text = title, color = Color.White, style = MaterialTheme.typography.titleSmall
         )
         Text(
-            text = if (isExpanded) "▼" else "▶",
-            color = Color.White,
-            style = MaterialTheme.typography.titleSmall
+            text = if (isExpanded) "▼" else "▶", color = Color.White, style = MaterialTheme.typography.titleSmall
         )
     }
 }

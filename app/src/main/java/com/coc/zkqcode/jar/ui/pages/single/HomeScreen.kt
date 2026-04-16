@@ -12,15 +12,12 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.PrimaryScrollableTabRow
-import androidx.compose.material3.Tab
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -36,6 +33,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.jar.ui.theme.AppColors
@@ -181,19 +179,34 @@ fun HomeScreen(
             .background(AppColors.Background)
     ) {
         // 1. Top Tab bar
-        PrimaryScrollableTabRow(
-            selectedTabIndex = selectedTabIndex, edgePadding = 0.dp, minTabWidth = 0.dp, containerColor = AppColors.Primary
+        // Glassmorphism tab bar — pill-shaped, semi-transparent, matching HTML nav style
+        Surface(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 6.dp)
+                .padding(top = 6.dp)
+                .border(1.dp, AppColors.Border, RoundedCornerShape(12.dp)),
+            shape = RoundedCornerShape(12.dp),
+            color = AppColors.CardBg,
+            shadowElevation = 0.dp
         ) {
-            tabs.forEachIndexed { index, title ->
-                Tab(
-                    selected = selectedTabIndex == index, onClick = { selectedTabIndex = index }, modifier = Modifier
-                        .wrapContentWidth() // Allows the tab to wrap its content
-                        .widthIn(min = 0.dp), // BREAKS the default minimum width constraint
-                    selectedContentColor = Color.White, unselectedContentColor = Color.White.copy(alpha = 0.75f), content = {
-                        Text(
-                            text = title, style = MaterialTheme.typography.labelLarge, modifier = Modifier.padding(horizontal = 5.dp, vertical = 5.dp)
-                        )
-                    })
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 10.dp), horizontalArrangement = Arrangement.SpaceAround, verticalAlignment = Alignment.CenterVertically
+            ) {
+                tabs.forEachIndexed { index, title ->
+                    val isActive = selectedTabIndex == index
+                    Text(
+                        text = title,
+                        style = MaterialTheme.typography.labelLarge,
+                        fontWeight = if (isActive) FontWeight.SemiBold else FontWeight.Normal,
+                        color = if (isActive) AppColors.Primary else AppColors.NavInactive,
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(8.dp))
+                            .clickable { selectedTabIndex = index }
+                            .padding(horizontal = 6.dp, vertical = 6.dp))
+                }
             }
         }
 
