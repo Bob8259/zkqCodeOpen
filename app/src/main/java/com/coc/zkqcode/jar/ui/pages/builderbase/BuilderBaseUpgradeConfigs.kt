@@ -51,14 +51,18 @@ fun BuilderBaseUpgradeConfigs(index: Int, onNavigatePriority: (Int) -> Unit = {}
         }
     }
     Column {
-        CustomButton(text = if (isExpanded.value) "缩起列表" else "展开列表", onClick = { isExpanded.value = !isExpanded.value }, containerColor = AppColors.Teal)
-
-        AnimatedVisibility(visible = isExpanded.value) {
-            Column {
+        Row {
+            CustomButton(text = if (isExpanded.value) "缩起列表" else "展开列表", onClick = { isExpanded.value = !isExpanded.value }, containerColor = AppColors.Teal)
+            AnimatedVisibility(visible = isExpanded.value) {
                 Row {
                     CustomButton(text = "一键全选", onClick = selectAll)
                     CustomButton(text = "一键反选", onClick = invertSelection)
                 }
+            }
+        }
+
+        AnimatedVisibility(visible = isExpanded.value) {
+            Column {
                 CustomButton(
                     onClick = { onNavigatePriority(index) },
                     text = "点击调整夜世界升级优先度"

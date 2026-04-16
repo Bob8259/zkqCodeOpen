@@ -51,19 +51,21 @@ fun MainBasePetConfigs(index: Int) {
         }
     }
     Column {
-        CustomButton(text = if (isExpanded.value) "缩起列表" else "展开列表", onClick = { isExpanded.value = !isExpanded.value }, containerColor = AppColors.Teal)
-
-        AnimatedVisibility(visible = isExpanded.value) {
-            Column {
+        Row {
+            CustomButton(text = if (isExpanded.value) "缩起列表" else "展开列表", onClick = { isExpanded.value = !isExpanded.value }, containerColor = AppColors.Teal)
+            AnimatedVisibility(visible = isExpanded.value) {
                 Row {
                     CustomButton(text = "一键全选", onClick = selectAll)
                     CustomButton(text = "一键反选", onClick = invertSelection)
                 }
-                FlowRow(modifier = Modifier.padding(top = 6.dp).border(1.dp, Color.Gray, RoundedCornerShape(8.dp)).padding(8.dp)) {
+            }
+        }
+
+        AnimatedVisibility(visible = isExpanded.value) {
+            FlowRow(modifier = Modifier.padding(top = 6.dp).border(1.dp, Color.Gray, RoundedCornerShape(8.dp)).padding(8.dp)) {
                     items.forEach { item ->
                         SettingToggleButton(key = "${item.key}_c${index}")
                     }
-                }
             }
         }
     }
