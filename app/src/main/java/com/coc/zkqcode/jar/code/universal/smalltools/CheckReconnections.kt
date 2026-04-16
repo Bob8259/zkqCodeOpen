@@ -11,6 +11,7 @@ import com.coc.zkqcode.core.util.touchactions.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.InGameVars
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
+import com.coc.zkqcode.jar.code.universal.recognizer.TextRecognizer
 import com.coc.zkqcode.jar.ui.schema.Schema
 import kotlinx.coroutines.delay
 
@@ -39,8 +40,20 @@ suspend fun checkReconnections(): Boolean {
                 return@any false // Not enough white pixels, continue checking remaining schemas
             }
             accountMessage("检测到重连，白色像素个数$whiteCount")
-            //TODO:
-            // 
+
+            // Use ML Kit to detect rating/review dialogue text in the same area as countWhitePixels
+            val recognizedTexts = TextRecognizer.recognize(
+                startX = 270, startY = 230,
+                endX = 1010, endY = 430,
+                useChinese = true,
+                threshold = 140,
+                applyPreprocess = true,
+                invertBinarization = true
+            )
+            val recognizedTextString = recognizedTexts.joinToString(" ") { it.text }
+            val isRatingDialog = recognizedTextString.contains("评分") ||
+                    recognizedTextString.contains("反馈意见")
+
             val configKey = Schema.GLOBAL_SETTINGS.AFTER_KICK_OPTION.key
             val action = GlobalVars.configStates[configKey]?.value?.toInt() ?: logAndRestart("Can not get $configKey")
             when (action) {
@@ -49,6 +62,10 @@ suspend fun checkReconnections(): Boolean {
                     TouchActions.tap(793, 459)
                     TouchActions.tap(379, 458)
                     TouchActions.tap(338, 511)
+                    if (isRatingDialog) {
+                        accountMessage("检测到评分/反馈对话框，执行重新提取存档，识别文本: $recognizedTextString")
+                        reExtractGameSavings()
+                    }
                 }
 
                 1 -> needReturnFalse = true // Signal caller to switch accounts
