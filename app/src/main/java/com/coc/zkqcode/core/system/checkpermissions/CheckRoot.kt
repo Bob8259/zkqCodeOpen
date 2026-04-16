@@ -102,7 +102,7 @@ fun CheckRootScreen() {
             }
 
             RootStatus.SERVER_ERROR -> {
-                FullScreenMessage("连接到Root服务器失败")
+                FullScreenMessage("连接到Root服务器失败。")
             }
 
             RootStatus.GRANTED -> {
@@ -128,7 +128,7 @@ fun CheckRootScreen() {
                 }
 
                 FullScreenMessage(
-                    message = "权限检查通过，配置加载完成。\n\n若未能自动显示主界面，请手动点击按钮"
+                    message = "权限检查通过，配置加载完成。\n\n若未能自动显示主界面，请手动点击按钮。"
                 ) {
                     LocalCustomButton(
                         text = "显示主界面",
