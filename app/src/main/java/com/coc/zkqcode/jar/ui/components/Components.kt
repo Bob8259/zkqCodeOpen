@@ -140,15 +140,14 @@ private val InfoSvgIcon: ImageVector by lazy {
 // ─── Step 3: Private helper — eliminates repeated getOrPut boilerplate ────────
 private fun rememberConfigState(key: String) = GlobalVars.configStates.getOrPut(key) { mutableStateOf(Schema.getDefaultValue(key)) }
 
-// ─── Step 1: Private composable — eliminates duplicated info-icon + alert block ──
+// ─── Step 1: Internal composable — eliminates duplicated info-icon + alert block ──
 @Composable
-private fun ExplainIcon(explain: String) {
+internal fun ExplainIcon(explain: String) {
     var showExplanation by remember { mutableStateOf(false) }
-    Image(
-        imageVector = InfoSvgIcon, contentDescription = "info", modifier = Modifier
-            .size(18.dp)
-            .clickable { showExplanation = true }
-            .padding(end = 2.dp))
+    Image(imageVector = InfoSvgIcon, contentDescription = "info", modifier = Modifier
+        .size(18.dp)
+        .clickable { showExplanation = true }
+        .padding(end = 2.dp))
     if (showExplanation) {
         CustomAlertDialog(onDismissRequest = { showExplanation = false }, title = {
             Text(
@@ -236,8 +235,7 @@ fun CustomAlertDialog(
             modifier = Modifier
                 .fillMaxSize()
                 .background(Color(0x99000000))
-                .clickable { onDismissRequest() },
-            contentAlignment = Alignment.Center
+                .clickable { onDismissRequest() }, contentAlignment = Alignment.Center
         ) {
             Surface(
                 modifier = Modifier
@@ -245,10 +243,7 @@ fun CustomAlertDialog(
                     .padding(16.dp)
                     .border(1.dp, AppColors.GlassBorder, RoundedCornerShape(24.dp))
                     // Consume clicks so they don't propagate to the backdrop
-                    .clickable(enabled = false) {},
-                shape = RoundedCornerShape(24.dp),
-                color = Color(0xF2FFFFFF),
-                shadowElevation = 3.dp
+                    .clickable(enabled = false) {}, shape = RoundedCornerShape(24.dp), color = Color(0xF2FFFFFF), shadowElevation = 3.dp
             ) {
                 Column {
                     // Title area — plain padding, no coloured header bar
@@ -271,8 +266,7 @@ fun CustomAlertDialog(
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 12.dp, vertical = 8.dp),
-                        horizontalArrangement = Arrangement.End
+                            .padding(horizontal = 12.dp, vertical = 8.dp), horizontalArrangement = Arrangement.End
                     ) {
                         confirmButton()
                     }
@@ -577,17 +571,16 @@ fun SettingDropdown(
                                 val textColor = if (isSelected) Color.White
                                 else AppColors.TextPrimary
 
-                                Box(
-                                    modifier = Modifier
-                                        .background(cardBg, RoundedCornerShape(8.dp))
-                                        .border(1.dp, cardBorder, RoundedCornerShape(8.dp))
-                                        .clickable {
-                                            GlobalVars.isAutoRunEnabled = false
-                                            state.value = idx.toString()
-                                            expanded = false
-                                            afterChange?.invoke(idx)
-                                        }
-                                        .padding(horizontal = 16.dp, vertical = 8.dp)) {
+                                Box(modifier = Modifier
+                                    .background(cardBg, RoundedCornerShape(8.dp))
+                                    .border(1.dp, cardBorder, RoundedCornerShape(8.dp))
+                                    .clickable {
+                                        GlobalVars.isAutoRunEnabled = false
+                                        state.value = idx.toString()
+                                        expanded = false
+                                        afterChange?.invoke(idx)
+                                    }
+                                    .padding(horizontal = 16.dp, vertical = 8.dp)) {
                                     Text(
                                         text = option, color = textColor, style = MaterialTheme.typography.labelMedium
                                     )
@@ -611,13 +604,12 @@ fun SectionBanner(
         colors = listOf(AppColors.Primary, AppColors.PrimaryLight)
     )
     val shape = RoundedCornerShape(10.dp)
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 4.dp, vertical = 4.dp)
-            .background(gradient, shape)
-            .clickable { onClick() }
-            .padding(horizontal = 16.dp, vertical = 14.dp),
+    Row(modifier = Modifier
+        .fillMaxWidth()
+        .padding(horizontal = 4.dp, vertical = 4.dp)
+        .background(gradient, shape)
+        .clickable { onClick() }
+        .padding(horizontal = 16.dp, vertical = 14.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically) {
         Text(

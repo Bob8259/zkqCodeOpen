@@ -49,7 +49,7 @@ suspend fun upgradeGearsAndPets(): Boolean {
         else -> return true
     }
     accountMessage("准备升级$actionName")
-    val result: Boolean = withHeroHall { upgradeGearsAction(canUpgradeGears, shouldUpgradePets) }
+    val result: Boolean = withHeroHall { upgradeGearsAndPetsAction(canUpgradeGears, shouldUpgradePets) }
 
     // Record only gear checks so the cooldown never blocks pet upgrades.
     if (canUpgradeGears) {
@@ -83,7 +83,7 @@ private suspend fun checkPets() {
 
     accountMessage("已启用 ${enabledPets.size} 个战宠")
 
-    repeat(3) {
+    repeat(4) {
         val screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult ?: logAndRestart("checkPets: Screen Capture Failed.")
 
         for ((pet, colorSchema) in enabledPets) {
@@ -122,7 +122,7 @@ private suspend fun checkPets() {
     }
 }
 
-private suspend fun upgradeGearsAction(shouldUpgradeGears: Boolean, shouldUpgradePets: Boolean) {
+private suspend fun upgradeGearsAndPetsAction(shouldUpgradeGears: Boolean, shouldUpgradePets: Boolean) {
     if (shouldUpgradeGears) {
         TouchActions.tap(685, 590)//Open Smith
         val upgradeGear = findMultiColorsUntil(schemas = listOf(MyColors.UpgradeGearArrow, MyColors.NewGear), duration = 800)

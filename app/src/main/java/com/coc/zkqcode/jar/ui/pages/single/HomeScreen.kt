@@ -14,10 +14,14 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -37,10 +41,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.util.fileactions.FileHelper
 import com.coc.zkqcode.jar.ui.components.CustomButton
+import com.coc.zkqcode.jar.ui.components.ExplainIcon
 import com.coc.zkqcode.jar.ui.components.SettingDropdown
 import com.coc.zkqcode.jar.ui.components.SettingInputRow
 import com.coc.zkqcode.jar.ui.components.SettingSection
@@ -206,23 +212,61 @@ fun HomeScreen(
                                         modifier = Modifier.padding(top = 8.dp, end = 6.dp)
                                     )
                                     CustomButton(
-                                        text = "修改任意配置停止计时", onClick = { GlobalVars.isAutoRunEnabled = false })
+                                        text = "停止计时", onClick = { GlobalVars.isAutoRunEnabled = false })
                                 }
                                 LoginScreen(
                                     onAdFreeClick = {
                                         saveAndSetPlaying(false)
                                     })
                             }
-                            SettingSection {
-                                FlowRow {
-                                    CustomButton(text = "启动手动切号模式", onClick = {
+                            // Quick-action two-card row — mirrors the HTML .quick-buttons grid
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 4.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)
+                            ) {
+                                QuickActionCard(
+                                    title = "手动切号？", subtitle = "点击切号", dotColor = Color(0xFFED8936), onClick = {
                                         AppStateManager.setMode(AppMode.SwitchAccount)
                                         onSaveSuccess()
-                                    })
-                                    CustomButton(text = "截屏反馈问题", onClick = {
+                                    }, modifier = Modifier.weight(1f)
+                                )
+                                QuickActionCard(
+                                    title = "发现问题？", subtitle = "点击反馈", dotColor = AppColors.Teal, onClick = {
                                         AppStateManager.setMode(AppMode.BugReport)
                                         onSaveSuccess()
-                                    })
+                                    }, modifier = Modifier.weight(1f)
+                                )
+                            }
+
+                            SettingSection {
+                                // Tips section header — orange dot + title, mirrors HTML .tips-card header
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(bottom = 8.dp)
+                                ) {
+                                    Box(
+                                        modifier = Modifier
+                                            .size(12.dp)
+                                            .background(Color(0xFFED8936), CircleShape)
+                                    )
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                    Text(
+                                        text = "换机前务必清除数据 保护账号安全", style = MaterialTheme.typography.labelMedium, color = AppColors.TextPrimary
+                                    )
+                                }
+                                // Two-tile grid — mirrors HTML .tips-grid / .tips-item
+                                Row(
+                                    horizontalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.padding(bottom = 8.dp)
+                                ) {
+                                    TipsActionTile(
+                                        text = "清除账号记忆",
+                                        explain = "辅助会缓存账号的运行状态，例如当前账号是否已完成突袭、部落竞赛等任务。切换账号后若未清除缓存，辅助将沿用先前账号的状态信息，可能导致异常操作。",
+                                        onClick = { cleanMemory() },
+                                        modifier = Modifier.weight(1f)
+                                    )
+                                    TipsActionTile(
+                                        text = "清除全部数据", onClick = { cleanAllData() }, modifier = Modifier.weight(1f)
+                                    )
                                 }
                                 // Centre mixed-height setting items within each FlowRow line so
                                 // switch labels and dropdown labels stay aligned after wrapping.
@@ -248,20 +292,6 @@ fun HomeScreen(
                                     SettingInputRow(key = GLOBAL_SETTINGS.DEVICE_REMARK.key)
 
                                 }
-                                FlowRow {
-                                    CustomButton(
-                                        text = "清除账号记忆",
-                                        onClick = { cleanMemory() },
-                                        explain = "辅助会缓存账号的运行状态，例如当前账号是否已完成突袭、部落竞赛等任务。切换账号后若未清除缓存，辅助将沿用先前账号的状态信息，可能导致异常操作。"
-                                    )
-                                    CustomButton(
-                                        text = "清除全部数据", onClick = { cleanAllData() })
-                                }
-                                Text(
-                                    text = "换机或设备到期前必须清空全部数据！部分云机在设备到期后不会清空用户数据，严重威胁隐私安全！",
-                                    modifier = Modifier.padding(top = 4.dp, bottom = 2.dp),
-                                    style = MaterialTheme.typography.labelMedium,
-                                )
                             }
                         }
                     }
@@ -431,4 +461,71 @@ fun HomeScreen(
             onDismissCleanAll = { showCleanAllConfirmation = false })
     }
 
+}
+
+// Private composable — mirrors the HTML .quick-btn glass card with dot + title + subtitle + arrow.
+@Composable
+private fun QuickActionCard(
+    title: String, subtitle: String, dotColor: Color, onClick: () -> Unit, modifier: Modifier = Modifier
+) {
+    Surface(
+        modifier = modifier
+            .border(1.5.dp, AppColors.GlassBorder, RoundedCornerShape(12.dp))
+            .clickable { onClick() }, shape = RoundedCornerShape(12.dp), color = AppColors.CardBg, shadowElevation = 0.dp
+    ) {
+        Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 20.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Box(
+                    modifier = Modifier
+                        .size(12.dp)
+                        .background(dotColor, CircleShape)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = title, style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Medium, color = AppColors.TextPrimary
+                )
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = subtitle, style = MaterialTheme.typography.bodySmall, color = AppColors.NavInactive
+                )
+                Text(
+                    text = "›", style = MaterialTheme.typography.bodyMedium, color = AppColors.NavInactive
+                )
+            }
+        }
+    }
+}
+
+// Private composable — mirrors the HTML .tips-item tile: light-blue bg, centered text, optional inline explain icon.
+@Composable
+private fun TipsActionTile(
+    text: String, onClick: () -> Unit, modifier: Modifier = Modifier, explain: String? = null
+) {
+    Surface(
+        modifier = modifier
+            .heightIn(min = 70.dp)
+            .border(1.dp, AppColors.Primary.copy(alpha = 0.2f), RoundedCornerShape(12.dp))
+            .clickable { onClick() },
+        shape = RoundedCornerShape(12.dp),
+        color = AppColors.Primary.copy(alpha = 0.12f),
+        shadowElevation = 0.dp
+    ) {
+        Box(
+            contentAlignment = Alignment.Center, modifier = Modifier.padding(16.dp)
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = text, style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Medium, color = AppColors.Primary, textAlign = TextAlign.Center
+                )
+                explain?.let {
+                    Spacer(modifier = Modifier.width(4.dp))
+                    ExplainIcon(explain = it)
+                }
+            }
+        }
+    }
 }
