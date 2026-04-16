@@ -143,20 +143,21 @@ private fun rememberConfigState(key: String) = GlobalVars.configStates.getOrPut(
 @Composable
 private fun ExplainIcon(explain: String) {
     var showExplanation by remember { mutableStateOf(false) }
-    Image(imageVector = InfoSvgIcon, contentDescription = "info", modifier = Modifier
-        .size(18.dp)
-        .clickable { showExplanation = true }
-        .padding(end = 2.dp))
+    Image(
+        imageVector = InfoSvgIcon, contentDescription = "info", modifier = Modifier
+            .size(18.dp)
+            .clickable { showExplanation = true }
+            .padding(end = 2.dp))
     if (showExplanation) {
         CustomAlertDialog(onDismissRequest = { showExplanation = false }, title = {
             Text(
-                text = "注意事项", style = MaterialTheme.typography.titleMedium, color = Color.White
+                text = "注意事项", style = MaterialTheme.typography.titleMedium, color = AppColors.TextPrimary
             )
         }, text = {
             Text(text = explain, style = MaterialTheme.typography.bodyMedium)
         }, confirmButton = {
             TextButton(onClick = { showExplanation = false }) {
-                Text("明白了")
+                Text("明白了", color = AppColors.Primary)
             }
         })
     }
@@ -229,40 +230,51 @@ fun CustomAlertDialog(
     Popup(
         popupPositionProvider = WindowCenterPositionProvider(), onDismissRequest = onDismissRequest, properties = PopupProperties(focusable = true)
     ) {
-        Surface(
+        // Semi-transparent backdrop overlay
+        Box(
             modifier = Modifier
-                .wrapContentSize()
-                .padding(16.dp)
-                .border(1.dp, AppColors.GlassBorder, RoundedCornerShape(12.dp)), shape = RoundedCornerShape(12.dp), color = Color(0xFFE8EAED), shadowElevation = 2.dp
+                .fillMaxWidth()
+                .background(Color(0x4D000000))
+                .clickable { onDismissRequest() },
+            contentAlignment = Alignment.Center
         ) {
-            Column {
-                // Orange gradient header for 注意事项 warning style
-                title?.let {
-                    val gradient = Brush.horizontalGradient(
-                        colors = listOf(Color(0xFFf9a825), Color(0xFFfbbc05))
-                    )
-                    Box(
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth(0.88f)
+                    .padding(16.dp)
+                    .border(1.dp, AppColors.GlassBorder, RoundedCornerShape(24.dp))
+                    // Consume clicks so they don't propagate to the backdrop
+                    .clickable(enabled = false) {},
+                shape = RoundedCornerShape(24.dp),
+                color = Color(0xF2FFFFFF),
+                shadowElevation = 3.dp
+            ) {
+                Column {
+                    // Title area — plain padding, no coloured header bar
+                    title?.let {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp, vertical = 12.dp)
+                        ) {
+                            it()
+                        }
+                    }
+                    // Body content
+                    text?.let {
+                        Box(modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 12.dp)) {
+                            it()
+                        }
+                    }
+                    // Confirm button row — right-aligned, primary blue text
+                    Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .background(gradient)
-                            .padding(horizontal = 16.dp, vertical = 12.dp)
+                            .padding(horizontal = 12.dp, vertical = 8.dp),
+                        horizontalArrangement = Arrangement.End
                     ) {
-                        it()
+                        confirmButton()
                     }
-                }
-                // Body content
-                text?.let {
-                    Box(modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)) {
-                        it()
-                    }
-                }
-                // Confirm button row
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 12.dp, vertical = 8.dp), horizontalArrangement = Arrangement.End
-                ) {
-                    confirmButton()
                 }
             }
         }
@@ -564,16 +576,17 @@ fun SettingDropdown(
                                 val textColor = if (isSelected) Color.White
                                 else AppColors.TextPrimary
 
-                                Box(modifier = Modifier
-                                    .background(cardBg, RoundedCornerShape(8.dp))
-                                    .border(1.dp, cardBorder, RoundedCornerShape(8.dp))
-                                    .clickable {
-                                        GlobalVars.isAutoRunEnabled = false
-                                        state.value = idx.toString()
-                                        expanded = false
-                                        afterChange?.invoke(idx)
-                                    }
-                                    .padding(horizontal = 16.dp, vertical = 8.dp)) {
+                                Box(
+                                    modifier = Modifier
+                                        .background(cardBg, RoundedCornerShape(8.dp))
+                                        .border(1.dp, cardBorder, RoundedCornerShape(8.dp))
+                                        .clickable {
+                                            GlobalVars.isAutoRunEnabled = false
+                                            state.value = idx.toString()
+                                            expanded = false
+                                            afterChange?.invoke(idx)
+                                        }
+                                        .padding(horizontal = 16.dp, vertical = 8.dp)) {
                                     Text(
                                         text = option, color = textColor, style = MaterialTheme.typography.labelMedium
                                     )
@@ -597,12 +610,13 @@ fun SectionBanner(
         colors = listOf(AppColors.Primary, AppColors.PrimaryLight)
     )
     val shape = RoundedCornerShape(10.dp)
-    Row(modifier = Modifier
-        .fillMaxWidth()
-        .padding(horizontal = 4.dp, vertical = 4.dp)
-        .background(gradient, shape)
-        .clickable { onClick() }
-        .padding(horizontal = 16.dp, vertical = 14.dp),
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 4.dp, vertical = 4.dp)
+            .background(gradient, shape)
+            .clickable { onClick() }
+            .padding(horizontal = 16.dp, vertical = 14.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically) {
         Text(

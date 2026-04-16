@@ -1,0 +1,1681 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>紫孔雀 · 淡蓝色白天模式</title>
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif;
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+  }
+
+  :root {
+    --body-bg: #e8f4fc;
+    --card-bg: rgba(255, 255, 255, 0.65);
+    --card-border: rgba(173, 216, 230, 0.4);
+    --text-main: #2d3748;
+    --text-secondary: #718096;
+    --text-light: #8e8e93;
+    --btn-blue: #e8f4fc;
+    --btn-blue-text: #4299e1;
+    --nav-bg: rgba(255, 255, 255, 0.65);
+    --nav-active: #4299e1;
+    --nav-inactive: #718096;
+    --input-bg: #fff;
+    --input-border: #aed0e0;
+    --switch-on: #4cd964;
+    --switch-off: #ccc;
+    --orange-bg: #ff9500; /* 新增橙色主题色 */
+    --blue-btn: #4299e1; /* 时间段按钮背景色 */
+  }
+
+  [data-theme="dark"] {
+    --body-bg: #121212;
+    --card-bg: rgba(30, 30, 40, 0.7);
+    --card-border: rgba(100, 116, 139, 0.3);
+    --text-main: #f0f0f0;
+    --text-secondary: #b0b0c0;
+    --text-light: #9090a0;
+    --btn-blue: rgba(66, 153, 225, 0.2);
+    --btn-blue-text: #90caf9;
+    --nav-bg: rgba(30, 30, 40, 0.8);
+    --nav-active: #90caf9;
+    --nav-inactive: #889;
+    --input-bg: #242535;
+    --input-border: #445;
+    --switch-on: #4cd964;
+    --switch-off: #666;
+    --orange-bg: #e68a00;
+    --blue-btn: #3182ce;
+  }
+
+  body {
+    background: var(--body-bg);
+    color: var(--text-main);
+    padding: 16px;
+    max-width: 480px;
+    margin: 0 auto;
+    padding-bottom: 90px;
+  }
+
+  /* 右侧竖向悬浮按钮 */
+  .float-controls {
+    position: fixed;
+    top: 50%;
+    right: 8px;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    z-index: 9999;
+  }
+
+  .float-btn {
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    background: var(--btn-blue);
+    border: 1px solid var(--card-border);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transition: transform 0.2s;
+  }
+  .float-btn:active {
+    transform: scale(0.95);
+  }
+  .float-btn svg {
+    width: 18px;
+    height: 18px;
+    fill: var(--btn-blue-text);
+  }
+
+  .glass {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    backdrop-filter: blur(20px) saturate(1.8);
+    -webkit-backdrop-filter: blur(20px) saturate(1.8);
+    border-radius: 24px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  }
+
+  .card {
+    padding: 20px;
+    margin-bottom: 24px;
+  }
+
+  .status-card {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .status-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .status-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .logo {
+    width: 72px;
+    height: 72px;
+    background: rgba(173, 216, 230, 0.3);
+    border-radius: 16px;
+    display: grid;
+    place-items: center;
+  }
+
+  .logo svg {
+    width: 40px;
+    height: 40px;
+    fill: #4299e1;
+  }
+
+  .app-name {
+    font-size: 28px;
+    color: var(--text-secondary);
+  }
+
+  .status {
+    font-size: 40px;
+    font-weight: 600;
+    color: #38b2ac;
+  }
+
+  .status-right {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-end;
+  }
+
+  .theme-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    color: var(--btn-blue-text);
+    background: var(--btn-blue);
+    padding: 5px 9px;
+    border-radius: 10px;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .notice-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 15px;
+    color: var(--btn-blue-text);
+    background: var(--btn-blue);
+    padding: 6px 10px;
+    border-radius: 10px;
+    cursor: pointer;
+    user-select: none;
+    transition: transform 0.2s;
+  }
+  .notice-btn:active {
+    transform: scale(0.95);
+  }
+
+  .user-info {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 16px;
+    color: var(--btn-blue-text);
+    background: var(--btn-blue);
+    padding: 8px 12px;
+    border-radius: 12px;
+    cursor: pointer;
+    user-select: none;
+    transition: transform 0.2s;
+  }
+  .user-info:active {
+    transform: scale(0.96);
+  }
+
+  .user-icon {
+    width: 20px;
+    height: 20px;
+  }
+
+  .gem-line {
+    font-size: 16px;
+    color: var(--text-secondary);
+    margin-top: 8px;
+    text-align: right;
+  }
+
+  .slogan {
+    text-align: center;
+    font-size: 15px;
+    color: var(--text-light);
+  }
+
+  .runtime {
+    background: var(--btn-blue);
+    border-radius: 20px;
+    padding: 8px 16px;
+    text-align: center;
+    font-size: 16px;
+  }
+
+  .login-card {
+    background: var(--btn-blue);
+    border-radius: 16px;
+    padding: 16px;
+    display: none;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .login-card.show {
+    display: flex;
+  }
+
+  .login-card input {
+    padding: 12px 14px;
+    border-radius: 12px;
+    border: 1px solid var(--input-border);
+    background: var(--input-bg);
+    font-size: 15px;
+    outline: none;
+    color: var(--text-main);
+  }
+
+  .login-btn-group {
+    display: flex;
+    gap: 10px;
+  }
+
+  .login-btn, .logout-btn {
+    flex: 1;
+    padding: 12px;
+    border-radius: 12px;
+    border: none;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+  }
+
+  .login-btn {
+    background: #4299e1;
+    color: #fff;
+  }
+
+  .logout-btn {
+    background: var(--card-bg);
+    color: #ff3b30;
+  }
+
+  .quick-buttons {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+
+  .quick-btn {
+    flex: 1;
+    padding: 20px 16px;
+    border-radius: 20px;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    backdrop-filter: blur(16px);
+  }
+
+  .quick-btn .title {
+    font-size: 22px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+
+  .dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+  }
+  .dot.orange { background: #ed8936; }
+  .dot.green { background: #38b2ac; }
+
+  .quick-btn .desc {
+    color: var(--text-secondary);
+    font-size: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .arrow {
+    color: var(--text-secondary);
+    font-size: 18px;
+    font-weight: bold;
+  }
+
+  .tips-card {
+    padding: 20px 16px;
+    border-radius: 20px;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    backdrop-filter: blur(16px);
+    margin-bottom: 24px;
+  }
+
+  .tips-card .header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+
+  .tips-card .title {
+    font-size: 22px;
+    font-weight: 500;
+    color: var(--text-main);
+    margin: 0;
+  }
+
+  .tips-grid {
+    display: flex;
+    gap: 12px;
+  }
+
+  .tips-item {
+    flex: 1;
+    background: var(--btn-blue);
+    border: 1px solid rgba(66, 153, 225, 0.2);
+    border-radius: 16px;
+    padding: 16px;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--btn-blue-text);
+    min-height: 70px;
+    cursor: pointer;
+  }
+
+  /* 页面容器 - 控制不同标签页的显示隐藏 */
+  .page-container {
+    display: none;
+  }
+  .page-container.active {
+    display: block;
+  }
+
+  /* 原有配置卡片样式 */
+  .config-card {
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-bottom: 20px;
+  }
+
+  .config-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .config-label {
+    font-size: 16px;
+    color: var(--text-main);
+  }
+
+  .config-input {
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--input-border);
+    background: var(--input-bg);
+    font-size: 16px;
+    width: 80px;
+    outline: none;
+    color: var(--text-main);
+  }
+
+  .config-switch {
+    width: 50px;
+    height: 28px;
+    border-radius: 14px;
+    background: var(--switch-on);
+    position: relative;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+
+  .config-switch.off {
+    background: var(--switch-off);
+  }
+
+  .config-switch::after {
+    content: '';
+    position: absolute;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: #fff;
+    top: 2px;
+    right: 2px;
+    transition: all 0.2s;
+  }
+
+  .config-switch.off::after {
+    right: calc(100% - 26px);
+  }
+
+  .config-select {
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: none;
+    background: #4299e1;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    min-width: 180px;
+  }
+
+  /* 新增多开账号配置样式 */
+  .multi-account-card {
+    padding: 20px;
+    margin-bottom: 24px;
+  }
+
+  .account-top {
+    margin-bottom: 16px;
+  }
+
+  .account-num-label {
+    font-size: 16px;
+    color: var(--text-main);
+    margin-right: 8px;
+  }
+
+  .account-num-input {
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--input-border);
+    background: var(--input-bg);
+    font-size: 16px;
+    width: 60px;
+    outline: none;
+    color: var(--text-main);
+    margin-bottom: 12px;
+  }
+
+  .batch-btn-group {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .batch-btn {
+    padding: 8px 16px;
+    border-radius: 8px;
+    border: none;
+    background: #4299e1;
+    color: #fff;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: transform 0.2s;
+  }
+
+  .batch-btn:active {
+    transform: scale(0.95);
+  }
+
+  .batch-config-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+  }
+
+  .batch-config-label {
+    font-size: 15px;
+    color: var(--text-main);
+  }
+
+  .batch-input {
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--input-border);
+    background: var(--input-bg);
+    font-size: 15px;
+    width: 60px;
+    outline: none;
+    color: var(--text-main);
+  }
+
+  .batch-separator {
+    font-size: 16px;
+    color: var(--text-secondary);
+  }
+
+  .confirm-btn {
+    padding: 8px 16px;
+    border-radius: 8px;
+    border: none;
+    background: #4299e1;
+    color: #fff;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: transform 0.2s;
+  }
+
+  .confirm-btn:active {
+    transform: scale(0.95);
+  }
+
+  /* 提取存档配置模块 */
+  .archive-extract-card {
+    padding: 16px;
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .archive-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .archive-label {
+    font-size: 15px;
+    color: var(--text-main);
+  }
+
+  .archive-select {
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: none;
+    background: #4299e1;
+    color: #fff;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    min-width: 100px;
+  }
+
+  .archive-input {
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--input-border);
+    background: var(--input-bg);
+    font-size: 15px;
+    width: 60px;
+    outline: none;
+    color: var(--text-main);
+  }
+
+  .archive-btn-group {
+    display: flex;
+    gap: 10px;
+    margin-top: 4px;
+  }
+
+  .archive-btn {
+    padding: 10px 16px;
+    border-radius: 8px;
+    border: none;
+    background: #4299e1;
+    color: #fff;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: transform 0.2s;
+    flex: 1;
+    max-width: 180px;
+  }
+
+  .archive-btn:active {
+    transform: scale(0.95);
+  }
+
+  /* 账号配置项卡片 */
+  .account-item-card {
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+
+  .account-status-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+
+  .status-switch {
+    width: 40px;
+    height: 22px;
+    border-radius: 11px;
+    background: var(--switch-on);
+    position: relative;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+
+  .status-switch.off {
+    background: var(--switch-off);
+  }
+
+  .status-switch::after {
+    content: '';
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #fff;
+    top: 2px;
+    right: 2px;
+    transition: all 0.2s;
+  }
+
+  .status-switch.off::after {
+    right: calc(100% - 20px);
+  }
+
+  .status-label {
+    font-size: 15px;
+    color: var(--text-main);
+  }
+
+  .remark-input {
+    padding: 6px 10px;
+    border-radius: 6px;
+    border: 1px solid var(--input-border);
+    background: var(--input-bg);
+    font-size: 14px;
+    outline: none;
+    color: var(--text-main);
+    margin-left: 8px;
+    width: 80px;
+  }
+
+  .account-config-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+
+  .account-config-label {
+    font-size: 15px;
+    color: var(--text-main);
+    min-width: 80px;
+  }
+
+  .account-select {
+    padding: 6px 10px;
+    border-radius: 6px;
+    border: none;
+    background: #4299e1;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    min-width: 100px;
+  }
+
+  .account-input {
+    padding: 6px 10px;
+    border-radius: 6px;
+    border: 1px solid var(--input-border);
+    background: var(--input-bg);
+    font-size: 14px;
+    outline: none;
+    color: var(--text-main);
+    width: 60px;
+  }
+
+  .bottom-nav {
+    position: fixed;
+    bottom: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: calc(100% - 32px);
+    max-width: 448px;
+    padding: 14px 0;
+    border-radius: 24px;
+    display: flex;
+    justify-content: space-around;
+    z-index: 10;
+    background: var(--nav-bg);
+    border: 1px solid var(--card-border);
+  }
+
+  .nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: var(--nav-inactive);
+    font-size: 14px;
+    gap: 4px;
+    cursor: pointer;
+  }
+
+  .nav-item.active {
+    color: var(--nav-active);
+  }
+
+  .nav-item svg {
+    width: 26px;
+    height: 26px;
+    fill: currentColor;
+  }
+
+  .modal-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.3);
+    backdrop-filter: blur(4px);
+    z-index: 99;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.35s ease;
+  }
+  .modal-overlay.show {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .liquid-modal {
+    width: 85%;
+    max-width: 380px;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 24px;
+    backdrop-filter: blur(25px) saturate(2);
+    -webkit-backdrop-filter: blur(25px) saturate(2);
+    padding: 24px;
+    transform: translateY(30px) scale(0.95);
+    transition: all 0.35s ease;
+  }
+  .modal-overlay.show .liquid-modal {
+    transform: translateY(0) scale(1);
+  }
+
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+  .modal-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-main);
+  }
+  .modal-close {
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    background: rgba(120,120,140,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 16px;
+    color: var(--text-main);
+  }
+
+  .modal-content {
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--text-main);
+  }
+
+  /* 新增配置文件管理样式 */
+  .config-file-card {
+    padding: 24px;
+    margin-bottom: 24px;
+  }
+
+  .config-file-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .config-file-label {
+    font-size: 18px;
+    color: var(--text-main);
+    font-weight: 500;
+  }
+
+  .config-file-input {
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--input-border);
+    background: var(--input-bg);
+    font-size: 18px;
+    width: 60px;
+    outline: none;
+    color: var(--text-main);
+    text-align: center;
+  }
+
+  .config-file-desc {
+    font-size: 15px;
+    color: var(--text-secondary);
+    margin-bottom: 20px;
+    line-height: 1.5;
+  }
+
+  .config-file-btn-group {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .config-file-btn {
+    padding: 12px 24px;
+    border-radius: 10px;
+    border: none;
+    background: #4299e1;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .config-file-btn:active {
+    transform: scale(0.95);
+    background: #3182ce;
+  }
+
+  /* ========== 新增特殊设置样式 ========== */
+  /* 特殊设置卡片 */
+  .special-setting-card {
+    padding: 20px;
+    margin-bottom: 24px;
+  }
+
+  /* 特殊设置标题 */
+  .special-title {
+    font-size: 16px;
+    color: var(--text-main);
+    margin-bottom: 16px;
+    line-height: 1.5;
+  }
+
+  /* 批量创号设置行 - 优化版 */
+  .batch-create-section {
+    margin-bottom: 20px;
+    border-radius: 16px;
+    background: rgba(66, 153, 225, 0.05);
+    border: 1px solid rgba(66, 153, 225, 0.1);
+    overflow: hidden;
+  }
+
+  .batch-create-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 16px;
+    cursor: pointer;
+  }
+
+  .batch-create-content {
+    padding: 0 16px;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease, padding 0.3s ease;
+  }
+
+  .batch-create-content.expanded {
+    padding: 12px 16px 16px;
+    max-height: 500px;
+  }
+
+  .batch-create-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+  }
+
+  /* 创号序号/前缀设置行 - 优化版 */
+  .create-num-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 12px 0;
+    padding-left: 16px;
+    flex-wrap: wrap;
+  }
+
+  /* 创号开关样式（带问号提示） */
+  .switch-with-tip {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex: 1;
+  }
+
+  /* 展开/收起箭头 */
+  .expand-arrow {
+    margin-left: auto;
+    font-size: 16px;
+    color: var(--btn-blue-text);
+    transition: transform 0.3s ease;
+  }
+
+  .expand-arrow.rotated {
+    transform: rotate(180deg);
+  }
+
+  /* 问号提示按钮 */
+  .tip-icon {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--btn-blue);
+    color: var(--btn-blue-text);
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-weight: bold;
+  }
+
+  /* 创号输入框 */
+  .create-input {
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--input-border);
+    background: var(--input-bg);
+    font-size: 15px;
+    width: 80px;
+    outline: none;
+    color: var(--text-main);
+  }
+
+  /* 创号前缀输入框 */
+  .prefix-input {
+    width: 120px;
+  }
+
+  /* 功能未完善提示 */
+  .unfinished-tip {
+    font-size: 14px;
+    color: #ff6b6b;
+    padding: 8px 16px;
+    background: rgba(255, 107, 107, 0.1);
+    border-radius: 8px;
+    margin: 8px 0 16px;
+    text-align: center;
+  }
+
+  /* 随机上号区域 */
+  .random-login-section {
+    margin-bottom: 20px;
+    border-radius: 16px;
+    background: rgba(66, 153, 225, 0.05);
+    border: 1px solid rgba(66, 153, 225, 0.1);
+    overflow: hidden;
+  }
+
+  .random-login-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 16px;
+    cursor: pointer;
+  }
+
+  .random-login-content {
+    padding: 0 16px;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease, padding 0.3s ease;
+  }
+
+  .random-login-content.expanded {
+    padding: 12px 16px 16px;
+    max-height: 500px;
+  }
+
+  /* 时间段按钮 */
+  .time-group-btn {
+    width: 100%;
+    padding: 16px 20px;
+    border-radius: 12px;
+    background: var(--blue-btn);
+    color: #fff;
+    border: none;
+    font-size: 16px;
+    text-align: left;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    cursor: pointer;
+    transition: transform 0.2s;
+  }
+
+  .time-group-btn:active {
+    transform: scale(0.98);
+  }
+
+  /* 注意事项弹窗标题栏 */
+  .notice-header {
+    background: var(--orange-bg);
+    color: #fff;
+    padding: 12px 16px;
+    border-radius: 12px 12px 0 0;
+    font-size: 16px;
+    font-weight: 500;
+    margin: -24px -24px 16px -24px;
+  }
+
+  /* 明白了按钮 */
+  .confirm-ok-btn {
+    text-align: right;
+    margin-top: 16px;
+    color: var(--btn-blue-text);
+    cursor: pointer;
+    font-size: 15px;
+  }
+</style>
+</head>
+<body>
+
+<!-- 右侧竖向悬浮按钮 -->
+<div class="float-controls">
+  <div class="float-btn" title="保存" onclick="alert('配置已保存')">
+    <svg viewBox="0 0 24 24">
+      <path d="M17 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/>
+    </svg>
+  </div>
+  <div class="float-btn" title="暂停" onclick="alert('已暂停运行')">
+    <svg viewBox="0 0 24 24">
+      <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"/>
+    </svg>
+  </div>
+  <div class="float-btn" title="退出" onclick="confirm('确定退出?')&&alert('已退出程序')">
+    <svg viewBox="0 0 24 24">
+      <path d="M10.09 15.59L11.5 17l5-5-5-5-1.41 1.41L12.67 11H3v2h9.67l-2.58 2.59zM19 3H5c-1.11 0-2 .9-2 2v4h2V5h14v14H5v-4H3v4c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/>
+    </svg>
+  </div>
+</div>
+
+<!-- 概览页面 -->
+<div class="page-container active" id="overviewPage">
+  <div class="glass card status-card">
+    <div class="status-header">
+      <div class="status-left">
+        <div class="logo">
+          <svg viewBox="0 0 24 24">
+            <path d="M12 2L4 10h3v10h10V10h3L12 2zm-1 14v-4h2v4h-2z"/>
+          </svg>
+        </div>
+        <div>
+          <div class="app-name">紫孔雀</div>
+          <div class="status">运行中</div>
+        </div>
+      </div>
+
+      <div class="status-right">
+        <div class="theme-toggle" onclick="toggleTheme()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36-.5.43-1.1.77-1.77.98.75-.47 1.31-1.2 1.55-2.05-.7.33-1.46.54-2.26.54-1.79 0-3.23-1.39-3.23-3.1 0-.47.11-.9.29-1.29C10.63 4.7 9.04 3.6 7.19 3.12 8.92 3.98 10.34 5.4 10.88 7.11c.7-.32 1.45-.5 2.22-.5.77 0 1.5.18 2.16.49.1-.31.16-.63.16-.96.01-1.66-1.33-3-2.99-3h-.43z"/>
+          </svg>
+          切换模式
+        </div>
+        <div class="notice-btn" onclick="showNotice()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/>
+          </svg>
+          公告
+        </div>
+        <div class="user-info" onclick="toggleLogin()">
+          <svg class="user-icon" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+          </svg>
+          <span>个人中心</span>
+        </div>
+        <div class="gem-line">卡班宝石: xx</div>
+      </div>
+    </div>
+
+    <div class="login-card" id="loginCard">
+      <input type="text" placeholder="请输入账号" id="account">
+      <input type="password" placeholder="请输入密码" id="password">
+      <div class="login-btn-group">
+        <button class="login-btn" onclick="login()">登录</button>
+        <button class="logout-btn" onclick="logout()">退出</button>
+      </div>
+    </div>
+
+    <div class="slogan">紫孔雀因你而变好</div>
+    <div class="runtime">运行时间 · 11小时 40分钟</div>
+  </div>
+
+  <div class="quick-buttons">
+    <div class="quick-btn">
+      <div class="title"><span class="dot orange"></span>手动切号？</div>
+      <div class="desc">点击切号 <span class="arrow">›</span></div>
+    </div>
+    <div class="quick-btn">
+      <div class="title"><span class="dot green"></span>发现问题？</div>
+      <div class="desc">点击反馈 <span class="arrow">›</span></div>
+    </div>
+  </div>
+
+  <div class="glass tips-card">
+    <div class="header">
+      <span class="dot orange"></span>
+      <div class="title">换机前务必清除数据 保护账号安全</div>
+    </div>
+    <div class="tips-grid">
+      <div class="tips-item">清除账号记忆</div>
+      <div class="tips-item">清除全部数据</div>
+    </div>
+  </div>
+
+  <div class="glass card config-card">
+    <div class="config-item">
+      <div class="config-label">延时倍率(低性能设备建议设置1.5-2.5)</div>
+      <input type="text" class="config-input" value="1">
+    </div>
+    
+    <div class="config-item">
+      <div class="config-label">进入游戏计时</div>
+      <input type="text" class="config-input" value="80">
+    </div>
+
+    <div class="config-item">
+      <div class="config-label">记录账号进度</div>
+      <div class="config-switch"></div>
+    </div>
+    
+    <div class="config-item">
+      <div class="config-label">自动更新</div>
+      <select class="config-select">
+        <option>仅启动时更新</option>
+        <option>自动更新</option>
+        <option>不更新</option>
+      </select>
+    </div>
+    
+    <div class="config-item">
+      <div class="config-label">开机自启(仅部分设备有效)</div>
+      <div class="config-switch"></div>
+    </div>
+    
+    <div class="config-item">
+      <div class="config-label">顶号后选项</div>
+      <select class="config-select">
+        <option>立刻重连</option>
+        <option>停止运行</option>
+        <option>提示用户</option>
+      </select>
+    </div>
+
+    <div class="config-item">
+      <div class="config-label">设备备注</div>
+      <input type="text" class="config-input" style="width: 120px;" placeholder="">
+    </div>
+  </div>
+</div>
+
+<!-- 设置页面 - 包含多开账号配置 -->
+<div class="page-container" id="settingsPage">
+  <!-- 多开账号配置卡片 -->
+  <div class="glass multi-account-card">
+    <!-- 提取存档配置模块 - 移到最上方 -->
+    <div class="glass archive-extract-card">
+      <div class="archive-row">
+        <span class="archive-label">提取存档版本选择</span>
+        <select class="archive-select">
+          <option>国服</option>
+          <option>国际服</option>
+        </select>
+      </div>
+      <div class="archive-row">
+        <span class="archive-label">提取国服存档到此序号</span>
+        <input type="text" class="archive-input" value="1">
+      </div>
+      <div class="archive-btn-group">
+        <button class="archive-btn" onclick="alert('已成功提取国服数据')">提取国服数据</button>
+        <button class="archive-btn" onclick="confirm('确定删除现有数据？')&&alert('现有数据已删除')">删除现有数据</button>
+      </div>
+    </div>
+
+    <div class="account-top">
+      <label class="account-num-label">多开账号数量</label>
+      <input type="text" class="account-num-input" value="2">
+      
+      <div class="batch-btn-group">
+        <button class="batch-btn" onclick="alert('已全选所有账号')">一键全选</button>
+        <button class="batch-btn" onclick="alert('已反选所有账号')">一键反选</button>
+      </div>
+      
+      <div class="batch-config-row">
+        <span class="batch-config-label">将配置</span>
+        <input type="text" class="batch-input" placeholder="">
+        <span class="batch-config-label">应用到账号</span>
+        <input type="text" class="batch-input" placeholder="">
+        <span class="batch-separator">-</span>
+        <input type="text" class="batch-input" placeholder="">
+        <button class="confirm-btn" onclick="alert('配置应用成功')">确认</button>
+      </div>
+      
+      <div class="batch-config-row">
+        <span class="batch-config-label">将账号</span>
+        <input type="text" class="batch-input" placeholder="">
+        <span class="batch-separator">-</span>
+        <input type="text" class="batch-input" placeholder="">
+        <span class="batch-config-label">改为</span>
+        <select class="account-select">
+          <option>国服</option>
+          <option>国际服</option>
+        </select>
+        <button class="confirm-btn" onclick="alert('账号版本修改成功')">确认</button>
+      </div>
+    </div>
+    
+    <!-- 账号1配置项 -->
+    <div class="glass account-item-card">
+      <div class="account-status-row">
+        <div class="status-switch" onclick="toggleSwitch(this)"></div>
+        <span class="status-label">开启状态</span>
+        <span class="status-label">备注</span>
+        <input type="text" class="remark-input" placeholder="">
+      </div>
+      
+      <div class="account-config-row">
+        <span class="account-config-label">游戏版本</span>
+        <select class="account-select">
+          <option>国际服</option>
+          <option>国服</option>
+        </select>
+        <span class="account-config-label">配置文件序号</span>
+        <input type="text" class="account-input" value="1">
+      </div>
+      
+      <div class="account-config-row">
+        <span class="account-config-label">启动游戏方式</span>
+        <select class="account-select">
+          <option>游戏存档</option>
+          <option>快捷方式</option>
+        </select>
+      </div>
+      
+      <div class="account-config-row">
+        <span class="account-config-label">国际服存档序号</span>
+        <input type="text" class="account-input" value="1">
+      </div>
+    </div>
+    
+    <!-- 账号2配置项 -->
+    <div class="glass account-item-card">
+      <div class="account-status-row">
+        <div class="status-switch off" onclick="toggleSwitch(this)"></div>
+        <span class="status-label">开启状态</span>
+        <span class="status-label">备注</span>
+        <input type="text" class="remark-input" placeholder="">
+      </div>
+      
+      <div class="account-config-row">
+        <span class="account-config-label">游戏版本</span>
+        <select class="account-select">
+          <option>国服</option>
+          <option>国际服</option>
+        </select>
+        <span class="account-config-label">配置文件序号</span>
+        <input type="text" class="account-input" value="1">
+      </div>
+      
+      <div class="account-config-row">
+        <span class="account-config-label">启动游戏方式</span>
+        <select class="account-select">
+          <option>游戏存档</option>
+          <option>快捷方式</option>
+        </select>
+      </div>
+      
+      <div class="account-config-row">
+        <span class="account-config-label">国服存档序号</span>
+        <input type="text" class="account-input" value="2">
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 配置文件管理页面 -->
+<div class="page-container" id="configFilePage">
+  <div class="glass config-file-card">
+    <div class="config-file-row">
+      <span class="config-file-label">配置文件数量</span>
+      <input type="text" class="config-file-input" id="configFileCount" value="2" onchange="updateConfigFileButtons()">
+    </div>
+    <div class="config-file-desc">
+      点击方格调整配置文件。调整完成后，回到"账号设置"，给每个账号分配所需的配置文件。
+    </div>
+    <div class="config-file-btn-group" id="configFileBtnGroup">
+      <!-- 按钮会根据输入的数量动态生成 -->
+      <button class="config-file-btn">配置文件1</button>
+      <button class="config-file-btn">配置文件2</button>
+    </div>
+  </div>
+</div>
+
+<!-- 新增：特殊设置页面 -->
+<div class="page-container" id="specialPage">
+  <div class="glass special-setting-card">
+    <div class="special-title">以下是特殊设置，使用前请仔细看教程。</div>
+    
+    <!-- 批量创号设置 - 优化版 -->
+    <div class="glass batch-create-section">
+      <div class="batch-create-header" onclick="toggleBatchCreate()">
+        <div class="switch-with-tip">
+          <div class="status-switch" id="batchCreateSwitch" onclick="toggleSwitch(this)"></div>
+          <span class="status-label">批量创号</span>
+          <div class="tip-icon" onclick="showBatchCreateTip(event)">?</div>
+        </div>
+        <span class="expand-arrow" id="batchCreateArrow">▼</span>
+      </div>
+      <div class="batch-create-content" id="batchCreateContent">
+        <!-- 创号序号设置 -->
+        <div class="create-num-row">
+          <span class="batch-config-label">创号开始序号</span>
+          <input type="text" class="create-input" value="1">
+          <span class="batch-config-label">创号结束序号</span>
+          <input type="text" class="create-input" value="10">
+        </div>
+        
+        <!-- 创号前缀/秒建筑设置 -->
+        <div class="create-num-row">
+          <span class="batch-config-label">创号前缀</span>
+          <input type="text" class="create-input prefix-input" value="紫孔雀">
+          <div class="status-switch off" onclick="toggleSwitch(this)"></div>
+          <span class="status-label">创号时宝石秒建筑</span>
+        </div>
+        
+        <!-- 数字后缀设置 -->
+        <div class="create-num-row">
+          <div class="status-switch off" onclick="toggleSwitch(this)"></div>
+          <span class="status-label">添加数字后缀</span>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 随机上号设置 - 优化版 -->
+    <div class="glass random-login-section">
+      <div class="random-login-header" onclick="toggleRandomLogin()">
+        <div class="switch-with-tip">
+          <div class="status-switch" id="randomLoginSwitch" onclick="toggleSwitch(this)"></div>
+          <span class="status-label">随机上号</span>
+          <div class="tip-icon" onclick="showRandomLoginTip(event)">?</div>
+        </div>
+        <span class="expand-arrow" id="randomLoginArrow">▼</span>
+      </div>
+      <div class="random-login-content" id="randomLoginContent">
+        <!-- 功能未完善提示 -->
+        <div class="unfinished-tip">(该功能制作中，未完善，请勿使用)</div>
+        
+        <!-- 时间段分组按钮 -->
+        <button class="time-group-btn" onclick="showTimeGroupTip('凌晨组')">
+          凌晨组 0:00 - 6:00
+          <span>›</span>
+        </button>
+        <button class="time-group-btn" onclick="showTimeGroupTip('上午组')">
+          上午组 6:00 - 12:00
+          <span>›</span>
+        </button>
+        <button class="time-group-btn" onclick="showTimeGroupTip('下午组')">
+          下午组 12:00 - 18:00
+          <span>›</span>
+        </button>
+        <button class="time-group-btn" onclick="showTimeGroupTip('夜晚组')">
+          夜晚组 18:00 - 24:00
+          <span>›</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 关于页面 -->
+<div class="page-container" id="aboutPage">
+  <div class="glass card" style="text-align: center; padding: 40px 20px;">
+    <div class="app-name" style="font-size: 32px; margin-bottom: 20px;">紫孔雀</div>
+    <div style="font-size: 16px; color: var(--text-secondary); margin-bottom: 30px;">版本 v1.0.0</div>
+    <div style="font-size: 15px; line-height: 1.8; color: var(--text-main);">
+      紫孔雀多开管理工具<br>
+      专注于账号多开管理与自动化运行<br>
+      © 2025 紫孔雀 版权所有
+    </div>
+  </div>
+</div>
+
+<!-- 公告弹窗 -->
+<div class="modal-overlay" id="noticeModal" onclick="closeNotice(event)">
+  <div class="liquid-modal">
+    <div class="modal-header">
+      <div class="modal-title">系统公告</div>
+      <div class="modal-close" onclick="closeNotice(event)">×</div>
+    </div>
+    <div class="modal-content">
+      这里是公告内容区域<br>
+      可自由编辑文字、更新日志、使用说明等<br><br>
+      1. 优化切号逻辑，提升稳定性<br>
+      2. 修复已知bug，增强账号安全<br>
+      3. 液态玻璃UI全新升级<br>
+      4. 新增多开账号配置功能<br>
+      5. 新增提取存档管理功能
+    </div>
+  </div>
+</div>
+
+<!-- 批量创号提示弹窗 -->
+<div class="modal-overlay" id="batchCreateTipModal" onclick="closeModal(event, 'batchCreateTipModal')">
+  <div class="liquid-modal">
+    <div class="notice-header">注意事项</div>
+    <div class="modal-content">
+      启用批量创号后，辅助将优先检查所有游戏存档是否存在，若存档缺失则自动创建账号；若存档齐全，则按照指定序号依次运行对应账号。序号与游戏存档编号一致，且所有账号均采用配置1的设定。<br><br>
+      部分云手机在创号过程中可能出现异常，建议改用模拟器完成创号操作。启用批量创号时，掉线重连选项须设置为"立即重连"。
+    </div>
+    <div class="confirm-ok-btn" onclick="closeModal(event, 'batchCreateTipModal')">明白了</div>
+  </div>
+</div>
+
+<!-- 随机上号提示弹窗 -->
+<div class="modal-overlay" id="randomLoginTipModal" onclick="closeModal(event, 'randomLoginTipModal')">
+  <div class="liquid-modal">
+    <div class="notice-header">注意事项</div>
+    <div class="modal-content">
+      启用随机上号后，脚本将根据当前时间段，从对应组的账号中随机选取顺序依次运行。每个账号运行完毕后，根据设定的概率决定是否继续对战或直接下线，并按对战时间比例计算等待时间后再运行下一个账号。<br><br>
+      随机上号与批量创号不能同时启用。
+    </div>
+    <div class="confirm-ok-btn" onclick="closeModal(event, 'randomLoginTipModal')">明白了</div>
+  </div>
+</div>
+
+<!-- 时间段分组提示弹窗 -->
+<div class="modal-overlay" id="timeGroupTipModal" onclick="closeModal(event, 'timeGroupTipModal')">
+  <div class="liquid-modal">
+    <div class="notice-header">注意事项</div>
+    <div class="modal-content" id="timeGroupContent">
+      <!-- 动态填充内容 -->
+    </div>
+    <div class="confirm-ok-btn" onclick="closeModal(event, 'timeGroupTipModal')">明白了</div>
+  </div>
+</div>
+
+<!-- 底部导航栏 - 新增特殊按钮 -->
+<div class="bottom-nav">
+  <div class="nav-item active" onclick="switchPage('overviewPage', this)">
+    <svg viewBox="0 0 24 24">
+      <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/>
+    </svg>
+    <span>概览</span>
+  </div>
+  <div class="nav-item" onclick="switchPage('settingsPage', this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="3"/>
+      <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.19a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06-.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.19a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 a2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.19a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l-.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 0 0 1-2 2h-.19a1.65 1.65 0 0 0-1.51 1z"/>
+    </svg>
+    <span>设置</span>
+  </div>
+  <div class="nav-item" onclick="switchPage('configFilePage', this)">
+    <svg viewBox="0 0 24 24">
+      <path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zM6 20V4h7v5h5v11H6z"/>
+    </svg>
+    <span>配置</span>
+  </div>
+  <!-- 新增：特殊按钮 -->
+  <div class="nav-item" onclick="switchPage('specialPage', this)">
+    <svg viewBox="0 0 24 24">
+      <path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/>
+    </svg>
+    <span>特殊</span>
+  </div>
+  <div class="nav-item" onclick="switchPage('aboutPage', this)">
+    <svg viewBox="0 0 24 24">
+      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+    </svg>
+    <span>关于</span>
+  </div>
+</div>
+
+<script>
+  // 登录卡片切换
+  function toggleLogin() {
+    const card = document.getElementById('loginCard');
+    card.classList.toggle('show');
+  }
+  function login() { alert('登录成功'); }
+  function logout() { alert('已退出'); }
+
+  // 公告弹窗
+  const modal = document.getElementById('noticeModal');
+  function showNotice() { modal.classList.add('show'); }
+  function closeNotice(e) {
+    if (e.target === modal || e.target.classList.contains('modal-close')) {
+      modal.classList.remove('show');
+    }
+  }
+
+  // 深色模式切换
+  function toggleTheme() {
+    const isDark = document.body.dataset.theme === 'dark';
+    document.body.dataset.theme = isDark ? 'light' : 'dark';
+    localStorage.setItem('theme', document.body.dataset.theme);
+  }
+
+  // 页面切换功能
+  function switchPage(pageId, navItem) {
+    // 隐藏所有页面
+    const allPages = document.querySelectorAll('.page-container');
+    allPages.forEach(page => {
+      page.classList.remove('active');
+    });
+    
+    // 显示目标页面
+    document.getElementById(pageId).classList.add('active');
+    
+    // 更新导航栏选中状态
+    const allNavItems = document.querySelectorAll('.nav-item');
+    allNavItems.forEach(item => {
+      item.classList.remove('active');
+    });
+    navItem.classList.add('active');
+  }
+
+  // 开关切换功能
+  function toggleSwitch(switchEl) {
+    switchEl.classList.toggle('off');
+    const status = switchEl.classList.contains('off') ? '关闭' : '开启';
+    // 批量创号和随机上号互斥
+    if(switchEl.id === 'batchCreateSwitch' && !switchEl.classList.contains('off')) {
+      document.getElementById('randomLoginSwitch').classList.add('off');
+    }
+    if(switchEl.id === 'randomLoginSwitch' && !switchEl.classList.contains('off')) {
+      document.getElementById('batchCreateSwitch').classList.add('off');
+    }
+    alert(`状态已${status}`);
+  }
+
+  // 配置文件数量变更时更新按钮
+  function updateConfigFileButtons() {
+    const countInput = document.getElementById('configFileCount');
+    const btnGroup = document.getElementById('configFileBtnGroup');
+    const count = parseInt(countInput.value) || 0;
+    
+    // 清空现有按钮
+    btnGroup.innerHTML = '';
+    
+    // 生成新按钮
+    for (let i = 1; i <= count; i++) {
+      const btn = document.createElement('button');
+      btn.className = 'config-file-btn';
+      btn.textContent = `配置文件${i}`;
+      btn.onclick = function() {
+        alert(`正在编辑配置文件${i}，请完善具体配置逻辑`);
+      };
+      btnGroup.appendChild(btn);
+    }
+  }
+
+  // ========== 新增特殊设置弹窗交互 ==========
+  // 显示批量创号提示
+  function showBatchCreateTip(e) {
+    // 阻止事件冒泡，避免触发展开/收起
+    if(e) e.stopPropagation();
+    document.getElementById('batchCreateTipModal').classList.add('show');
+  }
+
+  // 显示随机上号提示
+  function showRandomLoginTip(e) {
+    // 阻止事件冒泡，避免触发展开/收起
+    if(e) e.stopPropagation();
+    document.getElementById('randomLoginTipModal').classList.add('show');
+  }
+
+  // 显示时间段分组提示
+  function showTimeGroupTip(groupName) {
+    const contentEl = document.getElementById('timeGroupContent');
+    let content = '';
+    if(groupName === '凌晨组') {
+      content = `启用随机上号后，脚本将在${groupName}（0:00-6:00）从该组账号中随机选取顺序依次运行。每个账号运行完毕后，根据设定的概率决定是否继续对战或直接下线，并按对战时间比例计算等待时间后再运行下一个账号。`;
+    } else if(groupName === '上午组') {
+      content = `启用随机上号后，脚本将在${groupName}（6:00-12:00）从该组账号中随机选取顺序依次运行。每个账号运行完毕后，根据设定的概率决定是否继续对战或直接下线，并按对战时间比例计算等待时间后再运行下一个账号。`;
+    } else if(groupName === '下午组') {
+      content = `启用随机上号后，脚本将在${groupName}（12:00-18:00）从该组账号中随机选取顺序依次运行。每个账号运行完毕后，根据设定的概率决定是否继续对战或直接下线，并按对战时间比例计算等待时间后再运行下一个账号。`;
+    } else if(groupName === '夜晚组') {
+      content = `启用随机上号后，脚本将在${groupName}（18:00-24:00）从该组账号中随机选取顺序依次运行。每个账号运行完毕后，根据设定的概率决定是否继续对战或直接下线，并按对战时间比例计算等待时间后再运行下一个账号。`;
+    }
+    contentEl.innerHTML = content;
+    document.getElementById('timeGroupTipModal').classList.add('show');
+  }
+
+  // 关闭通用弹窗
+  function closeModal(e, modalId) {
+    const modal = document.getElementById(modalId);
+    if (e.target === modal || e.target.classList.contains('confirm-ok-btn') || e.target.classList.contains('modal-close')) {
+      modal.classList.remove('show');
+    }
+  }
+
+  // 批量创号展开/收起
+  function toggleBatchCreate() {
+    const content = document.getElementById('batchCreateContent');
+    const arrow = document.getElementById('batchCreateArrow');
+    content.classList.toggle('expanded');
+    arrow.classList.toggle('rotated');
+  }
+
+  // 随机上号展开/收起
+  function toggleRandomLogin() {
+    const content = document.getElementById('randomLoginContent');
+    const arrow = document.getElementById('randomLoginArrow');
+    content.classList.toggle('expanded');
+    arrow.classList.toggle('rotated');
+  }
+
+  // 初始化主题
+  document.addEventListener('DOMContentLoaded', () => {
+    document.body.dataset.theme = localStorage.getItem('theme') || 'light';
+    // 初始化配置文件按钮
+    updateConfigFileButtons();
+  });
+</script>
+</body>
+</html>
