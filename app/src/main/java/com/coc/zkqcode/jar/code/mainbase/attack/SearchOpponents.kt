@@ -172,7 +172,7 @@ suspend fun searchOpponentsAndDeployTroops(): Boolean {
             accountMessage("搜索次数：$searchTimes\n对手资源：\n${res.gold}金, ${res.elixir}水, ${res.darkElixir}黑\n目标资源：\n${targetGold}金, ${targetElixir}水, ${targetDarkElixir}黑")
 
             // Skip the first search result when dynamic adjustment is enabled, so the average has at least one data point
-            val allTargetsZero = targetGold == 0L && targetElixir == 0L && targetDarkElixir == 0L
+            val allTargetsZero = targetGold == 0 && targetElixir == 0 && targetDarkElixir == 0
             val meetsCriteria = allTargetsZero || ((!isDynamicAdjust || searchTimes > 2) && res.gold >= targetGold && res.elixir >= targetElixir && res.darkElixir >= targetDarkElixir)
             if (meetsCriteria) {
                 // Persist the final averaged thresholds so the next session can start from this value.

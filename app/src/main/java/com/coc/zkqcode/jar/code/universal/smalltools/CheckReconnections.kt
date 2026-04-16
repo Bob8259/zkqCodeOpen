@@ -39,13 +39,15 @@ suspend fun checkReconnections(): Boolean {
                 return@any false // Not enough white pixels, continue checking remaining schemas
             }
             accountMessage("检测到重连，白色像素个数$whiteCount")
+            //TODO:
+            // 
             val configKey = Schema.GLOBAL_SETTINGS.AFTER_KICK_OPTION.key
             val action = GlobalVars.configStates[configKey]?.value?.toInt() ?: logAndRestart("Can not get $configKey")
             when (action) {
                 0 -> {
                     // Tap the reload button, rating notification, and tutorial confirm
-                    TouchActions.tap(379, 458)
                     TouchActions.tap(793, 459)
+                    TouchActions.tap(379, 458)
                     TouchActions.tap(338, 511)
                 }
 
