@@ -42,6 +42,10 @@ object InGameVars {
     @Volatile
     var currentGameVersion: GameVersion = GameVersion.CN
     var adTime: Int = 15
+
+    // Set by checkRandomSchedule; read by RandomSchedulingLogic after stepBlock.
+    @Volatile
+    var isEarlyOffline: Boolean = false
 }
 
 fun accountMessage(text: String, isChecking: Boolean = true) {

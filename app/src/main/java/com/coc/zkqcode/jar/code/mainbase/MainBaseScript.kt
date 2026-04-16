@@ -1,8 +1,6 @@
 package com.coc.zkqcode.jar.code.mainbase
 
 
-import com.coc.zkqcode.jar.code.clancapital.clanCapitalAttack
-import com.coc.zkqcode.jar.code.clancapital.clanCapitalTrainTroops
 import com.coc.zkqcode.jar.code.clancapital.playClanCapital
 import com.coc.zkqcode.jar.code.mainbase.attack.mainBaseAttack
 import com.coc.zkqcode.jar.code.mainbase.attack.mainBaseTrainTroops
@@ -11,13 +9,13 @@ import com.coc.zkqcode.jar.code.mainbase.clan.joinClan
 import com.coc.zkqcode.jar.code.mainbase.clan.requestReinforcements
 import com.coc.zkqcode.jar.code.mainbase.herohall.placeHeroBanners
 import com.coc.zkqcode.jar.code.mainbase.herohall.upgradeGearsAndPets
+import com.coc.zkqcode.jar.code.mainbase.others.checkRandomSchedule
 import com.coc.zkqcode.jar.code.mainbase.others.collectClanCastleResources
 import com.coc.zkqcode.jar.code.mainbase.others.mainBaseCheckTutorials
 import com.coc.zkqcode.jar.code.mainbase.others.mainBaseCollectResources
 import com.coc.zkqcode.jar.code.mainbase.others.mainBaseRemoveObstacles
 import com.coc.zkqcode.jar.code.mainbase.others.useHelpers
 import com.coc.zkqcode.jar.code.mainbase.others.useMagicItems
-import com.coc.zkqcode.jar.code.mainbase.others.zoomSmallMainBase
 import com.coc.zkqcode.jar.code.mainbase.research.mainBaseResearch
 import com.coc.zkqcode.jar.code.universal.buildings.BaseType
 import com.coc.zkqcode.jar.code.universal.buildings.upgrade.upgradeBuildings
@@ -26,6 +24,7 @@ import com.coc.zkqcode.jar.code.universal.smalltools.enterMainBase
 
 suspend fun playMainBase(): Boolean {
     if (!enterMainBase()) return false
+    if (!checkRandomSchedule()) return false
     if (!playClanCapital()) return false
     if (!mainBaseCollectResources()) return false
     if (!mainBaseTrainTroops()) return false
