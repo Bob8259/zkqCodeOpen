@@ -136,7 +136,7 @@ object ScreenCaptureManager {
 
         mediaProjectionManager?.let {
             val intent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                // Force whole-screen capture on Android 14+, skipping the app-picker dialog
+                // Force whole-screen capture on Android 14+, skipping the app-picker dialogue
                 it.createScreenCaptureIntent(
                     MediaProjectionConfig.createConfigForDefaultDisplay()
                 )

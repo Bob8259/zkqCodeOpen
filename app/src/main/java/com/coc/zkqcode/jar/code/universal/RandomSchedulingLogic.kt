@@ -160,7 +160,7 @@ suspend fun runRandomSchedulingScript() {
                 val battleRatio = getIntConfig(config.battleRatioKey, 80)
                 val effectiveDuration = battleDurationMs.coerceAtLeast(MIN_EARLY_OFFLINE_DURATION_MS)
                 val restMs = calculateRestTimeMs(effectiveDuration, battleRatio)
-                waitWithProgress(restMs, "账号 $accountId：提前下线，休息中")
+                waitWithProgress(restMs, "提前下线，休息中")
                 continue
             }
 
@@ -177,7 +177,7 @@ suspend fun runRandomSchedulingScript() {
             if (roll < stopProb) {
                 // Stop path: rest based on actual battle duration
                 totalDurationMs = battleDurationMs
-                ShowMessage("账号 $accountId：完成流程后下线（概率命中）")
+                ShowMessage("完成流程后下线（概率命中）")
             } else {
                 // Continue path: run full step blocks in a loop until extra time expires.
                 // Each stepBlock runs to completion — timeout is only checked between rounds.
@@ -185,8 +185,7 @@ suspend fun runRandomSchedulingScript() {
                 val safeMax = maxOf(continueMin, continueMax)
                 val extraMinutes = if (safeMin == safeMax) safeMin else Random.nextInt(safeMin, safeMax + 1)
                 val extraMs = extraMinutes * 60_000L
-                ShowMessage("账号 $accountId：继续对战 $extraMinutes 分钟")
-
+                ShowMessage("继续对战 $extraMinutes 分钟")
                 val extraStartTime = System.currentTimeMillis()
                 while (System.currentTimeMillis() - extraStartTime < extraMs
                     && currentCoroutineContext().isActive
@@ -196,25 +195,23 @@ suspend fun runRandomSchedulingScript() {
                     // Break out of extra battle loop if early-offline triggered
                     if (InGameVars.isEarlyOffline) break
                 }
-
                 // If early-offline triggered during extra battle, kill game and rest
                 if (InGameVars.isEarlyOffline) {
-                    killGame()
                     InGameVars.isEarlyOffline = false
                     val battleRatio = getIntConfig(config.battleRatioKey, 80)
                     val totalEarlyDuration = battleDurationMs + (System.currentTimeMillis() - extraStartTime)
                     val effectiveDuration = totalEarlyDuration.coerceAtLeast(MIN_EARLY_OFFLINE_DURATION_MS)
                     val restMs = calculateRestTimeMs(effectiveDuration, battleRatio)
-                    waitWithProgress(restMs, "账号 $accountId：提前下线，休息中")
+                    waitWithProgress(restMs, "提前下线，休息中")
                     continue
                 }
 
                 totalDurationMs = battleDurationMs + (System.currentTimeMillis() - extraStartTime)
             }
-
+            killGame()
             // Calculate and wait rest time: total * (100 - ratio) / ratio
             val restMs = calculateRestTimeMs(totalDurationMs, battleRatio)
-            waitWithProgress(restMs, "账号 $accountId 完成对战")
+            waitWithProgress(restMs, "完成对战")
         }
 
         // If group changed mid-round, restart the outer loop immediately to pick new group

@@ -21,15 +21,26 @@ import com.coc.zkqcode.jar.ui.components.SettingInputRow
 import com.coc.zkqcode.jar.ui.components.SettingSection
 import com.coc.zkqcode.jar.ui.components.SettingSwitchIcon
 import com.coc.zkqcode.jar.ui.schema.Schema.ACCOUNT_SETTINGS
+import com.coc.zkqcode.jar.ui.schema.Schema.GLOBAL_SETTINGS
 
 @Composable
 fun AccountConfig(
     index: Int
 ) {
     SettingSection {
-        Row {
+        FlowRow {
             // Remove the switch label's extra text offset so it aligns with the remark label.
-            SettingSwitchIcon(key = "${ACCOUNT_SETTINGS.ISOPEN.key}${index}", textTopPadding = 0.dp)
+            val isRandomScheduling = GlobalVars.configStates[GLOBAL_SETTINGS.RANDOM_SCHEDULING.key]?.value == "1"
+            if (isRandomScheduling) {
+                Text(
+                    text = "当前已开启随机上号，请在右上角前往特殊设置页面->随机上号，通过调整账号分组来控制该账号是否开启",
+                    modifier = Modifier.padding(end = 10.dp),
+                    style = MaterialTheme.typography.labelMedium,
+                    color = Color.Gray
+                )
+            } else {
+                SettingSwitchIcon(key = "${ACCOUNT_SETTINGS.ISOPEN.key}${index}", textTopPadding = 0.dp)
+            }
             // Nudge only the remark label upward because it is centered against a taller text field.
             SettingInputRow(
                 key = "${ACCOUNT_SETTINGS.REMARK.key}${index}", topPadding = 4.dp, labelVerticalOffset = (-2).dp

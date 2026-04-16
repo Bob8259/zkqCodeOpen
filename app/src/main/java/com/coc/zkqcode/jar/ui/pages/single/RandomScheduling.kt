@@ -102,11 +102,6 @@ fun RandomScheduling() {
         mutableStateOf("0")
     }
     val isEnabled = rsState.value == "1"
-
-    Text(
-        text = "（该功能制作中，未完善，请勿使用）", style = MaterialTheme.typography.labelMedium, modifier = Modifier.padding(bottom = 4.dp)
-    )
-
     SettingSwitchIcon(
         key = GLOBAL_SETTINGS.RANDOM_SCHEDULING.key,
         explain = "启用随机上号后，脚本将根据当前时间段，从对应组的账号中随机选取顺序依次运行。每个账号运行完毕后，根据设定的概率决定是否继续对战或直接下线，并按对战时间比例计算等待时间后再运行下一个账号。\n\n随机上号与批量创号不能同时启用。",
