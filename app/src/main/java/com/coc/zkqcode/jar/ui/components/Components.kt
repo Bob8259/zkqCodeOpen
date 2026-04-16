@@ -197,8 +197,8 @@ private fun StyledBasicTextField(
             .padding(end = endPadding)
             .widthIn(min = 50.dp)
             .width(IntrinsicSize.Min)
-            .background(color = AppColors.CardBg, shape = RoundedCornerShape(4.dp))
-            .border(1.dp, AppColors.Border, RoundedCornerShape(4.dp))
+            .background(color = Color.White, shape = RoundedCornerShape(4.dp))
+            .border(1.dp, AppColors.GlassBorder, RoundedCornerShape(4.dp))
             .padding(4.dp)
             .heightIn(max = 120.dp)
             .verticalScroll(rememberScrollState())
@@ -258,10 +258,11 @@ fun CustomAlertDialog(
         Surface(
             modifier = Modifier
                 .wrapContentSize()
-                .padding(16.dp),
+                .padding(16.dp)
+                .border(1.dp, AppColors.GlassBorder, RoundedCornerShape(12.dp)),
             shape = RoundedCornerShape(12.dp),
             color = Color(0xFFE8EAED),
-            shadowElevation = 8.dp
+            shadowElevation = 2.dp
         ) {
             Column {
                 // Orange gradient header for 注意事项 warning style
@@ -530,7 +531,9 @@ fun SettingSection(
         Surface(
             modifier = modifier
                 .fillMaxWidth()
-                .padding(vertical = 4.dp), shape = RoundedCornerShape(12.dp), color = AppColors.CardBg, shadowElevation = 8.dp, tonalElevation = 5.dp
+                .padding(vertical = 4.dp)
+                .border(1.5.dp, AppColors.GlassBorder, RoundedCornerShape(12.dp)),
+            shape = RoundedCornerShape(12.dp), color = AppColors.CardBg, shadowElevation = 0.dp, tonalElevation = 0.dp
         ) {
             Column(modifier = Modifier.padding(horizontal = 10.dp, vertical = 8.dp)) {
                 content()
