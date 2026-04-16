@@ -382,8 +382,7 @@ fun HomeScreen(
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(horizontal = 4.dp, vertical = 4.dp),
-                            verticalAlignment = Alignment.CenterVertically
+                                .padding(horizontal = 4.dp, vertical = 4.dp), verticalAlignment = Alignment.CenterVertically
                         ) {
                             CustomButton(
                                 text = "◀ 返回", onClick = { selectedConfigIndex = null }, marginTop = 0.dp
@@ -399,17 +398,15 @@ fun HomeScreen(
                                                 .clip(RoundedCornerShape(16.dp))
                                                 .background(
                                                     if (isActive) AppColors.Primary
-                                                    else AppColors.Primary.copy(alpha = 0.6f)
+                                                    else AppColors.Primary.copy(alpha = 0.15f)
                                                 )
-                                                .border(1.dp, AppColors.Primary.copy(alpha = 0.8f), RoundedCornerShape(16.dp))
+                                                .border(1.dp, AppColors.Primary, RoundedCornerShape(16.dp))
                                                 .clickable {
                                                     scope.launch {
                                                         lazyListState.animateScrollToItem(itemIndex)
                                                     }
                                                 }
-                                                .padding(horizontal = 12.dp, vertical = 6.dp),
-                                            contentAlignment = Alignment.Center
-                                        ) {
+                                                .padding(horizontal = 12.dp, vertical = 6.dp), contentAlignment = Alignment.Center) {
                                             Text(
                                                 text = label, style = MaterialTheme.typography.labelMedium, color = if (isActive) Color.White else AppColors.Primary
                                             )
