@@ -22,8 +22,7 @@ fun LazyListScope.gameConfig(
     onNavigateBuilderBasePriority: (Int) -> Unit = {},
     onScrollToBottom: () -> Unit = {}
 ) {
-
-        mainBaseConfig(
+    mainBaseConfig(
         index = index,
         isExpanded = isMainExpanded,
         onToggleExpanded = onToggleMainExpanded,
