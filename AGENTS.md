@@ -24,3 +24,5 @@ Clarity: If any instruction is unclear or ambiguous, you must ask for clarificat
 Planning: For complex tasks, you are required to generate a development plan. You may only begin coding after receiving explicit permission from the user.
 
 Modification: If you fail to modify some files, then it may because they are changed during the chat. In this case, you should re-read them, and apply new changes based on the new file. Do not revert the changes.
+
+Build: You should try gradle debug build and fix all bugs.

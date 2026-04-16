@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
@@ -230,11 +231,11 @@ fun CustomAlertDialog(
     Popup(
         popupPositionProvider = WindowCenterPositionProvider(), onDismissRequest = onDismissRequest, properties = PopupProperties(focusable = true)
     ) {
-        // Semi-transparent backdrop overlay
+        // Full-screen semi-transparent backdrop overlay
         Box(
             modifier = Modifier
-                .fillMaxWidth()
-                .background(Color(0x4D000000))
+                .fillMaxSize()
+                .background(Color(0x99000000))
                 .clickable { onDismissRequest() },
             contentAlignment = Alignment.Center
         ) {
