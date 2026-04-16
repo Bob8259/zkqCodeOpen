@@ -1,9 +1,15 @@
 package com.coc.zkqcode.jar.ui.pages.builderbase
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -56,7 +62,7 @@ fun BuilderBaseResearchConfigs(index: Int) {
                     CustomButton(text = "一键全选", onClick = selectAll)
                     CustomButton(text = "一键反选", onClick = invertSelection)
                 }
-                FlowRow {
+                FlowRow(modifier = Modifier.padding(top = 6.dp).border(1.dp, Color.Gray, RoundedCornerShape(8.dp)).padding(8.dp)) {
                     items.forEach { item ->
                         SettingToggleButton(key = "${item.key}_c${index}")
                     }
