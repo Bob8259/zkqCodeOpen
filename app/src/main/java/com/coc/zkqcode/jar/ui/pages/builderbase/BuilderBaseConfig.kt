@@ -19,10 +19,10 @@ fun LazyListScope.builderBaseConfig(
     index: Int, isExpanded: Boolean, onToggleExpanded: () -> Unit, onNavigateBuilderBasePriority: (Int) -> Unit = {},
     onScrollToBottom: () -> Unit = {}
 ) {
-    // 🌙 Banner — 夜世界专属设置
+    // Banner — 夜世界专属设置
     item {
         SectionBanner(
-            title = "🌙 夜世界专属设置",
+            title = "夜世界专属设置",
             isExpanded = isExpanded,
             onClick = onToggleExpanded
         )

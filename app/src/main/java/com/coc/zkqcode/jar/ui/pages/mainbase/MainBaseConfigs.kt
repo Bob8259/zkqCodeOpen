@@ -27,10 +27,10 @@ fun LazyListScope.mainBaseConfig(
     onTogglePet: () -> Unit,
     onNavigatePriority: (Int) -> Unit = {}
 ) {
-    // ⚔️ Banner — 核心对战设置（主世界）
+    // Banner — 对战设置
     item {
         SectionBanner(
-            title = "⚔️ 核心对战设置（主世界）", isExpanded = isExpanded, onClick = onToggleExpanded
+            title = "对战设置（主世界）", isExpanded = isExpanded, onClick = onToggleExpanded
         )
     }
 
@@ -125,10 +125,10 @@ fun LazyListScope.mainBaseConfig(
         }
     }
 
-    // Banner — 自动研究设置
+    // Banner — 研究设置
     item {
         SectionBanner(
-            title = "🔬 自动研究设置", isExpanded = isResearchExpanded, onClick = onToggleResearch
+            title = "研究设置", isExpanded = isResearchExpanded, onClick = onToggleResearch
         )
     }
 
@@ -143,10 +143,10 @@ fun LazyListScope.mainBaseConfig(
         }
     }
 
-    // 🏗️ Banner — 自动建造设置（主世界）
+    // Banner — 建造设置（主世界）
     item {
         SectionBanner(
-            title = "🏗️ 自动建造设置（主世界）", isExpanded = isBuildExpanded, onClick = onToggleBuild
+            title = "建造设置（主世界）", isExpanded = isBuildExpanded, onClick = onToggleBuild
         )
     }
 
@@ -171,10 +171,10 @@ fun LazyListScope.mainBaseConfig(
         }
     }
 
-    // 🐾 Banner — 战宠&其他设置
+    // Banner — 战宠&其他设置
     item {
         SectionBanner(
-            title = "🐾 战宠&其他设置", isExpanded = isPetExpanded, onClick = onTogglePet
+            title = "战宠&其他设置", isExpanded = isPetExpanded, onClick = onTogglePet
         )
     }
 

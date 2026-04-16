@@ -45,19 +45,21 @@ fun BuilderBaseResearchConfigs(index: Int) {
         }
     }
     Column {
-        Row {
-            CustomButton(text = "一键全选", onClick = selectAll)
-            CustomButton(text = "一键反选", onClick = invertSelection)
-            CustomButton(
-                text = if (isExpanded.value) "缩起列表" else "展开列表",
-                onClick = { isExpanded.value = !isExpanded.value },
-                containerColor = AppColors.Teal)
-        }
+        CustomButton(
+            text = if (isExpanded.value) "缩起列表" else "展开列表",
+            onClick = { isExpanded.value = !isExpanded.value },
+            containerColor = AppColors.Teal)
 
         AnimatedVisibility(visible = isExpanded.value) {
-            FlowRow {
-                items.forEach { item ->
-                    SettingToggleButton(key = "${item.key}_c${index}")
+            Column {
+                Row {
+                    CustomButton(text = "一键全选", onClick = selectAll)
+                    CustomButton(text = "一键反选", onClick = invertSelection)
+                }
+                FlowRow {
+                    items.forEach { item ->
+                        SettingToggleButton(key = "${item.key}_c${index}")
+                    }
                 }
             }
         }

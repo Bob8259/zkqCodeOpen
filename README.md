@@ -18,7 +18,7 @@
 部分额外功能依赖 AI 检测插件仓库 https://github.com/Bob8259/zkqYOLO ，不过没有也能正常运行。
 
 1. **准备环境**
-   下载最新版 Android Studio，然后配置好 Rust 环境。
+   下载最新版 Android Studio，然后配置好 Rust 环境，并构建 Rust 代码。
 2. **修改代码**
    - 删掉 `CheckIntergrity.kt` 里的签名检测代码
    - 删掉加载广告的代码
@@ -35,3 +35,40 @@
 2. 构建项目，装到模拟器上。
 3. 把第一步备份的 jar 文件夹放回原来的位置。
 4. 运行 `deployAndReload`，就能一键跑脚本了。
+
+# 致谢
+
+本项目的开发离不开以下开源项目和库的支持，在此表示感谢。
+
+## 参考项目
+
+| 项目 | 作者 | 说明 | 许可证 |
+|------|------|------|--------|
+| [scrcpy](https://github.com/Genymobile/scrcpy) | Genymobile | 屏幕镜像与控制，本项目参考了其设计思路 | Apache 2.0 |
+| [libsu](https://github.com/topjohnwu/libsu) | topjohnwu | Android Root Shell 库 | Apache 2.0 |
+| [Reorderable](https://github.com/Calvin-LL/Reorderable) | Calvin Liang | Compose 拖拽排序组件，代码直接引用于本项目 | Apache 2.0 |
+
+## 使用的开源库
+
+### Android / Kotlin
+
+| 库 | 作者 | 说明 |
+|----|------|------|
+| [OkHttp](https://github.com/square/okhttp) | Square | HTTP 客户端 |
+| [Gson](https://github.com/google/gson) | Google | JSON 序列化/反序列化 |
+| [Ktor](https://github.com/ktorio/ktor) | JetBrains | 异步服务器框架（WebSocket 等） |
+| [Timber](https://github.com/JakeWharton/timber) | Jake Wharton | 日志工具 |
+| [ML Kit Text Recognition](https://developers.google.com/ml-kit) | Google | OCR 文字识别 |
+
+### Rust
+
+| 库 | 说明 |
+|----|------|
+| [jni](https://crates.io/crates/jni) | Rust 与 Java/Kotlin 的 JNI 交互 |
+| [x25519-dalek](https://crates.io/crates/x25519-dalek) | X25519 Diffie-Hellman 密钥交换 |
+| [chacha20](https://crates.io/crates/chacha20) | ChaCha20 流加密（RustCrypto） |
+| [blake2](https://crates.io/crates/blake2) | BLAKE2 哈希算法（RustCrypto） |
+| [android_logger](https://crates.io/crates/android_logger) | Android 平台日志输出 |
+| [obfstr](https://crates.io/crates/obfstr) | 编译期字符串混淆 |
+| [rustix](https://crates.io/crates/rustix) | 底层 POSIX API 绑定 |
+| [rand](https://crates.io/crates/rand) | 随机数生成 |

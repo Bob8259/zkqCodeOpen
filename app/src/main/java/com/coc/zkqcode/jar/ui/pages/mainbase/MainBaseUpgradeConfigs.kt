@@ -47,14 +47,14 @@ fun MainBaseUpgradeConfigs(index: Int, onNavigatePriority: (Int) -> Unit = {}) {
         }
     }
     Column {
-        Row {
-            CustomButton(text = "一键全选", onClick = selectAll)
-            CustomButton(text = "一键反选", onClick = invertSelection)
-            CustomButton(text = if (isExpanded.value) "缩起列表" else "展开列表", onClick = { isExpanded.value = !isExpanded.value }, containerColor = AppColors.Teal)
-        }
+        CustomButton(text = if (isExpanded.value) "缩起列表" else "展开列表", onClick = { isExpanded.value = !isExpanded.value }, containerColor = AppColors.Teal)
 
         AnimatedVisibility(visible = isExpanded.value) {
             Column {
+                Row {
+                    CustomButton(text = "一键全选", onClick = selectAll)
+                    CustomButton(text = "一键反选", onClick = invertSelection)
+                }
                 CustomButton(
                     onClick = { onNavigatePriority(index) },
                     text = "点击调整主世界升级优先度"

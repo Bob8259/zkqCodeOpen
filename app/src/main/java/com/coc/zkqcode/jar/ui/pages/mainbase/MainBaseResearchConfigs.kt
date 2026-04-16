@@ -46,22 +46,23 @@ fun MainBaseResearchConfigs(index: Int) {
         }
     }
     Column {
-        Row {
-            CustomButton(text = "一键全选", onClick = selectAll)
-            CustomButton(text = "一键反选", onClick = invertSelection)
-            CustomButton(text = if (isExpanded.value) "缩起列表" else "展开列表", onClick = { isExpanded.value = !isExpanded.value }, containerColor = AppColors.Teal)
-        }
-
-        // Research level dropdown
-        SettingDropdown(
-            key = "${MAIN_BASE_SETTINGS.RESEARCH_LEVEL.key}_c${index}",
-            options = listOf("满级", "满级减一", "满级减二")
-        )
+        CustomButton(text = if (isExpanded.value) "缩起列表" else "展开列表", onClick = { isExpanded.value = !isExpanded.value }, containerColor = AppColors.Teal)
 
         AnimatedVisibility(visible = isExpanded.value) {
-            FlowRow {
-                items.forEach { item ->
-                    SettingToggleButton(key = "${item.key}_c${index}")
+            Column {
+                Row {
+                    CustomButton(text = "一键全选", onClick = selectAll)
+                    CustomButton(text = "一键反选", onClick = invertSelection)
+                }
+                // Research level dropdown
+                SettingDropdown(
+                    key = "${MAIN_BASE_SETTINGS.RESEARCH_LEVEL.key}_c${index}",
+                    options = listOf("满级", "满级减一", "满级减二")
+                )
+                FlowRow {
+                    items.forEach { item ->
+                        SettingToggleButton(key = "${item.key}_c${index}")
+                    }
                 }
             }
         }
