@@ -39,8 +39,7 @@ import com.coc.zkqcode.core.ui.reorderable.rememberReorderableLazyGridState
 import kotlinx.coroutines.launch
 
 // Inline equivalent of the private rememberConfigState in Components.kt
-private fun getConfigState(key: String): MutableState<String> =
-    GlobalVars.configStates.getOrPut(key) { mutableStateOf(Schema.getDefaultValue(key)) }
+private fun getConfigState(key: String): MutableState<String> = GlobalVars.configStates.getOrPut(key) { mutableStateOf(Schema.getDefaultValue(key)) }
 
 @Composable
 fun MainBaseUpgradePriority(index: Int, onSaveSuccess: () -> Unit) {
@@ -82,12 +81,10 @@ fun MainBaseUpgradePriority(index: Int, onSaveSuccess: () -> Unit) {
             .background(AppColors.Background)
     ) {
         Text(
-            text = "长按单元格拖动调整优先度，点击切换启用/禁用。越靠上，越靠左表示优先度越高。",
-            style = MaterialTheme.typography.labelMedium,
-            modifier = Modifier.padding(8.dp)
+            text = "长按单元格拖动调整优先度，点击切换启用/禁用。越靠上，越靠左表示优先度越高。", style = MaterialTheme.typography.labelMedium, modifier = Modifier.padding(horizontal = 8.dp)
         )
 
-        Row {
+        Row(modifier = Modifier.padding(start = 8.dp, bottom = 6.dp)) {
             // Select all
             CustomButton(text = "一键全选", onClick = {
                 list.forEach { item ->
@@ -127,13 +124,10 @@ fun MainBaseUpgradePriority(index: Int, onSaveSuccess: () -> Unit) {
                     Card(
                         modifier = Modifier
                             .height(40.dp)
-                            .longPressDraggableHandle(),
-                        shape = RoundedCornerShape(8.dp),
-                        onClick = {
+                            .longPressDraggableHandle(), shape = RoundedCornerShape(8.dp), onClick = {
                             GlobalVars.isAutoRunEnabled = false
                             enableState.value = if (isEnabled) "0" else "1"
-                        },
-                        colors = CardDefaults.cardColors(
+                        }, colors = CardDefaults.cardColors(
                             containerColor = if (isEnabled) AppColors.PrimaryLight else AppColors.CardBg
                         )
                     ) {
@@ -174,10 +168,7 @@ fun MainBaseUpgradePriority(index: Int, onSaveSuccess: () -> Unit) {
                     isSaving = false
                     onSaveSuccess()
                 }
-            },
-            marginBottom = 4.dp,
-            text = if (isSaving) "保存中，请稍候" else "完成",
-            enable = !isSaving
+            }, marginBottom = 4.dp, text = if (isSaving) "保存中，请稍候" else "完成", enable = !isSaving
         )
     }
 }
