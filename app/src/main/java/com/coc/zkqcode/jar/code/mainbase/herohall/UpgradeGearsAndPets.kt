@@ -70,7 +70,9 @@ private suspend fun checkPets() {
         MainBasePets.PHOENIX to MyColors.Phoenix,
         MainBasePets.SPIRIT_FOX to MyColors.SpiritFox,
         MainBasePets.ANGRY_JELLY to MyColors.AngryJelly,
+        MainBasePets.ANGRY_JELLY to MyColors.AngryJelly2,
         MainBasePets.SNEEZY to MyColors.Sneezy,
+        MainBasePets.SNEEZY to MyColors.Sneezy2,
         MainBasePets.GREEDY_RAVEN to MyColors.GreedyRaven
     )
 

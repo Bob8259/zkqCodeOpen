@@ -28,7 +28,9 @@ interface IMainBaseHeroHallColors {
     val Phoenix: ColorSchema
     val SpiritFox: ColorSchema
     val AngryJelly: ColorSchema
+    val AngryJelly2: ColorSchema
     val Sneezy: ColorSchema
+    val Sneezy2: ColorSchema
     val GreedyRaven: ColorSchema
     val ConfirmUpgradePet: ColorSchema
     val AlreadyBeingUpgraded: ColorSchema
@@ -153,9 +155,19 @@ object MainBaseHeroHallColors : IMainBaseHeroHallColors {
         175, 385, 1110, 665, "C271FF", "16|-21|DA7EFF,42|-42|FFACFF,59|-29|DE94FF,89|1|A941FF,127|-11|5228E0,133|-38|A54AF4,130|-66|CD53E4,72|-87|FFC7FF,69|-66|FFA8FF", 0, 0.9, "愤怒水母"
     )
 
+    // Pet slot used to detect Angry Jelly (color variant 2) in the hero hall upgrade screen
+    override val AngryJelly2 = ColorSchema.parse(
+        175, 385, 1110, 665, "CE66FF", "26|0|882FE5,62|-5|723CD8,56|-30|FEA9FF,58|-50|110EFF,72|-58|120DFF,77|-56|8952FF,109|-73|F599FF,130|-72|E94ADF,116|-36|C182FF", 0, 0.9, "愤怒水母2"
+    )
+
     // Pet slot used to detect Sneezy in the hero hall upgrade screen
     override val Sneezy = ColorSchema.parse(
         175, 385, 1110, 665, "9DB1BD", "34|-36|7F5652,69|-41|C3A19C,92|-61|C9B6E8,113|-32|846CA1,128|-68|947BBE,141|-61|8A6160,121|-42|C8AFDD,89|-12|0D0D0D,66|-32|BA948D", 0, 0.9, "阿啾"
+    )
+
+    // Pet slot used to detect Sneezy (color variant 2) in the hero hall upgrade screen
+    override val Sneezy2 = ColorSchema.parse(
+        175, 385, 1110, 665, "9DB1BD", "18|-3|9DB1BD,59|-1|6D4946,62|-19|C59D97,77|-59|9877A9,83|-60|B99DD0,104|-43|A08FD1,122|-62|8F7CC0,131|-52|9F87CA,114|-29|826A99", 0, 0.9, "阿啾2"
     )
 
     // Pet slot used to detect Greedy Raven in the hero hall upgrade screen
