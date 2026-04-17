@@ -40,7 +40,6 @@ fun LazyListScope.mainBaseConfig(
     // Attack & Resource requirements
     item {
         SettingSection(visible = isExpanded) {
-            SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.CLAIM_DAILY_REWARD.key}_c$index")
             SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.AUTO_ATTACK.key}_c$index")
             Text(
                 text = "辅助会自动配兵，若想手动配兵，请勾选手动配兵选项。",
@@ -279,6 +278,7 @@ fun LazyListScope.mainBaseConfig(
                         explain = "启用后，移除障碍物时将增加随机点击操作，以提高移除稀有障碍物的概率。\n建议在批量挂机时开启，可有效防止地图建造空间不足。"
                     )
                 }
+                SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.CLAIM_DAILY_REWARD.key}_c$index")
                 SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.CLAIM_ACHIEVEMENT_GEMS.key}_c$index")
             }
         }

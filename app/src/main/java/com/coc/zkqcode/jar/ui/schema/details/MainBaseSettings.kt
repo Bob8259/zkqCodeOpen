@@ -40,6 +40,7 @@ object MainBaseSettings {
     val WALL_UPGRADE_SETTINGS = SettingDef("wall_upgrade_settings", "升级城墙", 1, "MAIN_BASE_SETTINGS")
     val INSTANT_UPGRADE = SettingDef("instant_upgrade", "用宝石升级消耗低于", 0, "MAIN_BASE_SETTINGS")
     val INSTANT_UPGRADE_THRESHOLD = SettingDef("instant_upgrade_threshold", "宝石的建筑", "3", "MAIN_BASE_SETTINGS")
+
     // Fallback trigger after repeated upgrade failures.
     val UPGRADE_ANY_BUILDING_AFTER_CONSECUTIVE_FAILURES = SettingDef(
         "upgrade_any_building_after_consecutive_failures", "连续升级失败", 0, "MAIN_BASE_SETTINGS"
@@ -129,7 +130,7 @@ object MainBaseSettings {
     val DONATE_CAPITAL_GOLD = SettingDef("donate_capital_gold", "捐都城币", 0, "MAIN_BASE_SETTINGS")
     val CLAIM_FREE_SHOP_REWARDS = SettingDef("claim_free_shop_rewards", "领商店免费奖励", 0, "MAIN_BASE_SETTINGS")
     val AUTO_JOIN_CLAN = SettingDef("auto_join_clan", "自动加部落", 0, "MAIN_BASE_SETTINGS")
-    val CLAIM_ACHIEVEMENT_GEMS = SettingDef("claim_achievement_gems", "领成就宝石", 0, "MAIN_BASE_SETTINGS")
+    val CLAIM_ACHIEVEMENT_GEMS = SettingDef("claim_achievement_gems", "领取成就宝石", 0, "MAIN_BASE_SETTINGS")
     val CLAN_TAG = SettingDef("clan_tag", "加指定部落标签(不填就随机加):", "", "MAIN_BASE_SETTINGS")
     val USE_TEMP_ITEMS = SettingDef("use_temp_items", "使用临时物品", 0, "MAIN_BASE_SETTINGS")
     val CLAN_JOIN_MESSAGE = SettingDef("clan_join_message", "加部落暗号:", "", "MAIN_BASE_SETTINGS")

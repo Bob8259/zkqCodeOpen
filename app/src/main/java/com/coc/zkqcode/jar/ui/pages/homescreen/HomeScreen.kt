@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -196,7 +195,7 @@ fun HomeScreen(
         Box(modifier = Modifier.weight(1f)) {
             // Layer 1: Scrollable content with top padding to avoid being hidden behind the tab bar
             LazyColumn(
-                state = lazyListState, contentPadding = PaddingValues(top = 52.dp), modifier = Modifier
+                state = lazyListState, contentPadding = PaddingValues(top = if (selectedTabIndex == 3 && selectedConfigIndex != null) 40.dp else 52.dp), modifier = Modifier
                     .fillMaxSize()
                     .padding(4.dp)
             ) {
@@ -320,8 +319,6 @@ fun HomeScreen(
                                     configCount = configCount, onConfigSelected = { selectedConfigIndex = it })
                             }
                         } else {
-                            // Extra top padding so content isn't hidden behind the floating back-button row
-                            item { Spacer(modifier = Modifier.height(45.dp)) }
                             // State hoisting for expansion keyed by config index
                             val currentMainExpanded = mainBaseExpandedStates[cfgIdx] ?: true
                             val currentClanExpanded = clanExpandedStates[cfgIdx] ?: true
@@ -373,32 +370,34 @@ fun HomeScreen(
             // Layer 2: Floating tab bar + optional back button overlay
             Column(modifier = Modifier.align(Alignment.TopStart)) {
                 // Glassmorphism tab bar — semi-transparent, matching HTML nav style
-                Surface(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 6.dp)
-                        .padding(top = 6.dp)
-                        .border(1.dp, AppColors.Border, RoundedCornerShape(12.dp)),
-                    shape = RoundedCornerShape(12.dp),
-                    color = AppColors.CardBg.copy(alpha = 0.9f),
-                    shadowElevation = 0.dp
-                ) {
-                    Row(
+                if (!(selectedTabIndex == 3 && selectedConfigIndex != null)) {
+                    Surface(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(vertical = 10.dp), horizontalArrangement = Arrangement.SpaceAround, verticalAlignment = Alignment.CenterVertically
+                            .padding(horizontal = 6.dp)
+                            .padding(top = 6.dp)
+                            .border(1.dp, AppColors.Border, RoundedCornerShape(12.dp)),
+                        shape = RoundedCornerShape(12.dp),
+                        color = AppColors.CardBg.copy(alpha = 0.9f),
+                        shadowElevation = 0.dp
                     ) {
-                        tabs.forEachIndexed { index, title ->
-                            val isActive = selectedTabIndex == index
-                            Text(
-                                text = title,
-                                style = MaterialTheme.typography.labelLarge,
-                                fontWeight = if (isActive) FontWeight.SemiBold else FontWeight.Normal,
-                                color = if (isActive) AppColors.Primary else AppColors.NavInactive,
-                                modifier = Modifier
-                                    .clip(RoundedCornerShape(8.dp))
-                                    .clickable { selectedTabIndex = index }
-                                    .padding(horizontal = 6.dp, vertical = 6.dp))
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 10.dp), horizontalArrangement = Arrangement.SpaceAround, verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            tabs.forEachIndexed { index, title ->
+                                val isActive = selectedTabIndex == index
+                                Text(
+                                    text = title,
+                                    style = MaterialTheme.typography.labelLarge,
+                                    fontWeight = if (isActive) FontWeight.SemiBold else FontWeight.Normal,
+                                    color = if (isActive) AppColors.Primary else AppColors.NavInactive,
+                                    modifier = Modifier
+                                        .clip(RoundedCornerShape(8.dp))
+                                        .clickable { selectedTabIndex = index }
+                                        .padding(horizontal = 6.dp, vertical = 6.dp))
+                            }
                         }
                     }
                 }
@@ -408,7 +407,7 @@ fun HomeScreen(
                     Surface(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 6.dp, vertical = 4.dp)
+                            .padding(horizontal = 6.dp)
                             .border(1.dp, AppColors.Border, RoundedCornerShape(12.dp)),
                         shape = RoundedCornerShape(12.dp),
                         color = AppColors.CardBg.copy(alpha = 0.9f),
