@@ -369,22 +369,64 @@ fun HomeScreen(
 
             // Layer 2: Floating tab bar + optional back button overlay
             Column(modifier = Modifier.align(Alignment.TopStart)) {
-                // Glassmorphism tab bar — semi-transparent, matching HTML nav style
-                if (!(selectedTabIndex == 3 && selectedConfigIndex != null)) {
-                    Surface(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 6.dp)
-                            .padding(top = 6.dp)
-                            .border(1.dp, AppColors.Border, RoundedCornerShape(12.dp)),
-                        shape = RoundedCornerShape(12.dp),
-                        color = AppColors.CardBg.copy(alpha = 0.9f),
-                        shadowElevation = 0.dp
-                    ) {
+                val isConfigDetail = selectedTabIndex == 3 && selectedConfigIndex != null
+                Surface(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 6.dp)
+                        .then(if (!isConfigDetail) Modifier.padding(top = 6.dp) else Modifier)
+                        .border(1.dp, AppColors.Border, RoundedCornerShape(12.dp)),
+                    shape = RoundedCornerShape(12.dp),
+                    color = AppColors.CardBg.copy(alpha = 0.9f),
+                    shadowElevation = 0.dp
+                ) {
+                    if (isConfigDetail) {
+                        // Back button + section chips when a config file is selected
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(vertical = 10.dp), horizontalArrangement = Arrangement.SpaceAround, verticalAlignment = Alignment.CenterVertically
+                                .padding(horizontal = 4.dp, vertical = 4.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            CustomButton(
+                                text = "◀ 返回", onClick = { selectedConfigIndex = null }, marginTop = 0.dp
+                            )
+                            LazyRow(
+                                state = chipListState,
+                                modifier = Modifier.weight(1f),
+                                horizontalArrangement = Arrangement.spacedBy(6.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                sectionItems.forEachIndexed { chipIndex, (label, itemIndex) ->
+                                    item {
+                                        val isActive = chipIndex == activeSectionIndex
+                                        Box(
+                                            modifier = Modifier
+                                                .clip(RoundedCornerShape(16.dp))
+                                                .background(if (isActive) AppColors.Primary else AppColors.Primary.copy(alpha = 0.15f))
+                                                .border(1.dp, AppColors.Primary, RoundedCornerShape(16.dp))
+                                                .clickable { scope.launch { lazyListState.animateScrollToItem(itemIndex) } }
+                                                .padding(horizontal = 12.dp, vertical = 6.dp),
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            Text(
+                                                text = label,
+                                                style = MaterialTheme.typography.labelMedium,
+                                                color = if (isActive) Color.White else AppColors.Primary
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    } else {
+                        // Glassmorphism tab bar
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 10.dp),
+                            horizontalArrangement = Arrangement.SpaceAround,
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
                             tabs.forEachIndexed { index, title ->
                                 val isActive = selectedTabIndex == index
@@ -396,57 +438,8 @@ fun HomeScreen(
                                     modifier = Modifier
                                         .clip(RoundedCornerShape(8.dp))
                                         .clickable { selectedTabIndex = index }
-                                        .padding(horizontal = 6.dp, vertical = 6.dp))
-                            }
-                        }
-                    }
-                }
-
-                // Back button + section outline pinned below the tab bar when a config file is selected
-                if (selectedTabIndex == 3 && selectedConfigIndex != null) {
-                    Surface(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 6.dp)
-                            .border(1.dp, AppColors.Border, RoundedCornerShape(12.dp)),
-                        shape = RoundedCornerShape(12.dp),
-                        color = AppColors.CardBg.copy(alpha = 0.9f),
-                        shadowElevation = 0.dp
-                    ) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 4.dp, vertical = 4.dp), verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            CustomButton(
-                                text = "◀ 返回", onClick = { selectedConfigIndex = null }, marginTop = 0.dp
-                            )
-                            LazyRow(
-                                state = chipListState, modifier = Modifier.weight(1f), horizontalArrangement = Arrangement.spacedBy(6.dp), verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                sectionItems.forEachIndexed { chipIndex, (label, itemIndex) ->
-                                    item {
-                                        val isActive = chipIndex == activeSectionIndex
-                                        Box(
-                                            modifier = Modifier
-                                                .clip(RoundedCornerShape(16.dp))
-                                                .background(
-                                                    if (isActive) AppColors.Primary
-                                                    else AppColors.Primary.copy(alpha = 0.15f)
-                                                )
-                                                .border(1.dp, AppColors.Primary, RoundedCornerShape(16.dp))
-                                                .clickable {
-                                                    scope.launch {
-                                                        lazyListState.animateScrollToItem(itemIndex)
-                                                    }
-                                                }
-                                                .padding(horizontal = 12.dp, vertical = 6.dp), contentAlignment = Alignment.Center) {
-                                            Text(
-                                                text = label, style = MaterialTheme.typography.labelMedium, color = if (isActive) Color.White else AppColors.Primary
-                                            )
-                                        }
-                                    }
-                                }
+                                        .padding(horizontal = 6.dp, vertical = 6.dp)
+                                )
                             }
                         }
                     }
