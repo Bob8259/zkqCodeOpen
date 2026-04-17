@@ -171,7 +171,7 @@ fun LazyListScope.mainBaseConfig(
             AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.BUILD_SETTING.key}_c$index"]?.value == "1") {
                 Column {
                     CustomButton(
-                        onClick = { onNavigatePriority(index) }, text = "点击调整主世界升级设置", containerColor = AppColors.Teal
+                        onClick = { onNavigatePriority(index) }, text = "点击调整主世界建筑升级", containerColor = AppColors.Teal
                     )
                     InputRowWithCheckBox(
                         checkBoxKey = "${MAIN_BASE_SETTINGS.INSTANT_UPGRADE.key}_c$index", inputKey = "${MAIN_BASE_SETTINGS.INSTANT_UPGRADE_THRESHOLD.key}_c$index"

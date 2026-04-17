@@ -42,7 +42,7 @@ import com.coc.zkqcode.jar.ui.components.CustomButton
 import com.coc.zkqcode.jar.ui.pages.builderbase.BuilderBaseUpgradePriority
 import com.coc.zkqcode.jar.ui.pages.mainbase.MainBaseUpgradePriority
 import com.coc.zkqcode.jar.ui.pages.single.BugReport
-import com.coc.zkqcode.jar.ui.pages.single.HomeScreen
+import com.coc.zkqcode.jar.ui.pages.homescreen.HomeScreen
 import com.coc.zkqcode.jar.ui.pages.single.SwitchAccount
 import com.coc.zkqcode.jar.ui.schema.ConfigManager
 import com.coc.zkqcode.jar.ui.theme.AppColors

@@ -1,4 +1,4 @@
-package com.coc.zkqcode.jar.ui.pages.single
+package com.coc.zkqcode.jar.ui.pages.homescreen
 
 import android.os.Environment
 import androidx.compose.foundation.background
@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -31,6 +30,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -41,16 +41,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.util.fileactions.FileHelper
 import com.coc.zkqcode.jar.ui.components.CustomButton
-import com.coc.zkqcode.jar.ui.components.ExplainIcon
 import com.coc.zkqcode.jar.ui.components.SettingDropdown
 import com.coc.zkqcode.jar.ui.components.SettingInputRow
 import com.coc.zkqcode.jar.ui.components.SettingSection
 import com.coc.zkqcode.jar.ui.components.SettingSwitchIcon
+import com.coc.zkqcode.jar.ui.pages.single.BatchCreateAccount
+import com.coc.zkqcode.jar.ui.pages.single.ConfigFileGrid
+import com.coc.zkqcode.jar.ui.pages.single.ExtractGameSave
+import com.coc.zkqcode.jar.ui.pages.single.LoginScreen
+import com.coc.zkqcode.jar.ui.pages.single.RandomScheduling
+import com.coc.zkqcode.jar.ui.pages.single.accountSettings
+import com.coc.zkqcode.jar.ui.pages.single.gameConfig
 import com.coc.zkqcode.jar.ui.schema.ConfigManager
 import com.coc.zkqcode.jar.ui.schema.Schema.GLOBAL_SETTINGS
 import com.coc.zkqcode.jar.ui.theme.AppColors
@@ -97,12 +102,12 @@ fun HomeScreen(
     }
 
     // Hoisted expansion states keyed by config index (1-based)
-    val mainBaseExpandedStates = androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateMapOf<Int, Boolean>() }
-    val researchExpandedStates = androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateMapOf<Int, Boolean>() }
-    val buildExpandedStates = androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateMapOf<Int, Boolean>() }
-    val petExpandedStates = androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateMapOf<Int, Boolean>() }
-    val clanExpandedStates = androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateMapOf<Int, Boolean>() }
-    val builderBaseExpandedStates = androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateMapOf<Int, Boolean>() }
+    val mainBaseExpandedStates = remember { mutableStateMapOf<Int, Boolean>() }
+    val researchExpandedStates = remember { mutableStateMapOf<Int, Boolean>() }
+    val buildExpandedStates = remember { mutableStateMapOf<Int, Boolean>() }
+    val petExpandedStates = remember { mutableStateMapOf<Int, Boolean>() }
+    val clanExpandedStates = remember { mutableStateMapOf<Int, Boolean>() }
+    val builderBaseExpandedStates = remember { mutableStateMapOf<Int, Boolean>() }
 
     val configCount = configCountStr.toIntOrNull() ?: 1
     val tabs = listOf("主页设置", "账号设置", "提取存档", "配置文件", "特殊设置")
@@ -461,71 +466,4 @@ fun HomeScreen(
             onDismissCleanAll = { showCleanAllConfirmation = false })
     }
 
-}
-
-// Private composable — mirrors the HTML .quick-btn glass card with dot + title + subtitle + arrow.
-@Composable
-private fun QuickActionCard(
-    title: String, subtitle: String, dotColor: Color, onClick: () -> Unit, modifier: Modifier = Modifier
-) {
-    Surface(
-        modifier = modifier
-            .border(1.5.dp, AppColors.GlassBorder, RoundedCornerShape(12.dp))
-            .clickable { onClick() }, shape = RoundedCornerShape(12.dp), color = AppColors.CardBg, shadowElevation = 0.dp
-    ) {
-        Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 20.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Box(
-                    modifier = Modifier
-                        .size(12.dp)
-                        .background(dotColor, CircleShape)
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    text = title, style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Medium, color = AppColors.TextPrimary
-                )
-            }
-            Spacer(modifier = Modifier.height(8.dp))
-            Row(
-                modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = subtitle, style = MaterialTheme.typography.bodySmall, color = AppColors.NavInactive
-                )
-                Text(
-                    text = "›", style = MaterialTheme.typography.bodyMedium, color = AppColors.NavInactive
-                )
-            }
-        }
-    }
-}
-
-// Private composable — mirrors the HTML .tips-item tile: light-blue bg, centered text, optional inline explain icon.
-@Composable
-private fun TipsActionTile(
-    text: String, onClick: () -> Unit, modifier: Modifier = Modifier, explain: String? = null
-) {
-    Surface(
-        modifier = modifier
-            .heightIn(min = 70.dp)
-            .border(1.dp, AppColors.Primary.copy(alpha = 0.2f), RoundedCornerShape(12.dp))
-            .clickable { onClick() },
-        shape = RoundedCornerShape(12.dp),
-        color = AppColors.Primary.copy(alpha = 0.12f),
-        shadowElevation = 0.dp
-    ) {
-        Box(
-            contentAlignment = Alignment.Center, modifier = Modifier.padding(16.dp)
-        ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(
-                    text = text, style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Medium, color = AppColors.Primary, textAlign = TextAlign.Center
-                )
-                explain?.let {
-                    Spacer(modifier = Modifier.width(4.dp))
-                    ExplainIcon(explain = it)
-                }
-            }
-        }
-    }
 }

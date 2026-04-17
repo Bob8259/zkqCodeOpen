@@ -1,4 +1,4 @@
-package com.coc.zkqcode.jar.ui.pages.single
+package com.coc.zkqcode.jar.ui.pages.homescreen
 
 import android.os.Environment
 import androidx.compose.foundation.layout.Column
