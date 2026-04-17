@@ -18,8 +18,7 @@ object MainBaseSettings {
     val MANUAL_TRAINING = SettingDef("manual_training", "手动配兵", 0, "MAIN_BASE_SETTINGS")
     val TACTICS_MODE = SettingDef("tactics_mode", "战术设置", "0", "MAIN_BASE_SETTINGS")
     val DONATION_SETTING = SettingDef("donation_setting", "自动捐兵", 1, "MAIN_BASE_SETTINGS")
-    val REQUEST_REINFORCEMENT_SETTING =
-        SettingDef("request_reinforcement_setting", "请求增援", 1, "MAIN_BASE_SETTINGS")
+    val REQUEST_REINFORCEMENT_SETTING = SettingDef("request_reinforcement_setting", "请求增援", 1, "MAIN_BASE_SETTINGS")
 
     // Resource farming trigger settings for auto-donation
     val DONATION_DETECT_INTERVAL = SettingDef("donation_detect_interval", "持续检测", "5", "MAIN_BASE_SETTINGS")
@@ -49,27 +48,22 @@ object MainBaseSettings {
         "upgrade_any_building_after_consecutive_failures_threshold", "次后，改为快速升级", "3", "MAIN_BASE_SETTINGS"
     )
 
-    val BATCH_WALL_UPGRADE_SETTINGS =
-        SettingDef("batch_wall_upgrade_settings", "批量升级城墙", 1, "MAIN_BASE_SETTINGS")
+    val BATCH_WALL_UPGRADE_SETTINGS = SettingDef("batch_wall_upgrade_settings", "批量升级城墙", 1, "MAIN_BASE_SETTINGS")
     val SAVE_WORKER = SettingDef("save_worker", "留1工人升级城墙", 0, "MAIN_BASE_SETTINGS")
-    val BUILDING_CONVERSION_SETTINGS =
-        SettingDef("building_conversion_settings", "改装建筑", 0, "MAIN_BASE_SETTINGS")
-    val UPGRADE_AFTER_FAIL_WALL_UPGRADE =
-        SettingDef("upgrade_after_fail_wall_upgrade", "升级城墙失败后建造", 0, "MAIN_BASE_SETTINGS")
+    val BUILDING_CONVERSION_SETTINGS = SettingDef("building_conversion_settings", "改装建筑", 0, "MAIN_BASE_SETTINGS")
+    val UPGRADE_AFTER_FAIL_WALL_UPGRADE = SettingDef("upgrade_after_fail_wall_upgrade", "升级城墙失败后建造", 0, "MAIN_BASE_SETTINGS")
     val UPGRADE_WALL_THRESHOLD = SettingDef(
         "upgrade_wall_threshold", "金水高于以下百分比后升级城墙", "85", "MAIN_BASE_SETTINGS"
     )
     val UPGRADE_PETS = SettingDef("upgrade_pets", "升级战宠", 1, "MAIN_BASE_SETTINGS")
-    val STOP_BATTLE_WHEN_NO_STAR =
-        SettingDef("stop_battle_when_no_star", "无胜利之星后停止对战", 0, "MAIN_BASE_SETTINGS")
+    val STOP_BATTLE_WHEN_NO_STAR = SettingDef("stop_battle_when_no_star", "无胜利之星后停止对战", 0, "MAIN_BASE_SETTINGS")
     val RESTART_GAME = SettingDef("restart_game", "部署后重启游戏", 1, "MAIN_BASE_SETTINGS")
     val PLAY_LADDER = SettingDef("play_ladder", "排位对战", 0, "MAIN_BASE_SETTINGS")
     val CHANGE_BASE = SettingDef("change_base", "切换阵型", 1, "MAIN_BASE_SETTINGS")
     val WAIT_FOR_BATTLE = SettingDef("wait_for_battle", "等待对战", 0, "MAIN_BASE_SETTINGS")
     val HELPER_SETTINGS = SettingDef("helper_settings", "用工人学徒和实验助手", 1, "MAIN_BASE_SETTINGS")
     val UPGRADE_RESEARCH_HELPER = SettingDef("upgrade_research_helper", "升级实验助手", 0, "MAIN_BASE_SETTINGS")
-    val UPGRADE_BUILDER_APPRENTICE =
-        SettingDef("upgrade_builder_apprentice", "升级工人学徒", 0, "MAIN_BASE_SETTINGS")
+    val UPGRADE_BUILDER_APPRENTICE = SettingDef("upgrade_builder_apprentice", "升级工人学徒", 0, "MAIN_BASE_SETTINGS")
     val DO_CLAN_GAMES = SettingDef("do_clan_games", "做竞赛任务", 1, "MAIN_BASE_SETTINGS")
     val CLAIM_CLAN_GAME_REWARDS = SettingDef("claim_clan_game_rewards", "领竞赛奖励", 0, "MAIN_BASE_SETTINGS")
     val PLAY_CLAN_WAR = SettingDef("play_clan_war", "打部落战", 0, "MAIN_BASE_SETTINGS")
@@ -80,8 +74,7 @@ object MainBaseSettings {
     val START_RAID = SettingDef("start_raid", "发起都城突袭", 0, "MAIN_BASE_SETTINGS")
 
     ////////////
-    val BUY_STAR_ORE_WITH_RAID_MEDAL =
-        SettingDef("buy_star_ore_with_raid_medal", "突袭币买星辉矿石", 0, "MAIN_BASE_SETTINGS")
+    val BUY_STAR_ORE_WITH_RAID_MEDAL = SettingDef("buy_star_ore_with_raid_medal", "突袭币买星辉矿石", 0, "MAIN_BASE_SETTINGS")
     val BUY_CLOCK_TOWER_POTION_WITH_RAID_MEDAL = SettingDef(
         "buy_clock_tower_potion_with_raid_medal", "突袭币买钟楼药水", 0, "MAIN_BASE_SETTINGS"
     )
@@ -100,8 +93,7 @@ object MainBaseSettings {
     val BUY_BUILDER_POTION_WITH_LEAGUE_MEDAL = SettingDef(
         "buy_builder_potion_with_league_medal", "联赛币买工人药水", 0, "MAIN_BASE_SETTINGS"
     )
-    val BUY_STAR_ORE_WITH_EVENT_MEDAL =
-        SettingDef("buy_star_ore_with_event_medal", "活动币买星辉矿石", 0, "MAIN_BASE_SETTINGS")
+    val BUY_STAR_ORE_WITH_EVENT_MEDAL = SettingDef("buy_star_ore_with_event_medal", "活动币买星辉矿石", 0, "MAIN_BASE_SETTINGS")
     val BUY_BUILDER_POTION_WITH_EVENT_MEDAL = SettingDef(
         "buy_builder_potion_with_event_medal", "活动币买工人药水", 0, "MAIN_BASE_SETTINGS"
     )

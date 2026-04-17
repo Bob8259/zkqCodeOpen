@@ -179,7 +179,7 @@ fun MainBaseUpgradePriority(index: Int, onSaveSuccess: () -> Unit) {
                     isSaving = false
                     onSaveSuccess()
                 }
-            }, marginBottom = 4.dp, text = if (isSaving) "保存中，请稍候" else "完成", enable = !isSaving
+            }, marginBottom = 4.dp, text = if (isSaving) "保存中，请稍候" else "完成", enable = !isSaving, containerColor = AppColors.Teal
         )
     }
 }
