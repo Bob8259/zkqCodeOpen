@@ -226,10 +226,6 @@ fun LoginScreen(onAdFreeClick: () -> Unit = {}) {
         modifier = Modifier
             .fillMaxSize(), horizontalAlignment = Alignment.Start
     ) {
-        Text(
-            text = "欢迎使用紫孔雀\nQQ群:820256617",
-            style = MaterialTheme.typography.labelMedium
-        )
         if (showMessage) {
             Text(
                 text = "登录后免广告，运行更高效！不登陆也可以运行。免广告每天花费0.25卡班积分，用多久扣多久。",

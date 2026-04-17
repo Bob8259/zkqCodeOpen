@@ -170,6 +170,7 @@ fun HomeScreen(
 
     // Clean All Data Confirmation Dialogue State
     var showCleanAllConfirmation by rememberSaveable { mutableStateOf(false) }
+    var showAnnouncement by remember { mutableStateOf(false) }
 
     val cleanAllData = {
         showCleanAllConfirmation = true
@@ -217,6 +218,8 @@ fun HomeScreen(
                                     )
                                     CustomButton(
                                         text = "停止计时", onClick = { GlobalVars.isAutoRunEnabled = false })
+                                    CustomButton(
+                                        text = "公告", onClick = { showAnnouncement = true })
                                 }
                                 LoginScreen(
                                     onAdFreeClick = {
@@ -450,6 +453,11 @@ fun HomeScreen(
                 }
             }
         } // End Box
+
+        // Announcement dialog
+        if (showAnnouncement) {
+            AnnouncementDialog(onDismiss = { showAnnouncement = false })
+        }
 
         // 3. Bottom fixed button area + dialogs + notification
         HomeScreenBottomBar(
