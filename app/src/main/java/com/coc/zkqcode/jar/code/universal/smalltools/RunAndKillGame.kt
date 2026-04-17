@@ -12,8 +12,13 @@ suspend fun runGame() {
 }
 
 suspend fun killGame() {
-    // Package name is defined in GameVersion enum, keeping version-specific details centralized
-    accountMessage("准备关闭游戏")
-    killApp(InGameVars.currentGameVersion.packageName)
+    // If disable_restart_game is enabled, skip killing the game
+    if (getStaticConfig("disable_restart_game") == "1") {
+        accountMessage("已禁用重启游戏")
+    } else {
+        // Package name is defined in GameVersion enum, keeping version-specific details centralized
+        accountMessage("准备关闭游戏")
+        killApp(InGameVars.currentGameVersion.packageName)
+    }
     delayWithMultiplier(500)
 }

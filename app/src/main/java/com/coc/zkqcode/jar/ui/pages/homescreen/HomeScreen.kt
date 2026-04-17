@@ -285,6 +285,10 @@ fun HomeScreen(
                                         key = GLOBAL_SETTINGS.AUTO_UPDATE.key, options = listOf("关闭自动更新", "仅启动时更新", "实时自动更新")
                                     )
                                     SettingSwitchIcon(key = GLOBAL_SETTINGS.AUTO_START.key)
+                                    SettingSwitchIcon(
+                                        key = GLOBAL_SETTINGS.DISABLE_RESTART_GAME.key,
+                                        explain = "勾选后，所有重启游戏的设定将失效，可能会导致卡界面。建议谨慎使用。"
+                                    )
                                     SettingDropdown(
                                         key = GLOBAL_SETTINGS.AFTER_KICK_OPTION.key, options = listOf("立刻重连", "切换账号", "原地等待"),
                                         // Disable batch create when dropdown is not "立刻重连" (index 0)
