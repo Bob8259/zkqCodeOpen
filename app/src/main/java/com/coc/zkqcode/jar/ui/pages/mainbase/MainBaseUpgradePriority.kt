@@ -103,6 +103,17 @@ fun MainBaseUpgradePriority(index: Int, onSaveSuccess: () -> Unit) {
                     state.value = if (state.value == "1") "0" else "1"
                 }
             })
+            // Reset priority to default order and enable all
+            CustomButton(text = "重置优先度", onClick = {
+                list = allPriorities.sortedBy { def ->
+                    def.defaultValue.toString().toIntOrNull() ?: Int.MAX_VALUE
+                }
+                list.forEach { item ->
+                    val buildingKey = item.key.removeSuffix("_priority")
+                    val enableKey = "${buildingKey}_c$index"
+                    getConfigState(enableKey).value = "1"
+                }
+            })
         }
 
         LazyVerticalGrid(

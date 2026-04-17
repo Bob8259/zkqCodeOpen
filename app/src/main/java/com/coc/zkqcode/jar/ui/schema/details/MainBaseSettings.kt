@@ -45,7 +45,7 @@ object MainBaseSettings {
         "upgrade_any_building_after_consecutive_failures", "连续升级失败", 0, "MAIN_BASE_SETTINGS"
     )
     val UPGRADE_ANY_BUILDING_AFTER_CONSECUTIVE_FAILURES_THRESHOLD = SettingDef(
-        "upgrade_any_building_after_consecutive_failures_threshold", "次后，升级任意建筑", "3", "MAIN_BASE_SETTINGS"
+        "upgrade_any_building_after_consecutive_failures_threshold", "次后，改为快速升级", "3", "MAIN_BASE_SETTINGS"
     )
 
     val BATCH_WALL_UPGRADE_SETTINGS =
