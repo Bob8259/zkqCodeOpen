@@ -171,6 +171,7 @@ fun HomeScreen(
     // Clean All Data Confirmation Dialogue State
     var showCleanAllConfirmation by rememberSaveable { mutableStateOf(false) }
     var showAnnouncement by remember { mutableStateOf(false) }
+    var showImportOldDataConfirmation by rememberSaveable { mutableStateOf(false) }
 
     val cleanAllData = {
         showCleanAllConfirmation = true
@@ -301,6 +302,11 @@ fun HomeScreen(
                                             }
                                         })
                                     SettingInputRow(key = GLOBAL_SETTINGS.DEVICE_REMARK.key)
+                                    CustomButton(
+                                        text = "导入旧版数据",
+                                        onClick = { showImportOldDataConfirmation = true },
+                                        marginTop = 6.dp
+                                    )
 
                                 }
                             }
@@ -457,6 +463,37 @@ fun HomeScreen(
         // Announcement dialog
         if (showAnnouncement) {
             AnnouncementDialog(onDismiss = { showAnnouncement = false })
+        }
+
+        if (showImportOldDataConfirmation) {
+            com.coc.zkqcode.jar.ui.components.CustomAlertDialog(
+                onDismissRequest = { showImportOldDataConfirmation = false },
+                title = { Text("导入旧版数据", style = MaterialTheme.typography.titleMedium) },
+                text = {
+                    Text(
+                        "导入旧版数据将覆盖当前配置，是否继续？\n\n因新旧版差距过大，此功能可能无法导入100%的数据。导入完成后，请仔细检查配置是否正确。\n\n导入后请手动重启辅助。",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                },
+                confirmButton = {
+                    Row {
+                        androidx.compose.material3.TextButton(onClick = { showImportOldDataConfirmation = false }) { Text("取消") }
+                        androidx.compose.material3.TextButton(onClick = {
+                            showImportOldDataConfirmation = false
+                            scope.launch(kotlinx.coroutines.Dispatchers.IO) {
+                                showMsg("正在扫描导入并覆盖配置...")
+                                val success = com.coc.zkqcode.jar.ui.schema.OldDataImporter.importOldData()
+                                if (success) {
+                                    ConfigManager.saveConfigs()
+                                    showMsg("旧版本数据导入成功且已保存")
+                                } else {
+                                    showMsg("未找到任何旧版数据")
+                                }
+                            }
+                        }) { Text("确认") }
+                    }
+                }
+            )
         }
 
         // 3. Bottom fixed button area + dialogs + notification
