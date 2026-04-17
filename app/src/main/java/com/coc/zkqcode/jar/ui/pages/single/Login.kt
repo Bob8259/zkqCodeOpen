@@ -227,7 +227,7 @@ fun LoginScreen(onAdFreeClick: () -> Unit = {}) {
             .fillMaxSize(), horizontalAlignment = Alignment.Start
     ) {
         Text(
-            text = "欢迎使用紫孔雀\nQQ群:820256617\n使用前请仔细阅读官网教程和注意事项。",
+            text = "欢迎使用紫孔雀\nQQ群:820256617",
             style = MaterialTheme.typography.labelMedium
         )
         if (showMessage) {

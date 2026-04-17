@@ -4,6 +4,7 @@ package com.coc.zkqcode.jar.ui.pages.single
 
 import android.os.Environment
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListScope
@@ -210,12 +211,26 @@ fun ExtractGameSaveContent() {
         // Show section content based on the selected index
         SettingSection {
             // Dropdown to switch between CN and Global versions
-            SettingDropdown(
-                key = GLOBAL_SETTINGS.EXTRACT_VERSION.key,
-                options = listOf("国服", "国际服", "数据号")
-            )
             if (selectedIndex == 2) {
                 // For "数据号" mode, show the slot selector and data content inputs plus action buttons
+                FlowRow {
+                    SettingDropdown(
+                        key = GLOBAL_SETTINGS.EXTRACT_VERSION.key,
+                        options = listOf("国服", "国际服", "数据号")
+                    )
+                    Row {
+                        CustomButton(text = "▼", onClick = {
+                            val key = GLOBAL_SETTINGS.EXTRACT_DATA_NUMBER.key
+                            val current = GlobalVars.configStates[key]?.value?.toIntOrNull() ?: 1
+                            if (current > 1) GlobalVars.configStates[key]?.value = (current - 1).toString()
+                        })
+                        CustomButton(text = "▲", onClick = {
+                            val key = GLOBAL_SETTINGS.EXTRACT_DATA_NUMBER.key
+                            val current = GlobalVars.configStates[key]?.value?.toIntOrNull() ?: 0
+                            GlobalVars.configStates[key]?.value = (current + 1).toString()
+                        })
+                    }
+                }
                 SettingInputRow(key = GLOBAL_SETTINGS.EXTRACT_DATA_NUMBER.key)
                 SettingInputRow(key = GLOBAL_SETTINGS.EXTRACT_DATA_CONTENT.key)
                 Row {
@@ -223,6 +238,22 @@ fun ExtractGameSaveContent() {
                     CustomButton(text = "删除数据", onClick = { performDeleteDataNumber() })
                 }
             } else {
+                FlowRow {
+                    SettingDropdown(
+                        key = GLOBAL_SETTINGS.EXTRACT_VERSION.key,
+                        options = listOf("国服", "国际服", "数据号")
+                    )
+                    Row {
+                        CustomButton(text = "▼", onClick = {
+                            val current = GlobalVars.configStates[selectedVariant.settingKey]?.value?.toIntOrNull() ?: 1
+                            if (current > 1) GlobalVars.configStates[selectedVariant.settingKey]?.value = (current - 1).toString()
+                        })
+                        CustomButton(text = "▲", onClick = {
+                            val current = GlobalVars.configStates[selectedVariant.settingKey]?.value?.toIntOrNull() ?: 0
+                            GlobalVars.configStates[selectedVariant.settingKey]?.value = (current + 1).toString()
+                        })
+                    }
+                }
                 GameConfigSection(
                     variant = selectedVariant,
                     onExtract = { performExtract(selectedVariant) },
