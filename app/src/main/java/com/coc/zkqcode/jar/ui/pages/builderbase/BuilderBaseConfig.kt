@@ -9,11 +9,13 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import com.coc.zkqcode.core.data.database.GlobalVars
+import com.coc.zkqcode.jar.ui.components.CustomButton
 import com.coc.zkqcode.jar.ui.components.SectionBanner
 import com.coc.zkqcode.jar.ui.components.SettingInputRow
 import com.coc.zkqcode.jar.ui.components.SettingSection
 import com.coc.zkqcode.jar.ui.components.SettingSwitchIcon
 import com.coc.zkqcode.jar.ui.schema.Schema.BUILDER_BASE_SETTINGS
+import com.coc.zkqcode.jar.ui.theme.AppColors
 
 fun LazyListScope.builderBaseConfig(
     index: Int, isExpanded: Boolean, onToggleExpanded: () -> Unit, onNavigateBuilderBasePriority: (Int) -> Unit = {},
@@ -114,7 +116,6 @@ fun LazyListScope.builderBaseConfig(
                     explain = "若尚未解锁第二区域，当金币或圣水超过30万时生效；\n若已解锁第二区域，当金币或圣水超过60万时生效。\n注意：此功能会移除野蛮人雕像，请谨慎使用。"
                 )
                 SettingSwitchIcon(key = "${BUILDER_BASE_SETTINGS.BUILDER_BASE_SAVE_WORKER.key}_c${index}")
-                // Keep the Clock Tower toggle beside other Builder Base upgrade switches.
                 SettingSwitchIcon(key = "${BUILDER_BASE_SETTINGS.BUILDER_BASE_ENABLE_CLOCK_TOWER.key}_c${index}")
             }
             AnimatedVisibility(visible = GlobalVars.configStates["${BUILDER_BASE_SETTINGS.BUILDER_BASE_WALL_UPGRADE_SETTINGS.key}_c$index"]?.value == "1") {
@@ -123,14 +124,12 @@ fun LazyListScope.builderBaseConfig(
                     SettingInputRow(key = "${BUILDER_BASE_SETTINGS.BUILDER_BASE_UPGRADE_WALL_THRESHOLD.key}_c$index")
                 }
             }
-            val builderBaseBuildVisible = GlobalVars.configStates["${BUILDER_BASE_SETTINGS.BUILDER_BASE_BUILD_SETTING.key}_c${index}"]?.value == "1"
-            val prevBuilderBaseBuildVisible = remember { mutableStateOf(builderBaseBuildVisible) }
-            LaunchedEffect(builderBaseBuildVisible) {
-                if (builderBaseBuildVisible && !prevBuilderBaseBuildVisible.value) onScrollToBottom()
-                prevBuilderBaseBuildVisible.value = builderBaseBuildVisible
-            }
-            AnimatedVisibility(visible = builderBaseBuildVisible) {
-                BuilderBaseUpgradeConfigs(index = index, onNavigatePriority = onNavigateBuilderBasePriority)
+            AnimatedVisibility(visible = GlobalVars.configStates["${BUILDER_BASE_SETTINGS.BUILDER_BASE_BUILD_SETTING.key}_c${index}"]?.value == "1") {
+                CustomButton(
+                    onClick = { onNavigateBuilderBasePriority(index) },
+                    text = "点击调整夜世界建筑升级",
+                    containerColor = AppColors.Teal
+                )
             }
         }
     }
