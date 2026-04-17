@@ -45,11 +45,14 @@ suspend fun clanCapitalTrainTroops(): Boolean {
         repeat(2) {
             TouchActions.tap(940, 610, delayTime = 50)
         }//骷髅法术
+        repeat(7) {
+            TouchActions.tap(780, 480, delayTime = 50)//雷电法术
+        }
         repeat(3) {
             TouchActions.tap(635, 470, delayTime = 50)
         }//治疗法术
         repeat(7) {
-            TouchActions.tap(780, 480, delayTime = 50)//雷电法术
+            TouchActions.tap(640, 615, delayTime = 50)//弹跳法术
         }
         val capitalMiner = findMultiColors(MyColors.CapitalMiner)
         if (capitalMiner != null) {
