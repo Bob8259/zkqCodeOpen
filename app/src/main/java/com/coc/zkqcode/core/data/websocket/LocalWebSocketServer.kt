@@ -13,6 +13,7 @@ import io.ktor.server.websocket.webSocket
 import io.ktor.websocket.Frame
 import io.ktor.websocket.WebSocketSession
 import io.ktor.websocket.readText
+import java.net.BindException
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -95,7 +96,12 @@ class LocalWebSocketServer {
      */
     suspend fun startAndAwaitClient(timeoutMs: Long = 10_000L): Boolean {
         clientConnectedDeferred = CompletableDeferred()
-        server.start(wait = false)
+        try {
+            server.start(wait = false)
+        } catch (e: BindException) {
+            showDebugInfo("LocalWebSocketServer: port $PORT already in use, cannot bind: ${e.message}")
+            return false
+        }
         showDebugInfo("LocalWebSocketServer: listening on port $PORT")
 
         return try {

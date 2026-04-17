@@ -36,6 +36,13 @@ object ServerHelper {
      * for the app_process client to connect and send its announcement.
      */
     private suspend fun tryLocalServerConnection(): ServerConnectionMethod? {
+        // If a server instance already exists, stop it before creating a new one
+        localServer?.let { existing ->
+            showDebugInfo("ServerHelper: stopping existing server before re-creating")
+            existing.stopServer()
+            localServer = null
+        }
+
         val server = LocalWebSocketServer()
         localServer = server
 
