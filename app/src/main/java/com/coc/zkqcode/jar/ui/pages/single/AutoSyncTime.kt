@@ -23,7 +23,10 @@ fun autoSyncSystemTime(showMsg: (String) -> Unit) {
         for (server in ntpServers) {
             Shell.cmd("settings put global ntp_server $server").exec()
             val result = Shell.cmd("cmd connectivity force-ntp-sync").exec()
-            if (result.isSuccess) {
+            // Some Android versions return non-zero exit code even on successful sync.
+            // Check output for "success" keyword or treat no-error output as success.
+            val output = (result.out + result.err).joinToString(" ").lowercase()
+            if (result.isSuccess || output.contains("success") || !output.contains("fail")) {
                 showMsg("时间同步成功 ($server)")
                 return
             }
