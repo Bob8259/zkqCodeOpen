@@ -45,9 +45,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.util.fileactions.FileHelper
-import com.coc.zkqcode.core.ui.floatingwindows.ImagePickerActivity
-import com.coc.zkqcode.core.util.fileactions.resetCustomBackground
-import com.coc.zkqcode.jar.ui.BackgroundImage
+import com.coc.zkqcode.jar.ui.pages.mainbase.BackgroundImage
 import com.coc.zkqcode.jar.ui.components.CustomButton
 import com.coc.zkqcode.jar.ui.components.SettingDropdown
 import com.coc.zkqcode.jar.ui.components.SettingInputRow
@@ -267,16 +265,24 @@ fun HomeScreen(
                             ) {
                                 QuickActionCard(
                                     title = "自定义背景", subtitle = "选择图片", dotColor = AppColors.PrimaryLight, onClick = {
-                                        saveAndSetPlaying(false)
-                                        val intent = Intent(context, ImagePickerActivity::class.java)
-                                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                                        context.startActivity(intent)
+                                        try {
+                                            saveAndSetPlaying(false)
+                                            val intent = Intent(context, com.coc.zkqcode.core.ui.floatingwindows.ImagePickerActivity::class.java)
+                                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                            context.startActivity(intent)
+                                        } catch (e: Throwable) {
+                                            showMsg("当前版本不支持此功能，请更新主程序")
+                                        }
                                     }, modifier = Modifier.weight(1f)
                                 )
                                 QuickActionCard(
                                     title = "重置背景", subtitle = "恢复默认", dotColor = AppColors.NavInactive, onClick = {
-                                        val success = resetCustomBackground(context)
-                                        showMsg(if (success) "背景已重置" else "重置失败")
+                                        try {
+                                            val success = com.coc.zkqcode.core.util.fileactions.resetCustomBackground(context)
+                                            showMsg(if (success) "背景已重置" else "重置失败")
+                                        } catch (e: Throwable) {
+                                            showMsg("当前版本不支持此功能，请更新主程序")
+                                        }
                                     }, modifier = Modifier.weight(1f)
                                 )
                             }
