@@ -13,8 +13,8 @@ object AppColors {
     // iOS-style green — toggle ON state
     val Success = Color(0xFF4CD964)
 
-    // Light blue page background — 60% opacity so the background image shows through
-    val Background = Color(0x99E8F4FC)
+    // Light blue page background — 40% opacity so the background image shows through more clearly
+    val Background = Color(0x66E8F4FC)
 
     // More opaque white card surfaces (95% opacity) so SettingSection stands out against the image
     val CardBg = Color(0xF2FFFFFF)

@@ -42,6 +42,11 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name="com.coc.zkqcode.core.ui.floatingwindows.ImagePickerActivity"
+            android:exported="false"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+
         <service
             android:name="com.coc.zkqcode.core.ui.floatingwindows.UIWindowService"
             android:enabled="true"

@@ -1,5 +1,6 @@
 package com.coc.zkqcode.jar.ui.pages.homescreen
 
+import android.content.Intent
 import android.os.Environment
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -39,10 +40,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.util.fileactions.FileHelper
+import com.coc.zkqcode.core.ui.floatingwindows.ImagePickerActivity
 import com.coc.zkqcode.jar.ui.BackgroundImage
 import com.coc.zkqcode.jar.ui.components.CustomButton
 import com.coc.zkqcode.jar.ui.components.SettingDropdown
@@ -176,6 +179,9 @@ fun HomeScreen(
     var showCleanAllConfirmation by rememberSaveable { mutableStateOf(false) }
     var showAnnouncement by remember { mutableStateOf(false) }
     var showImportOldDataConfirmation by rememberSaveable { mutableStateOf(false) }
+
+    // Context for launching the image picker activity
+    val context = LocalContext.current
 
     val cleanAllData = {
         showCleanAllConfirmation = true
@@ -311,6 +317,16 @@ fun HomeScreen(
                                     CustomButton(
                                         text = "导入旧版数据",
                                         onClick = { showImportOldDataConfirmation = true },
+                                        marginTop = 6.dp
+                                    )
+                                    CustomButton(
+                                        text = "自定义背景",
+                                        onClick = {
+                                            saveAndSetPlaying(false)
+                                            val intent = Intent(context, ImagePickerActivity::class.java)
+                                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                            context.startActivity(intent)
+                                        },
                                         marginTop = 6.dp
                                     )
 
