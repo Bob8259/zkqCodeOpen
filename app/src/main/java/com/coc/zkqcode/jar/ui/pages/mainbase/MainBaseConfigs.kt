@@ -40,6 +40,7 @@ fun LazyListScope.mainBaseConfig(
     // Attack & Resource requirements
     item {
         SettingSection(visible = isExpanded) {
+            SettingInputRow(key = "${MAIN_BASE_SETTINGS.CONFIG_REMARK.key}_c$index")
             SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.AUTO_ATTACK.key}_c$index")
             Text(
                 text = "辅助会自动配兵，若想手动配兵，请勾选手动配兵选项。",

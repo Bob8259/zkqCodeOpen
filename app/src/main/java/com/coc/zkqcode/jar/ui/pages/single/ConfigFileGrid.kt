@@ -87,15 +87,39 @@ fun ConfigFileGrid(
                                 .padding(horizontal = 8.dp),
                             contentAlignment = Alignment.Center
                         ) {
-                            Text(
-                                text = "配置文件$i",
-                                style = MaterialTheme.typography.labelLarge,
-                                fontWeight = FontWeight.Medium,
-                                color = Color.White,
-                                maxLines = 1,
-                                softWrap = false,
-                                overflow = TextOverflow.Ellipsis
-                            )
+                            val remarkState = com.coc.zkqcode.core.data.database.GlobalVars.configStates["${com.coc.zkqcode.jar.ui.schema.Schema.MAIN_BASE_SETTINGS.CONFIG_REMARK.key}_c$i"]?.value ?: ""
+                            if (remarkState.isNotEmpty()) {
+                                Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
+                                    Text(
+                                        text = "配置文件$i",
+                                        style = MaterialTheme.typography.labelSmall,
+                                        fontWeight = FontWeight.Medium,
+                                        color = Color.White,
+                                        maxLines = 1,
+                                        softWrap = false,
+                                        overflow = TextOverflow.Ellipsis
+                                    )
+                                    Text(
+                                        text = "备注: $remarkState",
+                                        style = MaterialTheme.typography.labelLarge,
+                                        fontWeight = FontWeight.Medium,
+                                        color = Color.White,
+                                        maxLines = 1,
+                                        softWrap = false,
+                                        overflow = TextOverflow.Ellipsis
+                                    )
+                                }
+                            } else {
+                                Text(
+                                    text = "配置文件$i",
+                                    style = MaterialTheme.typography.labelLarge,
+                                    fontWeight = FontWeight.Medium,
+                                    color = Color.White,
+                                    maxLines = 1,
+                                    softWrap = false,
+                                    overflow = TextOverflow.Ellipsis
+                                )
+                            }
                         }
                     }
                 }

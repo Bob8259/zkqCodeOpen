@@ -7,6 +7,7 @@ import com.coc.zkqcode.jar.ui.schema.SettingDef
 object MainBaseSettings {
     // Common settings
     val CLAIM_DAILY_REWARD = SettingDef("claim_daily_reward", "领取国服每日奖励", 1, "MAIN_BASE_SETTINGS")
+    val CONFIG_REMARK = SettingDef("config_remark", "备注:", "", "MAIN_BASE_SETTINGS")
     val AUTO_ATTACK = SettingDef("auto_attack", "自动进攻", 1, "MAIN_BASE_SETTINGS")
     val GOLD_REQUIREMENT = SettingDef("gold_requirement", "金币要求", "100", "MAIN_BASE_SETTINGS")
     val ELIXIR_REQUIREMENT = SettingDef("elixir_requirement", "圣水要求", "100", "MAIN_BASE_SETTINGS")
@@ -133,6 +134,7 @@ object MainBaseSettings {
 
     val all = listOf(
         CLAIM_DAILY_REWARD,
+        CONFIG_REMARK,
         AUTO_ATTACK,
         GOLD_REQUIREMENT,
         ELIXIR_REQUIREMENT,
