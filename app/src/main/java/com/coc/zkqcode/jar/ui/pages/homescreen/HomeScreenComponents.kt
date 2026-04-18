@@ -39,7 +39,7 @@ internal fun QuickActionCard(
             .border(1.5.dp, AppColors.GlassBorder, RoundedCornerShape(12.dp))
             .clickable { onClick() }, shape = RoundedCornerShape(12.dp), color = AppColors.CardBg, shadowElevation = 0.dp
     ) {
-        Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 20.dp)) {
+        Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Box(
                     modifier = Modifier
@@ -51,7 +51,7 @@ internal fun QuickActionCard(
                     text = title, style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Medium, color = AppColors.TextPrimary
                 )
             }
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(4.dp))
             Row(
                 modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically
             ) {

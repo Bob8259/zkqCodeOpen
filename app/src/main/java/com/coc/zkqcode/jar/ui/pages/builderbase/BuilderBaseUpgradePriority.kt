@@ -33,7 +33,7 @@ import androidx.compose.ui.unit.dp
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.ui.reorderable.ReorderableItem
 import com.coc.zkqcode.core.ui.reorderable.rememberReorderableLazyGridState
-import com.coc.zkqcode.jar.ui.BackgroundImage
+import com.coc.zkqcode.jar.ui.pages.homescreen.BackgroundImage
 import com.coc.zkqcode.jar.ui.components.CustomButton
 import com.coc.zkqcode.jar.ui.schema.Schema
 import com.coc.zkqcode.jar.ui.theme.AppColors

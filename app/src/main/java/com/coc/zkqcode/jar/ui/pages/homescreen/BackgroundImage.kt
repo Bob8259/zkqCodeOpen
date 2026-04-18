@@ -1,4 +1,4 @@
-﻿package com.coc.zkqcode.jar.ui
+﻿package com.coc.zkqcode.jar.ui.pages.homescreen
 
 import android.content.Context
 import android.graphics.BitmapFactory

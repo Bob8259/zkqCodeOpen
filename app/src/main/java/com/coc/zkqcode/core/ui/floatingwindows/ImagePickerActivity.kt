@@ -3,7 +3,7 @@ package com.coc.zkqcode.core.ui.floatingwindows
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import com.coc.zkqcode.jar.ui.saveCustomBackground
+import com.coc.zkqcode.core.util.fileactions.saveCustomBackground
 
 /**
  * Transparent Activity used to launch the system image picker from a Service context.

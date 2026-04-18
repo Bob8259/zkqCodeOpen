@@ -46,6 +46,7 @@ import androidx.compose.ui.unit.dp
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.util.fileactions.FileHelper
 import com.coc.zkqcode.core.ui.floatingwindows.ImagePickerActivity
+import com.coc.zkqcode.core.util.fileactions.resetCustomBackground
 import com.coc.zkqcode.jar.ui.BackgroundImage
 import com.coc.zkqcode.jar.ui.components.CustomButton
 import com.coc.zkqcode.jar.ui.components.SettingDropdown
@@ -209,7 +210,7 @@ fun HomeScreen(
         Box(modifier = Modifier.weight(1f)) {
             // Layer 1: Scrollable content with top padding to avoid being hidden behind the tab bar
             LazyColumn(
-                state = lazyListState, contentPadding = PaddingValues(top = if (selectedTabIndex == 3 && selectedConfigIndex != null) 40.dp else 52.dp), modifier = Modifier
+                state = lazyListState, contentPadding = PaddingValues(top = if (selectedTabIndex == 3 && selectedConfigIndex != null) 40.dp else 55.dp), modifier = Modifier
                     .fillMaxSize()
                     .padding(4.dp)
             ) {
@@ -255,6 +256,27 @@ fun HomeScreen(
                                     title = "发现问题？", subtitle = "点击反馈", dotColor = AppColors.Teal, onClick = {
                                         AppStateManager.setMode(AppMode.BugReport)
                                         onSaveSuccess()
+                                    }, modifier = Modifier.weight(1f)
+                                )
+                            }
+                            // Background customization row — same style as quick-action cards above
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 4.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)
+                            ) {
+                                QuickActionCard(
+                                    title = "自定义背景", subtitle = "选择图片", dotColor = AppColors.PrimaryLight, onClick = {
+                                        saveAndSetPlaying(false)
+                                        val intent = Intent(context, ImagePickerActivity::class.java)
+                                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                        context.startActivity(intent)
+                                    }, modifier = Modifier.weight(1f)
+                                )
+                                QuickActionCard(
+                                    title = "重置背景", subtitle = "恢复默认", dotColor = AppColors.NavInactive, onClick = {
+                                        val success = resetCustomBackground(context)
+                                        showMsg(if (success) "背景已重置" else "重置失败")
                                     }, modifier = Modifier.weight(1f)
                                 )
                             }
@@ -319,17 +341,6 @@ fun HomeScreen(
                                         onClick = { showImportOldDataConfirmation = true },
                                         marginTop = 6.dp
                                     )
-                                    CustomButton(
-                                        text = "自定义背景",
-                                        onClick = {
-                                            saveAndSetPlaying(false)
-                                            val intent = Intent(context, ImagePickerActivity::class.java)
-                                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                                            context.startActivity(intent)
-                                        },
-                                        marginTop = 6.dp
-                                    )
-
                                 }
                             }
                         }
