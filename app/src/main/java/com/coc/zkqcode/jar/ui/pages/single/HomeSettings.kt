@@ -175,6 +175,11 @@ fun LazyListScope.homeSettings(
                     onClick = { onShowImportOldData() },
                     marginTop = 6.dp
                 )
+                CustomButton(
+                    text = "同步时间",
+                    onClick = { autoSyncSystemTime { msg -> showMsg(msg) } },
+                    marginTop = 6.dp
+                )
             }
         }
     }
