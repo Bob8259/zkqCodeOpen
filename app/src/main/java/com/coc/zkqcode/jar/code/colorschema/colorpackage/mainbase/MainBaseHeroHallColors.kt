@@ -19,6 +19,7 @@ interface IMainBaseHeroHallColors {
     val PetsIconInHeroHall2: ColorSchema
     val PetsShopInnerBanner: ColorSchema
     val Lassi: ColorSchema
+    val Lassi2: ColorSchema
     val ElectroOwl: ColorSchema
     val MightyYak: ColorSchema
     val Unicorn: ColorSchema
@@ -109,6 +110,11 @@ object MainBaseHeroHallColors : IMainBaseHeroHallColors {
     // Pet slot used to detect Lassi in the hero hall upgrade screen
     override val Lassi = ColorSchema.parse(
         175, 385, 1110, 665, "FA51FA", "15|-34|CEA79B,37|-33|AA604D,55|-7|4E322D,81|-6|694337,88|-57|DF6B8F,93|-75|FF85FF,135|-55|834D3F,135|-28|E88E6D,116|-17|C06350", 0, 0.9, "莱希"
+    )
+
+    // Pet slot used to detect Lassi (color variant 2) in the hero hall upgrade screen
+    override val Lassi2 = ColorSchema.parse(
+        175, 385, 1110, 665, "7C483E", "52|-3|513835,93|-23|9D5545,87|-25|834B3C,81|-45|784736,81|-47|7A4838,81|-55|925243,133|-56|F5AF7D,126|-38|EB916F,109|-16|BC6353", 0, 0.9, "莱希2"
     )
 
     // Pet slot used to detect Electro Owl in the hero hall upgrade screen

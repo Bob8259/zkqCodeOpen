@@ -60,6 +60,7 @@ suspend fun upgradeGearsAndPets(): Boolean {
 private suspend fun checkPets() {
     val petColorMap = listOf(
         MainBasePets.LASSI to MyColors.Lassi,
+        MainBasePets.LASSI to MyColors.Lassi2,
         MainBasePets.ELECTRO_OWL to MyColors.ElectroOwl,
         MainBasePets.MIGHTY_YAK to MyColors.MightyYak,
         MainBasePets.UNICORN to MyColors.Unicorn,
