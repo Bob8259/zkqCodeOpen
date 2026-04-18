@@ -5,22 +5,36 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import com.coc.zkqcode.core.util.fileactions.backgroundRevision
-import com.coc.zkqcode.core.util.fileactions.getCustomBackgroundFile
 import java.io.IOException
+
+// Local fallback revision counter in case BackgroundHelper is not available on older hosts
+private val fallbackRevision = mutableIntStateOf(0)
+
+/**
+ * Safely get the background revision from core's BackgroundHelper.
+ * Falls back to a local counter if the core class is not available (older host).
+ */
+private fun getRevisionState(): androidx.compose.runtime.MutableIntState {
+    return try {
+        com.coc.zkqcode.core.util.fileactions.backgroundRevision
+    } catch (e: Throwable) {
+        fallbackRevision
+    }
+}
 
 // Loads the background image: custom from filesDir first, then fallback to assets/background.jpg.
 @Composable
 fun BackgroundImage() {
     val context = LocalContext.current
     // Read the revision so recomposition is triggered when the background changes
-    val revision by remember { backgroundRevision }
+    val revision by remember { getRevisionState() }
     val bitmap: ImageBitmap? = remember(revision) {
         loadCustomBackground(context) ?: loadAssetBackground(context)
     }
@@ -36,11 +50,13 @@ fun BackgroundImage() {
 
 private fun loadCustomBackground(context: android.content.Context): ImageBitmap? {
     return try {
-        val file = getCustomBackgroundFile(context)
+        // Use fully qualified name to avoid NoClassDefFoundError on older hosts
+        val file = com.coc.zkqcode.core.util.fileactions.getCustomBackgroundFile(context)
         if (file != null) {
             BitmapFactory.decodeFile(file.absolutePath)?.asImageBitmap()
         } else null
-    } catch (e: Exception) {
+    } catch (e: Throwable) {
+        // BackgroundHelper not available on older host — skip custom background
         null
     }
 }
