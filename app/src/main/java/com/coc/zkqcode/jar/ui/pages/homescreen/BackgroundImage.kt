@@ -43,6 +43,18 @@ fun saveCustomBackground(context: Context, uri: Uri): Boolean {
     }
 }
 
+/** Delete the custom background, reverting to the default asset image. */
+fun resetCustomBackground(context: Context): Boolean {
+    return try {
+        val file = File(context.filesDir, CUSTOM_BG_FILENAME)
+        if (file.exists()) file.delete()
+        notifyBackgroundChanged()
+        true
+    } catch (e: Exception) {
+        false
+    }
+}
+
 // Loads the background image: custom from filesDir first, then fallback to assets/background.jpg.
 @Composable
 fun BackgroundImage() {
