@@ -15,7 +15,6 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import java.io.File
-import java.io.IOException
 
 private const val CUSTOM_BG_FILENAME = "custom_background.jpg"
 
@@ -62,7 +61,7 @@ fun BackgroundImage() {
     // Read the revision so recomposition is triggered when the background changes
     val revision by remember { backgroundRevision }
     val bitmap: ImageBitmap? = remember(revision) {
-        loadCustomBackground(context) ?: loadAssetBackground(context)
+        loadCustomBackground(context)
     }
     bitmap?.let {
         Image(
@@ -85,12 +84,3 @@ private fun loadCustomBackground(context: Context): ImageBitmap? {
     }
 }
 
-private fun loadAssetBackground(context: Context): ImageBitmap? {
-    return try {
-        context.assets.open("background.jpg").use { inputStream ->
-            BitmapFactory.decodeStream(inputStream)?.asImageBitmap()
-        }
-    } catch (e: IOException) {
-        null
-    }
-}

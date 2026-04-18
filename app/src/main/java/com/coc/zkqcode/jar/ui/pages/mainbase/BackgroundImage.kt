@@ -16,7 +16,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import com.coc.zkqcode.core.util.fileactions.backgroundRevision
 import com.coc.zkqcode.core.util.fileactions.getCustomBackgroundFile
-import java.io.IOException
 
 // Local fallback revision counter in case BackgroundHelper is not available on older hosts
 private val fallbackRevision = mutableIntStateOf(0)
@@ -40,7 +39,7 @@ fun BackgroundImage() {
     // Read the revision so recomposition is triggered when the background changes
     val revision by remember { getRevisionState() }
     val bitmap: ImageBitmap? = remember(revision) {
-        loadCustomBackground(context) ?: loadAssetBackground(context)
+        loadCustomBackground(context)
     }
     bitmap?.let {
         Image(
@@ -65,12 +64,3 @@ private fun loadCustomBackground(context: Context): ImageBitmap? {
     }
 }
 
-private fun loadAssetBackground(context: Context): ImageBitmap? {
-    return try {
-        context.assets.open("background.jpg").use { inputStream ->
-            BitmapFactory.decodeStream(inputStream)?.asImageBitmap()
-        }
-    } catch (e: IOException) {
-        null
-    }
-}
