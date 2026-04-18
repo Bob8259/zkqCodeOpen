@@ -4,11 +4,10 @@ import android.content.Context
 import android.content.Intent
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.system.daemon.DaemonService
+import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.core.ui.floatingwindows.ControlWindowService
 import com.coc.zkqcode.core.ui.floatingwindows.MessageBoxService
 import com.coc.zkqcode.core.ui.floatingwindows.UIWindowService
-import com.coc.zkqcode.core.system.accessibility.MyAccessibilityService
-import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.topjohnwu.superuser.Shell
 import kotlin.system.exitProcess
 

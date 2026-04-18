@@ -77,12 +77,11 @@ fun AnnouncementDialog(onDismiss: () -> Unit) {
 
     val updateLog = """
         更新记录:
+        2026-04-18:
+        - 新增UI背景，修复部分设备都城配兵问题
         2026-04-16:
         - 修复部分设备不升级战宠的问题
         - 优化下兵逻辑
-        2026-04-14:
-        - 修复升级建筑异常的问题
-        - 完成界面重构
     """.trimIndent()
 
     val messageText = when {

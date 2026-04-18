@@ -29,9 +29,9 @@ suspend fun clanCapitalTrainTroops(): Boolean {
         // No attack times remaining; record the timestamp so the guard activates next cycle
         writeMemory(storageKey, (System.currentTimeMillis() / 60_000).toString())
         accountMessage("都城攻击次数已用完")
-        if (!enterMainScreen()) return false
+        return enterMainScreen()
     }
-    val trainTroopButton = findMultiColorsUntil(schemas = listOf(MyColors.TrainTroops), duration = 1000)
+    val trainTroopButton = findMultiColorsUntil(schemas = listOf(MyColors.TrainTroops, MyColors.TrainTroops2), duration = 1000)
     if (trainTroopButton != null) {
         TouchActions.tap(trainTroopButton.x, trainTroopButton.y)
     }

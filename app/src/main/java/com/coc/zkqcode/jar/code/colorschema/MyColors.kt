@@ -118,4 +118,7 @@ object MyColors : IUIColors by UIColors, IFeatureColors by FeatureColors, IMainB
     val CapitalTrainTroopPage = ColorSchema.parse(
         569, 267, 935, 347, "8B85FF", "15|0|8B85FF,39|0|8B85FF,79|6|7E79FF,96|10|7570FF,207|4|7AF1D2,231|4|7AF1D2,267|4|7AF1D2,283|8|74EECC,284|18|60E5B8", 0, 0.9, "练兵界面确认和取消"
     )
+    val TrainTroops2 = ColorSchema.parse(
+        17, 483, 88, 559, "57F8FF", "33|13|E4DF1E,31|9|DBD815,11|0|57E8FF,14|0|50DEFF,0|17|E2CDEC,3|17|AF9EAF,7|17|ECDDF4,11|17|E3C7E3,14|17|35576E", 0, 0.9, "都城练兵按钮2"
+    )
 }
