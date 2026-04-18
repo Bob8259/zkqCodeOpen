@@ -14,6 +14,7 @@ interface IMainBaseClanColors {
     val ClanChatIcon: ColorSchema
     val DonationButton: ColorSchema
     val DonateSuperTroops: ColorSchema
+    val DonateSuperTroops2: ColorSchema
     val DonateNormalTroops: ColorSchema
     val DonateSpells: ColorSchema
     val PreviousDonation: ColorSchema
@@ -56,6 +57,10 @@ object MainBaseClanColors : IMainBaseClanColors {
     // Donate super troops tab
     override val DonateSuperTroops = ColorSchema.parse(
         500, 50, 1180, 690, "0E0D81", "-40|-10|0E0D81,-40|-8|0E0D81,-40|-5|0E0D81,-40|-3|0E0D81,35|-15|0E0D81,35|-13|0E0D81,35|-12|0E0D81,35|-10|0E0D81,35|-9|0E0D81", 1, 0.97, "捐超级兵"
+    )
+    // Donate super troops tab (variant 2)
+    override val DonateSuperTroops2 = ColorSchema.parse(
+        500, 50, 1180, 690, "FFFFFF", "0|5|B87940,0|-11|B87940,2|-11|B87940,5|-5|FFFFFF,5|-2|FFFFFF,5|4|B87940,4|5|B87940,3|5|B87940,2|5|B87940", 1, 0.97, "捐超级兵2"
     )
     // Donate normal troops tab
     override val DonateNormalTroops = ColorSchema.parse(

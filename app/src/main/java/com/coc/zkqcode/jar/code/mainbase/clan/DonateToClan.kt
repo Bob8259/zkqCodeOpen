@@ -145,7 +145,7 @@ suspend fun donateToClan(): Boolean {
 private suspend fun donateActions() {
     // Iterate through all donation types and tap each if found
     val donationSchemas = listOf(
-        MyColors.DonateSuperTroops, MyColors.DonateNormalTroops, MyColors.DonateSpells
+        MyColors.DonateSuperTroops, MyColors.DonateSuperTroops2, MyColors.DonateNormalTroops, MyColors.DonateSpells
     )
     var emptyLoopCount = 0
     repeat(10) {

@@ -43,29 +43,24 @@ suspend fun checkReconnections(): Boolean {
 
             // Use ML Kit to detect rating/review dialogue text in the same area as countWhitePixels
             val recognizedTexts = TextRecognizer.recognize(
-                startX = 270, startY = 230,
-                endX = 1010, endY = 430,
-                useChinese = true,
-                threshold = 140,
-                applyPreprocess = true,
-                invertBinarization = true
+                startX = 270, startY = 230, endX = 1010, endY = 430, useChinese = true, threshold = 140, applyPreprocess = true, invertBinarization = true
             )
             val recognizedTextString = recognizedTexts.joinToString(" ") { it.text }
-            val isRatingDialog = recognizedTextString.contains("评分") ||
-                    recognizedTextString.contains("反馈意见")
+            val isRatingDialog = recognizedTextString.contains("评分") || recognizedTextString.contains("反馈意见")
 
             val configKey = Schema.GLOBAL_SETTINGS.AFTER_KICK_OPTION.key
             val action = GlobalVars.configStates[configKey]?.value?.toInt() ?: logAndRestart("Can not get $configKey")
+            if (isRatingDialog) {
+                accountMessage("检测到评分/反馈对话框，执行重新提取存档，识别文本: $recognizedTextString")
+                TouchActions.tap(793, 459)
+                reExtractGameSavings()
+            }
             when (action) {
                 0 -> {
                     // Tap the reload button, rating notification, and tutorial confirm
-                    TouchActions.tap(793, 459)
                     TouchActions.tap(379, 458)
                     TouchActions.tap(338, 511)
-                    if (isRatingDialog) {
-                        accountMessage("检测到评分/反馈对话框，执行重新提取存档，识别文本: $recognizedTextString")
-                        reExtractGameSavings()
-                    }
+
                 }
 
                 1 -> needReturnFalse = true // Signal caller to switch accounts
@@ -81,8 +76,7 @@ suspend fun checkReconnections(): Boolean {
 }
 
 private suspend fun captureOrRestart(): ScreenCaptureManager.CaptureResult =
-    ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult
-        ?: logAndRestart("failed to take screenshot at reconnection check")
+    ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult ?: logAndRestart("failed to take screenshot at reconnection check")
 
 /**
  * Counts pixels in the confirmation area (270,230)→(1010,430) where R,G,B > 235 (white).
