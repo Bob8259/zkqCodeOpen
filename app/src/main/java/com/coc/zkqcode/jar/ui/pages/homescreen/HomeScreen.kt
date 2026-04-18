@@ -43,6 +43,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.util.fileactions.FileHelper
+import com.coc.zkqcode.jar.ui.BackgroundImage
 import com.coc.zkqcode.jar.ui.components.CustomButton
 import com.coc.zkqcode.jar.ui.components.SettingDropdown
 import com.coc.zkqcode.jar.ui.components.SettingInputRow
@@ -77,13 +78,16 @@ fun HomeScreen(
     // Safety check for configuration state
     val configCountState = GlobalVars.configStates[GLOBAL_SETTINGS.CONFIG_COUNT.key]
     if (configCountState == null) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(AppColors.Background)
-                .padding(16.dp), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(text = "正在初始化配置...", color = Color.Gray)
+        Box(modifier = Modifier.fillMaxSize()) {
+            BackgroundImage()
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(AppColors.Background)
+                    .padding(16.dp), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(text = "正在初始化配置...", color = Color.Gray)
+            }
         }
         return
     }
@@ -188,11 +192,13 @@ fun HomeScreen(
         }
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(AppColors.Background)
-    ) {
+    Box(modifier = Modifier.fillMaxSize()) {
+        BackgroundImage()
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(AppColors.Background)
+        ) {
         // Floating tab bar overlaying the content area
         Box(modifier = Modifier.weight(1f)) {
             // Layer 1: Scrollable content with top padding to avoid being hidden behind the tab bar
@@ -505,6 +511,7 @@ fun HomeScreen(
             onDismissNotification = {},
             showCleanAllConfirmation = showCleanAllConfirmation,
             onDismissCleanAll = { showCleanAllConfirmation = false })
+        }
     }
 
 }

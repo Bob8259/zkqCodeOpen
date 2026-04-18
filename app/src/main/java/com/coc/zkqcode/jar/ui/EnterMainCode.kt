@@ -38,6 +38,7 @@ import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.util.basic.RunShell
 import com.coc.zkqcode.interfaces.MainCode
 import com.coc.zkqcode.jar.code.runMainScript
+import com.coc.zkqcode.jar.ui.BackgroundImage
 import com.coc.zkqcode.jar.ui.components.CustomButton
 import com.coc.zkqcode.jar.ui.pages.builderbase.BuilderBaseUpgradePriority
 import com.coc.zkqcode.jar.ui.pages.mainbase.MainBaseUpgradePriority
@@ -145,12 +146,14 @@ private fun ConfigLoadingScreen() {
 
     val scope = rememberCoroutineScope()
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(AppColors.Background),
-        contentAlignment = Alignment.Center
-    ) {
+    Box(modifier = Modifier.fillMaxSize()) {
+        BackgroundImage()
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(AppColors.Background),
+            contentAlignment = Alignment.Center
+        ) {
         Box(
             modifier = Modifier
                 .padding(horizontal = 32.dp)
@@ -185,6 +188,7 @@ private fun ConfigLoadingScreen() {
                         }
                     })
             }
+        }
         }
     }
 }

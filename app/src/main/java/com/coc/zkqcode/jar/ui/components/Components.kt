@@ -370,9 +370,10 @@ fun CustomButton(
     explain: String? = null,
     marginTop: Dp = 6.dp,
     marginBottom: Dp = 0.dp,
+    marginEnd: Dp = 8.dp,
     containerColor: Color = AppColors.Primary,
 ) {
-    Row(modifier = Modifier.padding(top = marginTop, bottom = marginBottom, end = 8.dp)) {
+    Row(modifier = Modifier.padding(top = marginTop, bottom = marginBottom, end = marginEnd)) {
         Button(
             onClick = {
                 GlobalVars.isAutoRunEnabled = false

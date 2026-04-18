@@ -30,6 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.coc.zkqcode.jar.ui.BackgroundImage
 import com.coc.zkqcode.jar.ui.components.CustomButton
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.jar.ui.theme.AppColors
@@ -74,12 +75,14 @@ fun MainBaseUpgradePriority(index: Int, onSaveSuccess: () -> Unit) {
     val scope = rememberCoroutineScope()
     var isSaving by remember { mutableStateOf(false) }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(10.dp)
-            .background(AppColors.Background)
-    ) {
+    Box(modifier = Modifier.fillMaxSize()) {
+        BackgroundImage()
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(10.dp)
+                .background(AppColors.Background)
+        ) {
         Text(
             text = "长按单元格拖动调整优先度，点击切换启用/禁用。越靠上，越靠左表示优先度越高。", style = MaterialTheme.typography.labelMedium, modifier = Modifier.padding(horizontal = 8.dp)
         )
@@ -181,5 +184,6 @@ fun MainBaseUpgradePriority(index: Int, onSaveSuccess: () -> Unit) {
                 }
             }, marginBottom = 4.dp, text = if (isSaving) "保存中，请稍候" else "完成", enable = !isSaving, containerColor = AppColors.Teal
         )
+        }
     }
 }

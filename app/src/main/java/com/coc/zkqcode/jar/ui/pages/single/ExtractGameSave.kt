@@ -207,70 +207,70 @@ fun ExtractGameSaveContent() {
     val selectedIndex = versionState.value.toIntOrNull() ?: 0
     val selectedVariant = GameVariant.entries.getOrElse(selectedIndex) { GameVariant.CN }
 
-    Column(modifier = Modifier.padding(6.dp)) {
-        // Show section content based on the selected index
-        SettingSection {
-            // Dropdown to switch between CN and Global versions
-            if (selectedIndex == 2) {
-                // For "数据号" mode, show the slot selector and data content inputs plus action buttons
-                FlowRow {
-                    SettingDropdown(
-                        key = GLOBAL_SETTINGS.EXTRACT_VERSION.key,
-                        options = listOf("国服", "国际服", "数据号")
-                    )
-                    Row {
-                        CustomButton(text = "▼", onClick = {
-                            val key = GLOBAL_SETTINGS.EXTRACT_DATA_NUMBER.key
-                            val current = GlobalVars.configStates[key]?.value?.toIntOrNull() ?: 1
-                            if (current > 1) GlobalVars.configStates[key]?.value = (current - 1).toString()
-                        })
-                        CustomButton(text = "▲", onClick = {
-                            val key = GLOBAL_SETTINGS.EXTRACT_DATA_NUMBER.key
-                            val current = GlobalVars.configStates[key]?.value?.toIntOrNull() ?: 0
-                            GlobalVars.configStates[key]?.value = (current + 1).toString()
-                        })
-                    }
-                }
-                SettingInputRow(key = GLOBAL_SETTINGS.EXTRACT_DATA_NUMBER.key)
-                SettingInputRow(key = GLOBAL_SETTINGS.EXTRACT_DATA_CONTENT.key)
-                Row {
-                    CustomButton(text = "保存数据", onClick = { performSaveDataNumber() })
-                    CustomButton(text = "删除数据", onClick = { performDeleteDataNumber() })
-                }
-            } else {
-                FlowRow {
-                    SettingDropdown(
-                        key = GLOBAL_SETTINGS.EXTRACT_VERSION.key,
-                        options = listOf("国服", "国际服", "数据号")
-                    )
-                    Row {
-                        CustomButton(text = "▼", onClick = {
-                            val current = GlobalVars.configStates[selectedVariant.settingKey]?.value?.toIntOrNull() ?: 1
-                            if (current > 1) GlobalVars.configStates[selectedVariant.settingKey]?.value = (current - 1).toString()
-                        })
-                        CustomButton(text = "▲", onClick = {
-                            val current = GlobalVars.configStates[selectedVariant.settingKey]?.value?.toIntOrNull() ?: 0
-                            GlobalVars.configStates[selectedVariant.settingKey]?.value = (current + 1).toString()
-                        })
-                    }
-                }
-                GameConfigSection(
-                    variant = selectedVariant,
-                    onExtract = { performExtract(selectedVariant) },
-                    onDelete = { performDelete(selectedVariant) }
-                )
-            }
-        }
-        // Show disclaimer when "数据号" (index 2) is selected
+
+    // Show section content based on the selected index
+    SettingSection {
+        // Dropdown to switch between CN and Global versions
         if (selectedIndex == 2) {
-            Text(
-                text = "数据号功能源自第三方代码，与紫孔雀作者无关。该功能仅供学习研究使用，禁止用于其他用途。数据号以明文方式保存，请自行确保信息安全。",
-                color = Color.Red,
-                fontSize = 11.sp,
-                modifier = Modifier.padding(top = 6.dp, start = 4.dp, end = 4.dp)
+            // For "数据号" mode, show the slot selector and data content inputs plus action buttons
+            FlowRow {
+                SettingDropdown(
+                    key = GLOBAL_SETTINGS.EXTRACT_VERSION.key,
+                    options = listOf("国服", "国际服", "数据号")
+                )
+                Row {
+                    CustomButton(text = "▼", onClick = {
+                        val key = GLOBAL_SETTINGS.EXTRACT_DATA_NUMBER.key
+                        val current = GlobalVars.configStates[key]?.value?.toIntOrNull() ?: 1
+                        if (current > 1) GlobalVars.configStates[key]?.value = (current - 1).toString()
+                    })
+                    CustomButton(text = "▲", onClick = {
+                        val key = GLOBAL_SETTINGS.EXTRACT_DATA_NUMBER.key
+                        val current = GlobalVars.configStates[key]?.value?.toIntOrNull() ?: 0
+                        GlobalVars.configStates[key]?.value = (current + 1).toString()
+                    })
+                }
+            }
+            SettingInputRow(key = GLOBAL_SETTINGS.EXTRACT_DATA_NUMBER.key)
+            SettingInputRow(key = GLOBAL_SETTINGS.EXTRACT_DATA_CONTENT.key)
+            Row {
+                CustomButton(text = "保存数据", onClick = { performSaveDataNumber() })
+                CustomButton(text = "删除数据", onClick = { performDeleteDataNumber() })
+            }
+        } else {
+            FlowRow {
+                SettingDropdown(
+                    key = GLOBAL_SETTINGS.EXTRACT_VERSION.key,
+                    options = listOf("国服", "国际服", "数据号")
+                )
+                Row {
+                    CustomButton(text = "▼", onClick = {
+                        val current = GlobalVars.configStates[selectedVariant.settingKey]?.value?.toIntOrNull() ?: 1
+                        if (current > 1) GlobalVars.configStates[selectedVariant.settingKey]?.value = (current - 1).toString()
+                    })
+                    CustomButton(text = "▲", onClick = {
+                        val current = GlobalVars.configStates[selectedVariant.settingKey]?.value?.toIntOrNull() ?: 0
+                        GlobalVars.configStates[selectedVariant.settingKey]?.value = (current + 1).toString()
+                    })
+                }
+            }
+            GameConfigSection(
+                variant = selectedVariant,
+                onExtract = { performExtract(selectedVariant) },
+                onDelete = { performDelete(selectedVariant) }
             )
         }
     }
+    // Show disclaimer when "数据号" (index 2) is selected
+    if (selectedIndex == 2) {
+        Text(
+            text = "数据号功能源自第三方代码，与紫孔雀作者无关。该功能仅供学习研究使用，禁止用于其他用途。数据号以明文方式保存，请自行确保信息安全。",
+            color = Color.Red,
+            fontSize = 11.sp,
+            modifier = Modifier.padding(top = 6.dp, start = 4.dp, end = 4.dp)
+        )
+    }
+
 
     // 全局弹窗组件
     if (showDialog) {

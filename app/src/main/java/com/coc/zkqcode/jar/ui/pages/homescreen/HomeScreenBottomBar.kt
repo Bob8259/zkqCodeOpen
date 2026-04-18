@@ -1,9 +1,9 @@
+@file:Suppress("AssignedValueIsNeverRead")
+
 package com.coc.zkqcode.jar.ui.pages.homescreen
 
 import android.os.Environment
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -21,6 +21,7 @@ import com.coc.zkqcode.core.util.exit.AppExitHelper
 import com.coc.zkqcode.jar.ui.components.CustomAlertDialog
 import com.coc.zkqcode.jar.ui.components.CustomButton
 import com.coc.zkqcode.jar.ui.components.CustomNotificationWindow
+import com.coc.zkqcode.jar.ui.components.SettingSection
 import com.coc.zkqcode.jar.ui.schema.ConfigManager
 import com.coc.zkqcode.statehelper.AppMode
 import com.coc.zkqcode.statehelper.AppStateManager
@@ -31,34 +32,24 @@ import kotlinx.coroutines.withContext
 
 @Composable
 fun HomeScreenBottomBar(
-    scope: CoroutineScope,
-    saveAndSetPlaying: (Boolean) -> Unit,
-    showNotification: Boolean,
-    notificationMessage: String,
-    onDismissNotification: () -> Unit,
-    showCleanAllConfirmation: Boolean,
-    onDismissCleanAll: () -> Unit
+    scope: CoroutineScope, saveAndSetPlaying: (Boolean) -> Unit, showNotification: Boolean, notificationMessage: String, onDismissNotification: () -> Unit, showCleanAllConfirmation: Boolean, onDismissCleanAll: () -> Unit
 ) {
     val context = LocalContext.current
 
     var showExitConfirmation by rememberSaveable { mutableStateOf(false) }
 
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(bottom = 4.dp)
-    ) {
-        Row(modifier = Modifier.padding(start = 6.dp)) {
+    SettingSection(modifier = Modifier.padding(horizontal = 4.dp)) {
+        Row {
             CustomButton(
-                text = "保存并运行", onClick = {
+                text = "保存并运行", marginTop = 0.dp, onClick = {
                     saveAndSetPlaying(true)
                 })
             CustomButton(
-                text = "保存并暂停", onClick = {
+                text = "保存并暂停", marginTop = 0.dp, onClick = {
                     saveAndSetPlaying(false)
                 })
             CustomButton(
-                text = "保存并退出", onClick = {
+                text = "保存并退出", marginTop = 0.dp, marginEnd = 0.dp, onClick = {
                     showExitConfirmation = true
                 })
         }
@@ -100,8 +91,7 @@ fun HomeScreenBottomBar(
             )
         }, text = {
             Text(
-                text = "确认要删除所有数据吗？\n此操作不可撤销，将删除辅助设置、账号信息等全部数据。\n\n清除数据后，辅助将自动关闭，请手动重启辅助。",
-                style = MaterialTheme.typography.bodyMedium
+                text = "确认要删除所有数据吗？\n此操作不可撤销，将删除辅助设置、账号信息等全部数据。\n\n清除数据后，辅助将自动关闭，请手动重启辅助。", style = MaterialTheme.typography.bodyMedium
             )
         }, confirmButton = {
             Row {
@@ -114,8 +104,7 @@ fun HomeScreenBottomBar(
                         val sdPath = Environment.getExternalStorageDirectory().path
                         withContext(Dispatchers.IO) {
                             RunShell.runNoOutput(
-                                "rm -rf $sdPath/zkqFiles && rm -rf $sdPath/loginData",
-                                checkIsPlaying = false
+                                "rm -rf $sdPath/zkqFiles && rm -rf $sdPath/loginData", checkIsPlaying = false
                             )
                         }
                         AppExitHelper.exitApplication(context)
