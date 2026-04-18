@@ -2,7 +2,7 @@ package com.coc.zkqcode.jar.code.mainbase.attack
 
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
-import com.coc.zkqcode.core.util.touchactions.TouchActions
+import com.coc.zkqcode.jar.code.universal.smalltools.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.jar.code.universal.InGameVars
@@ -215,12 +215,10 @@ private suspend fun mainBaseBattleTutorial(): Boolean {
             TouchActions.tap(1085, 283)//Try three bases.
             delayWithMultiplier(200)
             TouchActions.tap(593, 591, delayTime = 1200)//Add backups
-            TouchActions.swipe(1210, 562, -1000, 559)
-            delayWithMultiplier(400)
+            TouchActions.swipe(1210, 562, -1000, 559, delayAfter = 400)
             TouchActions.tap(150, 494, delayTime = 200)//Furnace
             TouchActions.tap(150, 494)
-            TouchActions.swipe(86, 562, 2500, 500)
-            delayWithMultiplier(400)
+            TouchActions.swipe(86, 562, 2500, 500, delayAfter = 400)
             // Repeatedly find and tap the archer training icon
             repeat(15) {
                 findMultiColors(schema = MyColors.TrainArcher)?.let { point ->

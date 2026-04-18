@@ -1,7 +1,7 @@
 package com.coc.zkqcode.jar.code.clancapital
 
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
-import com.coc.zkqcode.core.util.touchactions.TouchActions
+import com.coc.zkqcode.jar.code.universal.smalltools.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.jar.code.universal.InGameVars
@@ -39,8 +39,7 @@ suspend fun clanCapitalTrainTroops(): Boolean {
     val trashBinButton = findMultiColorsUntil(schemas = listOf(MyColors.CapitalTrainTroopPage), duration = 300)
     if (trashBinButton != null) {
         TouchActions.tap(505, 300)
-        TouchActions.swipe(925, 580, 0, 680)
-        delayWithMultiplier(300)
+        TouchActions.swipe(925, 580, 0, 680, delayAfter = 300)
         TouchActions.tap(780, 615, delayTime = 50)//冰霜法术
         repeat(2) {
             TouchActions.tap(940, 610, delayTime = 50)
@@ -62,8 +61,7 @@ suspend fun clanCapitalTrainTroops(): Boolean {
             }
         }
 
-        TouchActions.swipe(140, 680, 1200, 580)
-        delayWithMultiplier(300)
+        TouchActions.swipe(140, 680, 1200, 580, delayAfter = 300)
         var capitalBarbarianButton = findMultiColorsUntil(schemas = listOf(MyColors.CapitalBarbarian, MyColors.CapitalBarbarian2), duration = 200)
         if (capitalBarbarianButton != null) {
             isTrainingSuccess = true

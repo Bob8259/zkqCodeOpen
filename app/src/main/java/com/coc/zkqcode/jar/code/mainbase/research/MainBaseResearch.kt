@@ -5,7 +5,7 @@ import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.jar.code.universal.InGameVars
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
-import com.coc.zkqcode.core.util.touchactions.TouchActions
+import com.coc.zkqcode.jar.code.universal.smalltools.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.ColorSchema
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.mainbase.MainBaseResearchColors
@@ -57,8 +57,7 @@ suspend fun mainBaseResearch(): Boolean {
             if (whiteNumber != null) {
                 TouchActions.tap(whiteNumber.x, whiteNumber.y, delayTime = 800)
                 TouchActions.tap(1130, 55)
-                TouchActions.swipe(240, 500, 4000, 500)
-                delayWithMultiplier(300)
+                TouchActions.swipe(240, 500, 4000, 500, delayAfter = 300)
                 findAllResearchItems()
             }
         }
@@ -159,8 +158,7 @@ private suspend fun findAllResearchItems() {
         }
 
         // No enabled item found on current screen, swipe to see more items
-        TouchActions.swipe(860, 500, 400, 500)
-        delayWithMultiplier(300)
+        TouchActions.swipe(860, 500, 400, 500, delayAfter = 300)
     }
 
     accountMessage("未找到任何已启用的研究项目")

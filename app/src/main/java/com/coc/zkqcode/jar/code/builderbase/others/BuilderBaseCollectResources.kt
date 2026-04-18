@@ -4,7 +4,7 @@ import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
-import com.coc.zkqcode.core.util.touchactions.TouchActions
+import com.coc.zkqcode.jar.code.universal.smalltools.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.clickRightBottom
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
@@ -15,8 +15,7 @@ suspend fun collectBuilderBaseResources(): Boolean {
     zoomSmallBuilderBase()
     TouchActions.swipe(587, 420, 587, 700, delayTime = 100)
     goldMineAndElixirCollector()
-    TouchActions.swipe(587, 420, 587, 700)
-    delayWithMultiplier(100)
+    TouchActions.swipe(587, 420, 587, 700, delayAfter = 100)
     goldMineAndElixirCollector()
     // Use a label so we can break out of both loops when a cart is found
     outerLoop@ for (tx in 745..920 step 40) {

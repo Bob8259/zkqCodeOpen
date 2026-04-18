@@ -1,7 +1,7 @@
 package com.coc.zkqcode.jar.code.mainbase.herohall
 
 import com.coc.zkqcode.core.util.bugreporter.BugReporter
-import com.coc.zkqcode.core.util.touchactions.TouchActions
+import com.coc.zkqcode.jar.code.universal.smalltools.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.mainbase.others.zoomSmallMainBase
 import com.coc.zkqcode.jar.code.mainbase.upgrade.mainBaseFindBuildButton

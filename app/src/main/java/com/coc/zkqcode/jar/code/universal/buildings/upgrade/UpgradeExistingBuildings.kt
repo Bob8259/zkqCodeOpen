@@ -3,7 +3,7 @@ package com.coc.zkqcode.jar.code.universal.buildings.upgrade
 import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.jar.code.universal.buildings.BaseType
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
-import com.coc.zkqcode.core.util.touchactions.TouchActions
+import com.coc.zkqcode.jar.code.universal.smalltools.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.ColorSchema
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.mainbase.others.zoomSmallMainBase
@@ -341,8 +341,7 @@ private suspend fun upgradeHero(building: String): LoopAction {
     } else {
         // The unique logic for Dragon Duke
         accountMessage("升级英雄：飞龙公爵")
-        TouchActions.swipe(1189, 354, 120, 345, delayTime = 300)
-        delayWithMultiplier(200)
+        TouchActions.swipe(1189, 354, 120, 345, delayTime = 300, delayAfter = 200)
         val heroInsufficientResources = ColorSchema.parse(
             1020, 480, 1230, 530, "7F88FF", "1|0|7F88FF,2|0|7F88FF,3|0|7F88FF,3|1|7F88FF,2|1|7F88FF,0|1|7F88FF,0|1|7F88FF,0|2|7F88FF,1|2|7F88FF", 0, 0.97, "${building}资源不足"
         )
@@ -384,8 +383,7 @@ private suspend fun upgradeBuilding(building: String, currentBase: BaseType, att
             TouchActions.tap(greenTick.x, greenTick.y)
             return LoopAction.Break
         }
-        TouchActions.swipe(922, 202, 298, 505)
-        delayWithMultiplier(300)
+        TouchActions.swipe(922, 202, 298, 505, delayAfter = 300)
         greenTick = mainBaseFindBuildButton(type = BuildButtonType.Tick, duration = 800)
         if (greenTick != null) {
             accountMessage("合并天鹰火炮")

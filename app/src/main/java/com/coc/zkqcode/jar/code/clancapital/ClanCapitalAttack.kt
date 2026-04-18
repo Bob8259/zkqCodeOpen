@@ -4,7 +4,7 @@ import android.graphics.Bitmap
 import androidx.core.graphics.get
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
-import com.coc.zkqcode.core.util.touchactions.TouchActions
+import com.coc.zkqcode.jar.code.universal.smalltools.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.mainbase.others.zoomSmallMainBase
 import com.coc.zkqcode.jar.code.universal.accountMessage
@@ -75,8 +75,7 @@ suspend fun findAttackTarget(): Boolean {
         accountMessage("超时：未找到RaidInformation，退出攻击")
         return false
     }
-    TouchActions.swipe(300, 500, 300, 1500)
-    delayWithMultiplier(400)
+    TouchActions.swipe(300, 500, 300, 1500, delayAfter = 400)
     // Capture a fresh screenshot to analyse which districts are available to attack.
     val bitmap = ScreenCaptureManager.capture(asBitmap = true) as? Bitmap ?: run {
         accountMessage("截图失败，无法分析都城区域")

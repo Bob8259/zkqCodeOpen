@@ -1,7 +1,7 @@
 package com.coc.zkqcode.jar.code.builderbase.others
 
-import com.coc.zkqcode.core.util.touchactions.TouchActions
-import com.coc.zkqcode.core.util.touchactions.TouchActions.swipe
+import com.coc.zkqcode.jar.code.universal.smalltools.TouchActions
+import com.coc.zkqcode.jar.code.universal.smalltools.TouchActions.swipe
 import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.jar.code.universal.InGameVars
 import com.coc.zkqcode.jar.code.universal.buildings.BaseType

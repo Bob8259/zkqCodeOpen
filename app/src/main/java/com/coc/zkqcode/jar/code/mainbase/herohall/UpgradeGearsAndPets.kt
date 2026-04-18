@@ -3,7 +3,7 @@ package com.coc.zkqcode.jar.code.mainbase.herohall
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
-import com.coc.zkqcode.core.util.touchactions.TouchActions
+import com.coc.zkqcode.jar.code.universal.smalltools.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.ColorSchema
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.mainbase.MainBaseResearchColors
@@ -119,8 +119,7 @@ private suspend fun checkPets() {
             }
         }
 
-        TouchActions.swipe(800, 600, 180, 600)
-        delayWithMultiplier(100)
+        TouchActions.swipe(800, 600, 180, 600, delayAfter = 100)
     }
 }
 

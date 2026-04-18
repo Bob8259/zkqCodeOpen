@@ -3,7 +3,7 @@ package com.coc.zkqcode.jar.code.universal.buildings
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
-import com.coc.zkqcode.core.util.touchactions.TouchActions
+import com.coc.zkqcode.jar.code.universal.smalltools.TouchActions
 import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.jar.code.universal.InGameVars
 import com.coc.zkqcode.jar.code.universal.recognizer.TextRecognizer
@@ -124,15 +124,13 @@ suspend fun iterateBuilderBaseBuildingUpgradeList(
         val currentBuildingNames = result.buildings.map { it.name }.sorted()
         if (previousBuildingNames != null && currentBuildingNames == previousBuildingNames) {
             repeat(2) {
-                TouchActions.swipe(666, 170, 666, 300, delayTime = 200)
-                delayWithMultiplier(100)
+                TouchActions.swipe(666, 170, 666, 300, delayTime = 200, delayAfter = 100)
                 val extraResult = detectBuildingList(excludeNewBuildings)
                 if (onDetect(extraResult)) return
             }
             break@loop
         }
         previousBuildingNames = currentBuildingNames
-        TouchActions.swipe(666, 500, 666, 120, delayTime = 200)
-        delayWithMultiplier(300)
+        TouchActions.swipe(666, 500, 666, 120, delayTime = 200, delayAfter = 300)
     }
 }

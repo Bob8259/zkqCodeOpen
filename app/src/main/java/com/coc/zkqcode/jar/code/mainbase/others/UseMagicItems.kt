@@ -1,7 +1,7 @@
 package com.coc.zkqcode.jar.code.mainbase.others
 
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
-import com.coc.zkqcode.core.util.touchactions.TouchActions
+import com.coc.zkqcode.jar.code.universal.smalltools.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.ColorSchema
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.accountMessage
@@ -55,8 +55,7 @@ suspend fun useMagicItems(): Boolean {
                 // Record memory immediately after the magic item entry is opened.
                 repeat(3) {
                     checkMagicItems()
-                    TouchActions.swipe(640, 440, 640, 180)
-                    delayWithMultiplier(200)
+                    TouchActions.swipe(640, 440, 640, 180, delayAfter = 200)
                 }
                 writeMemory(storageKey, (System.currentTimeMillis() / 60_000).toString())
                 clickRightBottom(1)
