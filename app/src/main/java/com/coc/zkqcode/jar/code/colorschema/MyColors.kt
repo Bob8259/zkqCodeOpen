@@ -22,7 +22,9 @@ import com.coc.zkqcode.jar.code.colorschema.colorpackage.builderbase.IBuilderBas
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.builderbase.IBuilderBaseTrainingColors
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.builderbase.IBuilderBaseTutorial
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.builderbase.IBuilderBaseUpgradeColors
+import com.coc.zkqcode.jar.code.colorschema.colorpackage.clancapital.ClanCapitalColors
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.clancapital.ClanCapitalTutorialColors
+import com.coc.zkqcode.jar.code.colorschema.colorpackage.clancapital.IClanCapitalColors
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.clancapital.IClanCapitalTutorialColors
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.mainbase.IMainBaseAttackColors
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.mainbase.IMainBaseClanColors
@@ -55,70 +57,4 @@ object MyColors : IUIColors by UIColors, IFeatureColors by FeatureColors, IMainB
     IBuilderBaseAttackColors by BuilderBaseAttackColors, IUniversalUpgradeColors by UniversalUpgradeColors, IMainBaseUpgradeColors by MainBaseUpgradeColors, IMainBaseResearchColors by MainBaseResearchColors,
     IMainBaseResearchLevelColors by MainBaseResearchLevelColors, IMainBaseResourcesColors by MainBaseResourcesColors, IClanCapitalTutorialColors by ClanCapitalTutorialColors,
     IMainBaseAttackColors by MainBaseAttackColors, IMainBaseClanColors by MainBaseClanColors, IMainBaseHelperColors by MainBaseHelperColors, IMainBaseHeroHallColors by MainBaseHeroHallColors,
-    IMainBaseSmallTutorialColors by MainBaseSmallTutorialColors, IMainBaseMagicItemColors by MainBaseMagicItemColors {
-    // UI Colors
-    val BackToCamp = ColorSchema.parse(
-        58, 597, 102, 644, "10135B", "9|0|80A3EA,18|0|6682B6,27|0|7FA2E6,36|0|293265,0|23|2540A8,9|23|718BFD,18|23|7996FE,27|23|86A6FE,36|23|637AAE", 0, 0.9, "回营"
-    )
-    val AgreeTerms = ColorSchema.parse(
-        260, 470, 299, 509, "ACBAC2", "8|0|ACBAC2,16|0|ACBAC2,23|0|ACBAC2,31|0|ACBAC2,0|19|ACBAC2,8|19|ACBAC2,16|19|ACBAC2,23|19|ACBAC2,31|19|ACBAC2", 0, 0.9, "同意条款"
-    )
-    val AgreePrivacy = ColorSchema.parse(
-        184, 598, 593, 653, "67E2BF", "82|0|67E2BF,208|5|5CDCB3,245|0|67E2BF,327|0|67E2BF,0|27|21B76E,82|27|21B76E,164|27|21B76E,245|27|21B76E,327|27|21B76E", 0, 0.9, "同意隐私"
-    )
-    val LogIn = ColorSchema.parse(
-        663, 406, 879, 451, "FFFFFF", "-4|-8|261CE8,-1|-28|000000,27|-23|EDCD62,57|-16|E4C357,60|7|A77019,164|-23|EDCD62,182|-17|E6C459,178|4|B3791C,155|2|BB7E1E", 0, 0.9, "登录"
-    )
-    val SkinAd = ColorSchema.parse(
-        1167, 39, 1203, 77, "6761B8", "7|0|FFFFFF,14|0|FFFFFF,21|0|FFFFFF,28|0|8C84FF,0|19|3D3D3D,7|19|F9F7F7,14|19|0D0D0D,21|19|F9F9F9,28|19|1511EB", 0, 0.9, "皮肤广告"
-    )
-    val CapitalBackToCamp = ColorSchema.parse(
-        32, 589, 134, 686, "C2D7DC", "21|0|ADDEFF,41|0|86A9F6,61|0|53537C,82|0|C2D7DC,0|49|A9C5CC,21|49|A3BFC9,41|49|B0B7B9,61|49|A3BEC4,82|49|A9C5CC", 0, 0.9, "都城回营"
-    )
-    val CapitalAirShip = ColorSchema.parse(
-        64, 589, 124, 613, "385CBF", "12|0|365975,24|0|2A4567,36|0|355DAA,48|0|3860C3,0|12|2A396D,12|12|242A5B,24|12|2E4F5F,36|12|39618D,48|12|2F388E", 0, 0.9, "都城飞艇"
-    )
-    val CapitalAirShip2 = ColorSchema.parse(
-        60, 573, 113, 596, "4475AE", "11|0|2B4760,22|0|38557D,32|0|265AA9,43|0|3A61C5,0|11|325794,11|11|192F31,22|11|213636,32|11|305585,43|11|2E408F", 0, 0.9, "都城飞船2"
-    )
-
-    //Main Base Clan Colors
-    val TroopConfigCastleIcon = ColorSchema.parse(
-        0, 0, 0, 0, "4B596D", "3|0|6D7C8E,7|0|495568,11|0|485465,14|0|495565,0|11|282F40,3|11|1D2026,7|11|1F2023,11|11|232326,14|11|8E9BA6", 0, 0.9
-    )
-
-    // Clan Capital Colors
-    val CapitalBarbarian = ColorSchema.parse(
-        176, 424, 265, 517, "7CBAFE", "18|0|73B6EF,36|0|A097A5,53|0|0D14A4,71|0|6C87EC,0|47|3C3E61,18|47|818EC5,36|47|587FC0,53|47|6D9CEE,71|47|6B77A0", 0, 0.9, "都城野蛮人"
-    )
-    val CapitalBarbarian2 = ColorSchema.parse(
-        176, 424, 265, 517, "6DB3ED", "9|0|B0B2F5,19|0|FEE5E8,29|0|343F80,38|0|0D2493,0|29|92DDFF,9|29|46ADF3,19|29|0E1021,29|29|0F101D,38|29|283757", 0, 0.9, "都城野蛮人2"
-    )
-    val CapitalCoin = ColorSchema.parse(
-        1190, 18, 1264, 72, "E418BB", "-5|0|FF55F0,1|0|E418BB,5|0|D42FA6,3|-2|FB93DA,-9|-10|6CFFFF,-5|-9|68F4FF,3|-8|1BBDFA,-9|13|C53497,-20|8|0DD9FF", 0, 0.9, "都城币"
-    )
-    val ZeroAttackTimes = ColorSchema.parse(
-        1165, 545, 1200, 580, "FFFFFF", "-5|0|2126CF,7|2|2127D2,14|1|FFFFFF,17|1|2126CF,5|14|2129DC,5|-12|221DBA,8|-12|221DBA,7|-8|FFFFFF,7|7|FFFFFF", 0, 0.9, "无进攻机会"
-    )
-    val RaidInformation = ColorSchema.parse(
-        1130, 575, 1265, 705, "F2BF6C", "-1|17|EFBC6C,-1|35|E99D2F,-2|51|E4972E,89|0|F2BF6C,92|7|F2BE6C,89|45|E69A2F,90|63|DF922E,42|1|FFFFFF,43|11|FFFFFF", 0, 0.9, "蓝色突袭信息按钮"
-    )
-    val RaidMap = ColorSchema.parse(
-        1135, 570, 1260, 705, "CCE4E5", "-3|21|C9E2E4,-6|48|AAC6CD,-6|66|A8C4CC,43|12|FFE5B4,83|-4|CDE5E6,87|11|CAE3E4,91|36|ACC8CF,91|45|ABC6CE,87|51|AAC6CD", 0, 0.9, "突袭地图按钮"
-    )
-    val RaidRedAttackButton = ColorSchema.parse(
-        705, 619, 807, 658, "8380FF", "21|0|827FFF,41|0|8380FF,61|0|8280FF,82|0|827FFF,0|19|221EF7,21|19|221EF7,41|19|1D1AB9,61|19|221EF7,82|19|221EF7", 0, 0.9, "都城红色进攻按钮"
-    )
-    val NextRaid = ColorSchema.parse(
-        1066, 63, 1102, 101, "8D8FF3", "7|0|FFFFFF,14|0|21222D,21|0|FFFFFF,28|0|8C8FF3,0|19|2722EF,7|19|F8F8F8,14|19|17171D,21|19|FFFFFF,28|19|2722EF", 0, 0.9, "下次突袭"
-    )
-    val CapitalMiner = ColorSchema.parse(
-        133, 394, 1143, 694, "0F5590", "8|0|1D4A9C,17|0|1F4DA2,25|0|466692,33|0|35557B,0|29|4F698E,8|29|335F8C,17|29|3E6794,25|29|85A2E1,33|29|95B5FD", 0, 0.9, "都城矿工"
-    )
-    val CapitalTrainTroopPage = ColorSchema.parse(
-        569, 267, 935, 347, "8B85FF", "15|0|8B85FF,39|0|8B85FF,79|6|7E79FF,96|10|7570FF,207|4|7AF1D2,231|4|7AF1D2,267|4|7AF1D2,283|8|74EECC,284|18|60E5B8", 0, 0.9, "练兵界面确认和取消"
-    )
-    val TrainTroops2 = ColorSchema.parse(
-        17, 483, 88, 559, "57F8FF", "33|13|E4DF1E,31|9|DBD815,11|0|57E8FF,14|0|50DEFF,0|17|E2CDEC,3|17|AF9EAF,7|17|ECDDF4,11|17|E3C7E3,14|17|35576E", 0, 0.9, "都城练兵按钮2"
-    )
-}
+    IMainBaseSmallTutorialColors by MainBaseSmallTutorialColors, IMainBaseMagicItemColors by MainBaseMagicItemColors, IClanCapitalColors by ClanCapitalColors

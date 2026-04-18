@@ -39,6 +39,14 @@ interface IUIColors {
     val MorePointCoupon: ColorSchema
     val TencentChildProtection: ColorSchema
     val CollectElixirCartTutorial: ColorSchema
+    val BackToCamp: ColorSchema
+    val AgreeTerms: ColorSchema
+    val AgreePrivacy: ColorSchema
+    val LogIn: ColorSchema
+    val SkinAd: ColorSchema
+    val CapitalBackToCamp: ColorSchema
+    val CapitalAirShip: ColorSchema
+    val CapitalAirShip2: ColorSchema
 }
 
 object UIColors : IUIColors {
@@ -162,5 +170,38 @@ object UIColors : IUIColors {
     )
     override val CollectElixirCartTutorial = ColorSchema.parse(
         618, 461, 658, 542, "02A5FE", "8|0|00A8FD,16|0|00A9FD,24|0|00A9FD,32|0|00A5FD,0|41|22AFFF,8|41|21B8FF,16|41|21BDFF,24|41|21BBFF,32|41|22B2FF", 0, 0.9, "领圣水车教程"
+    )
+
+    // Back to camp button (generic)
+    override val BackToCamp = ColorSchema.parse(
+        58, 597, 102, 644, "10135B", "9|0|80A3EA,18|0|6682B6,27|0|7FA2E6,36|0|293265,0|23|2540A8,9|23|718BFD,18|23|7996FE,27|23|86A6FE,36|23|637AAE", 0, 0.9, "回营"
+    )
+    // Agree terms checkbox
+    override val AgreeTerms = ColorSchema.parse(
+        260, 470, 299, 509, "ACBAC2", "8|0|ACBAC2,16|0|ACBAC2,23|0|ACBAC2,31|0|ACBAC2,0|19|ACBAC2,8|19|ACBAC2,16|19|ACBAC2,23|19|ACBAC2,31|19|ACBAC2", 0, 0.9, "同意条款"
+    )
+    // Agree privacy button
+    override val AgreePrivacy = ColorSchema.parse(
+        184, 598, 593, 653, "67E2BF", "82|0|67E2BF,208|5|5CDCB3,245|0|67E2BF,327|0|67E2BF,0|27|21B76E,82|27|21B76E,164|27|21B76E,245|27|21B76E,327|27|21B76E", 0, 0.9, "同意隐私"
+    )
+    // Log in button
+    override val LogIn = ColorSchema.parse(
+        663, 406, 879, 451, "FFFFFF", "-4|-8|261CE8,-1|-28|000000,27|-23|EDCD62,57|-16|E4C357,60|7|A77019,164|-23|EDCD62,182|-17|E6C459,178|4|B3791C,155|2|BB7E1E", 0, 0.9, "登录"
+    )
+    // Skin advertisement popup
+    override val SkinAd = ColorSchema.parse(
+        1167, 39, 1203, 77, "6761B8", "7|0|FFFFFF,14|0|FFFFFF,21|0|FFFFFF,28|0|8C84FF,0|19|3D3D3D,7|19|F9F7F7,14|19|0D0D0D,21|19|F9F9F9,28|19|1511EB", 0, 0.9, "皮肤广告"
+    )
+    // Capital back to camp button
+    override val CapitalBackToCamp = ColorSchema.parse(
+        32, 589, 134, 686, "C2D7DC", "21|0|ADDEFF,41|0|86A9F6,61|0|53537C,82|0|C2D7DC,0|49|A9C5CC,21|49|A3BFC9,41|49|B0B7B9,61|49|A3BEC4,82|49|A9C5CC", 0, 0.9, "都城回营"
+    )
+    // Capital airship button
+    override val CapitalAirShip = ColorSchema.parse(
+        64, 589, 124, 613, "385CBF", "12|0|365975,24|0|2A4567,36|0|355DAA,48|0|3860C3,0|12|2A396D,12|12|242A5B,24|12|2E4F5F,36|12|39618D,48|12|2F388E", 0, 0.9, "都城飞艇"
+    )
+    // Capital airship button (variant 2)
+    override val CapitalAirShip2 = ColorSchema.parse(
+        60, 573, 113, 596, "4475AE", "11|0|2B4760,22|0|38557D,32|0|265AA9,43|0|3A61C5,0|11|325794,11|11|192F31,22|11|213636,32|11|305585,43|11|2E408F", 0, 0.9, "都城飞船2"
     )
 }

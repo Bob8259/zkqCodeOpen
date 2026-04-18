@@ -19,6 +19,7 @@ interface IMainBaseClanColors {
     val DonateSpells: ColorSchema
     val PreviousDonation: ColorSchema
     val RequestReinforcement: ColorSchema
+    val TroopConfigCastleIcon: ColorSchema
 }
 
 object MainBaseClanColors : IMainBaseClanColors {
@@ -77,5 +78,9 @@ object MainBaseClanColors : IMainBaseClanColors {
     // Request reinforcements button in the clan chat window
     override val RequestReinforcement = ColorSchema.parse(
         284, 650, 482, 714, "3AD48B", "-27|-2|2D2D31,-8|-17|FFFFFF,-9|-33|ECECEC,2|-24|949494,14|-29|F5F5F5,15|-19|FFFFFF,-42|-24|97A4B1,14|-21|FFFFFF,12|-26|FDFDFD", 0, 0.9, "求援按钮"
+    )
+    // Troop config castle icon for donation identification
+    override val TroopConfigCastleIcon = ColorSchema.parse(
+        0, 0, 0, 0, "4B596D", "3|0|6D7C8E,7|0|495568,11|0|485465,14|0|495565,0|11|282F40,3|11|1D2026,7|11|1F2023,11|11|232326,14|11|8E9BA6", 0, 0.9
     )
 }
