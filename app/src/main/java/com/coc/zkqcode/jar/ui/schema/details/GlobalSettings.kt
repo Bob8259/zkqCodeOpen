@@ -33,6 +33,11 @@ object GlobalSettings {
     val DEVICE_REMARK = SettingDef("device_remark", "设备备注", "", "GLOBAL_SETTINGS")
     val RUNTIME_SCREENSHOT = SettingDef("runtime_screenshot", "运行时截图", 0, "GLOBAL_SETTINGS")
 
+    // ── Temperature Protection (温度保护) ────────────────────────────────────
+    val TEMP_PROTECTION = SettingDef("temp_protection", "温度保护", 0, "GLOBAL_SETTINGS")
+    val TEMP_PAUSE_THRESHOLD = SettingDef("temp_pause_threshold", "暂停温度(°C)", "45", "GLOBAL_SETTINGS")
+    val TEMP_RESUME_THRESHOLD = SettingDef("temp_resume_threshold", "恢复温度(°C)", "38", "GLOBAL_SETTINGS")
+
     // ── Random Scheduling (随机上号) ──────────────────────────────────────────
     val RANDOM_SCHEDULING = SettingDef("random_scheduling", "随机上号", 0, "GLOBAL_SETTINGS")
 
@@ -105,6 +110,9 @@ object GlobalSettings {
         AFTER_KICK_OPTION,
         DEVICE_REMARK,
         RUNTIME_SCREENSHOT,
+        TEMP_PROTECTION,
+        TEMP_PAUSE_THRESHOLD,
+        TEMP_RESUME_THRESHOLD,
         RANDOM_SCHEDULING,
         RS_BATTLE_RATIO_DAWN, RS_BATTLE_RATIO_MORNING, RS_BATTLE_RATIO_AFTERNOON, RS_BATTLE_RATIO_NIGHT,
         RS_STOP_PROB_DAWN, RS_STOP_PROB_MORNING, RS_STOP_PROB_AFTERNOON, RS_STOP_PROB_NIGHT,

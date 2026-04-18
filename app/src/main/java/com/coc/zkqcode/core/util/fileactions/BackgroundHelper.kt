@@ -26,7 +26,7 @@ fun saveCustomBackground(context: Context, uri: Uri): Boolean {
         }
         notifyBackgroundChanged()
         true
-    } catch (e: Exception) {
+    } catch (_: Exception) {
         false
     }
 }
@@ -38,7 +38,7 @@ fun resetCustomBackground(context: Context): Boolean {
         if (file.exists()) file.delete()
         notifyBackgroundChanged()
         true
-    } catch (e: Exception) {
+    } catch (_: Exception) {
         false
     }
 }

@@ -45,7 +45,7 @@ suspend fun donateToClan(): Boolean {
             displayAds()
             lastAdTime = System.currentTimeMillis()
         }
-        // Capture a single frame buffer and reuse it for all color checks in this iteration
+        // Capture a single frame buffer and reuse it for all colour checks in this iteration
         val screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult ?: logAndRestart("in donateToClan, screen capture failed.")
 
         val clanChat = findMultiColors(schema = MyColors.ClanChatIcon, byteBuffer = screenBuffer, increment = 1)
@@ -73,7 +73,7 @@ suspend fun donateToClan(): Boolean {
             val castleIconSchema = ColorSchema.rescope(
                 MyColors.TroopConfigCastleIcon,
                 x1 = donationButton.x - 200, y1 = donationButton.y - 30,
-                x2 = donationButton.x - 90,  y2 = donationButton.y + 40
+                x2 = donationButton.x - 90, y2 = donationButton.y + 40
             )
             val castleIcon = findMultiColors(schema = castleIconSchema, byteBuffer = screenBuffer, increment = 1)
             if (castleIcon != null) {
@@ -100,7 +100,7 @@ suspend fun donateToClan(): Boolean {
         var darkElixirPercentage = 0
         val darkElixirIcon = findMultiColors(schema = MyColors.DarkElixirIcon, increment = 1)
         if (darkElixirIcon != null) {
-            // darkElixirBar is the rightmost colored point on the dark elixir bar
+            // darkElixirBar is the rightmost coloured point on the dark elixir bar
             val darkElixirBar = findMultiColors(schema = MyColors.DarkElixirColor)
             // x = 1260 → 0%, x = 1079 → 100%; bar shrinks leftward as storage fills, so invert the direction
             darkElixirPercentage = if (darkElixirBar != null) {
@@ -160,9 +160,9 @@ private suspend fun donateActions() {
                 repeat(3) {
                     // Global version uses a random delay to mimic human input; CN version uses default delay
                     if (InGameVars.currentGameVersion == GameVersion.GLOBAL) {
-                        TouchActions.tap(target.x, target.y, delayTime = (20..50).random())
+                        TouchActions.tap(target.x, target.y, delayTime = (150..300).random())
                     } else {
-                        TouchActions.tap(target.x, target.y)
+                        TouchActions.tap(target.x, target.y, delayTime = 20)
                     }
                 }
             }

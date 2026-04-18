@@ -21,6 +21,7 @@ import com.coc.zkqcode.jar.code.universal.create.batchCreateAccounts
 import com.coc.zkqcode.jar.code.universal.runRandomSchedulingScript
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.smalltools.StorageKeys
+import com.coc.zkqcode.jar.code.universal.smalltools.checkAndCoolDown
 import com.coc.zkqcode.jar.code.universal.smalltools.checkReconnections
 import com.coc.zkqcode.jar.code.universal.smalltools.getConfigOrStop
 import com.coc.zkqcode.jar.code.universal.smalltools.readMemory
@@ -123,6 +124,7 @@ suspend fun runMainScript() {
  * writeGameFiles → enterMainScreen → playBuilderBase → playMainBase.
  */
 suspend fun runAccountStepBlock() {
+    checkAndCoolDown()
     displayAds()
     RunShell.runNoOutput("input keyevent 3")
     RunShell.runNoOutput("am kill-all")
