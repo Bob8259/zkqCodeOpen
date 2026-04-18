@@ -4,12 +4,19 @@ package com.coc.zkqcode.loadjar
 
 import android.content.Context
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.material3.Button
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import com.coc.zkqcode.core.ui.localcomponents.LocalCustomButton
 import com.coc.zkqcode.interfaces.MainCode
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.statehelper.AppMode
@@ -34,13 +41,29 @@ class Loadjar(private val context: Context) {
                 pluginUI?.ShowMainUI(context, onClose)
             }
         } else {
-            Column() {
-                Text(text = loadStatus)
-                Button(onClick = {
-                    AppStateManager.setMode(AppMode.Run)
-                    onClose()
-                }) {
-                    Text(text = "关闭悬浮窗")
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color(0x66E8F4FC)),
+                contentAlignment = Alignment.Center
+            ) {
+                Column(
+                    modifier = Modifier.padding(16.dp),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = loadStatus,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = Color(0xFF2D3748)
+                    )
+                    LocalCustomButton(
+                        text = "关闭悬浮窗",
+                        onClick = {
+                            AppStateManager.setMode(AppMode.Run)
+                            onClose()
+                        }
+                    )
                 }
             }
         }
