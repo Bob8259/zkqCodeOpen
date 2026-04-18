@@ -9,6 +9,9 @@ class ZKQApplication : Application() {
         // Initialize libsu as soon as the process starts so every component
         // shares the same builder configuration before any shell is created.
         ensureLibSuInitialized()
+        // Load native library early in the Application lifecycle so it doesn't
+        // block the Activity UI thread and cause a white screen on slow devices.
+        System.loadLibrary("rust_logic")
     }
 
     private fun ensureLibSuInitialized() {

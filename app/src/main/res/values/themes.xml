@@ -2,4 +2,8 @@
 <resources>
 
     <style name="Theme.ZKQcode" parent="android:Theme.Material.Light.NoActionBar" />
+
+    <style name="Theme.ZKQcode.Splash" parent="Theme.ZKQcode">
+        <item name="android:windowBackground">@drawable/splash_background</item>
+    </style>
 </resources>

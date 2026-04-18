@@ -49,7 +49,7 @@ suspend fun useMagicItems(): Boolean {
         for (detection in scan) {
             val box = detection.boundingBox
             TouchActions.tap(box.centerX().toInt(), box.centerY().toInt())
-            val magicItemIcon = findMultiColorsUntil(schemas = listOf(MyColors.MagicItemIcon, MyColors.MagicItemIcon2, MyColors.MagicItemIcon3), duration = 200)
+            val magicItemIcon = findMultiColorsUntil(schemas = listOf(MyColors.MagicItemIcon, MyColors.MagicItemIcon2, MyColors.MagicItemIcon3, MyColors.MagicItemIcon4), duration = 200)
             if (magicItemIcon != null) {
                 TouchActions.tap(magicItemIcon.x, magicItemIcon.y, delayTime = 800)
                 // Record memory immediately after the magic item entry is opened.

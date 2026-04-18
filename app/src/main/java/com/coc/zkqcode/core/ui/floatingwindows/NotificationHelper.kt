@@ -27,7 +27,7 @@ object NotificationHelper {
             }
         }
 
-        // Decode the drawable as a full-color large icon for the notification
+        // Decode the drawable as a full-colour large icon for the notification
         val largeIcon = BitmapFactory.decodeResource(context.resources, R.drawable.main_icon)
 
         return NotificationCompat.Builder(context, CHANNEL_ID)

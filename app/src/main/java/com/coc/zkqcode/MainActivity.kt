@@ -1,5 +1,6 @@
 package com.coc.zkqcode
 
+import android.content.pm.ActivityInfo
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -13,23 +14,23 @@ class MainActivity : ComponentActivity() {
     private lateinit var projectionPermissionHelper: ProjectionPermissionHelper
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        setTheme(R.style.Theme_ZKQcode)
         super.onCreate(savedInstanceState)
+        // Unlock orientation after splash theme is replaced
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
         projectionPermissionHelper = ProjectionPermissionHelper(this)
         ShowMessage.init(this)
-        System.loadLibrary("rust_logic")
         ScreenCaptureManager.init(this)
         LogHelper.initTimber(this)
         LogHelper.showDebugInfo("MainActivity Start!")
         setContent {
             CheckRootScreen()
         }
-
     }
 
     fun requestMediaProjection() {
         projectionPermissionHelper.requestMediaProjection()
     }
-
 
     override fun onDestroy() {
         super.onDestroy()

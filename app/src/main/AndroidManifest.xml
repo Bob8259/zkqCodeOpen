@@ -34,7 +34,8 @@
             android:name=".MainActivity"
             android:configChanges="orientation|screenSize|screenLayout"
             android:exported="true"
-            android:theme="@style/Theme.ZKQcode">
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.ZKQcode.Splash">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
