@@ -35,7 +35,7 @@ suspend fun donateToClan(): Boolean {
         ?: logAndRestart("${Schema.MAIN_BASE_SETTINGS.DONATION_FARMING_STOP_THRESHOLD.displayName} 必须是数字，请检查配置")).coerceAtMost(95)
 
     val startTime = System.currentTimeMillis()
-    val intervalMillis = donationTimeInterval * 1000L
+    var intervalMillis = donationTimeInterval * 1000L
     var lastAdTime = 0L
     // Track farming mode state across donation loop iterations
     var inFarmingMode = false
@@ -71,9 +71,7 @@ suspend fun donateToClan(): Boolean {
             // Check if a troop config castle icon is present to the left of the donation button.
             // Its presence means this is a troop configuration row (not a real donation request) — skip it.
             val castleIconSchema = ColorSchema.rescope(
-                MyColors.TroopConfigCastleIcon,
-                x1 = donationButton.x - 200, y1 = donationButton.y - 30,
-                x2 = donationButton.x - 90, y2 = donationButton.y + 40
+                MyColors.TroopConfigCastleIcon, x1 = donationButton.x - 200, y1 = donationButton.y - 30, x2 = donationButton.x - 90, y2 = donationButton.y + 40
             )
             val castleIcon = findMultiColors(schema = castleIconSchema, byteBuffer = screenBuffer, increment = 1)
             if (castleIcon != null) {
@@ -86,8 +84,12 @@ suspend fun donateToClan(): Boolean {
             TouchActions.swipe(1155, 480, -500, 480, delayTime = 100)//Spells
             donateActions()
             clickRightBottom(1)
+            // If remaining detection time is less than 3 seconds, extend it to 3 seconds
+            val remaining = intervalMillis - (System.currentTimeMillis() - startTime)
+            if (remaining < 3000L) {
+                intervalMillis += (3000L - remaining)
+            }
             continue
-
         } else {
             val previousDonation = findMultiColors(MyColors.PreviousDonation, byteBuffer = screenBuffer, increment = 1)
             if (previousDonation != null) {
