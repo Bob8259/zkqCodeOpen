@@ -1,13 +1,12 @@
 package com.coc.zkqcode.jar.code.universal.smalltools
 
-import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
-import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
-import com.coc.zkqcode.jar.code.universal.smalltools.TouchActions
 import com.coc.zkqcode.jar.code.builderbase.others.zoomSmallBuilderBase
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.mainbase.others.zoomSmallMainBase
+import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.jar.code.universal.clickRightBottom
+import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.tutorial.AllTutorials
 import kotlinx.coroutines.delay
@@ -19,7 +18,7 @@ import kotlinx.coroutines.delay
 suspend fun enterMainBase(): Boolean {
     val loopStart = System.currentTimeMillis()
     clickRightBottom(1)
-    while (System.currentTimeMillis() - loopStart < 30_000L) {
+    while (System.currentTimeMillis() - loopStart < 60_000L) {
         val workers = findMultiColorsUntil(schemas = listOf(MyColors.MainBaseWorker, MyColors.MainBaseWorker2, MyColors.MainBaseWorker3, MyColors.GoblinWorker, MyColors.GoblinResearcher), duration = 200)
         if (workers != null) {
             accountMessage("已进入主世界")
@@ -58,7 +57,7 @@ suspend fun enterMainBase(): Boolean {
 suspend fun enterBuilderBase(isCheck: Boolean): Boolean {
     val loopStart = System.currentTimeMillis()
     clickRightBottom(1)
-    while (System.currentTimeMillis() - loopStart < 30_000L) {
+    while (System.currentTimeMillis() - loopStart < 60_000L) {
         val remaining = (30_000L - (System.currentTimeMillis() - loopStart)) / 1000.0
         // 1. Check for Builder Base success indicator
         if (findMultiColorsUntil(schemas = listOf(MyColors.BuilderBaseWorker, MyColors.BuilderBaseWorker2), duration = 200) != null) {

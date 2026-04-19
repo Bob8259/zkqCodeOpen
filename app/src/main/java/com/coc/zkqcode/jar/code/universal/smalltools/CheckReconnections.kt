@@ -54,13 +54,13 @@ suspend fun checkReconnections(): Boolean {
                 accountMessage("检测到评分/反馈对话框，执行重新提取存档，识别文本: $recognizedTextString")
                 TouchActions.tap(793, 459)
                 reExtractGameSavings()
+                return@any true
             }
             when (action) {
                 0 -> {
                     // Tap the reload button, rating notification, and tutorial confirm
                     TouchActions.tap(379, 458)
                     TouchActions.tap(338, 511)
-
                 }
 
                 1 -> needReturnFalse = true // Signal caller to switch accounts
