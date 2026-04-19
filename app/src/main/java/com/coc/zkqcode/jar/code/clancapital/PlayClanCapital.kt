@@ -34,9 +34,7 @@ suspend fun playClanCapital(): Boolean {
         return enterMainScreen()
     }
     for (i in 0 until 6) {
-        val attackState = clanCapitalAttack()
-        if (attackState == CapitalState.Error) return false
-        if (attackState == CapitalState.NoAttack) break
+        if (!clanCapitalAttack()) break
     }
     return enterMainScreen()
 }

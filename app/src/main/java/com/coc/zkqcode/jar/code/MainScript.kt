@@ -92,7 +92,7 @@ suspend fun runMainScript() {
     var lastUpdateCheckTime = System.currentTimeMillis()
     var nextUpdateInterval = (2 * 3600_000L) + (Math.random() * 3600_000L).toLong()
     while (currentCoroutineContext().isActive) {
-        runTestCode()
+//        runTestCode()
         runAccountStepBlock()
         // Circularly search for the next enabled account, wrapping back to currentAccountNumber (inclusive)
         // Emit hot update signal at safe point, throttled to once every 2-3 hours randomly
@@ -118,6 +118,16 @@ suspend fun runMainScript() {
         }
     }
 }
+
+private suspend fun runTestCode() {
+    while (true) {
+        detectMyClanWarPosition()
+//        ShowMessage(findMultiColors(MyColors.SpellColorAtDeploymentBar, increment = 1).toString())
+        accountMessage("测试代码结束")
+        delay(1000)
+    }
+}
+
 
 /**
  * Shared account step block used by both sequential and random scheduling modes.
@@ -147,14 +157,7 @@ suspend fun runAccountStepBlock() {
     }
 }
 
-private suspend fun runTestCode() {
-    while (true) {
-        detectMyClanWarPosition()
-//        ShowMessage(findMultiColors(MyColors.SpellColorAtDeploymentBar, increment = 1).toString())
-        accountMessage("测试代码结束")
-        delay(1000)
-    }
-}
+
 
 /**
  * Searches [searchOrder] for the first enabled account.

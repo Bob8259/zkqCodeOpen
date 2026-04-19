@@ -21,21 +21,17 @@ import com.coc.zkqcode.jar.code.universal.smalltools.runGame
 import com.coc.zkqcode.jar.code.universal.smalltools.writeMemory
 import kotlin.random.Random
 
-enum class CapitalState {
-    NoAttack, Error, Normal
-}
-
-suspend fun clanCapitalAttack(): CapitalState {
+suspend fun clanCapitalAttack(): Boolean {
     val storageKey = StorageKeys.withAccountNumber(
         StorageKeys.CLAN_CAPITAL_ATTACK, InGameVars.currentAccountNumber
     )
 
-    if (!enterClanCapital()) return CapitalState.Error
+    if (!enterClanCapital()) return false
     if (findMultiColors(MyColors.ZeroAttackTimes) != null) {
         // No attack times remaining; record the timestamp so the guard activates next cycle
         writeMemory(storageKey, (System.currentTimeMillis() / 60_000).toString())
         accountMessage("都城攻击次数已用完")
-        if (!enterMainScreen()) return CapitalState.NoAttack
+        if (!enterMainScreen()) return false
     }
     if (findAttackTarget()) {
         val endBattleButton = findMultiColorsUntil(schemas = listOf(MyColors.EndBattle), duration = 10000)
@@ -44,17 +40,17 @@ suspend fun clanCapitalAttack(): CapitalState {
             killGame()
             delayWithMultiplier(1000)
             runGame()
-            if (!enterClanCapital()) return CapitalState.Error
+            if (!enterClanCapital()) return false
         }
         deployClanCapitalTroopsAndSpells()
         killGame()
         delayWithMultiplier(1000)
         runGame()
     } else {
-        return CapitalState.NoAttack
+        return false
     }
-    return if (!enterMainScreen()) CapitalState.Error
-    else CapitalState.Normal
+    return if (!enterMainScreen()) false
+    else true
 }
 
 
