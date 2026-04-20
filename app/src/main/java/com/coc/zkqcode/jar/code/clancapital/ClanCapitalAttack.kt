@@ -49,8 +49,7 @@ suspend fun clanCapitalAttack(): Boolean {
     } else {
         return false
     }
-    return if (!enterMainScreen()) false
-    else true
+    return enterMainScreen()
 }
 
 
@@ -88,7 +87,7 @@ suspend fun findAttackTarget(): Boolean {
             val centerY = (district.y1 + district.y2) / 2
             // Offset per design: shift left 80px and down 80px to land on the entry button. Y is capped at 719.
             val tapY = minOf(centerY + 80, 719)
-            accountMessage("找到可攻击区域: ${district.name}, 点击 (${centerX - 80}, $tapY)")
+            accountMessage(district.name)
             TouchActions.tap(centerX - 80, tapY)
             val raidButton = findMultiColorsUntil(schemas = listOf(MyColors.RaidRedAttackButton), duration = 300)
             if (raidButton != null) {
@@ -241,14 +240,14 @@ private data class CapitalDistrict(
  * whether a district still has destructible buildings to attack.
  */
 private val CAPITAL_DISTRICTS = listOf(
-    CapitalDistrict(829, 343, 850, 370, "野蛮人兵营"),
+    CapitalDistrict(829, 343, 850, 370, "野蛮兵营"),
     CapitalDistrict(662, 420, 682, 444, "法师山谷"),
     CapitalDistrict(954, 515, 972, 537, "飞龙悬崖"),
     CapitalDistrict(520, 555, 536, 577, "气球环礁"),
-    CapitalDistrict(773, 582, 791, 606, "建筑工人工坊"),
+    CapitalDistrict(773, 582, 791, 606, "建筑工坊"),
     CapitalDistrict(364, 670, 383, 691, "戈仑石场"),
     CapitalDistrict(616, 709, 638, 719, "骷髅公园"),
-    CapitalDistrict(894, 706, 921, 719, "哥布林矿井"),
+    CapitalDistrict(894, 706, 921, 719, "哥布矿井"),
     CapitalDistrict(660, 208, 678, 230, "都城之巅"),
 )
 
