@@ -1,18 +1,26 @@
 package com.coc.zkqcode.jar.code.mainbase.attack
 
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
-import com.coc.zkqcode.core.util.fileactions.LogHelper
-import com.coc.zkqcode.jar.code.universal.smalltools.TouchActions
-import com.coc.zkqcode.jar.code.universal.accountMessage
-import com.coc.zkqcode.jar.code.universal.InGameVars
+import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
 import com.coc.zkqcode.jar.code.colorschema.MyColors
+import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
+import com.coc.zkqcode.jar.code.universal.smalltools.TouchActions
 import com.coc.zkqcode.jar.code.universal.smalltools.getBooleanConfigRuntime
+import com.coc.zkqcode.jar.code.universal.smalltools.getConfigRuntime
 import com.coc.zkqcode.jar.code.universal.smalltools.killGame
 import com.coc.zkqcode.jar.code.universal.smalltools.runGame
 import com.coc.zkqcode.jar.ui.schema.Schema
 import kotlinx.coroutines.delay
+
+suspend fun mainBaseRemainingAttack(): Boolean {
+    val remainingBattleTimes = getConfigRuntime(Schema.MAIN_BASE_SETTINGS.BATTLE_TIMES.key).toIntOrNull() ?: logAndRestart("${Schema.MAIN_BASE_SETTINGS.BATTLE_TIMES.displayName}必须是数字。")
+    repeat(remainingBattleTimes - 2) {
+        if (!mainBaseAttack()) return false
+    }
+    return mainBaseAttack()
+}
 
 suspend fun mainBaseAttack(): Boolean {
     if (!getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.AUTO_ATTACK.key)) return true
