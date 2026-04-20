@@ -42,10 +42,6 @@ fun LazyListScope.mainBaseConfig(
         SettingSection(visible = isExpanded) {
             SettingInputRow(key = "${MAIN_BASE_SETTINGS.CONFIG_REMARK.key}_c$index")
             SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.AUTO_ATTACK.key}_c$index")
-            Text(
-                text = "辅助会自动配兵，若想手动配兵，请勾选手动配兵选项。",
-                style = MaterialTheme.typography.labelMedium,
-            )
             SettingInputRow(key = "${MAIN_BASE_SETTINGS.GOLD_REQUIREMENT.key}_c$index")
             SettingInputRow(key = "${MAIN_BASE_SETTINGS.ELIXIR_REQUIREMENT.key}_c$index")
             SettingInputRow(key = "${MAIN_BASE_SETTINGS.DARK_ELIXIR_REQUIREMENT.key}_c$index")
