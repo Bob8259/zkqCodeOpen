@@ -255,10 +255,17 @@ private suspend fun upgradeWalls(currentBase: BaseType, wallType: WallType): Loo
             // Calculate how many walls we can upgrade while keeping resources above the threshold
             val currentResource = if (wallType == WallType.Gold) resources.gold else resources.elixir
             val currentPercent = if (wallType == WallType.Gold) currentResourcePercentage.gold else currentResourcePercentage.elixir
-            val fullResource = if (currentPercent > 0) currentResource / (currentPercent / 100.0) else 0.0
-            val targetResource = fullResource * (thresholds / 100.0)
-            val usableResource = currentResource - targetResource
-            val upgradableNumber = if (wallCost > 0) kotlin.math.ceil(usableResource / wallCost).toInt().coerceAtLeast(0) else 0
+            val upgradableNumber = if (currentPercent < 1) {
+                1
+            } else if (wallCost > 0) {
+                val safePercent = currentPercent.coerceAtLeast(1)
+                val fullResource = currentResource / (safePercent / 100.0)
+                val targetResource = fullResource * (thresholds / 100.0)
+                val usableResource = currentResource - targetResource
+                kotlin.math.ceil(usableResource / wallCost).toInt().coerceAtLeast(0)
+            } else {
+                1
+            }
             accountMessage("升级单个城墙花费：$wallCost\n当前资源数量：${currentResource}，当前资源百分比：${currentPercent}\n可升级数量：$upgradableNumber")
             tapGoldBar()
             val upgradeCrossMark = findMultiColorsUntil(schemas = listOf(MyColors.UpgradeWallCrossMark), duration = 1000)
