@@ -15,11 +15,12 @@ import com.coc.zkqcode.jar.ui.schema.Schema
 import kotlinx.coroutines.delay
 
 suspend fun mainBaseRemainingAttack(): Boolean {
-    val remainingBattleTimes = getConfigRuntime(Schema.MAIN_BASE_SETTINGS.BATTLE_TIMES.key).toIntOrNull() ?: logAndRestart("${Schema.MAIN_BASE_SETTINGS.BATTLE_TIMES.displayName}必须是数字。")
-    repeat(remainingBattleTimes - 2) {
+    val totalBattleTimes = getConfigRuntime(Schema.MAIN_BASE_SETTINGS.BATTLE_TIMES.key).toIntOrNull() ?: logAndRestart("${Schema.MAIN_BASE_SETTINGS.BATTLE_TIMES.displayName}必须是数字。")
+    val remainingTimes = (totalBattleTimes - 1).coerceAtLeast(0)
+    repeat(remainingTimes) {
         if (!mainBaseAttack()) return false
     }
-    return mainBaseAttack()
+    return true
 }
 
 suspend fun mainBaseAttack(): Boolean {
