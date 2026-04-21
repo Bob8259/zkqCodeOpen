@@ -106,7 +106,10 @@ fun LazyListScope.mainBaseConfig(
                 SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.DONATION_SETTING.key}_c$index")
                 SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.REQUEST_REINFORCEMENT_SETTING.key}_c$index")
                 SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.COLLECT_CLAN_CASTLE.key}_c$index")
-                SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.PLAY_CLAN_WAR.key}_c$index")
+                SettingSwitchIcon(
+                    key = "${MAIN_BASE_SETTINGS.PLAY_CLAN_WAR.key}_c$index",
+                    explain = "部落战其中一次打对位，另一次打推荐对手。\n不保证胜率，请谨慎使用。"
+                )
             }
 
             AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.DONATION_SETTING.key}_c$index"]?.value == "1") {
