@@ -89,7 +89,10 @@ private suspend fun executeClanWarAttack(attackX: Int, attackY: Int): Boolean {
     TouchActions.tap(780, 440) // Confirm attack
     TouchActions.tap(1080, 640) // Attack
     ShowMessage("检测是否进入对战中")
-    findMultiColorsUntil(schemas = listOf(MyColors.EndBattle), duration = 5000)
+    if (findMultiColorsUntil(schemas = listOf(MyColors.EndBattle), duration = 5000) == null) {
+        ShowMessage("进入部落战失败")
+        return false
+    }
     mainBaseDeployTroops()
     killGame()
     return true

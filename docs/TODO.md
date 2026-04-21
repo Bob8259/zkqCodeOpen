@@ -21,7 +21,6 @@
 ### 升级战宠及之后的所有主世界UI
 - 做竞赛任务（DO_CLAN_GAMES）
 - 领竞赛奖励（CLAIM_CLAN_GAME_REWARDS）
-- 打部落战（PLAY_CLAN_WAR）
 - 打联赛（PLAY_LEAGUE）
 - 发起部落战（START_CLAN_WAR_SETTINGS）
 - 发起联赛（START_LEAGUE_SETTINGS）
