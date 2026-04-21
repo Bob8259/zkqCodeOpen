@@ -23,7 +23,7 @@ object BuilderBaseSettings {
     val BUILDER_BASE_UPGRADE_WALL_THRESHOLD = SettingDef(
         "builder_base_upgrade_wall_threshold", "金水高于以下百分比后升级城墙", "85", "BUILDER_BASE_SETTINGS"
     )
-    val BUILDER_BASE_REMOVE_OBSTACLES = SettingDef("builder_base_remove_obstacles", "移除障碍物", 1, "BUILDER_BASE_SETTINGS")
+    val BUILDER_BASE_REMOVE_OBSTACLES = SettingDef("builder_base_remove_obstacles", "移除障碍物", 0, "BUILDER_BASE_SETTINGS")
     val BUILDER_BASE_SAVE_WORKER = SettingDef("builder_base_save_worker", "留1工人升级城墙", 0, "BUILDER_BASE_SETTINGS")
     val BUILDER_BASE_ENABLE_CLOCK_TOWER = SettingDef("builder_base_enable_clock_tower", "开启时光钟楼", 1, "BUILDER_BASE_SETTINGS")
 

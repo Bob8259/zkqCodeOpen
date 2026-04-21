@@ -1,16 +1,16 @@
 package com.coc.zkqcode.jar.code.universal.buildings
 
 import android.graphics.Bitmap
-import androidx.compose.ui.graphics.Color
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
-import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.core.util.bugreporter.BugReporter
 import com.coc.zkqcode.jar.code.colorschema.ColorSchema
 import com.coc.zkqcode.jar.code.colorschema.MyColors
+import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.recognizer.TextRecognizer
+import com.coc.zkqcode.jar.code.universal.recognizer.cleanOcrDigits
 
 /**
  * Data class representing the worker information (available/total).
@@ -64,7 +64,7 @@ object WorkerAndResearch {
             val combinedText = results.sortedBy { it.position?.left ?: 0 }.joinToString("") { it.text }
             val workerInfo = parseWorkerInfo(combinedText)
             if (workerInfo != WorkerInfo(0, 0)) return workerInfo
-            // Fallback: OCR failed, use color-based pattern matching on the preprocessed bitmap
+            // Fallback: OCR failed, use colour-based pattern matching on the preprocessed bitmap
             return detectWorkerByColorMatch(startX, startY, endX, endY)
         }
         accountMessage("未检测到${baseName}工人，已将错误截图保存到/sdcard/zkqFiles/bugReporter\n请反馈给作者")
@@ -112,7 +112,7 @@ object WorkerAndResearch {
                 return researcherInfo.available > 0
             }
 
-            // Fallback: OCR failed, use color-based pattern matching
+            // Fallback: OCR failed, use colour-based pattern matching
             val fallback = detectWorkerByColorMatch(startX, startY, endX, endY)
             if (fallback != WorkerInfo(0, 0)) {
                 accountMessage("${baseName}研究数量：${fallback.available}/${fallback.total}")
@@ -168,8 +168,7 @@ object WorkerAndResearch {
      */
     internal fun parseWorkerInfo(text: String): WorkerInfo {
         // Clean text and handle common OCR misrecognitions
-        val cleaned = text.replace(" ", "").replace("o", "0").replace("O", "0").replace("I", "1").replace("l", "1")
-            .replace("Z", "2").replace("z", "2").replace("S", "5").replace("s", "5").replace("G", "6")
+        val cleaned = cleanOcrDigits(text)
 
         val match = Regex("""(\d+)/(\d+)""").find(cleaned)
 
