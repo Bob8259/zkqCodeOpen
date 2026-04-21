@@ -36,7 +36,6 @@ import androidx.savedstate.setViewTreeSavedStateRegistryOwner
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.system.hotupdate.HotUpdateManager
 import com.coc.zkqcode.core.util.basic.RunShell
-import com.coc.zkqcode.jar.code.universal.smalltools.TouchActions
 import com.coc.zkqcode.statehelper.AppMode
 import com.coc.zkqcode.statehelper.AppStateManager
 import com.topjohnwu.superuser.Shell
@@ -89,10 +88,6 @@ class ControlWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner 
                     } else {
                         botJob?.cancel()
                         botJob = null
-                        // Release any stuck touch pointers when bot stops
-                        launch(Dispatchers.IO) {
-                            TouchActions.releaseAllPointers()
-                        }
                     }
                 }
         }

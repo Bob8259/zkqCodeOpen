@@ -4,8 +4,6 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.lazy.LazyListScope
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.jar.ui.components.CustomButton
 import com.coc.zkqcode.jar.ui.components.InputRowWithCheckBox
@@ -42,8 +40,7 @@ fun LazyListScope.mainBaseConfig(
         SettingSection(visible = isExpanded) {
             SettingInputRow(key = "${MAIN_BASE_SETTINGS.CONFIG_REMARK.key}_c$index")
             FlowRow {
-                SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.AUTO_ATTACK.key}_c$index")
-                /*
+                SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.AUTO_ATTACK.key}_c$index")/*
                 SettingSwitchIcon(
                     key = "${MAIN_BASE_SETTINGS.PLAY_LADDER.key}_c$index",
                     explain = "排位赛不保证胜率，请谨慎开启。"
@@ -107,8 +104,7 @@ fun LazyListScope.mainBaseConfig(
                 SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.REQUEST_REINFORCEMENT_SETTING.key}_c$index")
                 SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.COLLECT_CLAN_CASTLE.key}_c$index")
                 SettingSwitchIcon(
-                    key = "${MAIN_BASE_SETTINGS.PLAY_CLAN_WAR.key}_c$index",
-                    explain = "部落战其中一次打对位，另一次打推荐对手。\n不保证胜率，请谨慎使用。"
+                    key = "${MAIN_BASE_SETTINGS.PLAY_CLAN_WAR.key}_c$index", explain = "部落战其中一次打对位，另一次打推荐对手。\n不保证胜率，请谨慎使用。"
                 )
             }
 
