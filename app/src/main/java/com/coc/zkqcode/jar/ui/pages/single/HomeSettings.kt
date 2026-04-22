@@ -3,6 +3,8 @@ package com.coc.zkqcode.jar.ui.pages.single
 import android.content.Context
 import android.content.Intent
 import android.os.Environment
+import com.coc.zkqcode.core.ui.floatingwindows.ImagePickerActivity
+import com.coc.zkqcode.core.util.fileactions.resetCustomBackground
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -95,24 +97,16 @@ fun LazyListScope.homeSettings(
         ) {
             QuickActionCard(
                 title = "自定义背景", subtitle = "选择图片", dotColor = AppColors.PrimaryLight, onClick = {
-                    try {
-                        saveAndSetPlaying(false)
-                        val intent = Intent(context, com.coc.zkqcode.core.ui.floatingwindows.ImagePickerActivity::class.java)
-                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                        context.startActivity(intent)
-                    } catch (e: Throwable) {
-                        showMsg("当前版本不支持此功能，请更新主程序")
-                    }
+                    saveAndSetPlaying(false)
+                    val intent = Intent(context, ImagePickerActivity::class.java)
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    context.startActivity(intent)
                 }, modifier = Modifier.weight(1f)
             )
             QuickActionCard(
                 title = "重置背景", subtitle = "恢复默认", dotColor = AppColors.NavInactive, onClick = {
-                    try {
-                        val success = com.coc.zkqcode.core.util.fileactions.resetCustomBackground(context)
-                        showMsg(if (success) "背景已重置" else "重置失败")
-                    } catch (e: Throwable) {
-                        showMsg("当前版本不支持此功能，请更新主程序")
-                    }
+                    val success = resetCustomBackground(context)
+                    showMsg(if (success) "背景已重置" else "重置失败")
                 }, modifier = Modifier.weight(1f)
             )
         }
