@@ -105,19 +105,19 @@ suspend fun detectMyClanWarPosition(): Int {
         TouchActions.tap(755, 60)
         val ourTeam = findMultiColorsUntil(schemas = listOf(MyColors.OurTeam), duration = 1000)
         if (ourTeam != null) {
-            delayWithMultiplier(1000)
-            repeat(13) {
+            delayWithMultiplier(300)
+            for (i in 0 until 13) {
                 val position = findMultiColorsUntil(schemas = listOf(MyColors.MyPositionGreen), duration = 500)
                 if (position != null) {
                     // Calculate crop area using position offsets
                     val startX = position.x - 10
-                    val startY = position.y + 12
-                    val endX = position.x + 54
-                    val endY = position.y + 44
+                    val startY = position.y + 5
+                    val endX = position.x + 55
+                    val endY = position.y + 50
 
                     // Use ML Kit to recognize the number in the area
                     val results = TextRecognizer.recognize(
-                        startX = startX, startY = startY, endX = endX, endY = endY, useChinese = false, applyPreprocess = true, threshold = 200
+                        startX = startX, startY = startY, endX = endX, endY = endY, useChinese = false, applyPreprocess = true, threshold = 240, saveImage = true
                     )
                     if (results.isNotEmpty()) {
                         val rawText = results.joinToString("") { it.text }
@@ -131,8 +131,9 @@ suspend fun detectMyClanWarPosition(): Int {
                         accountMessage("未检测到位置编号 (${position.x}, ${position.y})")
                     }
                     TouchActions.tap(1120, 55) // Close info page
+                    break
                 }
-                TouchActions.swipe(320, 570, 320, 210)
+                TouchActions.swipe(320, 570, 320, 210, delayAfter = 300)
             }
         }
     } else {
