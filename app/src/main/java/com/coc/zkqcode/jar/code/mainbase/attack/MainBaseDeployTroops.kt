@@ -47,7 +47,7 @@ private suspend fun deployOthers() {
     //Deploy other troops and spells
     repeat(10) {
         val troops = findMultiColorsUntil(
-            schemas = listOf(MyColors.TroopColorAtDeploymentBar, MyColors.SuperTroopColorAtDeploymentBar, MyColors.SpecialTroopColorAtDeploymentBar), duration = 20
+            schemas = listOf(MyColors.TroopColorAtDeploymentBar, MyColors.TroopColorAtDeploymentBar2, MyColors.SuperTroopColorAtDeploymentBar, MyColors.SpecialTroopColorAtDeploymentBar), duration = 20
         )
         if (troops != null) {
             TouchActions.tap(troops.x, troops.y, delayTime = 300)

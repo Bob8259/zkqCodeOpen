@@ -45,6 +45,7 @@ interface IMainBaseAttackColors {
     val RoyalChampion2: ColorSchema
     val DragonDuke: ColorSchema
     val TroopColorAtDeploymentBar: ColorSchema
+    val TroopColorAtDeploymentBar2: ColorSchema
     val SpellColorAtDeploymentBar: ColorSchema
     val SuperTroopColorAtDeploymentBar: ColorSchema
     val SpecialTroopColorAtDeploymentBar: ColorSchema
@@ -193,6 +194,9 @@ object MainBaseAttackColors : IMainBaseAttackColors {
     )
     override val TroopColorAtDeploymentBar = ColorSchema.parse(
         80, 590, 1200, 720, "D08E4C", "5|0|D18F4D,11|0|D1904E,16|0|D19150,21|0|D29250,0|5|BE8444,5|5|BF8544,11|5|C08646,16|5|C18848,21|5|C1894A", 0, 0.95, "部队颜色"
+    )
+    override val TroopColorAtDeploymentBar2 = ColorSchema.parse(
+        80, 590, 1200, 720, "E29A56", "-2|0|E29A56,-4|0|E19A57,-6|0|E19A56,-8|0|E59A55,-5|8|FFFFFF,-5|10|FFFFFF,-3|10|FFFFFF,-2|12|FFFFFF,0|13|FFFFFF", 0, 0.95, "部队颜色2"
     )
     override val SpellColorAtDeploymentBar = ColorSchema.parse(
         80, 590, 1200, 720, "DA5372", "3|0|DA5372,6|0|DA5372,9|0|DA5372,12|0|DA5372,0|7|BF475E,3|7|BF485F,6|7|BF475E,9|7|BF475E,12|7|BE485E", 0, 0.95, "法术颜色"
