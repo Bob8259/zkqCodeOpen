@@ -107,7 +107,9 @@ private suspend fun closeAdvertisements() {
         MyColors.SkinAd,
         MyColors.CapitalBackToCamp,
         MyColors.CapitalAirShip,
-        MyColors.CapitalAirShip2
+        MyColors.CapitalAirShip2,
+        MyColors.AgreeTerms,
+        MyColors.LogIn
     )
 
     // 3. Iterate through schemas

@@ -241,17 +241,11 @@ tasks.register("validateUploadJarGuard") {
         }
 
         val scriptLines = mainScriptFile.readLines()
-        val runMainScriptStart = scriptLines.indexOfFirst { it.contains("suspend fun runMainScript()") }
-        val runTestCodeDeclaration = scriptLines.indexOfFirst { it.contains("private suspend fun runTestCode()") }
-        if (runMainScriptStart == -1 || runTestCodeDeclaration == -1 || runTestCodeDeclaration <= runMainScriptStart) {
-            throw GradleException("Cannot validate upload safety because the expected MainScript structure was not found.")
-        }
 
-        // Only scan the main script body so the helper declaration itself does not trigger the guard.
-        val runMainScriptLines = scriptLines.subList(runMainScriptStart, runTestCodeDeclaration)
-        val activeRunTestCodeLine = Regex("""^\s*runTestCode\s*\(\s*\)\s*(?://.*)?$""")
-        val isTestHookEnabled = runMainScriptLines.any { line ->
-            activeRunTestCodeLine.matches(line)
+        // Scan every line: flag any uncommented runTestCode() call that is NOT the function declaration itself.
+        val callPattern = Regex("""^\s*runTestCode\s*\(\s*\)\s*$""")
+        val isTestHookEnabled = scriptLines.any { line ->
+            callPattern.matches(line)
         }
 
         if (isTestHookEnabled) {

@@ -40,15 +40,13 @@ suspend fun clanWar(): Boolean {
         STRATEGY_POSITION
     }
 
-    val attacked = when (currentStrategy) {
+    when (currentStrategy) {
         STRATEGY_POSITION -> attackByPosition()
         STRATEGY_RECOMMENDATION -> attackByRecommendation()
-        else -> false
-    }
-    if (attacked) {
-        writeMemory(storageKey, currentStrategy)
     }
 
+    writeMemory(storageKey, currentStrategy)
+    
     return enterMainScreen()
 }
 
@@ -90,6 +88,7 @@ private suspend fun executeClanWarAttack(attackX: Int, attackY: Int): Boolean {
     TouchActions.tap(1080, 640) // Attack
     TouchActions.tap(780, 440) // Confirm attack
     TouchActions.tap(1080, 640) // Attack
+    TouchActions.tap(755, 470)//Double confirm
     ShowMessage("检测是否进入对战中")
     if (findMultiColorsUntil(schemas = listOf(MyColors.EndBattle), duration = 5000) == null) {
         ShowMessage("进入部落战失败")

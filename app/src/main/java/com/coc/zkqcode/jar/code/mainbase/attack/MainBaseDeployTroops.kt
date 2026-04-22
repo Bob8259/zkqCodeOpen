@@ -30,6 +30,7 @@ private const val DRAG_SWEEP_MS = 600
 private const val DRAG_SWEEP_SLOW_MS = 3000
 
 suspend fun mainBaseDeployTroops() {
+    delayWithMultiplier(200)
     // Record the start time of the battle
     zoomSmallMainBase(isForAttack = true)
     repeat(3) {
