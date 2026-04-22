@@ -46,7 +46,7 @@ suspend fun clanWar(): Boolean {
     }
 
     writeMemory(storageKey, currentStrategy)
-    
+
     return enterMainScreen()
 }
 
@@ -71,9 +71,7 @@ private suspend fun attackByPosition(): Boolean {
  * Returns true if the attack was executed.
  */
 private suspend fun attackByRecommendation(): Boolean {
-    val recommended = findMultiColorsUntil(
-        schemas = listOf(MyColors.RecommendedOpponent), duration = 1000
-    ) ?: return false
+    val recommended = findMultiColorsUntil(schemas = listOf(MyColors.RecommendedOpponent), duration = 3000) ?: return false
     ShowMessage("已找到推荐对手，准备尝试进攻")
     TouchActions.tap(recommended.x, recommended.y - 100)
     val attackButton = findMultiColors(MyColors.ClanWarAttack) ?: return false
@@ -123,21 +121,15 @@ suspend fun detectMyClanWarPosition(): Int {
                         val height = endY - startY
                         if (startX >= 0 && startY >= 0 && endX <= screenBuffer.width && endY <= screenBuffer.height) {
                             val cropBitmap = TextRecognizer.preprocess(
-                                Bitmap.createBitmap(screenBuffer, startX, startY, width, height),
-                                threshold = 250,
-                                invertBinarization = true
+                                Bitmap.createBitmap(screenBuffer, startX, startY, width, height), threshold = 250, invertBinarization = true
                             )
                             if (AiDetector.loadWeights("clan-war-numbers")) {
                                 try {
                                     val detections = AiDetector.detect(
-                                        bitmap = cropBitmap,
-                                        clearWeightsAfter = false,
-                                        threshold = 0.3f
+                                        bitmap = cropBitmap, clearWeightsAfter = false, threshold = 0.3f
                                     )
                                     if (detections.isNotEmpty()) {
-                                        val number = detections.sortedBy { it.boundingBox.centerX() }
-                                            .joinToString("") { it.classIndex.toString() }
-                                            .toIntOrNull()
+                                        val number = detections.sortedBy { it.boundingBox.centerX() }.joinToString("") { it.classIndex.toString() }.toIntOrNull()
                                         accountMessage("检测到部落战位置编号: $number")
                                         if (number != null) {
                                             TouchActions.tap(1120, 55) // Close info page

@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:drawable="@color/splash_background" />
-    <item>
+    <item
+        android:width="225dp"
+        android:height="220dp"
+        android:gravity="center">
         <bitmap
             android:gravity="center"
             android:src="@drawable/splash" />
