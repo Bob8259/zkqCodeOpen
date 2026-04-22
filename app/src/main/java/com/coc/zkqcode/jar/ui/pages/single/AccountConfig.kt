@@ -28,6 +28,7 @@ fun AccountConfig(
     index: Int
 ) {
     SettingSection {
+        Text(text = "账号${index + 1}", style = MaterialTheme.typography.labelMedium)
         FlowRow {
             // Remove the switch label's extra text offset so it aligns with the remark label.
             val isRandomScheduling = GlobalVars.configStates[GLOBAL_SETTINGS.RANDOM_SCHEDULING.key]?.value == "1"
