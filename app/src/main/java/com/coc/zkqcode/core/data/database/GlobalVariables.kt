@@ -29,6 +29,9 @@ object GlobalVars {
     var isSwitchingAccount: Boolean = false
 
     @Volatile
+    var runDataNumberEntryOnly: Boolean = false
+
+    @Volatile
     var absorbEdge: Int = 0 // 1: Left, 0: Right
 
     @Volatile

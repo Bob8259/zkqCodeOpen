@@ -19,6 +19,7 @@ import com.coc.zkqcode.jar.code.universal.create.batchCreateAccounts
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.runRandomSchedulingScript
 import com.coc.zkqcode.jar.code.universal.smalltools.StorageKeys
+import com.coc.zkqcode.jar.code.universal.smalltools.tapDataNumberEntryButtons
 import com.coc.zkqcode.jar.code.universal.smalltools.checkAndCoolDown
 import com.coc.zkqcode.jar.code.universal.smalltools.getConfigOrStop
 import com.coc.zkqcode.jar.code.universal.smalltools.readMemory
@@ -32,6 +33,11 @@ import kotlinx.coroutines.isActive
 
 
 suspend fun runMainScript() {
+    if (GlobalVars.runDataNumberEntryOnly) {
+        GlobalVars.runDataNumberEntryOnly = false
+        tapDataNumberEntryButtons()
+        return
+    }
     waitForPlay()
     accountMessage("检测到设置已更新\n即将重新运行")
     delay(200)

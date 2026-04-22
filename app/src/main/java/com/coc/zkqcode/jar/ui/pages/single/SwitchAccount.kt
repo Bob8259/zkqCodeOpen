@@ -203,6 +203,10 @@ fun SwitchAccount(onClose: () -> Unit) {
                             AppStateManager.setMode(AppMode.Run)
                             GlobalVars.isPlaying.value = false
                             GlobalVars.updateWindowPosition = true
+                            if (versionId == 2) {
+                                GlobalVars.runDataNumberEntryOnly = true
+                                GlobalVars.isPlaying.value = true
+                            }
                             withContext(Dispatchers.Main) {
                                 accountMessage("切号完成", false)
                                 onClose()

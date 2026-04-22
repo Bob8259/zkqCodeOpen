@@ -2,7 +2,6 @@ package com.coc.zkqcode.jar.code.universal.smalltools
 
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.core.util.basic.RunShell
-import com.coc.zkqcode.jar.code.universal.smalltools.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.GameVersion
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
@@ -18,8 +17,8 @@ suspend fun launchGameAndHandleDataNumberLogin(gameVersion: GameVersion) {
     tapDataNumberEntryButtons()
 }
 
-// Reuse the existing color-recognition pipeline on a short timeout loop after the game launches.
-private suspend fun tapDataNumberEntryButtons() {
+// Reuse the existing colour-recognition pipeline on a short timeout loop after the game launches.
+suspend fun tapDataNumberEntryButtons() {
     val startTime = System.currentTimeMillis()
     while (System.currentTimeMillis() - startTime < DATA_NUMBER_SEARCH_TIMEOUT_MS) {
         val screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult
