@@ -107,6 +107,7 @@ private suspend fun checkPrivacy() {
 }
 
 suspend fun reExtractGameSavings() {
+    accountMessage("重新提取存档中")
     // 1. Configuration items
     val packageName = "com.supercell.clashofclans"
     val folderName = "zkqGlobalGameSave"

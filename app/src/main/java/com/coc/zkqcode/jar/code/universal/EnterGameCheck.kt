@@ -141,8 +141,13 @@ private suspend fun closeAdvertisements() {
         zoomSmallMainBase()
         mainBaseDeployTroops()
     }
+    findMultiColors(byteBuffer = screenBuffer, schema = MyColors.ReturnTask2, increment = 1)?.let {
+        accountMessage("检测到回归教程")
+        zoomSmallMainBase()
+        mainBaseDeployTroops()
+    }
     findMultiColors(byteBuffer = screenBuffer, schema = MyColors.TencentChildProtection, increment = 1)?.let {
-        TouchActions.tap(1011, 87)
+        TouchActions.tap(1010, 85)
         screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult ?: logAndRestart("failed to take screenshot at close advertisement")
     }
     findMultiColors(byteBuffer = screenBuffer, schema = MyColors.DailyLoginReward, increment = 1)?.let {

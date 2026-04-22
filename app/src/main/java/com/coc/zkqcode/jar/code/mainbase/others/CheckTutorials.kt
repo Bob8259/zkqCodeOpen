@@ -26,14 +26,19 @@ suspend fun mainBaseCheckTutorials(): Boolean {
 
     // Check the current view first, then scan the lower area after swiping.
     handleTutorialArrowIfNeeded()
+    TouchActions.tap(195, 115)//Resources Cart
+    TouchActions.tap(640, 560)
     swipe(910, 135, 0, 720)
     handleTutorialArrowIfNeeded()
+    TouchActions.tap(140, 325)//Resources Cart
+    TouchActions.tap(640, 560)
     // Record the completed daily check so we only scan once per day.
     writeMemory(storageKey, (System.currentTimeMillis() / 60_000).toString())
     return enterMainScreen()
 }
 
 private suspend fun handleTutorialArrowIfNeeded() {
+
     val tutorialArrow = findMultiColorsUntil(
         schemas = listOf(MyColors.MainBaseSmallTutorial), duration = 1500
     ) ?: return
