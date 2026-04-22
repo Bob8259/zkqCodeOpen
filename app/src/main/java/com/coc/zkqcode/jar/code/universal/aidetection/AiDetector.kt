@@ -236,7 +236,7 @@ object AiDetector {
                         val status = gson.fromJson(body, StatusResponse::class.java)
                         // Verify the plugin version meets the minimum requirement.
                         val ver = status.version.toDoubleOrNull() ?: 0.0
-                        if (ver < 1.04) {
+                        if (ver < 1.05) {
                             versionTooLow = true
                         } else {
                             return true

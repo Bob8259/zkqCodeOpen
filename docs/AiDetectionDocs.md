@@ -1,6 +1,6 @@
 # ZKQyolo — AI Detector Inference Service for Android
 
-**Version:** 1.03
+**Version:** 1.05
 
 An Android app that runs a local HTTP server exposing AI detector inference. The app launches a foreground service on startup, making the detection API available to other apps or automation tools on the device via `http://localhost:13462`.
 
@@ -54,6 +54,7 @@ All detector models are expected to be bundled in the APK assets directory.
 | `"building-detect"` | `my_building_detector.tflite` | Bundled in assets |
 | `"capital-building-detect"` | `capital_building_detector.tflite` | Bundled in assets |
 | `"remove-obstacle"` | `obstacles_detector.tflite` | Bundled in assets |
+| `"clan-war-numbers"` | `clan_war_number_detector.tflite` | Bundled in assets |
 
 > **Note:** `modelType` is required. Omitting it or passing an unrecognized value will result in an error.
 > If a model asset has not been packaged under `app/src/main/assets`, `/load` will fail with a missing-asset error.
@@ -77,7 +78,7 @@ Health check. Returns the server status, version, and current model state.
 ```json
 {
   "status": "running",
-  "version": "1.03",
+  "version": "1.05",
   "modelLoaded": true,
   "modelType": "walls-detect"
 }
@@ -117,7 +118,7 @@ Load model weights into the TFLite interpreter. If the same model type is alread
 **Error response (400) — missing or invalid `modelType`:**
 
 ```json
-{ "success": false, "error": "\"modelType\" is required. Valid types: walls-detect, numbers, building-detect, capital-building-detect, remove-obstacle" }
+{ "success": false, "error": "\"modelType\" is required. Valid types: walls-detect, numbers, building-detect, capital-building-detect, remove-obstacle, clan-war-numbers" }
 ```
 
 **Error response (500) — model failed to load:**

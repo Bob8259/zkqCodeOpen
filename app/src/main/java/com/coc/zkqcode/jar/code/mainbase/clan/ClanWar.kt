@@ -1,18 +1,20 @@
 package com.coc.zkqcode.jar.code.mainbase.clan
 
+import android.graphics.Bitmap
+import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
-import com.coc.zkqcode.jar.code.universal.smalltools.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.mainbase.attack.mainBaseDeployTroops
 import com.coc.zkqcode.jar.code.universal.InGameVars
 import com.coc.zkqcode.jar.code.universal.accountMessage
+import com.coc.zkqcode.jar.code.universal.aidetection.AiDetector
+import com.coc.zkqcode.jar.code.universal.recognizer.TextRecognizer
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
-import com.coc.zkqcode.jar.code.universal.recognizer.TextRecognizer
-import com.coc.zkqcode.jar.code.universal.recognizer.cleanOcrDigits
 import com.coc.zkqcode.jar.code.universal.smalltools.StorageKeys
+import com.coc.zkqcode.jar.code.universal.smalltools.TouchActions
 import com.coc.zkqcode.jar.code.universal.smalltools.getBooleanConfigRuntime
 import com.coc.zkqcode.jar.code.universal.smalltools.killGame
 import com.coc.zkqcode.jar.code.universal.smalltools.readMemory
@@ -56,7 +58,7 @@ suspend fun clanWar(): Boolean {
  */
 private suspend fun attackByPosition(): Boolean {
     val myPosition = detectMyClanWarPosition()
-    TouchActions.swipe(640, 300, 640, 3000, delayAfter = 500)
+    TouchActions.swipe(640, 300, 640, 10000, delayAfter = 500)
     TouchActions.tap(460, 300) // Tap the first opponent
     repeat(myPosition - 1) {
         TouchActions.tap(950, 570, delayTime = 50)
@@ -110,30 +112,51 @@ suspend fun detectMyClanWarPosition(): Int {
                 val position = findMultiColorsUntil(schemas = listOf(MyColors.MyPositionGreen), duration = 500)
                 if (position != null) {
                     // Calculate crop area using position offsets
-                    val startX = position.x - 10
+                    val startX = position.x - 5
                     val startY = position.y + 5
                     val endX = position.x + 55
                     val endY = position.y + 50
 
-                    // Use ML Kit to recognize the number in the area
-                    val results = TextRecognizer.recognize(
-                        startX = startX, startY = startY, endX = endX, endY = endY, useChinese = false, applyPreprocess = true, threshold = 240, saveImage = true
-                    )
-                    if (results.isNotEmpty()) {
-                        val rawText = results.joinToString("") { it.text }
-                        val number = cleanOcrDigits(rawText).toIntOrNull()
-                        accountMessage("检测到部落战位置编号: $number")
-                        if (number != null) {
-                            TouchActions.tap(1120, 55) // Close info page
-                            return number
+                    // Capture screen and crop to the number region, then use YOLO to detect digits
+                    val screenBuffer = ScreenCaptureManager.capture(asBitmap = true) as? Bitmap
+                    if (screenBuffer != null) {
+                        val width = endX - startX
+                        val height = endY - startY
+                        if (startX >= 0 && startY >= 0 && endX <= screenBuffer.width && endY <= screenBuffer.height) {
+                            val cropBitmap = TextRecognizer.preprocess(
+                                Bitmap.createBitmap(screenBuffer, startX, startY, width, height),
+                                threshold = 250,
+                                invertBinarization = true
+                            )
+                            if (AiDetector.loadWeights("clan-war-numbers")) {
+                                try {
+                                    val detections = AiDetector.detect(
+                                        bitmap = cropBitmap,
+                                        clearWeightsAfter = false,
+                                        threshold = 0.3f
+                                    )
+                                    if (detections.isNotEmpty()) {
+                                        val number = detections.sortedBy { it.boundingBox.centerX() }
+                                            .joinToString("") { it.classIndex.toString() }
+                                            .toIntOrNull()
+                                        accountMessage("检测到部落战位置编号: $number")
+                                        if (number != null) {
+                                            TouchActions.tap(1120, 55) // Close info page
+                                            return number
+                                        }
+                                    } else {
+                                        accountMessage("未检测到位置编号 (${position.x}, ${position.y})")
+                                    }
+                                } finally {
+                                    AiDetector.clearWeights()
+                                }
+                            }
                         }
-                    } else {
-                        accountMessage("未检测到位置编号 (${position.x}, ${position.y})")
                     }
                     TouchActions.tap(1120, 55) // Close info page
                     break
                 }
-                TouchActions.swipe(320, 570, 320, 210, delayAfter = 300)
+                TouchActions.swipe(320, 570, 320, 210)
             }
         }
     } else {

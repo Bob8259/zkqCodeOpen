@@ -20,6 +20,7 @@ import com.coc.zkqcode.jar.code.universal.create.batchCreateAccounts
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.runRandomSchedulingScript
 import com.coc.zkqcode.jar.code.universal.smalltools.StorageKeys
+import com.coc.zkqcode.jar.code.universal.smalltools.TouchActions
 import com.coc.zkqcode.jar.code.universal.smalltools.tapDataNumberEntryButtons
 import com.coc.zkqcode.jar.code.universal.smalltools.checkAndCoolDown
 import com.coc.zkqcode.jar.code.universal.smalltools.getConfigOrStop
@@ -133,9 +134,10 @@ private suspend fun resolveGameVersion(isBatchCreate: Boolean): GameVersion {
 private suspend fun runTestCode() {
     while (true) {
         clanWar()
+//        TouchActions.swipe(640, 300, 640, 9000, delayAfter = 500)
 //        ShowMessage(findMultiColors(MyColors.MyPositionGreen, increment = 1).toString())
         accountMessage("测试代码结束")
-        delay(1000)
+        delay(1000000)
     }
 }
 
