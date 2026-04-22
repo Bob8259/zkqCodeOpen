@@ -11,6 +11,7 @@ import com.coc.zkqcode.jar.code.auth.userAuth
 import com.coc.zkqcode.jar.code.builderbase.playBuilderBase
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.mainbase.clan.clanWar
+import com.coc.zkqcode.jar.code.mainbase.others.mainBaseCheckTutorials
 import com.coc.zkqcode.jar.code.mainbase.playMainBase
 import com.coc.zkqcode.jar.code.universal.GameVersion
 import com.coc.zkqcode.jar.code.universal.InGameVars
@@ -63,7 +64,7 @@ suspend fun runMainScript() {
     var lastUpdateCheckTime = System.currentTimeMillis()
     var nextUpdateInterval = (2 * 3600_000L) + (Math.random() * 3600_000L).toLong()
     while (currentCoroutineContext().isActive) {
-//        runTestCode()
+        runTestCode()
         runAccountStepBlock()
         // Circularly search for the next enabled account, wrapping back to currentAccountNumber (inclusive)
         // Emit hot update signal at safe point, throttled to once every 2-3 hours randomly
@@ -82,6 +83,17 @@ suspend fun runMainScript() {
         InGameVars.currentGameVersion = resolveGameVersion(isBatchCreate)
     }
 }
+
+private suspend fun runTestCode() {
+    while (true) {
+//        mainBaseCheckTutorials()
+//        TouchActions.swipe(640, 300, 640, 9000, delayAfter = 500)
+//        ShowMessage(findMultiColors(MyColors.MyPositionGreen, increment = 1).toString())
+        accountMessage("测试代码结束")
+        delay(1000000)
+    }
+}
+
 
 /** Handles hot-update signal on start and random-scheduling gate.
  *  Returns updateOption, or null if random scheduling took over. */
@@ -131,15 +143,6 @@ private suspend fun resolveGameVersion(isBatchCreate: Boolean): GameVersion {
     }
 }
 
-private suspend fun runTestCode() {
-    while (true) {
-        clanWar()
-//        TouchActions.swipe(640, 300, 640, 9000, delayAfter = 500)
-//        ShowMessage(findMultiColors(MyColors.MyPositionGreen, increment = 1).toString())
-        accountMessage("测试代码结束")
-        delay(1000000)
-    }
-}
 
 
 /**

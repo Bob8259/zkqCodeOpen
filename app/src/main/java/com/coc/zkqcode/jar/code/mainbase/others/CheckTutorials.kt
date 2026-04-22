@@ -26,7 +26,7 @@ suspend fun mainBaseCheckTutorials(): Boolean {
 
     // Check the current view first, then scan the lower area after swiping.
     handleTutorialArrowIfNeeded()
-    swipe(911, 134, 0, 720)
+    swipe(910, 135, 0, 720)
     handleTutorialArrowIfNeeded()
     // Record the completed daily check so we only scan once per day.
     writeMemory(storageKey, (System.currentTimeMillis() / 60_000).toString())
@@ -39,7 +39,10 @@ private suspend fun handleTutorialArrowIfNeeded() {
     ) ?: return
 
     TouchActions.tap(tutorialArrow.x + 20, tutorialArrow.y + 60, delayTime = 800)
-
+    val clanMadelTutorial = findMultiColors(MyColors.ClanMadelTutorial)
+    if (clanMadelTutorial != null) {
+        TouchActions.tap(clanMadelTutorial.x, clanMadelTutorial.y)
+    }
     if (findMultiColors(MyColors.OuterPetIcon) != null) {
         petsTutorial()
         return
