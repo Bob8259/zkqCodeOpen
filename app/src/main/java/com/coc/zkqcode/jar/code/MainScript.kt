@@ -42,34 +42,8 @@ suspend fun runMainScript() {
     accountMessage("检测到设置已更新\n即将重新运行")
     delay(200)
     userAuth()
-    // Read hot update preference and emit signal if "OnStart" mode is selected
-    val updateOption = getConfigOrStop(Schema.GLOBAL_SETTINGS.AUTO_UPDATE.key).toIntOrNull() ?: 0
-    if (updateOption == 1 || updateOption == 2) {
-        val deferred = CompletableDeferred<Unit>()
-        GlobalVars.updateCheckSignal.tryEmit(deferred)
-        deferred.await()
-    }
-    // 1. Check if random scheduling mode is enabled — takes over the entire loop
-    val isRandomScheduling = getConfigOrStop(Schema.GLOBAL_SETTINGS.RANDOM_SCHEDULING.key) == "1"
-    if (isRandomScheduling) {
-        runRandomSchedulingScript()
-        return
-    }
-
-    // 2. Initialize/update local memory state
-    val isBatchCreate = getConfigOrStop(Schema.GLOBAL_SETTINGS.BATCH_CREATE_ACCOUNT.key) == "1"
-
-    val accountTotal: Int = if (isBatchCreate) {
-        getConfigOrStop(Schema.GLOBAL_SETTINGS.CREATE_END_ID.key).toIntOrNull() ?: logAndRestart("${Schema.GLOBAL_SETTINGS.CREATE_END_ID.displayName} 必须是数字，请检查配置")
-    } else {
-        getConfigOrStop(Schema.GLOBAL_SETTINGS.ACCOUNT_COUNT.key).toIntOrNull() ?: logAndRestart("${Schema.GLOBAL_SETTINGS.ACCOUNT_COUNT.displayName} 必须是数字，请检查配置")
-    }
-    // In batch-create mode, the lower bound comes from CREATE_START_ID
-    val accountStart: Int = if (isBatchCreate) {
-        getConfigOrStop(Schema.GLOBAL_SETTINGS.CREATE_START_ID.key).toIntOrNull() ?: logAndRestart("${Schema.GLOBAL_SETTINGS.CREATE_START_ID.displayName} 必须是数字，请检查配置")
-    } else {
-        1
-    }
+    val updateOption = checkHotUpdateAndScheduling() ?: return
+    val (isBatchCreate, accountStart, accountTotal) = resolveAccountRange()
 
     val startAccount = readMemory(StorageKeys.ACCOUNT_NUMBER).toIntOrNull() ?: accountStart
     // Reset startAccount to accountStart if it is out of range (e.g. account count was reduced)
@@ -80,14 +54,7 @@ suspend fun runMainScript() {
     val activeAccount = findAndActivateAccount(initialSearchOrder, isBatchCreate) ?: return
     // 3. Execute main logic loop
     InGameVars.currentAccountNumber = activeAccount
-    // In batch-create mode, force GLOBAL version for all accounts
-    InGameVars.currentGameVersion = if (isBatchCreate) {
-        GameVersion.GLOBAL
-    } else {
-        GameVersion.fromId(
-            getConfigOrStop("${Schema.ACCOUNT_SETTINGS.GAME_VERSION.key}${InGameVars.currentAccountNumber}").toIntOrNull() ?: logAndRestart("${Schema.ACCOUNT_SETTINGS.GAME_VERSION.displayName} 必须是数字，请检查配置")
-        )
-    }
+    InGameVars.currentGameVersion = resolveGameVersion(isBatchCreate)
     InGameVars.adTime = 10.coerceAtLeast(accountTotal * 8)
     batchCreateAccounts()//Create all needed accounts first.
     // Track elapsed time for periodic hot update checks (updateOption 2)
@@ -110,14 +77,55 @@ suspend fun runMainScript() {
 
         InGameVars.currentAccountNumber = nextAccount
         writeMemory(StorageKeys.ACCOUNT_NUMBER, nextAccount.toString())
-        // In batch-create mode, force GLOBAL version for all accounts
-        InGameVars.currentGameVersion = if (isBatchCreate) {
-            GameVersion.GLOBAL
-        } else {
-            GameVersion.fromId(
-                getConfigOrStop("${Schema.ACCOUNT_SETTINGS.GAME_VERSION.key}${InGameVars.currentAccountNumber}").toIntOrNull() ?: logAndRestart("${Schema.ACCOUNT_SETTINGS.GAME_VERSION.displayName} 必须是数字，请检查配置")
-            )
-        }
+        InGameVars.currentGameVersion = resolveGameVersion(isBatchCreate)
+    }
+}
+
+/** Handles hot-update signal on start and random-scheduling gate.
+ *  Returns updateOption, or null if random scheduling took over. */
+private suspend fun checkHotUpdateAndScheduling(): Int? {
+    val updateOption = getConfigOrStop(Schema.GLOBAL_SETTINGS.AUTO_UPDATE.key).toIntOrNull()
+        ?: logAndRestart("${Schema.GLOBAL_SETTINGS.AUTO_UPDATE.displayName} 必须是数字，请检查配置")
+    if (updateOption == 1 || updateOption == 2) {
+        val deferred = CompletableDeferred<Unit>()
+        GlobalVars.updateCheckSignal.tryEmit(deferred)
+        deferred.await()
+    }
+    val isRandomScheduling = getConfigOrStop(Schema.GLOBAL_SETTINGS.RANDOM_SCHEDULING.key) == "1"
+    if (isRandomScheduling) {
+        runRandomSchedulingScript()
+        return null
+    }
+    return updateOption
+}
+
+private data class AccountRange(val isBatchCreate: Boolean, val accountStart: Int, val accountTotal: Int)
+
+/** Reads config to determine the account iteration range. */
+private suspend fun resolveAccountRange(): AccountRange {
+    val isBatchCreate = getConfigOrStop(Schema.GLOBAL_SETTINGS.BATCH_CREATE_ACCOUNT.key) == "1"
+    val accountTotal: Int = if (isBatchCreate) {
+        getConfigOrStop(Schema.GLOBAL_SETTINGS.CREATE_END_ID.key).toIntOrNull() ?: logAndRestart("${Schema.GLOBAL_SETTINGS.CREATE_END_ID.displayName} 必须是数字，请检查配置")
+    } else {
+        getConfigOrStop(Schema.GLOBAL_SETTINGS.ACCOUNT_COUNT.key).toIntOrNull() ?: logAndRestart("${Schema.GLOBAL_SETTINGS.ACCOUNT_COUNT.displayName} 必须是数字，请检查配置")
+    }
+    val accountStart: Int = if (isBatchCreate) {
+        getConfigOrStop(Schema.GLOBAL_SETTINGS.CREATE_START_ID.key).toIntOrNull() ?: logAndRestart("${Schema.GLOBAL_SETTINGS.CREATE_START_ID.displayName} 必须是数字，请检查配置")
+    } else {
+        1
+    }
+    return AccountRange(isBatchCreate, accountStart, accountTotal)
+}
+
+/** Resolves the current account's GameVersion, forcing GLOBAL in batch-create mode. */
+private suspend fun resolveGameVersion(isBatchCreate: Boolean): GameVersion {
+    return if (isBatchCreate) {
+        GameVersion.GLOBAL
+    } else {
+        GameVersion.fromId(
+            getConfigOrStop("${Schema.ACCOUNT_SETTINGS.GAME_VERSION.key}${InGameVars.currentAccountNumber}").toIntOrNull()
+                ?: logAndRestart("${Schema.ACCOUNT_SETTINGS.GAME_VERSION.displayName} 必须是数字，请检查配置")
+        )
     }
 }
 
