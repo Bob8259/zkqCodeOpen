@@ -61,6 +61,8 @@ suspend fun checkAndCoolDown() {
             accountMessage("设备已降温: ${temp}°C，恢复运行")
             break
         }
+        killGame()
+        RunShell.runNoOutput("input keyevent 3") // Press home button
         accountMessage("等待降温中: ${temp}°C (目标: ≤${resumeTemp}°C)")
     }
 
