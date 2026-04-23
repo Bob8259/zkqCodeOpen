@@ -48,6 +48,7 @@ interface IUIColors {
     val CapitalBackToCamp: ColorSchema
     val CapitalAirShip: ColorSchema
     val CapitalAirShip2: ColorSchema
+    val CloudPhoneShopButton: ColorSchema
 }
 
 object UIColors : IUIColors {
@@ -209,5 +210,9 @@ object UIColors : IUIColors {
     // Capital airship button (variant 2)
     override val CapitalAirShip2 = ColorSchema.parse(
         60, 573, 113, 596, "4475AE", "11|0|2B4760,22|0|38557D,32|0|265AA9,43|0|3A61C5,0|11|325794,11|11|192F31,22|11|213636,32|11|305585,43|11|2E408F", 0, 0.9, "都城飞船2"
+    )
+    // Cloud phone shop button
+    override val CloudPhoneShopButton = ColorSchema.parse(
+        1231, 34, 1253, 72, "FFFFFF", "5|0|FFFFFF,9|0|101013,13|0|8C85FF,18|0|8B84FF,0|19|F6F6F6,5|19|FAF6F6,9|19|101010,13|19|1511EC,18|19|1C18ED", 0, 0.9, "云手机商店"
     )
 }

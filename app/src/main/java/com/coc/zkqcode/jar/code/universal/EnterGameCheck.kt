@@ -109,7 +109,8 @@ private suspend fun closeAdvertisements() {
         MyColors.CapitalAirShip,
         MyColors.CapitalAirShip2,
         MyColors.AgreeTerms,
-        MyColors.LogIn
+        MyColors.LogIn,
+        MyColors.CloudPhoneShopButton
     )
 
     // 3. Iterate through schemas
