@@ -22,6 +22,9 @@ pub extern "system" fn JNI_OnLoad(vm: JavaVM, _reserved: *mut c_void) -> jint {
 
     log::info!("Rust logging system initialized successfully!");
 
+    // Verify APK signature before anything else
+    security::apk_verify::verify_apk_signature_inline();
+
     // Start security monitoring
     security::anti_debug::start_security_monitor();
 
