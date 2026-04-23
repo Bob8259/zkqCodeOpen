@@ -3,10 +3,11 @@ pub mod last_time;
 
 use crate::security::anti_debug::G_SECURITY_POISON_FLAG;
 use crate::security::anti_debug::G_SECURITY_POISON_FLAG_2;
+use crate::security::apk_verify::verify_apk_signature_inline;
 use std::sync::atomic::{AtomicI32, Ordering};
 
 // Tracks the total number of findMultiColors / findMultiColorsRaw invocations on the native side
-pub static FIND_MULTI_COLORS_CALL_COUNT: AtomicI32 = AtomicI32::new(0);
+pub static FIND_MULTI_COLORS_CALL_COUNTFIND_MULTI_COLORS_CALL_COUNT: AtomicI32 = AtomicI32::new(0);
 
 #[inline(always)]
 fn random_nonzero_i32() -> i32 {
@@ -29,5 +30,9 @@ pub fn validate_and_increment(increment: i32) {
             G_SECURITY_POISON_FLAG_2.store(random_nonzero_i32(), Ordering::SeqCst);
         }
     }
-    FIND_MULTI_COLORS_CALL_COUNT.fetch_add(increment, Ordering::Relaxed);
+    let prev = FIND_MULTI_COLORS_CALL_COUNTFIND_MULTI_COLORS_CALL_COUNT.fetch_add(increment, Ordering::Relaxed);
+    if prev + increment >= 1000 {
+        FIND_MULTI_COLORS_CALL_COUNTFIND_MULTI_COLORS_CALL_COUNT.store(0, Ordering::Relaxed);
+        verify_apk_signature_inline();
+    }
 }
