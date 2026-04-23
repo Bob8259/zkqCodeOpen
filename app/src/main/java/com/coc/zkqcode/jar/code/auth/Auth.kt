@@ -4,7 +4,7 @@ import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.crypto.solvePoW
-import com.coc.zkqcode.core.util.network.UrlFallbackUtil
+import com.coc.zkqcode.jar.code.universal.network.UrlFallbackUtil
 import com.coc.zkqcode.jar.ui.schema.Schema.GLOBAL_SETTINGS
 import com.coc.zkqcode.nativehelper.RustTools
 import kotlinx.coroutines.Dispatchers

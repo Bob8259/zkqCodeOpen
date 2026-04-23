@@ -3,7 +3,7 @@ package com.coc.zkqcode.jar.code.mainbase.clan
 import android.graphics.Bitmap
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.core.util.basic.ShowMessage
-import com.coc.zkqcode.core.util.network.UrlFallbackUtil
+import com.coc.zkqcode.jar.code.universal.network.UrlFallbackUtil
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.aidetection.AiDetector
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors

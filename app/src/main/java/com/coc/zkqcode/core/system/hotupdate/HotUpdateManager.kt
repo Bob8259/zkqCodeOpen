@@ -7,7 +7,6 @@ import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.crypto.solvePoW
 import com.coc.zkqcode.core.util.fileactions.LogHelper
-import com.coc.zkqcode.core.util.network.UrlFallbackUtil
 import com.coc.zkqcode.loadjar.Loadjar
 import com.coc.zkqcode.statehelper.AppMode
 import com.coc.zkqcode.statehelper.AppStateManager
@@ -22,12 +21,18 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.Response
 import org.json.JSONObject
 import java.io.File
+import java.io.IOException
+import java.net.SocketTimeoutException
 import java.security.MessageDigest
 import java.util.concurrent.TimeUnit
 
 object HotUpdateManager {
+
+    private const val PRIMARY_URL = "https://zkqcoc.store/"
+    private const val BACKUP_URL = "http://103.85.226.101/"
 
     private const val MAX_RETRY = 3
     private const val WATCHDOG_TIMEOUT_MS = 8 * 3600_000L       // 8 hours
@@ -117,7 +122,7 @@ object HotUpdateManager {
         val serverVersion: Long
         try {
             val responseStr = withContext(Dispatchers.IO) {
-                UrlFallbackUtil.executeGetWithFallbackAndReadBody("api/hot-update-md5")
+                executeGetWithFallbackAndReadBody("api/hot-update-md5")
             }
             val json = JSONObject(responseStr)
             serverMd5 = json.getString("md5")
@@ -169,7 +174,7 @@ object HotUpdateManager {
 
                 // Stream response bytes to temp file with progress reporting using fallback
                 withContext(Dispatchers.IO) {
-                    UrlFallbackUtil.executeWithFallback(
+                    executeWithFallback(
                         endpoint = "api/hot-update-download",
                         requestBuilder = { baseUrl ->
                             Request.Builder()
@@ -312,9 +317,69 @@ object HotUpdateManager {
      */
     private suspend fun fetchPowNonce(): String {
         val responseStr = withContext(Dispatchers.IO) {
-            UrlFallbackUtil.executeGetWithFallbackAndReadBody("api/pow/challenge")
+            executeGetWithFallbackAndReadBody("api/pow/challenge")
         }
         return JSONObject(responseStr).getString("nonce")
+    }
+
+    /**
+     * Executes a network request with fallback logic.
+     * Tries primary URL first, then backup URL if primary fails.
+     */
+    private suspend fun executeWithFallback(
+        endpoint: String,
+        requestBuilder: (baseUrl: String) -> Request
+    ): Response {
+        val primaryRequest = requestBuilder(PRIMARY_URL)
+        val primaryException = try {
+            val response = withContext(Dispatchers.IO) {
+                httpClient.newCall(primaryRequest).execute()
+            }
+            if (response.isSuccessful) {
+                return response
+            } else {
+                response.close()
+                null
+            }
+        } catch (e: SocketTimeoutException) {
+            e
+        } catch (e: IOException) {
+            e
+        }
+
+        if (BACKUP_URL.isNotBlank()) {
+            ShowMessage("主服务器连接失败，正在尝试备用服务器...")
+            val backupRequest = requestBuilder(BACKUP_URL)
+            try {
+                val response = withContext(Dispatchers.IO) {
+                    httpClient.newCall(backupRequest).execute()
+                }
+                if (response.isSuccessful) {
+                    return response
+                } else {
+                    response.close()
+                    throw IOException("Backup server returned error: ${response.code}")
+                }
+            } catch (e: Exception) {
+                throw IOException("Both primary and backup servers failed. Primary: ${primaryException?.message}, Backup: ${e.message}", e)
+            }
+        } else {
+            throw IOException("Primary server failed and no backup URL configured: ${primaryException?.message}", primaryException)
+        }
+    }
+
+    /**
+     * Executes a GET request with fallback and returns the response body as string.
+     */
+    private suspend fun executeGetWithFallbackAndReadBody(endpoint: String): String {
+        return executeWithFallback(endpoint) { baseUrl ->
+            Request.Builder()
+                .url("${baseUrl}${endpoint}")
+                .get()
+                .build()
+        }.use { response ->
+            response.body.string()
+        }
     }
 
     /**

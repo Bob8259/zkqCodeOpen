@@ -1,5 +1,3 @@
-import java.util.Properties
-
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
@@ -9,16 +7,6 @@ android {
     namespace = "com.coc.zkqcode"
     compileSdk = 36
 
-    val localProperties = Properties()
-    val localPropertiesFile = rootProject.file("local.properties")
-    if (localPropertiesFile.exists()) {
-        localPropertiesFile.inputStream().use {
-            localProperties.load(it)
-        }
-    }
-    val baseUrl: String = localProperties.getProperty("BASE_URL") ?: ""
-    val baseUrlBackup: String = localProperties.getProperty("BASE_URL_BACKUP") ?: ""
-
     defaultConfig {
         applicationId = "com.coc.zkqcode"
         minSdk = 24
@@ -27,8 +15,6 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        buildConfigField("String", "BASE_URL", "\"$baseUrl\"")
-        buildConfigField("String", "BASE_URL_BACKUP", "\"$baseUrlBackup\"")
     }
 
     buildTypes {

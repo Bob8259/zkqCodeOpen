@@ -31,7 +31,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
-import com.coc.zkqcode.core.util.network.UrlFallbackUtil
+import com.coc.zkqcode.jar.code.universal.network.UrlFallbackUtil
 import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.jar.ui.components.CustomButton
 import com.coc.zkqcode.statehelper.AppMode

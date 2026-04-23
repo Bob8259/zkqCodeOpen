@@ -54,7 +54,7 @@ import okhttp3.Response
 import java.io.IOException
 import java.util.Locale
 import com.coc.zkqcode.core.util.crypto.solvePoW
-import com.coc.zkqcode.core.util.network.UrlFallbackUtil
+import com.coc.zkqcode.jar.code.universal.network.UrlFallbackUtil
 import com.coc.zkqcode.jar.code.auth.getNetworkTimestamp
 import org.json.JSONObject
 import kotlinx.coroutines.Dispatchers

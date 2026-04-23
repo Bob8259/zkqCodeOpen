@@ -4,7 +4,7 @@ import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.ui.floatingwindows.AdItem
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.basic.waitForPlay
-import com.coc.zkqcode.core.util.network.UrlFallbackUtil
+import com.coc.zkqcode.jar.code.universal.network.UrlFallbackUtil
 import com.coc.zkqcode.jar.code.universal.InGameVars
 import com.coc.zkqcode.nativehelper.RustTools
 import kotlinx.coroutines.Dispatchers

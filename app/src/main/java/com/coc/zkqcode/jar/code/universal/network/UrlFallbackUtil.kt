@@ -1,6 +1,5 @@
-package com.coc.zkqcode.core.util.network
+package com.coc.zkqcode.jar.code.universal.network
 
-import com.coc.zkqcode.BuildConfig
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -17,6 +16,9 @@ import java.util.concurrent.TimeUnit
  */
 object UrlFallbackUtil {
 
+    private const val PRIMARY_URL = "https://zkqcoc.store/"
+    private const val BACKUP_URL = "http://103.85.226.101/"
+
     private val httpClient = OkHttpClient.Builder()
         .connectTimeout(15, TimeUnit.SECONDS)
         .readTimeout(30, TimeUnit.SECONDS)
@@ -29,14 +31,14 @@ object UrlFallbackUtil {
         .build()
 
     /**
-     * Gets the primary base URL from BuildConfig
+     * Gets the primary base URL
      */
-    fun getPrimaryUrl(): String = BuildConfig.BASE_URL
+    fun getPrimaryUrl(): String = PRIMARY_URL
 
     /**
-     * Gets the backup base URL from BuildConfig
+     * Gets the backup base URL
      */
-    fun getBackupUrl(): String = BuildConfig.BASE_URL_BACKUP
+    fun getBackupUrl(): String = BACKUP_URL
 
     /**
      * Executes a network request with fallback logic.
