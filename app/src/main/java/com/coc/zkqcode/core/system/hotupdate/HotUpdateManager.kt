@@ -31,8 +31,7 @@ import java.util.concurrent.TimeUnit
 
 object HotUpdateManager {
 
-    private const val PRIMARY_URL = "https://zkqcoc.store/"
-    private const val BACKUP_URL = "http://103.85.226.101/"
+    private const val URL_FALLBACK_UTIL_CLASS = "com.coc.zkqcode.jar.code.universal.network.UrlFallbackUtil"
 
     private const val MAX_RETRY = 3
     private const val WATCHDOG_TIMEOUT_MS = 8 * 3600_000L       // 8 hours
@@ -326,11 +325,27 @@ object HotUpdateManager {
      * Executes a network request with fallback logic.
      * Tries primary URL first, then backup URL if primary fails.
      */
+    /**
+     * Retrieves the primary and backup URLs from the JAR's UrlFallbackUtil via reflection.
+     * Returns a Pair(primaryUrl, backupUrl). Throws IOException if the JAR is not loaded.
+     */
+    private fun getUrlsFromJar(): Pair<String, String> {
+        return try {
+            val clazz = Class.forName(URL_FALLBACK_UTIL_CLASS)
+            val primaryUrl = clazz.getField("PRIMARY_URL").get(null) as String
+            val backupUrl = clazz.getField("BACKUP_URL").get(null) as String
+            Pair(primaryUrl, backupUrl)
+        } catch (e: Exception) {
+            throw IOException("JAR not loaded, cannot resolve server URLs: ${e.message}", e)
+        }
+    }
+
     private suspend fun executeWithFallback(
         endpoint: String,
         requestBuilder: (baseUrl: String) -> Request
     ): Response {
-        val primaryRequest = requestBuilder(PRIMARY_URL)
+        val (primaryUrl, backupUrl) = getUrlsFromJar()
+        val primaryRequest = requestBuilder(primaryUrl)
         val primaryException = try {
             val response = withContext(Dispatchers.IO) {
                 httpClient.newCall(primaryRequest).execute()
@@ -347,9 +362,9 @@ object HotUpdateManager {
             e
         }
 
-        if (BACKUP_URL.isNotBlank()) {
+        if (backupUrl.isNotBlank()) {
             ShowMessage("主服务器连接失败，正在尝试备用服务器...")
-            val backupRequest = requestBuilder(BACKUP_URL)
+            val backupRequest = requestBuilder(backupUrl)
             try {
                 val response = withContext(Dispatchers.IO) {
                     httpClient.newCall(backupRequest).execute()

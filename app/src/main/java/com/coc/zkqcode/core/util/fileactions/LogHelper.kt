@@ -17,8 +17,11 @@ import java.util.concurrent.atomic.AtomicBoolean
 object LogHelper {
     // Re-entry guard to prevent recursive calls (e.g. ShowMessage -> logAndRestart -> ShowMessage)
     private val isRestarting = AtomicBoolean(false)
+    // Guard against planting Timber trees more than once (e.g. multiple Activity instances)
+    private val timberInitialized = AtomicBoolean(false)
 
     fun initTimber(context: Context) {
+        if (!timberInitialized.compareAndSet(false, true)) return
         if (BuildConfig.DEBUG) {
             Timber.plant(Timber.DebugTree())
         } else {
