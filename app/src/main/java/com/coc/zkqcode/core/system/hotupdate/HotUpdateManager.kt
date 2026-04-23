@@ -3,11 +3,11 @@ package com.coc.zkqcode.core.system.hotupdate
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
-import com.coc.zkqcode.BuildConfig
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.crypto.solvePoW
 import com.coc.zkqcode.core.util.fileactions.LogHelper
+import com.coc.zkqcode.core.util.network.UrlFallbackUtil
 import com.coc.zkqcode.loadjar.Loadjar
 import com.coc.zkqcode.statehelper.AppMode
 import com.coc.zkqcode.statehelper.AppStateManager
@@ -103,7 +103,6 @@ object HotUpdateManager {
 
     private suspend fun checkAndUpdate(context: Context) = withTimeout(UPDATE_TIMEOUT_MS) {
         ShowMessage("准备检查新版本")
-        val baseUrl = BuildConfig.BASE_URL
         val assetsDir = File(context.filesDir, "assets")
         // Ensure assets directory exists (e.g. on fresh install)
         if (!assetsDir.exists()) assetsDir.mkdirs()
@@ -117,14 +116,8 @@ object HotUpdateManager {
         val serverFileName: String
         val serverVersion: Long
         try {
-            val checkRequest = Request.Builder().url("${baseUrl}api/hot-update-md5").get().build()
             val responseStr = withContext(Dispatchers.IO) {
-                httpClient.newCall(checkRequest).execute().use { response ->
-                    if (!response.isSuccessful) {
-                        throw IllegalStateException("Version check failed: ${response.code}")
-                    }
-                    response.body.string()
-                }
+                UrlFallbackUtil.executeGetWithFallbackAndReadBody("api/hot-update-md5")
             }
             val json = JSONObject(responseStr)
             serverMd5 = json.getString("md5")
@@ -161,8 +154,8 @@ object HotUpdateManager {
         for (attempt in 1..MAX_RETRY) {
             ShowMessage("检测到新版 (服务器版本号=$serverVersion, 本地版本号=$localVersion)\n下载中，第$attempt/$MAX_RETRY 次尝试")
             try {
-                // Fetch PoW challenge (nonce valid for 10s, single-use)
-                val powNonce = fetchPowNonce(baseUrl)
+                // Fetch PoW challenge (nonce valid for 10s, single-use) with fallback
+                val powNonce = fetchPowNonce()
                 val powSalt = solvePoW(powNonce)
 
                 // Build JSON request body for download endpoint
@@ -173,11 +166,18 @@ object HotUpdateManager {
                     put("powSalt", powSalt)
                 }
                 val requestBody = jsonBody.toString().toRequestBody("application/json".toMediaTypeOrNull())
-                val downloadRequest = Request.Builder().url("${baseUrl}api/hot-update-download").post(requestBody).build()
 
-                // Stream response bytes to temp file with progress reporting
+                // Stream response bytes to temp file with progress reporting using fallback
                 withContext(Dispatchers.IO) {
-                    httpClient.newCall(downloadRequest).execute().use { response ->
+                    UrlFallbackUtil.executeWithFallback(
+                        endpoint = "api/hot-update-download",
+                        requestBuilder = { baseUrl ->
+                            Request.Builder()
+                                .url("${baseUrl}api/hot-update-download")
+                                .post(requestBody)
+                                .build()
+                        }
+                    ).use { response ->
                         if (!response.isSuccessful) {
                             throw IllegalStateException("Download failed: ${response.code}")
                         }
@@ -308,17 +308,11 @@ object HotUpdateManager {
     }
 
     /**
-     * Fetches a fresh PoW nonce from the server challenge endpoint.
+     * Fetches a fresh PoW nonce from the server challenge endpoint with fallback.
      */
-    private suspend fun fetchPowNonce(baseUrl: String): String {
-        val request = Request.Builder().url("${baseUrl}api/pow/challenge").get().build()
+    private suspend fun fetchPowNonce(): String {
         val responseStr = withContext(Dispatchers.IO) {
-            httpClient.newCall(request).execute().use { response ->
-                if (!response.isSuccessful) {
-                    throw IllegalStateException("PoW challenge failed: ${response.code}")
-                }
-                response.body.string()
-            }
+            UrlFallbackUtil.executeGetWithFallbackAndReadBody("api/pow/challenge")
         }
         return JSONObject(responseStr).getString("nonce")
     }

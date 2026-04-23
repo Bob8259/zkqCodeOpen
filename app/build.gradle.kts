@@ -17,6 +17,7 @@ android {
         }
     }
     val baseUrl: String = localProperties.getProperty("BASE_URL") ?: ""
+    val baseUrlBackup: String = localProperties.getProperty("BASE_URL_BACKUP") ?: ""
 
     defaultConfig {
         applicationId = "com.coc.zkqcode"
@@ -27,6 +28,7 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         buildConfigField("String", "BASE_URL", "\"$baseUrl\"")
+        buildConfigField("String", "BASE_URL_BACKUP", "\"$baseUrlBackup\"")
     }
 
     buildTypes {

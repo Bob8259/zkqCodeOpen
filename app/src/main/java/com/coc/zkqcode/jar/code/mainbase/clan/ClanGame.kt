@@ -1,9 +1,9 @@
 package com.coc.zkqcode.jar.code.mainbase.clan
 
 import android.graphics.Bitmap
-import com.coc.zkqcode.BuildConfig
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.core.util.basic.ShowMessage
+import com.coc.zkqcode.core.util.network.UrlFallbackUtil
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
@@ -15,7 +15,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
-import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.ByteArrayOutputStream
@@ -71,22 +70,20 @@ private suspend fun uploadScreenshot(name: String) {
             )
             .build()
 
-        val request = Request.Builder()
-            .url("${BuildConfig.BASE_URL}api/bug-report")
-            .post(requestBody)
-            .build()
-
-        val response = withContext(Dispatchers.IO) {
-            OkHttpClient().newCall(request).execute()
+        // Use fallback utility for upload
+        withContext(Dispatchers.IO) {
+            UrlFallbackUtil.executeWithFallbackAndReadBody(
+                endpoint = "api/bug-report",
+                requestBuilder = { baseUrl ->
+                    Request.Builder()
+                        .url("${baseUrl}api/bug-report")
+                        .post(requestBody)
+                        .build()
+                }
+            )
         }
 
-        response.use { resp ->
-            if (resp.isSuccessful) {
-                ShowMessage("截图上传成功: $fileName")
-            } else {
-                ShowMessage("截图上传失败: ${resp.code}")
-            }
-        }
+        ShowMessage("截图上传成功: $fileName")
     } catch (e: Exception) {
         ShowMessage("截图上传异常: ${e.message}")
     }

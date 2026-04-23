@@ -1,20 +1,16 @@
 package com.coc.zkqcode.jar.code.auth
 
-import com.coc.zkqcode.BuildConfig
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.ui.floatingwindows.AdItem
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.basic.waitForPlay
+import com.coc.zkqcode.core.util.network.UrlFallbackUtil
 import com.coc.zkqcode.jar.code.universal.InGameVars
 import com.coc.zkqcode.nativehelper.RustTools
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
-import okhttp3.OkHttpClient
-import okhttp3.Request
 import org.json.JSONArray
-
-private val httpClient = OkHttpClient()
 
 // Fetch ads from the server, display them in an overlay for the given duration,
 // bracketed by native start/end markers for tamper detection.
@@ -24,14 +20,10 @@ suspend fun displayAds() {
     waitForPlay()
     RustTools.markAdStart()
 
-    // Fetch ad data from the server API
+    // Fetch ad data from the server API with fallback
     val adItems = try {
-        val request = Request.Builder()
-            .url("${BuildConfig.BASE_URL}api/get-ad")
-            .get()
-            .build()
         val body = withContext(Dispatchers.IO) {
-            httpClient.newCall(request).execute().use { it.body.string() }
+            UrlFallbackUtil.executeGetWithFallbackAndReadBody("api/get-ad")
         }
         val arr = JSONArray(body)
         (0 until arr.length()).map { i ->

@@ -29,9 +29,9 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.coc.zkqcode.BuildConfig
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
+import com.coc.zkqcode.core.util.network.UrlFallbackUtil
 import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.jar.ui.components.CustomButton
 import com.coc.zkqcode.statehelper.AppMode
@@ -42,7 +42,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
-import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONObject
@@ -145,25 +144,20 @@ fun BugReport(onClose: () -> Unit) {
                                     )
                                     .build()
 
-                                val uploadUrl = "${BuildConfig.BASE_URL}api/bug-report"
-
-                                val request = Request.Builder()
-                                    .url(uploadUrl)
-                                    .post(requestBody)
-                                    .build()
-
-                                val response = withContext(Dispatchers.IO) {
-                                    OkHttpClient().newCall(request).execute()
+                                // Use fallback utility for upload
+                                val responseBody = withContext(Dispatchers.IO) {
+                                    UrlFallbackUtil.executeWithFallbackAndReadBody(
+                                        endpoint = "api/bug-report",
+                                        requestBuilder = { baseUrl ->
+                                            Request.Builder()
+                                                .url("${baseUrl}api/bug-report")
+                                                .post(requestBody)
+                                                .build()
+                                        }
+                                    )
                                 }
 
-                                response.use { resp ->
-                                    val body = resp.body.string()
-                                    statusMessage = if (resp.isSuccessful) {
-                                        "截图提交成功！请与作者/客服联系。"
-                                    } else {
-                                        translateServerError(body)
-                                    }
-                                }
+                                statusMessage = "截图提交成功！请与作者/客服联系。"
                             } catch (e: Exception) {
                                 statusMessage = "提交失败：${e.message}"
                             } finally {

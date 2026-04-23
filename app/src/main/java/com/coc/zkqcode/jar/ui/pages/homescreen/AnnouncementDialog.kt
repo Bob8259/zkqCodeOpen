@@ -11,16 +11,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
-import com.coc.zkqcode.BuildConfig
+import com.coc.zkqcode.core.util.network.UrlFallbackUtil
 import com.coc.zkqcode.jar.ui.components.CustomAlertDialog
 import com.coc.zkqcode.jar.ui.theme.AppColors
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import okhttp3.OkHttpClient
-import okhttp3.Request
 import org.json.JSONObject
 import java.io.File
-import java.util.concurrent.TimeUnit
 
 @Composable
 fun AnnouncementDialog(onDismiss: () -> Unit) {
@@ -41,24 +38,8 @@ fun AnnouncementDialog(onDismiss: () -> Unit) {
                     ?.mapNotNull { it.name.removePrefix("encrypted_").removeSuffix(".jar").toLongOrNull() }
                     ?.maxOrNull() ?: 0L
 
-                val httpClient = OkHttpClient.Builder()
-                    .connectTimeout(30, TimeUnit.SECONDS)
-                    .readTimeout(120, TimeUnit.SECONDS)
-                    .writeTimeout(30, TimeUnit.SECONDS)
-                    .build()
-
-                val baseUrl = BuildConfig.BASE_URL
-                val checkRequest = Request.Builder()
-                    .url("${baseUrl}api/hot-update-md5")
-                    .get()
-                    .build()
-
-                val responseStr = httpClient.newCall(checkRequest).execute().use { response ->
-                    if (!response.isSuccessful) {
-                        throw IllegalStateException("Version check failed: ${response.code}")
-                    }
-                    response.body.string()
-                }
+                // Use fallback utility for version check
+                val responseStr = UrlFallbackUtil.executeGetWithFallbackAndReadBody("api/hot-update-md5")
 
                 val json = JSONObject(responseStr)
                 val serverFileName = json.getString("fileName")

@@ -1,11 +1,10 @@
 package com.coc.zkqcode.jar.code.auth
 
-import com.coc.zkqcode.BuildConfig
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.util.basic.ShowMessage
-
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.crypto.solvePoW
+import com.coc.zkqcode.core.util.network.UrlFallbackUtil
 import com.coc.zkqcode.jar.ui.schema.Schema.GLOBAL_SETTINGS
 import com.coc.zkqcode.nativehelper.RustTools
 import kotlinx.coroutines.Dispatchers
@@ -138,7 +137,6 @@ suspend fun userAuth() {
             return
         }
 
-        val baseUrl = BuildConfig.BASE_URL
         val timestamp = getNetworkTimestamp()
         // Retrieve last_time from native Rust storage (auto-initializes on first call)
         val lastTime = RustTools.getLastTime()
@@ -162,13 +160,10 @@ suspend fun userAuth() {
         // The entire challenge→solve→deduct sequence is retried together on connection timeout.
         val (responseCode, responseBody) = try {
             retryOnTimeout {
-                // Fetch a fresh PoW challenge and parse the nonce in one step
+                // Fetch a fresh PoW challenge and parse the nonce in one step with fallback
                 val powNonce = withContext(Dispatchers.IO) {
-                    httpClient.newCall(
-                        Request.Builder().url("${baseUrl}api/pow/challenge").get().build()
-                    ).execute().use { response ->
-                        if (!response.isSuccessful) throw IllegalStateException("PoW challenge failed: ${response.code}")
-                        JSONObject(response.body.string()).getString("nonce")
+                    UrlFallbackUtil.executeGetWithFallbackAndReadBody("api/pow/challenge").let { responseBody ->
+                        JSONObject(responseBody).getString("nonce")
                     }
                 }
 
@@ -178,11 +173,17 @@ suspend fun userAuth() {
                 // Build and send the deduct request with the fresh PoW
                 val postData = "public_key=${encryptionParts[0]}" + "&nonce=${encryptionParts[1]}" + "&data=${encryptionParts[2]}" + "&pow_nonce=$powNonce" + "&pow_salt=$powSalt"
                 withContext(Dispatchers.IO) {
-                    httpClient.newCall(
-                        Request.Builder().url("${baseUrl}api/mobile-deduct")
-                            .post(postData.toRequestBody("application/x-www-form-urlencoded".toMediaTypeOrNull()))
-                            .build()
-                    ).execute().use { Pair(it.code, it.body.string()) }
+                    UrlFallbackUtil.executeWithFallbackAndReadBody(
+                        endpoint = "api/mobile-deduct",
+                        requestBuilder = { baseUrl ->
+                            Request.Builder()
+                                .url("${baseUrl}api/mobile-deduct")
+                                .post(postData.toRequestBody("application/x-www-form-urlencoded".toMediaTypeOrNull()))
+                                .build()
+                        }
+                    ).let { responseBody ->
+                        Pair(200, responseBody)
+                    }
                 }
             }
         } catch (_: Exception) {

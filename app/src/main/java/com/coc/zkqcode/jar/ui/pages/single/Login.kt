@@ -1,7 +1,6 @@
 package com.coc.zkqcode.jar.ui.pages.single
 
 import android.content.Intent
-import com.coc.zkqcode.BuildConfig
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
@@ -47,8 +46,6 @@ import com.coc.zkqcode.jar.ui.components.SettingInputRow
 import com.coc.zkqcode.jar.ui.schema.Schema.GLOBAL_SETTINGS
 import com.coc.zkqcode.nativehelper.RustTools
 import kotlinx.coroutines.launch
-import okhttp3.Call
-import okhttp3.Callback
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -57,6 +54,7 @@ import okhttp3.Response
 import java.io.IOException
 import java.util.Locale
 import com.coc.zkqcode.core.util.crypto.solvePoW
+import com.coc.zkqcode.core.util.network.UrlFallbackUtil
 import com.coc.zkqcode.jar.code.auth.getNetworkTimestamp
 import org.json.JSONObject
 import kotlinx.coroutines.Dispatchers
@@ -86,7 +84,6 @@ fun LoginScreen(onAdFreeClick: () -> Unit = {}) {
     }
     fun login(email: String, password: String) {
         isLoginButtonEnabled = false
-        val baseURL = BuildConfig.BASE_URL
 
         scope.launch {
             if (!email.contains("@")) {
@@ -97,20 +94,14 @@ fun LoginScreen(onAdFreeClick: () -> Unit = {}) {
                 return@launch // Exit function
             }
 
-            // 0. Fetch PoW Challenge
+            // 0. Fetch PoW Challenge with fallback
             gemInfo = "登录中，请稍后..."
 
-            val httpClient = OkHttpClient()
             var powNonce: String
 
             try {
-                val challengeRequest =
-                    Request.Builder().url("${baseURL}api/pow/challenge").get().build()
                 val responseStr = withContext(Dispatchers.IO) {
-                    httpClient.newCall(challengeRequest).execute().use { response ->
-                        if (!response.isSuccessful) throw IOException("Unexpected code $response")
-                        response.body.string()
-                    }
+                    UrlFallbackUtil.executeGetWithFallbackAndReadBody("api/pow/challenge")
                 }
                 val json = JSONObject(responseStr)
                 powNonce = json.getString("nonce")
@@ -149,76 +140,65 @@ fun LoginScreen(onAdFreeClick: () -> Unit = {}) {
             val nonce = parts[1]
             val ciphertext = parts[2]
 
-            // 3. Send Request
+            // 3. Send Request with fallback
             // Assuming server expects: public_key, nonce, data (ciphertext)
             val postData =
                 "public_key=$myPublicKey&nonce=$nonce&data=$ciphertext&pow_nonce=$powNonce&pow_salt=$powSalt"
-            val client = OkHttpClient()
             val requestBody =
                 postData.toRequestBody("application/x-www-form-urlencoded".toMediaTypeOrNull())
-            val request =
-                Request.Builder().url("${baseURL}api/mobile-login").post(requestBody).build()
 
-            client.newCall(request).enqueue(object : Callback {
-                override fun onFailure(call: Call, e: IOException) {
-                    scope.launch {
-                        gemInfo = "登录失败: ${e.message}"
+            try {
+                val responseBody = withContext(Dispatchers.IO) {
+                    UrlFallbackUtil.executeWithFallbackAndReadBody(
+                        endpoint = "api/mobile-login",
+                        requestBuilder = { baseUrl ->
+                            Request.Builder()
+                                .url("${baseUrl}api/mobile-login")
+                                .post(requestBody)
+                                .build()
+                        }
+                    )
+                }
+
+                isLoginButtonEnabled = true
+                // 4. Decrypt Response via Native Layer
+                val decrypted = try {
+                    RustTools.decryptLoginResponse(responseBody)
+                } catch (e: Exception) {
+                    "Error: Decryption exception: ${e.message}"
+                }
+
+                // 5. Parse Decrypted Result
+                // Expected format: gem=xxx OR Error message
+                if (decrypted.startsWith("Error")) {
+                    gemInfo = "登录失败: $decrypted"
+                    showMessage = true
+                    GlobalVars.configStates[GLOBAL_SETTINGS.GEM_COUNT.key]!!.value = ""
+                } else {
+                    val gemRegex = """gem=([\d.]+)""".toRegex()
+                    val gemMatch = gemRegex.find(decrypted)
+
+                    if (gemMatch != null) {
+                        val gem = gemMatch.groupValues[1]
+                        formattedGem = String.format(Locale.US, "%.4f", gem.toDouble())
+                        gem.toDoubleOrNull()?.let {
+                            showMessage = (it < 0.000001)
+                        }
+                        GlobalVars.configStates[GLOBAL_SETTINGS.GEM_COUNT.key]!!.value = gem
+                        gemInfo = "登录成功！卡班积分数量 $formattedGem"
+                    } else {
+                        gemInfo = "登录成功，但无法解析数据: $decrypted"
                         showMessage = true
                         GlobalVars.configStates[GLOBAL_SETTINGS.GEM_COUNT.key]!!.value = ""
-                        failTimesCount++
-                        isLoginButtonEnabled = true
                     }
                 }
-
-                override fun onResponse(call: Call, response: Response) {
-                    scope.launch {
-                        if (response.isSuccessful) {
-                            isLoginButtonEnabled = true
-                            val responseBody = response.body.string()
-                            // 4. Decrypt Response via Native Layer
-                            val decrypted = try {
-                                RustTools.decryptLoginResponse(responseBody)
-                            } catch (e: Exception) {
-                                "Error: Decryption exception: ${e.message}"
-                            }
-
-                            // 5. Parse Decrypted Result
-                            // Expected format: gem=xxx OR Error message
-                            if (decrypted.startsWith("Error")) {
-                                gemInfo = "登录失败: $decrypted"
-                                showMessage = true
-                                GlobalVars.configStates[GLOBAL_SETTINGS.GEM_COUNT.key]!!.value = ""
-                            } else {
-                                val gemRegex = """gem=([\d.]+)""".toRegex()
-                                val gemMatch = gemRegex.find(decrypted)
-
-                                if (gemMatch != null) {
-                                    val gem = gemMatch.groupValues[1]
-                                    formattedGem = String.format(Locale.US, "%.4f", gem.toDouble())
-                                    gem.toDoubleOrNull()?.let {
-                                        showMessage = (it < 0.000001)
-                                    }
-                                    GlobalVars.configStates[GLOBAL_SETTINGS.GEM_COUNT.key]!!.value =
-                                        gem
-                                    gemInfo = "登录成功！卡班积分数量 $formattedGem"
-                                } else {
-                                    gemInfo = "登录成功，但无法解析数据: $decrypted"
-                                    showMessage = true
-                                    GlobalVars.configStates[GLOBAL_SETTINGS.GEM_COUNT.key]!!.value =
-                                        ""
-                                }
-                            }
-                        } else {
-                            val responseBody = response.body.string()
-                            gemInfo = "登录失败：$responseBody"
-                            showMessage = true
-                            failTimesCount++
-                            isLoginButtonEnabled = true
-                            GlobalVars.configStates[GLOBAL_SETTINGS.GEM_COUNT.key]!!.value = ""
-                        }
-                    }
-                }
-            })
+            } catch (e: Exception) {
+                gemInfo = "登录失败: ${e.message}"
+                showMessage = true
+                GlobalVars.configStates[GLOBAL_SETTINGS.GEM_COUNT.key]!!.value = ""
+                failTimesCount++
+                isLoginButtonEnabled = true
+            }
         }
     }
 
@@ -315,7 +295,7 @@ fun LoginScreen(onAdFreeClick: () -> Unit = {}) {
             CustomButton(
                 text = "免广告", marginTop = 0.dp, onClick = {
                     gemInfo = "前往官网即可注册，赞助后免广告，官网链接https://zkqcoc.store\n如有疑问请加群咨询。"
-                    val url = BuildConfig.BASE_URL
+                    val url = UrlFallbackUtil.getPrimaryUrl()
                     val intent = Intent(Intent.ACTION_VIEW, url.toUri())
                     // Required when startActivity is called from a non-Activity context
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)

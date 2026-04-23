@@ -1,6 +1,5 @@
 *.iml
 .gradle
-/local.properties
 /.idea/caches
 /.idea/libraries
 /.idea/modules.xml
@@ -12,7 +11,6 @@
 /captures
 .externalNativeBuild
 .cxx
-local.properties
 
 # Custom patterns
 .idea/
@@ -29,7 +27,6 @@ rust_logic/src/security/keys.rs
 app/encrypt_jar.py
 app/upload_jar.py*.iml
 .gradle
-/local.properties
 /.idea/caches
 /.idea/libraries
 /.idea/modules.xml
@@ -41,7 +38,6 @@ app/upload_jar.py*.iml
 /captures
 .externalNativeBuild
 .cxx
-local.properties
 
 # Custom patterns
 .idea/
