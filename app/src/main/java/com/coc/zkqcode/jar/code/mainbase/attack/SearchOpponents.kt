@@ -109,7 +109,7 @@ suspend fun searchOpponentsAndDeployTroops(): Boolean {
                 if (!getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.WAIT_FOR_BATTLE.key)) return false
             }
         }
-        val canNotAttack = findMultiColors(schema = MyColors.CanNotAttack)
+        val canNotAttack = findMultiColorsUntil(schemas = listOf(MyColors.CanNotAttack, MyColors.CanNotAttack2), duration = 10)
         if (canNotAttack != null) {
             return false
         }
