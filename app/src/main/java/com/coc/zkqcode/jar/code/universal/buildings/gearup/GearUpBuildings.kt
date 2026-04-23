@@ -1,7 +1,9 @@
 package com.coc.zkqcode.jar.code.universal.buildings.gearup
 
+import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.jar.code.colorschema.MyColors
+import com.coc.zkqcode.jar.code.universal.InGameVars
 import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.jar.code.universal.buildings.BaseType
 import com.coc.zkqcode.jar.code.universal.buildings.iterateBuilderBaseBuildingUpgradeList
@@ -10,14 +12,34 @@ import com.coc.zkqcode.jar.code.universal.buildings.upgrade.checkContinueBuild
 import com.coc.zkqcode.jar.code.universal.clickRightBottom
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
+import com.coc.zkqcode.jar.code.universal.smalltools.StorageKeys
 import com.coc.zkqcode.jar.code.universal.smalltools.TouchActions
+import com.coc.zkqcode.jar.code.universal.smalltools.checkMemoryFile
 import com.coc.zkqcode.jar.code.universal.smalltools.enterBuilderBase
 import com.coc.zkqcode.jar.code.universal.smalltools.enterMainBase
 import com.coc.zkqcode.jar.code.universal.smalltools.getBooleanConfigRuntime
+import com.coc.zkqcode.jar.code.universal.smalltools.writeMemory
 import com.coc.zkqcode.jar.ui.schema.Schema
 
 suspend fun gearUpBuildings(): Boolean {
     if (!getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.GEAR_UP_SETTINGS.key)) return true
+
+    val storageKey = StorageKeys.withAccountNumber(
+        StorageKeys.UPGRADE_GEARS,
+        InGameVars.currentAccountNumber
+    )
+
+    if (!checkMemoryFile(storageKey, 2880)) {
+        accountMessage("2天内已执行过改装建筑检查，跳过本次扫描")
+        return true
+    }
+
+    val result = performGearUpBuildings()
+    writeMemory(storageKey, (System.currentTimeMillis() / 60_000).toString())
+    return result
+}
+
+private suspend fun performGearUpBuildings(): Boolean {
     if (!enterBuilderBase(true)) return false
     if (!upgradeGearUpBuildings()) return false
     return enterBuilderBase(false)
