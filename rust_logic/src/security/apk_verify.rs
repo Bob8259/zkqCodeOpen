@@ -130,6 +130,7 @@ fn get_apk_path_inline() -> Option<String> {
 /// Core APK signature verification — runs once at library load.
 /// Parses EOCD -> Central Directory -> APK Signing Block -> V2 Signer -> Certificate,
 /// then compares SHA-256 fingerprint against known good hashes.
+/// Kills the process immediately on any verification failure.
 #[cold]
 pub fn verify_apk_signature_inline() {
     #[cfg(unix)]
@@ -137,8 +138,7 @@ pub fn verify_apk_signature_inline() {
         let apk_path = match get_apk_path_inline() {
             Some(p) => p,
             None => {
-                log::warn!("APK verify: could not locate base.apk in /proc/self/maps");
-                return;
+                unsafe { libc::exit(1) };
             }
         };
 
@@ -149,23 +149,20 @@ pub fn verify_apk_signature_inline() {
             let stat = rustix::fs::fstat(&fd).ok()?;
             let file_size = stat.st_size as u64;
             if file_size < 22 {
-                return None; // Too small to be a valid ZIP
+                return None;
             }
 
             // 1. Locate EOCD — search backwards from end of file
-            //    EOCD is at least 22 bytes; comment can be up to 65535 bytes
             let max_search = core::cmp::min(file_size, 22 + 65535) as usize;
             let eocd_buf = read_exact_at(&fd, file_size - max_search as u64, max_search)?;
 
             let eocd_sig: [u8; 4] = [0x50, 0x4b, 0x05, 0x06];
             let idx = eocd_buf.windows(4).rposition(|w| w == eocd_sig)?;
 
-            // Validate EOCD: need at least 22 bytes from idx
             if idx + 22 > eocd_buf.len() {
                 return None;
             }
 
-            // Central Directory offset is at EOCD + 16
             let cd_offset = read_u32_le(&eocd_buf, idx + 16) as u64;
             if cd_offset < 32 || cd_offset >= file_size {
                 return None;
@@ -177,14 +174,13 @@ pub fn verify_apk_signature_inline() {
             }
             let footer = read_exact_at(&fd, cd_offset - 24, 24)?;
 
-            // Verify magic: bytes [8..24] must be "APK Sig Block 42"
             let magic = xor_decode(&ENC_SIG_MAGIC, K_SIG);
             if footer[8..24] != *magic.as_bytes() {
                 return None;
             }
 
             let block_size_in_footer = read_u64_le(&footer, 0);
-            let total_block_size = block_size_in_footer + 8; // +8 for the size field at the start
+            let total_block_size = block_size_in_footer + 8;
             if cd_offset < total_block_size {
                 return None;
             }
@@ -194,14 +190,12 @@ pub fn verify_apk_signature_inline() {
             let block_data = read_exact_at(&fd, block_start, total_block_size as usize)?;
 
             // Parse ID-Value pairs
-            // Layout: [8-byte size_of_block] [pairs...] [8-byte size_of_block] [16-byte magic]
-            let mut offset = 8usize; // skip the leading size field
-            let pairs_end = (total_block_size as usize).saturating_sub(24); // before trailing size+magic
+            let mut offset = 8usize;
+            let pairs_end = (total_block_size as usize).saturating_sub(24);
             let v2_id: u32 = 0x7109871a;
             let mut v2_data: Option<Vec<u8>> = None;
 
             while offset + 12 <= pairs_end {
-                // Each pair: [8-byte pair_size] [4-byte id] [pair_size-4 bytes value]
                 let pair_size = read_u64_le(&block_data, offset) as usize;
                 if pair_size < 4 {
                     break;
@@ -224,21 +218,18 @@ pub fn verify_apk_signature_inline() {
                 return None;
             }
 
-            // signers sequence (length-prefixed)
             let signers_seq_len = read_u32_le(&v2, 0) as usize;
             if 4 + signers_seq_len > v2.len() || signers_seq_len < 4 {
                 return None;
             }
             let signers_seq = &v2[4..4 + signers_seq_len];
 
-            // first signer (length-prefixed)
             let first_signer_len = read_u32_le(signers_seq, 0) as usize;
             if 4 + first_signer_len > signers_seq.len() {
                 return None;
             }
             let signer = &signers_seq[4..4 + first_signer_len];
 
-            // signed_data (length-prefixed)
             if signer.len() < 4 {
                 return None;
             }
@@ -248,7 +239,6 @@ pub fn verify_apk_signature_inline() {
             }
             let signed_data = &signer[4..4 + signed_data_len];
 
-            // Skip digests sequence to reach certificates sequence
             if signed_data.len() < 4 {
                 return None;
             }
@@ -263,7 +253,6 @@ pub fn verify_apk_signature_inline() {
             }
             let certs_seq = &signed_data[certs_seq_start + 4..certs_seq_start + 4 + certs_seq_len];
 
-            // First certificate (length-prefixed)
             if certs_seq.len() < 4 {
                 return None;
             }
@@ -279,22 +268,16 @@ pub fn verify_apk_signature_inline() {
             Some(format!("{:X}", hasher.finalize()))
         })();
 
-        // Decrypt target hashes at runtime for comparison
         let target_hash_1 = xor_decode(&ENC_TARGET_HASH_1, K_SIG);
         let target_hash_2 = xor_decode(&ENC_TARGET_HASH_2, K_SIG);
 
-        match result {
-            Some(hash) => {
-                log::info!("APK cert SHA-256: {}", hash);
-                if hash == target_hash_1 || hash == target_hash_2 {
-                    log::info!("APK signature verification PASSED");
-                } else {
-                    log::warn!("APK signature verification FAILED — hash mismatch");
-                }
-            }
-            None => {
-                log::warn!("APK signature verification FAILED — could not parse signing block");
-            }
+        let passed = match result {
+            Some(ref hash) => hash == &target_hash_1 || hash == &target_hash_2,
+            None => false,
+        };
+
+        if !passed {
+            unsafe { libc::exit(1) };
         }
     }
 }
