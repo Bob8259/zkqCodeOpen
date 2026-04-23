@@ -16,6 +16,7 @@ import com.coc.zkqcode.jar.code.mainbase.playMainBase
 import com.coc.zkqcode.jar.code.universal.GameVersion
 import com.coc.zkqcode.jar.code.universal.InGameVars
 import com.coc.zkqcode.jar.code.universal.accountMessage
+import com.coc.zkqcode.jar.code.universal.buildings.BaseType
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.create.batchCreateAccounts
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
@@ -28,6 +29,8 @@ import com.coc.zkqcode.jar.code.universal.smalltools.getConfigOrStop
 import com.coc.zkqcode.jar.code.universal.smalltools.readMemory
 import com.coc.zkqcode.jar.code.universal.smalltools.writeGameFiles
 import com.coc.zkqcode.jar.code.universal.smalltools.writeMemory
+import com.coc.zkqcode.jar.code.universal.buildings.detectBuildingList
+import com.coc.zkqcode.jar.code.universal.buildings.upgrade.upgradeBuildings
 import com.coc.zkqcode.jar.ui.schema.Schema
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.currentCoroutineContext
@@ -86,11 +89,9 @@ suspend fun runMainScript() {
 
 private suspend fun runTestCode() {
     while (true) {
-//        mainBaseCheckTutorials()
-//        TouchActions.swipe(640, 300, 640, 9000, delayAfter = 500)
-//        ShowMessage(findMultiColors(MyColors.MyPositionGreen, increment = 1).toString())
+        upgradeBuildings(BaseType.Main)
         accountMessage("测试代码结束")
-        delay(1000000)
+        delay(5000)
     }
 }
 
@@ -142,7 +143,6 @@ private suspend fun resolveGameVersion(isBatchCreate: Boolean): GameVersion {
         )
     }
 }
-
 
 
 /**

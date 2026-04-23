@@ -67,4 +67,7 @@ object MyColors : IUIColors by UIColors, IFeatureColors by FeatureColors, IMainB
     val OpenClanGame = ColorSchema.parse(
         202, 83, 1074, 687, "7AF1D2", "70|-2|7FF3D7,93|0|7AF1D2,-562|-76|174AF1,-516|-58|1F41B8,-419|-81|C7974C,-415|-10|CD9D50,-136|9|FFBB9E,-18|-33|FFBDA5,82|-33|FFBDAB", 0, 0.9, "打开部落竞赛"
     )
+    val GearUp = ColorSchema.parse(
+        0, 0, 0, 0, "E2E1E3", "-5|0|ACA09B,-5|-6|D5D4D8,1|-7|7E7D7E,3|-11|D4D0D3,8|-11|B9B2B4,7|-14|B8B5BA,11|-11|C1BEC2,11|-7|CCCACD,9|-2|988E87", 0, 0.9, "改装标志"
+    )
 }

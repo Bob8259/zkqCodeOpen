@@ -159,7 +159,7 @@ fun cleanBuildingName(raw: String): String {
         "十字连學" to "十字连弩",
         "十字達弩" to "十字连弩",
         "十字達弩" to "十字连弩",
-        "暗果重油罐" to "暗黑重油罐",
+        "暗果" to "暗黑",
         "铁匠镇" to "铁匠铺",
         "宝石矿共" to "宝石矿井",
         "室中炸弹发射器" to "空中炸弹发射器",
@@ -183,7 +183,9 @@ fun cleanBuildingName(raw: String): String {
         "建议升級" to "建议升级",
         "时光钟控类" to "时光钟楼",
         ":" to "",
-        "：" to ""
+        "：" to "",
+        "十字连違弩" to "十字连弩",
+        "加衣炮" to "加农炮"
     )
 
     // Apply all string replacements
@@ -193,16 +195,24 @@ fun cleanBuildingName(raw: String): String {
     // Remove all text starting from 'x' or 'X' (e.g. "建筑xgas6" -> "建筑")
     name = name.replace(Regex("[xX].*"), "")
 
-    // If the name starts with "新", keep it as is to skip fuzzy matching
-    if (name.startsWith("新")) {
+    // If the name starts with "新" or "改装", keep it as is to skip fuzzy matching
+    if (name.startsWith("新") || name.startsWith("改装")) {
+        return name
+    }
+
+    // Filter to keep only Chinese characters before fuzzy matching to reduce false positives
+    val chineseOnly = name.filter { it in '\u4e00'..'\u9fff' }
+    
+    // If no Chinese characters remain after filtering, return the original name
+    if (chineseOnly.isEmpty()) {
         return name
     }
 
     // Check special OCR labels before buildings so section markers are normalized early.
-    findBestFuzzyMatch(name, SPECIAL_OCR_LABELS)?.let { return it }
+    findBestFuzzyMatch(chineseOnly, SPECIAL_OCR_LABELS)?.let { return it }
 
     // Match building names last to avoid treating section labels as real buildings.
-    findBestFuzzyMatch(name, ALL_BUILDINGS)?.let { return it }
+    findBestFuzzyMatch(chineseOnly, ALL_BUILDINGS)?.let { return it }
 
     return name
 }
