@@ -18,7 +18,7 @@ import com.coc.zkqcode.jar.ui.schema.Schema
 
 suspend fun gearUpBuildings(): Boolean {
     if (!getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.GEAR_UP_SETTINGS.key)) return true
-    if (!enterBuilderBase(true)) return true
+    if (!enterBuilderBase(true)) return false
     if (!upgradeGearUpBuildings()) return false
     return enterBuilderBase(false)
 }
