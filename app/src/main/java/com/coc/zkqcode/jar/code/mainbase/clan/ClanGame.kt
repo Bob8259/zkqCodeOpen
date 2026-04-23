@@ -27,29 +27,28 @@ suspend fun clanGame(): Boolean {
     val calendar = findMultiColors(MyColors.Calendar)
     if (calendar != null && checkMemoryFile(CLAN_GAME_MEMORY_KEY, CLAN_GAME_INTERVAL_MINUTES)) {
         TouchActions.tap(calendar.x, calendar.y)
-        for (i in 0..2) {
-            val openClanGame = findMultiColorsUntil(schemas = listOf(MyColors.OpenClanGame), duration = 500)
-            if (openClanGame != null) {
-                ShowMessage("当前部落竞赛未制作完成，正在收集数据中，请稍后。")
-                TouchActions.tap(openClanGame.x, openClanGame.y, delayTime = 3000)
 
-                // Upload a screenshot to the server
-                uploadScreenshot("clan_game_${System.currentTimeMillis()}")
-                TouchActions.swipe(700, 500, 600, 20, delayAfter = 300)
-                // Upload a screenshot to the server again
-                uploadScreenshot("clan_game_${System.currentTimeMillis()}")
+        val openClanGame = findMultiColorsUntil(schemas = listOf(MyColors.OpenClanGame), duration = 500)
+        if (openClanGame != null) {
+            ShowMessage("当前部落竞赛未制作完成，正在收集数据中，请稍后。")
+            TouchActions.tap(openClanGame.x, openClanGame.y, delayTime = 3000)
 
-                TouchActions.swipe(600, 150, 600, 600, delayAfter = 300)
-                //try to give up
-                ShowMessage("尝试放弃一个任务。这是为了帮助作者收集数据，是正常情况。之后才能做出更好的竞赛功能")
-                TouchActions.tap(546, 196)
-                TouchActions.tap(918, 319, delayTime = 3000)
-                ShowMessage("尝试放弃一个任务。这是为了帮助作者收集数据，是正常情况。之后才能做出更好的竞赛功能")
-                TouchActions.tap(914, 337)
-                TouchActions.tap(776, 445)
-            }
-            TouchActions.swipe(600, 660, 600, 120)
+            // Upload a screenshot to the server
+            uploadScreenshot("clan_game_${System.currentTimeMillis()}")
+            TouchActions.swipe(700, 500, 600, 20, delayAfter = 300)
+            // Upload a screenshot to the server again
+            uploadScreenshot("clan_game_${System.currentTimeMillis()}")
+
+            TouchActions.swipe(600, 150, 600, 600, delayAfter = 300)
+            //try to give up
+            ShowMessage("尝试放弃一个任务。这是为了帮助作者收集数据，是正常情况。之后才能做出更好的竞赛功能")
+            TouchActions.tap(546, 196)
+            TouchActions.tap(918, 319, delayTime = 3000)
+            ShowMessage("尝试放弃一个任务。这是为了帮助作者收集数据，是正常情况。之后才能做出更好的竞赛功能")
+            TouchActions.tap(914, 337)
+            TouchActions.tap(776, 445)
         }
+
         writeMemory(CLAN_GAME_MEMORY_KEY, (System.currentTimeMillis() / 60_000).toString())
     }
     return enterMainScreen()
