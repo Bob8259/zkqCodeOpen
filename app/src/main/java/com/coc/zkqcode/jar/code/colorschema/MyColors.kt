@@ -62,12 +62,17 @@ object MyColors : IUIColors by UIColors, IFeatureColors by FeatureColors, IMainB
     IMainBaseHeroHallColors by MainBaseHeroHallColors, IMainBaseSmallTutorialColors by MainBaseSmallTutorialColors, IMainBaseMagicItemColors by MainBaseMagicItemColors, IClanCapitalColors by ClanCapitalColors {
     //Clan Game Colours
     val Calendar = ColorSchema.parse(
-        173, 630, 474, 704, "5678E1", "6|0|4770D3,12|0|9EB1C8,17|0|ECF1F8,23|0|FFFFFF,0|12|FFFFFF,6|12|FFFFFF,12|12|3620B1,17|12|B5AFF1,23|12|FFFFFF", 0, 0.9, "日历标志"
+        175, 630, 475, 7055, "5678E1", "6|0|4770D3,12|0|9EB1C8,17|0|ECF1F8,23|0|FFFFFF,0|12|FFFFFF,6|12|FFFFFF,12|12|3620B1,17|12|B5AFF1,23|12|FFFFFF", 0, 0.9, "日历标志"
     )
     val OpenClanGame = ColorSchema.parse(
-        202, 83, 1074, 687, "7AF1D2", "70|-2|7FF3D7,93|0|7AF1D2,-562|-76|174AF1,-516|-58|1F41B8,-419|-81|C7974C,-415|-10|CD9D50,-136|9|FFBB9E,-18|-33|FFBDA5,82|-33|FFBDAB", 0, 0.9, "打开部落竞赛"
+        200, 85, 1075, 690, "7AF1D2", "70|-2|7FF3D7,93|0|7AF1D2,-562|-76|174AF1,-516|-58|1F41B8,-419|-81|C7974C,-415|-10|CD9D50,-136|9|FFBB9E,-18|-33|FFBDA5,82|-33|FFBDAB", 0, 0.9, "打开部落竞赛"
     )
-    val GearUp = ColorSchema.parse(
+
+    //Gear Up Colours
+    val UpgradeListGearUpIcon = ColorSchema.parse(
         0, 0, 0, 0, "E2E1E3", "-5|0|ACA09B,-5|-6|D5D4D8,1|-7|7E7D7E,3|-11|D4D0D3,8|-11|B9B2B4,7|-14|B8B5BA,11|-11|C1BEC2,11|-7|CCCACD,9|-2|988E87", 0, 0.9, "改装标志"
+    )
+    val BuildingGearUpButton = ColorSchema.parse(
+        180, 500, 1180, 635, "AB9C99", "1|-12|D7D4D8,23|-28|BCB9BE,33|-21|C4C2C6,31|-2|8B827D,21|4|7F7C81,5|4|81746D,1|-6|DAD8DB,13|-15|7E7D7E,22|-17|A3978E", 0, 0.9, "改装建筑按钮"
     )
 }

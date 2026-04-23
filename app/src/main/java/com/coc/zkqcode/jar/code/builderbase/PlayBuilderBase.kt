@@ -9,6 +9,7 @@ import com.coc.zkqcode.jar.code.builderbase.research.builderBaseResearch
 import com.coc.zkqcode.jar.code.builderbase.others.collectBuilderBaseResources
 import com.coc.zkqcode.jar.code.builderbase.others.turnOnClockTower
 import com.coc.zkqcode.jar.code.universal.buildings.BaseType
+import com.coc.zkqcode.jar.code.universal.buildings.gearup.gearUpBuildings
 import com.coc.zkqcode.jar.code.universal.buildings.upgrade.upgradeBuildings
 import com.coc.zkqcode.jar.code.universal.buildings.walls.upgradeWalls
 import com.coc.zkqcode.jar.code.universal.smalltools.enterBuilderBase
@@ -17,6 +18,7 @@ import com.coc.zkqcode.jar.ui.schema.Schema
 
 suspend fun playBuilderBase(): Boolean {
     if (!claimAchievement()) return false
+    if (!gearUpBuildings()) return false
     val noBuilderBase = getBooleanConfigRuntime(Schema.BUILDER_BASE_SETTINGS.NO_BUILDER_BASE.key)
     if (noBuilderBase) return true//if no builder base, then directly return.
     if (!enterBuilderBase(true)) return true

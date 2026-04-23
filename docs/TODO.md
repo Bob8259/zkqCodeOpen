@@ -15,7 +15,6 @@
 ）
 
 ### 城墙相关
-- 改装建筑（BUILDING_CONVERSION_SETTINGS）
 - 升级城墙失败后建造（UPGRADE_AFTER_FAIL_WALL_UPGRADE）
 
 ### 升级战宠及之后的所有主世界UI

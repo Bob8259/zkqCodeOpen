@@ -52,7 +52,7 @@ object MainBaseSettings {
 
     val BATCH_WALL_UPGRADE_SETTINGS = SettingDef("batch_wall_upgrade_settings", "批量升级城墙", 1, "MAIN_BASE_SETTINGS")
     val SAVE_WORKER = SettingDef("save_worker", "留1工人升级城墙", 0, "MAIN_BASE_SETTINGS")
-    val BUILDING_CONVERSION_SETTINGS = SettingDef("building_conversion_settings", "改装建筑", 0, "MAIN_BASE_SETTINGS")
+    val GEAR_UP_SETTINGS = SettingDef("gear_up_settings", "改装建筑", 0, "MAIN_BASE_SETTINGS")
     val UPGRADE_AFTER_FAIL_WALL_UPGRADE = SettingDef("upgrade_after_fail_wall_upgrade", "升级城墙失败后建造", 0, "MAIN_BASE_SETTINGS")
     val UPGRADE_WALL_THRESHOLD = SettingDef(
         "upgrade_wall_threshold", "金水高于以下百分比后升级城墙", "85", "MAIN_BASE_SETTINGS"
@@ -167,7 +167,7 @@ object MainBaseSettings {
         UPGRADE_ANY_BUILDING_AFTER_CONSECUTIVE_FAILURES_THRESHOLD,
         BATCH_WALL_UPGRADE_SETTINGS,
         SAVE_WORKER,
-        BUILDING_CONVERSION_SETTINGS,
+        GEAR_UP_SETTINGS,
         UPGRADE_AFTER_FAIL_WALL_UPGRADE,
         UPGRADE_WALL_THRESHOLD,
         UPGRADE_PETS,

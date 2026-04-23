@@ -54,20 +54,20 @@ suspend fun detectBuildingList(excludeNewBuildings: Boolean = false, excludeGear
         val y = pos.top + startY
 
         var text = item.text
-        
+
         // Check for green "new building" indicator
         val greenCount = countGreenPixelsInArea(screenBuffer, x - 15, y - 3, x, y + 20)
         if (greenCount > 20 && !text.startsWith("新")) {
             text = "新$text"
         }
-        
+
         // Check for gear-up icon
-        val gearUpSchema = ColorSchema.rescope(MyColors.GearUp, x - 55, y - 10, x + 55, y + 25)
+        val gearUpSchema = ColorSchema.rescope(MyColors.UpgradeListGearUpIcon, x - 55, y - 10, x + 55, y + 25)
         val gearUpDetected = findMultiColors(schema = gearUpSchema, byteBuffer = screenBuffer, increment = 1) != null
         if (gearUpDetected && !text.startsWith("改装")) {
             text = "改装$text"
         }
-        
+
         item.copy(text = text)
     }
     // If "建议升级" is detected, only keep results below it (greater y)
@@ -84,7 +84,7 @@ suspend fun detectBuildingList(excludeNewBuildings: Boolean = false, excludeGear
     // used by the game for unaffordable upgrade costs) are found to the right of the building name, skip it.
     // Map results to DetectedBuilding with flags indicating if it was marked as "New" or "GearUp"
     data class BuildingWithFlags(val building: DetectedBuilding, val isNew: Boolean, val isGearUp: Boolean)
-    
+
     val allBuildings = processedResults.mapNotNull { item ->
         val pos = item.position ?: return@mapNotNull null
         if (!chineseRegex.containsMatchIn(item.text)) return@mapNotNull null
@@ -116,7 +116,7 @@ suspend fun detectBuildingList(excludeNewBuildings: Boolean = false, excludeGear
             return BuildingDetectionResult(listOf(gearUpBuilding.building))
         }
     }
-    
+
     // Filter out gear-up buildings if excludeGearUpBuildings is true
     val filteredBuildings = if (excludeGearUpBuildings) {
         allBuildings.filter { !it.isGearUp }

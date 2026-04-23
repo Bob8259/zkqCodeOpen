@@ -173,7 +173,7 @@ fun LazyListScope.mainBaseConfig(
                     explain = "建造时会忽略可改装的建筑，并且会优先建造新建筑和新的建筑工人小屋。"
                 )
                 SettingSwitchIcon(
-                    key = "${MAIN_BASE_SETTINGS.BUILDING_CONVERSION_SETTINGS.key}_c$index",
+                    key = "${MAIN_BASE_SETTINGS.GEAR_UP_SETTINGS.key}_c$index",
                     explain = "改装建筑属于主世界功能，即使关闭夜世界，也依然会生效。"
                 )
                 SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.WALL_UPGRADE_SETTINGS.key}_c$index")

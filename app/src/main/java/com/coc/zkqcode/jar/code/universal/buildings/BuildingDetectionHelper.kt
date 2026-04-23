@@ -160,6 +160,7 @@ fun cleanBuildingName(raw: String): String {
         "十字達弩" to "十字连弩",
         "十字達弩" to "十字连弩",
         "暗果" to "暗黑",
+        "女箭塔" to "箭塔",
         "铁匠镇" to "铁匠铺",
         "宝石矿共" to "宝石矿井",
         "室中炸弹发射器" to "空中炸弹发射器",
@@ -202,7 +203,7 @@ fun cleanBuildingName(raw: String): String {
 
     // Filter to keep only Chinese characters before fuzzy matching to reduce false positives
     val chineseOnly = name.filter { it in '\u4e00'..'\u9fff' }
-    
+
     // If no Chinese characters remain after filtering, return the original name
     if (chineseOnly.isEmpty()) {
         return name
