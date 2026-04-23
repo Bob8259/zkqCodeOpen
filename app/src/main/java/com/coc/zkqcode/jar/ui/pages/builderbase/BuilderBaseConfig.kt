@@ -41,7 +41,7 @@ fun LazyListScope.builderBaseConfig(
             }
             SettingSwitchIcon(
                 key = "${BUILDER_BASE_SETTINGS.NO_BUILDER_BASE.key}_c${index}",
-                explain = "启用后，辅助将不再进入夜世界，夜世界的所有相关设置均会失效。\n但若已接取夜世界的部落竞赛任务，辅助仍会进入夜世界完成该任务。"
+                explain = "启用后，辅助将不再进入夜世界，夜世界的所有相关设置均会失效。"
             )
         }
     }

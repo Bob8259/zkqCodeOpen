@@ -66,7 +66,7 @@ object MainBaseSettings {
     val HELPER_SETTINGS = SettingDef("helper_settings", "用工人学徒和实验助手", 1, "MAIN_BASE_SETTINGS")
     val UPGRADE_RESEARCH_HELPER = SettingDef("upgrade_research_helper", "升级实验助手", 0, "MAIN_BASE_SETTINGS")
     val UPGRADE_BUILDER_APPRENTICE = SettingDef("upgrade_builder_apprentice", "升级工人学徒", 0, "MAIN_BASE_SETTINGS")
-    val DO_CLAN_GAMES = SettingDef("do_clan_games", "做竞赛任务", 1, "MAIN_BASE_SETTINGS")
+    val DO_CLAN_GAMES = SettingDef("do_clan_games", "做部落竞赛任务", 1, "MAIN_BASE_SETTINGS")
     val CLAIM_CLAN_GAME_REWARDS = SettingDef("claim_clan_game_rewards", "领竞赛奖励", 0, "MAIN_BASE_SETTINGS")
     val PLAY_CLAN_WAR = SettingDef("play_clan_war", "打部落战", 0, "MAIN_BASE_SETTINGS")
     val PLAY_LEAGUE = SettingDef("play_league", "打联赛", 0, "MAIN_BASE_SETTINGS")

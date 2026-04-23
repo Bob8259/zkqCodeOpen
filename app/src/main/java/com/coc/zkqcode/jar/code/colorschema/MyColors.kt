@@ -58,5 +58,13 @@ object MyColors : IUIColors by UIColors, IFeatureColors by FeatureColors, IMainB
     IBuilderBaseUpgradeColors by BuilderBaseUpgradeColors, IBuilderBaseClockTowerColors by BuilderBaseClockTowerColors, IBuilderBaseResearchColors by BuilderBaseResearchColors,
     IBuilderBaseAttackColors by BuilderBaseAttackColors, IUniversalUpgradeColors by UniversalUpgradeColors, IMainBaseUpgradeColors by MainBaseUpgradeColors, IMainBaseResearchColors by MainBaseResearchColors,
     IMainBaseResearchLevelColors by MainBaseResearchLevelColors, IMainBaseResourcesColors by MainBaseResourcesColors, IClanCapitalTutorialColors by ClanCapitalTutorialColors,
-    IMainBaseAttackColors by MainBaseAttackColors, IMainBaseClanColors by MainBaseClanColors, IMainBaseClanWarColors by MainBaseClanWarColors, IMainBaseHelperColors by MainBaseHelperColors, IMainBaseHeroHallColors by MainBaseHeroHallColors,
-    IMainBaseSmallTutorialColors by MainBaseSmallTutorialColors, IMainBaseMagicItemColors by MainBaseMagicItemColors, IClanCapitalColors by ClanCapitalColors
+    IMainBaseAttackColors by MainBaseAttackColors, IMainBaseClanColors by MainBaseClanColors, IMainBaseClanWarColors by MainBaseClanWarColors, IMainBaseHelperColors by MainBaseHelperColors,
+    IMainBaseHeroHallColors by MainBaseHeroHallColors, IMainBaseSmallTutorialColors by MainBaseSmallTutorialColors, IMainBaseMagicItemColors by MainBaseMagicItemColors, IClanCapitalColors by ClanCapitalColors {
+    //Clan Game Colours
+    val Calendar = ColorSchema.parse(
+        173, 630, 474, 704, "5678E1", "6|0|4770D3,12|0|9EB1C8,17|0|ECF1F8,23|0|FFFFFF,0|12|FFFFFF,6|12|FFFFFF,12|12|3620B1,17|12|B5AFF1,23|12|FFFFFF", 0, 0.9, "日历标志"
+    )
+    val OpenClanGame = ColorSchema.parse(
+        202, 83, 1074, 687, "7AF1D2", "70|-2|7FF3D7,93|0|7AF1D2,-562|-76|174AF1,-516|-58|1F41B8,-419|-81|C7974C,-415|-10|CD9D50,-136|9|FFBB9E,-18|-33|FFBDA5,82|-33|FFBDAB", 0, 0.9, "打开部落竞赛"
+    )
+}

@@ -11,7 +11,7 @@ import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.smalltools.getBooleanConfigRuntime
 import com.coc.zkqcode.jar.ui.schema.Schema
 
-suspend fun requestReinforcements(): Boolean {
+suspend fun requestReinforcement(): Boolean {
     if (!getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.REQUEST_REINFORCEMENT_SETTING.key)) return true
     accountMessage("准备请求增援")
     val clanChat = findMultiColors(MyColors.ClanChatIcon)
@@ -36,6 +36,7 @@ suspend fun requestReinforcements(): Boolean {
                 TouchActions.tap(780, 490)
                 break
             }
+            if (findMultiColors(MyColors.CanNotRequestReinforcement) != null) break
             delayWithMultiplier(200)
         }
     }
