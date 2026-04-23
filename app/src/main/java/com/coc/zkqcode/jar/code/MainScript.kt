@@ -65,7 +65,7 @@ suspend fun runMainScript() {
     batchCreateAccounts()//Create all needed accounts first.
     // Track elapsed time for periodic hot update checks (updateOption 2)
     var lastUpdateCheckTime = System.currentTimeMillis()
-    var nextUpdateInterval = (2 * 3600_000L) + (Math.random() * 3600_000L).toLong()
+    var nextUpdateInterval = (3600_000L) + (Math.random() * 7200_000L).toLong()
     while (currentCoroutineContext().isActive) {
 //        runTestCode()
         runAccountStepBlock()
@@ -76,7 +76,7 @@ suspend fun runMainScript() {
             GlobalVars.updateCheckSignal.tryEmit(deferred)
             deferred.await()
             lastUpdateCheckTime = System.currentTimeMillis()
-            nextUpdateInterval = (2 * 3600_000L) + (Math.random() * 3600_000L).toLong()
+            nextUpdateInterval = (3600_000L) + (Math.random() * 7200_000L).toLong()
         }
         val searchOrder = ((InGameVars.currentAccountNumber + 1)..accountTotal) + (accountStart..InGameVars.currentAccountNumber)
         val nextAccount = findAndActivateAccount(searchOrder, isBatchCreate) ?: return
