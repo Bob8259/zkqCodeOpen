@@ -5,6 +5,7 @@ import com.coc.zkqcode.jar.code.clancapital.playClanCapital
 import com.coc.zkqcode.jar.code.mainbase.attack.mainBaseAttack
 import com.coc.zkqcode.jar.code.mainbase.attack.mainBaseRemainingAttack
 import com.coc.zkqcode.jar.code.mainbase.attack.mainBaseTrainTroops
+import com.coc.zkqcode.jar.code.mainbase.clan.clanGame
 import com.coc.zkqcode.jar.code.mainbase.clan.clanWar
 import com.coc.zkqcode.jar.code.mainbase.clan.donateToClan
 import com.coc.zkqcode.jar.code.mainbase.clan.joinClan
@@ -28,10 +29,11 @@ suspend fun playMainBase(): Boolean {
     if (!enterMainBase()) return false
     if (!checkRandomSchedule()) return false
     if (!playClanCapital()) return false
-    if (!clanWar()) return false
+    if (!clanGame()) return true
     if (!mainBaseCollectResources()) return false
     if (!mainBaseTrainTroops()) return false
     if (!mainBaseAttack()) return false
+    if (!clanWar()) return false
     if (!mainBaseRemoveObstacles()) return false
     if (!joinClan()) return false
     if (!requestReinforcement()) return false
