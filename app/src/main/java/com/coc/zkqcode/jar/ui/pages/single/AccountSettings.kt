@@ -71,7 +71,7 @@ private fun batchUpdateAllAccounts(keyPrefix: String, valueProducer: (String) ->
 }
 
 @Composable
-private fun SmallTextField(
+internal fun SmallTextField(
     modifier: Modifier = Modifier,
     value: String,
     onValueChange: (String) -> Unit,

@@ -121,4 +121,22 @@ object ConfigManager {
     suspend fun saveAndRun(onSaveSuccess: () -> Unit = {}) {
         saveConfigs(onSaveSuccess)
     }
+
+    /**
+     * Copies all PROFILE-scoped setting values from profile [from] to profile [to].
+     */
+    fun syncProfileConfigs(from: Int, to: Int) {
+        SchemaRegistry.ALL_MODULES
+            .filter { it.scope == Scope.PROFILE }
+            .forEach { module ->
+                module.settings.forEach { def ->
+                    val srcKey = "${def.key}_c$from"
+                    val dstKey = "${def.key}_c$to"
+                    val srcValue = GlobalVars.configStates[srcKey]?.value ?: return@forEach
+                    GlobalVars.configStates.getOrPut(dstKey) {
+                        mutableStateOf(def.defaultValue.toString())
+                    }.value = srcValue
+                }
+            }
+    }
 }

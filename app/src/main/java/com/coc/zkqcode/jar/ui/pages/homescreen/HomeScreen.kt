@@ -241,7 +241,10 @@ fun HomeScreen(
                             // Show grid of config files
                             item {
                                 ConfigFileGrid(
-                                    configCount = configCount, onConfigSelected = { selectedConfigIndex = it })
+                                    configCount = configCount,
+                                    onConfigSelected = { selectedConfigIndex = it },
+                                    onShowMsg = showMsg
+                                )
                             }
                         } else {
                             // State hoisting for expansion keyed by config index

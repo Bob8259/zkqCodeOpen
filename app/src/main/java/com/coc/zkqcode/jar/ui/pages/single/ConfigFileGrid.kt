@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -18,6 +19,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -26,6 +31,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.coc.zkqcode.jar.ui.theme.AppColors
+import com.coc.zkqcode.jar.ui.components.CustomButton
 import com.coc.zkqcode.jar.ui.components.SettingInputRow
 import com.coc.zkqcode.jar.ui.components.SettingSection
 import com.coc.zkqcode.jar.ui.schema.ConfigManager
@@ -35,7 +41,8 @@ import com.coc.zkqcode.jar.ui.schema.Schema.GLOBAL_SETTINGS
 @Composable
 fun ConfigFileGrid(
     configCount: Int,
-    onConfigSelected: (Int) -> Unit
+    onConfigSelected: (Int) -> Unit,
+    onShowMsg: (String) -> Unit = {}
 ) {
     val items = (1..configCount).toList()
 
@@ -124,6 +131,55 @@ fun ConfigFileGrid(
                     }
                 }
             }
+        }
+    }
+
+    // Sync section: copy all settings from one profile to another
+    SettingSection {
+        var fromText by remember { mutableStateOf("") }
+        var toText by remember { mutableStateOf("") }
+
+        FlowRow(modifier = Modifier.padding(top = 6.dp)) {
+            Text(
+                text = "将配置文件",
+                style = MaterialTheme.typography.labelMedium,
+                modifier = Modifier
+                    .padding(end = 4.dp)
+                    .align(Alignment.CenterVertically)
+            )
+            SmallTextField(
+                modifier = Modifier.align(Alignment.CenterVertically),
+                value = fromText,
+                onValueChange = { fromText = it }
+            )
+            Text(
+                text = "的内容同步至配置文件",
+                style = MaterialTheme.typography.labelMedium,
+                modifier = Modifier
+                    .padding(horizontal = 4.dp)
+                    .align(Alignment.CenterVertically)
+            )
+            SmallTextField(
+                modifier = Modifier
+                    .align(Alignment.CenterVertically)
+                    .padding(end = 4.dp),
+                value = toText,
+                onValueChange = { toText = it }
+            )
+            CustomButton(
+                text = "确认",
+                marginTop = 6.dp,
+                onClick = {
+                    val from = fromText.toIntOrNull()
+                    val to = toText.toIntOrNull()
+                    if (from != null && to != null && from != to
+                        && from in 1..configCount && to in 1..configCount
+                    ) {
+                        ConfigManager.syncProfileConfigs(from, to)
+                        onShowMsg("配置文件$from 已同步至 配置文件$to")
+                    }
+                }
+            )
         }
     }
 }
