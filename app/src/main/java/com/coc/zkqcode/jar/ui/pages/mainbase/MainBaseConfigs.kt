@@ -168,7 +168,14 @@ fun LazyListScope.mainBaseConfig(
     item {
         SettingSection(visible = isBuildExpanded) {
             FlowRow {
-                SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.BUILD_SETTING.key}_c$index")
+                SettingSwitchIcon(
+                    key = "${MAIN_BASE_SETTINGS.BUILD_SETTING.key}_c$index",
+                    explain = "建造时会忽略可改装的建筑，并且会优先建造新建筑和新的建筑工人小屋。"
+                )
+                SettingSwitchIcon(
+                    key = "${MAIN_BASE_SETTINGS.BUILDING_CONVERSION_SETTINGS.key}_c$index",
+                    explain = "改装建筑属于主世界功能，即使关闭夜世界，也依然会生效。"
+                )
                 SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.WALL_UPGRADE_SETTINGS.key}_c$index")
                 SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.SAVE_WORKER.key}_c$index")
             }

@@ -5,7 +5,7 @@ package com.coc.zkqcode.jar.ui.schema.details
 import com.coc.zkqcode.jar.ui.schema.SettingDef
 
 object BuilderBaseSettings {
-    val NO_BUILDER_BASE = SettingDef("no_builder_base", "不打夜世界", 0, "BUILDER_BASE_SETTINGS")
+    val NO_BUILDER_BASE = SettingDef("no_builder_base", "关闭夜世界", 0, "BUILDER_BASE_SETTINGS")
     val BUILDER_BASE_FARMING = SettingDef("builder_base_farming", "夜世界打资源", 1, "BUILDER_BASE_SETTINGS")
     val BUILDER_BASE_BATTLE_TIMES = SettingDef(
         "builder_base_battle_times", "对战局数", 2, "BUILDER_BASE_SETTINGS"
