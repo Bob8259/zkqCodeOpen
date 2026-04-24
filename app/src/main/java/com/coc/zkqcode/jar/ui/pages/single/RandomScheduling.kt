@@ -5,8 +5,6 @@ package com.coc.zkqcode.jar.ui.pages.single
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
-import androidx.compose.foundation.gestures.scrollBy
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -26,20 +24,18 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.input.pointer.PointerEventPass
+import androidx.compose.ui.input.pointer.changedToUp
+import androidx.compose.ui.input.pointer.consumeAllChanges
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.input.pointer.positionChange
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalViewConfiguration
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
@@ -52,7 +48,12 @@ import com.coc.zkqcode.jar.ui.components.SettingSwitchIcon
 import com.coc.zkqcode.jar.ui.schema.Schema.ACCOUNT_SETTINGS
 import com.coc.zkqcode.jar.ui.schema.Schema.GLOBAL_SETTINGS
 import com.coc.zkqcode.jar.ui.theme.AppColors
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeoutOrNull
 
 private data class GroupKeys(
     val battleRatio: String, val stopProb: String, val continueMin: String, val continueMax: String, val noWorker: String, val fullRes: String, val accounts: String
@@ -88,7 +89,9 @@ private fun gameVersionLabel(value: String?): String = when (value) {
 private data class AccountCellColors(val bg: Color, val border: Color, val text: Color)
 
 private fun accountCellColors(isSelected: Boolean) = AccountCellColors(
-    bg = if (isSelected) AppColors.Primary else AppColors.Primary.copy(alpha = 0.10f), border = if (isSelected) AppColors.Primary else AppColors.PrimaryLight, text = if (isSelected) Color.White else AppColors.TextPrimary
+    bg = if (isSelected) AppColors.Primary else AppColors.Primary.copy(alpha = 0.10f),
+    border = if (isSelected) AppColors.Primary else AppColors.PrimaryLight,
+    text = if (isSelected) Color.White else AppColors.TextPrimary
 )
 
 private fun stepBasedAutoSize(
@@ -164,65 +167,31 @@ private fun AccountGroupSelector(accountsKey: String) {
     val accountCountStr = GlobalVars.configStates[GLOBAL_SETTINGS.ACCOUNT_COUNT.key]?.value ?: "2"
     val accountCount = accountCountStr.toIntOrNull()?.coerceAtLeast(1) ?: 2
     val gridState = rememberLazyGridState()
-    val hapticFeedback = LocalHapticFeedback.current
+    val scope = rememberCoroutineScope()
+    val density = LocalDensity.current
+    val viewConfiguration = LocalViewConfiguration.current
 
     val selectedAccounts = remember(accountsState.value) {
         accountsState.value.split(",").mapNotNull { it.trim().toIntOrNull() }.toSet()
     }
 
-    // --- 拖动选择相关的状态 ---
+    // 预览选中状态（拖动过程中临时显示）
+    var previewSelected by remember { mutableStateOf(selectedAccounts) }
+    // 是否处于拖动模式
     var isDragging by remember { mutableStateOf(false) }
-    var isAdding by remember { mutableStateOf(true) }
-    var previewSelection by remember { mutableStateOf(setOf<Int>()) }
-    var pointerPosition by remember { mutableStateOf(Offset.Zero) }
+    // 当前拖动模式：true=添加，false=移除
+    var dragMode by remember { mutableStateOf(true) }
+    // 边缘自动滚动的协程 Job
+    val edgeScrollJob = remember { mutableStateOf<Job?>(null) }
 
-    // 如果正在拖动，显示预览状态；否则显示实际保存的数据状态
-    val displayedSelected = if (isDragging) previewSelection else selectedAccounts
-
-    // 根据坐标获取账号ID并更新预览状态
-    val updateSelectionAt = { offset: Offset ->
-        val itemInfo = gridState.layoutInfo.visibleItemsInfo.find { item ->
-            offset.x >= item.offset.x && offset.x <= (item.offset.x + item.size.width) &&
-            offset.y >= item.offset.y && offset.y <= (item.offset.y + item.size.height)
-        }
-        if (itemInfo != null) {
-            val id = itemInfo.index + 1 // 因为 items 数据是 1..accountCount，索引加 1 即为 ID
-            if (id in 1..accountCount) {
-                previewSelection = if (isAdding) {
-                    previewSelection + id
-                } else {
-                    previewSelection - id
-                }
-            }
+    // 当数据源 selectedAccounts 变化时（例如按钮全选），同步预览
+    LaunchedEffect(selectedAccounts) {
+        if (!isDragging) {
+            previewSelected = selectedAccounts
         }
     }
 
-    // --- 边缘自动滚动检测 ---
-    LaunchedEffect(isDragging) {
-        while (isDragging) {
-            val y = pointerPosition.y
-            val viewportHeight = gridState.layoutInfo.viewportSize.height.toFloat()
-            val threshold = 150f // 触发边缘滚动的距离阈值 (px)
-            var scrollAmount = 0f
-
-            if (viewportHeight > 0f) {
-                if (y < threshold) {
-                    // 靠近顶部，向上滚动 (负值)
-                    scrollAmount = (y - threshold) * 0.2f
-                } else if (y > viewportHeight - threshold) {
-                    // 靠近底部，向下滚动 (正值)
-                    scrollAmount = (y - (viewportHeight - threshold)) * 0.2f
-                }
-            }
-
-            if (scrollAmount != 0f) {
-                gridState.scrollBy(scrollAmount)
-                // 滚动后，列表项位置改变，需重新计算手指下方的格子
-                updateSelectionAt(pointerPosition)
-            }
-            delay(16L) // 约 60fps 的刷新率持续检测
-        }
-    }
+    val displayedSelected = if (isDragging) previewSelected else selectedAccounts
 
     Column(
         modifier = Modifier
@@ -234,23 +203,22 @@ private fun AccountGroupSelector(accountsKey: String) {
         Text(
             text = "选择加入本组的账号：", style = MaterialTheme.typography.labelMedium, modifier = Modifier.padding(bottom = 4.dp)
         )
-
         Row(
             horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.padding(bottom = 4.dp)
         ) {
-            CustomButton(
-                text = "一键全选", marginTop = 0.dp, onClick = {
-                    accountsState.value = (1..accountCount).joinToString(",")
-                })
-            CustomButton(
-                text = "一键反选", marginTop = 0.dp, onClick = {
-                    val inverted = (1..accountCount).filter { it !in selectedAccounts }
-                    accountsState.value = inverted.joinToString(",")
-                })
+            CustomButton(text = "一键全选", marginTop = 0.dp, onClick = {
+                accountsState.value = (1..accountCount).joinToString(",")
+            })
+            CustomButton(text = "一键反选", marginTop = 0.dp, onClick = {
+                val inverted = (1..accountCount).filter { it !in selectedAccounts }
+                accountsState.value = inverted.joinToString(",")
+            })
         }
 
         val cellSizeDp = 52.dp
         val spacingDp = 4.dp
+        val cellSizePx = with(density) { cellSizeDp.toPx() }
+        val spacingPx = with(density) { spacingDp.toPx() }
 
         BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
             val columnsCount = maxOf(1, ((maxWidth + spacingDp) / (cellSizeDp + spacingDp)).toInt())
@@ -262,57 +230,140 @@ private fun AccountGroupSelector(accountsKey: String) {
                     .fillMaxWidth()
                     .heightIn(max = RS_GRID_MAX_HEIGHT)
                     .then(if (fullGridHeight < RS_GRID_MAX_HEIGHT) Modifier.heightIn(min = fullGridHeight) else Modifier)
-                    // 在此处拦截手势并处理长按拖动
+                    // 手势处理：长按后拖动选择
                     .pointerInput(accountCount, selectedAccounts) {
-                        detectDragGesturesAfterLongPress(
-                            onDragStart = { offset ->
-                                isDragging = true
-                                pointerPosition = offset
-                                previewSelection = selectedAccounts
+                        val touchSlop = viewConfiguration.touchSlop
+                        val longPressTimeout = 400L
 
-                                // 长按震动反馈
-                                hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
-
-                                // 判断起始格子状态以决定是"添加模式"还是"移除模式"
-                                val startItemInfo = gridState.layoutInfo.visibleItemsInfo.find { item ->
-                                    offset.x >= item.offset.x && offset.x <= (item.offset.x + item.size.width) &&
-                                    offset.y >= item.offset.y && offset.y <= (item.offset.y + item.size.height)
+                        // 辅助函数：根据手指在 Box 内的坐标找到账号ID
+                        fun findAccountId(fingerPos: Offset): Int? {
+                            val layoutInfo = gridState.layoutInfo
+                            // viewportStartOffset 是 Int，转为 Float 参与计算
+                            val viewportOffset = layoutInfo.viewportStartOffset.toFloat()
+                            for (item in layoutInfo.visibleItemsInfo) {
+                                val itemLeft = (item.index % columnsCount) * (cellSizePx + spacingPx)
+                                val itemRight = itemLeft + cellSizePx
+                                val itemTop = item.offset.toFloat() - viewportOffset
+                                val itemBottom = itemTop + item.size.toFloat()
+                                if (fingerPos.x in itemLeft..itemRight && fingerPos.y in itemTop..itemBottom) {
+                                    return item.index + 1 // 账号ID从1开始
                                 }
-                                if (startItemInfo != null) {
-                                    val startId = startItemInfo.index + 1
-                                    isAdding = startId !in selectedAccounts
-                                    updateSelectionAt(offset)
-                                } else {
-                                    isAdding = true
-                                }
-                            },
-                            onDrag = { change, _ ->
-                                change.consume()
-                                pointerPosition = change.position
-                                updateSelectionAt(pointerPosition)
-                            },
-                            onDragEnd = {
-                                isDragging = false
-                                // 拖动结束，将预览结果保存到全局状态
-                                accountsState.value = previewSelection.sorted().joinToString(",")
-                            },
-                            onDragCancel = {
-                                isDragging = false
-                                previewSelection = selectedAccounts // 恢复原状
                             }
-                        )
+                            return null
+                        }
+
+                        // 边缘自动滚动速度计算
+                        fun scrollSpeed(distanceFromEdge: Float, maxDistance: Float): Float {
+                            if (distanceFromEdge <= 0) return 0f
+                            val factor = (distanceFromEdge / maxDistance).coerceIn(0f, 1f)
+                            return 10f * factor
+                        }
+
+                        // 等待按下事件
+                        while (true) {
+                            val downEvent = awaitPointerEvent(PointerEventPass.Main)
+                            val down = downEvent.changes.first()
+                            if (down.changedToUp()) continue
+                            val downPos = down.position
+                            var longPressHandled = false
+
+                            // 检测长按或提前移动
+                            withTimeoutOrNull<Unit>(longPressTimeout) {
+                                while (true) {
+                                    val event = awaitPointerEvent(PointerEventPass.Main)
+                                    val change = event.changes.first()
+                                    if (change.changedToUp()) {
+                                        change.consumeAllChanges()
+                                        throw CancellationException("Up before long press")
+                                    } else {
+                                        val currentPos = change.position
+                                        val distance = (currentPos - downPos).getDistance()
+                                        if (distance > touchSlop) {
+                                            change.consumeAllChanges()
+                                            throw CancellationException("Moved too far")
+                                        }
+                                    }
+                                }
+                            } ?: run { longPressHandled = true }
+
+                            if (!longPressHandled) continue
+
+                            // ---------- 长按触发，进入拖动选择模式 ----------
+                            val initAccount = findAccountId(downPos)
+                            val actualSet = selectedAccounts
+                            dragMode = initAccount != null && initAccount !in actualSet // true: 添加模式； false: 移除模式
+                            previewSelected = actualSet.toMutableSet().apply {
+                                if (initAccount != null) {
+                                    if (dragMode) add(initAccount) else remove(initAccount)
+                                }
+                            }.toSet()
+                            isDragging = true
+
+                            var currentPos = downPos
+                            // 拖动主循环
+                            try {
+                                while (true) {
+                                    val event = awaitPointerEvent(PointerEventPass.Main)
+                                    val change = event.changes.first()
+                                    if (change.changedToUp()) {
+                                        change.consumeAllChanges()
+                                        break
+                                    } else {
+                                        currentPos = change.position
+                                        val account = findAccountId(currentPos)
+                                        val mutableSet = previewSelected.toMutableSet()
+                                        if (account != null) {
+                                            if (dragMode) mutableSet.add(account) else mutableSet.remove(account)
+                                            previewSelected = mutableSet.toSet()
+                                        }
+
+                                        // 处理边缘自动滚动
+                                        val boxHeight = size.height.toFloat()
+                                        val edgeHeight = with(density) { 30.dp.toPx() }
+                                        edgeScrollJob.value?.cancel()
+                                        when {
+                                            currentPos.y < edgeHeight -> {
+                                                val speed = scrollSpeed(edgeHeight - currentPos.y, edgeHeight)
+                                                edgeScrollJob.value = scope.launch {
+                                                    while (isActive) {
+                                                        gridState.scrollBy(-speed)
+                                                        delay(16)
+                                                    }
+                                                }
+                                            }
+                                            currentPos.y > boxHeight - edgeHeight -> {
+                                                val speed = scrollSpeed(currentPos.y - (boxHeight - edgeHeight), edgeHeight)
+                                                edgeScrollJob.value = scope.launch {
+                                                    while (isActive) {
+                                                        gridState.scrollBy(speed)
+                                                        delay(16)
+                                                    }
+                                                }
+                                            }
+                                            else -> {
+                                                edgeScrollJob.value = null
+                                            }
+                                        }
+                                        change.consumeAllChanges()
+                                    }
+                                }
+                            } finally {
+                                edgeScrollJob.value?.cancel()
+                                edgeScrollJob.value = null
+                                // 保存最终结果
+                                accountsState.value = previewSelected.toSortedSet().joinToString(",")
+                                isDragging = false
+                            }
+                        }
                     }
             ) {
                 val accountIds = remember(accountCount) { (1..accountCount).toList() }
-                
-                // 将 userScrollEnabled 绑定，确保拖动时不要被默认滚动拦截
                 LazyVerticalGrid(
                     state = gridState,
                     columns = GridCells.Fixed(columnsCount),
                     modifier = Modifier.fillMaxSize(),
                     horizontalArrangement = Arrangement.spacedBy(spacingDp),
-                    verticalArrangement = Arrangement.spacedBy(spacingDp),
-                    userScrollEnabled = !isDragging 
+                    verticalArrangement = Arrangement.spacedBy(spacingDp)
                 ) {
                     items(accountIds, key = { it }) { id ->
                         val isSelected = id in displayedSelected
