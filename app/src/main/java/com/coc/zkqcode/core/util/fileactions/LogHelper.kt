@@ -57,6 +57,39 @@ object LogHelper {
         Timber.tag("zkq_debug").d("Debug info: $message")
     }
 
+    /**
+     * Write crash details to a dedicated crash.log file in the app's private logs directory.
+     * Called by the global uncaught exception handler installed in ZKQApplication.
+     */
+    @SuppressLint("LogNotTimber")
+    fun writeCrashLog(context: Context, thread: Thread, throwable: Throwable) {
+        try {
+            val logDir = File(context.filesDir, "logs")
+            if (!logDir.exists()) logDir.mkdirs()
+            val crashFile = File(logDir, "crash.log")
+
+            val timestamp = SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.getDefault()).format(Date())
+            val entry = buildString {
+                appendLine("=== CRASH at $timestamp ===")
+                appendLine("Thread: ${thread.name}")
+                appendLine(throwable.stackTraceToString())
+                appendLine()
+            }
+
+            FileOutputStream(crashFile, true).use { fos ->
+                fos.write(entry.toByteArray())
+            }
+
+            // Keep crash.log at a reasonable size (last 200 lines)
+            val lines = crashFile.readLines()
+            if (lines.size > 200) {
+                crashFile.writeText(lines.takeLast(200).joinToString("\n") + "\n")
+            }
+        } catch (e: Exception) {
+            Log.e("LogHelper", "Failed to write crash log", e)
+        }
+    }
+
     class FileLoggingTree(private val context: Context) : Timber.Tree() {
         @SuppressLint("LogNotTimber")
         override fun log(priority: Int, tag: String?, message: String, t: Throwable?) {

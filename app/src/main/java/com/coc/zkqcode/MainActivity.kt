@@ -21,7 +21,6 @@ class MainActivity : ComponentActivity() {
         projectionPermissionHelper = ProjectionPermissionHelper(this)
         ShowMessage.init(this)
         ScreenCaptureManager.init(this)
-        LogHelper.initTimber(this)
         LogHelper.showDebugInfo("MainActivity Start!")
         setContent {
             CheckRootScreen()
