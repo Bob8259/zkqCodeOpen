@@ -103,10 +103,6 @@ fun LazyListScope.mainBaseConfig(
                 SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.DONATION_SETTING.key}_c$index")
                 SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.REQUEST_REINFORCEMENT_SETTING.key}_c$index")
                 SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.COLLECT_CLAN_CASTLE.key}_c$index")
-                SettingSwitchIcon(
-                    key = "${MAIN_BASE_SETTINGS.PLAY_CLAN_WAR.key}_c$index", explain = "部落战其中一次打对位，另一次打推荐对手。\n不保证胜率，请谨慎使用。"
-                )
-                SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.DO_CLAN_GAMES.key}_c$index")
             }
 
             AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.DONATION_SETTING.key}_c$index"]?.value == "1") {
@@ -124,7 +120,22 @@ fun LazyListScope.mainBaseConfig(
                     }
                 }
             }
-
+            FlowRow{
+                SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.DO_CLAN_GAMES.key}_c$index")
+                SettingSwitchIcon(
+                    key = "${MAIN_BASE_SETTINGS.PLAY_CLAN_WAR.key}_c$index", explain = "部落战其中一次打对位，另一次打推荐对手。\n不保证胜率，请谨慎使用。"
+                )
+            }
+            AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.DO_CLAN_GAMES.key}_c$index"]?.value == "1") {
+                Column {
+                    FlowRow {
+                        SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.ACCEPT_MAIN_WORLD_NORMAL_TASK.key}_c$index")
+                        SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.ACCEPT_MAIN_WORLD_ADVANCED_TASK.key}_c$index")
+                        SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.ACCEPT_NIGHT_WORLD_NORMAL_TASK.key}_c$index")
+                        SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.ACCEPT_NIGHT_WORLD_ADVANCED_TASK.key}_c$index")
+                    }
+                }
+            }
             Column {
                 SettingSwitchIcon(
                     key = "${MAIN_BASE_SETTINGS.AUTO_JOIN_CLAN.key}_c$index",
