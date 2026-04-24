@@ -62,6 +62,50 @@ fun ConfigFileGrid(
                     }
                 },
             )
+            var fromText by remember { mutableStateOf("") }
+            var toText by remember { mutableStateOf("") }
+            FlowRow(modifier = Modifier.padding(top = 6.dp)) {
+                Text(
+                    text = "将配置文件",
+                    style = MaterialTheme.typography.labelMedium,
+                    modifier = Modifier
+                        .padding(end = 4.dp)
+                        .align(Alignment.CenterVertically)
+                )
+                SmallTextField(
+                    modifier = Modifier.align(Alignment.CenterVertically),
+                    value = fromText,
+                    onValueChange = { fromText = it }
+                )
+                Text(
+                    text = "的内容同步至配置文件",
+                    style = MaterialTheme.typography.labelMedium,
+                    modifier = Modifier
+                        .padding(horizontal = 4.dp)
+                        .align(Alignment.CenterVertically)
+                )
+                SmallTextField(
+                    modifier = Modifier
+                        .align(Alignment.CenterVertically)
+                        .padding(end = 4.dp),
+                    value = toText,
+                    onValueChange = { toText = it }
+                )
+                CustomButton(
+                    text = "确认",
+                    marginTop = 6.dp,
+                    onClick = {
+                        val from = fromText.toIntOrNull()
+                        val to = toText.toIntOrNull()
+                        if (from != null && to != null && from != to
+                            && from in 1..configCount && to in 1..configCount
+                        ) {
+                            ConfigManager.syncProfileConfigs(from, to)
+                            onShowMsg("配置文件$from 已同步至 配置文件$to")
+                        }
+                    }
+                )
+            }
             Text(
                 text = "点击方格调整配置文件。调整完成后，回到\"账号设置\"，给每个账号分配所需的配置文件。",
                 style = MaterialTheme.typography.labelSmall,
@@ -134,52 +178,4 @@ fun ConfigFileGrid(
         }
     }
 
-    // Sync section: copy all settings from one profile to another
-    SettingSection {
-        var fromText by remember { mutableStateOf("") }
-        var toText by remember { mutableStateOf("") }
-
-        FlowRow(modifier = Modifier.padding(top = 6.dp)) {
-            Text(
-                text = "将配置文件",
-                style = MaterialTheme.typography.labelMedium,
-                modifier = Modifier
-                    .padding(end = 4.dp)
-                    .align(Alignment.CenterVertically)
-            )
-            SmallTextField(
-                modifier = Modifier.align(Alignment.CenterVertically),
-                value = fromText,
-                onValueChange = { fromText = it }
-            )
-            Text(
-                text = "的内容同步至配置文件",
-                style = MaterialTheme.typography.labelMedium,
-                modifier = Modifier
-                    .padding(horizontal = 4.dp)
-                    .align(Alignment.CenterVertically)
-            )
-            SmallTextField(
-                modifier = Modifier
-                    .align(Alignment.CenterVertically)
-                    .padding(end = 4.dp),
-                value = toText,
-                onValueChange = { toText = it }
-            )
-            CustomButton(
-                text = "确认",
-                marginTop = 6.dp,
-                onClick = {
-                    val from = fromText.toIntOrNull()
-                    val to = toText.toIntOrNull()
-                    if (from != null && to != null && from != to
-                        && from in 1..configCount && to in 1..configCount
-                    ) {
-                        ConfigManager.syncProfileConfigs(from, to)
-                        onShowMsg("配置文件$from 已同步至 配置文件$to")
-                    }
-                }
-            )
-        }
-    }
 }
