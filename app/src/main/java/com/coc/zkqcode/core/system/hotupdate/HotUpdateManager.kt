@@ -330,10 +330,15 @@ object HotUpdateManager {
      * Returns a Pair(primaryUrl, backupUrl). Throws IOException if the JAR is not loaded.
      */
     private fun getUrlsFromJar(): Pair<String, String> {
+        // Use the JAR's own classloader so Class.forName can find dynamically loaded classes.
+        // Class.forName(name) alone uses the system classloader which is unaware of DexClassLoader/InMemoryDexClassLoader classes.
+        val jarClassLoader = GlobalVars.pluginUI?.javaClass?.classLoader
+            ?: throw IOException("JAR not loaded, cannot resolve server URLs: pluginUI is null")
+
         return try {
-            val clazz = Class.forName(URL_FALLBACK_UTIL_CLASS)
+            val clazz = Class.forName(URL_FALLBACK_UTIL_CLASS, true, jarClassLoader)
             val primaryUrl = clazz.getField("PRIMARY_URL").get(null) as String
-            val backupUrl = clazz.getField("BACKUP_URL").get(null) as String
+            val backupUrl = clazz.getField("BACKUP_URL").get(null) as? String ?: ""
             Pair(primaryUrl, backupUrl)
         } catch (e: Exception) {
             throw IOException("JAR not loaded, cannot resolve server URLs: ${e.message}", e)
