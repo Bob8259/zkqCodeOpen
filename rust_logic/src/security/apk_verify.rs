@@ -4,7 +4,6 @@
 //! parses EOCD -> Central Directory -> APK Signing Block -> V2 Signer -> Certificate,
 //! then compares the SHA-256 fingerprint against known good hashes.
 //!
-//! All I/O uses rustix syscalls directly (no std::fs).
 //! All sensitive strings are XOR-encrypted at compile time.
 
 #[cfg(unix)]
@@ -110,21 +109,50 @@ fn read_exact_at(fd: &rustix::fd::OwnedFd, offset: u64, len: usize) -> Option<Ve
     Some(buf)
 }
 
-/// Retrieve the current APK path by parsing /proc/self/maps
+/// Retrieve the current APK path by parsing /proc/self/maps.
+/// Uses a tiered approach for maximum device compatibility:
+///   Pass 1: prefer r--s (standard shared APK mapping)
+///   Pass 2: fallback to r--p (some custom ROMs use private mapping)
+///   Pass 3: any permission flags — ultimate fallback
 #[cfg(unix)]
-fn get_apk_path_inline() -> Option<String> {
+fn get_apk_path_inline() -> Result<Option<String>, &'static str> {
     let maps_path = xor_decode(&ENC_MAPS_PATH, K_SIG);
     let base_apk_str = xor_decode(&ENC_BASE_APK, K_SIG);
 
-    let content = read_to_string_rustix(&maps_path)?;
+    let content = read_to_string_rustix(&maps_path).ok_or("Unable to read /proc/self/maps")?;
+
+    // Pass 1: r--s (standard shared mapping for APK files on most devices)
     for line in content.lines() {
-        if line.contains(&base_apk_str) && line.contains(" r--p ") {
+        if line.contains(" r--s ") {
             if let Some(path) = line.split_whitespace().last() {
-                return Some(path.to_string());
+                if path.ends_with(&base_apk_str) {
+                    return Ok(Some(path.to_string()));
+                }
             }
         }
     }
-    None
+
+    // Pass 2: r--p (some ROMs may use private mapping)
+    for line in content.lines() {
+        if line.contains(" r--p ") {
+            if let Some(path) = line.split_whitespace().last() {
+                if path.ends_with(&base_apk_str) {
+                    return Ok(Some(path.to_string()));
+                }
+            }
+        }
+    }
+
+    // Pass 3: any permission flags — ultimate fallback for exotic mappings
+    for line in content.lines() {
+        if let Some(path) = line.split_whitespace().last() {
+            if path.ends_with(&base_apk_str) {
+                return Ok(Some(path.to_string()));
+            }
+        }
+    }
+
+    Ok(None)
 }
 
 /// Core APK signature verification — runs once at library load.
@@ -135,61 +163,66 @@ fn get_apk_path_inline() -> Option<String> {
 pub fn verify_apk_signature_inline() {
     #[cfg(unix)]
     {
-        let apk_path = match get_apk_path_inline() {
-            Some(p) => p,
-            None => {
-                unsafe { libc::exit(1) };
-            }
-        };
+        let verification_result = (|| -> Result<String, &'static str> {
+            let apk_path = match get_apk_path_inline()? {
+                Some(path) => path,
+                None => return Err("APK path not found in /proc/self/maps"),
+            };
 
-        let result = (|| -> Option<String> {
-            let fd = openat(CWD, apk_path.as_str(), OFlags::RDONLY, Mode::empty()).ok()?;
+            let fd = openat(CWD, apk_path.as_str(), OFlags::RDONLY, Mode::empty())
+                .map_err(|_| "Unable to open APK file")?;
 
-            // Get file size via fstat
-            let stat = rustix::fs::fstat(&fd).ok()?;
+            // Get file size via fstat.
+            let stat = rustix::fs::fstat(&fd).map_err(|_| "Unable to stat APK file")?;
             let file_size = stat.st_size as u64;
             if file_size < 22 {
-                return None;
+                return Err("APK file is too small");
             }
 
-            // 1. Locate EOCD — search backwards from end of file
+            // 1. Locate EOCD — search backwards from end of file.
             let max_search = core::cmp::min(file_size, 22 + 65535) as usize;
-            let eocd_buf = read_exact_at(&fd, file_size - max_search as u64, max_search)?;
+            let eocd_buf = read_exact_at(&fd, file_size - max_search as u64, max_search)
+                .ok_or("Unable to read EOCD")?;
 
             let eocd_sig: [u8; 4] = [0x50, 0x4b, 0x05, 0x06];
-            let idx = eocd_buf.windows(4).rposition(|w| w == eocd_sig)?;
+            let idx = eocd_buf
+                .windows(4)
+                .rposition(|w| w == eocd_sig)
+                .ok_or("EOCD signature not found")?;
 
             if idx + 22 > eocd_buf.len() {
-                return None;
+                return Err("EOCD record is truncated");
             }
 
             let cd_offset = read_u32_le(&eocd_buf, idx + 16) as u64;
             if cd_offset < 32 || cd_offset >= file_size {
-                return None;
+                return Err("Central directory offset is invalid");
             }
 
-            // 2. Locate APK Signing Block — read 24-byte footer just before CD
+            // 2. Locate APK Signing Block — read 24-byte footer just before CD.
             if cd_offset < 24 {
-                return None;
+                return Err("Signing block footer is not present");
             }
-            let footer = read_exact_at(&fd, cd_offset - 24, 24)?;
+            let footer = read_exact_at(&fd, cd_offset - 24, 24)
+                .ok_or("Unable to read signing block footer")?;
 
             let magic = xor_decode(&ENC_SIG_MAGIC, K_SIG);
             if footer[8..24] != *magic.as_bytes() {
-                return None;
+                return Err("Signing block magic mismatch");
             }
 
             let block_size_in_footer = read_u64_le(&footer, 0);
             let total_block_size = block_size_in_footer + 8;
             if cd_offset < total_block_size {
-                return None;
+                return Err("Signing block size exceeds file bounds");
             }
             let block_start = cd_offset - total_block_size;
 
-            // 3. Read the entire signing block
-            let block_data = read_exact_at(&fd, block_start, total_block_size as usize)?;
+            // 3. Read the entire signing block.
+            let block_data = read_exact_at(&fd, block_start, total_block_size as usize)
+                .ok_or("Unable to read signing block")?;
 
-            // Parse ID-Value pairs
+            // Parse ID-Value pairs.
             let mut offset = 8usize;
             let pairs_end = (total_block_size as usize).saturating_sub(24);
             let v2_id: u32 = 0x7109871a;
@@ -198,11 +231,11 @@ pub fn verify_apk_signature_inline() {
             while offset + 12 <= pairs_end {
                 let pair_size = read_u64_le(&block_data, offset) as usize;
                 if pair_size < 4 {
-                    break;
+                    return Err("Signing block entry size is invalid");
                 }
                 offset += 8;
                 if offset + pair_size > pairs_end {
-                    break;
+                    return Err("Signing block entry exceeds block bounds");
                 }
                 let pair_id = read_u32_le(&block_data, offset);
                 if pair_id == v2_id {
@@ -212,72 +245,70 @@ pub fn verify_apk_signature_inline() {
                 offset += pair_size;
             }
 
-            // 4. Parse V2 Signer to extract the certificate
-            let v2 = v2_data?;
+            // 4. Parse V2 Signer to extract the certificate.
+            let v2 = v2_data.ok_or("V2 signer block not found")?;
             if v2.len() < 4 {
-                return None;
+                return Err("V2 signer block is truncated");
             }
 
             let signers_seq_len = read_u32_le(&v2, 0) as usize;
             if 4 + signers_seq_len > v2.len() || signers_seq_len < 4 {
-                return None;
+                return Err("Signer sequence length is invalid");
             }
             let signers_seq = &v2[4..4 + signers_seq_len];
 
             let first_signer_len = read_u32_le(signers_seq, 0) as usize;
             if 4 + first_signer_len > signers_seq.len() {
-                return None;
+                return Err("First signer length is invalid");
             }
             let signer = &signers_seq[4..4 + first_signer_len];
 
             if signer.len() < 4 {
-                return None;
+                return Err("Signer record is truncated");
             }
             let signed_data_len = read_u32_le(signer, 0) as usize;
             if 4 + signed_data_len > signer.len() {
-                return None;
+                return Err("Signed data length is invalid");
             }
             let signed_data = &signer[4..4 + signed_data_len];
 
             if signed_data.len() < 4 {
-                return None;
+                return Err("Signed data is truncated");
             }
             let digests_len = read_u32_le(signed_data, 0) as usize;
             let certs_seq_start = 4 + digests_len;
             if certs_seq_start + 4 > signed_data.len() {
-                return None;
+                return Err("Certificate sequence header is missing");
             }
             let certs_seq_len = read_u32_le(signed_data, certs_seq_start) as usize;
             if certs_seq_start + 4 + certs_seq_len > signed_data.len() {
-                return None;
+                return Err("Certificate sequence length is invalid");
             }
             let certs_seq = &signed_data[certs_seq_start + 4..certs_seq_start + 4 + certs_seq_len];
 
             if certs_seq.len() < 4 {
-                return None;
+                return Err("Certificate entry is truncated");
             }
             let cert_len = read_u32_le(certs_seq, 0) as usize;
             if 4 + cert_len > certs_seq.len() {
-                return None;
+                return Err("Certificate length is invalid");
             }
             let cert = &certs_seq[4..4 + cert_len];
 
-            // 5. Calculate SHA-256 fingerprint
+            // 5. Calculate SHA-256 fingerprint.
             let mut hasher = Sha256::new();
             hasher.update(cert);
-            Some(format!("{:X}", hasher.finalize()))
+            Ok(format!("{:X}", hasher.finalize()))
         })();
 
         let target_hash_1 = xor_decode(&ENC_TARGET_HASH_1, K_SIG);
         let target_hash_2 = xor_decode(&ENC_TARGET_HASH_2, K_SIG);
 
-        let passed = match result {
-            Some(ref hash) => hash == &target_hash_1 || hash == &target_hash_2,
-            None => false,
-        };
-
-        if !passed {
-            unsafe { libc::exit(1) };
+        match verification_result {
+            Ok(ref hash) if hash == &target_hash_1 || hash == &target_hash_2 => {}
+            Ok(_) | Err(_) => {
+                unsafe { libc::exit(1) };
+            }
         }
     }
 }
