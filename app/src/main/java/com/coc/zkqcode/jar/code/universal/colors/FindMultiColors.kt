@@ -26,10 +26,7 @@ private val findMultiColorsCallCount = AtomicInteger(0)
  * @return The Point where the main color was found, or null if not found.
  */
 suspend fun findMultiColors(
-    schema: ColorSchema,
-    bitmap: Bitmap? = null,
-    byteBuffer: ScreenCaptureManager.CaptureResult? = null,
-    increment: Int = 10
+    schema: ColorSchema, bitmap: Bitmap? = null, byteBuffer: ScreenCaptureManager.CaptureResult? = null, increment: Int = 10
 ): Point? {
     waitForPlay()
 
@@ -66,14 +63,7 @@ suspend fun findMultiColors(
             val stride = resultAny.rowStride
 
             val result = RustTools.findMultiColorsRaw(
-                buf,
-                w, h, stride,
-                schema.x1, schema.y1, schema.x2, schema.y2,
-                schema.mainColor,
-                schema.threshold,
-                offsetsArray,
-                schema.direction,
-                increment
+                buf, w, h, stride, schema.x1, schema.y1, schema.x2, schema.y2, schema.mainColor, schema.threshold, offsetsArray, schema.direction, increment
             )
             if (result != null && result.size == 2) {
                 schema.name?.let { accountMessage("已找到：$it,坐标：${result[0]}, ${result[1]}") }
@@ -86,13 +76,7 @@ suspend fun findMultiColors(
             val useBmp = bitmap ?: (resultAny as? Bitmap)
             if (useBmp != null) {
                 val result = RustTools.findMultiColors(
-                    useBmp,
-                    schema.x1, schema.y1, schema.x2, schema.y2,
-                    schema.mainColor,
-                    schema.threshold,
-                    offsetsArray,
-                    schema.direction,
-                    increment
+                    useBmp, schema.x1, schema.y1, schema.x2, schema.y2, schema.mainColor, schema.threshold, offsetsArray, schema.direction, increment
                 )
                 if (result != null && result.size == 2) {
                     schema.name?.let { accountMessage("已找到：$it,坐标：${result[0]}, ${result[1]}") }
@@ -116,15 +100,10 @@ suspend fun findMultiColors(
  *                  use the default of 5 for all others.
  */
 suspend fun findMultiColorsUntil(
-    bitmap: Bitmap? = null,
-    byteBuffer: ScreenCaptureManager.CaptureResult? = null,
-    schemas: List<ColorSchema>,
-    duration: Int,
-    increment: Int = 10
+    bitmap: Bitmap? = null, byteBuffer: ScreenCaptureManager.CaptureResult? = null, schemas: List<ColorSchema>, duration: Int, increment: Int = 10
 ): Point? {
     val startTime = System.currentTimeMillis()
-    val multiplier = GlobalVars.configStates["delay_multiplier"]?.value?.toFloat()
-        ?: logAndRestart("Failed to get delayMultiplier")
+    val multiplier = GlobalVars.configStates["delay_multiplier"]?.value?.toFloat() ?: logAndRestart("Failed to get delayMultiplier")
 
     while (true) {
         val captured = if (bitmap == null && byteBuffer == null) ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult else null
