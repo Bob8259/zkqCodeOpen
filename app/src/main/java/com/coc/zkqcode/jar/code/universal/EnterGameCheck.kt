@@ -30,8 +30,7 @@ suspend fun enterMainScreen(isDoubleCheck: Boolean = false): Boolean {
     val timeoutSeconds = GlobalVars.configStates["enter_game_timer"]?.value?.toIntOrNull() ?: logAndRestart("enter main game error, can not get game timer")
     val timeoutMillis = timeoutSeconds * 1000L
     var mainBaseTutorialElements = 0
-    // Counter to throttle clickRightBottom to roughly every 5 seconds
-    var clickRightBottomCounter = 20
+    var lastClickRightBottomTime = startTime - 5000L
     GlobalVars.absorbEdge = 0
     while (System.currentTimeMillis() - startTime < timeoutMillis) {
         // 3. Insert your logic to check if the main screen is actually visible
@@ -53,11 +52,11 @@ suspend fun enterMainScreen(isDoubleCheck: Boolean = false): Boolean {
             accountMessage("倒计时${((timeoutMillis - System.currentTimeMillis() + startTime) / 1000).toInt()}秒")
             closeAdvertisements()
 
-            // Click right bottom roughly every 5 seconds
-            if (clickRightBottomCounter++ >= 4) {
+            val currentTime = System.currentTimeMillis()
+            if (currentTime - lastClickRightBottomTime >= 5000L) {
                 clickRightBottom(10)
                 if (!checkReconnections()) return false
-                clickRightBottomCounter = 0
+                lastClickRightBottomTime = currentTime
             }
 
             if (AllTutorials.checkIsInTutorial(mainBaseTutorialElements)) mainBaseTutorialElements++
