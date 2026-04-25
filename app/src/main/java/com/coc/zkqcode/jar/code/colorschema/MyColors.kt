@@ -82,6 +82,9 @@ object MyColors : IUIColors by UIColors, IFeatureColors by FeatureColors, IMainB
     val MainBaseClanGame = ColorSchema.parse(
         0, 0, 0, 0, "D2925C", "1|0|D1915C,2|0|D1915C,3|0|D1925C,4|0|D1925C,5|0|D1915C,6|0|D1915C,7|0|D1925C,8|0|D1925C,9|0|D2925D", 0, 0.96, "主世界任务"
     )
+    val AcceptTask = ColorSchema.parse(
+        392, 92, 1158, 618, "74E3AE", "33|0|74E3AE,67|0|74E3AE,101|0|74E3AE,134|0|74E3AE,0|35|3AD48B,33|35|3AD48B,67|35|3AD48B,101|35|3AD48B,134|35|3AD48B", 0, 0.9, "接取任务"
+    )
 
     //Gear Up Colours
     val UpgradeListGearUpIcon = ColorSchema.parse(

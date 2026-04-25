@@ -35,6 +35,10 @@ enum class GameVersion(
     }
 }
 
+enum class ClanGameAcceptedTaskBase {
+    NONE, MAIN_WORLD, NIGHT_WORLD
+}
+
 object InGameVars {
     @Volatile
     var currentAccountNumber: Int = 1
@@ -42,6 +46,7 @@ object InGameVars {
     @Volatile
     var currentGameVersion: GameVersion = GameVersion.CN
     var adTime: Int = 15
+    var clanGameAcceptedTaskBase: ClanGameAcceptedTaskBase = ClanGameAcceptedTaskBase.NONE
 
     // Set by checkRandomSchedule; read by RandomSchedulingLogic after stepBlock.
     @Volatile
