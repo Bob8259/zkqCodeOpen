@@ -11,6 +11,7 @@ import com.coc.zkqcode.jar.code.auth.displayAds
 import com.coc.zkqcode.jar.code.colorschema.ColorSchema
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.accountMessage
+import com.coc.zkqcode.jar.code.universal.ClanGameAcceptedTaskBase
 import com.coc.zkqcode.jar.code.universal.InGameVars
 import com.coc.zkqcode.jar.code.universal.buildings.BaseType
 import com.coc.zkqcode.jar.code.universal.buildings.walls.calculateResourcesPercentage
@@ -71,8 +72,13 @@ suspend fun builderBaseAttack(): Boolean {
             resourcePercentage.gold < 96 -> "gold"
             else -> "exile"
         }
-        val battleTimes =
-            getConfigRuntime(Schema.BUILDER_BASE_SETTINGS.BUILDER_BASE_BATTLE_TIMES.key).toIntOrNull() ?: logAndRestart("${Schema.BUILDER_BASE_SETTINGS.BUILDER_BASE_BATTLE_TIMES.displayName} 必须是数字，请检查配置")
+        val battleTimesSetting = if (InGameVars.clanGameAcceptedTaskBase == ClanGameAcceptedTaskBase.NIGHT_WORLD) {
+            Schema.BUILDER_BASE_SETTINGS.BUILDER_BASE_BATTLE_TIMES_WITH_TASKS
+        } else {
+            Schema.BUILDER_BASE_SETTINGS.BUILDER_BASE_BATTLE_TIMES
+        }
+        val battleTimes = getConfigRuntime(battleTimesSetting.key).toIntOrNull()
+            ?: logAndRestart("${battleTimesSetting.displayName} 必须是数字，请检查配置")
         repeat(battleTimes) { index ->
             if (!realAttack(attackType, index + 1, battleTimes)) return false
             if ((index + 1) % 5 == 0) {

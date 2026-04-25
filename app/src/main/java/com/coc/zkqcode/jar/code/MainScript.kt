@@ -69,7 +69,7 @@ suspend fun runMainScript() {
     var lastUpdateCheckTime = System.currentTimeMillis()
     var nextUpdateInterval = (3600_000L) + (Math.random() * 7200_000L).toLong()
     while (currentCoroutineContext().isActive) {
-        runTestCode()
+//        runTestCode()
         runAccountStepBlock()
         // Circularly search for the next enabled account, wrapping back to currentAccountNumber (inclusive)
         // Emit hot update signal at safe point, throttled to once every 2-3 hours randomly
@@ -119,7 +119,7 @@ private suspend fun checkHotUpdateAndScheduling(): Int? {
 private data class AccountRange(val isBatchCreate: Boolean, val accountStart: Int, val accountTotal: Int)
 
 /** Reads config to determine the account iteration range. */
-private suspend fun resolveAccountRange(): AccountRange {
+private fun resolveAccountRange(): AccountRange {
     val isBatchCreate = getConfigOrStop(Schema.GLOBAL_SETTINGS.BATCH_CREATE_ACCOUNT.key) == "1"
     val accountTotal: Int = if (isBatchCreate) {
         getConfigOrStop(Schema.GLOBAL_SETTINGS.CREATE_END_ID.key).toIntOrNull() ?: logAndRestart("${Schema.GLOBAL_SETTINGS.CREATE_END_ID.displayName} 必须是数字，请检查配置")
