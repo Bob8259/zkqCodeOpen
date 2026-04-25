@@ -64,6 +64,9 @@ object MainBaseSettings {
     val PLAY_LADDER = SettingDef("play_ladder", "排位对战", 0, "MAIN_BASE_SETTINGS")
     val CHANGE_BASE = SettingDef("change_base", "调整援兵/阵型", 1, "MAIN_BASE_SETTINGS")
     val WAIT_FOR_BATTLE = SettingDef("wait_for_battle", "等待对战", 0, "MAIN_BASE_SETTINGS")
+    val WAIT_FOR_BATTLE_AFTER_ACCEPT_MAIN_WORLD_TASK = SettingDef(
+        "wait_for_battle_after_accept_main_world_task", "接取任务后等待对战", 1, "MAIN_BASE_SETTINGS"
+    )
     val HELPER_SETTINGS = SettingDef("helper_settings", "用工人学徒和实验助手", 1, "MAIN_BASE_SETTINGS")
     val UPGRADE_RESEARCH_HELPER = SettingDef("upgrade_research_helper", "升级实验助手", 0, "MAIN_BASE_SETTINGS")
     val UPGRADE_BUILDER_APPRENTICE = SettingDef("upgrade_builder_apprentice", "升级工人学徒", 0, "MAIN_BASE_SETTINGS")
@@ -183,6 +186,7 @@ object MainBaseSettings {
         PLAY_LADDER,
         CHANGE_BASE,
         WAIT_FOR_BATTLE,
+        WAIT_FOR_BATTLE_AFTER_ACCEPT_MAIN_WORLD_TASK,
         HELPER_SETTINGS,
         UPGRADE_RESEARCH_HELPER,
         UPGRADE_BUILDER_APPRENTICE,

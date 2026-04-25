@@ -4,6 +4,7 @@ import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
 import com.coc.zkqcode.jar.code.universal.smalltools.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.MyColors
+import com.coc.zkqcode.jar.code.universal.ClanGameAcceptedTaskBase
 import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.jar.code.universal.InGameVars
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
@@ -106,7 +107,10 @@ suspend fun searchOpponentsAndDeployTroops(): Boolean {
             val waitForBattle = findMultiColors(schema = MyColors.WaitForBattle)
             if (waitForBattle != null) {
                 accountMessage("进攻需等待冷却")
-                if (!getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.WAIT_FOR_BATTLE.key)) return false
+                val shouldWaitForBattle = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.WAIT_FOR_BATTLE.key)
+                val shouldWaitAfterMainWorldTask = InGameVars.clanGameAcceptedTaskBase == ClanGameAcceptedTaskBase.MAIN_WORLD &&
+                    getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.WAIT_FOR_BATTLE_AFTER_ACCEPT_MAIN_WORLD_TASK.key)
+                if (!shouldWaitForBattle && !shouldWaitAfterMainWorldTask) return false
             }
         }
         val canNotAttack = findMultiColorsUntil(schemas = listOf(MyColors.CanNotAttack, MyColors.CanNotAttack2), duration = 10)
