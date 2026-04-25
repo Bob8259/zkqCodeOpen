@@ -379,8 +379,8 @@ private suspend fun upgradeBuilding(building: String, currentBase: BaseType, att
     }
 
     // Successful upgrade flow
-    TouchActions.tap(633, 631) // normal upgrade or unlock new buildings
-    TouchActions.tap(982, 634)// machines
+    TouchActions.tap(630, 630, delayTime = 10) // normal upgrade or unlock new buildings
+    TouchActions.tap(980, 635)// machines
     if (building == "大本营") {
         TouchActions.tap(748, 621)//before upgrade
         zoomSmallMainBase()
