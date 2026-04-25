@@ -83,7 +83,7 @@ private suspend fun detectAndAcceptATask(): Boolean {
     if (!AiDetector.loadWeights("clan-game")) return false
     try {
         val detections = AiDetector.detect(
-            bitmap = screenshot, clearWeightsAfter = false, threshold = 0.3f
+            bitmap = screenshot, clearWeightsAfter = false, threshold = 0.65f
         ).filter { detection ->
             val centerX = detection.boundingBox.centerX()
             val centerY = detection.boundingBox.centerY()
