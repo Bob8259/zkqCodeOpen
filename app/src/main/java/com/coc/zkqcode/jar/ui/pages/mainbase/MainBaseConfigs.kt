@@ -87,7 +87,7 @@ fun LazyListScope.mainBaseConfig(
         SettingSection(visible = isExpanded) {
             FlowRow {
                 SettingSwitchIcon(
-                    key = "${MAIN_BASE_SETTINGS.WAIT_FOR_BATTLE.key}_c$index", explain = "启用后，若当前处于对战冷却期，辅助将持续等待直至冷却结束。"
+                    key = "${MAIN_BASE_SETTINGS.WAIT_FOR_BATTLE.key}_c$index", explain = "启用后，若当前处于对战冷却期，辅助将持续等待直至冷却结束。无论是否接取竞赛任务都生效。"
                 )
                 SettingSwitchIcon(
                     key = "${MAIN_BASE_SETTINGS.RESTART_GAME.key}_c$index", explain = "启用后，辅助将在部署全部部队后自动重启游戏。此功能仅适用于主世界对战。"
