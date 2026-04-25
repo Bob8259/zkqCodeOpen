@@ -15,6 +15,7 @@ import com.coc.zkqcode.jar.ui.components.SettingInputRow
 import com.coc.zkqcode.jar.ui.components.SettingSection
 import com.coc.zkqcode.jar.ui.components.SettingSwitchIcon
 import com.coc.zkqcode.jar.ui.schema.Schema.BUILDER_BASE_SETTINGS
+import com.coc.zkqcode.jar.ui.schema.Schema.MAIN_BASE_SETTINGS
 import com.coc.zkqcode.jar.ui.theme.AppColors
 
 fun LazyListScope.builderBaseConfig(
@@ -41,7 +42,13 @@ fun LazyListScope.builderBaseConfig(
             }
             SettingSwitchIcon(
                 key = "${BUILDER_BASE_SETTINGS.NO_BUILDER_BASE.key}_c${index}",
-                explain = "启用后，辅助将不再进入夜世界，夜世界的所有相关设置均会失效。"
+                explain = "启用后，辅助将不再进入夜世界，夜世界的所有相关设置均会失效。",
+                afterChange = { checked ->
+                    if (checked) {
+                        GlobalVars.configStates["${MAIN_BASE_SETTINGS.ACCEPT_NIGHT_WORLD_NORMAL_TASK.key}_c$index"]?.value = "0"
+                        GlobalVars.configStates["${MAIN_BASE_SETTINGS.ACCEPT_NIGHT_WORLD_ADVANCED_TASK.key}_c$index"]?.value = "0"
+                    }
+                }
             )
         }
     }
@@ -53,7 +60,13 @@ fun LazyListScope.builderBaseConfig(
             Row {
                 SettingSwitchIcon(
                     key = "${BUILDER_BASE_SETTINGS.BUILDER_BASE_FARMING.key}_c${index}",
-                    explain = "辅助将自动完成兵种配置，暂不支持手动配兵。若未启用\u201C上分模式\u201D或\u201C刷圣水车\u201D，辅助将根据当前账号的资源状况智能选择对战模式。"
+                    explain = "辅助将自动完成兵种配置，暂不支持手动配兵。若未启用\u201C上分模式\u201D或\u201C刷圣水车\u201D，辅助将根据当前账号的资源状况智能选择对战模式。",
+                    afterChange = { checked ->
+                        if (!checked) {
+                            GlobalVars.configStates["${MAIN_BASE_SETTINGS.ACCEPT_NIGHT_WORLD_NORMAL_TASK.key}_c$index"]?.value = "0"
+                            GlobalVars.configStates["${MAIN_BASE_SETTINGS.ACCEPT_NIGHT_WORLD_ADVANCED_TASK.key}_c$index"]?.value = "0"
+                        }
+                    }
                 )
                 SettingSwitchIcon(key = "${BUILDER_BASE_SETTINGS.STOP_WHEN_RESOURCE_FULL.key}_c${index}")
             }

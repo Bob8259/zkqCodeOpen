@@ -11,6 +11,7 @@ import com.coc.zkqcode.jar.ui.components.SectionBanner
 import com.coc.zkqcode.jar.ui.components.SettingInputRow
 import com.coc.zkqcode.jar.ui.components.SettingSection
 import com.coc.zkqcode.jar.ui.components.SettingSwitchIcon
+import com.coc.zkqcode.jar.ui.schema.Schema.BUILDER_BASE_SETTINGS
 import com.coc.zkqcode.jar.ui.schema.Schema.MAIN_BASE_SETTINGS
 import com.coc.zkqcode.jar.ui.theme.AppColors
 
@@ -40,7 +41,15 @@ fun LazyListScope.mainBaseConfig(
         SettingSection(visible = isExpanded) {
             SettingInputRow(key = "${MAIN_BASE_SETTINGS.CONFIG_REMARK.key}_c$index")
             FlowRow {
-                SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.AUTO_ATTACK.key}_c$index")/*
+                SettingSwitchIcon(
+                    key = "${MAIN_BASE_SETTINGS.AUTO_ATTACK.key}_c$index",
+                    afterChange = { checked ->
+                        if (!checked) {
+                            GlobalVars.configStates["${MAIN_BASE_SETTINGS.ACCEPT_MAIN_WORLD_NORMAL_TASK.key}_c$index"]?.value = "0"
+                            GlobalVars.configStates["${MAIN_BASE_SETTINGS.ACCEPT_MAIN_WORLD_ADVANCED_TASK.key}_c$index"]?.value = "0"
+                        }
+                    }
+                )/*
                 SettingSwitchIcon(
                     key = "${MAIN_BASE_SETTINGS.PLAY_LADDER.key}_c$index",
                     explain = "排位赛不保证胜率，请谨慎开启。"
@@ -130,10 +139,40 @@ fun LazyListScope.mainBaseConfig(
             AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.DO_CLAN_GAMES.key}_c$index"]?.value == "1") {
                 Column {
                     FlowRow {
-                        SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.ACCEPT_MAIN_WORLD_NORMAL_TASK.key}_c$index")
-                        SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.ACCEPT_MAIN_WORLD_ADVANCED_TASK.key}_c$index")
-                        SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.ACCEPT_NIGHT_WORLD_NORMAL_TASK.key}_c$index")
-                        SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.ACCEPT_NIGHT_WORLD_ADVANCED_TASK.key}_c$index")
+                        SettingSwitchIcon(
+                            key = "${MAIN_BASE_SETTINGS.ACCEPT_MAIN_WORLD_NORMAL_TASK.key}_c$index",
+                            afterChange = { checked ->
+                                if (checked) {
+                                    GlobalVars.configStates["${MAIN_BASE_SETTINGS.AUTO_ATTACK.key}_c$index"]?.value = "1"
+                                }
+                            }
+                        )
+                        SettingSwitchIcon(
+                            key = "${MAIN_BASE_SETTINGS.ACCEPT_MAIN_WORLD_ADVANCED_TASK.key}_c$index",
+                            afterChange = { checked ->
+                                if (checked) {
+                                    GlobalVars.configStates["${MAIN_BASE_SETTINGS.AUTO_ATTACK.key}_c$index"]?.value = "1"
+                                }
+                            }
+                        )
+                        SettingSwitchIcon(
+                            key = "${MAIN_BASE_SETTINGS.ACCEPT_NIGHT_WORLD_NORMAL_TASK.key}_c$index",
+                            afterChange = { checked ->
+                                if (checked) {
+                                    GlobalVars.configStates["${BUILDER_BASE_SETTINGS.NO_BUILDER_BASE.key}_c$index"]?.value = "0"
+                                    GlobalVars.configStates["${BUILDER_BASE_SETTINGS.BUILDER_BASE_FARMING.key}_c$index"]?.value = "1"
+                                }
+                            }
+                        )
+                        SettingSwitchIcon(
+                            key = "${MAIN_BASE_SETTINGS.ACCEPT_NIGHT_WORLD_ADVANCED_TASK.key}_c$index",
+                            afterChange = { checked ->
+                                if (checked) {
+                                    GlobalVars.configStates["${BUILDER_BASE_SETTINGS.NO_BUILDER_BASE.key}_c$index"]?.value = "0"
+                                    GlobalVars.configStates["${BUILDER_BASE_SETTINGS.BUILDER_BASE_FARMING.key}_c$index"]?.value = "1"
+                                }
+                            }
+                        )
                     }
                 }
             }
