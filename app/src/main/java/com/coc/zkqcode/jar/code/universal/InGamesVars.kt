@@ -1,6 +1,7 @@
 package com.coc.zkqcode.jar.code.universal
 
 import com.coc.zkqcode.core.util.basic.ShowMessage
+import com.coc.zkqcode.jar.code.universal.buildings.BaseType
 
 /**
  * Represents the target game version/server type, carrying all package and launch metadata.
@@ -46,6 +47,9 @@ object InGameVars {
     // Set by checkRandomSchedule; read by RandomSchedulingLogic after stepBlock.
     @Volatile
     var isEarlyOffline: Boolean = false
+
+    @Volatile
+    var wallUpgradeNoWorkerBase: BaseType? = null
 }
 
 fun accountMessage(text: String, isChecking: Boolean = true) {

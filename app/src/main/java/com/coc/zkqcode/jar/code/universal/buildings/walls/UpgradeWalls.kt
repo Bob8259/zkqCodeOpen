@@ -2,6 +2,7 @@ package com.coc.zkqcode.jar.code.universal.buildings.walls
 
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.jar.code.colorschema.MyColors
+import com.coc.zkqcode.jar.code.universal.InGameVars
 import com.coc.zkqcode.jar.code.universal.buildings.BaseType
 import com.coc.zkqcode.jar.code.universal.buildings.WorkerAndResearch
 import com.coc.zkqcode.jar.code.universal.buildings.upgrade.UpgradeResult
@@ -25,9 +26,13 @@ suspend fun upgradeWalls(currentBase: BaseType): Boolean {
         return true
     }
     val workerNumber = WorkerAndResearch.detectWorkerNumber(currentBase)
-
-    if (workerNumber.available < 1 || workerNumber.total < 1) {
+    val hasNoUsableWorker = workerNumber.available < 1 || workerNumber.total < 1
+    if (hasNoUsableWorker) {
+        InGameVars.wallUpgradeNoWorkerBase = currentBase
         return true
+    }
+    if (InGameVars.wallUpgradeNoWorkerBase == currentBase) {
+        InGameVars.wallUpgradeNoWorkerBase = null
     }
     // Use the appropriate threshold key and display name based on the current base type
     val (wallThresholdKey, wallThresholdName) = when (currentBase) {

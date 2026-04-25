@@ -10,8 +10,7 @@ import com.coc.zkqcode.jar.code.builderbase.others.collectBuilderBaseResources
 import com.coc.zkqcode.jar.code.builderbase.others.turnOnClockTower
 import com.coc.zkqcode.jar.code.universal.buildings.BaseType
 import com.coc.zkqcode.jar.code.universal.buildings.gearup.gearUpBuildings
-import com.coc.zkqcode.jar.code.universal.buildings.upgrade.upgradeBuildings
-import com.coc.zkqcode.jar.code.universal.buildings.walls.upgradeWalls
+import com.coc.zkqcode.jar.code.universal.buildings.upgradeWallsThenBuildings
 import com.coc.zkqcode.jar.code.universal.smalltools.enterBuilderBase
 import com.coc.zkqcode.jar.code.universal.smalltools.getBooleanConfigRuntime
 import com.coc.zkqcode.jar.ui.schema.Schema
@@ -27,8 +26,7 @@ suspend fun playBuilderBase(): Boolean {
     if (!clickOttosOutPost()) return false
     if (!builderBaseRemoveObstacles()) return false
     if (!enterBuilderBase(false)) return true
-    if (!upgradeWalls(BaseType.Builder)) return false
-    if (!upgradeBuildings(BaseType.Builder)) return false
+    if (!upgradeWallsThenBuildings(BaseType.Builder)) return false
     if (!builderBaseResearch()) return false
     if (!turnOnClockTower()) return true
     if (!enterBuilderBase(false)) return true

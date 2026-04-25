@@ -21,8 +21,7 @@ import com.coc.zkqcode.jar.code.mainbase.others.useHelpers
 import com.coc.zkqcode.jar.code.mainbase.others.useMagicItems
 import com.coc.zkqcode.jar.code.mainbase.research.mainBaseResearch
 import com.coc.zkqcode.jar.code.universal.buildings.BaseType
-import com.coc.zkqcode.jar.code.universal.buildings.upgrade.upgradeBuildings
-import com.coc.zkqcode.jar.code.universal.buildings.walls.upgradeWalls
+import com.coc.zkqcode.jar.code.universal.buildings.upgradeWallsThenBuildings
 import com.coc.zkqcode.jar.code.universal.smalltools.enterMainBase
 
 suspend fun playMainBase(): Boolean {
@@ -38,8 +37,7 @@ suspend fun playMainBase(): Boolean {
     if (!joinClan()) return false
     if (!requestReinforcement()) return false
     if (!donateToClan()) return false
-    if (!upgradeWalls(BaseType.Main)) return false
-    if (!upgradeBuildings(BaseType.Main)) return false
+    if (!upgradeWallsThenBuildings(BaseType.Main)) return false
     if (!mainBaseResearch()) return false
     if (!placeHeroBanners()) return false
     if (!mainBaseCheckTutorials()) return false
