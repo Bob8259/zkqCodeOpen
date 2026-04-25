@@ -5,16 +5,18 @@ import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.jar.code.colorschema.ColorSchema
 import com.coc.zkqcode.jar.code.colorschema.MyColors
-import com.coc.zkqcode.jar.code.universal.ClanGameAcceptedTaskBase
-import com.coc.zkqcode.jar.code.universal.InGameVars
 import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.jar.code.universal.aidetection.AiDetector
 import com.coc.zkqcode.jar.code.universal.clickRightBottom
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
+import com.coc.zkqcode.jar.code.universal.smalltools.CLAN_GAME_TASK_BASE_MAIN_WORLD
+import com.coc.zkqcode.jar.code.universal.smalltools.CLAN_GAME_TASK_BASE_NIGHT_WORLD
+import com.coc.zkqcode.jar.code.universal.smalltools.CLAN_GAME_TASK_BASE_NONE
 import com.coc.zkqcode.jar.code.universal.smalltools.TouchActions
 import com.coc.zkqcode.jar.code.universal.smalltools.getBooleanConfigRuntime
+import com.coc.zkqcode.jar.code.universal.smalltools.writeClanGameAcceptedTaskBase
 import com.coc.zkqcode.jar.ui.schema.Schema
 
 private const val CLAN_GAME_DETECT_LEFT = 470f
@@ -25,7 +27,7 @@ private const val CLAN_GAME_NORMAL_TASK_CLASS = 0
 private const val CLAN_GAME_PRO_TASK_CLASS = 1
 
 suspend fun clanGame(): Boolean {
-    InGameVars.clanGameAcceptedTaskBase = ClanGameAcceptedTaskBase.NONE
+    writeClanGameAcceptedTaskBase(CLAN_GAME_TASK_BASE_NONE)
     if (!getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.DO_CLAN_GAMES.key)) return true
     val calendar = findMultiColorsUntil(schemas = listOf(MyColors.Calendar, MyColors.Calendar2), duration = 100)
 
@@ -124,7 +126,7 @@ private suspend fun detectAndAcceptATask(): Boolean {
         }
 
         if (acceptTask(targetTask.x, targetTask.y)) {
-            InGameVars.clanGameAcceptedTaskBase = targetTask.acceptedTaskBase
+            writeClanGameAcceptedTaskBase(targetTask.acceptedTaskBase)
             accountMessage("已接取部落竞赛${targetTask.baseType}${targetTask.taskType}")
             return true
         }
@@ -146,11 +148,11 @@ private suspend fun acceptTask(x: Int, y: Int): Boolean {
     return false
 }
 
-private fun toAcceptedTaskBase(baseType: String): ClanGameAcceptedTaskBase {
+private fun toAcceptedTaskBase(baseType: String): String {
     return when (baseType) {
-        "主世界" -> ClanGameAcceptedTaskBase.MAIN_WORLD
-        "夜世界" -> ClanGameAcceptedTaskBase.NIGHT_WORLD
-        else -> ClanGameAcceptedTaskBase.NONE
+        "主世界" -> CLAN_GAME_TASK_BASE_MAIN_WORLD
+        "夜世界" -> CLAN_GAME_TASK_BASE_NIGHT_WORLD
+        else -> CLAN_GAME_TASK_BASE_NONE
     }
 }
 
@@ -189,5 +191,5 @@ private data class ClanGameTaskDecision(
     val taskType: String,
     val baseType: String,
     val shouldAccept: Boolean,
-    val acceptedTaskBase: ClanGameAcceptedTaskBase = toAcceptedTaskBase(baseType)
+    val acceptedTaskBase: String = toAcceptedTaskBase(baseType)
 )

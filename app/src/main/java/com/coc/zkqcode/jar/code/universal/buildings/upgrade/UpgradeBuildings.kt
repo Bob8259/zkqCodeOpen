@@ -182,7 +182,7 @@ private suspend fun buildOneNewBuildings(currentBase: BaseType): Boolean {
                 } else {
                     clickRightBottom(1)
                     delayWithMultiplier(500)
-                    // Cleanup if tick disappears
+                    // Clean-up if tick disappears
                     builderBaseFindBuildButton(type = BuildButtonType.Cross)?.let { cross ->
                         TouchActions.tap(cross.x, cross.y)
                     }
@@ -238,7 +238,7 @@ private suspend fun tryToBatchBuildWalls(x: Int, y: Int, currentBase: BaseType) 
             val distance = sqrt((dx * dx + dy * dy).toDouble())
 
             if (distance > 0) {
-                // Calculate trajectory based on the vector from center to the detected arrow
+                // Calculate trajectory based on the vector from centre to the detected arrow
                 val targetOffset = 3000
                 val endX = (arrowX + (dx / distance) * targetOffset).toInt()
                 val endY = (arrowY + (dy / distance) * targetOffset).toInt()
