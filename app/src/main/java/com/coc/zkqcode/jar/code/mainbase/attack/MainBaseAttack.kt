@@ -3,6 +3,8 @@ package com.coc.zkqcode.jar.code.mainbase.attack
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
 import com.coc.zkqcode.jar.code.colorschema.MyColors
+import com.coc.zkqcode.jar.code.universal.ClanGameAcceptedTaskBase
+import com.coc.zkqcode.jar.code.universal.InGameVars
 import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
@@ -15,7 +17,13 @@ import com.coc.zkqcode.jar.ui.schema.Schema
 import kotlinx.coroutines.delay
 
 suspend fun mainBaseRemainingAttack(): Boolean {
-    val totalBattleTimes = getConfigRuntime(Schema.MAIN_BASE_SETTINGS.BATTLE_TIMES.key).toIntOrNull() ?: logAndRestart("${Schema.MAIN_BASE_SETTINGS.BATTLE_TIMES.displayName}必须是数字。")
+    val battleTimesSetting = if (InGameVars.clanGameAcceptedTaskBase == ClanGameAcceptedTaskBase.MAIN_WORLD) {
+        Schema.MAIN_BASE_SETTINGS.BATTLE_TIMES_WITH_TASKS
+    } else {
+        Schema.MAIN_BASE_SETTINGS.BATTLE_TIMES
+    }
+    val totalBattleTimes = getConfigRuntime(battleTimesSetting.key).toIntOrNull()
+        ?: logAndRestart("${battleTimesSetting.displayName}必须是数字。")
     val remainingTimes = (totalBattleTimes - 1).coerceAtLeast(0)
     repeat(remainingTimes) {
         if (!mainBaseAttack()) return false

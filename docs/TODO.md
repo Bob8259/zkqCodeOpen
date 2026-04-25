@@ -35,8 +35,5 @@
 - 邀请玩家（INVITE_PLAYERS）
 - 刷经验
 
-## BuilderBaseConfig.kt（夜世界设置）
-- 接取竞赛后，对战以下局数后切号（BUILDER_BASE_BATTLE_TIMES_WITH_TASKS）
-
 ## 其他
 - 上传云端配置，分享配置
