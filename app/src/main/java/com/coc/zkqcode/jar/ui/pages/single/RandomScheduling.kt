@@ -6,6 +6,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.scrollBy
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -31,7 +32,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -179,6 +179,15 @@ private fun AccountGroupSelector(accountsKey: String) {
     // 如果正在拖动，显示预览状态；否则显示实际保存的数据状态
     val displayedSelected = if (isDragging) previewSelection else selectedAccounts
 
+    val toggleAccount = { id: Int ->
+        val updatedSelection = if (id in selectedAccounts) {
+            selectedAccounts - id
+        } else {
+            selectedAccounts + id
+        }
+        accountsState.value = updatedSelection.sorted().joinToString(",")
+    }
+
     // 根据坐标获取账号ID并更新预览状态
     val updateSelectionAt = { offset: Offset ->
         val itemInfo = gridState.layoutInfo.visibleItemsInfo.find { item ->
@@ -232,7 +241,10 @@ private fun AccountGroupSelector(accountsKey: String) {
             .padding(8.dp)
     ) {
         Text(
-            text = "选择加入本组的账号：", style = MaterialTheme.typography.labelMedium, modifier = Modifier.padding(bottom = 4.dp)
+            text = "选择加入本组的账号：", style = MaterialTheme.typography.labelMedium
+        )
+        Text(
+            text = "点击或长按拖拽均可调节账号开启状态。", color = Color.Gray, style = MaterialTheme.typography.labelSmall, modifier = Modifier.padding(bottom = 4.dp)
         )
 
         Row(
@@ -324,6 +336,15 @@ private fun AccountGroupSelector(accountsKey: String) {
                         Box(
                             modifier = Modifier
                                 .width(cellSizeDp)
+                                .pointerInput(id, isDragging, selectedAccounts) {
+                                    detectTapGestures(
+                                        onTap = {
+                                            if (!isDragging) {
+                                                toggleAccount(id)
+                                            }
+                                        }
+                                    )
+                                }
                                 .background(colors.bg, RoundedCornerShape(8.dp))
                                 .border(1.dp, colors.border, RoundedCornerShape(8.dp))
                                 .padding(horizontal = 2.dp)
