@@ -96,4 +96,12 @@ object MyColors : IUIColors by UIColors, IFeatureColors by FeatureColors, IMainB
     val BuildingGearUpButton = ColorSchema.parse(
         180, 500, 1180, 635, "AB9C99", "1|-12|D7D4D8,23|-28|BCB9BE,33|-21|C4C2C6,31|-2|8B827D,21|4|7F7C81,5|4|81746D,1|-6|DAD8DB,13|-15|7E7D7E,22|-17|A3978E", 0, 0.9, "改装建筑按钮"
     )
+
+    //Builder Collect Resources Colour
+    val ElixirCart1 = ColorSchema.parse(
+        643, 163, 896, 408, "D61F7A", "-5|-3|D53C85,-14|6|7CB1AA,9|6|7BB0A9,9|3|7FAFA8,9|1|83ACA5,9|-1|84A8A2,9|-3|86A5A0,9|-6|879E99,9|-9|879996", 0, 0.9, "圣水车1"
+    )
+    val ElixirCart2 = ColorSchema.parse(
+        643, 163, 896, 408, "D42D73", "-2|0|D0276A,1|-4|CC4B95,5|-4|CC8DB7,7|0|DB5CA4,4|5|C6195A,16|6|1B3FC7,14|-8|264BA6,-7|-9|264CA5,-7|10|183CD3", 0, 0.9, "圣水车2"
+    )
 }
