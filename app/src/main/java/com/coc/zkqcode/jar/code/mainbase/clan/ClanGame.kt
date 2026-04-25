@@ -53,19 +53,25 @@ suspend fun clanGame(): Boolean {
                 }
             }
             if (detectAndAcceptATask()) return enterMainScreen()
-
             TouchActions.swipe(700, 500, 600, 20, delayAfter = 300)
-            // Upload a screenshot to the server again
             if (detectAndAcceptATask()) return enterMainScreen()
-            delayWithMultiplier(1000000)
-            TouchActions.swipe(600, 150, 600, 600, delayAfter = 300)
+            giveUpATask()
         }
 
     }
     return enterMainScreen()
 }
 
-suspend fun detectAndAcceptATask(): Boolean {
+private suspend fun giveUpATask() {
+    accountMessage("未找到可接取的任务，放弃第一个任务")
+    TouchActions.swipe(600, 150, 600, 600, delayAfter = 300)
+    TouchActions.tap(550, 200)//First task
+    TouchActions.tap(900, 320, delayTime = 2000)//Accept
+    TouchActions.tap(900, 320)//Give up
+    TouchActions.tap(775, 445)
+}
+
+private suspend fun detectAndAcceptATask(): Boolean {
     val screenshot = ScreenCaptureManager.capture(asBitmap = true) as? Bitmap
     if (screenshot == null) {
         accountMessage("部落竞赛截图失败，无法检测任务")
