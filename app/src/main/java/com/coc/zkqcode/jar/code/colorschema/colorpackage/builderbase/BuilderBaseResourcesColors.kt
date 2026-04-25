@@ -14,6 +14,8 @@ interface IBuilderBaseResourcesColors {
     val BuilderBaseCollectGem1: ColorSchema
     val BuilderBaseCollectGem2: ColorSchema
     val BuilderBaseCollectGem3: ColorSchema
+    val ElixirCart1: ColorSchema
+    val ElixirCart2: ColorSchema
 }
 
 object BuilderBaseResourcesColors : IBuilderBaseResourcesColors {
@@ -49,5 +51,11 @@ object BuilderBaseResourcesColors : IBuilderBaseResourcesColors {
     // Add a third gem variant to improve builder base gem pickup coverage.
     override val BuilderBaseCollectGem3 = ColorSchema.parse(
         115, 85, 1130, 610, "72DEC8", "-2|7|77E3C1,-6|2|6CEDD6,0|-4|3FC094,2|-2|6FDCC7,5|-1|7CE1CF,1|3|80E3CC,-3|-1|66D9C0,-4|-3|3CBC89,1|0|76DFC9", 0, 0.92, "收集宝石3"
+    )
+    override val ElixirCart1 = ColorSchema.parse(
+        643, 163, 896, 408, "D61F7A", "-5|-3|D53C85,-14|6|7CB1AA,9|6|7BB0A9,9|3|7FAFA8,9|1|83ACA5,9|-1|84A8A2,9|-3|86A5A0,9|-6|879E99,9|-9|879996", 0, 0.9, "圣水车1"
+    )
+    override val ElixirCart2 = ColorSchema.parse(
+        643, 163, 896, 408, "D42D73", "-2|0|D0276A,1|-4|CC4B95,5|-4|CC8DB7,7|0|DB5CA4,4|5|C6195A,16|6|1B3FC7,14|-8|264BA6,-7|-9|264CA5,-7|10|183CD3", 0, 0.9, "圣水车2"
     )
 }
