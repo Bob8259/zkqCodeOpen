@@ -266,7 +266,8 @@ fun LazyListScope.accountSettings() {
     // Display account configurations based on account_count
     val accountCountStr = GlobalVars.configStates[GLOBAL_SETTINGS.ACCOUNT_COUNT.key]!!.value
     val currentAccountCount = accountCountStr.toIntOrNull() ?: 3
-    items(count = currentAccountCount, key = { it + 1 }) { i ->
-        AccountConfig(index = i + 1)
+    val accountRowCount = (currentAccountCount + 1) / 2
+    items(count = accountRowCount, key = { it * 2 + 1 }) { i ->
+        AccountConfig(index = i * 2 + 1)
     }
 }

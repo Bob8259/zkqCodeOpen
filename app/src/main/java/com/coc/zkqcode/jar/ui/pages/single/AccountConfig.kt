@@ -1,8 +1,12 @@
 package com.coc.zkqcode.jar.ui.pages.single
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -27,8 +31,29 @@ import com.coc.zkqcode.jar.ui.schema.Schema.GLOBAL_SETTINGS
 fun AccountConfig(
     index: Int
 ) {
-    SettingSection {
-        Text(text = "账号${index}", style = MaterialTheme.typography.labelMedium)
+    val accountCount = GlobalVars.configStates[GLOBAL_SETTINGS.ACCOUNT_COUNT.key]?.value?.toIntOrNull() ?: index
+
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        AccountSettingSection(index = index, modifier = Modifier.weight(1f))
+        if (index + 1 <= accountCount) {
+            AccountSettingSection(index = index + 1, modifier = Modifier.weight(1f))
+        } else {
+            Spacer(modifier = Modifier.weight(1f))
+        }
+    }
+}
+
+@Composable
+private fun AccountSettingSection(
+    index: Int,
+    modifier: Modifier = Modifier
+) {
+    Box(modifier = modifier) {
+        SettingSection {
+            Text(text = "账号${index}", style = MaterialTheme.typography.labelMedium)
         FlowRow {
             // Remove the switch label's extra text offset so it aligns with the remark label.
             val isRandomScheduling = GlobalVars.configStates[GLOBAL_SETTINGS.RANDOM_SCHEDULING.key]?.value == "1"
@@ -56,11 +81,12 @@ fun AccountConfig(
                 key = "${ACCOUNT_SETTINGS.START_METHOD.key}${index}", options = listOf("游戏存档", "直接启动", "数据号")
             )
         }
-        when (GlobalVars.configStates["${ACCOUNT_SETTINGS.START_METHOD.key}${index}"]!!.value) {
-            "0" -> GameFiles(index)//Game save login
-            "2" -> UseDataPackage(index)//Account switcher
-        }
+            when (GlobalVars.configStates["${ACCOUNT_SETTINGS.START_METHOD.key}${index}"]!!.value) {
+                "0" -> GameFiles(index)//Game save login
+                "2" -> UseDataPackage(index)//Account switcher
+            }
 
+        }
     }
 }
 
