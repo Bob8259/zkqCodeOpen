@@ -134,10 +134,10 @@ object MainBaseSettings {
     val CLAN_NAME = SettingDef("clan_name", "部落名称:", "", "MAIN_BASE_SETTINGS")
     val CONSECUTIVE_COUNT = SettingDef("consecutive_count", "连号数量:", 3, "MAIN_BASE_SETTINGS")
 
-    val ACCEPT_MAIN_WORLD_NORMAL_TASK = SettingDef("accept_main_world_normal_task", "接主世界普通任务", 1, "MAIN_BASE_SETTINGS")
-    val ACCEPT_MAIN_WORLD_ADVANCED_TASK = SettingDef("accept_main_world_advanced_task", "接主世界高级任务", 0, "MAIN_BASE_SETTINGS")
-    val ACCEPT_NIGHT_WORLD_NORMAL_TASK = SettingDef("accept_night_world_normal_task", "接夜世界普通任务", 1, "MAIN_BASE_SETTINGS")
-    val ACCEPT_NIGHT_WORLD_ADVANCED_TASK = SettingDef("accept_night_world_advanced_task", "接夜世界高级任务", 0, "MAIN_BASE_SETTINGS")
+    val ACCEPT_MAIN_WORLD_NORMAL_TASK = SettingDef("accept_main_world_normal_task", "接取主世界普通任务", 1, "MAIN_BASE_SETTINGS")
+    val ACCEPT_MAIN_WORLD_ADVANCED_TASK = SettingDef("accept_main_world_advanced_task", "接取主世界高级任务", 0, "MAIN_BASE_SETTINGS")
+    val ACCEPT_NIGHT_WORLD_NORMAL_TASK = SettingDef("accept_night_world_normal_task", "接取夜世界普通任务", 1, "MAIN_BASE_SETTINGS")
+    val ACCEPT_NIGHT_WORLD_ADVANCED_TASK = SettingDef("accept_night_world_advanced_task", "接取夜世界高级任务", 0, "MAIN_BASE_SETTINGS")
 
     val all = listOf(
         CLAIM_DAILY_REWARD,

@@ -48,7 +48,7 @@ fun LazyListScope.mainBaseConfig(
                             GlobalVars.configStates["${MAIN_BASE_SETTINGS.ACCEPT_MAIN_WORLD_NORMAL_TASK.key}_c$index"]?.value = "0"
                             GlobalVars.configStates["${MAIN_BASE_SETTINGS.ACCEPT_MAIN_WORLD_ADVANCED_TASK.key}_c$index"]?.value = "0"
                         }
-                    }
+                    },
                 )/*
                 SettingSwitchIcon(
                     key = "${MAIN_BASE_SETTINGS.PLAY_LADDER.key}_c$index",
@@ -130,7 +130,7 @@ fun LazyListScope.mainBaseConfig(
                     }
                 }
             }
-            FlowRow{
+            FlowRow {
                 SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.DO_CLAN_GAMES.key}_c$index")
                 SettingSwitchIcon(
                     key = "${MAIN_BASE_SETTINGS.PLAY_CLAN_WAR.key}_c$index", explain = "部落战其中一次打对位，另一次打推荐对手。\n不保证胜率，请谨慎使用。"
@@ -140,38 +140,34 @@ fun LazyListScope.mainBaseConfig(
                 Column {
                     FlowRow {
                         SettingSwitchIcon(
-                            key = "${MAIN_BASE_SETTINGS.ACCEPT_MAIN_WORLD_NORMAL_TASK.key}_c$index",
-                            afterChange = { checked ->
+                            key = "${MAIN_BASE_SETTINGS.ACCEPT_MAIN_WORLD_NORMAL_TASK.key}_c$index", afterChange = { checked ->
                                 if (checked) {
                                     GlobalVars.configStates["${MAIN_BASE_SETTINGS.AUTO_ATTACK.key}_c$index"]?.value = "1"
                                 }
-                            }
+                            }, explain = "开启后，会自动接取主世界基础任务，例如摧毁兵营，工人小屋等，任何账号都可以完成，并会自动开启主世界对战选项。"
                         )
                         SettingSwitchIcon(
-                            key = "${MAIN_BASE_SETTINGS.ACCEPT_MAIN_WORLD_ADVANCED_TASK.key}_c$index",
-                            afterChange = { checked ->
+                            key = "${MAIN_BASE_SETTINGS.ACCEPT_MAIN_WORLD_ADVANCED_TASK.key}_c$index", afterChange = { checked ->
                                 if (checked) {
                                     GlobalVars.configStates["${MAIN_BASE_SETTINGS.AUTO_ATTACK.key}_c$index"]?.value = "1"
                                 }
-                            }
+                            }, explain = "开启后，会自动接取主世界高级任务，例如击败英雄，获取暗黑重油等，建议大本营升级至7级或以上后开启，并会自动开启主世界对战选项。"
                         )
                         SettingSwitchIcon(
-                            key = "${MAIN_BASE_SETTINGS.ACCEPT_NIGHT_WORLD_NORMAL_TASK.key}_c$index",
-                            afterChange = { checked ->
+                            key = "${MAIN_BASE_SETTINGS.ACCEPT_NIGHT_WORLD_NORMAL_TASK.key}_c$index", afterChange = { checked ->
                                 if (checked) {
                                     GlobalVars.configStates["${BUILDER_BASE_SETTINGS.NO_BUILDER_BASE.key}_c$index"]?.value = "0"
                                     GlobalVars.configStates["${BUILDER_BASE_SETTINGS.BUILDER_BASE_FARMING.key}_c$index"]?.value = "1"
                                 }
-                            }
+                            }, explain = "开启后，会自动接取夜世界基础任务，例如摧毁箭塔，建筑工人大本营等，任何账号都可以完成，并会自动开启夜世界对战选项。"
                         )
                         SettingSwitchIcon(
-                            key = "${MAIN_BASE_SETTINGS.ACCEPT_NIGHT_WORLD_ADVANCED_TASK.key}_c$index",
-                            afterChange = { checked ->
+                            key = "${MAIN_BASE_SETTINGS.ACCEPT_NIGHT_WORLD_ADVANCED_TASK.key}_c$index", afterChange = { checked ->
                                 if (checked) {
                                     GlobalVars.configStates["${BUILDER_BASE_SETTINGS.NO_BUILDER_BASE.key}_c$index"]?.value = "0"
                                     GlobalVars.configStates["${BUILDER_BASE_SETTINGS.BUILDER_BASE_FARMING.key}_c$index"]?.value = "1"
                                 }
-                            }
+                            }, explain = "开启后，会自动接取夜世界高级任务，例如摧毁奥仔哨站，多管迫击炮等，建议解锁第二区域后开启，并会自动开启夜世界对战选项。"
                         )
                     }
                 }
@@ -220,12 +216,10 @@ fun LazyListScope.mainBaseConfig(
         SettingSection(visible = isBuildExpanded) {
             FlowRow {
                 SettingSwitchIcon(
-                    key = "${MAIN_BASE_SETTINGS.BUILD_SETTING.key}_c$index",
-                    explain = "建造时会忽略可改装的建筑，并且会优先建造新建筑和新的建筑工人小屋。"
+                    key = "${MAIN_BASE_SETTINGS.BUILD_SETTING.key}_c$index", explain = "建造时会忽略可改装的建筑，并且会优先建造新建筑和新的建筑工人小屋。"
                 )
                 SettingSwitchIcon(
-                    key = "${MAIN_BASE_SETTINGS.GEAR_UP_SETTINGS.key}_c$index",
-                    explain = "改装建筑属于主世界功能，即使关闭夜世界，也依然会生效。"
+                    key = "${MAIN_BASE_SETTINGS.GEAR_UP_SETTINGS.key}_c$index", explain = "改装建筑属于主世界功能，即使关闭夜世界，也依然会生效。"
                 )
                 SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.WALL_UPGRADE_SETTINGS.key}_c$index")
                 SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.SAVE_WORKER.key}_c$index")
