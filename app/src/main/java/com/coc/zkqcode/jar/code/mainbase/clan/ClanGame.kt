@@ -39,7 +39,7 @@ suspend fun clanGame(): Boolean {
         }
         if (openClanGame != null) {
             TouchActions.tap(openClanGame.x, openClanGame.y, delayTime = 1000)
-            val normalTask = findMultiColorsUntil(schemas = listOf(MyColors.NormalTasks), duration = 3000)
+            val normalTask = findMultiColorsUntil(schemas = listOf(MyColors.NormalTasks, MyColors.OnGoingTask), duration = 3000)
             if (normalTask != null) {
                 delayWithMultiplier(300)
                 if (findMultiColors(MyColors.FinishedTask) != null) {
