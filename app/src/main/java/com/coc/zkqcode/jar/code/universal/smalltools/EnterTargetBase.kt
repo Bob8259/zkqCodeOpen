@@ -36,7 +36,6 @@ suspend fun enterMainBase(): Boolean {
         zoomSmallBuilderBase()
         TouchActions.swipe(750, 150, 750, 550)
         // Tap all grid points in the area to trigger the main base portal
-        TouchActions.tap()
         for (x in 960..1000 step 30) {
             for (y in 35..210 step 30) {
                 TouchActions.tap(x, y, isJitter = false, delayTime = 50)
