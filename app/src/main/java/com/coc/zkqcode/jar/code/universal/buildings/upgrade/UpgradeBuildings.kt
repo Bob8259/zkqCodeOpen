@@ -12,9 +12,9 @@ import com.coc.zkqcode.jar.code.builderbase.upgrade.builderBaseFindBuildButton
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.mainbase.others.zoomSmallMainBase
 import com.coc.zkqcode.jar.code.mainbase.upgrade.mainBaseFindBuildButton
-import com.coc.zkqcode.jar.code.universal.buildings.ALL_BUILDINGS
 import com.coc.zkqcode.jar.code.universal.buildings.BaseType
 import com.coc.zkqcode.jar.code.universal.buildings.WorkerAndResearch
+import com.coc.zkqcode.jar.code.universal.buildings.getBuildingNames
 import com.coc.zkqcode.jar.code.universal.buildings.iterateBuilderBaseBuildingUpgradeList
 import com.coc.zkqcode.jar.code.universal.clickRightBottom
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
@@ -25,7 +25,6 @@ import com.coc.zkqcode.jar.ui.schema.Schema
 import kotlin.math.sqrt
 
 
-private val upgradableBuildingsMap = ALL_BUILDINGS.associateWith { false }.toMutableMap()
 private var zoomOrNot: Boolean = true
 
 enum class BuildButtonType {
@@ -39,7 +38,7 @@ suspend fun upgradeBuildings(currentBase: BaseType): Boolean {
         if (!getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.BUILD_SETTING.key)) return true
     }
     zoomOrNot = true
-    upgradableBuildingsMap.keys.forEach { upgradableBuildingsMap[it] = false }
+    val upgradableBuildingsMap = getBuildingNames(currentBase).associateWith { false }.toMutableMap()
     var isNewBuildingDetected = false
     clickRightBottom(1)
     if (checkContinueBuild(currentBase)) {
@@ -49,7 +48,7 @@ suspend fun upgradeBuildings(currentBase: BaseType): Boolean {
         }
         if (worker != null) {
             TouchActions.tap(worker.x, worker.y)
-            iterateBuilderBaseBuildingUpgradeList(onDetect = { result ->
+            iterateBuilderBaseBuildingUpgradeList(baseType = currentBase, onDetect = { result ->
                 val buildings = result.buildings
                 if (buildings.isEmpty()) {
                     accountMessage("未检测到可升级建筑")

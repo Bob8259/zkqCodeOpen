@@ -2,6 +2,7 @@ package com.coc.zkqcode.jar.code.universal.buildings
 
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.jar.code.universal.smalltools.TouchActions
+import com.coc.zkqcode.jar.ui.schema.details.BuilderBaseBuildings
 import com.coc.zkqcode.jar.ui.schema.details.MainBaseBuildings
 import kotlin.math.abs
 import kotlin.math.max
@@ -30,12 +31,15 @@ data class BuildingDetectionResult(
 )
 
 /**
- * List of benchmark buildings for OCR matching.
- * Derived from MainBaseBuildings schema so that adding a building there
- * automatically includes it here. "城墙" is the only extra entry needed
- * for detection that has no upgrade schema entry.
+ * Returns base-specific benchmark buildings for OCR matching.
+ * "城墙" is the only extra entry needed for detection that has no upgrade schema entry.
  */
-val ALL_BUILDINGS = MainBaseBuildings.all.map { it.displayName } + listOf("城墙")
+fun getBuildingNames(baseType: BaseType): List<String> = when (baseType) {
+    BaseType.Main -> MainBaseBuildings.all.map { it.displayName }
+    BaseType.Builder -> BuilderBaseBuildings.all.map { it.displayName }
+} + listOf("城墙")
+
+val ALL_BUILDINGS = getBuildingNames(BaseType.Main)
 
 /**
  * OCR labels that help locate sections in the upgrade list but are not buildings.
@@ -131,7 +135,7 @@ fun countGreenPixelsInArea(
  * - Replaces OCR-misread "减墙" with "城墙"
  * - Strips trailing "x" / "X" followed by digits (e.g. "储金罐x2" → "储金罐")
  */
-fun cleanBuildingName(raw: String): String {
+fun cleanBuildingName(raw: String, candidateBuildings: List<String> = ALL_BUILDINGS): String {
     // Remove whitespace and pipes immediately
     var name = raw.replace(" ", "").replace("|", "")
 
@@ -196,9 +200,13 @@ fun cleanBuildingName(raw: String): String {
     // Remove all text starting from 'x' or 'X' (e.g. "建筑xgas6" -> "建筑")
     name = name.replace(Regex("[xX].*"), "")
 
-    // If the name starts with "新" or "改装", keep it as is to skip fuzzy matching
-    if (name.startsWith("新") || name.startsWith("改装")) {
-        return name
+    val prefix = when {
+        name.startsWith("新") -> "新"
+        name.startsWith("改装") -> "改装"
+        else -> ""
+    }
+    if (prefix.isNotEmpty()) {
+        name = name.removePrefix(prefix)
     }
 
     // Filter to keep only Chinese characters before fuzzy matching to reduce false positives
@@ -210,12 +218,14 @@ fun cleanBuildingName(raw: String): String {
     }
 
     // Check special OCR labels before buildings so section markers are normalized early.
-    findBestFuzzyMatch(chineseOnly, SPECIAL_OCR_LABELS)?.let { return it }
+    if (prefix.isEmpty()) {
+        findBestFuzzyMatch(chineseOnly, SPECIAL_OCR_LABELS)?.let { return it }
+    }
 
     // Match building names last to avoid treating section labels as real buildings.
-    findBestFuzzyMatch(chineseOnly, ALL_BUILDINGS)?.let { return it }
+    findBestFuzzyMatch(chineseOnly, candidateBuildings)?.let { return prefix + it }
 
-    return name
+    return prefix + name
 }
 
 /**

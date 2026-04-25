@@ -66,6 +66,7 @@ private suspend fun upgradeGearUpBuildings(): Boolean {
     TouchActions.tap(worker.x, worker.y)
 
     iterateBuilderBaseBuildingUpgradeList(
+        baseType = BaseType.Main,
         excludeNewBuildings = false,
         excludeGearUpBuildings = false,
         onDetect = { result ->

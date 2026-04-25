@@ -120,7 +120,7 @@ suspend fun upgradeAllExistingBuildings(buildings: List<String>, currentBase: Ba
             // Only count consecutive failures when the requested building cannot be found.
             var selectedBuilding = building
             if (skipOrdering) {
-                if (!findSpecificBuilding(building, true)) {
+                if (!findSpecificBuilding(building, currentBase, true)) {
                     // Wall not found; clean up UI and signal caller to stop its upgrade loop
                     clickRightBottom(1)
                     enterMainScreen()
@@ -130,7 +130,7 @@ suspend fun upgradeAllExistingBuildings(buildings: List<String>, currentBase: Ba
                 val shouldUseFallback = isFallbackEnabled && building != "城墙" && consecutiveFailureCount >= fallbackThreshold
 
                 if (shouldUseFallback) {
-                    val fallbackBuilding = findFirstEnabledExistingBuilding(fallbackEnabledBuildings)
+                    val fallbackBuilding = findFirstEnabledExistingBuilding(fallbackEnabledBuildings, currentBase)
                     if (fallbackBuilding != null) {
                         consecutiveFailureCount = 0
                         selectedBuilding = fallbackBuilding
@@ -139,11 +139,11 @@ suspend fun upgradeAllExistingBuildings(buildings: List<String>, currentBase: Ba
                         clickRightBottom(1)
                         break
                     }
-                } else if (!findSpecificBuilding(building)) {
+                } else if (!findSpecificBuilding(building, currentBase)) {
                     if (building != "城墙") {
                         consecutiveFailureCount++
                         if (consecutiveFailureCount >= fallbackThreshold && isFallbackEnabled) {
-                            val fallbackBuilding = findFirstEnabledExistingBuilding(fallbackEnabledBuildings)
+                            val fallbackBuilding = findFirstEnabledExistingBuilding(fallbackEnabledBuildings, currentBase)
                             if (fallbackBuilding != null) {
                                 consecutiveFailureCount = 0
                                 selectedBuilding = fallbackBuilding
@@ -403,10 +403,10 @@ private suspend fun upgradeBuilding(building: String, currentBase: BaseType, att
     return LoopAction.Proceed
 }
 
-private suspend fun findSpecificBuilding(buildingName: String, excludeNewBuildings: Boolean = false): Boolean {
+private suspend fun findSpecificBuilding(buildingName: String, currentBase: BaseType, excludeNewBuildings: Boolean = false): Boolean {
     var found = false
     accountMessage("准备寻找$buildingName")
-    iterateBuilderBaseBuildingUpgradeList(excludeNewBuildings = excludeNewBuildings, onDetect = { result ->
+    iterateBuilderBaseBuildingUpgradeList(baseType = currentBase, excludeNewBuildings = excludeNewBuildings, onDetect = { result ->
         val building = result.buildings.find { it.name == buildingName }
         if (building != null) {
             accountMessage("已找到$buildingName")
@@ -420,9 +420,9 @@ private suspend fun findSpecificBuilding(buildingName: String, excludeNewBuildin
     return found
 }
 
-private suspend fun findFirstEnabledExistingBuilding(enabledBuildings: Set<String>): String? {
+private suspend fun findFirstEnabledExistingBuilding(enabledBuildings: Set<String>, currentBase: BaseType): String? {
     var selectedBuilding: String? = null
-    iterateBuilderBaseBuildingUpgradeList(excludeNewBuildings = true, onDetect = { result ->
+    iterateBuilderBaseBuildingUpgradeList(baseType = currentBase, excludeNewBuildings = true, onDetect = { result ->
         val building = result.buildings.firstOrNull { it.name in enabledBuildings && it.name != "城墙" }
         if (building != null) {
             accountMessage("连续失败过多，改为升级${building.name}")

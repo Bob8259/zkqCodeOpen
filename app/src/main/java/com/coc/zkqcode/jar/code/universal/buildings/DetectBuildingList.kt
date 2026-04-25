@@ -18,7 +18,8 @@ import com.coc.zkqcode.jar.code.universal.smalltools.TouchActions
  * @param excludeGearUpBuildings If true, gear-up buildings (改装-prefixed) are excluded; if false, returns only the first gear-up building.
  * @return A list of [DetectedBuilding] objects.
  */
-suspend fun detectBuildingList(excludeNewBuildings: Boolean = false, excludeGearUpBuildings: Boolean = true): BuildingDetectionResult {
+suspend fun detectBuildingList(baseType: BaseType, excludeNewBuildings: Boolean = false, excludeGearUpBuildings: Boolean = true): BuildingDetectionResult {
+    val candidateBuildings = getBuildingNames(baseType)
     val startX = 400
     val startY = 100
     val endX = 900
@@ -73,7 +74,7 @@ suspend fun detectBuildingList(excludeNewBuildings: Boolean = false, excludeGear
     // If "建议升级" is detected, only keep results below it (greater y)
     val upgradeY = processedResults.mapNotNull { item ->
         val pos = item.position ?: return@mapNotNull null
-        val cleaned = cleanBuildingName(item.text)
+        val cleaned = cleanBuildingName(item.text, candidateBuildings)
         if (cleaned == "建议升级") {
             pos.top + startY
         } else null
@@ -97,11 +98,11 @@ suspend fun detectBuildingList(excludeNewBuildings: Boolean = false, excludeGear
         val count = countPixelsInArea(screenBuffer, x + 200, y - 20, x + 430, y + 10, 0xFF887F)
         if (count > 10) return@mapNotNull null
 
-        val cleanedName = cleanBuildingName(item.text)
+        val cleanedName = cleanBuildingName(item.text, candidateBuildings)
         val isNew = cleanedName.startsWith("新")
         val isGearUp = cleanedName.startsWith("改装")
 
-        if (isNew || isGearUp || cleanedName in ALL_BUILDINGS) {
+        if (isNew || isGearUp || cleanedName in candidateBuildings) {
             BuildingWithFlags(DetectedBuilding(name = cleanedName, x = x, y = y), isNew, isGearUp)
         } else {
             null
@@ -147,20 +148,21 @@ suspend fun detectBuildingList(excludeNewBuildings: Boolean = false, excludeGear
  * If [onDetect] returns true, the iteration stops immediately.
  */
 suspend fun iterateBuilderBaseBuildingUpgradeList(
+    baseType: BaseType,
     excludeNewBuildings: Boolean = false,
     excludeGearUpBuildings: Boolean = true,
     onDetect: suspend (BuildingDetectionResult) -> Boolean
 ) {
     var previousBuildingNames: List<String>? = null
     loop@ for (i in 1..12) {
-        val result = detectBuildingList(excludeNewBuildings, excludeGearUpBuildings)
+        val result = detectBuildingList(baseType, excludeNewBuildings, excludeGearUpBuildings)
         if (onDetect(result)) return
 
         val currentBuildingNames = result.buildings.map { it.name }.sorted()
         if (previousBuildingNames != null && currentBuildingNames == previousBuildingNames) {
             repeat(2) {
                 TouchActions.swipe(666, 170, 666, 300, delayTime = 200, delayAfter = 100)
-                val extraResult = detectBuildingList(excludeNewBuildings, excludeGearUpBuildings)
+                val extraResult = detectBuildingList(baseType, excludeNewBuildings, excludeGearUpBuildings)
                 if (onDetect(extraResult)) return
             }
             break@loop

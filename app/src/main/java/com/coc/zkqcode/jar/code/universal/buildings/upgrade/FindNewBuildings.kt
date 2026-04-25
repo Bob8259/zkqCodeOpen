@@ -18,7 +18,7 @@ suspend fun builderBaseFindNewBuildings(currentBase: BaseType): Boolean {
     if (worker != null) {
         TouchActions.tap(worker.x, worker.y)
         var found = false
-        iterateBuilderBaseBuildingUpgradeList(onDetect = { result ->
+        iterateBuilderBaseBuildingUpgradeList(baseType = currentBase, onDetect = { result ->
             val buildings = result.buildings
             if (buildings.isEmpty()) {
                 accountMessage("未检测到可升级建筑")
