@@ -14,13 +14,9 @@ import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.smalltools.TouchActions
-import com.coc.zkqcode.jar.code.universal.smalltools.checkMemoryFile
 import com.coc.zkqcode.jar.code.universal.smalltools.getBooleanConfigRuntime
-import com.coc.zkqcode.jar.code.universal.smalltools.writeMemory
 import com.coc.zkqcode.jar.ui.schema.Schema
 
-private const val CLAN_GAME_MEMORY_KEY = "clan_game_last_run"
-private const val CLAN_GAME_INTERVAL_MINUTES = 60
 private const val CLAN_GAME_DETECT_LEFT = 470f
 private const val CLAN_GAME_DETECT_TOP = 125f
 private const val CLAN_GAME_DETECT_RIGHT = 1100f
@@ -64,7 +60,6 @@ suspend fun clanGame(): Boolean {
             TouchActions.swipe(600, 150, 600, 600, delayAfter = 300)
         }
 
-        writeMemory(CLAN_GAME_MEMORY_KEY, (System.currentTimeMillis() / 60_000).toString())
     }
     return enterMainScreen()
 }
