@@ -62,7 +62,10 @@ object MyColors : IUIColors by UIColors, IFeatureColors by FeatureColors, IMainB
     IMainBaseHeroHallColors by MainBaseHeroHallColors, IMainBaseSmallTutorialColors by MainBaseSmallTutorialColors, IMainBaseMagicItemColors by MainBaseMagicItemColors, IClanCapitalColors by ClanCapitalColors {
     //Clan Game Colours
     val Calendar = ColorSchema.parse(
-        175, 630, 475, 7055, "5678E1", "6|0|4770D3,12|0|9EB1C8,17|0|ECF1F8,23|0|FFFFFF,0|12|FFFFFF,6|12|FFFFFF,12|12|3620B1,17|12|B5AFF1,23|12|FFFFFF", 0, 0.9, "日历标志"
+        175, 630, 475, 705, "5678E1", "6|0|4770D3,12|0|9EB1C8,17|0|ECF1F8,23|0|FFFFFF,0|12|FFFFFF,6|12|FFFFFF,12|12|3620B1,17|12|B5AFF1,23|12|FFFFFF", 0, 0.9, "日历标志"
+    )
+    val Calendar2 = ColorSchema.parse(
+        175, 630, 475, 705, "784EFC", "-4|10|FDFDFF,-16|7|FFFFFF,-16|3|FFFFFF,-17|-1|FCFCFF,-14|-9|5477E0,-10|-9|5776E3,-4|-5|7050E4,2|-1|FFFFFF,5|13|FFFFFF", 0, 0.9, "日历标志2"
     )
     val OpenClanGame = ColorSchema.parse(
         200, 85, 1075, 690, "7AF1D2", "70|-2|7FF3D7,93|0|7AF1D2,-562|-76|174AF1,-516|-58|1F41B8,-419|-81|C7974C,-415|-10|CD9D50,-136|9|FFBB9E,-18|-33|FFBDA5,82|-33|FFBDAB", 0, 0.9, "打开部落竞赛"

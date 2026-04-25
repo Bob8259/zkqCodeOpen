@@ -26,7 +26,8 @@ private const val CLAN_GAME_PRO_TASK_CLASS = 1
 
 suspend fun clanGame(): Boolean {
     InGameVars.clanGameAcceptedTaskBase = ClanGameAcceptedTaskBase.NONE
-    val calendar = findMultiColors(MyColors.Calendar)
+    if (!getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.DO_CLAN_GAMES.key)) return true
+    val calendar = findMultiColorsUntil(schemas = listOf(MyColors.Calendar, MyColors.Calendar2), duration = 100)
 
     if (calendar != null) {
         TouchActions.tap(calendar.x, calendar.y)
