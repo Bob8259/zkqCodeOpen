@@ -78,8 +78,7 @@ suspend fun builderBaseAttack(): Boolean {
         } else {
             Schema.BUILDER_BASE_SETTINGS.BUILDER_BASE_BATTLE_TIMES
         }
-        val battleTimes = getConfigRuntime(battleTimesSetting.key).toIntOrNull()
-            ?: logAndRestart("${battleTimesSetting.displayName} 必须是数字，请检查配置")
+        val battleTimes = getConfigRuntime(battleTimesSetting.key).toIntOrNull() ?: logAndRestart("${battleTimesSetting.displayName} 必须是数字，请检查配置")
         repeat(battleTimes) { index ->
             if (!realAttack(attackType, index + 1, battleTimes)) return false
             if ((index + 1) % 5 == 0) {
@@ -203,52 +202,54 @@ private suspend fun normalBattle(isNormal: Boolean = true) {
     TouchActions.tap(125, 610, delayTime = 200) // Battle Machine
     TouchActions.tap(deployPos.first, deployPos.second, delayTime = 200) // Deploy the Machine
     if (!isNormal) return
-    val generalTroops = findMultiColorsUntil(schemas = listOf(MyColors.TroopsWithSkills, MyColors.TroopsWithOutSkills), duration = 200)
-    if (generalTroops != null) {
-        accountMessage("准备点击女巫，点击坐标${generalTroops.x + 1}, 610\n当前部署位置${deployPos.first}, ${deployPos.second}")
-        delayWithMultiplier(1500)
-        TouchActions.tap(generalTroops.x + 15, 620, delayTime = 200) // Troops
-        val nightWitch = findMultiColors(schema = MyColors.NightWitch)
-        if (nightWitch != null) {
-            TouchActions.touchDown((deployPos.first + Random.nextInt(1, 4)).toFloat(), (deployPos.second + Random.nextInt(1, 4)).toFloat(), 1)
-            delayWithMultiplier(4000)
-            TouchActions.touchUp(1)
-            accountMessage("等女巫走一会")
-            delayWithMultiplier(Random.nextInt(5000, 10000))
-            repeat(6) {
-                val skillsPos = findMultiColors(
-                    schema = ColorSchema.rescope(
-                        MyColors.TroopSkills, MyColors.TroopSkills.x1, MyColors.TroopSkills.y1, MyColors.TroopSkills.x2, MyColors.TroopSkills.y2, direction = Random.nextInt(0, 2)
+    repeat(2) {
+        val generalTroops = findMultiColorsUntil(schemas = listOf(MyColors.TroopsWithSkills, MyColors.TroopsWithOutSkills), duration = 200)
+        if (generalTroops != null) {
+            accountMessage("准备点击部队，点击坐标${generalTroops.x + 1}, 610\n当前部署位置${deployPos.first}, ${deployPos.second}")
+            delayWithMultiplier(1500)
+            TouchActions.tap(generalTroops.x + 15, 620, delayTime = 200) // Troops
+            val nightWitch = findMultiColors(schema = MyColors.NightWitch)
+            if (nightWitch != null) {
+                TouchActions.touchDown((deployPos.first + Random.nextInt(1, 4)).toFloat(), (deployPos.second + Random.nextInt(1, 4)).toFloat(), 1)
+                delayWithMultiplier(4000)
+                TouchActions.touchUp(1)
+                accountMessage("等女巫走一会")
+                delayWithMultiplier(Random.nextInt(5000, 10000))
+                repeat(6) {
+                    val skillsPos = findMultiColors(
+                        schema = ColorSchema.rescope(
+                            MyColors.TroopSkills, MyColors.TroopSkills.x1, MyColors.TroopSkills.y1, MyColors.TroopSkills.x2, MyColors.TroopSkills.y2, direction = Random.nextInt(0, 2)
+                        )
                     )
-                )
-                if (skillsPos != null) {
-                    TouchActions.tap(skillsPos.x, 620)
-                    delayWithMultiplier(Random.nextInt(500, 4000))
+                    if (skillsPos != null) {
+                        TouchActions.tap(skillsPos.x, 620)
+                        delayWithMultiplier(Random.nextInt(500, 4000))
+                    }
                 }
-            }
-        } else {
-            attemptLoop@ for (attempt in 0 until 5) {
-                // Step 1: Touch down at a random position
-                var currentPos = deployPositions.random()
-                TouchActions.touchDown(deployPos.first.toFloat(), deployPos.second.toFloat(), 1)
-                delayWithMultiplier(600)
+            } else {
+                attemptLoop@ for (attempt in 0 until 5) {
+                    // Step 1: Touch down at a random position
+                    var currentPos = deployPositions.random()
+                    TouchActions.touchDown(deployPos.first.toFloat(), deployPos.second.toFloat(), 1)
+                    delayWithMultiplier(600)
 
-                // Steps 2-3: Move smoothly to random positions until barbarian is gone
-                var moveCount = 0
-                while (true) {
-                    val nextPos = deployPositions.random()
-                    TouchActions.moveSmoothly(
-                        fromX = currentPos.first.toFloat(), fromY = currentPos.second.toFloat(), toX = nextPos.first.toFloat(), toY = nextPos.second.toFloat(), duration = Random.nextInt(200, 500)
-                    )
-                    currentPos = nextPos
-                    moveCount++
-                    // Only check barbarian presence every 3 moves to reduce findMultiColors calls
-                    if (moveCount % 3 == 0) {
-                        val barbarian = findMultiColors(schema = MyColors.BuilderBaseBarbarian)
-                        if (barbarian == null) {
-                            // Release finger and exit outer loop — barbarian is gone
-                            TouchActions.touchUp(1)
-                            break@attemptLoop
+                    // Steps 2-3: Move smoothly to random positions until barbarian is gone
+                    var moveCount = 0
+                    while (true) {
+                        val nextPos = deployPositions.random()
+                        TouchActions.moveSmoothly(
+                            fromX = currentPos.first.toFloat(), fromY = currentPos.second.toFloat(), toX = nextPos.first.toFloat(), toY = nextPos.second.toFloat(), duration = Random.nextInt(200, 500)
+                        )
+                        currentPos = nextPos
+                        moveCount++
+                        // Only check barbarian presence every 3 moves to reduce findMultiColors calls
+                        if (moveCount % 3 == 0) {
+                            val barbarian = findMultiColors(schema = MyColors.BuilderBaseBarbarian)
+                            if (barbarian == null) {
+                                // Release finger and exit outer loop — barbarian is gone
+                                TouchActions.touchUp(1)
+                                break@attemptLoop
+                            }
                         }
                     }
                 }

@@ -8,6 +8,7 @@ import com.coc.zkqcode.core.util.basic.waitForPlay
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
 import com.coc.zkqcode.jar.code.auth.displayAds
 import com.coc.zkqcode.jar.code.auth.userAuth
+import com.coc.zkqcode.jar.code.builderbase.attack.builderBaseAttack
 import com.coc.zkqcode.jar.code.builderbase.playBuilderBase
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.mainbase.clan.clanGame
@@ -91,7 +92,7 @@ suspend fun runMainScript() {
 
 private suspend fun runTestCode() {
     while (true) {
-        clanGame()
+        builderBaseAttack()
         accountMessage("测试代码结束")
         delay(5000)
     }
