@@ -144,7 +144,7 @@ fun BugReport(onClose: () -> Unit) {
                                     )
                                     .build()
 
-                                // Use fallback utility for upload
+                                // Use fallback utility for upload and surface known server errors.
                                 val responseBody = withContext(Dispatchers.IO) {
                                     UrlFallbackUtil.executeWithFallbackAndReadBody(
                                         endpoint = "api/bug-report",
@@ -157,9 +157,18 @@ fun BugReport(onClose: () -> Unit) {
                                     )
                                 }
 
-                                statusMessage = "截图提交成功！请与作者/客服联系。"
+                                statusMessage = if (hasKnownServerError(responseBody)) {
+                                    translateServerError(responseBody)
+                                } else {
+                                    "截图提交成功！请与作者/客服联系。"
+                                }
                             } catch (e: Exception) {
-                                statusMessage = "提交失败：${e.message}"
+                                val errorMessage = e.message.orEmpty()
+                                statusMessage = if (hasKnownServerError(errorMessage)) {
+                                    translateServerError(errorMessage)
+                                } else {
+                                    "提交失败：${e.message}"
+                                }
                             } finally {
                                 // Restore the window so the user sees the result
                                 isTransparent = false
@@ -208,13 +217,16 @@ private fun Modifier.drawVerticalScrollbar(
     }
 }
 
+private fun hasKnownServerError(responseBody: String): Boolean {
+    val message = extractServerMessage(responseBody)
+    return message.contains("folder is full", ignoreCase = true) ||
+            message.contains("No file uploaded", ignoreCase = true) ||
+            (message.contains("Missing", ignoreCase = true) && message.contains("image", ignoreCase = true))
+}
+
 // Translate known server error messages to Chinese
 private fun translateServerError(responseBody: String): String {
-    val message = try {
-        JSONObject(responseBody).optString("message", responseBody)
-    } catch (_: Exception) {
-        responseBody
-    }
+    val message = extractServerMessage(responseBody)
 
     return when {
         message.contains("folder is full", ignoreCase = true) ->
@@ -228,5 +240,13 @@ private fun translateServerError(responseBody: String): String {
 
         else ->
             "提交失败：$message"
+    }
+}
+
+private fun extractServerMessage(responseBody: String): String {
+    return try {
+        JSONObject(responseBody).optString("message", responseBody)
+    } catch (_: Exception) {
+        responseBody
     }
 }
