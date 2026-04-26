@@ -2,14 +2,10 @@ package com.coc.zkqcode.jar.code.universal.buildings.upgrade
 
 import android.graphics.Point
 import com.coc.zkqcode.jar.code.universal.buildings.BaseType
-import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
-import com.coc.zkqcode.core.util.bugreporter.BugReporter
 import com.coc.zkqcode.jar.code.universal.smalltools.TouchActions
 import com.coc.zkqcode.jar.code.builderbase.upgrade.builderBaseFindBuildButton
 import com.coc.zkqcode.jar.code.mainbase.upgrade.mainBaseFindBuildButton
-import com.coc.zkqcode.jar.code.universal.clickRightBottom
-import com.coc.zkqcode.jar.code.universal.smalltools.killGame
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.withContext
 import kotlin.math.sqrt
@@ -54,13 +50,8 @@ suspend fun tryToFindBuildPosition(baseType: BaseType): Point? {
                 TouchActions.touchUp(1)
             }
         }
-    } else {
-        accountMessage("未找到红色叉，错误截图已保存到/sdcard/zkqFiles/bugReporter\n请将截图反馈给作者")
-        BugReporter.takeScreenshot("Red_Cross_Not_Found")
-        killGame()
-        clickRightBottom(1)
-        return null
     }
+    return null
 }
 
 private suspend fun iterateThroughAllPossiblePositions(baseType: BaseType): Point? {

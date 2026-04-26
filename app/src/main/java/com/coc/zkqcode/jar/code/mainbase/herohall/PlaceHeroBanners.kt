@@ -1,6 +1,5 @@
 package com.coc.zkqcode.jar.code.mainbase.herohall
 
-import com.coc.zkqcode.core.util.bugreporter.BugReporter
 import com.coc.zkqcode.jar.code.universal.smalltools.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.mainbase.others.zoomSmallMainBase
@@ -15,7 +14,6 @@ import com.coc.zkqcode.jar.code.universal.clickRightBottom
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.smalltools.StorageKeys
 import com.coc.zkqcode.jar.code.universal.smalltools.checkMemoryFile
-import com.coc.zkqcode.jar.code.universal.smalltools.killGame
 import com.coc.zkqcode.jar.code.universal.smalltools.writeMemory
 
 suspend fun placeHeroBanners(): Boolean {
@@ -61,13 +59,7 @@ private suspend fun placeHeroBannerAction() {
                 moveWithDelay(635F, 330F)
                 zoomSmallMainBase(isForBuild = true)
                 targetTick = tryToFindBuildPosition(BaseType.Main)
-            } else {
-                accountMessage("未找到红色叉，错误截图已保存到/sdcard/zkqFiles/bugReporter\n请将截图反馈给作者")
-                BugReporter.takeScreenshot("Red_Cross_Not_Found")
-                killGame()
-                clickRightBottom(1)
-                return
-            }
+            } 
         }
 
         if (targetTick != null) {

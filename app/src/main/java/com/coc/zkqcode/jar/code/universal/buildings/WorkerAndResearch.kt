@@ -2,7 +2,6 @@ package com.coc.zkqcode.jar.code.universal.buildings
 
 import android.graphics.Bitmap
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
-import com.coc.zkqcode.core.util.bugreporter.BugReporter
 import com.coc.zkqcode.jar.code.colorschema.ColorSchema
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.accountMessage
@@ -67,8 +66,6 @@ object WorkerAndResearch {
             // Fallback: OCR failed, use colour-based pattern matching on the preprocessed bitmap
             return detectWorkerByColorMatch(startX, startY, endX, endY)
         }
-        accountMessage("未检测到${baseName}工人，已将错误截图保存到/sdcard/zkqFiles/bugReporter\n请反馈给作者")
-        BugReporter.takeScreenshot("${bugTag}_Not_Detected")
         return WorkerInfo(0, 0)
     }
 
@@ -121,8 +118,6 @@ object WorkerAndResearch {
             accountMessage("${baseName}研究数量：0/0")
             return false
         }
-        accountMessage("未检测到${baseName}研究，已将错误截图保存到/sdcard/zkqFiles/bugReporter\n请反馈给作者")
-        BugReporter.takeScreenshot("${bugTag}_Not_Detected")
         return false
     }
 

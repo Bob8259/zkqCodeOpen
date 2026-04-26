@@ -151,7 +151,8 @@ private suspend fun acceptTask(x: Int, y: Int): Boolean {
     val acceptTaskButton = findMultiColors(MyColors.AcceptTask)
     if (acceptTaskButton != null) {
         //TODO: Take a screenshot, and upload to the server. You should continue rest of the code regardless of the server response.
-        
+        // You can re-use bugReport functions.
+
         TouchActions.tap(acceptTaskButton.x, acceptTaskButton.y, isJitter = false, delayTime = 2500)
         clickRightBottom(1)
         return true
