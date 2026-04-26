@@ -4,6 +4,7 @@ import android.graphics.Bitmap
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.jar.code.colorschema.ColorSchema
+import com.coc.zkqcode.jar.code.universal.network.UrlFallbackUtil
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.jar.code.universal.aidetection.AiDetector
@@ -19,6 +20,14 @@ import com.coc.zkqcode.jar.code.universal.smalltools.TouchActions
 import com.coc.zkqcode.jar.code.universal.smalltools.getBooleanConfigRuntime
 import com.coc.zkqcode.jar.code.universal.smalltools.writeClanGameAcceptedTaskBase
 import com.coc.zkqcode.jar.ui.schema.Schema
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.Request
+import okhttp3.RequestBody.Companion.toRequestBody
+import java.io.ByteArrayOutputStream
 
 private const val CLAN_GAME_DETECT_LEFT = 470f
 private const val CLAN_GAME_DETECT_TOP = 125f
@@ -150,14 +159,54 @@ private suspend fun acceptTask(x: Int, y: Int): Boolean {
     TouchActions.tap(x, y, delayTime = 500)
     val acceptTaskButton = findMultiColors(MyColors.AcceptTask)
     if (acceptTaskButton != null) {
-        //TODO: Take a screenshot, and upload to the server. You should continue rest of the code regardless of the server response.
-        // You can re-use bugReport functions.
+        uploadClanGameTaskScreenshot()
 
         TouchActions.tap(acceptTaskButton.x, acceptTaskButton.y, isJitter = false, delayTime = 2500)
         clickRightBottom(1)
         return true
     }
     return false
+}
+
+private suspend fun uploadClanGameTaskScreenshot() {
+    val screenshot = ScreenCaptureManager.capture(asBitmap = true) as? Bitmap
+    if (screenshot == null) {
+        accountMessage("部落竞赛截图上传跳过：截图为空")
+        return
+    }
+
+    CoroutineScope(Dispatchers.IO).launch {
+        try {
+            val imageBytes = ByteArrayOutputStream().use { outputStream ->
+                screenshot.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
+                outputStream.toByteArray()
+            }
+            screenshot.recycle()
+
+            val imageName = "clan_game_${System.currentTimeMillis()}.png"
+            val requestBody = MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart(
+                    "image",
+                    imageName,
+                    imageBytes.toRequestBody("image/png".toMediaTypeOrNull())
+                )
+                .build()
+
+            UrlFallbackUtil.executeWithFallbackAndReadBody(
+                endpoint = "api/bug-report",
+                requestBuilder = { baseUrl ->
+                    Request.Builder()
+                        .url("${baseUrl}api/bug-report")
+                        .post(requestBody)
+                        .build()
+                }
+            )
+        } catch (e: Exception) {
+            accountMessage("部落竞赛截图上传失败：${e.message}")
+            if (!screenshot.isRecycled) screenshot.recycle()
+        }
+    }
 }
 
 private fun toAcceptedTaskBase(baseType: String): String {
