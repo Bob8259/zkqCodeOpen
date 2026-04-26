@@ -117,11 +117,7 @@ private suspend fun detectAndAcceptATask(targetBaseType: BaseType): Boolean {
             }
             val baseType = detectClanGameBaseType(screenshot, centerX, centerY)
             ClanGameTaskDecision(
-                x = centerX,
-                y = centerY,
-                taskType = taskType,
-                baseType = baseType,
-                shouldAccept = shouldAcceptClanGameTask(detection.classIndex, baseType, targetBaseType)
+                x = centerX, y = centerY, taskType = taskType, baseType = baseType, shouldAccept = shouldAcceptClanGameTask(detection.classIndex, baseType, targetBaseType)
             )
         }
 
@@ -154,7 +150,7 @@ private suspend fun acceptTask(x: Int, y: Int): Boolean {
     TouchActions.tap(x, y, delayTime = 500)
     val acceptTaskButton = findMultiColors(MyColors.AcceptTask)
     if (acceptTaskButton != null) {
-        TouchActions.tap(acceptTaskButton.x, acceptTaskButton.y, delayTime = 2500)
+        TouchActions.tap(acceptTaskButton.x, acceptTaskButton.y, isJitter = false, delayTime = 2500)
         clickRightBottom(1)
         return true
     }
