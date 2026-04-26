@@ -88,7 +88,11 @@ suspend fun findAttackTarget(): Boolean {
             // Offset per design: shift left 80px and down 80px to land on the entry button. Y is capped at 719.
             val tapY = minOf(centerY + 80, 719)
             accountMessage(district.name)
-            TouchActions.tap(centerX - 80, tapY)
+            if (district.name == "哥布矿井") {
+                TouchActions.tap(840, 715)
+            } else {
+                TouchActions.tap(centerX - 80, tapY)
+            }
             val raidButton = findMultiColorsUntil(schemas = listOf(MyColors.RaidRedAttackButton), duration = 300)
             if (raidButton != null) {
                 TouchActions.tap(raidButton.x, raidButton.y)
