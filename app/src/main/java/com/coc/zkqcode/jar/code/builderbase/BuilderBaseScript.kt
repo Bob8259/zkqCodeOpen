@@ -8,7 +8,7 @@ import com.coc.zkqcode.jar.code.builderbase.precheck.claimAchievement
 import com.coc.zkqcode.jar.code.builderbase.research.builderBaseResearch
 import com.coc.zkqcode.jar.code.builderbase.others.collectBuilderBaseResources
 import com.coc.zkqcode.jar.code.builderbase.others.turnOnClockTower
-import com.coc.zkqcode.jar.code.mainbase.clan.clanGame
+import com.coc.zkqcode.jar.code.universal.clangame.clanGame
 import com.coc.zkqcode.jar.code.universal.buildings.BaseType
 import com.coc.zkqcode.jar.code.universal.buildings.gearup.gearUpBuildings
 import com.coc.zkqcode.jar.code.universal.buildings.upgradeWallsThenBuildings

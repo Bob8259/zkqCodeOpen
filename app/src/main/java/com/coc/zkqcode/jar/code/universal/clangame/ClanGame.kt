@@ -1,4 +1,4 @@
-package com.coc.zkqcode.jar.code.mainbase.clan
+package com.coc.zkqcode.jar.code.universal.clangame
 
 import android.graphics.Bitmap
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
@@ -150,6 +150,8 @@ private suspend fun acceptTask(x: Int, y: Int): Boolean {
     TouchActions.tap(x, y, delayTime = 500)
     val acceptTaskButton = findMultiColors(MyColors.AcceptTask)
     if (acceptTaskButton != null) {
+        //TODO: Take a screenshot, and upload to the server. You should continue rest of the code regardless of the server response.
+        
         TouchActions.tap(acceptTaskButton.x, acceptTaskButton.y, isJitter = false, delayTime = 2500)
         clickRightBottom(1)
         return true
