@@ -101,11 +101,26 @@ private suspend fun detectAndAcceptATask(targetBaseType: BaseType): Boolean {
         return false
     }
 
+    val cropLeft = CLAN_GAME_DETECT_LEFT.toInt()
+    val cropTop = CLAN_GAME_DETECT_TOP.toInt()
+    val cropRight = CLAN_GAME_DETECT_RIGHT.toInt()
+    val cropBottom = CLAN_GAME_DETECT_BOTTOM.toInt()
+    val cropWidth = cropRight - cropLeft
+    val cropHeight = cropBottom - cropTop
+    if (cropLeft < 0 || cropTop < 0 || cropRight > screenshot.width || cropBottom > screenshot.height || cropWidth <= 0 || cropHeight <= 0) {
+        accountMessage("部落竞赛截图尺寸异常，无法裁剪检测区域：${screenshot.width}x${screenshot.height}")
+        return false
+    }
+
+    var clanGameCrop: Bitmap? = null
     if (!AiDetector.loadWeights("clan-game")) return false
     try {
+        clanGameCrop = Bitmap.createBitmap(screenshot, cropLeft, cropTop, cropWidth, cropHeight)
         val detections = AiDetector.detect(
-            bitmap = screenshot, clearWeightsAfter = false, threshold = 0.65f
-        ).filter { detection ->
+            bitmap = clanGameCrop, clearWeightsAfter = false, threshold = 0.65f
+        ).onEach { detection ->
+            detection.boundingBox.offset(cropLeft.toFloat(), cropTop.toFloat())
+        }.filter { detection ->
             val centerX = detection.boundingBox.centerX()
             val centerY = detection.boundingBox.centerY()
             detection.classIndex in CLAN_GAME_NORMAL_TASK_CLASS..CLAN_GAME_PRO_TASK_CLASS && centerX in CLAN_GAME_DETECT_LEFT..CLAN_GAME_DETECT_RIGHT && centerY in CLAN_GAME_DETECT_TOP..CLAN_GAME_DETECT_BOTTOM
@@ -151,6 +166,7 @@ private suspend fun detectAndAcceptATask(targetBaseType: BaseType): Boolean {
         accountMessage("未找到部落竞赛接取按钮")
         return false
     } finally {
+        clanGameCrop?.recycle()
         AiDetector.clearWeights()
     }
 }
