@@ -13,7 +13,7 @@ object BuilderBaseSettings {
     val BUILDER_BASE_BATTLE_TIMES_WITH_TASKS = SettingDef(
         "builder_base_battle_times_with_tasks", "接取竞赛后对战局数", "3", "BUILDER_BASE_SETTINGS"
     )
-    val STOP_WHEN_RESOURCE_FULL = SettingDef("stop_when_resource_full", "资源满后停止对战", 1, "BUILDER_BASE_SETTINGS")
+    val BUILDER_BASE_STOP_BATTLE_AFTER_FULL_RESOURCES = SettingDef("builder_base_stop_battle_after_full_resources", "资源满后停止对战", 1, "BUILDER_BASE_SETTINGS")
     val TROPHY_PUSHING_MODE = SettingDef("trophy_pushing_mode", "上分模式", 0, "BUILDER_BASE_SETTINGS")
     val ELIXIR_CART_FARMING = SettingDef("elixir_cart_farming", "刷圣水车", 0, "BUILDER_BASE_SETTINGS")
     val BUILDER_BASE_RESEARCH = SettingDef("builder_base_research", "夜世界研究", 1, "BUILDER_BASE_SETTINGS")
@@ -31,7 +31,7 @@ object BuilderBaseSettings {
         NO_BUILDER_BASE,
         BUILDER_BASE_FARMING,
         BUILDER_BASE_BATTLE_TIMES,
-        STOP_WHEN_RESOURCE_FULL,
+        BUILDER_BASE_STOP_BATTLE_AFTER_FULL_RESOURCES,
         TROPHY_PUSHING_MODE,
         ELIXIR_CART_FARMING,
         BUILDER_BASE_RESEARCH,

@@ -68,7 +68,7 @@ fun LazyListScope.builderBaseConfig(
                         }
                     }
                 )
-                SettingSwitchIcon(key = "${BUILDER_BASE_SETTINGS.STOP_WHEN_RESOURCE_FULL.key}_c${index}")
+                SettingSwitchIcon(key = "${BUILDER_BASE_SETTINGS.BUILDER_BASE_STOP_BATTLE_AFTER_FULL_RESOURCES.key}_c${index}")
             }
             SettingInputRow(key = "${BUILDER_BASE_SETTINGS.BUILDER_BASE_BATTLE_TIMES.key}_c${index}")
             SettingInputRow(key = "${BUILDER_BASE_SETTINGS.BUILDER_BASE_BATTLE_TIMES_WITH_TASKS.key}_c${index}")

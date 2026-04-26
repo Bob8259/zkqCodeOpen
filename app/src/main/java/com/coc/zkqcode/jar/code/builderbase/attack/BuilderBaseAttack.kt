@@ -52,10 +52,12 @@ suspend fun builderBaseAttack(): Boolean {
     // Consider resource full if percentage >= 96%
     val isGoldFull = resourcePercentage.gold >= 96
     val isExileFull = resourcePercentage.elixir >= 96
-    val stopIfFull = getBooleanConfigRuntime(Schema.BUILDER_BASE_SETTINGS.STOP_WHEN_RESOURCE_FULL.key)
+    val stopIfFull = getBooleanConfigRuntime(Schema.BUILDER_BASE_SETTINGS.BUILDER_BASE_STOP_BATTLE_AFTER_FULL_RESOURCES.key)
+    val acceptedTaskBase = readClanGameAcceptedTaskBase()
+    val hasNightWorldTask = acceptedTaskBase == CLAN_GAME_TASK_BASE_NIGHT_WORLD
 
     // 3. Determine action based on resource state and settings
-    if (isGoldFull && isExileFull && stopIfFull) {
+    if (isGoldFull && isExileFull && stopIfFull && !hasNightWorldTask) {
         accountMessage("资源已满，停止对战")
     } else {
         // Evaluate attack strategy
@@ -73,7 +75,7 @@ suspend fun builderBaseAttack(): Boolean {
             resourcePercentage.gold < 96 -> "gold"
             else -> "exile"
         }
-        val battleTimesSetting = if (readClanGameAcceptedTaskBase() == CLAN_GAME_TASK_BASE_NIGHT_WORLD) {
+        val battleTimesSetting = if (hasNightWorldTask) {
             Schema.BUILDER_BASE_SETTINGS.BUILDER_BASE_BATTLE_TIMES_WITH_TASKS
         } else {
             Schema.BUILDER_BASE_SETTINGS.BUILDER_BASE_BATTLE_TIMES

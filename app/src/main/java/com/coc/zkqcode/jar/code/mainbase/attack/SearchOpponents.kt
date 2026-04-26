@@ -91,7 +91,9 @@ suspend fun searchOpponentsAndDeployTroops(): Boolean {
     if (fullResources.isNotEmpty()) {
         accountMessage("${fullResources.joinToString("、")}已满")
     }
-    if (getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.STOP_BATTLE_AFTER_FULL_RESOURCES.key)) {
+    val acceptedTaskBase = readClanGameAcceptedTaskBase()
+    val hasMainWorldTask = acceptedTaskBase == CLAN_GAME_TASK_BASE_MAIN_WORLD
+    if (getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.STOP_BATTLE_AFTER_FULL_RESOURCES.key) && !hasMainWorldTask) {
         if (targetGold == 0 && targetElixir == 0 && targetDarkElixir == 0) return false
     }
     var searchTimes = 0
@@ -109,7 +111,7 @@ suspend fun searchOpponentsAndDeployTroops(): Boolean {
             if (waitForBattle != null) {
                 accountMessage("进攻需等待冷却")
                 val shouldWaitForBattle = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.WAIT_FOR_BATTLE.key)
-                val shouldWaitAfterMainWorldTask = readClanGameAcceptedTaskBase() == CLAN_GAME_TASK_BASE_MAIN_WORLD &&
+                val shouldWaitAfterMainWorldTask = hasMainWorldTask &&
                     getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.WAIT_FOR_BATTLE_AFTER_ACCEPT_MAIN_WORLD_TASK.key)
                 if (!shouldWaitForBattle && !shouldWaitAfterMainWorldTask) return false
             }
