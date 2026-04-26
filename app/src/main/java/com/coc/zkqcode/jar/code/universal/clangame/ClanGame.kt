@@ -81,7 +81,7 @@ private suspend fun openClanGameTaskPage(): Boolean {
     return true
 }
 
-private suspend fun prepareClanGameTaskState(finishedTaskWaitMillis: Long = 4000): Boolean {
+private suspend fun prepareClanGameTaskState(finishedTaskWaitMillis: Int = 4000): Boolean {
     val normalTask = findMultiColorsUntil(
         schemas = listOf(MyColors.NormalTasks, MyColors.OnGoingTask, MyColors.TaskCoolDown, MyColors.FailedTask), duration = 3000
     )
