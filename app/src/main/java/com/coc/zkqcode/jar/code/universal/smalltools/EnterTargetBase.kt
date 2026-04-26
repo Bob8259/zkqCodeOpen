@@ -26,7 +26,7 @@ suspend fun enterMainBase(): Boolean {
             delayWithMultiplier(200)
             return true
         }
-        val remaining = (30_000L - (System.currentTimeMillis() - loopStart)) / 1000.0
+        val remaining = (60_000L - (System.currentTimeMillis() - loopStart)) / 1000.0
         accountMessage("尝试进入主世界中，剩余${"%.1f".format(remaining)}秒后退出\n请手动给主世界和夜世界切换默认场景")
         val builderBaseStarBonus = findMultiColors(schema = MyColors.BuilderBaseStarBonus)
         if (builderBaseStarBonus != null) {
@@ -60,7 +60,7 @@ suspend fun enterBuilderBase(isCheck: Boolean): Boolean {
     val loopStart = System.currentTimeMillis()
     clickRightBottom(1)
     while (System.currentTimeMillis() - loopStart < 60_000L) {
-        val remaining = (30_000L - (System.currentTimeMillis() - loopStart)) / 1000.0
+        val remaining = (60_000L - (System.currentTimeMillis() - loopStart)) / 1000.0
         // 1. Check for Builder Base success indicator
         if (findMultiColorsUntil(schemas = listOf(MyColors.BuilderBaseWorker, MyColors.BuilderBaseWorker2), duration = 200) != null) {
             accountMessage("已进入夜世界")

@@ -106,6 +106,7 @@ private suspend fun closeAdvertisements() {
         MyColors.BackToCamp,
         MyColors.SkinAd,
         MyColors.CapitalBackToCamp,
+        MyColors.CapitalBackToCamp2,
         MyColors.CapitalAirShip,
         MyColors.CapitalAirShip2,
         MyColors.AgreeTerms,

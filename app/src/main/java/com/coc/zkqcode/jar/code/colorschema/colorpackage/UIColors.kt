@@ -47,6 +47,7 @@ interface IUIColors {
     val LogIn: ColorSchema
     val SkinAd: ColorSchema
     val CapitalBackToCamp: ColorSchema
+    val CapitalBackToCamp2: ColorSchema
     val CapitalAirShip: ColorSchema
     val CapitalAirShip2: ColorSchema
     val CloudPhoneShopButton: ColorSchema
@@ -208,6 +209,10 @@ object UIColors : IUIColors {
     // Capital back to camp button
     override val CapitalBackToCamp = ColorSchema.parse(
         32, 589, 134, 686, "C2D7DC", "21|0|ADDEFF,41|0|86A9F6,61|0|53537C,82|0|C2D7DC,0|49|A9C5CC,21|49|A3BFC9,41|49|B0B7B9,61|49|A3BEC4,82|49|A9C5CC", 0, 0.9, "都城回营"
+    )
+    // Capital back to camp button (variant 2)
+    override val CapitalBackToCamp2 = ColorSchema.parse(
+        60, 598, 99, 649, "5162B5", "8|0|5E6FB4,16|0|6D80C5,23|0|83A8F4,31|0|4E483A,0|25|2648BE,8|25|6786E2,16|25|6987D5,23|25|5C6DB7,31|25|6F7AB2", 0, 0.9, "都城回营2"
     )
     // Capital airship button
     override val CapitalAirShip = ColorSchema.parse(
