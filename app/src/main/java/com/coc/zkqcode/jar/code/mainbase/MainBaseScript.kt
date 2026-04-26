@@ -30,7 +30,6 @@ suspend fun playMainBase(): Boolean {
     if (!playClanCapital()) return false
     if (!mainBaseCollectResources()) return false
     if (!mainBaseTrainTroops()) return false
-    if (!clanGame()) return true
     if (!mainBaseAttack()) return false
     if (!clanWar()) return false
     if (!mainBaseRemoveObstacles()) return false
