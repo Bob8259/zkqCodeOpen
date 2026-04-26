@@ -175,44 +175,12 @@ private suspend fun acceptTask(x: Int, y: Int): Boolean {
     TouchActions.tap(x, y, delayTime = 500)
     val acceptTaskButton = findMultiColors(MyColors.AcceptTask)
     if (acceptTaskButton != null) {
-        uploadClanGameTaskScreenshot()
-
+    
         TouchActions.tap(acceptTaskButton.x, acceptTaskButton.y, isJitter = false, delayTime = 2500)
         clickRightBottom(1)
         return true
     }
     return false
-}
-
-private suspend fun uploadClanGameTaskScreenshot() {
-    val screenshot = ScreenCaptureManager.capture(asBitmap = true) as? Bitmap
-    if (screenshot == null) {
-        accountMessage("部落竞赛截图上传跳过：截图为空")
-        return
-    }
-
-    CoroutineScope(Dispatchers.IO).launch {
-        try {
-            val imageBytes = ByteArrayOutputStream().use { outputStream ->
-                screenshot.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
-                outputStream.toByteArray()
-            }
-            screenshot.recycle()
-
-            val imageName = "clan_game_${System.currentTimeMillis()}.png"
-            val requestBody = MultipartBody.Builder().setType(MultipartBody.FORM).addFormDataPart(
-                    "image", imageName, imageBytes.toRequestBody("image/png".toMediaTypeOrNull())
-                ).build()
-
-            UrlFallbackUtil.executeWithFallbackAndReadBody(
-                endpoint = "api/bug-report", requestBuilder = { baseUrl ->
-                    Request.Builder().url("${baseUrl}api/bug-report").post(requestBody).build()
-                })
-        } catch (e: Exception) {
-            accountMessage("部落竞赛截图上传失败：${e.message}")
-            if (!screenshot.isRecycled) screenshot.recycle()
-        }
-    }
 }
 
 private fun toAcceptedTaskBase(baseType: String): String {

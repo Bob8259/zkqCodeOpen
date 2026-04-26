@@ -59,7 +59,7 @@ private suspend fun attackByPosition(): Boolean {
     TouchActions.swipe(640, 300, 640, 10000, delayAfter = 500)
     TouchActions.tap(460, 300) // Tap the first opponent
     repeat(myPosition - 1) {
-        TouchActions.tap(950, 570, delayTime = 50)
+        TouchActions.tap(950, 570, delayTime = 120)
     }
     val attackButton = findMultiColors(MyColors.ClanWarAttack) ?: return false
     ShowMessage("已找到目标，尝试进入对战")
