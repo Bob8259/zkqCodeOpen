@@ -4,22 +4,21 @@ import com.coc.zkqcode.core.system.inputmethod.ZKQInputMethodService
 import com.coc.zkqcode.core.util.basic.RunShell
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
-import com.coc.zkqcode.jar.code.universal.smalltools.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.MyColors
-import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.jar.code.universal.InGameVars
+import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.jar.code.universal.clickRightBottom
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.smalltools.StorageKeys
+import com.coc.zkqcode.jar.code.universal.smalltools.TouchActions
 import com.coc.zkqcode.jar.code.universal.smalltools.checkMemoryFile
 import com.coc.zkqcode.jar.code.universal.smalltools.getBooleanConfigRuntime
 import com.coc.zkqcode.jar.code.universal.smalltools.getConfigRuntime
 import com.coc.zkqcode.jar.code.universal.smalltools.setZKQInputMethod
 import com.coc.zkqcode.jar.code.universal.smalltools.writeMemory
 import com.coc.zkqcode.jar.ui.schema.Schema
-import kotlinx.coroutines.delay
 
 suspend fun joinClan(): Boolean {
     if (!getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.AUTO_JOIN_CLAN.key)) return true
@@ -58,11 +57,12 @@ suspend fun joinClan(): Boolean {
             if (joinClanButton != null) {
                 setZKQInputMethod()
                 TouchActions.tap(joinClanButton.x, joinClanButton.y)
-                TouchActions.tap(642, 165, delayTime = 300)//input message
+                TouchActions.tap(640, 165, delayTime = 300)//input message
                 if (!clanCode.isBlank())
                     ZKQInputMethodService.instance?.inputText(clanCode) ?: logAndRestart("获取输入法失败")
                 delayWithMultiplier(200)
-                TouchActions.tap(787, 327, delayTime = 300)//send message
+                TouchActions.tap(790, 330, delayTime = 300)//send message
+                TouchActions.tap(780, 500)//directly join
                 clickRightBottom(1)
             }
         }
