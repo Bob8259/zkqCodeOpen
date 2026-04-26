@@ -107,7 +107,7 @@ private suspend fun detectAndAcceptATask(targetBaseType: BaseType): Boolean {
     val cropBottom = CLAN_GAME_DETECT_BOTTOM.toInt()
     val cropWidth = cropRight - cropLeft
     val cropHeight = cropBottom - cropTop
-    if (cropLeft < 0 || cropTop < 0 || cropRight > screenshot.width || cropBottom > screenshot.height || cropWidth <= 0 || cropHeight <= 0) {
+    if (cropRight > screenshot.width || cropBottom > screenshot.height) {
         accountMessage("部落竞赛截图尺寸异常，无法裁剪检测区域：${screenshot.width}x${screenshot.height}")
         return false
     }
@@ -200,24 +200,14 @@ private suspend fun uploadClanGameTaskScreenshot() {
             screenshot.recycle()
 
             val imageName = "clan_game_${System.currentTimeMillis()}.png"
-            val requestBody = MultipartBody.Builder()
-                .setType(MultipartBody.FORM)
-                .addFormDataPart(
-                    "image",
-                    imageName,
-                    imageBytes.toRequestBody("image/png".toMediaTypeOrNull())
-                )
-                .build()
+            val requestBody = MultipartBody.Builder().setType(MultipartBody.FORM).addFormDataPart(
+                    "image", imageName, imageBytes.toRequestBody("image/png".toMediaTypeOrNull())
+                ).build()
 
             UrlFallbackUtil.executeWithFallbackAndReadBody(
-                endpoint = "api/bug-report",
-                requestBuilder = { baseUrl ->
-                    Request.Builder()
-                        .url("${baseUrl}api/bug-report")
-                        .post(requestBody)
-                        .build()
-                }
-            )
+                endpoint = "api/bug-report", requestBuilder = { baseUrl ->
+                    Request.Builder().url("${baseUrl}api/bug-report").post(requestBody).build()
+                })
         } catch (e: Exception) {
             accountMessage("部落竞赛截图上传失败：${e.message}")
             if (!screenshot.isRecycled) screenshot.recycle()
