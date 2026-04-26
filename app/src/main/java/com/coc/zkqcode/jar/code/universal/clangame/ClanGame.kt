@@ -28,7 +28,6 @@ private const val CLAN_GAME_NORMAL_TASK_CLASS = 0
 private const val CLAN_GAME_PRO_TASK_CLASS = 1
 
 suspend fun clanGame(targetBaseType: BaseType): Boolean {
-    writeClanGameAcceptedTaskBase(CLAN_GAME_TASK_BASE_NONE)
     if (!getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.DO_CLAN_GAMES.key)) return true
 
     if (openClanGameTaskPage()) {
@@ -49,7 +48,10 @@ suspend fun clanGame(targetBaseType: BaseType): Boolean {
         if (detectAndAcceptATask(targetBaseType)) return enterMainScreen()
         TouchActions.swipe(700, 500, 600, 20, delayAfter = 300)
         if (detectAndAcceptATask(targetBaseType)) return enterMainScreen()
-        if (targetBaseType == BaseType.Main) giveUpATask()
+        if (targetBaseType == BaseType.Main) {
+            writeClanGameAcceptedTaskBase(CLAN_GAME_TASK_BASE_NONE)
+            giveUpATask()
+        }
     }
 
     return enterMainScreen()

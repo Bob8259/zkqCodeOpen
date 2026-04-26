@@ -86,7 +86,7 @@ suspend fun builderBaseAttack(): Boolean {
             getConfigRuntime(Schema.BUILDER_BASE_SETTINGS.BUILDER_BASE_BATTLE_TIMES.key).toIntOrNull() ?: logAndRestart("${Schema.BUILDER_BASE_SETTINGS.BUILDER_BASE_BATTLE_TIMES.displayName} 必须是数字，请检查配置")
         val shouldCheckClanGameTask = battleTimesSetting == Schema.BUILDER_BASE_SETTINGS.BUILDER_BASE_BATTLE_TIMES_WITH_TASKS && battleTimes > normalBattleTimes
         repeat(battleTimes) { index ->
-            if (!realAttack(attackType, index + 1, battleTimes)) return false
+            if (!realAttack(attackType, hasNightWorldTask, index + 1, battleTimes)) return false
             val completedBattleTimes = index + 1
             if (shouldCheckClanGameTask && completedBattleTimes >= normalBattleTimes && !hasAcceptedClanGameTask()) return true
 
@@ -101,7 +101,7 @@ suspend fun builderBaseAttack(): Boolean {
     return enterMainScreen()
 }
 
-private suspend fun realAttack(mode: String, battleNumber: Int = 1, battleTimes: Int): Boolean {
+private suspend fun realAttack(mode: String, hasNightWorldTask: Boolean, battleNumber: Int = 1, battleTimes: Int): Boolean {
     val startTime = System.currentTimeMillis()
     // Track first detection of SwitchTroopButton for shorter initial delay
     var isFirstSwitchTroop = true
@@ -157,9 +157,13 @@ private suspend fun realAttack(mode: String, battleNumber: Int = 1, battleTimes:
                 accountMessage("已进入第二区域")
                 delayWithMultiplier(2000)
             }
-            when (mode) {
-                "gold" -> normalBattle()
-                "exile" -> deployAndExit()
+            if (hasNightWorldTask) {
+                normalBattle()
+            } else {
+                when (mode) {
+                    "gold" -> normalBattle()
+                    "exile" -> deployAndExit()
+                }
             }
             continue
         }
