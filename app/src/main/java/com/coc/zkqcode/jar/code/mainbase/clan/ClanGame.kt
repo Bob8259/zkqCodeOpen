@@ -41,7 +41,7 @@ suspend fun clanGame(): Boolean {
         }
         if (openClanGame != null) {
             TouchActions.tap(openClanGame.x, openClanGame.y, delayTime = 1000)
-            val normalTask = findMultiColorsUntil(schemas = listOf(MyColors.NormalTasks, MyColors.OnGoingTask, MyColors.TaskCoolDown), duration = 3000)
+            val normalTask = findMultiColorsUntil(schemas = listOf(MyColors.NormalTasks, MyColors.OnGoingTask, MyColors.TaskCoolDown, MyColors.FailedTask), duration = 3000)
             if (normalTask != null) {
                 delayWithMultiplier(300)
                 if (findMultiColors(MyColors.FinishedTask) != null) {
@@ -49,14 +49,16 @@ suspend fun clanGame(): Boolean {
                     delayWithMultiplier(3500)
                 }
                 if (findMultiColors(MyColors.OnGoingTask) != null) {
-                    accountMessage("已有任务进行中")
                     clickRightBottom(2)
                     return enterMainScreen()
                 }
                 if (findMultiColors(MyColors.TaskCoolDown) != null) {
-                    accountMessage("竞赛冷却中")
                     clickRightBottom(2)
                     return enterMainScreen()
+                }
+                if (findMultiColors(MyColors.FailedTask) != null) {
+                    TouchActions.tap(550, 200)//First task
+                    TouchActions.tap(1025, 340, delayTime = 3500)
                 }
             }
             if (detectAndAcceptATask()) return enterMainScreen()

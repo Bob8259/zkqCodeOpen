@@ -35,6 +35,7 @@ interface IUIColors {
     val PassAwardAd: ColorSchema
     val ReturnTask: ColorSchema
     val ReturnTask2: ColorSchema
+    val ReturnTask3: ColorSchema
     val MiddleGreenButton: ColorSchema
     val ExclusiveGift: ColorSchema
     val MorePointCoupon: ColorSchema
@@ -156,6 +157,11 @@ object UIColors : IUIColors {
     // Return task panel marker on the event page (variant 2)
     override val ReturnTask2 = ColorSchema.parse(
         6, 489, 1278, 692, "D08E4D", "2|5|C48746,9|3|CE8D4C,13|-1|DC9652,17|5|C78C4C,1219|-59|FFFFFF,1224|-68|FFFFFF,1214|-70|FFFFFF,1221|-69|FFFFFF,1231|-60|FFFFFF", 0, 0.9, "回归任务"
+    )
+
+    // Return task panel marker on the event page (variant 3)
+    override val ReturnTask3 = ColorSchema.parse(
+        37, 496, 1267, 633, "DB9653", "3|4|CE8F50,-7|7|C3884A,-7|0|DB9652,-4|8|C18848,1173|-72|FFFFFF,1177|-67|FFFFFF,1176|-61|FFFFFF,1182|-53|FFFFFF,1186|-56|FFFFFF", 0, 0.9, "回归任务"
     )
 
     // Middle green confirmation button (e.g. events and helper tutorials)

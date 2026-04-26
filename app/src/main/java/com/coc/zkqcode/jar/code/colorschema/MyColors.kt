@@ -72,4 +72,8 @@ object MyColors : IUIColors by UIColors, IFeatureColors by FeatureColors, IClanG
     val TaskCoolDown = ColorSchema.parse(
         541, 164, 1024, 485, "4ED69F", "5|0|55DFAF,10|0|7CF8E0,14|0|86FBE6,19|0|90FFEF,0|13|90FCE1,5|13|94FDE1,10|13|85FBD8,14|13|7DFBD6,19|13|79FCDD", 0, 0.9, "冷却宝石标志"
     )
+    val FailedTask = ColorSchema.parse(
+        478, 134, 526, 311, "3A2EF2", "0|8|272CEB,0|15|272CEB,0|24|272CEB,0|27|272CEB,1|35|282DEC,1|39|292EED,1|42|292FEE,1|51|3037F7,0|56|3D44FF", 0, 0.9, "失败的任务"
+    )
+
 }

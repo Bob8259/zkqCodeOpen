@@ -9,6 +9,7 @@ import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.mainbase.attack.mainBaseDeployTroops
 import com.coc.zkqcode.jar.code.mainbase.others.zoomSmallMainBase
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
+import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.smalltools.checkReconnections
 import com.coc.zkqcode.jar.code.universal.smalltools.getBooleanConfigRuntime
 import com.coc.zkqcode.jar.code.universal.smalltools.isGameAtFront
@@ -136,12 +137,7 @@ private suspend fun closeAdvertisements() {
         }
 
     }
-    findMultiColors(byteBuffer = screenBuffer, schema = MyColors.ReturnTask, increment = 1)?.let {
-        accountMessage("检测到回归教程")
-        zoomSmallMainBase()
-        mainBaseDeployTroops()
-    }
-    findMultiColors(byteBuffer = screenBuffer, schema = MyColors.ReturnTask2, increment = 1)?.let {
+    findMultiColorsUntil(byteBuffer = screenBuffer, schemas = listOf(MyColors.ReturnTask, MyColors.ReturnTask2, MyColors.ReturnTask3), duration = 20, increment = 1)?.let {
         accountMessage("检测到回归教程")
         zoomSmallMainBase()
         mainBaseDeployTroops()
