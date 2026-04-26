@@ -4,15 +4,14 @@ import android.graphics.Bitmap
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.jar.code.colorschema.ColorSchema
-import com.coc.zkqcode.jar.code.universal.network.UrlFallbackUtil
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.jar.code.universal.aidetection.AiDetector
+import com.coc.zkqcode.jar.code.universal.buildings.BaseType
 import com.coc.zkqcode.jar.code.universal.clickRightBottom
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
-import com.coc.zkqcode.jar.code.universal.buildings.BaseType
 import com.coc.zkqcode.jar.code.universal.smalltools.CLAN_GAME_TASK_BASE_MAIN_WORLD
 import com.coc.zkqcode.jar.code.universal.smalltools.CLAN_GAME_TASK_BASE_NIGHT_WORLD
 import com.coc.zkqcode.jar.code.universal.smalltools.CLAN_GAME_TASK_BASE_NONE
@@ -20,14 +19,6 @@ import com.coc.zkqcode.jar.code.universal.smalltools.TouchActions
 import com.coc.zkqcode.jar.code.universal.smalltools.getBooleanConfigRuntime
 import com.coc.zkqcode.jar.code.universal.smalltools.writeClanGameAcceptedTaskBase
 import com.coc.zkqcode.jar.ui.schema.Schema
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.MultipartBody
-import okhttp3.Request
-import okhttp3.RequestBody.Companion.toRequestBody
-import java.io.ByteArrayOutputStream
 
 private const val CLAN_GAME_DETECT_LEFT = 470f
 private const val CLAN_GAME_DETECT_TOP = 125f
@@ -39,46 +30,67 @@ private const val CLAN_GAME_PRO_TASK_CLASS = 1
 suspend fun clanGame(targetBaseType: BaseType): Boolean {
     writeClanGameAcceptedTaskBase(CLAN_GAME_TASK_BASE_NONE)
     if (!getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.DO_CLAN_GAMES.key)) return true
-    val calendar = findMultiColorsUntil(schemas = listOf(MyColors.Calendar, MyColors.Calendar2), duration = 100)
 
-    if (calendar != null) {
-        TouchActions.tap(calendar.x, calendar.y)
-
-        var openClanGame = findMultiColorsUntil(schemas = listOf(MyColors.OpenClanGame), duration = 100)
-        if (openClanGame == null) {
-            TouchActions.swipe(700, 500, 600, 20, delayAfter = 300)
-            openClanGame = findMultiColorsUntil(schemas = listOf(MyColors.OpenClanGame), duration = 100)
-        }
-        if (openClanGame != null) {
-            TouchActions.tap(openClanGame.x, openClanGame.y, delayTime = 1000)
-            val normalTask = findMultiColorsUntil(schemas = listOf(MyColors.NormalTasks, MyColors.OnGoingTask, MyColors.TaskCoolDown, MyColors.FailedTask), duration = 3000)
-            if (normalTask != null) {
-                delayWithMultiplier(300)
-                if (findMultiColors(MyColors.FinishedTask) != null) {
-                    accountMessage("已有任务完成，等待4秒")
-                    delayWithMultiplier(4000)
-                }
-                if (findMultiColors(MyColors.OnGoingTask) != null) {
-                    clickRightBottom(2)
-                    return enterMainScreen()
-                }
-                if (findMultiColors(MyColors.TaskCoolDown) != null) {
-                    clickRightBottom(2)
-                    return enterMainScreen()
-                }
-                if (findMultiColors(MyColors.FailedTask) != null) {
-                    TouchActions.tap(550, 200)//First task
-                    TouchActions.tap(1025, 340, delayTime = 3500)
-                }
+    if (openClanGameTaskPage()) {
+        if (prepareClanGameTaskState()) {
+            if (findMultiColors(MyColors.OnGoingTask) != null) {
+                clickRightBottom(2)
+                return enterMainScreen()
             }
-            if (detectAndAcceptATask(targetBaseType)) return enterMainScreen()
-            TouchActions.swipe(700, 500, 600, 20, delayAfter = 300)
-            if (detectAndAcceptATask(targetBaseType)) return enterMainScreen()
-            if (targetBaseType == BaseType.Main) giveUpATask()
+            if (findMultiColors(MyColors.TaskCoolDown) != null) {
+                clickRightBottom(2)
+                return enterMainScreen()
+            }
+            if (findMultiColors(MyColors.FailedTask) != null) {
+                TouchActions.tap(550, 200)//First task
+                TouchActions.tap(1025, 340, delayTime = 3500)
+            }
         }
-
+        if (detectAndAcceptATask(targetBaseType)) return enterMainScreen()
+        TouchActions.swipe(700, 500, 600, 20, delayAfter = 300)
+        if (detectAndAcceptATask(targetBaseType)) return enterMainScreen()
+        if (targetBaseType == BaseType.Main) giveUpATask()
     }
+
     return enterMainScreen()
+}
+
+suspend fun hasAcceptedClanGameTask(): Boolean {
+    if (!openClanGameTaskPage()) return false
+    if (!prepareClanGameTaskState()) return false
+    val result = findMultiColors(MyColors.OnGoingTask) != null
+    clickRightBottom(2)
+    return result
+}
+
+private suspend fun openClanGameTaskPage(): Boolean {
+    val calendar = findMultiColorsUntil(schemas = listOf(MyColors.Calendar, MyColors.Calendar2), duration = 100) ?: return false
+
+    TouchActions.tap(calendar.x, calendar.y)
+
+    var openClanGame = findMultiColorsUntil(schemas = listOf(MyColors.OpenClanGame), duration = 100)
+    if (openClanGame == null) {
+        TouchActions.swipe(700, 500, 600, 20, delayAfter = 300)
+        openClanGame = findMultiColorsUntil(schemas = listOf(MyColors.OpenClanGame), duration = 100)
+    }
+    if (openClanGame == null) return false
+
+    TouchActions.tap(openClanGame.x, openClanGame.y, delayTime = 1000)
+    return true
+}
+
+private suspend fun prepareClanGameTaskState(): Boolean {
+    val normalTask = findMultiColorsUntil(
+        schemas = listOf(MyColors.NormalTasks, MyColors.OnGoingTask, MyColors.TaskCoolDown, MyColors.FailedTask), duration = 3000
+    )
+    if (normalTask == null) return false
+
+    delayWithMultiplier(300)
+    if (findMultiColors(MyColors.FinishedTask) != null) {
+        accountMessage("已有任务完成，等待4秒")
+        delayWithMultiplier(4000)
+    }
+    return true
 }
 
 private suspend fun giveUpATask() {
@@ -175,7 +187,7 @@ private suspend fun acceptTask(x: Int, y: Int): Boolean {
     TouchActions.tap(x, y, delayTime = 500)
     val acceptTaskButton = findMultiColors(MyColors.AcceptTask)
     if (acceptTaskButton != null) {
-    
+
         TouchActions.tap(acceptTaskButton.x, acceptTaskButton.y, isJitter = false, delayTime = 2500)
         clickRightBottom(1)
         return true

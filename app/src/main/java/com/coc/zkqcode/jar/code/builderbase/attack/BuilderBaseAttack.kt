@@ -18,6 +18,7 @@ import com.coc.zkqcode.jar.code.universal.clickRightBottom
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
+import com.coc.zkqcode.jar.code.universal.clangame.hasAcceptedClanGameTask
 import com.coc.zkqcode.jar.code.universal.smalltools.CLAN_GAME_TASK_BASE_NIGHT_WORLD
 import com.coc.zkqcode.jar.code.universal.smalltools.StorageKeys
 import com.coc.zkqcode.jar.code.universal.smalltools.checkMemoryFile
@@ -81,8 +82,14 @@ suspend fun builderBaseAttack(): Boolean {
             Schema.BUILDER_BASE_SETTINGS.BUILDER_BASE_BATTLE_TIMES
         }
         val battleTimes = getConfigRuntime(battleTimesSetting.key).toIntOrNull() ?: logAndRestart("${battleTimesSetting.displayName} 必须是数字，请检查配置")
+        val normalBattleTimes =
+            getConfigRuntime(Schema.BUILDER_BASE_SETTINGS.BUILDER_BASE_BATTLE_TIMES.key).toIntOrNull() ?: logAndRestart("${Schema.BUILDER_BASE_SETTINGS.BUILDER_BASE_BATTLE_TIMES.displayName} 必须是数字，请检查配置")
+        val shouldCheckClanGameTask = battleTimesSetting == Schema.BUILDER_BASE_SETTINGS.BUILDER_BASE_BATTLE_TIMES_WITH_TASKS && battleTimes > normalBattleTimes
         repeat(battleTimes) { index ->
             if (!realAttack(attackType, index + 1, battleTimes)) return false
+            val completedBattleTimes = index + 1
+            if (shouldCheckClanGameTask && completedBattleTimes >= normalBattleTimes && !hasAcceptedClanGameTask()) return true
+
             if ((index + 1) % 5 == 0) {
                 if (!enterMainScreen()) return false
                 displayAds()
@@ -223,6 +230,7 @@ private suspend fun normalBattle(isNormal: Boolean = true) {
                             MyColors.TroopSkills, MyColors.TroopSkills.x1, MyColors.TroopSkills.y1, MyColors.TroopSkills.x2, MyColors.TroopSkills.y2, direction = Random.nextInt(0, 2)
                         )
                     )
+
                     if (skillsPos != null) {
                         TouchActions.tap(skillsPos.x, 620)
                         delayWithMultiplier(Random.nextInt(500, 4000))

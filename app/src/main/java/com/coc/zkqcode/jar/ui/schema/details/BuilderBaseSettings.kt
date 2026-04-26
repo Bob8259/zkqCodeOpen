@@ -11,7 +11,7 @@ object BuilderBaseSettings {
         "builder_base_battle_times", "对战局数", "2", "BUILDER_BASE_SETTINGS"
     )
     val BUILDER_BASE_BATTLE_TIMES_WITH_TASKS = SettingDef(
-        "builder_base_battle_times_with_tasks", "接取竞赛后对战局数", "3", "BUILDER_BASE_SETTINGS"
+        "builder_base_battle_times_with_tasks", "接取竞赛后对战局数", "5", "BUILDER_BASE_SETTINGS"
     )
     val BUILDER_BASE_STOP_BATTLE_AFTER_FULL_RESOURCES = SettingDef("builder_base_stop_battle_after_full_resources", "资源满后停止对战", 1, "BUILDER_BASE_SETTINGS")
     val TROPHY_PUSHING_MODE = SettingDef("trophy_pushing_mode", "上分模式", 0, "BUILDER_BASE_SETTINGS")

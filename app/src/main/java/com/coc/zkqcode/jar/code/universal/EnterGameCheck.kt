@@ -72,7 +72,7 @@ suspend fun enterMainScreen(isDoubleCheck: Boolean = false): Boolean {
 }
 
 
-suspend fun clickRightBottom(times: Int, delayTime: Int = 50) {
+suspend fun clickRightBottom(times: Int, delayTime: Int = 100) {
     repeat(times) {
         TouchActions.tap(1279, 100, false, delayTime)
     }

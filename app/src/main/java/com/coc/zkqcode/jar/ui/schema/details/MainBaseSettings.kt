@@ -10,7 +10,7 @@ object MainBaseSettings {
     val CONFIG_REMARK = SettingDef("config_remark", "备注:", "", "MAIN_BASE_SETTINGS")
     val AUTO_ATTACK = SettingDef("auto_attack", "自动进攻", 1, "MAIN_BASE_SETTINGS")
     val BATTLE_TIMES = SettingDef("battle_times", "对战局数", "1", "MAIN_BASE_SETTINGS")
-    val BATTLE_TIMES_WITH_TASKS = SettingDef("battle_times_with_tasks", "接取竞赛后对战局数", "2", "MAIN_BASE_SETTINGS")
+    val BATTLE_TIMES_WITH_TASKS = SettingDef("battle_times_with_tasks", "接取竞赛后对战局数", "5", "MAIN_BASE_SETTINGS")
     val GOLD_REQUIREMENT = SettingDef("gold_requirement", "金币要求", "100", "MAIN_BASE_SETTINGS")
     val ELIXIR_REQUIREMENT = SettingDef("elixir_requirement", "圣水要求", "100", "MAIN_BASE_SETTINGS")
     val DARK_ELIXIR_REQUIREMENT = SettingDef("dark_elixir_requirement", "黑油要求", "10", "MAIN_BASE_SETTINGS")

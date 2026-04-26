@@ -4,6 +4,7 @@ import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.accountMessage
+import com.coc.zkqcode.jar.code.universal.clangame.hasAcceptedClanGameTask
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.smalltools.CLAN_GAME_TASK_BASE_MAIN_WORLD
@@ -22,11 +23,14 @@ suspend fun mainBaseRemainingAttack(): Boolean {
     } else {
         Schema.MAIN_BASE_SETTINGS.BATTLE_TIMES
     }
-    val totalBattleTimes = getConfigRuntime(battleTimesSetting.key).toIntOrNull()
-        ?: logAndRestart("${battleTimesSetting.displayName}必须是数字。")
+    val totalBattleTimes = getConfigRuntime(battleTimesSetting.key).toIntOrNull() ?: logAndRestart("${battleTimesSetting.displayName}必须是数字。")
+    val normalBattleTimes = getConfigRuntime(Schema.MAIN_BASE_SETTINGS.BATTLE_TIMES.key).toIntOrNull() ?: logAndRestart("${Schema.MAIN_BASE_SETTINGS.BATTLE_TIMES.displayName}必须是数字。")
+    val shouldCheckClanGameTask = battleTimesSetting == Schema.MAIN_BASE_SETTINGS.BATTLE_TIMES_WITH_TASKS && totalBattleTimes > normalBattleTimes
     val remainingTimes = (totalBattleTimes - 1).coerceAtLeast(0)
-    repeat(remainingTimes) {
+    repeat(remainingTimes) { index ->
         if (!mainBaseAttack()) return false
+        val completedBattleTimes = index + 2
+        if (shouldCheckClanGameTask && completedBattleTimes >= normalBattleTimes && !hasAcceptedClanGameTask()) return true
     }
     return true
 }
