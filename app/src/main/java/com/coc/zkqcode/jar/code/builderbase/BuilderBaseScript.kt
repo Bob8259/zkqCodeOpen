@@ -18,7 +18,7 @@ import com.coc.zkqcode.jar.ui.schema.Schema
 
 suspend fun playBuilderBase(): Boolean {
     if (!claimAchievement()) return false
-    if (!clanGame()) return true
+    if (!clanGame(BaseType.Builder)) return true
     if (!gearUpBuildings()) return false
     val noBuilderBase = getBooleanConfigRuntime(Schema.BUILDER_BASE_SETTINGS.NO_BUILDER_BASE.key)
     if (noBuilderBase) return true//if no builder base, then directly return.

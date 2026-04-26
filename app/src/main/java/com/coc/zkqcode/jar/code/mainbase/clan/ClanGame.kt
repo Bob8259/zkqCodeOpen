@@ -11,6 +11,7 @@ import com.coc.zkqcode.jar.code.universal.clickRightBottom
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
+import com.coc.zkqcode.jar.code.universal.buildings.BaseType
 import com.coc.zkqcode.jar.code.universal.smalltools.CLAN_GAME_TASK_BASE_MAIN_WORLD
 import com.coc.zkqcode.jar.code.universal.smalltools.CLAN_GAME_TASK_BASE_NIGHT_WORLD
 import com.coc.zkqcode.jar.code.universal.smalltools.CLAN_GAME_TASK_BASE_NONE
@@ -26,7 +27,7 @@ private const val CLAN_GAME_DETECT_BOTTOM = 520f
 private const val CLAN_GAME_NORMAL_TASK_CLASS = 0
 private const val CLAN_GAME_PRO_TASK_CLASS = 1
 
-suspend fun clanGame(): Boolean {
+suspend fun clanGame(targetBaseType: BaseType): Boolean {
     writeClanGameAcceptedTaskBase(CLAN_GAME_TASK_BASE_NONE)
     if (!getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.DO_CLAN_GAMES.key)) return true
     val calendar = findMultiColorsUntil(schemas = listOf(MyColors.Calendar, MyColors.Calendar2), duration = 100)
@@ -61,9 +62,9 @@ suspend fun clanGame(): Boolean {
                     TouchActions.tap(1025, 340, delayTime = 3500)
                 }
             }
-            if (detectAndAcceptATask()) return enterMainScreen()
+            if (detectAndAcceptATask(targetBaseType)) return enterMainScreen()
             TouchActions.swipe(700, 500, 600, 20, delayAfter = 300)
-            if (detectAndAcceptATask()) return enterMainScreen()
+            if (detectAndAcceptATask(targetBaseType)) return enterMainScreen()
             giveUpATask()
         }
 
@@ -84,7 +85,7 @@ private suspend fun giveUpATask() {
     clickRightBottom(2)
 }
 
-private suspend fun detectAndAcceptATask(): Boolean {
+private suspend fun detectAndAcceptATask(targetBaseType: BaseType): Boolean {
     val screenshot = ScreenCaptureManager.capture(asBitmap = true) as? Bitmap
     if (screenshot == null) {
         accountMessage("部落竞赛截图失败，无法检测任务")
@@ -116,7 +117,11 @@ private suspend fun detectAndAcceptATask(): Boolean {
             }
             val baseType = detectClanGameBaseType(screenshot, centerX, centerY)
             ClanGameTaskDecision(
-                x = centerX, y = centerY, taskType = taskType, baseType = baseType, shouldAccept = shouldAcceptClanGameTask(detection.classIndex, baseType)
+                x = centerX,
+                y = centerY,
+                taskType = taskType,
+                baseType = baseType,
+                shouldAccept = shouldAcceptClanGameTask(detection.classIndex, baseType, targetBaseType)
             )
         }
 
@@ -164,7 +169,9 @@ private fun toAcceptedTaskBase(baseType: String): String {
     }
 }
 
-private fun shouldAcceptClanGameTask(classIndex: Int, baseType: String): Boolean {
+private fun shouldAcceptClanGameTask(classIndex: Int, baseType: String, targetBaseType: BaseType): Boolean {
+    if (toBaseType(baseType) != targetBaseType) return false
+
     val settingKey = when (baseType) {
         "主世界" -> when (classIndex) {
             CLAN_GAME_NORMAL_TASK_CLASS -> Schema.MAIN_BASE_SETTINGS.ACCEPT_MAIN_WORLD_NORMAL_TASK.key
@@ -181,6 +188,14 @@ private fun shouldAcceptClanGameTask(classIndex: Int, baseType: String): Boolean
         else -> return false
     }
     return getBooleanConfigRuntime(settingKey)
+}
+
+private fun toBaseType(baseType: String): BaseType? {
+    return when (baseType) {
+        "主世界" -> BaseType.Main
+        "夜世界" -> BaseType.Builder
+        else -> null
+    }
 }
 
 private suspend fun detectClanGameBaseType(screenshot: Bitmap, x: Int, y: Int): String {
