@@ -46,8 +46,8 @@ suspend fun clanGame(targetBaseType: BaseType): Boolean {
             if (normalTask != null) {
                 delayWithMultiplier(300)
                 if (findMultiColors(MyColors.FinishedTask) != null) {
-                    accountMessage("已有任务完成，等待3秒")
-                    delayWithMultiplier(3500)
+                    accountMessage("已有任务完成，等待4秒")
+                    delayWithMultiplier(4000)
                 }
                 if (findMultiColors(MyColors.OnGoingTask) != null) {
                     clickRightBottom(2)
