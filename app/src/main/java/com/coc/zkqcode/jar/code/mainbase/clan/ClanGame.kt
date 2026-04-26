@@ -65,7 +65,7 @@ suspend fun clanGame(targetBaseType: BaseType): Boolean {
             if (detectAndAcceptATask(targetBaseType)) return enterMainScreen()
             TouchActions.swipe(700, 500, 600, 20, delayAfter = 300)
             if (detectAndAcceptATask(targetBaseType)) return enterMainScreen()
-            giveUpATask()
+            if (targetBaseType == BaseType.Main) giveUpATask()
         }
 
     }
