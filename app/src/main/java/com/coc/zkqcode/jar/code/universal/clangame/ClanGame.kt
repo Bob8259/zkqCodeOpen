@@ -78,6 +78,21 @@ suspend fun hasAcceptedClanGameTask(): Boolean {
     if (!openClanGameTaskPage()) return false
     prepareClanGameTaskState()
     val result = findMultiColors(MyColors.OnGoingTask) != null
+    if (!result) {
+        if (findMultiColors(MyColors.TaskCoolDown) != null) {
+            clickRightBottom(2)
+            return enterMainScreen()
+        }
+        if (findMultiColors(MyColors.FailedTask) != null) {
+            TouchActions.tap(550, 200)//First task
+            TouchActions.tap(1025, 340, delayTime = 3500)
+        }
+        if (detectAndAcceptATask(BaseType.Builder)) return enterMainScreen()
+        TouchActions.swipe(700, 500, 600, 20, delayAfter = 300)
+        if (detectAndAcceptATask(BaseType.Builder)) return enterMainScreen()
+        writeClanGameAcceptedTaskBase(CLAN_GAME_TASK_BASE_NONE)
+        giveUpATask()
+    }
     clickRightBottom(2)
     return result
 }
