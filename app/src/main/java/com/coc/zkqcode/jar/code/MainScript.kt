@@ -33,6 +33,7 @@ import kotlinx.coroutines.isActive
 suspend fun runMainScript() {
     if (GlobalVars.runDataNumberEntryOnly) {
         GlobalVars.runDataNumberEntryOnly = false
+        GlobalVars.isPlaying.value = false
         tapDataNumberEntryButtons()
         return
     }
