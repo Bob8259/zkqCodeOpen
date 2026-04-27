@@ -6,6 +6,7 @@ import com.coc.zkqcode.jar.code.universal.smalltools.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.jar.code.universal.InGameVars
+import com.coc.zkqcode.jar.code.universal.clickRightBottom
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
@@ -112,7 +113,7 @@ suspend fun searchOpponentsAndDeployTroops(): Boolean {
                 accountMessage("进攻需等待冷却")
                 val shouldWaitForBattle = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.WAIT_FOR_BATTLE.key)
                 val shouldWaitAfterMainWorldTask = hasMainWorldTask &&
-                    getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.WAIT_FOR_BATTLE_AFTER_ACCEPT_MAIN_WORLD_TASK.key)
+                        getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.WAIT_FOR_BATTLE_AFTER_ACCEPT_MAIN_WORLD_TASK.key)
                 if (!shouldWaitForBattle && !shouldWaitAfterMainWorldTask) return false
             }
         }
@@ -199,7 +200,8 @@ suspend fun searchOpponentsAndDeployTroops(): Boolean {
         val remainingMinutes = (SEARCH_TIMEOUT_MS - (System.currentTimeMillis() - battleStartTime)) / 60000.0
         accountMessage("搜索中... ${"%.1f".format(remainingMinutes)}分钟后强制退出")
         if (!checkReconnections()) return false
-        delayWithMultiplier(100)
+        clickRightBottom(1)
+        delayWithMultiplier(200)
     }
     return battleStarted
 }

@@ -141,6 +141,9 @@ object MainBaseSettings {
     val ACCEPT_MAIN_WORLD_ADVANCED_TASK = SettingDef("accept_main_world_advanced_task", "接取主世界高级任务", 0, "MAIN_BASE_SETTINGS")
     val ACCEPT_NIGHT_WORLD_NORMAL_TASK = SettingDef("accept_night_world_normal_task", "接取夜世界普通任务", 1, "MAIN_BASE_SETTINGS")
     val ACCEPT_NIGHT_WORLD_ADVANCED_TASK = SettingDef("accept_night_world_advanced_task", "接取夜世界高级任务", 0, "MAIN_BASE_SETTINGS")
+    val STOP_CLAN_GAMES_AFTER_4000_POINTS = SettingDef(
+        "stop_clan_games_after_4000_points", "积分到达4000后，停止竞赛", 0, "MAIN_BASE_SETTINGS"
+    )
 
     val all = listOf(
         CLAIM_DAILY_REWARD,
@@ -236,6 +239,7 @@ object MainBaseSettings {
         ACCEPT_MAIN_WORLD_NORMAL_TASK,
         ACCEPT_MAIN_WORLD_ADVANCED_TASK,
         ACCEPT_NIGHT_WORLD_NORMAL_TASK,
-        ACCEPT_NIGHT_WORLD_ADVANCED_TASK
+        ACCEPT_NIGHT_WORLD_ADVANCED_TASK,
+        STOP_CLAN_GAMES_AFTER_4000_POINTS
     )
 }

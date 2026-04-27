@@ -75,5 +75,8 @@ object MyColors : IUIColors by UIColors, IFeatureColors by FeatureColors, IClanG
     val FailedTask = ColorSchema.parse(
         478, 134, 526, 311, "3A2EF2", "0|8|272CEB,0|15|272CEB,0|24|272CEB,0|27|272CEB,1|35|282DEC,1|39|292EED,1|42|292FEE,1|51|3037F7,0|56|3D44FF", 0, 0.9, "失败的任务"
     )
+    val FourThousandPoints = ColorSchema.parse(
+        243, 638, 249, 663, "6ADDFA", "-1|0|6ADDFA,-2|0|6ADDFA,-3|0|6ADDFA,-4|0|6ADDFA,-4|22|6ADDFA,-3|22|6ADDFA,-2|22|6ADDFA,-1|22|6ADDFA,1|12|FFFFFF", 0, 0.9, "4000积分"
+    )
 
 }

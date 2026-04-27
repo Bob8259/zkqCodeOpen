@@ -27,6 +27,7 @@ object StorageKeys {
     const val CLAN_CAPITAL_ATTACK = "ClanCapitalAttack"
     const val CLAN_WAR_LAST_STRATEGY = "ClanWarLastStrategy"
     const val CLAN_GAME_ACCEPTED_TASK_BASE = "ClanGameAcceptedTaskBase"
+    const val CLAN_GAME_FINISHED_MONTH = "ClanGameFinishedMonth"
 
     // Per-account keys for dynamic adjustment resource thresholds
     const val DYNAMIC_GOLD = "DynamicGold"

@@ -5,6 +5,7 @@ import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.jar.code.colorschema.ColorSchema
 import com.coc.zkqcode.jar.code.colorschema.MyColors
+import com.coc.zkqcode.jar.code.universal.InGameVars
 import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.jar.code.universal.aidetection.AiDetector
 import com.coc.zkqcode.jar.code.universal.buildings.BaseType
@@ -15,10 +16,15 @@ import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.smalltools.CLAN_GAME_TASK_BASE_MAIN_WORLD
 import com.coc.zkqcode.jar.code.universal.smalltools.CLAN_GAME_TASK_BASE_NIGHT_WORLD
 import com.coc.zkqcode.jar.code.universal.smalltools.CLAN_GAME_TASK_BASE_NONE
+import com.coc.zkqcode.jar.code.universal.smalltools.StorageKeys
 import com.coc.zkqcode.jar.code.universal.smalltools.TouchActions
 import com.coc.zkqcode.jar.code.universal.smalltools.getBooleanConfigRuntime
+import com.coc.zkqcode.jar.code.universal.smalltools.readMemory
 import com.coc.zkqcode.jar.code.universal.smalltools.writeClanGameAcceptedTaskBase
+import com.coc.zkqcode.jar.code.universal.smalltools.writeMemory
 import com.coc.zkqcode.jar.ui.schema.Schema
+import java.util.Calendar
+import java.util.TimeZone
 
 private const val CLAN_GAME_DETECT_LEFT = 470f
 private const val CLAN_GAME_DETECT_TOP = 125f
@@ -26,12 +32,22 @@ private const val CLAN_GAME_DETECT_RIGHT = 1100f
 private const val CLAN_GAME_DETECT_BOTTOM = 520f
 private const val CLAN_GAME_NORMAL_TASK_CLASS = 0
 private const val CLAN_GAME_PRO_TASK_CLASS = 1
+private const val CLAN_GAME_START_DAY = 22
+private const val CLAN_GAME_END_DAY = 28
+private const val CLAN_GAME_WINDOW_HOUR = 16
+private val BEIJING_TIME_ZONE: TimeZone = TimeZone.getTimeZone("Asia/Shanghai")
 
 suspend fun clanGame(targetBaseType: BaseType): Boolean {
     if (!getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.DO_CLAN_GAMES.key)) return true
+    if (!shouldCheckClanGameNow()) return true
 
     if (openClanGameTaskPage()) {
         if (prepareClanGameTaskState()) {
+            if (getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.STOP_CLAN_GAMES_AFTER_4000_POINTS.key) && findMultiColors(MyColors.FourThousandPoints) != null) {
+                markClanGameFinishedThisMonth()
+                clickRightBottom(2)
+                return enterMainScreen()
+            }
             if (findMultiColors(MyColors.OnGoingTask) != null) {
                 clickRightBottom(2)
                 return enterMainScreen()
@@ -58,11 +74,57 @@ suspend fun clanGame(targetBaseType: BaseType): Boolean {
 }
 
 suspend fun hasAcceptedClanGameTask(): Boolean {
+    if (!shouldCheckClanGameNow()) return false
     if (!openClanGameTaskPage()) return false
     prepareClanGameTaskState()
     val result = findMultiColors(MyColors.OnGoingTask) != null
     clickRightBottom(2)
     return result
+}
+
+private suspend fun shouldCheckClanGameNow(): Boolean {
+    val now = getBeijingCalendar()
+    if (!isInClanGamePeriod(now)) {
+        accountMessage("当前不在部落竞赛时间（每月22日16:00至28日16:00北京时间），暂不检测")
+        return false
+    }
+
+    if (readMemory(getClanGameFinishedMonthStorageKey()) == getClanGameMonth(now)) {
+        accountMessage("本月部落竞赛已完成，等待下个月")
+        return false
+    }
+
+    return true
+}
+
+private suspend fun markClanGameFinishedThisMonth() {
+    writeMemory(getClanGameFinishedMonthStorageKey(), getClanGameMonth(getBeijingCalendar()))
+    accountMessage("本月部落竞赛已完成，等待下个月")
+}
+
+private fun getClanGameFinishedMonthStorageKey(): String {
+    return StorageKeys.withAccountNumber(StorageKeys.CLAN_GAME_FINISHED_MONTH, InGameVars.currentAccountNumber)
+}
+
+private fun getBeijingCalendar(): Calendar {
+    return Calendar.getInstance(BEIJING_TIME_ZONE)
+}
+
+private fun isInClanGamePeriod(calendar: Calendar): Boolean {
+    val day = calendar.get(Calendar.DAY_OF_MONTH)
+    val hour = calendar.get(Calendar.HOUR_OF_DAY)
+    return when (day) {
+        !in CLAN_GAME_START_DAY..CLAN_GAME_END_DAY -> false
+        CLAN_GAME_START_DAY -> hour >= CLAN_GAME_WINDOW_HOUR
+        CLAN_GAME_END_DAY -> hour < CLAN_GAME_WINDOW_HOUR
+        else -> true
+    }
+}
+
+private fun getClanGameMonth(calendar: Calendar): String {
+    val year = calendar.get(Calendar.YEAR)
+    val month = (calendar.get(Calendar.MONTH) + 1).toString().padStart(2, '0')
+    return "$year-$month"
 }
 
 private suspend fun openClanGameTaskPage(): Boolean {
