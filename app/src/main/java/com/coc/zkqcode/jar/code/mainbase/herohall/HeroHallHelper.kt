@@ -20,6 +20,7 @@ suspend fun withHeroHall(action: suspend () -> Unit): Boolean {
         )
         for (detection in scan) {
             val box = detection.boundingBox
+            if (box.centerY() <= 85) continue
             if (openHeroHall(box.centerX().toInt(), box.centerY().toInt())) {
                 action()
                 return true
