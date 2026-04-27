@@ -59,7 +59,7 @@ suspend fun clanGame(targetBaseType: BaseType): Boolean {
 
 suspend fun hasAcceptedClanGameTask(): Boolean {
     if (!openClanGameTaskPage()) return false
-    if (!prepareClanGameTaskState(finishedTaskWaitMillis = 1000, returnFalseWhenFinishedTask = true)) return false
+    prepareClanGameTaskState()
     val result = findMultiColors(MyColors.OnGoingTask) != null
     clickRightBottom(2)
     return result
@@ -81,10 +81,7 @@ private suspend fun openClanGameTaskPage(): Boolean {
     return true
 }
 
-private suspend fun prepareClanGameTaskState(
-    finishedTaskWaitMillis: Int = 4000,
-    returnFalseWhenFinishedTask: Boolean = false,
-): Boolean {
+private suspend fun prepareClanGameTaskState(): Boolean {
     val normalTask = findMultiColorsUntil(
         schemas = listOf(MyColors.NormalTasks, MyColors.OnGoingTask, MyColors.TaskCoolDown, MyColors.FailedTask), duration = 3000
     )
@@ -92,9 +89,8 @@ private suspend fun prepareClanGameTaskState(
 
     delayWithMultiplier(300)
     if (findMultiColors(MyColors.FinishedTask) != null) {
-        accountMessage("已有任务完成，等待${finishedTaskWaitMillis / 1000}秒")
-        delayWithMultiplier(finishedTaskWaitMillis)
-        if (returnFalseWhenFinishedTask) return false
+        accountMessage("已有任务完成，等待4秒")
+        delayWithMultiplier(4000)
     }
     return true
 }

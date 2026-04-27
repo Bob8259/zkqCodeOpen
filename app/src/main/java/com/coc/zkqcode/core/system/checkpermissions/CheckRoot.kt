@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.sp
 import com.coc.zkqcode.MainActivity
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.data.websocket.ServerActions
+import com.coc.zkqcode.core.ui.floatingwindows.ControlWindowService
 import com.coc.zkqcode.core.ui.floatingwindows.UIWindowService
 import com.coc.zkqcode.core.ui.localcomponents.LocalCustomButton
 import com.coc.zkqcode.statehelper.AppMode
@@ -121,7 +122,8 @@ fun CheckRootScreen() {
                         GlobalVars.serverActions = ServerActions(ServerHelper.localServer)
                     }
 
-                    // Start the floating window service AFTER serverActions is ready
+                    // Start the control window before showing the main UI window.
+                    context.startService(Intent(context, ControlWindowService::class.java))
                     val serviceIntent = Intent(context, UIWindowService::class.java)
                     context.startService(serviceIntent)
                     (context as? MainActivity)?.requestMediaProjection()
@@ -138,6 +140,7 @@ fun CheckRootScreen() {
                             GlobalVars.isAutoRunEnabled = true
                             GlobalVars.autoRunTimer = 60
                             GlobalVars.updateWindowPosition = false
+                            context.startService(Intent(context, ControlWindowService::class.java))
                             context.startService(serviceIntent)
                         }
                     )

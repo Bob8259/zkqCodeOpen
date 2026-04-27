@@ -147,6 +147,20 @@ fun ControlWindow(
             }
         )
     }
+    val togglePlayPause = {
+        internalInteractionCount++
+        val nextPlaying = !isPlaying
+        isPlaying = nextPlaying
+        if (nextPlaying) {
+            if (AppStateManager.currentMode != AppMode.Run) {
+                AppStateManager.setMode(AppMode.Run)
+            }
+        } else {
+            ShowMessage("暂停中，请稍后...")
+            restoreDefaultInputMethod()
+            ShowMessage("已暂停")
+        }
+    }
 
     Row(
         modifier = Modifier
@@ -243,13 +257,7 @@ fun ControlWindow(
                         .clickable {
                             // Disable play/pause icon when ad is playing
                             if (GlobalVars.isAdPlaying) return@clickable
-                            internalInteractionCount++
-                            isPlaying = !isPlaying
-                            if (!isPlaying) {
-                                ShowMessage("暂停中，请稍后...")
-                                restoreDefaultInputMethod()
-                                ShowMessage("已暂停")
-                            }
+                            togglePlayPause()
                         }
                 )
             }
@@ -265,13 +273,7 @@ fun ControlWindow(
                         .clickable {
                             // Disable play/pause icon when ad is playing
                             if (GlobalVars.isAdPlaying) return@clickable
-                            internalInteractionCount++
-                            isPlaying = !isPlaying
-                            if (!isPlaying) {
-                                ShowMessage("暂停中，请稍后...")
-                                restoreDefaultInputMethod()
-                                ShowMessage("已暂停")
-                            }
+                            togglePlayPause()
                         }
                 )
                 Image(

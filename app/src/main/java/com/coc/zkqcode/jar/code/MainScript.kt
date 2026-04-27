@@ -24,6 +24,8 @@ import com.coc.zkqcode.jar.code.universal.smalltools.readMemory
 import com.coc.zkqcode.jar.code.universal.smalltools.writeGameFiles
 import com.coc.zkqcode.jar.code.universal.smalltools.writeMemory
 import com.coc.zkqcode.jar.ui.schema.Schema
+import com.coc.zkqcode.statehelper.AppMode
+import com.coc.zkqcode.statehelper.AppStateManager
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
@@ -32,9 +34,8 @@ import kotlinx.coroutines.isActive
 
 suspend fun runMainScript() {
     if (GlobalVars.runDataNumberEntryOnly) {
-        GlobalVars.runDataNumberEntryOnly = false
-        GlobalVars.isPlaying.value = false
         tapDataNumberEntryButtons()
+        finishDataNumberEntryOnlyRun()
         return
     }
     waitForPlay()
@@ -78,6 +79,12 @@ suspend fun runMainScript() {
         writeMemory(StorageKeys.ACCOUNT_NUMBER, nextAccount.toString())
         InGameVars.currentGameVersion = resolveGameVersion(isBatchCreate)
     }
+}
+
+private fun finishDataNumberEntryOnlyRun() {
+    GlobalVars.runDataNumberEntryOnly = false
+    GlobalVars.isPlaying.value = false
+    AppStateManager.setMode(AppMode.Main)
 }
 
 private suspend fun runTestCode() {
