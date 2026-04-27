@@ -40,7 +40,7 @@ private const val CLAN_GAME_WINDOW_HOUR = 16
 private const val CLAN_GAME_OPEN_BUTTON_WAIT_MS = 100
 private const val CLAN_GAME_TASK_STATE_WAIT_MS = 3000
 private const val CLAN_GAME_AFTER_TASK_STATE_DELAY_MS = 300
-private const val CLAN_GAME_FINISHED_TASK_DELAY_MS = 4000
+private const val CLAN_GAME_FINISHED_TASK_DELAY_MS = 5000
 private const val CLAN_GAME_PAGE_OPEN_DELAY_MS = 1000
 private const val CLAN_GAME_TASK_LIST_SWIPE_START_X = 700
 private const val CLAN_GAME_TASK_LIST_SWIPE_START_Y = 500
@@ -102,6 +102,7 @@ suspend fun hasAcceptedClanGameTask(): Boolean {
     if (!openClanGameTaskPage()) return false
     prepareClanGameTaskState()
     val result = findMultiColors(MyColors.OnGoingTask) != null
+    accountMessage("接取任务状态：$result")
     if (!result) {
         when (getCurrentClanGameTaskState(checkFourThousandPoints = false)) {
             ClanGameTaskState.CoolDown -> return closeClanGamePageAndEnterMainScreen()
@@ -191,7 +192,7 @@ private suspend fun prepareClanGameTaskState(): Boolean {
 
     delayWithMultiplier(CLAN_GAME_AFTER_TASK_STATE_DELAY_MS)
     if (findMultiColors(MyColors.FinishedTask) != null) {
-        accountMessage("已有任务完成，等待4秒")
+        accountMessage("已有任务完成，等待5秒")
         delayWithMultiplier(CLAN_GAME_FINISHED_TASK_DELAY_MS)
     }
     return true
