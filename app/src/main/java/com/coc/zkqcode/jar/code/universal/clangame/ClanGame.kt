@@ -103,15 +103,14 @@ suspend fun hasAcceptedClanGameTask(currentBaseType: BaseType): Boolean {
     prepareClanGameTaskState()
     val result = findMultiColors(MyColors.OnGoingTask) != null
     accountMessage("接取任务状态：$result")
+    delayWithMultiplier(1000)
     if (!result) {
         when (getCurrentClanGameTaskState(checkFourThousandPoints = false)) {
             ClanGameTaskState.CoolDown -> return closeClanGamePageAndEnterMainScreen()
             ClanGameTaskState.Failed -> clearFailedTask()
             ClanGameTaskState.FourThousandPointsReached, ClanGameTaskState.OnGoing, ClanGameTaskState.None -> Unit
         }
-        if (currentBaseType == BaseType.Builder) {
-            if (detectAndAcceptTaskWithRetry(BaseType.Main)) return enterMainScreen()
-        } else if (currentBaseType == BaseType.Main) {
+        if (currentBaseType == BaseType.Main) {
             if (detectAndAcceptTaskWithRetry(BaseType.Builder)) return enterMainScreen()
         }
         writeClanGameAcceptedTaskBase(CLAN_GAME_TASK_BASE_NONE)
