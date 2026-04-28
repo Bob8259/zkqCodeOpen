@@ -88,7 +88,7 @@ suspend fun builderBaseAttack(): Boolean {
         repeat(battleTimes) { index ->
             if (!realAttack(attackType, hasNightWorldTask, index + 1, battleTimes)) return false
             val completedBattleTimes = index + 1
-            if (shouldCheckClanGameTask && completedBattleTimes >= normalBattleTimes && !hasAcceptedClanGameTask()) return true
+            if (shouldCheckClanGameTask && completedBattleTimes >= normalBattleTimes && !hasAcceptedClanGameTask(BaseType.Builder)) return true
 
             if ((index + 1) % 5 == 0) {
                 if (!enterMainScreen()) return false

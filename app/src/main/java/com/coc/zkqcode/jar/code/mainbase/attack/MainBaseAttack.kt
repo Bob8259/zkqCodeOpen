@@ -4,6 +4,7 @@ import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.accountMessage
+import com.coc.zkqcode.jar.code.universal.buildings.BaseType
 import com.coc.zkqcode.jar.code.universal.clangame.hasAcceptedClanGameTask
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
@@ -29,7 +30,7 @@ suspend fun mainBaseRemainingAttack(): Boolean {
     val remainingTimes = (totalBattleTimes - 1).coerceAtLeast(0)
     repeat(remainingTimes) { index ->
         val completedBattleTimes = index + 2
-        if (shouldCheckClanGameTask && completedBattleTimes >= normalBattleTimes && !hasAcceptedClanGameTask()) return true
+        if (shouldCheckClanGameTask && completedBattleTimes >= normalBattleTimes && !hasAcceptedClanGameTask(BaseType.Main)) return true
         if (!mainBaseAttack()) return false
     }
     return true
