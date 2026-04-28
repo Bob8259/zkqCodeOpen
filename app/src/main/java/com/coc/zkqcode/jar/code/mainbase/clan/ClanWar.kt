@@ -2,7 +2,6 @@ package com.coc.zkqcode.jar.code.mainbase.clan
 
 import android.graphics.Bitmap
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
-import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.mainbase.attack.mainBaseDeployTroops
@@ -61,8 +60,8 @@ private suspend fun attackByPosition(): Boolean {
     repeat(myPosition - 1) {
         TouchActions.tap(950, 570, delayTime = 120)
     }
-    val attackButton = findMultiColors(MyColors.ClanWarAttack) ?: return false
-    ShowMessage("已找到目标，尝试进入对战")
+    val attackButton = findMultiColorsUntil(listOf(MyColors.ClanWarAttack, MyColors.ClanWarAttack2), duration = 1000) ?: return false
+    accountMessage("已找到目标，尝试进入对战")
     return executeClanWarAttack(attackButton.x, attackButton.y)
 }
 
@@ -72,9 +71,9 @@ private suspend fun attackByPosition(): Boolean {
  */
 private suspend fun attackByRecommendation(): Boolean {
     val recommended = findMultiColorsUntil(schemas = listOf(MyColors.RecommendedOpponent), duration = 3000) ?: return false
-    ShowMessage("已找到推荐对手，准备尝试进攻")
+    accountMessage("已找到推荐对手，准备尝试进攻")
     TouchActions.tap(recommended.x, recommended.y - 100)
-    val attackButton = findMultiColors(MyColors.ClanWarAttack) ?: return false
+    val attackButton = findMultiColorsUntil(listOf(MyColors.ClanWarAttack, MyColors.ClanWarAttack2), duration = 1000) ?: return false
     return executeClanWarAttack(attackButton.x, attackButton.y)
 }
 
@@ -87,9 +86,9 @@ private suspend fun executeClanWarAttack(attackX: Int, attackY: Int): Boolean {
     TouchActions.tap(780, 440) // Confirm attack
     TouchActions.tap(1080, 640) // Attack
     TouchActions.tap(755, 470)//Double confirm
-    ShowMessage("检测是否进入对战中")
+    accountMessage("检测是否进入对战中")
     if (findMultiColorsUntil(schemas = listOf(MyColors.EndBattle), duration = 5000) == null) {
-        ShowMessage("进入部落战失败")
+        accountMessage("进入部落战失败")
         return false
     }
     mainBaseDeployTroops()

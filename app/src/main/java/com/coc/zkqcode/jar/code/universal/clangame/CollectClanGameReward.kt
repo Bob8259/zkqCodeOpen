@@ -40,7 +40,7 @@ suspend fun collectClanGameReward(): Boolean {
     if (!getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.CLAIM_CLAN_GAME_REWARDS.key)) return true
 
     val rewardPeriod = getCurrentRewardPeriod() ?: run {
-        accountMessage("当前不在竞赛奖励领取时间（每月28日16:00至次月4日16:00北京时间），暂不检测")
+        accountMessage("当前不在竞赛奖励领取时间，暂不检测")
         return true
     }
     val storageKey = StorageKeys.withAccountNumber(StorageKeys.CLAN_GAME_REWARD_CLAIMED_PERIOD, InGameVars.currentAccountNumber)

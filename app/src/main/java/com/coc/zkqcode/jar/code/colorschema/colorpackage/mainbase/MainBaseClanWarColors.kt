@@ -10,6 +10,7 @@ interface IMainBaseClanWarColors {
     val MyPositionGreen: ColorSchema
     val ClanWarSwordIcon: ColorSchema
     val ClanWarAttack: ColorSchema
+    val ClanWarAttack2: ColorSchema
     val RecommendedOpponent: ColorSchema
 }
 
@@ -37,6 +38,9 @@ object MainBaseClanWarColors : IMainBaseClanWarColors {
     // Clan war attack button
     override val ClanWarAttack = ColorSchema.parse(
         750, 527, 874, 570, "51C6FF", "25|0|51C6FF,50|0|51C6FF,75|0|51C6FF,100|0|51C6FF,0|21|1356EE,25|21|1356EE,50|21|1356EE,75|21|1356EE,100|21|1356EE", 0, 0.9, "部落战橙色进攻"
+    )
+    override val ClanWarAttack2 = ColorSchema.parse(
+        662, 536, 781, 573, "50C6FF", "24|0|50C6FF,48|0|50C6FF,71|0|50C6FF,95|0|50C6FF,0|19|1257EE,24|19|1257ED,48|19|1141AB,71|19|1357ED,95|19|1357ED", 0, 0.9, "部落战橙色进攻2"
     )
 
     // Recommended opponent indicator
