@@ -18,6 +18,7 @@ interface IClanGameColors {
     val TaskCoolDown: ColorSchema
     val FailedTask: ColorSchema
     val FourThousandPoints: ColorSchema
+    val ClanGameRewards: ColorSchema
 }
 
 object ClanGameColors : IClanGameColors {
@@ -59,5 +60,8 @@ object ClanGameColors : IClanGameColors {
     )
     override val FourThousandPoints = ColorSchema.parse(
         243, 638, 249, 663, "6ADDFA", "-1|0|6ADDFA,-2|0|6ADDFA,-3|0|6ADDFA,-4|0|6ADDFA,-4|22|6ADDFA,-3|22|6ADDFA,-2|22|6ADDFA,-1|22|6ADDFA,1|12|FFFFFF", 0, 0.9, "4000积分"
+    )
+    override val ClanGameRewards = ColorSchema.parse(
+        453, 186, 526, 206, "59D2D2", "15|0|59D2D2,30|0|59D2D2,44|0|59D2D2,59|0|59D2D2,0|10|59D2D2,15|10|59D2D2,30|10|59D2D2,44|10|59D2D2,59|10|59D2D2", 0, 0.9, "竞赛奖励"
     )
 }

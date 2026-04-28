@@ -92,7 +92,7 @@ suspend fun enterBuilderBase(isCheck: Boolean): Boolean {
                     }
 
                     // 2. Check for Main Base indicator (failure to switch)
-                    if (findMultiColors(schema = MyColors.UpgradeToTH6) != null) {
+                    if (findMultiColorsUntil(listOf(MyColors.UpgradeToTH6, MyColors.UpgradeToTH6_2), 100) != null) {
                         return false
                     }
 
