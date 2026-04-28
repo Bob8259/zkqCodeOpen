@@ -112,12 +112,11 @@ suspend fun searchOpponentsAndDeployTroops(): Boolean {
             if (waitForBattle != null) {
                 accountMessage("进攻需等待冷却")
                 val shouldWaitForBattle = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.WAIT_FOR_BATTLE.key)
-                val shouldWaitAfterMainWorldTask = hasMainWorldTask &&
-                        getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.WAIT_FOR_BATTLE_AFTER_ACCEPT_MAIN_WORLD_TASK.key)
+                val shouldWaitAfterMainWorldTask = hasMainWorldTask && getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.WAIT_FOR_BATTLE_AFTER_ACCEPT_MAIN_WORLD_TASK.key)
                 if (!shouldWaitForBattle && !shouldWaitAfterMainWorldTask) return false
             }
         }
-        val canNotAttack = findMultiColorsUntil(schemas = listOf(MyColors.CanNotAttack, MyColors.CanNotAttack2), duration = 10)
+        val canNotAttack = findMultiColorsUntil(schemas = listOf(MyColors.CanNotAttack, MyColors.CanNotAttack2, MyColors.CanNotAttack3), duration = 10)
         if (canNotAttack != null) {
             return false
         }

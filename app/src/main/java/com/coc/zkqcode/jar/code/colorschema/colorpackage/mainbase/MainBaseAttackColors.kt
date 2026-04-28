@@ -57,6 +57,7 @@ interface IMainBaseAttackColors {
     // Indicates the player cannot attack (e.g. shield active or not enough trophies)
     val CanNotAttack: ColorSchema
     val CanNotAttack2: ColorSchema
+    val CanNotAttack3: ColorSchema
 }
 
 object MainBaseAttackColors : IMainBaseAttackColors {
@@ -235,5 +236,10 @@ object MainBaseAttackColors : IMainBaseAttackColors {
     // Second variant for cannot-attack detection
     override val CanNotAttack2 = ColorSchema.parse(
         556, 366, 670, 451, "BDBEFE", "0|-2|BDBEFE,0|-5|BDBEFE,0|-8|BDBEFE,5|-4|BDBEFE,5|-1|B6B9F7,1|15|125584,-3|15|10466C,-2|-18|0A3655,2|-18|256E9C", 0, 0.95, "无法进攻2"
+    )
+
+    // Third variant for cannot-attack detection
+    override val CanNotAttack3 = ColorSchema.parse(
+        636, 382, 691, 422, "C5C6FB", "0|1|C5C5F7,0|2|C6C6F6,0|3|C6C7F4,-14|3|C6C6FE,-15|3|C6C6FE,-17|3|BFBFFF,-18|10|C0C0FF,-17|10|BFBFFF,-16|10|C0C0FF", 0, 0.9, "无法进攻3"
     )
 }
