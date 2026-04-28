@@ -97,7 +97,7 @@ suspend fun clanGame(targetBaseType: BaseType): Boolean {
     return enterMainScreen()
 }
 
-suspend fun hasAcceptedClanGameTask(): Boolean {
+suspend fun hasAcceptedClanGameTask(currentBaseType: BaseType): Boolean {
     if (!shouldCheckClanGameNow()) return false
     if (!openClanGameTaskPage()) return false
     prepareClanGameTaskState()
@@ -107,11 +107,13 @@ suspend fun hasAcceptedClanGameTask(): Boolean {
         when (getCurrentClanGameTaskState(checkFourThousandPoints = false)) {
             ClanGameTaskState.CoolDown -> return closeClanGamePageAndEnterMainScreen()
             ClanGameTaskState.Failed -> clearFailedTask()
-            ClanGameTaskState.FourThousandPointsReached,
-            ClanGameTaskState.OnGoing,
-            ClanGameTaskState.None -> Unit
+            ClanGameTaskState.FourThousandPointsReached, ClanGameTaskState.OnGoing, ClanGameTaskState.None -> Unit
         }
-        if (detectAndAcceptTaskWithRetry(BaseType.Builder)) return enterMainScreen()
+        if (currentBaseType == BaseType.Builder) {
+            if (detectAndAcceptTaskWithRetry(BaseType.Main)) return enterMainScreen()
+        } else if (currentBaseType == BaseType.Main) {
+            if (detectAndAcceptTaskWithRetry(BaseType.Builder)) return enterMainScreen()
+        }
         writeClanGameAcceptedTaskBase(CLAN_GAME_TASK_BASE_NONE)
         giveUpATask()
     }
@@ -166,8 +168,7 @@ private fun getClanGameMonth(calendar: Calendar): String {
 
 private suspend fun openClanGameTaskPage(): Boolean {
     val calendar = findMultiColorsUntil(
-        schemas = listOf(MyColors.Calendar, MyColors.Calendar2),
-        duration = CLAN_GAME_OPEN_BUTTON_WAIT_MS
+        schemas = listOf(MyColors.Calendar, MyColors.Calendar2), duration = CLAN_GAME_OPEN_BUTTON_WAIT_MS
     ) ?: return false
 
     TouchActions.tap(calendar.x, calendar.y)
@@ -185,8 +186,7 @@ private suspend fun openClanGameTaskPage(): Boolean {
 
 private suspend fun prepareClanGameTaskState(): Boolean {
     val normalTask = findMultiColorsUntil(
-        schemas = listOf(MyColors.NormalTasks, MyColors.OnGoingTask, MyColors.TaskCoolDown, MyColors.FailedTask),
-        duration = CLAN_GAME_TASK_STATE_WAIT_MS
+        schemas = listOf(MyColors.NormalTasks, MyColors.OnGoingTask, MyColors.TaskCoolDown, MyColors.FailedTask), duration = CLAN_GAME_TASK_STATE_WAIT_MS
     )
     if (normalTask == null) return false
 
@@ -220,9 +220,7 @@ private suspend fun closeClanGamePageAndEnterMainScreen(): Boolean {
 private suspend fun clearFailedTask() {
     TouchActions.tap(CLAN_GAME_FIRST_TASK_X, CLAN_GAME_FIRST_TASK_Y)
     TouchActions.tap(
-        CLAN_GAME_FAILED_TASK_CONFIRM_X,
-        CLAN_GAME_FAILED_TASK_CONFIRM_Y,
-        delayTime = CLAN_GAME_FAILED_TASK_CONFIRM_DELAY_MS
+        CLAN_GAME_FAILED_TASK_CONFIRM_X, CLAN_GAME_FAILED_TASK_CONFIRM_Y, delayTime = CLAN_GAME_FAILED_TASK_CONFIRM_DELAY_MS
     )
 }
 
@@ -234,22 +232,14 @@ private suspend fun detectAndAcceptTaskWithRetry(targetBaseType: BaseType): Bool
 
 private suspend fun swipeClanGameTaskList() {
     TouchActions.swipe(
-        CLAN_GAME_TASK_LIST_SWIPE_START_X,
-        CLAN_GAME_TASK_LIST_SWIPE_START_Y,
-        CLAN_GAME_TASK_LIST_SWIPE_END_X,
-        CLAN_GAME_TASK_LIST_SWIPE_END_Y,
-        delayAfter = CLAN_GAME_SWIPE_DELAY_MS
+        CLAN_GAME_TASK_LIST_SWIPE_START_X, CLAN_GAME_TASK_LIST_SWIPE_START_Y, CLAN_GAME_TASK_LIST_SWIPE_END_X, CLAN_GAME_TASK_LIST_SWIPE_END_Y, delayAfter = CLAN_GAME_SWIPE_DELAY_MS
     )
 }
 
 private suspend fun giveUpATask() {
     accountMessage("未找到可接取的任务，放弃第一个任务")
     TouchActions.swipe(
-        CLAN_GAME_GIVE_UP_SWIPE_START_X,
-        CLAN_GAME_GIVE_UP_SWIPE_START_Y,
-        CLAN_GAME_GIVE_UP_SWIPE_END_X,
-        CLAN_GAME_GIVE_UP_SWIPE_END_Y,
-        delayAfter = CLAN_GAME_SWIPE_DELAY_MS
+        CLAN_GAME_GIVE_UP_SWIPE_START_X, CLAN_GAME_GIVE_UP_SWIPE_START_Y, CLAN_GAME_GIVE_UP_SWIPE_END_X, CLAN_GAME_GIVE_UP_SWIPE_END_Y, delayAfter = CLAN_GAME_SWIPE_DELAY_MS
     )
     TouchActions.tap(CLAN_GAME_FIRST_TASK_X, CLAN_GAME_FIRST_TASK_Y)
     TouchActions.tap(CLAN_GAME_GIVE_UP_ACCEPT_X, CLAN_GAME_GIVE_UP_ACCEPT_Y, delayTime = CLAN_GAME_GIVE_UP_ACCEPT_DELAY_MS)
@@ -284,17 +274,13 @@ private suspend fun detectAndAcceptATask(targetBaseType: BaseType): Boolean {
     try {
         clanGameCrop = Bitmap.createBitmap(screenshot, cropLeft, cropTop, cropWidth, cropHeight)
         val detections = AiDetector.detect(
-            bitmap = clanGameCrop,
-            clearWeightsAfter = false,
-            threshold = CLAN_GAME_AI_THRESHOLD
+            bitmap = clanGameCrop, clearWeightsAfter = false, threshold = CLAN_GAME_AI_THRESHOLD
         ).onEach { detection ->
             detection.boundingBox.offset(cropLeft.toFloat(), cropTop.toFloat())
         }.filter { detection ->
             val centerX = detection.boundingBox.centerX()
             val centerY = detection.boundingBox.centerY()
-            ClanGameTaskClass.fromClassIndex(detection.classIndex) != null &&
-                    centerX in CLAN_GAME_DETECT_LEFT..CLAN_GAME_DETECT_RIGHT &&
-                    centerY in CLAN_GAME_DETECT_TOP..CLAN_GAME_DETECT_BOTTOM
+            ClanGameTaskClass.fromClassIndex(detection.classIndex) != null && centerX in CLAN_GAME_DETECT_LEFT..CLAN_GAME_DETECT_RIGHT && centerY in CLAN_GAME_DETECT_TOP..CLAN_GAME_DETECT_BOTTOM
         }.sortedWith(compareBy({ it.boundingBox.centerY() }, { it.boundingBox.centerX() }))
 
         if (detections.isEmpty()) {
@@ -308,11 +294,7 @@ private suspend fun detectAndAcceptATask(targetBaseType: BaseType): Boolean {
             val centerY = detection.boundingBox.centerY().toInt()
             val clanGameBase = detectClanGameBaseType(screenshot, centerX, centerY)
             ClanGameTaskDecision(
-                x = centerX,
-                y = centerY,
-                taskClass = taskClass,
-                clanGameBase = clanGameBase,
-                shouldAccept = shouldAcceptClanGameTask(taskClass, clanGameBase, targetBaseType)
+                x = centerX, y = centerY, taskClass = taskClass, clanGameBase = clanGameBase, shouldAccept = shouldAcceptClanGameTask(taskClass, clanGameBase, targetBaseType)
             )
         }
 
@@ -347,10 +329,7 @@ private suspend fun acceptTask(x: Int, y: Int): Boolean {
     val acceptTaskButton = findMultiColors(MyColors.AcceptTask)
     if (acceptTaskButton != null) {
         TouchActions.tap(
-            acceptTaskButton.x,
-            acceptTaskButton.y,
-            isJitter = false,
-            delayTime = CLAN_GAME_ACCEPT_TASK_CONFIRM_DELAY_MS
+            acceptTaskButton.x, acceptTaskButton.y, isJitter = false, delayTime = CLAN_GAME_ACCEPT_TASK_CONFIRM_DELAY_MS
         )
         clickRightBottom(CLAN_GAME_ACCEPT_CLOSE_CLICK_COUNT)
         return true
@@ -366,20 +345,12 @@ private fun shouldAcceptClanGameTask(taskClass: ClanGameTaskClass, clanGameBase:
 
 private suspend fun detectClanGameBaseType(screenshot: Bitmap, x: Int, y: Int): ClanGameBase {
     val builderBaseSchema = ColorSchema.rescope(
-        MyColors.BuilderBaseClanGame,
-        x - CLAN_GAME_BASE_ICON_DETECT_HALF_WIDTH,
-        y + CLAN_GAME_BASE_ICON_DETECT_TOP_OFFSET,
-        x + CLAN_GAME_BASE_ICON_DETECT_HALF_WIDTH,
-        y + CLAN_GAME_BASE_ICON_DETECT_BOTTOM_OFFSET
+        MyColors.BuilderBaseClanGame, x - CLAN_GAME_BASE_ICON_DETECT_HALF_WIDTH, y + CLAN_GAME_BASE_ICON_DETECT_TOP_OFFSET, x + CLAN_GAME_BASE_ICON_DETECT_HALF_WIDTH, y + CLAN_GAME_BASE_ICON_DETECT_BOTTOM_OFFSET
     )
     if (findMultiColors(builderBaseSchema, bitmap = screenshot) != null) return ClanGameBase.Builder
 
     val mainBaseSchema = ColorSchema.rescope(
-        MyColors.MainBaseClanGame,
-        x - CLAN_GAME_BASE_ICON_DETECT_HALF_WIDTH,
-        y + CLAN_GAME_BASE_ICON_DETECT_TOP_OFFSET,
-        x + CLAN_GAME_BASE_ICON_DETECT_HALF_WIDTH,
-        y + CLAN_GAME_BASE_ICON_DETECT_BOTTOM_OFFSET
+        MyColors.MainBaseClanGame, x - CLAN_GAME_BASE_ICON_DETECT_HALF_WIDTH, y + CLAN_GAME_BASE_ICON_DETECT_TOP_OFFSET, x + CLAN_GAME_BASE_ICON_DETECT_HALF_WIDTH, y + CLAN_GAME_BASE_ICON_DETECT_BOTTOM_OFFSET
     )
     if (findMultiColors(mainBaseSchema, bitmap = screenshot) != null) return ClanGameBase.Main
 
@@ -387,40 +358,23 @@ private suspend fun detectClanGameBaseType(screenshot: Bitmap, x: Int, y: Int): 
 }
 
 private enum class ClanGameTaskState {
-    FourThousandPointsReached,
-    OnGoing,
-    CoolDown,
-    Failed,
-    None
+    FourThousandPointsReached, OnGoing, CoolDown, Failed, None
 }
 
 private enum class ClanGameBase(
-    val displayName: String,
-    val baseType: BaseType?,
-    val acceptedTaskBase: String
+    val displayName: String, val baseType: BaseType?, val acceptedTaskBase: String
 ) {
-    Main("主世界", BaseType.Main, CLAN_GAME_TASK_BASE_MAIN_WORLD),
-    Builder("夜世界", BaseType.Builder, CLAN_GAME_TASK_BASE_NIGHT_WORLD),
-    Unknown("未知世界", null, CLAN_GAME_TASK_BASE_NONE)
+    Main("主世界", BaseType.Main, CLAN_GAME_TASK_BASE_MAIN_WORLD), Builder("夜世界", BaseType.Builder, CLAN_GAME_TASK_BASE_NIGHT_WORLD), Unknown("未知世界", null, CLAN_GAME_TASK_BASE_NONE)
 }
 
 private enum class ClanGameTaskClass(
-    val classIndex: Int,
-    val displayName: String,
-    private val mainBaseSettingKey: String,
-    private val builderBaseSettingKey: String
+    val classIndex: Int, val displayName: String, private val mainBaseSettingKey: String, private val builderBaseSettingKey: String
 ) {
     Normal(
-        CLAN_GAME_NORMAL_TASK_CLASS,
-        "普通任务",
-        Schema.MAIN_BASE_SETTINGS.ACCEPT_MAIN_WORLD_NORMAL_TASK.key,
-        Schema.MAIN_BASE_SETTINGS.ACCEPT_NIGHT_WORLD_NORMAL_TASK.key
+        CLAN_GAME_NORMAL_TASK_CLASS, "普通任务", Schema.MAIN_BASE_SETTINGS.ACCEPT_MAIN_WORLD_NORMAL_TASK.key, Schema.MAIN_BASE_SETTINGS.ACCEPT_NIGHT_WORLD_NORMAL_TASK.key
     ),
     Pro(
-        CLAN_GAME_PRO_TASK_CLASS,
-        "高级任务",
-        Schema.MAIN_BASE_SETTINGS.ACCEPT_MAIN_WORLD_ADVANCED_TASK.key,
-        Schema.MAIN_BASE_SETTINGS.ACCEPT_NIGHT_WORLD_ADVANCED_TASK.key
+        CLAN_GAME_PRO_TASK_CLASS, "高级任务", Schema.MAIN_BASE_SETTINGS.ACCEPT_MAIN_WORLD_ADVANCED_TASK.key, Schema.MAIN_BASE_SETTINGS.ACCEPT_NIGHT_WORLD_ADVANCED_TASK.key
     );
 
     fun settingKeyFor(clanGameBase: ClanGameBase): String? {
@@ -439,9 +393,5 @@ private enum class ClanGameTaskClass(
 }
 
 private data class ClanGameTaskDecision(
-    val x: Int,
-    val y: Int,
-    val taskClass: ClanGameTaskClass,
-    val clanGameBase: ClanGameBase,
-    val shouldAccept: Boolean
+    val x: Int, val y: Int, val taskClass: ClanGameTaskClass, val clanGameBase: ClanGameBase, val shouldAccept: Boolean
 )
