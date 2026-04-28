@@ -74,4 +74,5 @@ object MyColors : IUIColors by UIColors, IFeatureColors by FeatureColors, IClanG
     val TempGameContinue = ColorSchema.parse(
         574, 626, 707, 676, "88E9BB", "27|0|88E9BB,54|0|88E9BB,80|0|88E9BB,107|0|88E9BC,0|25|3AD48B,27|25|3AD48B,54|25|3AD48B,80|25|3AD48B,107|25|3AD48B", 0, 0.9, "临时活动继续"
     )
+
 }

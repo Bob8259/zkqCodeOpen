@@ -21,7 +21,7 @@ private data class RewardTap(val x: Int, val y: Int)
 private val firstRewardTaps = listOf(
     RewardTap(490, 430),
     RewardTap(610, 340),
-    RewardTap(720, 430),
+    RewardTap(720, 250),
     RewardTap(840, 430),
     RewardTap(950, 330),
     RewardTap(1075, 250),

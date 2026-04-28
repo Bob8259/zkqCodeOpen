@@ -19,7 +19,7 @@ suspend fun checkReconnections(): Boolean {
     checkPrivacy()
 
     val homeSchemas = listOf(
-        MyColors.Reconnection, MyColors.ReconnectionOnCloudPhone, MyColors.RatingOnCloudPhone, MyColors.RatingOnCloudPhone2
+        MyColors.Reconnection, MyColors.ReconnectionOnCloudPhone, MyColors.ReconnectionOnOppoA57, MyColors.RatingOnCloudPhone, MyColors.RatingOnCloudPhone2
     )
     var screenBuffer = captureOrRestart()
 
@@ -59,7 +59,8 @@ suspend fun checkReconnections(): Boolean {
                 0 -> {
                     // Tap the reload button, rating notification, and tutorial confirm
                     TouchActions.tap(379, 458)
-                    TouchActions.tap(338, 511)
+                    TouchActions.tap(338, 510, delayTime = 10)
+                    TouchActions.tap(338, 520)
                 }
 
                 1 -> needReturnFalse = true // Signal caller to switch accounts
