@@ -79,4 +79,9 @@ object MyColors : IUIColors by UIColors, IFeatureColors by FeatureColors, IClanG
         243, 638, 249, 663, "6ADDFA", "-1|0|6ADDFA,-2|0|6ADDFA,-3|0|6ADDFA,-4|0|6ADDFA,-4|22|6ADDFA,-3|22|6ADDFA,-2|22|6ADDFA,-1|22|6ADDFA,1|12|FFFFFF", 0, 0.9, "4000积分"
     )
 
+    //Main Base Attack Colours
+    val SiegeMachineAtDeploymentBar = ColorSchema.parse(
+        66, 590, 1244, 717, "BFA823", "1|0|BFA723,0|1|BFA823,3|3|C4AC26,9|-2|C0A922,-2|5|C3AC26,-1|8|C7B029,5|6|C8B029,-1|3|C1AA25,1|4|C3AC26", 0, 0.9, "攻城机器"
+    )
+
 }

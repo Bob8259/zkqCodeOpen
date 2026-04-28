@@ -40,7 +40,17 @@ suspend fun mainBaseDeployTroops() {
         deployIfPresent(DRAG_SWEEP_SLOW_MS, MyColors.BarbarianAtDeploymentBar, MyColors.BarbarianAtDeploymentBar2)
         deployIfPresent(DRAG_SWEEP_SLOW_MS, MyColors.ArcherAtDeploymentBar, MyColors.ArcherAtDeploymentBar2, MyColors.ArcherAtDeploymentBar3, MyColors.ArcherAtDeploymentBar4)
         deployHeroes()
+        deploySiegeMachine()
         deployOthers()
+    }
+}
+
+private suspend fun deploySiegeMachine() {
+    val siegeMachine = findMultiColors(MyColors.SiegeMachineAtDeploymentBar)
+    if (siegeMachine != null) {
+        TouchActions.tap(siegeMachine.x + 10, siegeMachine.y + 20)
+        TouchActions.tap(350, 250, delayTime = 100)
+        TouchActions.tap(DRAG_START_X.toInt(), DRAG_START_Y.toInt())
     }
 }
 
