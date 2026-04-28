@@ -124,6 +124,7 @@ private suspend fun shouldCheckClanGameNow(): Boolean {
     val now = getBeijingCalendar()
     if (!isInClanGamePeriod(now)) {
         accountMessage("当前不在部落竞赛时间（每月22日16:00至28日16:00北京时间），暂不检测")
+        writeClanGameAcceptedTaskBase(CLAN_GAME_TASK_BASE_NONE)
         return false
     }
 
