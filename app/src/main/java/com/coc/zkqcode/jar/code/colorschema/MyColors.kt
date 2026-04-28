@@ -65,7 +65,12 @@ object MyColors : IUIColors by UIColors, IFeatureColors by FeatureColors, IClanG
     IMainBaseResourcesColors by MainBaseResourcesColors, IClanCapitalTutorialColors by ClanCapitalTutorialColors, IMainBaseAttackColors by MainBaseAttackColors, IMainBaseClanColors by MainBaseClanColors,
     IMainBaseClanWarColors by MainBaseClanWarColors, IMainBaseHelperColors by MainBaseHelperColors, IMainBaseHeroHallColors by MainBaseHeroHallColors, IMainBaseSmallTutorialColors by MainBaseSmallTutorialColors,
     IMainBaseMagicItemColors by MainBaseMagicItemColors, IClanCapitalColors by ClanCapitalColors {
-    //UI colors
+    //Clan Game Colours
+    val ClanGameRewards = ColorSchema.parse(
+        453, 186, 526, 206, "59D2D2", "15|0|59D2D2,30|0|59D2D2,44|0|59D2D2,59|0|59D2D2,0|10|59D2D2,15|10|59D2D2,30|10|59D2D2,44|10|59D2D2,59|10|59D2D2", 0, 0.9, "竞赛奖励"
+    )
+
+    // UI colors
     val TempGameContinue = ColorSchema.parse(
         574, 626, 707, 676, "88E9BB", "27|0|88E9BB,54|0|88E9BB,80|0|88E9BB,107|0|88E9BC,0|25|3AD48B,27|25|3AD48B,54|25|3AD48B,80|25|3AD48B,107|25|3AD48B", 0, 0.9, "临时活动继续"
     )

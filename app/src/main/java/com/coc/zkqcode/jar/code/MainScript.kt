@@ -13,6 +13,7 @@ import com.coc.zkqcode.jar.code.mainbase.playMainBase
 import com.coc.zkqcode.jar.code.universal.GameVersion
 import com.coc.zkqcode.jar.code.universal.InGameVars
 import com.coc.zkqcode.jar.code.universal.accountMessage
+import com.coc.zkqcode.jar.code.universal.clangame.collectClanGameReward
 import com.coc.zkqcode.jar.code.universal.create.batchCreateAccounts
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.runRandomSchedulingScript
@@ -61,7 +62,7 @@ suspend fun runMainScript() {
     var lastUpdateCheckTime = System.currentTimeMillis()
     var nextUpdateInterval = (3600_000L) + (Math.random() * 7200_000L).toLong()
     while (currentCoroutineContext().isActive) {
-//        runTestCode()
+        runTestCode()
         runAccountStepBlock()
         // Circularly search for the next enabled account, wrapping back to currentAccountNumber (inclusive)
         // Emit hot update signal at safe point, throttled to once every 2-3 hours randomly
@@ -89,7 +90,7 @@ private fun finishDataNumberEntryOnlyRun() {
 
 private suspend fun runTestCode() {
     while (true) {
-        builderBaseAttack()
+        collectClanGameReward()
         accountMessage("测试代码结束")
         delay(5000)
     }

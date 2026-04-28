@@ -100,7 +100,7 @@ suspend fun findMultiColors(
  *                  use the default of 5 for all others.
  */
 suspend fun findMultiColorsUntil(
-    bitmap: Bitmap? = null, byteBuffer: ScreenCaptureManager.CaptureResult? = null, schemas: List<ColorSchema>, duration: Int, increment: Int = 10
+    schemas: List<ColorSchema>, duration: Int, bitmap: Bitmap? = null, byteBuffer: ScreenCaptureManager.CaptureResult? = null, increment: Int = 10
 ): Point? {
     val startTime = System.currentTimeMillis()
     val multiplier = GlobalVars.configStates["delay_multiplier"]?.value?.toFloat() ?: logAndRestart("Failed to get delayMultiplier")

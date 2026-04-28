@@ -176,7 +176,7 @@ fun LazyListScope.mainBaseConfig(
                     }
                 }
             }
-            SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.CLAIM_CLAN_GAME_REWARDS.key}_c$index", explain = "辅助会优先领书和宝石，其他随机领取。")
+            SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.CLAIM_CLAN_GAME_REWARDS.key}_c$index", explain = "优先领取魔法书和宝石，其他随机领取。")
 
             Column {
                 SettingSwitchIcon(
