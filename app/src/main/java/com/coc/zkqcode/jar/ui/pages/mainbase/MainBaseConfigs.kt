@@ -173,10 +173,11 @@ fun LazyListScope.mainBaseConfig(
                             }, explain = "开启后，会自动接取夜世界高级任务，例如摧毁奥仔哨站，多管迫击炮等，建议解锁第二区域后开启，并会自动开启夜世界对战选项。"
                         )
                         SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.STOP_CLAN_GAMES_AFTER_4000_POINTS.key}_c$index")
-
                     }
                 }
             }
+            SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.CLAIM_CLAN_GAME_REWARDS.key}_c$index", explain = "辅助会优先领书和宝石，其他随机领取。")
+
             Column {
                 SettingSwitchIcon(
                     key = "${MAIN_BASE_SETTINGS.AUTO_JOIN_CLAN.key}_c$index",

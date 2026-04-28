@@ -40,7 +40,7 @@ object WorkerAndResearch {
 
         val workerSchemas = when (baseType) {
             BaseType.Builder -> listOf(MyColors.BuilderBaseWorker, MyColors.BuilderBaseWorker2)
-            BaseType.Main -> listOf(MyColors.MainBaseWorker, MyColors.MainBaseWorker2, MyColors.MainBaseWorker3)
+            BaseType.Main -> MyColors.MainBaseWorkerSchemas
         }
         val baseName = when (baseType) {
             BaseType.Builder -> "夜世界"; BaseType.Main -> "主世界"

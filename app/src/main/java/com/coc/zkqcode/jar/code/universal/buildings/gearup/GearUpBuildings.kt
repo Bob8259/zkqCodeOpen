@@ -54,7 +54,7 @@ private suspend fun upgradeGearUpBuildings(): Boolean {
     if (!enterMainBase()) return true
 
     val worker = findMultiColorsUntil(
-        schemas = listOf(MyColors.MainBaseWorker, MyColors.MainBaseWorker2, MyColors.MainBaseWorker3),
+        schemas = MyColors.MainBaseWorkerSchemas,
         duration = 1000
     )
 
