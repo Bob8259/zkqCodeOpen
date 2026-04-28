@@ -23,6 +23,7 @@ import com.coc.zkqcode.jar.code.universal.smalltools.readMemory
 import com.coc.zkqcode.jar.code.universal.smalltools.writeClanGameAcceptedTaskBase
 import com.coc.zkqcode.jar.code.universal.smalltools.writeMemory
 import com.coc.zkqcode.jar.ui.schema.Schema
+import kotlinx.coroutines.delay
 import java.util.Calendar
 import java.util.TimeZone
 
@@ -187,6 +188,8 @@ private suspend fun prepareClanGameTaskState(): Boolean {
     val normalTask = findMultiColorsUntil(
         schemas = listOf(MyColors.NormalTasks, MyColors.OnGoingTask, MyColors.TaskCoolDown, MyColors.FailedTask), duration = CLAN_GAME_TASK_STATE_WAIT_MS
     )
+    accountMessage("当前进入页面状态：$normalTask")
+    delayWithMultiplier(1000)
     if (normalTask == null) return false
 
     delayWithMultiplier(CLAN_GAME_AFTER_TASK_STATE_DELAY_MS)
