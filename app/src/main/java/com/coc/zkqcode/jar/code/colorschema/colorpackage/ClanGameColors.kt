@@ -14,6 +14,10 @@ interface IClanGameColors {
     val BuilderBaseClanGame: ColorSchema
     val MainBaseClanGame: ColorSchema
     val AcceptTask: ColorSchema
+    val GiveUpTaskButton: ColorSchema
+    val TaskCoolDown: ColorSchema
+    val FailedTask: ColorSchema
+    val FourThousandPoints: ColorSchema
 }
 
 object ClanGameColors : IClanGameColors {
@@ -43,5 +47,17 @@ object ClanGameColors : IClanGameColors {
     )
     override val AcceptTask = ColorSchema.parse(
         392, 92, 1158, 618, "74E3AE", "33|0|74E3AE,67|0|74E3AE,101|0|74E3AE,134|0|74E3AE,0|35|3AD48B,33|35|3AD48B,67|35|3AD48B,101|35|3AD48B,134|35|3AD48B", 0, 0.9, "接取任务"
+    )
+    override val GiveUpTaskButton = ColorSchema.parse(
+        634, 120, 1028, 428, "7674FF", "7|0|7674FF,99|3|221EF7,117|24|221EF7,51|24|0D4DD0,65|24|0D39AC,12|33|221EF7,3|41|221EF7,99|43|221EF7,125|40|221EF7", 0, 0.92, "放弃任务"
+    )
+    override val TaskCoolDown = ColorSchema.parse(
+        541, 164, 1024, 485, "4ED69F", "5|0|55DFAF,10|0|7CF8E0,14|0|86FBE6,19|0|90FFEF,0|13|90FCE1,5|13|94FDE1,10|13|85FBD8,14|13|7DFBD6,19|13|79FCDD", 0, 0.9, "冷却宝石标志"
+    )
+    override val FailedTask = ColorSchema.parse(
+        478, 134, 526, 311, "3A2EF2", "0|8|272CEB,0|15|272CEB,0|24|272CEB,0|27|272CEB,1|35|282DEC,1|39|292EED,1|42|292FEE,1|51|3037F7,0|56|3D44FF", 0, 0.9, "失败的任务"
+    )
+    override val FourThousandPoints = ColorSchema.parse(
+        243, 638, 249, 663, "6ADDFA", "-1|0|6ADDFA,-2|0|6ADDFA,-3|0|6ADDFA,-4|0|6ADDFA,-4|22|6ADDFA,-3|22|6ADDFA,-2|22|6ADDFA,-1|22|6ADDFA,1|12|FFFFFF", 0, 0.9, "4000积分"
     )
 }

@@ -16,6 +16,7 @@ interface IMainBaseAttackColors {
     val DarkElixirIcon: ColorSchema
     val InsufficientGold: ColorSchema
     val DragonAtDeploymentBar: ColorSchema
+    val SiegeMachineAtDeploymentBar: ColorSchema
 
     // Troop deploy bar color variants
     val BarbarianAtDeploymentBar: ColorSchema
@@ -91,6 +92,9 @@ object MainBaseAttackColors : IMainBaseAttackColors {
     )
     override val DragonAtDeploymentBar = ColorSchema.parse(
         85, 589, 1189, 717, "DB5C6E", "14|6|4F2D8C,27|10|EB6B79,24|22|BF4F5E,15|30|2E268C,25|37|5537A9,27|45|5C336D,25|47|552268,2|23|7393F7,-10|19|883542", 0, 0.9, "部署飞龙"
+    )
+    override val SiegeMachineAtDeploymentBar = ColorSchema.parse(
+        66, 590, 1244, 717, "BFA823", "1|0|BFA723,0|1|BFA823,3|3|C4AC26,9|-2|C0A922,-2|5|C3AC26,-1|8|C7B029,5|6|C8B029,-1|3|C1AA25,1|4|C3AC26", 0, 0.9, "攻城机器"
     )
 
     // Troop deploy bar color variants
