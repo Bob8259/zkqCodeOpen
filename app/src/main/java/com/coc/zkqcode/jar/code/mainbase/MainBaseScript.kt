@@ -22,13 +22,15 @@ import com.coc.zkqcode.jar.code.mainbase.others.useMagicItems
 import com.coc.zkqcode.jar.code.mainbase.research.mainBaseResearch
 import com.coc.zkqcode.jar.code.universal.buildings.BaseType
 import com.coc.zkqcode.jar.code.universal.buildings.upgradeWallsThenBuildings
+import com.coc.zkqcode.jar.code.universal.clangame.collectClanGameReward
 import com.coc.zkqcode.jar.code.universal.smalltools.enterMainBase
 
 suspend fun playMainBase(): Boolean {
     if (!enterMainBase()) return false
     if (!checkRandomSchedule()) return false
     if (!playClanCapital()) return false
-    if (!clanGame(BaseType.Main)) return true
+    if (!clanGame(BaseType.Main)) return false
+    if (!collectClanGameReward()) return false
     if (!mainBaseCollectResources()) return false
     if (!mainBaseTrainTroops()) return false
     if (!mainBaseAttack()) return false
