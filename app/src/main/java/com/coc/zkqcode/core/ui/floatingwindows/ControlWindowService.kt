@@ -1,11 +1,13 @@
 package com.coc.zkqcode.core.ui.floatingwindows
 
+import android.annotation.SuppressLint
 import android.app.Service
 import android.content.Intent
 import android.content.pm.ServiceInfo
 import android.graphics.PixelFormat
 import android.os.Build
 import android.os.IBinder
+import android.os.PowerManager
 import android.os.Process
 import android.view.Gravity
 import android.view.WindowManager
@@ -54,6 +56,7 @@ class ControlWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner 
     private var controlComposeView: ComposeView? = null
     private val serviceScope = CoroutineScope(Dispatchers.Main + Job())
     private var botJob: Job? = null
+    private var wakeLock: PowerManager.WakeLock? = null
 
     private val lifecycleRegistry = LifecycleRegistry(this)
     override val lifecycle: Lifecycle = lifecycleRegistry
@@ -69,6 +72,7 @@ class ControlWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner 
         updateForegroundRecord()
         lifecycleRegistry.currentState = Lifecycle.State.CREATED
         windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
+        acquireWakeLock()
         showControlWindow()
         startBotLogic()
         startHotUpdateListener()
@@ -286,6 +290,7 @@ class ControlWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner 
 
     override fun onDestroy() {
         super.onDestroy()
+        releaseWakeLock()
         serviceScope.cancel()
         lifecycleRegistry.currentState = Lifecycle.State.DESTROYED
         if (controlComposeView != null) {
@@ -312,6 +317,26 @@ class ControlWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner 
         updateForegroundRecord()
         lifecycleRegistry.currentState = Lifecycle.State.STARTED
         return START_STICKY
+    }
+
+    @SuppressLint("WakelockTimeout")
+    @Suppress("DEPRECATION")
+    private fun acquireWakeLock() {
+        if (wakeLock?.isHeld == true) return
+        val powerManager = getSystemService(POWER_SERVICE) as PowerManager
+        wakeLock = powerManager.newWakeLock(
+            PowerManager.SCREEN_DIM_WAKE_LOCK,
+            "ZKQcode::ControlWindowWakeLock"
+        ).apply {
+            acquire()
+        }
+    }
+
+    private fun releaseWakeLock() {
+        if (wakeLock?.isHeld == true) {
+            wakeLock?.release()
+        }
+        wakeLock = null
     }
 
     private fun updateForegroundRecord() {
