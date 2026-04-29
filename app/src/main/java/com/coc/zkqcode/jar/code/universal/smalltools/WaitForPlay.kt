@@ -1,8 +1,8 @@
-package com.coc.zkqcode.core.util.basic
+package com.coc.zkqcode.jar.code.universal.smalltools
 
 import com.coc.zkqcode.core.data.database.GlobalVars
+import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.exit.AppExitHelper
-import com.coc.zkqcode.jar.code.universal.smalltools.setZKQInputMethod
 import kotlinx.coroutines.delay
 
 /** Suspends until the script is playing.

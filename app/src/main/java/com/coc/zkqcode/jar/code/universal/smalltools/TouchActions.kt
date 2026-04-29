@@ -3,7 +3,6 @@ package com.coc.zkqcode.jar.code.universal.smalltools
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.data.database.ServerConnectionMethod
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
-import com.coc.zkqcode.core.util.basic.waitForPlay
 import com.coc.zkqcode.core.util.fileactions.LogHelper
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.delay

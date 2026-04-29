@@ -5,7 +5,7 @@ import android.graphics.Point
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.jar.code.universal.accountMessage
-import com.coc.zkqcode.core.util.basic.waitForPlay
+import com.coc.zkqcode.jar.code.universal.smalltools.waitForPlay
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
 import com.coc.zkqcode.jar.code.auth.userAuth
 import com.coc.zkqcode.jar.code.colorschema.ColorSchema

@@ -3,7 +3,7 @@ package com.coc.zkqcode.jar.code.universal.recognizer
 import android.graphics.Bitmap
 import android.graphics.Rect
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
-import com.coc.zkqcode.core.util.basic.waitForPlay
+import com.coc.zkqcode.jar.code.universal.smalltools.waitForPlay
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
 import com.coc.zkqcode.core.util.fileactions.LogHelper.showDebugInfo
 import com.google.android.gms.tasks.Tasks
