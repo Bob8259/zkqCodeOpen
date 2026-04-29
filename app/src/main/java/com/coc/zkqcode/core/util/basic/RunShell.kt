@@ -1,6 +1,5 @@
 package com.coc.zkqcode.core.util.basic
 
-import com.coc.zkqcode.jar.code.universal.smalltools.waitForPlay
 import com.topjohnwu.superuser.Shell
 
 /**
