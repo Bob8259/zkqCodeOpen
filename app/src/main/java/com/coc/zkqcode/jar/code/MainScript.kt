@@ -90,7 +90,7 @@ private fun finishDataNumberEntryOnlyRun() {
 
 private suspend fun runTestCode() {
     while (true) {
-        collectClanGameReward()
+        builderBaseAttack()
         accountMessage("测试代码结束")
         delay(5000)
     }
