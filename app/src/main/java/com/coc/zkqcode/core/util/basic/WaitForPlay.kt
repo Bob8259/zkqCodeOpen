@@ -22,7 +22,7 @@ suspend fun waitForPlay() {
             }
             return
         }
-        if (!GlobalVars.isPlaying.value) {
+        if (GlobalVars.isPlaying.value) {
             localSetZKQInputMethod()
             break
         }
