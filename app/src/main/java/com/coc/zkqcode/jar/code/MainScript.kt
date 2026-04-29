@@ -22,6 +22,7 @@ import com.coc.zkqcode.jar.code.universal.smalltools.tapDataNumberEntryButtons
 import com.coc.zkqcode.jar.code.universal.smalltools.checkAndCoolDown
 import com.coc.zkqcode.jar.code.universal.smalltools.getConfigOrStop
 import com.coc.zkqcode.jar.code.universal.smalltools.readMemory
+import com.coc.zkqcode.jar.code.universal.smalltools.setZKQInputMethod
 import com.coc.zkqcode.jar.code.universal.smalltools.writeGameFiles
 import com.coc.zkqcode.jar.code.universal.smalltools.writeMemory
 import com.coc.zkqcode.jar.ui.schema.Schema
@@ -40,6 +41,7 @@ suspend fun runMainScript() {
         return
     }
     waitForPlay()
+    setZKQInputMethod()
     accountMessage("检测到设置已更新\n即将重新运行")
     delay(200)
     userAuth()
@@ -100,8 +102,7 @@ private suspend fun runTestCode() {
 /** Handles hot-update signal on start and random-scheduling gate.
  *  Returns updateOption, or null if random scheduling took over. */
 private suspend fun checkHotUpdateAndScheduling(): Int? {
-    val updateOption = getConfigOrStop(Schema.GLOBAL_SETTINGS.AUTO_UPDATE.key).toIntOrNull()
-        ?: logAndRestart("${Schema.GLOBAL_SETTINGS.AUTO_UPDATE.displayName} 必须是数字，请检查配置")
+    val updateOption = getConfigOrStop(Schema.GLOBAL_SETTINGS.AUTO_UPDATE.key).toIntOrNull() ?: logAndRestart("${Schema.GLOBAL_SETTINGS.AUTO_UPDATE.displayName} 必须是数字，请检查配置")
     if (updateOption == 1 || updateOption == 2) {
         val deferred = CompletableDeferred<Unit>()
         GlobalVars.updateCheckSignal.tryEmit(deferred)
@@ -134,13 +135,12 @@ private fun resolveAccountRange(): AccountRange {
 }
 
 /** Resolves the current account's GameVersion, forcing GLOBAL in batch-create mode. */
-private suspend fun resolveGameVersion(isBatchCreate: Boolean): GameVersion {
+private fun resolveGameVersion(isBatchCreate: Boolean): GameVersion {
     return if (isBatchCreate) {
         GameVersion.GLOBAL
     } else {
         GameVersion.fromId(
-            getConfigOrStop("${Schema.ACCOUNT_SETTINGS.GAME_VERSION.key}${InGameVars.currentAccountNumber}").toIntOrNull()
-                ?: logAndRestart("${Schema.ACCOUNT_SETTINGS.GAME_VERSION.displayName} 必须是数字，请检查配置")
+            getConfigOrStop("${Schema.ACCOUNT_SETTINGS.GAME_VERSION.key}${InGameVars.currentAccountNumber}").toIntOrNull() ?: logAndRestart("${Schema.ACCOUNT_SETTINGS.GAME_VERSION.displayName} 必须是数字，请检查配置")
         )
     }
 }

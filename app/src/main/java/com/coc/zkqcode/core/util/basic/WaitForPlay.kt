@@ -2,6 +2,7 @@ package com.coc.zkqcode.core.util.basic
 
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.util.exit.AppExitHelper
+import com.coc.zkqcode.jar.code.universal.smalltools.setZKQInputMethod
 import kotlinx.coroutines.delay
 
 /** Suspends until the script is playing.
@@ -12,7 +13,7 @@ suspend fun waitForPlay() {
     ShowMessage("当前已暂停\n为节省资源占用，暂停60分钟后自动退出。")
     val startTime = System.currentTimeMillis()
 
-    while (!GlobalVars.isPlaying.value) {
+    while (true) {
         delay(1000)
         // Exit the app if paused for more than 60 minutes
         if (System.currentTimeMillis() - startTime >= 60 * 60_000L) {
@@ -21,6 +22,10 @@ suspend fun waitForPlay() {
                 AppExitHelper.exitApplication(ctx)
             }
             return
+        }
+        if (!GlobalVars.isPlaying.value) {
+            setZKQInputMethod()
+            break
         }
     }
 }
