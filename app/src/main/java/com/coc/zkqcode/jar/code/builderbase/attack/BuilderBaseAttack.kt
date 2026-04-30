@@ -135,6 +135,10 @@ private suspend fun realAttack(mode: String, hasNightWorldTask: Boolean, battleN
                 clickRightBottom(2)
                 builderBaseTrainTroops()
             }
+            val greenButton = findMultiColors(MyColors.GreenConfirm)
+            if (greenButton != null) {
+                TouchActions.tap(greenButton.x, greenButton.y)
+            }
             continue
         }
         val search = findMultiColors(byteBuffer = capturedScreen, schema = MyColors.CancelAttackSearch)
