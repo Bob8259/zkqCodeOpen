@@ -41,6 +41,10 @@ object GlobalSettings {
     // ── Random Scheduling (随机上号) ──────────────────────────────────────────
     val RANDOM_SCHEDULING = SettingDef("random_scheduling", "随机上号", 0, "GLOBAL_SETTINGS")
 
+    // ── Scheduled Restart (定时重启) ───────────────────────────────────────────
+    val SCHEDULED_RESTART = SettingDef("scheduled_restart", "定时重启", 0, "GLOBAL_SETTINGS")
+    val RESTART_INTERVAL = SettingDef("restart_interval", "重启间隔(分钟)", "60", "GLOBAL_SETTINGS")
+
     // Battle time ratio per group
     val RS_BATTLE_RATIO_DAWN = SettingDef("rs_battle_ratio_dawn", "对战时间比例", "80", "GLOBAL_SETTINGS")
     val RS_BATTLE_RATIO_MORNING = SettingDef("rs_battle_ratio_morning", "对战时间比例", "80", "GLOBAL_SETTINGS")
@@ -120,7 +124,8 @@ object GlobalSettings {
         RS_CONTINUE_MAX_DAWN, RS_CONTINUE_MAX_MORNING, RS_CONTINUE_MAX_AFTERNOON, RS_CONTINUE_MAX_NIGHT,
         RS_NO_WORKER_DAWN, RS_NO_WORKER_MORNING, RS_NO_WORKER_AFTERNOON, RS_NO_WORKER_NIGHT,
         RS_FULL_RES_DAWN, RS_FULL_RES_MORNING, RS_FULL_RES_AFTERNOON, RS_FULL_RES_NIGHT,
-        RS_ACCOUNTS_DAWN, RS_ACCOUNTS_MORNING, RS_ACCOUNTS_AFTERNOON, RS_ACCOUNTS_NIGHT
+        RS_ACCOUNTS_DAWN, RS_ACCOUNTS_MORNING, RS_ACCOUNTS_AFTERNOON, RS_ACCOUNTS_NIGHT,
+        SCHEDULED_RESTART, RESTART_INTERVAL
     )
 }
 

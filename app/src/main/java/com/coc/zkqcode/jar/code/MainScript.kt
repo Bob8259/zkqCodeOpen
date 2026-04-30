@@ -34,6 +34,7 @@ import kotlinx.coroutines.isActive
 
 
 suspend fun runMainScript() {
+    val scriptStartTime = (System.currentTimeMillis() / 1000).toInt()
     if (GlobalVars.runDataNumberEntryOnly) {
         tapDataNumberEntryButtons()
         finishDataNumberEntryOnlyRun()
@@ -80,6 +81,7 @@ suspend fun runMainScript() {
         InGameVars.currentAccountNumber = nextAccount
         writeMemory(StorageKeys.ACCOUNT_NUMBER, nextAccount.toString())
         InGameVars.currentGameVersion = resolveGameVersion(isBatchCreate)
+        checkScheduledReboot(scriptStartTime)
     }
 }
 
@@ -198,6 +200,19 @@ private suspend fun findAndActivateAccount(
         }
     }
     return found
+}
+
+private suspend fun checkScheduledReboot(scriptStartTime: Int) {
+    val isScheduledRestartEnabled = GlobalVars.configStates[Schema.GLOBAL_SETTINGS.SCHEDULED_RESTART.key]?.value == "1"
+    if (isScheduledRestartEnabled) {
+        val intervalMinutes = GlobalVars.configStates[Schema.GLOBAL_SETTINGS.RESTART_INTERVAL.key]?.value?.toLongOrNull() ?: 60L
+        val currentTimeSeconds = (System.currentTimeMillis() / 1000).toInt()
+        if (currentTimeSeconds - scriptStartTime >= intervalMinutes * 60) {
+            accountMessage("定时重启时间已到，即将重启设备...")
+            delay(2000)
+            RunShell.runNoOutput("reboot", false)
+        }
+    }
 }
 
 
