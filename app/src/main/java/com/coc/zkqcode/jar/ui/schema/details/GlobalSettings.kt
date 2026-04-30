@@ -42,7 +42,7 @@ object GlobalSettings {
     val RANDOM_SCHEDULING = SettingDef("random_scheduling", "随机上号", 0, "GLOBAL_SETTINGS")
 
     // ── Scheduled Restart (定时重启) ───────────────────────────────────────────
-    val SCHEDULED_RESTART = SettingDef("scheduled_restart", "定时重启", 0, "GLOBAL_SETTINGS")
+    val SCHEDULED_RESTART = SettingDef("scheduled_restart", "定时重启设备", 0, "GLOBAL_SETTINGS")
     val RESTART_INTERVAL = SettingDef("restart_interval", "重启间隔(分钟)", "60", "GLOBAL_SETTINGS")
 
     // Battle time ratio per group
