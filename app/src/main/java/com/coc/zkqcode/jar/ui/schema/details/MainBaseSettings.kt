@@ -70,6 +70,9 @@ object MainBaseSettings {
     val HELPER_SETTINGS = SettingDef("helper_settings", "用工人学徒和实验助手", 1, "MAIN_BASE_SETTINGS")
     val UPGRADE_RESEARCH_HELPER = SettingDef("upgrade_research_helper", "升级实验助手", 0, "MAIN_BASE_SETTINGS")
     val UPGRADE_BUILDER_APPRENTICE = SettingDef("upgrade_builder_apprentice", "升级工人学徒", 0, "MAIN_BASE_SETTINGS")
+    val PROSPECTOR_BLUE_TO_GOLD = SettingDef("prospector_blue_to_gold", "探矿者蓝矿转黄矿", 0, "MAIN_BASE_SETTINGS")
+    val PROSPECTOR_BLUE_TO_PURPLE = SettingDef("prospector_blue_to_purple", "探矿者蓝矿转紫矿", 0, "MAIN_BASE_SETTINGS")
+    val PROSPECTOR_PURPLE_TO_GOLD = SettingDef("prospector_purple_to_gold", "探矿者紫矿转黄矿", 0, "MAIN_BASE_SETTINGS")
     val DO_CLAN_GAMES = SettingDef("do_clan_games", "做部落竞赛任务", 1, "MAIN_BASE_SETTINGS")
     val CLAIM_CLAN_GAME_REWARDS = SettingDef("claim_clan_game_rewards", "领竞赛奖励", 0, "MAIN_BASE_SETTINGS")
     val PLAY_CLAN_WAR = SettingDef("play_clan_war", "打部落战", 0, "MAIN_BASE_SETTINGS")
@@ -193,6 +196,9 @@ object MainBaseSettings {
         HELPER_SETTINGS,
         UPGRADE_RESEARCH_HELPER,
         UPGRADE_BUILDER_APPRENTICE,
+        PROSPECTOR_BLUE_TO_GOLD,
+        PROSPECTOR_BLUE_TO_PURPLE,
+        PROSPECTOR_PURPLE_TO_GOLD,
         DO_CLAN_GAMES,
         CLAIM_CLAN_GAME_REWARDS,
         PLAY_CLAN_WAR,

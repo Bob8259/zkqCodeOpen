@@ -292,6 +292,9 @@ fun LazyListScope.mainBaseConfig(
                 SettingSwitchIcon(
                     key = "${MAIN_BASE_SETTINGS.UPGRADE_BUILDER_APPRENTICE.key}_c$index", explain = "工人学徒的升级优先级低于购买新建筑工人及升级实验助手。"
                 )
+                SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.PROSPECTOR_BLUE_TO_GOLD.key}_c$index")
+                SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.PROSPECTOR_BLUE_TO_PURPLE.key}_c$index")
+                SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.PROSPECTOR_PURPLE_TO_GOLD.key}_c$index")
             }
         }
     }

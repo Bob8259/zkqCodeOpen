@@ -2,7 +2,6 @@ package com.coc.zkqcode.jar.code.mainbase.others
 
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.jar.code.universal.smalltools.TouchActions
-import com.coc.zkqcode.jar.code.universal.smalltools.TouchActions.swipe
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.jar.code.universal.InGameVars
@@ -20,7 +19,7 @@ import com.coc.zkqcode.jar.code.universal.smalltools.writeMemory
 import com.coc.zkqcode.jar.ui.schema.Schema
 
 suspend fun useHelpers(): Boolean {
-    if (!getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.HELPER_SETTINGS.key)) return true
+    if (!getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.HELPER_SETTINGS.key) && !getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.PROSPECTOR_BLUE_TO_GOLD.key) && !getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.PROSPECTOR_BLUE_TO_PURPLE.key)) return true
     val storageKey = StorageKeys.withAccountNumber(
         StorageKeys.USE_HELPERS, InGameVars.currentAccountNumber
     )
@@ -47,7 +46,7 @@ suspend fun useHelpers(): Boolean {
             val openHelperHut = findMultiColorsUntil(schemas = listOf(MyColors.BuilderHelperIcon, MyColors.ResearchHelperIcon, MyColors.ResearchHelperIcon2), duration = 200)
             if (openHelperHut != null) {
                 TouchActions.tap(openHelperHut.x, openHelperHut.y)
-                checkResearchHelper(isUpgradeHelper)
+                configureAndAssignHelpers(isUpgradeHelper)
                 writeMemory(storageKey, (System.currentTimeMillis() / 60_000).toString())
                 clickRightBottom(1)
                 return true
@@ -57,7 +56,7 @@ suspend fun useHelpers(): Boolean {
     }
 
     if (!scanAndTapHelpers()) {
-        swipe(900, 130, 0, 720)
+        TouchActions.swipe(900, 130, 0, 720)
         scanAndTapHelpers()
     }
     return enterMainScreen()
@@ -67,7 +66,7 @@ private suspend fun clickLeisure() {
     TouchActions.tap(1070, 625, delayTime = 200)//空闲中
 }
 
-private suspend fun checkResearchHelper(isUpgradeHelper: Boolean) {
+private suspend fun configureAndAssignHelpers(isUpgradeHelper: Boolean) {
     repeat(15) {
         val middleGreen = findMultiColors(MyColors.MiddleGreenButton)
         if (middleGreen != null) {
@@ -96,15 +95,31 @@ private suspend fun checkResearchHelper(isUpgradeHelper: Boolean) {
             TouchActions.tap(801, 623, delayTime = 200)
             TouchActions.tap(801, 623, delayTime = 200)
             clickLeisure()
-        } else if (lockedBuilderHelper != null) {
-            return
         }
         val innerBuilderHelper = findMultiColors(MyColors.InnerBuilderHelper)
         if (innerBuilderHelper != null) {
             TouchActions.tap(innerBuilderHelper.x, innerBuilderHelper.y)
             assignHelper()
             clickLeisure()
-            return
+        }
+        val prospector = findMultiColors(MyColors.Prospector)
+        if (prospector != null) {
+            TouchActions.tap(prospector.x, prospector.y)
+            TouchActions.swipe(1030, 340, 1030, 720)//reset to the original position
+            TouchActions.swipe(730, 340, 1030, 720, delayAfter = 300)
+            if (getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.PROSPECTOR_BLUE_TO_PURPLE.key)) {
+                TouchActions.swipe(1030, 340, 1030, 275, delayAfter = 300)
+                TouchActions.tap(1060, 520)//convert
+            }
+            if (getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.PROSPECTOR_BLUE_TO_GOLD.key)) {
+                TouchActions.swipe(1030, 340, 1030, 0, delayAfter = 300)
+                TouchActions.tap(1060, 520)//convert
+            }
+            if (getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.PROSPECTOR_PURPLE_TO_GOLD.key)) {
+                TouchActions.swipe(1030, 340, 1030, 0, delayAfter = 300)
+                TouchActions.swipe(730, 340, 1030, 275, delayAfter = 300)
+                TouchActions.tap(1060, 520)//convert
+            }
         }
         delayWithMultiplier(200)
     }
