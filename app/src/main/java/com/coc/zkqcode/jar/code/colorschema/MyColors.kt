@@ -70,4 +70,8 @@ object MyColors : IUIColors by UIColors, IFeatureColors by FeatureColors, IClanG
         362, 555, 584, 666, "A8C2FF", "38|45|3F6CC6,40|41|4384EF,31|48|786B96,32|43|A7D1FF,25|36|465471,14|26|A1B5D2,-19|31|7D8CAC,-17|2|B0CDFC,-13|-17|6B6B7F", 0, 0.9, "探矿者"
     )
 
+    // Builder Base Upgrade Colour
+    val RebuildGemMine = ColorSchema.parse(
+        522, 426, 789, 695, "8DFAE2", "17|0|8DFAE2,43|-1|8DFAE3,77|-1|8DFAE3,109|-1|8DFAE3,4|65|1FBC6D,37|61|1FBC6D,71|67|1FBC6D,95|68|1FBC6E,119|66|1FBC6D", 0, 0.9, "重建"
+    )
 }

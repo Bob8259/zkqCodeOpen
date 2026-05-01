@@ -106,6 +106,7 @@ private suspend fun deployHeroes() {
             // Tap the deploy zone to place the hero on the battlefield
             TouchActions.tap(350, 250, delayTime = 100)
             TouchActions.tap(DRAG_START_X.toInt(), DRAG_START_Y.toInt())
+            TouchActions.tap(found.x, found.y)
         }
     }
 }

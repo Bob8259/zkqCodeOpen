@@ -398,6 +398,10 @@ private suspend fun upgradeBuilding(building: String, currentBase: BaseType, att
             return LoopAction.Break
         }
     }
+    val rebuildButton = findMultiColors(MyColors.RebuildGemMine)
+    if (rebuildButton != null) {
+        TouchActions.tap(rebuildButton.x, rebuildButton.y)
+    }
     tapGoldBar()
     accountMessage("升级成功: $building (第 $attempt 个)")
     return LoopAction.Proceed
