@@ -19,7 +19,7 @@ suspend fun checkReconnections(): Boolean {
     checkPrivacy()
 
     val homeSchemas = listOf(
-        MyColors.Reconnection, MyColors.ReconnectionOnCloudPhone, MyColors.ReconnectionOnOppoA57, MyColors.RatingOnCloudPhone, MyColors.RatingOnCloudPhone2
+        MyColors.Reconnection, MyColors.ReconnectionOnCloudPhone, MyColors.ReconnectionOnOppoA57, MyColors.ReconnectionOnLeiDian, MyColors.RatingOnCloudPhone, MyColors.RatingOnCloudPhone2
     )
     var screenBuffer = captureOrRestart()
 

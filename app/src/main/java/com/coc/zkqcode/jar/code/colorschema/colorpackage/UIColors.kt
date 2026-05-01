@@ -8,6 +8,7 @@ interface IUIColors {
     val Reconnection: ColorSchema
     val ReconnectionOnCloudPhone: ColorSchema
     val ReconnectionOnOppoA57: ColorSchema
+    val ReconnectionOnLeiDian: ColorSchema
     val RatingOnCloudPhone: ColorSchema
     val RatingOnCloudPhone2: ColorSchema
     val GreenConfirm: ColorSchema
@@ -64,6 +65,9 @@ object UIColors : IUIColors {
     )
     override val ReconnectionOnOppoA57 = ColorSchema.parse(
         254, 137, 1020, 576, "1D1C19", "95|0|1D1C19,190|0|1D1C19,284|0|1D1C19,379|0|1D1C19,0|24|1D1C19,95|24|1D1C19,190|24|1D1C19,284|24|1D1C19,379|24|1D1C19", 0, 0.99, "OPPO A57 断线重连"
+    )
+    override val ReconnectionOnLeiDian = ColorSchema.parse(
+        260, 142, 1001, 581, "201B1C", "15|8|201B1C,98|16|201B1C,176|19|201B1C,238|19|201B1C,290|17|201B1C,270|45|201B1C,170|51|201B1C,98|55|201B1C,62|56|201B1C", 0, 0.99, "雷电模拟器断线重连"
     )
     override val RatingOnCloudPhone = ColorSchema.parse(
         249, 206, 1035, 522, "424242", "157|0|424242,314|0|424242,471|0|424242,628|0|424242,0|158|424242,157|158|424242,314|158|424242,471|158|424242,628|158|424242", 0, 0.99, "云手机打分提示"

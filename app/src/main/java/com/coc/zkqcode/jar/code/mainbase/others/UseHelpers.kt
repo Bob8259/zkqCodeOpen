@@ -67,6 +67,7 @@ private suspend fun clickLeisure() {
 }
 
 private suspend fun configureAndAssignHelpers(isUpgradeHelper: Boolean) {
+    var isInHelperPage = false
     repeat(15) {
         val middleGreen = findMultiColors(MyColors.MiddleGreenButton)
         if (middleGreen != null) {
@@ -74,6 +75,7 @@ private suspend fun configureAndAssignHelpers(isUpgradeHelper: Boolean) {
         }
         val innerResearchHelper = findMultiColors(MyColors.InnerResearchHelper)
         if (innerResearchHelper != null) {
+            isInHelperPage = true
             TouchActions.tap(innerResearchHelper.x, innerResearchHelper.y)
             val lockedResearchHelper = findMultiColors(MyColors.LockedResearchHelper)
             if (lockedResearchHelper != null) {
@@ -91,6 +93,7 @@ private suspend fun configureAndAssignHelpers(isUpgradeHelper: Boolean) {
         val lockedBuilderHelper = findMultiColors(MyColors.LockedBuilderHelper)
         if (lockedBuilderHelper != null && isUpgradeHelper && getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.UPGRADE_BUILDER_APPRENTICE.key)) {
             accountMessage("已勾选升级工人助手")
+            isInHelperPage = true
             TouchActions.tap(lockedBuilderHelper.x, lockedBuilderHelper.y)
             TouchActions.tap(801, 623, delayTime = 200)
             TouchActions.tap(801, 623, delayTime = 200)
@@ -98,12 +101,14 @@ private suspend fun configureAndAssignHelpers(isUpgradeHelper: Boolean) {
         }
         val innerBuilderHelper = findMultiColors(MyColors.InnerBuilderHelper)
         if (innerBuilderHelper != null) {
+            isInHelperPage = true
             TouchActions.tap(innerBuilderHelper.x, innerBuilderHelper.y)
             assignHelper()
             clickLeisure()
         }
         val prospector = findMultiColors(MyColors.Prospector)
         if (prospector != null) {
+            isInHelperPage = true
             TouchActions.tap(prospector.x, prospector.y)
             TouchActions.swipe(1030, 340, 1030, 720)//reset to the original position
             TouchActions.swipe(730, 340, 1030, 720, delayAfter = 300)
@@ -121,6 +126,7 @@ private suspend fun configureAndAssignHelpers(isUpgradeHelper: Boolean) {
                 TouchActions.tap(1060, 520)//convert
             }
         }
+        if (isInHelperPage) return
         delayWithMultiplier(200)
     }
 }
