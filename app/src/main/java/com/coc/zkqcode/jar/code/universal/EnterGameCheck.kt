@@ -139,7 +139,7 @@ private suspend fun closeAdvertisements() {
         }
 
     }
-    findMultiColorsUntil(byteBuffer = screenBuffer, schemas = listOf(MyColors.ReturnTask, MyColors.ReturnTask2, MyColors.ReturnTask3), duration = 20, increment = 1)?.let {
+    findMultiColorsUntil(byteBuffer = screenBuffer, schemas = listOf(MyColors.ReturnTask, MyColors.ReturnTask2, MyColors.ReturnTask3, MyColors.ReturnTask4), duration = 20, increment = 1)?.let {
         accountMessage("检测到回归教程")
         zoomSmallMainBase()
         mainBaseDeployTroops()
