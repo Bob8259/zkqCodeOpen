@@ -16,7 +16,7 @@ object AutoGrantTool {
     fun forceEnableAccessibility(): Boolean {
         try {
             val getCmd = "settings get secure enabled_accessibility_services"
-            val currentServices = RunShell.runBlockingOutput(getCmd, checkIsPlaying = false).joinToString("")
+            val currentServices = RunShell.runBlockingOutput(getCmd).joinToString("")
 
             // Strip ALL entries belonging to our package (including stale/corrupt variants)
             val strippedList = currentServices
@@ -25,18 +25,18 @@ object AutoGrantTool {
                 .joinToString(":")
 
             // === Cycle 1: process removal so the system fully forgets our service ===
-            RunShell.runBlockingNoOutput("settings put secure enabled_accessibility_services $strippedList", checkIsPlaying = false)
-            RunShell.runBlockingNoOutput("settings put secure accessibility_enabled 0", checkIsPlaying = false)
+            RunShell.runBlockingNoOutput("settings put secure enabled_accessibility_services $strippedList")
+            RunShell.runBlockingNoOutput("settings put secure accessibility_enabled 0")
             Thread.sleep(30)
-            RunShell.runBlockingNoOutput("settings put secure accessibility_enabled 1", checkIsPlaying = false)
+            RunShell.runBlockingNoOutput("settings put secure accessibility_enabled 1")
             Thread.sleep(50)
 
             // === Cycle 2: add our service as a brand-new entry and trigger bind ===
-            RunShell.runBlockingNoOutput("settings put secure accessibility_enabled 0", checkIsPlaying = false)
+            RunShell.runBlockingNoOutput("settings put secure accessibility_enabled 0")
             Thread.sleep(30)
             val newList = if (strippedList.isEmpty()) SERVICE_PATH else "$strippedList:$SERVICE_PATH"
-            RunShell.runBlockingNoOutput("settings put secure enabled_accessibility_services $newList", checkIsPlaying = false)
-            RunShell.runBlockingNoOutput("settings put secure accessibility_enabled 1", checkIsPlaying = false)
+            RunShell.runBlockingNoOutput("settings put secure enabled_accessibility_services $newList")
+            RunShell.runBlockingNoOutput("settings put secure accessibility_enabled 1")
 
             return true
         } catch (e: Exception) {

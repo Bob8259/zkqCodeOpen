@@ -125,7 +125,7 @@ suspend fun writeGameFilesCore(
     val sourceDir = "$sdPath/zkqFiles/$folderName/$savePathName"
 
     // Verify that the archive directory exists before attempting to write
-    if (!RunShell.runBlocking("[ -d \"$sourceDir\" ]", checkIsPlaying = false).isSuccess) {
+    if (!RunShell.runBlocking("[ -d \"$sourceDir\" ]").isSuccess) {
         ShowMessage("存档文件不存在：$sourceDir\n即将跳过当前账号")
         return false
     }

@@ -25,7 +25,7 @@ object AppExitHelper {
     fun restoreDefaultInputMethod() {
         val defaultIme = GlobalVars.defaultInputMethod
         if (!defaultIme.isNullOrBlank()) {
-            RunShell.runBlockingNoOutput("ime set $defaultIme", checkIsPlaying = false)
+            RunShell.runBlockingNoOutput("ime set $defaultIme")
         }
     }
 
@@ -33,7 +33,7 @@ object AppExitHelper {
         try {
             // 使用 pkill -f 匹配包含指定类名的全路径进程
             // com.coc.zkqserver.ShellServer 是你在 app_process 中启动的类名
-            RunShell.runBlockingNoOutput("pkill -f com.coc.zkqserver.ShellServer", checkIsPlaying = false)
+            RunShell.runBlockingNoOutput("pkill -f com.coc.zkqserver.ShellServer")
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -42,13 +42,13 @@ object AppExitHelper {
     private fun stopDaemonProcess() {
         try {
             // Use libsu to execute pgrep to find the PID(s) of the daemon script
-            val pids = RunShell.runBlockingOutput("pgrep -f /data/local/tmp/zkq_daemon.sh", checkIsPlaying = false)
+            val pids = RunShell.runBlockingOutput("pgrep -f /data/local/tmp/zkq_daemon.sh")
 
             if (pids.isNotEmpty()) {
                 // Kill all found PIDs
                 pids.forEach { pid ->
                     if (pid.isNotBlank()) {
-                        RunShell.runBlockingNoOutput("kill -9 $pid", checkIsPlaying = false)
+                        RunShell.runBlockingNoOutput("kill -9 $pid")
                     }
                 }
             }

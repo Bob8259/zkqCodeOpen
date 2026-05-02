@@ -83,7 +83,7 @@ fun ExtractGameSaveContent() {
 
             // 1. Check if save already exists (use Shell to check shared_prefs folder)
             val checkExistCmd = "[ -d \"$targetSaveDir/shared_prefs\" ]"
-            if (RunShell.runBlocking(checkExistCmd, checkIsPlaying = false).isSuccess) {
+            if (RunShell.runBlocking(checkExistCmd).isSuccess) {
                 showMsg("提取失败，存档已存在")
                 return@launch
             }
@@ -92,10 +92,10 @@ fun ExtractGameSaveContent() {
 
             // 2. Ensure directory structure exists
             // mkdir -p will recursively create directories: if zkqFiles doesn't exist it will be created, if zkqCNGameSave doesn't exist it will also be created
-            RunShell.runBlockingNoOutput("mkdir -p \"$gameRootDir\"", checkIsPlaying = false)
+            RunShell.runBlockingNoOutput("mkdir -p \"$gameRootDir\"")
 
             // Create directory for this save
-            RunShell.runBlockingNoOutput("mkdir -p \"$targetSaveDir\"", checkIsPlaying = false)
+            RunShell.runBlockingNoOutput("mkdir -p \"$targetSaveDir\"")
 
             // Iterate and copy each subdirectory from game data into the save location
             variant.gameVersion.subDirs.forEach { dir ->
@@ -123,7 +123,7 @@ fun ExtractGameSaveContent() {
 
             // 使用 Shell 检查目录是否存在
             val checkExistCmd = "[ -d \"$targetPath\" ]"
-            if (!RunShell.runBlocking(checkExistCmd, checkIsPlaying = false).isSuccess) {
+            if (!RunShell.runBlocking(checkExistCmd).isSuccess) {
                 showMsg("删除失败，存档不存在")
                 return@launch
             }
@@ -131,7 +131,7 @@ fun ExtractGameSaveContent() {
             showMsg("删除中...")
 
             // 执行删除
-            val result = RunShell.runBlocking("rm -rf \"$targetPath\"", checkIsPlaying = false)
+            val result = RunShell.runBlocking("rm -rf \"$targetPath\"")
 
             if (result.isSuccess) {
                 showMsg("删除成功！")

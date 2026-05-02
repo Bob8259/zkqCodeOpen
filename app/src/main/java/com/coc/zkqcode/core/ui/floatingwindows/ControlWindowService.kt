@@ -302,7 +302,7 @@ class ControlWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner 
 
     override fun onTaskRemoved(rootIntent: Intent?) {
         super.onTaskRemoved(rootIntent)
-        RunShell.runBlockingNoOutput("am start -n com.coc.zkqcode/.MainActivity >>/dev/null 2>&1", checkIsPlaying = false)
+        RunShell.runBlockingNoOutput("am start -n com.coc.zkqcode/.MainActivity >>/dev/null 2>&1")
         GlobalVars.autoRunTimer = 5
     }
 
@@ -310,7 +310,7 @@ class ControlWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner 
         // Detect START_STICKY restart: system delivers null intent after LMKD kill
         if (intent == null) {
             // Relaunch MainActivity to re-initialize the full app (JAR loading, etc.)
-            RunShell.runBlockingNoOutput("am start -n com.coc.zkqcode/.MainActivity >>/dev/null 2>&1", checkIsPlaying = false)
+            RunShell.runBlockingNoOutput("am start -n com.coc.zkqcode/.MainActivity >>/dev/null 2>&1")
             GlobalVars.autoRunTimer = 5
         }
         updateForegroundRecord()

@@ -48,8 +48,7 @@ object LogHelper {
         // Spawn a detached process via setsid to restart the app after killing it.
         // The new session ensures this child survives the parent process termination.
         RunShell.runBlockingNoOutput(
-            "setsid sh -c 'sleep 2; am force-stop com.coc.zkqcode; sleep 1; am start -n com.coc.zkqcode/.MainActivity' > /dev/null 2>&1 &",
-            checkIsPlaying = false
+            "setsid sh -c 'sleep 2; am force-stop com.coc.zkqcode; sleep 1; am start -n com.coc.zkqcode/.MainActivity' > /dev/null 2>&1 &"
         )
         error(message)
     }

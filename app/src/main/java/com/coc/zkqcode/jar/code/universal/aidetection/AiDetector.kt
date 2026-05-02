@@ -69,12 +69,12 @@ object AiDetector {
     private fun getPluginApkFile(): File? {
         val context = ShowMessage.getContext()
         if (context == null) {
-            accountMessage("AI插件安装失败：上下文未初始化")
+            accountMessage("辅助插件安装失败：上下文未初始化")
             return null
         }
         val downloadDir = File(context.filesDir, PLUGIN_DOWNLOAD_DIR)
         if (!downloadDir.exists() && !downloadDir.mkdirs()) {
-            accountMessage("AI插件安装失败：无法创建下载目录")
+            accountMessage("辅助插件安装失败：无法创建下载目录")
             return null
         }
         return File(downloadDir, PLUGIN_APK_NAME)
@@ -94,9 +94,9 @@ object AiDetector {
         if (total > 0) {
             val totalMb = total / 1024.0 / 1024.0
             val percent = (downloaded * 100 / total).coerceAtMost(100)
-            return "AI插件下载中：$percent% (${String.format(Locale.US, "%.2f", downloadedMb)}MB/${String.format(Locale.US, "%.2f", totalMb)}MB)"
+            return "辅助插件下载中：$percent% (${String.format(Locale.US, "%.2f", downloadedMb)}MB/${String.format(Locale.US, "%.2f", totalMb)}MB)"
         }
-        return "AI插件下载中：${String.format(Locale.US, "%.2f", downloadedMb)}MB"
+        return "辅助插件下载中：${String.format(Locale.US, "%.2f", downloadedMb)}MB"
     }
 
     private suspend fun downloadPluginApk(targetFile: File): Boolean = withContext(Dispatchers.IO) {
@@ -107,7 +107,7 @@ object AiDetector {
             val request = Request.Builder().url(PLUGIN_DOWNLOAD_URL).get().build()
             downloadClient.newCall(request).execute().use { response ->
                 if (!response.isSuccessful) {
-                    postMessage("AI插件下载失败：HTTP ${response.code}")
+                    postMessage("辅助插件下载失败：HTTP ${response.code}")
                     return@withContext false
                 }
                 val body = response.body
@@ -137,21 +137,25 @@ object AiDetector {
             if (targetFile.exists()) {
                 targetFile.delete()
             }
-            postMessage("AI插件下载失败：${e.message}")
+            postMessage("辅助插件下载失败：${e.message}")
             false
         }
     }
 
     private suspend fun installPlugin(apkFile: File): Boolean {
+        // Stream the APK into pm install via stdin to bypass SELinux file-access restrictions.
+        // The PackageManagerService cannot read files from the app's private storage or
+        // /data/local/tmp without the correct SELinux context, but streaming avoids both issues.
+        val size = apkFile.length()
         val installResult = RunShell.run(
-            "pm install -r \"${apkFile.absolutePath}\"",
+            "cat \"${apkFile.absolutePath}\" | pm install -S $size",
             checkIsPlaying = false
         )
         if (installResult.any { it.contains("Success", ignoreCase = true) }) {
             return true
         }
         val errorMessage = installResult.joinToString("\n").ifBlank { "未返回安装结果" }
-        accountMessage("AI插件安装失败：$errorMessage")
+        accountMessage("辅助插件安装失败：$errorMessage")
         return false
     }
 
@@ -162,7 +166,7 @@ object AiDetector {
         }
         if (hasError) {
             val errorMessage = launchResult.joinToString("\n").ifBlank { "未返回启动结果" }
-            accountMessage("AI插件启动失败：$errorMessage")
+            accountMessage("辅助插件启动失败：$errorMessage")
             return false
         }
         return true
@@ -180,17 +184,17 @@ object AiDetector {
      * The plugin needs one foreground launch so its app-side initialization can complete
      * before the detector returns to the game and polls the local server again.
      */
-    private suspend fun downloadAndInstallPlugin(): Boolean {
+    suspend fun downloadAndInstallPlugin(): Boolean {
         val apkFile = getPluginApkFile() ?: return false
         try {
             if (!downloadPluginApk(apkFile)) {
                 return false
             }
-            accountMessage("AI插件下载完成，开始安装")
+            accountMessage("辅助插件下载完成，开始安装")
             if (!installPlugin(apkFile)) {
                 return false
             }
-            accountMessage("AI插件安装成功，正在启动插件")
+            accountMessage("辅助插件安装成功，正在启动插件")
             if (!launchPluginMainActivity()) {
                 return false
             }
@@ -209,7 +213,7 @@ object AiDetector {
         if (isPluginInstalled()) {
             return true
         }
-        accountMessage("未检测到AI插件，开始自动下载安装")
+        accountMessage("未检测到辅助插件，开始自动下载安装")
         return downloadAndInstallPlugin()
     }
 
@@ -253,13 +257,13 @@ object AiDetector {
             if (versionTooLow) {
                 if (updateAttempted) {
                     // Already tried once; avoid an infinite update loop.
-                    accountMessage("AI插件更新后版本仍然过低，请手动更新")
+                    accountMessage("辅助插件更新后版本仍然过低，请手动更新")
                     return false
                 }
-                accountMessage("AI插件版本过低，正在尝试自动下载更新")
+                accountMessage("辅助插件版本过低，正在尝试自动下载更新")
                 updateAttempted = true
                 if (!downloadAndInstallPlugin()) {
-                    accountMessage("AI插件自动更新失败，请手动下载安装最新版")
+                    accountMessage("辅助插件自动更新失败，请手动下载安装最新版")
                     return false
                 }
                 // Reset the polling timer so the full window is available after the update.
@@ -268,7 +272,7 @@ object AiDetector {
                 delay(POLL_INTERVAL_MS)
             }
         }
-        accountMessage("AI插件启动失败，请检查插件是否安装成功并已正常启动")
+        accountMessage("辅助插件启动失败，请检查插件是否安装成功并已正常启动")
         return false
     }
 
@@ -284,7 +288,7 @@ object AiDetector {
         return try {
             client.newCall(request).execute().use { response ->
                 if (!response.isSuccessful) {
-                    accountMessage("模型加载失败: HTTP ${response.code}")
+                    accountMessage("插件加载失败: HTTP ${response.code}")
                     return false
                 }
                 val responseBody = response.body.string()
@@ -292,12 +296,12 @@ object AiDetector {
                 if (parsed.success) {
                     true
                 } else {
-                    accountMessage("模型加载失败: ${parsed.error ?: "未知错误"}")
+                    accountMessage("插件加载失败: ${parsed.error ?: "未知错误"}")
                     false
                 }
             }
         } catch (e: Exception) {
-            accountMessage("模型加载异常: ${e.message}")
+            accountMessage("插件加载异常: ${e.message}")
             false
         }
     }
@@ -309,7 +313,7 @@ object AiDetector {
         distanceThreshold: Double = 5.0
     ): List<DetectionResult> {
         if (!ensureServerReady()) return emptyList()
-        accountMessage("AI检测中，请耐心等待。\n检测速度取决于设备性能，低性能设备可能需要5-10秒。")
+        accountMessage("检测中，请耐心等待。")
         val stream = ByteArrayOutputStream()
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
         val imageBytes = stream.toByteArray()
