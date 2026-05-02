@@ -1,6 +1,6 @@
 package com.coc.zkqcode.jar.ui.pages.single
 
-import com.coc.zkqcode.core.util.basic.RunShell
+import com.coc.zkqcode.jar.code.ShellHelper
 
 /**
  * Forces an NTP time sync using Android's native mechanism via root shell.
@@ -10,7 +10,7 @@ import com.coc.zkqcode.core.util.basic.RunShell
 fun autoSyncSystemTime(showMsg: (String) -> Unit) {
     try {
         // Enable automatic time
-        RunShell.runBlockingNoOutput("settings put global auto_time 1")
+        ShellHelper.runBlockingNoOutput("settings put global auto_time 1")
 
         // Try NTP servers in order until one succeeds
         val ntpServers = listOf(
@@ -21,8 +21,8 @@ fun autoSyncSystemTime(showMsg: (String) -> Unit) {
         )
 
         for (server in ntpServers) {
-            RunShell.runBlockingNoOutput("settings put global ntp_server $server")
-            val result = RunShell.runBlocking("cmd connectivity force-ntp-sync")
+            ShellHelper.runBlockingNoOutput("settings put global ntp_server $server")
+            val result = ShellHelper.runBlocking("cmd connectivity force-ntp-sync")
             // Some Android versions return non-zero exit code even on successful sync.
             // Check output for "success" keyword or treat no-error output as success.
             val output = (result.out + result.err).joinToString(" ").lowercase()
