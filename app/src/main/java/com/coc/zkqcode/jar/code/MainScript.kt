@@ -59,7 +59,7 @@ suspend fun runMainScript() {
     // 3. Execute main logic loop
     InGameVars.currentAccountNumber = activeAccount
     InGameVars.currentGameVersion = resolveGameVersion(isBatchCreate)
-    InGameVars.adTime = 10
+    InGameVars.adTime = (accountTotal * 5).coerceIn(10, 30)
     batchCreateAccounts()//Create all needed accounts first.
     // Track elapsed time for periodic hot update checks (updateOption 2)
     var lastUpdateCheckTime = System.currentTimeMillis()
