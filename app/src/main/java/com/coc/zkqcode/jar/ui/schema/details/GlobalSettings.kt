@@ -11,8 +11,8 @@ object GlobalSettings {
     val SWITCH_ACCOUNT_VERSION = SettingDef("switch_account_version", "切号版本选择", "0", "GLOBAL_SETTINGS")
     val EXTRACT_CN = SettingDef("extract_cn", "提取国服存档到此序号", "1", "GLOBAL_SETTINGS")
     val EXTRACT_GLOBAL = SettingDef("extract_global", "提取国际服存档到此序号", "1", "GLOBAL_SETTINGS")
-    val EXTRACT_DATA_NUMBER = SettingDef("extract_data_number", "保存数据号到此序号", "1", "GLOBAL_SETTINGS")
-    val EXTRACT_DATA_CONTENT = SettingDef("extract_data_content", "数据号内容", "", "GLOBAL_SETTINGS")
+    val EXTRACT_DATA_NUMBER = SettingDef("extract_data_number", "保存到此序号", "1", "GLOBAL_SETTINGS")
+    val EXTRACT_DATA_CONTENT = SettingDef("extract_data_content", "内容", "", "GLOBAL_SETTINGS")
 
     val EMAIL = SettingDef("email", "邮箱", "free@zkq", "GLOBAL_SETTINGS")
     val PASSWORD = SettingDef("password", "密码", "free_for_testing", "GLOBAL_SETTINGS")
@@ -137,7 +137,7 @@ object AccountSettings {
     val START_METHOD = SettingDef("start_method", "启动方式", "0", "ACCOUNT_SETTINGS")
     val CN_PATH = SettingDef("cn_path", "国服存档序号", "", "ACCOUNT_SETTINGS")
     val GLOBAL_PATH = SettingDef("global_path", "国际服存档序号", "", "ACCOUNT_SETTINGS")
-    val DATA_CONTENT = SettingDef("data_content", "数据号序号", "", "ACCOUNT_SETTINGS")
+    val DATA_CONTENT = SettingDef("data_content", "测试数据序号", "", "ACCOUNT_SETTINGS")
 
     val all = listOf(
         ISOPEN, REMARK, GAME_VERSION, ACCOUNT_CONFIG, START_METHOD, CN_PATH, GLOBAL_PATH, DATA_CONTENT

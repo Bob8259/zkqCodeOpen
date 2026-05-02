@@ -42,7 +42,7 @@ suspend fun writeDataNumberFile(slot: String): Boolean {
     RunShell.runNoOutput("rm -rf \"/data/data/${GameVersion.CN.packageName}/shared_prefs\"/*", false)
     val trimmedSlot = slot.trim()
     if (trimmedSlot.isEmpty()) {
-        ShowMessage("数据号序号不能为空\n即将跳过当前账号")
+        ShowMessage("数据序号不能为空\n即将跳过当前账号")
         return false
     }
 
@@ -52,30 +52,30 @@ suspend fun writeDataNumberFile(slot: String): Boolean {
     val dataTxtPath = "$loginDataDir/data.txt"
 
     if (!FileHelper.checkExists(dataJsonPath)) {
-        ShowMessage("数据号文件不存在：$dataJsonPath\n即将跳过当前账号")
+        ShowMessage("数据文件不存在：$dataJsonPath\n即将跳过当前账号")
         return false
     }
 
     val dataJson = FileHelper.readJson(dataJsonPath)
     if (dataJson == null) {
-        ShowMessage("数据号文件格式无效：$dataJsonPath\n即将跳过当前账号")
+        ShowMessage("数据文件格式无效：$dataJsonPath\n即将跳过当前账号")
         return false
     }
 
     if (!dataJson.has(trimmedSlot)) {
-        ShowMessage("数据号不存在：$trimmedSlot\n即将跳过当前账号")
+        ShowMessage("数据不存在：$trimmedSlot\n即将跳过当前账号")
         return false
     }
 
     val contentElement = dataJson.get(trimmedSlot)
     if (contentElement == null || contentElement.isJsonNull) {
-        ShowMessage("数据号内容无效：$trimmedSlot\n即将跳过当前账号")
+        ShowMessage("数据内容无效：$trimmedSlot\n即将跳过当前账号")
         return false
     }
 
     val dataContent = contentElement.asString
     if (dataContent.isBlank()) {
-        ShowMessage("数据号内容为空：$trimmedSlot\n即将跳过当前账号")
+        ShowMessage("数据内容为空：$trimmedSlot\n即将跳过当前账号")
         return false
     }
 
@@ -88,7 +88,7 @@ suspend fun writeDataNumberFile(slot: String): Boolean {
         """.trimIndent(), false
     )
     if (writeResult != "success") {
-        ShowMessage("写入数据号失败：$dataTxtPath\n即将跳过当前账号")
+        ShowMessage("写入数据失败：$dataTxtPath\n即将跳过当前账号")
         return false
     }
     return true
@@ -100,7 +100,7 @@ private suspend fun writeCurrentAccountDataNumberFile(): Boolean {
     val slotKey = "${ACCOUNT_SETTINGS.DATA_CONTENT.key}$accountIndex"
     val slot = getConfigOrStop(slotKey).trim()
     if (slot.isEmpty()) {
-        ShowMessage("数据号序号不能为空：$slotKey\n即将跳过当前账号")
+        ShowMessage("数据序号不能为空：$slotKey\n即将跳过当前账号")
         return false
     }
     if (!writeDataNumberFile(slot)) return false

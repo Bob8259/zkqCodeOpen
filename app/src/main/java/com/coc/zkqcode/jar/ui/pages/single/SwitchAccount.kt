@@ -111,7 +111,7 @@ fun SwitchAccount(onClose: () -> Unit) {
             FlowRow {
                 SettingDropdown(
                     key = GLOBAL_SETTINGS.SWITCH_ACCOUNT_VERSION.key,
-                    options = listOf("国服", "国际服", "数据号")
+                    options = listOf("国服", "国际服", "测试功能")
                 )
                 Row {
                     CustomButton(text = "▼", onClick = {

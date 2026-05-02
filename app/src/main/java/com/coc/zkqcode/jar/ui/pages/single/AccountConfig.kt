@@ -53,7 +53,7 @@ fun AccountConfig(
             )
             SettingInputRow(key = "${ACCOUNT_SETTINGS.ACCOUNT_CONFIG.key}${index}")
             SettingDropdown(
-                key = "${ACCOUNT_SETTINGS.START_METHOD.key}${index}", options = listOf("游戏存档", "直接启动", "数据号")
+                key = "${ACCOUNT_SETTINGS.START_METHOD.key}${index}", options = listOf("游戏存档", "直接启动", "测试功能")
             )
         }
         when (GlobalVars.configStates["${ACCOUNT_SETTINGS.START_METHOD.key}${index}"]!!.value) {
@@ -71,13 +71,13 @@ fun UseDataPackage(
     if (GlobalVars.configStates["${ACCOUNT_SETTINGS.GAME_VERSION.key}${index}"]!!.value == "0") {
         Column {
             Text(
-                text = "换机或设备到期前，务必清空数据号信息！\n否则有被盗号风险！", modifier = Modifier.padding(end = 10.dp), style = MaterialTheme.typography.labelMedium, color = Color.Red
+                text = "换机或设备到期前，务必清空信息！\n否则有被盗号风险！", modifier = Modifier.padding(end = 10.dp), style = MaterialTheme.typography.labelMedium, color = Color.Red
             )
             SettingInputRow(key = "${ACCOUNT_SETTINGS.DATA_CONTENT.key}${index}")
         }
     } else {
         Text(
-            text = "国际服不支持上号器，请更换启动游戏方式！",
+            text = "国际服不支持测试功能，请更换启动游戏方式！",
             modifier = Modifier.padding(end = 10.dp, bottom = 6.dp),
             style = MaterialTheme.typography.labelMedium,
         )

@@ -184,7 +184,7 @@ object AiDetector {
      * The plugin needs one foreground launch so its app-side initialization can complete
      * before the detector returns to the game and polls the local server again.
      */
-    suspend fun downloadAndInstallPlugin(): Boolean {
+    private suspend fun downloadAndInstallPlugin(): Boolean {
         val apkFile = getPluginApkFile() ?: return false
         try {
             if (!downloadPluginApk(apkFile)) {

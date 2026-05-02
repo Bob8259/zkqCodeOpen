@@ -9,6 +9,8 @@ import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.jar.code.universal.InGameVars
 import com.coc.zkqcode.jar.code.universal.smalltools.checkReconnections
+import com.coc.zkqcode.jar.code.universal.smalltools.isGameAtFront
+import com.coc.zkqcode.jar.code.universal.smalltools.runGame
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.isActive
 
@@ -26,12 +28,15 @@ object AllTutorials {
 
             val remainingSeconds = ((durationMillis - elapsed) / 1000).toInt()
             accountMessage("教程中，还剩${remainingSeconds}秒")
+            if (isGameAtFront()) {
+                if (mainBaseTutorial()) return true
+                if (builderBaseTutorial()) return true
 
-            if (mainBaseTutorial()) return true
-            if (builderBaseTutorial()) return true
-
-            // Maintenance checks
-            if (!checkReconnections()) return false
+                // Maintenance checks
+                if (!checkReconnections()) return false
+            } else {
+                runGame()
+            }
             delayWithMultiplier(200)
         }
         return false
@@ -43,15 +48,10 @@ object AllTutorials {
      */
     suspend fun checkIsInTutorial(times: Int): Boolean {
         val targetSchemas = listOf(
-            MyColors.SpeakingVillager,
-            MyColors.SpeakingVillager2,
-            MyColors.EnterAge,
-            MyColors.BuilderMaster,
-            MyColors.CapitalOldMan
+            MyColors.SpeakingVillager, MyColors.SpeakingVillager2, MyColors.EnterAge, MyColors.BuilderMaster, MyColors.CapitalOldMan
         )
 
-        val screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult
-            ?: LogHelper.logAndRestart("failed to take screenshot at close checkIsInTutorial")
+        val screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult ?: LogHelper.logAndRestart("failed to take screenshot at close checkIsInTutorial")
         // Iterate through schemas and find the first match to retrieve its coordinates
         val point = targetSchemas.firstNotNullOfOrNull { schema ->
             findMultiColors(byteBuffer = screenBuffer, schema = schema)

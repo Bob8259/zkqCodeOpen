@@ -153,7 +153,7 @@ fun ExtractGameSaveContent() {
                 return@launch
             }
             if (content.isEmpty()) {
-                showMsg("错误：数据号内容不能为空")
+                showMsg("错误：数据内容不能为空")
                 return@launch
             }
 
@@ -212,11 +212,11 @@ fun ExtractGameSaveContent() {
     SettingSection {
         // Dropdown to switch between CN and Global versions
         if (selectedIndex == 2) {
-            // For "数据号" mode, show the slot selector and data content inputs plus action buttons
+            // For "测试功能" mode, show the slot selector and data content inputs plus action buttons
             FlowRow {
                 SettingDropdown(
                     key = GLOBAL_SETTINGS.EXTRACT_VERSION.key,
-                    options = listOf("国服", "国际服", "数据号")
+                    options = listOf("国服", "国际服", "测试功能")
                 )
                 Row {
                     CustomButton(text = "▼", onClick = {
@@ -241,7 +241,7 @@ fun ExtractGameSaveContent() {
             FlowRow {
                 SettingDropdown(
                     key = GLOBAL_SETTINGS.EXTRACT_VERSION.key,
-                    options = listOf("国服", "国际服", "数据号")
+                    options = listOf("国服", "国际服", "测试功能")
                 )
                 Row {
                     CustomButton(text = "▼", onClick = {
@@ -261,10 +261,10 @@ fun ExtractGameSaveContent() {
             )
         }
     }
-    // Show disclaimer when "数据号" (index 2) is selected
+    // Show disclaimer when "数测试功能" (index 2) is selected
     if (selectedIndex == 2) {
         Text(
-            text = "数据号功能源自第三方代码，与紫孔雀作者无关。该功能仅供学习研究使用，禁止用于其他用途。数据号以明文方式保存，请自行确保信息安全。",
+            text = "测试功能功能源自第三方代码，与作者无关。该功能仅供学习研究使用，禁止用于其他用途，若违反需自行承担后果，与作者无关。数据以明文方式保存，请自行确保信息安全。",
             color = Color.Red,
             fontSize = 11.sp,
             modifier = Modifier.padding(top = 6.dp, start = 4.dp, end = 4.dp)
