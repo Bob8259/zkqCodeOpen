@@ -348,12 +348,13 @@ object ScreenCaptureManager {
      * Improved coroutine screenshot method.
      * Tries MediaProjection first; falls back to shell screencap -p on failure.
      *
-     * Recovery strategy on stale frames:
-     * - First, retry with a longer timeout WITHOUT destroying resources (the
-     *   VirtualDisplay may still be alive; the screen is just static).
-     * - On Android 14+ (API 34), never attempt to recreate VirtualDisplay on the
-     *   same projection — fall back to shell immediately.
-     * - On older APIs, destroy and recreate as before.
+     * Strategy:
+     * 1. Try to acquire a fresh frame with a short timeout.
+     * 2. If no new frame arrives (screen is static), return the cached frame as
+     *    long as the VirtualDisplay is still alive — the cache is a valid
+     *    representation of the current screen regardless of its age.
+     * 3. Only fall back to shell when the MediaProjection pipeline is actually
+     *    broken (projection/virtualDisplay/imageReader is null).
      */
     suspend fun capture(asBitmap: Boolean = true): Any? = captureMutex.withLock {
         // If MediaProjection already failed, skip directly to shell
@@ -492,41 +493,37 @@ object ScreenCaptureManager {
             if (result != null) {
                 result
             } else {
-                // 2. Timeout: Check if we can reuse cached frame
-                val now = System.currentTimeMillis()
-                val isCacheValid = (now - lastFrameTimestamp) < 3000 // 3 seconds valid window
+                // 2. No new frame — the screen is likely static.
+                //    Return the cached frame as long as the pipeline is alive.
+                //    A static screen produces no new ImageReader frames, but the
+                //    last captured frame is still a valid representation.
+                val pipelineAlive = virtualDisplay != null && imageReader != null && mediaProjection != null
 
-                if (isCacheValid) {
-                    if (asBitmap && cachedBitmap != null) {
-                        cachedBitmap
-                    } else if (!asBitmap && cachedCaptureResult != null) {
-                        cachedCaptureResult
+                if (pipelineAlive) {
+                    val cached = if (asBitmap) cachedBitmap else cachedCaptureResult
+                    if (cached != null) {
+                        cached
                     } else {
-                        null
+                        // Pipeline is alive but we never got a single frame yet.
+                        // This can happen on very first capture if the device is slow.
+                        // Give it one more try with a longer timeout.
+                        LogHelper.showDebugInfo("capture: Pipeline alive but no cached frame, retrying with longer timeout")
+                        withTimeoutOrNull(500) {
+                            attemptCapture()
+                        }
                     }
                 } else {
-                    // 3. Cache expired — retry WITHOUT destroying resources first.
-                    // The VirtualDisplay is likely still alive; the screen may just be
-                    // static with no new frames being produced.
-                    LogHelper.showDebugInfo("capture: No new frame for >3s, retrying without resource destruction")
-                    val retryResult = withTimeoutOrNull(500) {
-                        attemptCapture()
-                    }
-
-                    if (retryResult != null) {
-                        retryResult
-                    } else if (!canRecreateVirtualDisplay()) {
-                        // Android 14+: Cannot recreate VirtualDisplay on the same
-                        // projection. Give up on MediaProjection entirely.
-                        LogHelper.showDebugInfo("capture: API 34+ prevents VirtualDisplay recreation, switching to shell")
-                        null
-                    } else {
-                        // Pre-Android 14: Safe to destroy and recreate resources
-                        LogHelper.showDebugInfo("capture: Destroying and recreating resources (pre-API 34)")
+                    // Pipeline is broken — resources are null.
+                    // On pre-API 34 we can try to recreate; on 34+ go straight to shell.
+                    if (canRecreateVirtualDisplay()) {
+                        LogHelper.showDebugInfo("capture: Pipeline broken, recreating resources (pre-API 34)")
                         cleanupDisplayResources()
                         withTimeoutOrNull(500) {
                             attemptCapture()
                         }
+                    } else {
+                        LogHelper.showDebugInfo("capture: Pipeline broken on API 34+, cannot recreate")
+                        null
                     }
                 }
             }
