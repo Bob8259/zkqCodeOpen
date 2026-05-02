@@ -75,8 +75,11 @@ object MyColors : IUIColors by UIColors, IFeatureColors by FeatureColors, IClanG
         522, 426, 789, 695, "8DFAE2", "17|0|8DFAE2,43|-1|8DFAE3,77|-1|8DFAE3,109|-1|8DFAE3,4|65|1FBC6D,37|61|1FBC6D,71|67|1FBC6D,95|68|1FBC6E,119|66|1FBC6D", 0, 0.9, "重建"
     )
 
-    //UI Colorus
+    //UI Colours
     val ReturnTask4 = ColorSchema.parse(
         86, 587, 330, 626, "CD8C4B", "5|4|BF8545,12|1|C98D4C,16|-7|E29B56,22|1|CB8F4E,38|2|FFFFFF,40|3|FFFFFF,38|0|FFFFFF,38|-9|E49C58,36|-8|E39B57", 0, 0.98, "回归任务4"
+    )
+    val IncreaseRank = ColorSchema.parse(
+        662, 604, 837, 644, "88E9BB", "35|0|88E8BB,70|0|88E9BB,105|0|88E9BB,140|0|88E9BB,0|20|3AD48B,35|20|3AD48B,70|20|3AD48B,105|20|3AD48B,140|20|3AD48B", 0, 0.9, "段位提示"
     )
 }

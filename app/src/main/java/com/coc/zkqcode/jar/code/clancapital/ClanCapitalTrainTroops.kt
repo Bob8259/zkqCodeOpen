@@ -36,7 +36,7 @@ suspend fun clanCapitalTrainTroops(): Boolean {
         TouchActions.tap(trainTroopButton.x, trainTroopButton.y)
     }
     var isTrainingSuccess = false
-    val trashBinButton = findMultiColorsUntil(schemas = listOf(MyColors.CapitalTrainTroopPage), duration = 300)
+    val trashBinButton = findMultiColorsUntil(schemas = listOf(MyColors.CapitalTrainTroopPage, MyColors.CapitalTrainTroopPage2), duration = 300)
     if (trashBinButton != null) {
         TouchActions.tap(505, 300)
         TouchActions.swipe(925, 580, 0, 680, delayAfter = 300)

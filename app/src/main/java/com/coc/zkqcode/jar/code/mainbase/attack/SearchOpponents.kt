@@ -125,13 +125,8 @@ suspend fun searchOpponentsAndDeployTroops(): Boolean {
         if (villagerSpeaking != null || setBaseIcon != null) {
             if (!mainBaseBattleTutorial()) return false
         }
-        val searchOpponents = findMultiColors(schema = MyColors.SearchOpponents)
-        if (searchOpponents != null) {
-            TouchActions.tap(searchOpponents.x, searchOpponents.y)
-        }
-        val attackButton = findMultiColors(schema = MyColors.AttackButton)
-        if (attackButton != null) {
-            TouchActions.tap(attackButton.x, attackButton.y)
+        listOf(MyColors.SearchOpponents, MyColors.AttackButton, MyColors.IncreaseRank).forEach { schema ->
+            findMultiColors(schema = schema)?.let { TouchActions.tap(it.x, it.y) }
         }
         val insufficientGold = findMultiColors(schema = MyColors.InsufficientGold)
         if (insufficientGold != null) {

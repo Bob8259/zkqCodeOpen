@@ -15,6 +15,7 @@ interface IClanCapitalColors {
     val NextRaid: ColorSchema
     val CapitalMiner: ColorSchema
     val CapitalTrainTroopPage: ColorSchema
+    val CapitalTrainTroopPage2: ColorSchema
     val TrainTroops2: ColorSchema
 }
 
@@ -58,6 +59,10 @@ object ClanCapitalColors : IClanCapitalColors {
     // Capital train troop page confirm and cancel
     override val CapitalTrainTroopPage = ColorSchema.parse(
         569, 267, 935, 347, "8B85FF", "15|0|8B85FF,39|0|8B85FF,79|6|7E79FF,96|10|7570FF,207|4|7AF1D2,231|4|7AF1D2,267|4|7AF1D2,283|8|74EECC,284|18|60E5B8", 0, 0.9, "练兵界面确认和取消"
+    )
+    // Capital train troop page confirm and cancel (variant 2)
+    override val CapitalTrainTroopPage2 = ColorSchema.parse(
+        478, 278, 532, 332, "8D88FF", "13|-3|928DFF,22|-3|928DFF,37|-1|8F8AFF,42|10|7772FF,40|38|1915E0,27|48|1F1FBE,12|48|1F1FBE,13|8|FFFFFF,20|7|FFFFFF", 0, 0.9, "练兵界面确认和取消2"
     )
     // Capital train troops button (variant 2)
     override val TrainTroops2 = ColorSchema.parse(
