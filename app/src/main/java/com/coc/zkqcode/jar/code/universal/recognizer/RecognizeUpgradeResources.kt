@@ -33,7 +33,7 @@ suspend fun recognizeUpgradeResources(currentBase: BaseType): Int {
 
     val cropBitmap = Bitmap.createBitmap(screenBuffer, startX, startY, width, height)
 
-    // Return 0 when the AI model cannot be prepared for numeric detection.
+    // Return 0 when the model cannot be prepared for numeric detection.
     if (!AiDetector.loadWeights("numbers")) return 0
     try {
         val detections = AiDetector.detect(

@@ -9,7 +9,7 @@ import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 
 /**
  * Detects the instant build cost by recognizing numbers near the upgrade gem icon.
- * Uses the AI detection model to detect individual digits and combines them into the final cost value.
+ * Uses the detection model to detect individual digits and combines them into the final cost value.
  *
  * @return The detected cost as an integer, or null if detection fails
  */
@@ -41,7 +41,7 @@ suspend fun detectInstantBuildCost(): Int? {
 
     val cropBitmap = Bitmap.createBitmap(screenBuffer, startX, startY, width, height)
 
-    // Load the model and run detection via the remote AI detection service.
+    // Load the model and run detection via the remote detection service.
     if (!AiDetector.loadWeights("numbers")) return null
     try {
         val detections = AiDetector.detect(

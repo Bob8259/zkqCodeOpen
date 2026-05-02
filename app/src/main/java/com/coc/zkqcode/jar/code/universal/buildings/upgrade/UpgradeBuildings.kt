@@ -219,7 +219,7 @@ private suspend fun tryToBatchBuildWalls(x: Int, y: Int, currentBase: BaseType) 
         // Swipe up to avoid overlapping.
         TouchActions.swipe(280, 480, 280, 320, delayTime = 600)//Swiped for 160 pixels here, so in the trajectory calculate, the offset for y should be 150
     }
-    // Locate the arrow element using the AI detection service.
+    // Locate the arrow element using the detection service.
     delayWithMultiplier(200)
     val screenBuffer = ScreenCaptureManager.capture(asBitmap = true) as? Bitmap ?: logAndRestart("in BuilderBaseUpgradeBuildings, screen capture failed.")
     // Return early if the model weights fail to load.

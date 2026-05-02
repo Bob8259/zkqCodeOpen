@@ -5,7 +5,7 @@ import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
 
 /**
- * Performs tiled AI detection on a 1280x720 screenshot.
+ * Performs tiled detection on a 1280x720 screenshot.
  * The image is split into three overlapping 640x640 crops so the model's
  * square input covers the full width, with overlap filtering to avoid
  * counting the same object twice.

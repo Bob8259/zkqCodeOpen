@@ -117,7 +117,7 @@ private suspend fun deployClanCapitalTroopsAndSpells() {
 private suspend fun zoomSmallClanCapital() {
     // Start from the same stable zoomed-out view used by other main-base automation flows.
     zoomSmallMainBase()
-    // Nudge the camera toward the clan capital battlefield before running AI detection.
+    // Nudge the camera toward the clan capital battlefield before running detection.
     TouchActions.swipe(900, 250, 500, 320)
 }
 

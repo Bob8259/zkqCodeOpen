@@ -35,8 +35,8 @@ object AiDetector {
     private const val MAIN_ACTIVITY_CMD = "am start -n $PLUGIN_PACKAGE/.MainActivity"
     private const val PLUGIN_DOWNLOAD_URL =
         "https://gitee.com/azikaban/zkqYOLO/releases/download/AIplugin/app-release.apk"
-    private const val PLUGIN_DOWNLOAD_DIR = "ai-plugin"
-    private const val PLUGIN_APK_NAME = "AI.apk"
+    private const val PLUGIN_DOWNLOAD_DIR = "plugin"
+    private const val PLUGIN_APK_NAME = "app-release.apk"
     private const val READY_TIMEOUT_MS = 10_000L
     private const val POLL_INTERVAL_MS = 1000L
     private const val DOWNLOAD_PROGRESS_INTERVAL_MS = 500L
@@ -273,7 +273,7 @@ object AiDetector {
     }
 
     /**
-     * Loads model weights via the AI detection service /load endpoint.
+     * Loads model weights via the detection service /load endpoint.
      * @return true if weights loaded successfully, false on any failure.
      */
     suspend fun loadWeights(modelType: String? = null): Boolean {
