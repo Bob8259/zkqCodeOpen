@@ -25,6 +25,7 @@ import com.coc.zkqcode.jar.ui.components.SettingDropdown
 import com.coc.zkqcode.jar.ui.components.SettingSection
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.util.basic.RunShell
+import com.coc.zkqcode.jar.code.ShellHelper
 import com.coc.zkqcode.core.util.fileactions.FileHelper
 import com.coc.zkqcode.jar.code.universal.GameVersion
 import com.coc.zkqcode.jar.ui.components.SettingInputRow

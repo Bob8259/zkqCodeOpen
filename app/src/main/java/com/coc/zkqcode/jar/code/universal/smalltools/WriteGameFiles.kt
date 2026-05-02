@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.os.Environment
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.util.basic.RunShell
+import com.coc.zkqcode.jar.code.ShellHelper
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.fileactions.FileHelper
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
