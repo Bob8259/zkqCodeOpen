@@ -371,6 +371,13 @@ class MessageBoxService : Service(), LifecycleOwner, SavedStateRegistryOwner {
                             modifier = Modifier.padding(bottom = 4.dp)
                         )
 
+                        Text(
+                            text = "所有广告均来自赞助用户，交易前请仔细甄别。紫孔雀不对广告内容负责。",
+                            fontSize = 9.sp,
+                            color = Color.Gray,
+                            modifier = Modifier.padding(bottom = 4.dp)
+                        )
+
                         // Use weight so the list flexes within the height-constrained parent
                         AdList(context)
 
