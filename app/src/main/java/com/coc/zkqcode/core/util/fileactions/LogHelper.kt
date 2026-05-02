@@ -4,8 +4,8 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.util.Log
 import com.coc.zkqcode.BuildConfig
+import com.coc.zkqcode.core.util.basic.RunShell
 import com.coc.zkqcode.core.util.basic.ShowMessage
-import com.topjohnwu.superuser.Shell
 import timber.log.Timber
 import java.io.File
 import java.io.FileOutputStream
@@ -47,9 +47,10 @@ object LogHelper {
         }
         // Spawn a detached process via setsid to restart the app after killing it.
         // The new session ensures this child survives the parent process termination.
-        Shell.cmd(
-            "setsid sh -c 'sleep 2; am force-stop com.coc.zkqcode; sleep 1; am start -n com.coc.zkqcode/.MainActivity' > /dev/null 2>&1 &"
-        ).exec()
+        RunShell.runBlockingNoOutput(
+            "setsid sh -c 'sleep 2; am force-stop com.coc.zkqcode; sleep 1; am start -n com.coc.zkqcode/.MainActivity' > /dev/null 2>&1 &",
+            checkIsPlaying = false
+        )
         error(message)
     }
 

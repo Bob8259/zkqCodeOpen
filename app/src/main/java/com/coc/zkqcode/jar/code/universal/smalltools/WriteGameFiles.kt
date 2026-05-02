@@ -11,8 +11,6 @@ import com.coc.zkqcode.jar.code.universal.GameVersion
 import com.coc.zkqcode.jar.code.universal.InGameVars
 import com.coc.zkqcode.jar.ui.schema.Schema
 import com.coc.zkqcode.jar.ui.schema.Schema.ACCOUNT_SETTINGS
-import com.topjohnwu.superuser.Shell
-
 // Helper function: quickly get config value, trigger logAndRestart if empty
 fun getConfigOrStop(key: String): String {
     return GlobalVars.configStates[key]?.value ?: logAndRestart("Failed to get config: $key")
@@ -127,7 +125,7 @@ suspend fun writeGameFilesCore(
     val sourceDir = "$sdPath/zkqFiles/$folderName/$savePathName"
 
     // Verify that the archive directory exists before attempting to write
-    if (!Shell.cmd("[ -d \"$sourceDir\" ]").exec().isSuccess) {
+    if (!RunShell.runBlocking("[ -d \"$sourceDir\" ]", checkIsPlaying = false).isSuccess) {
         ShowMessage("存档文件不存在：$sourceDir\n即将跳过当前账号")
         return false
     }
@@ -135,9 +133,9 @@ suspend fun writeGameFilesCore(
     if (killGame) killGame()
     subDirs.forEach { subDir ->
         val destPath = "/data/data/$packageName/$subDir"
-        Shell.cmd("rm -rf \"$destPath\"/*").exec()
-        Shell.cmd("cp -r \"$sourceDir/$subDir/\"* \"$destPath/\"").exec()
-        Shell.cmd("chmod -R 777 \"$destPath\"").exec()
+        RunShell.runNoOutput("rm -rf \"$destPath\"/*", checkIsPlaying = false)
+        RunShell.runNoOutput("cp -r \"$sourceDir/$subDir/\"* \"$destPath/\"", checkIsPlaying = false)
+        RunShell.runNoOutput("chmod -R 777 \"$destPath\"", checkIsPlaying = false)
     }
     return true
 }

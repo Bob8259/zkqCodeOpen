@@ -4,7 +4,6 @@ import android.content.Intent
 import android.net.Uri
 import android.provider.Settings
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -16,7 +15,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.ui.draw.clip
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -25,6 +23,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
@@ -37,11 +36,11 @@ import com.coc.zkqcode.core.data.websocket.ServerActions
 import com.coc.zkqcode.core.ui.floatingwindows.ControlWindowService
 import com.coc.zkqcode.core.ui.floatingwindows.UIWindowService
 import com.coc.zkqcode.core.ui.localcomponents.LocalCustomButton
+import com.coc.zkqcode.core.util.basic.RunShell
 import com.coc.zkqcode.statehelper.AppMode
 import com.coc.zkqcode.statehelper.AppStateManager
-import com.topjohnwu.superuser.Shell
 
-// Local color palette mirroring AppColors from the jar module
+// Local colour palette mirroring AppColors from the jar module
 private val ColorPrimary     = Color(0xFF4299E1)
 private val ColorBackground  = Color(0xFFE8F4FC)
 private val ColorCardBg      = Color(0xA6FFFFFF)
@@ -55,7 +54,6 @@ fun CheckRootScreen() {
     // 使用 LaunchedEffect 监听并检测
     LaunchedEffect(Unit) {
         CheckIntergrity.checkAppIntegrity(context)
-        Shell.cmd("adb shell input keyevent 4").exec()
         status = PermissionManager.checkAndGrantPermissions(context) { newStatus ->
             status = newStatus
         }
@@ -110,15 +108,17 @@ fun CheckRootScreen() {
                 // Initialize ServerActions and Configs once Root is GRANTED
                 LaunchedEffect(Unit) {
                     // Get and store default IME
+                    RunShell.runNoOutput("appops set com.coc.zkqcode PROJECT_MEDIA allow", checkIsPlaying = false)
+                    RunShell.runNoOutput("cmd appops set com.coc.zkqcode PROJECT_MEDIA allow", checkIsPlaying = false)
                     if (GlobalVars.defaultInputMethod == null) {
-                        val result = Shell.cmd("settings get secure default_input_method").exec()
-                        if (result.isSuccess && result.out.isNotEmpty()) {
-                            GlobalVars.defaultInputMethod = result.out[0]
+                        val result = RunShell.run("settings get secure default_input_method", checkIsPlaying = false)
+                        if (result.isNotEmpty()) {
+                            GlobalVars.defaultInputMethod = result[0]
                         }
                     }
 
                     if (GlobalVars.serverActions == null) {
-                        // Pass the local WS server instance established by ServerHelper (may be null for shell fallback)
+                        // Pass the local WS server instance established by ServerHelper (maybe null for shell fallback)
                         GlobalVars.serverActions = ServerActions(ServerHelper.localServer)
                     }
 

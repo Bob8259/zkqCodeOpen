@@ -34,7 +34,7 @@ object AiDetector {
         "am start-foreground-service -n $PLUGIN_PACKAGE/.service.YoloService"
     private const val MAIN_ACTIVITY_CMD = "am start -n $PLUGIN_PACKAGE/.MainActivity"
     private const val PLUGIN_DOWNLOAD_URL =
-        "https://gitee.com/azikaban/zkqYOLO/releases/download/AIplugin/AI.apk"
+        "https://gitee.com/azikaban/zkqYOLO/releases/download/AIplugin/app-release.apk"
     private const val PLUGIN_DOWNLOAD_DIR = "ai-plugin"
     private const val PLUGIN_APK_NAME = "AI.apk"
     private const val READY_TIMEOUT_MS = 10_000L

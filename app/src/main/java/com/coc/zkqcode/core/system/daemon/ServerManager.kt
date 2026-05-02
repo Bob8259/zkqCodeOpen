@@ -1,7 +1,7 @@
 package com.coc.zkqcode.core.system.daemon
 
 import android.content.Context
-import com.topjohnwu.superuser.Shell
+import com.coc.zkqcode.core.util.basic.RunShell
 import java.io.File
 
 object ServerManager {
@@ -15,13 +15,11 @@ object ServerManager {
                 }
             }
             // Kill any stale ShellServer processes to free port 6839 before starting a new one
-            Shell.cmd("pkill -f com.coc.zkqserver.ShellServer").exec()
+            RunShell.runBlockingNoOutput("pkill -f com.coc.zkqserver.ShellServer", checkIsPlaying = false)
             // Start the server in a detached session so it survives parent process termination
-            Shell.cmd("setsid sh -c 'export CLASSPATH=${serverFile.absolutePath}; exec app_process /system/bin com.coc.zkqserver.ShellServer' > /dev/null 2>&1 &")
-                .exec()
+            RunShell.runBlockingNoOutput("setsid sh -c 'export CLASSPATH=${serverFile.absolutePath}; exec app_process /system/bin com.coc.zkqserver.ShellServer' > /dev/null 2>&1 &", checkIsPlaying = false)
             // Use nohup for enhanced fault tolerance
-            Shell.cmd("nohup sh -c 'export CLASSPATH=${serverFile.absolutePath}; exec app_process /system/bin com.coc.zkqserver.ShellServer' > /dev/null 2>&1 &")
-                .exec()
+            RunShell.runBlockingNoOutput("nohup sh -c 'export CLASSPATH=${serverFile.absolutePath}; exec app_process /system/bin com.coc.zkqserver.ShellServer' > /dev/null 2>&1 &", checkIsPlaying = false)
             true
         } catch (e: Exception) {
             e.printStackTrace()

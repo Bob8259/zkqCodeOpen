@@ -5,7 +5,8 @@ import android.content.Intent
 import android.net.Uri
 import android.os.PowerManager
 import android.provider.Settings
-import com.topjohnwu.superuser.Shell
+import com.coc.zkqcode.core.util.basic.RunShell
+import kotlinx.coroutines.runBlocking
 
 object BatteryOptimizationHelper {
     /**
@@ -23,10 +24,10 @@ object BatteryOptimizationHelper {
         val packageName = context.packageName
         if (!isIgnoringBatteryOptimizations(context)) {
             // Try with root first
-            Shell.cmd(
-                "dumpsys deviceidle whitelist +$packageName",
-                "cmd deviceidle whitelist +$packageName"
-            ).exec()
+            runBlocking {
+                RunShell.runNoOutput("dumpsys deviceidle whitelist +$packageName", checkIsPlaying = false)
+                RunShell.runNoOutput("cmd deviceidle whitelist +$packageName", checkIsPlaying = false)
+            }
 
             // Check again. If still false, then start an intent ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS
             if (!isIgnoringBatteryOptimizations(context)) {

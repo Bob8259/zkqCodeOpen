@@ -8,7 +8,7 @@ import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.core.ui.floatingwindows.ControlWindowService
 import com.coc.zkqcode.core.ui.floatingwindows.MessageBoxService
 import com.coc.zkqcode.core.ui.floatingwindows.UIWindowService
-import com.topjohnwu.superuser.Shell
+import com.coc.zkqcode.core.util.basic.RunShell
 import kotlin.system.exitProcess
 
 object AppExitHelper {
@@ -25,7 +25,7 @@ object AppExitHelper {
     fun restoreDefaultInputMethod() {
         val defaultIme = GlobalVars.defaultInputMethod
         if (!defaultIme.isNullOrBlank()) {
-            Shell.cmd("ime set $defaultIme").exec()
+            RunShell.runBlockingNoOutput("ime set $defaultIme", checkIsPlaying = false)
         }
     }
 
@@ -33,7 +33,7 @@ object AppExitHelper {
         try {
             // 使用 pkill -f 匹配包含指定类名的全路径进程
             // com.coc.zkqserver.ShellServer 是你在 app_process 中启动的类名
-            Shell.cmd("pkill -f com.coc.zkqserver.ShellServer").exec()
+            RunShell.runBlockingNoOutput("pkill -f com.coc.zkqserver.ShellServer", checkIsPlaying = false)
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -42,16 +42,13 @@ object AppExitHelper {
     private fun stopDaemonProcess() {
         try {
             // Use libsu to execute pgrep to find the PID(s) of the daemon script
-            val pgrepResult = Shell.cmd("pgrep -f /data/local/tmp/zkq_daemon.sh").exec()
-
-            // Get all output lines (PIDs)
-            val pids = pgrepResult.out
+            val pids = RunShell.runBlockingOutput("pgrep -f /data/local/tmp/zkq_daemon.sh", checkIsPlaying = false)
 
             if (pids.isNotEmpty()) {
                 // Kill all found PIDs
                 pids.forEach { pid ->
                     if (pid.isNotBlank()) {
-                        Shell.cmd("kill -9 $pid").exec()
+                        RunShell.runBlockingNoOutput("kill -9 $pid", checkIsPlaying = false)
                     }
                 }
             }

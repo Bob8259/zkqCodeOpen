@@ -40,7 +40,6 @@ import com.coc.zkqcode.core.system.hotupdate.HotUpdateManager
 import com.coc.zkqcode.core.util.basic.RunShell
 import com.coc.zkqcode.statehelper.AppMode
 import com.coc.zkqcode.statehelper.AppStateManager
-import com.topjohnwu.superuser.Shell
 import timber.log.Timber
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -303,7 +302,7 @@ class ControlWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner 
 
     override fun onTaskRemoved(rootIntent: Intent?) {
         super.onTaskRemoved(rootIntent)
-        Shell.cmd("am start -n com.coc.zkqcode/.MainActivity >>/dev/null 2>&1").exec()
+        RunShell.runBlockingNoOutput("am start -n com.coc.zkqcode/.MainActivity >>/dev/null 2>&1", checkIsPlaying = false)
         GlobalVars.autoRunTimer = 5
     }
 
@@ -311,7 +310,7 @@ class ControlWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner 
         // Detect START_STICKY restart: system delivers null intent after LMKD kill
         if (intent == null) {
             // Relaunch MainActivity to re-initialize the full app (JAR loading, etc.)
-            Shell.cmd("am start -n com.coc.zkqcode/.MainActivity >>/dev/null 2>&1").exec()
+            RunShell.runBlockingNoOutput("am start -n com.coc.zkqcode/.MainActivity >>/dev/null 2>&1", checkIsPlaying = false)
             GlobalVars.autoRunTimer = 5
         }
         updateForegroundRecord()

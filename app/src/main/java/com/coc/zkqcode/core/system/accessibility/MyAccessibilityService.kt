@@ -15,7 +15,7 @@ class MyAccessibilityService : AccessibilityService() {
         var isDetectionEnabled = false
         private var instance: MyAccessibilityService? = null
         private val handler = Handler(Looper.getMainLooper())
-        
+
     }
 
     override fun onServiceConnected() {

@@ -13,8 +13,6 @@ import com.coc.zkqcode.jar.code.universal.smalltools.killGame
 import com.coc.zkqcode.jar.code.universal.smalltools.runGame
 import com.coc.zkqcode.jar.code.universal.tutorial.AllTutorials
 import com.coc.zkqcode.jar.ui.schema.Schema
-import com.topjohnwu.superuser.Shell
-
 @SuppressLint("SdCardPath")
 suspend fun batchCreateAccounts() {
     if (getConfigOrStop(Schema.GLOBAL_SETTINGS.BATCH_CREATE_ACCOUNT.key) != "1") return
@@ -37,7 +35,7 @@ suspend fun batchCreateAccounts() {
             while (!tutorialPassed) {
                 // Kill game and clear save data to force a fresh account
                 killGame()
-                Shell.cmd("rm -rf \"/data/data/$globalPackageName/shared_prefs\"/*").exec()
+                RunShell.runNoOutput("rm -rf \"/data/data/$globalPackageName/shared_prefs\"/*", checkIsPlaying = false)
 
                 // Launch the global version game
                 runGame()
@@ -50,8 +48,8 @@ suspend fun batchCreateAccounts() {
             }
 
             // Extract game files to the save directory
-            Shell.cmd("mkdir -p \"$path/shared_prefs\"").exec()
-            Shell.cmd("cp -r /data/data/$globalPackageName/shared_prefs/* \"$path/shared_prefs/\"").exec()
+            RunShell.runNoOutput("mkdir -p \"$path/shared_prefs\"", checkIsPlaying = false)
+            RunShell.runNoOutput("cp -r /data/data/$globalPackageName/shared_prefs/* \"$path/shared_prefs/\"", checkIsPlaying = false)
             accountMessage("账号$i 创建成功，存档已保存至 $path")
         }
     }

@@ -6,6 +6,7 @@ import androidx.core.app.NotificationManagerCompat
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.data.database.ServerConnectionMethod
 import com.coc.zkqcode.core.system.daemon.ServerManager
+import com.coc.zkqcode.core.util.basic.RunShell
 import com.coc.zkqcode.core.util.fileactions.LogHelper
 import com.topjohnwu.superuser.Shell
 import kotlinx.coroutines.Dispatchers
@@ -28,12 +29,13 @@ object PermissionManager {
             }
             // 2. If Root is available, try to grant permissions silently
             val pkg = context.packageName
-            Shell.cmd(
-                "pm grant $pkg android.permission.SYSTEM_ALERT_WINDOW",
-                "cmd appops set $pkg SYSTEM_ALERT_WINDOW allow",
-                "pm grant $pkg android.permission.POST_NOTIFICATIONS",
+            RunShell.runNoOutput(
+                "pm grant $pkg android.permission.SYSTEM_ALERT_WINDOW && " +
+                "cmd appops set $pkg SYSTEM_ALERT_WINDOW allow && " +
+                "pm grant $pkg android.permission.POST_NOTIFICATIONS && " +
                 "pm grant $pkg android.permission.FOREGROUND_SERVICE",
-            ).exec()
+                checkIsPlaying = false
+            )
             // 2.5 Add battery optimization whitelist check
             BatteryOptimizationHelper.requestIgnoreBatteryOptimizations(context)
 

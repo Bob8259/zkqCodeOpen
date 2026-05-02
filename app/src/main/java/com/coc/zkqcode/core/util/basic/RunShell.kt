@@ -38,4 +38,29 @@ object RunShell {
         }
         return run(cmd, checkIsPlaying).firstOrNull { it.isNotBlank() } ?: ""
     }
+
+    /**
+     * Executes a shell command and returns the full Shell.Result (blocking, non-suspend).
+     * Useful when you need access to isSuccess, out, and err.
+     * @param checkIsPlaying if true, waits until the script is playing before executing (ignored in blocking variant)
+     */
+    fun runBlocking(cmd: String, checkIsPlaying: Boolean = false): Shell.Result {
+        return Shell.cmd(cmd).exec()
+    }
+
+    /**
+     * Blocking variant: executes a shell command and returns the output as a list of strings.
+     * @param checkIsPlaying if true, waits until the script is playing before executing (ignored in blocking variant)
+     */
+    fun runBlockingOutput(cmd: String, checkIsPlaying: Boolean = false): List<String> {
+        return Shell.cmd(cmd).exec().out
+    }
+
+    /**
+     * Blocking variant: executes a shell command without returning the output.
+     * @param checkIsPlaying if true, waits until the script is playing before executing (ignored in blocking variant)
+     */
+    fun runBlockingNoOutput(cmd: String, checkIsPlaying: Boolean = false) {
+        Shell.cmd(cmd).exec()
+    }
 }
