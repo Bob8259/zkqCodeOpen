@@ -82,4 +82,13 @@ object MyColors : IUIColors by UIColors, IFeatureColors by FeatureColors, IClanG
     val IncreaseRank = ColorSchema.parse(
         662, 604, 837, 644, "88E9BB", "35|0|88E8BB,70|0|88E9BB,105|0|88E9BB,140|0|88E9BB,0|20|3AD48B,35|20|3AD48B,70|20|3AD48B,105|20|3AD48B,140|20|3AD48B", 0, 0.9, "段位提示"
     )
+    val ClanLeagueSeasonInfo = ColorSchema.parse(
+        1125, 597, 1268, 711, "CF933D", "2|14|CF933D,16|12|C68D3B,38|-11|2F5D74,61|-14|65C1E8,75|-10|CF933D,86|-1|CF933D,90|17|CF933D,81|58|CF933D,14|53|CF933D", 0, 0.9, "赛季信息"
+    )
+    val SmallBlueInfoIcon = ColorSchema.parse(
+        1097, 215, 1144, 258, "FFFFFF", "0|4|FFFFFF,-12|4|885119,-14|-7|D29866,-9|15|61300D,0|15|773C17,6|15|6F360D,10|9|66380D,12|1|73480D,12|-15|F4D372", 0, 0.9, "蓝色信息按钮"
+    )
+    val ClaimClanLeagueReward = ColorSchema.parse(
+        369, 383, 583, 496, "7BF7DA", "18|-3|81F7DD,37|0|7BF7DA,76|0|7BF7DA,131|5|70F3D2,-20|-43|FFFFFF,27|-43|FFFFFF,79|-41|FFFFFF,121|-41|FFFFFF,193|-49|FFFFFF", 0, 0.98, "领取部落联赛奖励教程"
+    )
 }

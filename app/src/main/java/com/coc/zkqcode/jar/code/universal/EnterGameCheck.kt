@@ -113,7 +113,10 @@ private suspend fun closeAdvertisements() {
         MyColors.LogIn,
         MyColors.CloudPhoneShopButton,
         MyColors.TempGameContinue,
-        MyColors.IncreaseRank
+        MyColors.IncreaseRank,
+        MyColors.ClanLeagueSeasonInfo,
+        MyColors.SmallBlueInfoIcon,
+        MyColors.ClaimClanLeagueReward
     )
 
     // 3. Iterate through schemas

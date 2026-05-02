@@ -43,6 +43,7 @@ suspend fun runMainScript() {
     }
     waitForPlay()
     setZKQInputMethod()
+    cleanUp()
     accountMessage("检测到设置已更新\n即将重新运行")
     delay(200)
     userAuth()
@@ -100,7 +101,10 @@ private suspend fun runTestCode() {
     }
 }
 
-
+private suspend fun cleanUp(){
+    RunShell.runNoOutput("input keyevent 4") // Press back
+    RunShell.runNoOutput("input keyevent 3") // Press home
+}
 /** Handles hot-update signal on start and random-scheduling gate.
  *  Returns updateOption, or null if random scheduling took over. */
 private suspend fun checkHotUpdateAndScheduling(): Int? {
