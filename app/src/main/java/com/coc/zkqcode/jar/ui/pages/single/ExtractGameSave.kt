@@ -261,16 +261,6 @@ fun ExtractGameSaveContent() {
             )
         }
     }
-    // Show disclaimer when "数测试功能" (index 2) is selected
-    if (selectedIndex == 2) {
-        Text(
-            text = "测试功能功能源自第三方代码，与作者无关。该功能仅供学习研究使用，禁止用于其他用途，若违反需自行承担后果，与作者无关。数据以明文方式保存，请自行确保信息安全。",
-            color = Color.Red,
-            fontSize = 11.sp,
-            modifier = Modifier.padding(top = 6.dp, start = 4.dp, end = 4.dp)
-        )
-    }
-
 
     // 全局弹窗组件
     if (showDialog) {

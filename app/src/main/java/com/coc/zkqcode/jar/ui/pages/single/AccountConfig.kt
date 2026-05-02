@@ -70,9 +70,6 @@ fun UseDataPackage(
 ) {
     if (GlobalVars.configStates["${ACCOUNT_SETTINGS.GAME_VERSION.key}${index}"]!!.value == "0") {
         Column {
-            Text(
-                text = "换机或设备到期前，务必清空信息！\n否则有被盗号风险！", modifier = Modifier.padding(end = 10.dp), style = MaterialTheme.typography.labelMedium, color = Color.Red
-            )
             SettingInputRow(key = "${ACCOUNT_SETTINGS.DATA_CONTENT.key}${index}")
         }
     } else {
