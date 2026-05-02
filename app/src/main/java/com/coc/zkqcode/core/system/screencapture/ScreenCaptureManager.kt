@@ -40,6 +40,11 @@ object ScreenCaptureManager {
     // Skip MediaProjection and go straight to shell screencap after first failure
     private var useShellFallback = false
 
+    // Android 14+ enforces single-use MediaProjection tokens.
+    // Track whether the cached resultData has already been consumed by
+    // getMediaProjection() so we never attempt to reuse a spent token.
+    private var projectionTokenUsed = false
+
     // --- New: Dedicated background thread for handling screenshots ---
     private var handlerThread: HandlerThread? = null
     private var backgroundHandler: Handler? = null
@@ -103,6 +108,13 @@ object ScreenCaptureManager {
             val code = cachedResultCode
             val data = cachedIntentData
             if (code != null && data != null) {
+                // On Android 14+ the resultData token is single-use.
+                // If we already consumed it once, don't attempt again — it will throw.
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE && projectionTokenUsed) {
+                    LogHelper.showDebugInfo("ensureProjection: token already consumed on API 34+, skipping re-creation")
+                    return null
+                }
+
                 ensureHandlerThread()
                 // getMediaProjection() requires a running foreground service with
                 // FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION on Android 14+.
@@ -111,9 +123,15 @@ object ScreenCaptureManager {
                     mediaProjection = mediaProjectionManager?.getMediaProjection(code, data)?.also {
                         it.registerCallback(projectionCallback, backgroundHandler)
                     }
+                    // Mark the token as consumed so we never try to reuse it on API 34+
+                    projectionTokenUsed = true
                 } catch (e: SecurityException) {
                     LogHelper.showDebugInfo("ensureProjection: getMediaProjection() failed — " +
                             "foreground service with MEDIA_PROJECTION type may not be running: ${e.message}")
+                    projectionTokenUsed = true
+                } catch (e: Exception) {
+                    LogHelper.showDebugInfo("ensureProjection: getMediaProjection() failed: ${e.message}")
+                    projectionTokenUsed = true
                 }
             }
         }
@@ -163,9 +181,19 @@ object ScreenCaptureManager {
         cleanupDisplayResources()
         mediaProjection = null
 
-        // Clear cached permission credentials
+        // Clear cached permission credentials and token tracking
         cachedResultCode = null
         cachedIntentData = null
+        projectionTokenUsed = false
+    }
+
+    /**
+     * Check whether it is safe to recreate a VirtualDisplay on the current projection.
+     * On Android 14+ (API 34), createVirtualDisplay() can only be called once per
+     * MediaProjection instance, so recreation is not possible.
+     */
+    private fun canRecreateVirtualDisplay(): Boolean {
+        return Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE
     }
 
     private fun ensureVirtualDisplay(projection: MediaProjection) {
@@ -190,10 +218,14 @@ object ScreenCaptureManager {
             }
         } else {
             // If VirtualDisplay already exists, check if size has changed
-            // Note: resize is not supported in all versions, simple handling here: if size changed, destroy and recreate
-            // But usually updateMetrics has been called in capture(), so we can assume metrics are new
-            // Simple check if imageReader matches
             if (imageReader?.width != screenWidth || imageReader?.height != screenHeight) {
+                // On Android 14+, we cannot call createVirtualDisplay() again on the same
+                // projection instance. Fall back to shell instead of crashing.
+                if (!canRecreateVirtualDisplay()) {
+                    LogHelper.showDebugInfo("ensureVirtualDisplay: Size changed but API 34+ prevents recreation, will use shell fallback")
+                    return
+                }
+
                 LogHelper.showDebugInfo("ensureVirtualDisplay: Size changed, recreating resources")
                 cleanupDisplayResources()
                 prepareImageReader()
@@ -227,7 +259,7 @@ object ScreenCaptureManager {
             LogHelper.showDebugInfo("takeScreenshot: Failed to ensure projection")
             return false
         }
-        ensureHandlerThread() // 确保后台线程已启动
+        ensureHandlerThread() // Ensure background thread is started
 
         return try {
             ensureVirtualDisplay(projection)
@@ -241,6 +273,9 @@ object ScreenCaptureManager {
 
     private fun prepareImageReader() {
         if (imageReader == null || imageReader?.width != screenWidth || imageReader?.height != screenHeight) {
+            // Remove listener before closing to prevent race condition where the
+            // background handler receives a callback on a closing/closed reader.
+            imageReader?.setOnImageAvailableListener(null, null)
             imageReader?.close()
             // Use RGBA_8888 format, maxImages set to 2 is sufficient
             imageReader = ImageReader.newInstance(screenWidth, screenHeight, PixelFormat.RGBA_8888, 2)
@@ -253,16 +288,25 @@ object ScreenCaptureManager {
             cachedIntentData = data
             // Re-enable MediaProjection path since new permission was granted
             useShellFallback = false
+            // Fresh token — mark as not yet consumed
+            projectionTokenUsed = false
             ensureHandlerThread()
             mediaProjection = mediaProjectionManager?.getMediaProjection(resultCode, data)?.also {
                 it.registerCallback(projectionCallback, backgroundHandler)
             }
+            // The token has now been consumed by getMediaProjection()
+            projectionTokenUsed = true
         } else {
             LogHelper.showDebugInfo("onPermissionGranted: Permission denied (resultCode=$resultCode)")
         }
     }
 
     private fun cleanupDisplayResources() {
+        // Remove the image listener BEFORE closing the reader to prevent the
+        // background handler from receiving a callback on a closing/closed reader.
+        // This fixes the "Image is already closed" race condition.
+        imageReader?.setOnImageAvailableListener(null, null)
+
         virtualDisplay?.release()
         virtualDisplay = null
         imageReader?.close()
@@ -283,6 +327,7 @@ object ScreenCaptureManager {
         mediaProjection = null
         cachedResultCode = null
         cachedIntentData = null
+        projectionTokenUsed = false
         // Stop background thread
         handlerThread?.quitSafely()
         handlerThread = null
@@ -302,6 +347,13 @@ object ScreenCaptureManager {
     /**
      * Improved coroutine screenshot method.
      * Tries MediaProjection first; falls back to shell screencap -p on failure.
+     *
+     * Recovery strategy on stale frames:
+     * - First, retry with a longer timeout WITHOUT destroying resources (the
+     *   VirtualDisplay may still be alive; the screen is just static).
+     * - On Android 14+ (API 34), never attempt to recreate VirtualDisplay on the
+     *   same projection — fall back to shell immediately.
+     * - On older APIs, destroy and recreate as before.
      */
     suspend fun capture(asBitmap: Boolean = true): Any? = captureMutex.withLock {
         // If MediaProjection already failed, skip directly to shell
@@ -432,8 +484,8 @@ object ScreenCaptureManager {
                 }
             }
 
-            // 1. Try to get a new frame (Short timeout)
-            val result = withTimeoutOrNull(100) {
+            // 1. Try to get a new frame (increased timeout for slower devices)
+            val result = withTimeoutOrNull(300) {
                 attemptCapture()
             }
 
@@ -453,13 +505,28 @@ object ScreenCaptureManager {
                         null
                     }
                 } else {
-                    // 3. Cache expired or not available -> Force reset
-                    LogHelper.showDebugInfo("capture: No new frame for >3s, recreating resources")
-                    cleanupDisplayResources()
-
-                    // 4. Retry after reset (longer timeout to allow setup)
-                    withTimeoutOrNull(200) {
+                    // 3. Cache expired — retry WITHOUT destroying resources first.
+                    // The VirtualDisplay is likely still alive; the screen may just be
+                    // static with no new frames being produced.
+                    LogHelper.showDebugInfo("capture: No new frame for >3s, retrying without resource destruction")
+                    val retryResult = withTimeoutOrNull(500) {
                         attemptCapture()
+                    }
+
+                    if (retryResult != null) {
+                        retryResult
+                    } else if (!canRecreateVirtualDisplay()) {
+                        // Android 14+: Cannot recreate VirtualDisplay on the same
+                        // projection. Give up on MediaProjection entirely.
+                        LogHelper.showDebugInfo("capture: API 34+ prevents VirtualDisplay recreation, switching to shell")
+                        null
+                    } else {
+                        // Pre-Android 14: Safe to destroy and recreate resources
+                        LogHelper.showDebugInfo("capture: Destroying and recreating resources (pre-API 34)")
+                        cleanupDisplayResources()
+                        withTimeoutOrNull(500) {
+                            attemptCapture()
+                        }
                     }
                 }
             }
@@ -486,4 +553,3 @@ object ScreenCaptureManager {
         return ShellScreenCapture.capture(asBitmap)
     }
 }
-
