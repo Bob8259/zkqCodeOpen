@@ -1,6 +1,9 @@
 package com.coc.zkqcode.jar.ui.pages.homescreen
 
 import android.content.Context
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -10,12 +13,15 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
 import com.coc.zkqcode.jar.code.universal.network.UrlFallbackUtil
 import com.coc.zkqcode.jar.ui.components.CustomAlertDialog
 import com.coc.zkqcode.jar.ui.theme.AppColors
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
 
@@ -24,6 +30,7 @@ fun AnnouncementDialog(onDismiss: () -> Unit) {
     val context = LocalContext.current
     var localVersion by remember { mutableStateOf<Long?>(null) }
     var serverVersion by remember { mutableStateOf<Long?>(null) }
+    var updateLog by remember { mutableStateOf("正在获取更新记录...") }
     var isLoading by remember { mutableStateOf(true) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
 
@@ -44,6 +51,23 @@ fun AnnouncementDialog(onDismiss: () -> Unit) {
                 val json = JSONObject(responseStr)
                 val serverFileName = json.getString("fileName")
                 serverVersion = serverFileName.removePrefix("encrypted_").removeSuffix(".jar").toLongOrNull() ?: 0L
+
+                // Fetch update log from server
+                try {
+                    val updateLogResponse = UrlFallbackUtil.executeGetWithFallbackAndReadBody("api/update-log")
+                    val updateLogJson = JSONObject(updateLogResponse)
+                    val updatesArray: JSONArray = updateLogJson.getJSONArray("updates")
+                    val logBuilder = StringBuilder("更新记录:\n")
+                    for (i in 0 until updatesArray.length()) {
+                        logBuilder.append(updatesArray.getString(i))
+                        if (i < updatesArray.length() - 1) {
+                            logBuilder.append("\n")
+                        }
+                    }
+                    updateLog = logBuilder.toString()
+                } catch (e: Exception) {
+                    updateLog = "获取更新记录失败: ${e.message}"
+                }
             }
         } catch (e: Exception) {
             errorMessage = e.message
@@ -56,28 +80,22 @@ fun AnnouncementDialog(onDismiss: () -> Unit) {
         loadVersionInfo(context)
     }
 
-    val updateLog = """
-        更新记录:
-        2026-04-30：
-        新增强制不锁屏的功能
-        修复紫孔雀输入法失效的问题
-        修复部分设备检测主界面失效的问题
-        2026-04-28：
-        新增领取竞赛奖励的功能
-    """.trimIndent()
+    val footer = "\n\n更多更新记录可前往官网教程文档内查看"
 
     val messageText = when {
         isLoading -> "正在检查版本信息..."
         errorMessage != null -> "检查版本失败: $errorMessage"
         localVersion != null && serverVersion != null -> {
             if (serverVersion!! > localVersion!!) {
-                "检测到新版本!\n当前版本: $localVersion，服务器版本: $serverVersion\n\n$updateLog"
+                "检测到新版本!\n当前版本: $localVersion，服务器版本: $serverVersion\n\n$updateLog$footer"
             } else {
-                "当前已是最新版本\n当前版本: $localVersion，服务器版本: $serverVersion\n\n$updateLog"
+                "当前已是最新版本\n当前版本: $localVersion，服务器版本: $serverVersion\n\n$updateLog$footer"
             }
         }
-        else -> "无法获取版本信息\n\n$updateLog"
+        else -> "无法获取版本信息\n\n$updateLog$footer"
     }
+
+    val scrollState = rememberScrollState()
 
     CustomAlertDialog(
         onDismissRequest = onDismiss,
@@ -91,7 +109,10 @@ fun AnnouncementDialog(onDismiss: () -> Unit) {
         text = {
             Text(
                 text = messageText,
-                style = MaterialTheme.typography.bodyMedium
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier
+                    .heightIn(max = 400.dp)
+                    .verticalScroll(scrollState)
             )
         },
         confirmButton = {
