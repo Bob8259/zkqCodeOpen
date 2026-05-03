@@ -52,6 +52,8 @@ suspend fun enterMainScreen(isDoubleCheck: Boolean = false): Boolean {
 
             accountMessage("倒计时${((timeoutMillis - System.currentTimeMillis() + startTime) / 1000).toInt()}秒")
             closeAdvertisements()
+            // After 15s, also dismiss clan league popups
+            if (System.currentTimeMillis() - startTime > 15_000L) closeClanLeaguePopups()
 
             val currentTime = System.currentTimeMillis()
             if (currentTime - lastClickRightBottomTime >= 5000L) {
@@ -78,6 +80,23 @@ suspend fun clickRightBottom(times: Int, delayTime: Int = 100) {
     }
 }
 
+
+/**
+ * Checks and dismisses clan league related popups (season info, blue info icon, claim reward).
+ */
+private suspend fun closeClanLeaguePopups() {
+    var screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult ?: return
+    listOf(
+        MyColors.ClanLeagueSeasonInfo, MyColors.SmallBlueInfoIcon, MyColors.ClaimClanLeagueReward
+    ).forEach { schema ->
+        val point = findMultiColors(byteBuffer = screenBuffer, schema = schema, increment = 1)
+        if (point != null) {
+            TouchActions.tap(point.x, point.y)
+            // Retake the screenBuffer so the next schema check uses the updated screen
+            screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult ?: return@forEach
+        }
+    }
+}
 
 private suspend fun closeAdvertisements() {
     // 1. Capture the screen and cast safely (Use 'var' so we can update it)
@@ -114,9 +133,7 @@ private suspend fun closeAdvertisements() {
         MyColors.CloudPhoneShopButton,
         MyColors.TempGameContinue,
         MyColors.IncreaseRank,
-        MyColors.ClanLeagueSeasonInfo,
-        MyColors.SmallBlueInfoIcon,
-        MyColors.ClaimClanLeagueReward
+        MyColors.ClanLeagueReturnCamp
     )
 
     // 3. Iterate through schemas

@@ -44,7 +44,6 @@ suspend fun runMainScript() {
     }
     waitForPlay()
     setZKQInputMethod()
-    cleanUp()
     accountMessage("检测到设置已更新\n即将重新运行")
     delay(200)
     userAuth()
@@ -67,7 +66,7 @@ suspend fun runMainScript() {
     var lastUpdateCheckTime = System.currentTimeMillis()
     var nextUpdateInterval = (3600_000L) + (Math.random() * 7200_000L).toLong()
     while (currentCoroutineContext().isActive) {
-        runTestCode()
+//        runTestCode()
         runAccountStepBlock()
         // Circularly search for the next enabled account, wrapping back to currentAccountNumber (inclusive)
         // Emit hot update signal at safe point, throttled to once every 2-3 hours randomly
@@ -98,7 +97,7 @@ private suspend fun runTestCode() {
     while (true) {
         clanLeague()
         accountMessage("测试代码结束")
-        delay(5000)
+        delay(500000)
     }
 }
 
@@ -161,6 +160,7 @@ private fun resolveGameVersion(isBatchCreate: Boolean): GameVersion {
  */
 suspend fun runAccountStepBlock() {
     checkAndCoolDown()
+    cleanUp()
     displayAds()
     RunShell.runNoOutput("input keyevent 3")
     RunShell.runNoOutput("am kill-all")

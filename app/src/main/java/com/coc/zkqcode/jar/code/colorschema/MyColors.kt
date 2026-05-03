@@ -79,6 +79,9 @@ object MyColors : IUIColors by UIColors, IFeatureColors by FeatureColors, IClanG
     val ReturnTask4 = ColorSchema.parse(
         86, 587, 330, 626, "CD8C4B", "5|4|BF8545,12|1|C98D4C,16|-7|E29B56,22|1|CB8F4E,38|2|FFFFFF,40|3|FFFFFF,38|0|FFFFFF,38|-9|E49C58,36|-8|E39B57", 0, 0.98, "回归任务4"
     )
+    val ClanLeagueReturnCamp = ColorSchema.parse(
+        60, 606, 102, 652, "AAE3FF", "9|0|7D98E6,17|0|364C9C,25|0|7DA0E8,34|0|34456A,0|23|2646C3,9|23|758FFF,17|23|7A9AFF,25|23|92BAFF,34|23|6576B1", 0, 0.9, "联赛回营"
+    )
 
     //Clan League/War Colours
     val ClanLeagueGreenWarIcon = ColorSchema.parse(

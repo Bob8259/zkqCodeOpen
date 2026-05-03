@@ -33,6 +33,7 @@ suspend fun mainBaseDeployTroops() {
     delayWithMultiplier(200)
     // Record the start time of the battle
     zoomSmallMainBase(isForAttack = true)
+    deploySiegeMachine()
     repeat(3) {
         // Deploy each troop type if detected in the deployment bar
         deployIfPresent(DRAG_SWEEP_MS, MyColors.DragonAtDeploymentBar, MyColors.DragonAtDeploymentBar2)
@@ -40,7 +41,6 @@ suspend fun mainBaseDeployTroops() {
         deployIfPresent(DRAG_SWEEP_SLOW_MS, MyColors.BarbarianAtDeploymentBar, MyColors.BarbarianAtDeploymentBar2)
         deployIfPresent(DRAG_SWEEP_SLOW_MS, MyColors.ArcherAtDeploymentBar, MyColors.ArcherAtDeploymentBar2, MyColors.ArcherAtDeploymentBar3, MyColors.ArcherAtDeploymentBar4)
         deployHeroes()
-        deploySiegeMachine()
         deployOthers()
     }
 }
