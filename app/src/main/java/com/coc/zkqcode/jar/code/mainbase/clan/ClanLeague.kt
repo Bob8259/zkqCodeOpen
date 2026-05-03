@@ -10,6 +10,7 @@ import com.coc.zkqcode.jar.code.universal.clickRightBottom
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
+import com.coc.zkqcode.jar.code.universal.isInHomePage
 import com.coc.zkqcode.jar.code.universal.smalltools.TouchActions
 import com.coc.zkqcode.jar.code.universal.smalltools.getBooleanConfigRuntime
 import com.coc.zkqcode.jar.ui.schema.Schema
@@ -20,14 +21,14 @@ suspend fun clanLeague(): Boolean {
     if (findMultiColors(MyColors.ClanWarSwordIcon) != null) {
         TouchActions.tap(50, 440) // Enter clan war
     } else if (getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.PLAY_CLAN_WAR.key)) {
-        //Clan War code has already entered the clan league page, so nothing is needed here.
+        //If clan war is enabled, then the clan war code will enter the clan league page
+        if (isInHomePage()) {//But if the war is not found, then we should return
+            return true
+        }
     } else {
         return enterMainScreen()
     }
 
-    val startTime = System.currentTimeMillis()
-    val multiplier = GlobalVars.configStates["delay_multiplier"]?.value?.toFloat() ?: logAndRestart("Failed to get delayMultiplier")
-    val duration = (10000 * multiplier).toLong()
 
     val tappableSchemas = listOf(
         MyColors.ClanLeagueSeasonInfo, MyColors.SmallBlueInfoIcon, MyColors.ClaimClanLeagueReward
@@ -60,6 +61,9 @@ suspend fun clanLeague(): Boolean {
         }
 
     } else {
+        val startTime = System.currentTimeMillis()
+        val multiplier = GlobalVars.configStates["delay_multiplier"]?.value?.toFloat() ?: logAndRestart("Failed to get delayMultiplier")
+        val duration = (10000 * multiplier).toLong()
         while (System.currentTimeMillis() - startTime < duration) {
             val captured = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult
             // Tap each of the three dismissible colours if found

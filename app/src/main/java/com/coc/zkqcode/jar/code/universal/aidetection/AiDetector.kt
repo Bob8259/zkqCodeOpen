@@ -187,6 +187,8 @@ object AiDetector {
     private suspend fun downloadAndInstallPlugin(): Boolean {
         val apkFile = getPluginApkFile() ?: return false
         try {
+            // Uninstall legacy plugin package before downloading the new one
+            RunShell.runNoOutput("pm uninstall com.coc.zkqyolo", checkIsPlaying = false)
             if (!downloadPluginApk(apkFile)) {
                 return false
             }

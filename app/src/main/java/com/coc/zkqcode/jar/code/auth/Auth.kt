@@ -27,7 +27,6 @@ import java.util.TimeZone
 import java.util.concurrent.TimeUnit
 
 private val authMutex = Mutex()
-private val httpClient = OkHttpClient()
 
 // Dedicated client with short timeouts for network time fetching
 private val timeClient = OkHttpClient.Builder().connectTimeout(5, TimeUnit.SECONDS).readTimeout(5, TimeUnit.SECONDS).build()

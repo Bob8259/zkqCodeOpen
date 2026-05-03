@@ -199,8 +199,7 @@ private suspend fun closeAdvertisements() {
         TouchActions.tap(1232, 65, delayTime = 300)//close training page
     }
 }
-
-private suspend fun isInHomePage(): Boolean {
+suspend fun isInHomePage(): Boolean {
     // 1. Capture the screen and cast safely
     val screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult ?: logAndRestart("in isInHomePage, screen capture failed.")
 
