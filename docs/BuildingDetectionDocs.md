@@ -1,8 +1,8 @@
-# Building Detector Inference Service for Android
+# ZKQbuilding — Detector Inference Service for Android
 
 **Version:** 1.08
 
-An Android app that runs a local HTTP server exposing building detector inference. The app launches a foreground service on startup, making the detection API available to other apps or automation tools on the device via `http://localhost:13462`.
+An Android app that runs a local HTTP server exposing detector inference. The app launches a foreground service on startup, making the detection API available to other apps or automation tools on the device via `http://localhost:13462`.
 
 ---
 
@@ -37,7 +37,7 @@ curl -X POST http://localhost:13462/detect \
 You can also start the service without opening the app UI:
 
 ```
-adb shell am start-foreground-service -n com.coc.zkqyolo/.service.YoloService
+adb shell am start-foreground-service -n com.building.plugin/.service.DetectorService
 ```
 
 ---
@@ -247,4 +247,3 @@ curl -X POST http://localhost:13462/detect \
   -H "Content-Type: application/octet-stream" \
   --data-binary @image.png
 ```
-

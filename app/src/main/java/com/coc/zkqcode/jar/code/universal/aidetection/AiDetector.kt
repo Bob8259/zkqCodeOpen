@@ -29,7 +29,7 @@ data class DetectionResult(
 
 object AiDetector {
     private const val BASE_URL = "http://localhost:13462"
-    private const val PLUGIN_PACKAGE = "com.coc.zkqyolo"
+    private const val PLUGIN_PACKAGE = "com.building.plugin"
     private const val SERVICE_START_CMD =
         "am start-foreground-service -n $PLUGIN_PACKAGE/.service.YoloService"
     private const val MAIN_ACTIVITY_CMD = "am start -n $PLUGIN_PACKAGE/.MainActivity"
@@ -69,12 +69,12 @@ object AiDetector {
     private fun getPluginApkFile(): File? {
         val context = ShowMessage.getContext()
         if (context == null) {
-            accountMessage("辅助插件安装失败：上下文未初始化")
+            accountMessage("建筑插件安装失败：上下文未初始化")
             return null
         }
         val downloadDir = File(context.filesDir, PLUGIN_DOWNLOAD_DIR)
         if (!downloadDir.exists() && !downloadDir.mkdirs()) {
-            accountMessage("辅助插件安装失败：无法创建下载目录")
+            accountMessage("建筑插件安装失败：无法创建下载目录")
             return null
         }
         return File(downloadDir, PLUGIN_APK_NAME)
@@ -94,9 +94,9 @@ object AiDetector {
         if (total > 0) {
             val totalMb = total / 1024.0 / 1024.0
             val percent = (downloaded * 100 / total).coerceAtMost(100)
-            return "辅助插件下载中：$percent% (${String.format(Locale.US, "%.2f", downloadedMb)}MB/${String.format(Locale.US, "%.2f", totalMb)}MB)"
+            return "建筑插件下载中：$percent% (${String.format(Locale.US, "%.2f", downloadedMb)}MB/${String.format(Locale.US, "%.2f", totalMb)}MB)"
         }
-        return "辅助插件下载中：${String.format(Locale.US, "%.2f", downloadedMb)}MB"
+        return "建筑插件下载中：${String.format(Locale.US, "%.2f", downloadedMb)}MB"
     }
 
     private suspend fun downloadPluginApk(targetFile: File): Boolean = withContext(Dispatchers.IO) {
@@ -107,7 +107,7 @@ object AiDetector {
             val request = Request.Builder().url(PLUGIN_DOWNLOAD_URL).get().build()
             downloadClient.newCall(request).execute().use { response ->
                 if (!response.isSuccessful) {
-                    postMessage("辅助插件下载失败：HTTP ${response.code}")
+                    postMessage("建筑插件下载失败：HTTP ${response.code}")
                     return@withContext false
                 }
                 val body = response.body
@@ -137,7 +137,7 @@ object AiDetector {
             if (targetFile.exists()) {
                 targetFile.delete()
             }
-            postMessage("辅助插件下载失败：${e.message}")
+            postMessage("建筑插件下载失败：${e.message}")
             false
         }
     }
@@ -155,7 +155,7 @@ object AiDetector {
             return true
         }
         val errorMessage = installResult.joinToString("\n").ifBlank { "未返回安装结果" }
-        accountMessage("辅助插件安装失败：$errorMessage")
+        accountMessage("建筑插件安装失败：$errorMessage")
         return false
     }
 
@@ -166,7 +166,7 @@ object AiDetector {
         }
         if (hasError) {
             val errorMessage = launchResult.joinToString("\n").ifBlank { "未返回启动结果" }
-            accountMessage("辅助插件启动失败：$errorMessage")
+            accountMessage("建筑插件启动失败：$errorMessage")
             return false
         }
         return true
@@ -190,11 +190,11 @@ object AiDetector {
             if (!downloadPluginApk(apkFile)) {
                 return false
             }
-            accountMessage("辅助插件下载完成，开始安装")
+            accountMessage("建筑插件下载完成，开始安装")
             if (!installPlugin(apkFile)) {
                 return false
             }
-            accountMessage("辅助插件安装成功，正在启动插件")
+            accountMessage("建筑插件安装成功，正在启动插件")
             if (!launchPluginMainActivity()) {
                 return false
             }
@@ -213,7 +213,7 @@ object AiDetector {
         if (isPluginInstalled()) {
             return true
         }
-        accountMessage("未检测到辅助插件，开始自动下载安装")
+        accountMessage("未检测到建筑插件，开始自动下载安装")
         return downloadAndInstallPlugin()
     }
 
@@ -257,13 +257,13 @@ object AiDetector {
             if (versionTooLow) {
                 if (updateAttempted) {
                     // Already tried once; avoid an infinite update loop.
-                    accountMessage("辅助插件更新后版本仍然过低，请手动更新")
+                    accountMessage("建筑插件更新后版本仍然过低，请手动更新")
                     return false
                 }
-                accountMessage("辅助插件版本过低，正在尝试自动下载更新")
+                accountMessage("建筑插件版本过低，正在尝试自动下载更新")
                 updateAttempted = true
                 if (!downloadAndInstallPlugin()) {
-                    accountMessage("辅助插件自动更新失败，请手动下载安装最新版")
+                    accountMessage("建筑插件自动更新失败，请手动下载安装最新版")
                     return false
                 }
                 // Reset the polling timer so the full window is available after the update.
@@ -272,7 +272,7 @@ object AiDetector {
                 delay(POLL_INTERVAL_MS)
             }
         }
-        accountMessage("辅助插件启动失败，请检查插件是否安装成功并已正常启动")
+        accountMessage("建筑插件启动失败，请检查插件是否安装成功并已正常启动")
         return false
     }
 
