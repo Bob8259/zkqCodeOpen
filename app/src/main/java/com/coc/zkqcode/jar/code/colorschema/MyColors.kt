@@ -100,4 +100,11 @@ object MyColors : IUIColors by UIColors, IFeatureColors by FeatureColors, IClanG
         369, 383, 583, 496, "7BF7DA", "18|-3|81F7DD,37|0|7BF7DA,76|0|7BF7DA,131|5|70F3D2,-20|-43|FFFFFF,27|-43|FFFFFF,79|-41|FFFFFF,121|-41|FFFFFF,193|-49|FFFFFF", 0, 0.98, "领取部落联赛奖励教程"
     )
 
+    //Builder Base Clock Tower Colours
+    val ClockTowerPotionOutside = ColorSchema.parse(
+        169, 494, 1146, 634, "F6BAD8", "-8|15|F9C4DE,-17|0|FFD5E5,-2|-7|FFE3F5,11|-4|82E0FC,18|0|416083,29|3|609DC9,-11|-12|FCD5EB,-22|-1|FFDDE8,-1|9|F4B5D6", 0, 0.9, "钟楼药水外部标志"
+    )
+    val ClockTowerPotionInner = ColorSchema.parse(
+        514, 398, 759, 512, "E5C286", "28|7|E5C286,38|19|E5C286,83|40|FFD2E4,93|32|FFE5F7,103|33|82E0FD,111|41|7BD8F6,99|43|403533,79|49|FFDDE7,30|51|CF932F", 0, 0.9, "钟楼药水内部"
+    )
 }

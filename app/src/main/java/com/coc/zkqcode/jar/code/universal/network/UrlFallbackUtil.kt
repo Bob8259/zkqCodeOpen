@@ -96,11 +96,11 @@ object UrlFallbackUtil {
                 }
             } catch (e: Exception) {
                 // Both failed
-                throw IOException("Both primary and backup servers failed. Primary: ${primaryException?.message}, Backup: ${e.message}", e)
+                throw IOException("Both primary and backup servers failed. Primary: ${primaryException.message}, Backup: ${e.message}", e)
             }
         } else {
             // No backup URL configured
-            throw IOException("Primary server failed and no backup URL configured: ${primaryException?.message}", primaryException)
+            throw IOException("Primary server failed and no backup URL configured: ${primaryException.message}", primaryException)
         }
     }
 
@@ -158,48 +158,4 @@ object UrlFallbackUtil {
         }
     }
 
-    /**
-     * Checks if the primary URL is reachable.
-     * Uses a HEAD request with short timeout.
-     *
-     * @return true if primary is reachable, false otherwise
-     */
-    suspend fun isPrimaryUrlReachable(): Boolean {
-        return try {
-            val request = Request.Builder()
-                .url("${getPrimaryUrl()}")
-                .head()
-                .build()
-            val response = withContext(Dispatchers.IO) {
-                shortTimeoutClient.newCall(request).execute()
-            }
-            response.use { it.isSuccessful }
-        } catch (_: Exception) {
-            false
-        }
-    }
-
-    /**
-     * Checks if the backup URL is reachable.
-     * Uses a HEAD request with short timeout.
-     *
-     * @return true if backup is reachable, false otherwise
-     */
-    suspend fun isBackupUrlReachable(): Boolean {
-        val backupUrl = getBackupUrl()
-        if (backupUrl.isBlank()) return false
-
-        return try {
-            val request = Request.Builder()
-                .url(backupUrl)
-                .head()
-                .build()
-            val response = withContext(Dispatchers.IO) {
-                shortTimeoutClient.newCall(request).execute()
-            }
-            response.use { it.isSuccessful }
-        } catch (_: Exception) {
-            false
-        }
-    }
 }
