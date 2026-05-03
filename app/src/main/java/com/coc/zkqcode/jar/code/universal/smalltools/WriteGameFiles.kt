@@ -146,6 +146,16 @@ suspend fun writeGameFilesCore(
  * to the game's data directory, then sets permissions to 777.
  */
 suspend fun writeGameFiles(): Boolean {
+    // In batch-create mode, always use start_method=0 (game save), GLOBAL version,
+    // and account number as save path — skip reading per-account config.
+    val isBatchCreate = getConfigOrStop(Schema.GLOBAL_SETTINGS.BATCH_CREATE_ACCOUNT.key) == "1"
+    if (isBatchCreate) {
+        killGame()
+        val version = GameVersion.GLOBAL
+        val savePathName = InGameVars.currentAccountNumber.toString()
+        return writeGameFilesCore(version.packageName, savePathName, version.folderName, version.subDirs)
+    }
+
     val startMethod = getConfigOrStop("${ACCOUNT_SETTINGS.START_METHOD.key}${InGameVars.currentAccountNumber}").toIntOrNull() ?: logAndRestart("${ACCOUNT_SETTINGS.START_METHOD.displayName} 必须是数字，请检查配置")
     killGame()
     return when (startMethod) {

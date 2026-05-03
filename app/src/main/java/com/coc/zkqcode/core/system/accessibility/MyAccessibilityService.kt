@@ -49,7 +49,7 @@ class MyAccessibilityService : AccessibilityService() {
     }
 
     private fun findAndClickTarget(rootNode: AccessibilityNodeInfo): Boolean {
-        // Priority 1: ID (android:id/button1 is the standard confirm button ID for system dialogs)
+        // Priority 1: ID (android:id/button1 is the standard confirm button ID for system dialogues)
         val idNodes = rootNode.findAccessibilityNodeInfosByViewId("android:id/button1")
 
         // Priority 2: Text (Support Chinese and English)
