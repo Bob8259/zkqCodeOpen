@@ -5,12 +5,12 @@ plugins {
 
 android {
     namespace = "com.coc.zkqcode"
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "com.coc.zkqcode"
         minSdk = 24
-        targetSdk = 36
+        targetSdk = 37
         versionCode = 1
         versionName = "1.0"
 
@@ -20,6 +20,7 @@ android {
     buildTypes {
         release {
             isMinifyEnabled = true
+            isShrinkResources = true
             isDebuggable = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
