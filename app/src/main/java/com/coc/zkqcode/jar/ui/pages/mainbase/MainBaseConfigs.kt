@@ -135,13 +135,6 @@ fun LazyListScope.mainBaseConfig(
             }
             FlowRow {
                 SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.DO_CLAN_GAMES.key}_c$index")
-                SettingSwitchIcon(
-                    key = "${MAIN_BASE_SETTINGS.PLAY_CLAN_WAR.key}_c$index", explain = "部落战其中一次打对位，另一次打推荐对手。\n不保证胜率，请谨慎使用。"
-                )
-                SettingSwitchIcon(
-                    key = "${MAIN_BASE_SETTINGS.PLAY_LEAGUE.key}_c$index", explain = "默认打对位，如果对位已被打则随机进攻，不保证胜率。"
-                )
-                SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.PLAY_RAID.key}_c$index")
             }
             AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.DO_CLAN_GAMES.key}_c$index"]?.value == "1") {
                 Column {
@@ -180,20 +173,29 @@ fun LazyListScope.mainBaseConfig(
                     }
                 }
             }
-            SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.CLAIM_CLAN_GAME_REWARDS.key}_c$index", explain = "优先领取魔法书和宝石，其他随机领取。")
 
-            Column {
+            SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.CLAIM_CLAN_GAME_REWARDS.key}_c$index", explain = "优先领取魔法书和宝石，其他随机领取。")
+            FlowRow {
                 SettingSwitchIcon(
-                    key = "${MAIN_BASE_SETTINGS.AUTO_JOIN_CLAN.key}_c$index",
-                    explain = "启用后，辅助将自动申请加入部落。若未指定部落标签，仅在当前无部落时执行加入操作；若已指定标签，则每日检测一次是否已加入目标部落。注意：使用此功能前需先建造部落城堡。"
+                    key = "${MAIN_BASE_SETTINGS.PLAY_CLAN_WAR.key}_c$index", explain = "部落战其中一次打对位，另一次打推荐对手。\n不保证胜率，请谨慎使用。"
                 )
-                AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.AUTO_JOIN_CLAN.key}_c$index"]?.value == "1") {
-                    Column {
-                        SettingInputRow(key = "${MAIN_BASE_SETTINGS.CLAN_TAG.key}_c$index")
-                        SettingInputRow(key = "${MAIN_BASE_SETTINGS.CLAN_JOIN_MESSAGE.key}_c$index")
-                    }
+                SettingSwitchIcon(
+                    key = "${MAIN_BASE_SETTINGS.PLAY_LEAGUE.key}_c$index", explain = "默认打对位，如果对位已被打则随机进攻，不保证胜率。"
+                )
+                SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.PLAY_RAID.key}_c$index")
+            }
+
+            SettingSwitchIcon(
+                key = "${MAIN_BASE_SETTINGS.AUTO_JOIN_CLAN.key}_c$index",
+                explain = "启用后，辅助将自动申请加入部落。若未指定部落标签，仅在当前无部落时执行加入操作；若已指定标签，则每日检测一次是否已加入目标部落。注意：使用此功能前需先建造部落城堡。"
+            )
+            AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.AUTO_JOIN_CLAN.key}_c$index"]?.value == "1") {
+                Column {
+                    SettingInputRow(key = "${MAIN_BASE_SETTINGS.CLAN_TAG.key}_c$index")
+                    SettingInputRow(key = "${MAIN_BASE_SETTINGS.CLAN_JOIN_MESSAGE.key}_c$index")
                 }
             }
+
         }
     }
 
