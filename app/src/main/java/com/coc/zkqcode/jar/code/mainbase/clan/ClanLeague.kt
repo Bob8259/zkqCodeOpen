@@ -16,8 +16,15 @@ import com.coc.zkqcode.jar.ui.schema.Schema
 
 suspend fun clanLeague(): Boolean {
     if (!getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.PLAY_LEAGUE.key)) return true
-    findMultiColors(MyColors.ClanWarSwordIcon) ?: return true // No clan war attack times, return
-    TouchActions.tap(50, 440) // Enter clan war
+
+    if (findMultiColors(MyColors.ClanWarSwordIcon) != null) {
+        TouchActions.tap(50, 440) // Enter clan war
+    } else if (getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.PLAY_CLAN_WAR.key)) {
+        //Clan War code has already entered the clan league page, so nothing is needed here.
+    } else {
+        return enterMainScreen()
+    }
+
     val startTime = System.currentTimeMillis()
     val multiplier = GlobalVars.configStates["delay_multiplier"]?.value?.toFloat() ?: logAndRestart("Failed to get delayMultiplier")
     val duration = (10000 * multiplier).toLong()

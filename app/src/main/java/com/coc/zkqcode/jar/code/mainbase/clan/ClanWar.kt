@@ -38,15 +38,22 @@ suspend fun clanWar(): Boolean {
     } else {
         STRATEGY_POSITION
     }
-
-    when (currentStrategy) {
-        STRATEGY_POSITION -> attackByPosition()
-        STRATEGY_RECOMMENDATION -> attackByRecommendation()
+    if (findMultiColorsUntil(schemas = listOf(MyColors.ClanWarInfo), duration = 1000) == null) {
+        accountMessage("未检测到部落竞赛，当前可能是联赛")
+        return if (getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.PLAY_LEAGUE.key)) {
+            true
+        } else {
+            enterMainScreen()
+        }
+    } else {
+        when (currentStrategy) {
+            STRATEGY_POSITION -> attackByPosition()
+            STRATEGY_RECOMMENDATION -> attackByRecommendation()
+        }
+        writeMemory(storageKey, currentStrategy)
+        return enterMainScreen()
     }
 
-    writeMemory(storageKey, currentStrategy)
-
-    return enterMainScreen()
 }
 
 /**
