@@ -64,47 +64,4 @@ object MyColors : IUIColors by UIColors, IFeatureColors by FeatureColors, IClanG
     IUniversalUpgradeColors by UniversalUpgradeColors, IMainBaseUpgradeColors by MainBaseUpgradeColors, IMainBaseResearchColors by MainBaseResearchColors, IMainBaseResearchLevelColors by MainBaseResearchLevelColors,
     IMainBaseResourcesColors by MainBaseResourcesColors, IClanCapitalTutorialColors by ClanCapitalTutorialColors, IMainBaseAttackColors by MainBaseAttackColors, IMainBaseClanColors by MainBaseClanColors,
     IMainBaseClanWarColors by MainBaseClanWarColors, IMainBaseHelperColors by MainBaseHelperColors, IMainBaseHeroHallColors by MainBaseHeroHallColors, IMainBaseSmallTutorialColors by MainBaseSmallTutorialColors,
-    IMainBaseMagicItemColors by MainBaseMagicItemColors, IClanCapitalColors by ClanCapitalColors {
-    // Helper Colors
-    val Prospector = ColorSchema.parse(
-        362, 555, 584, 666, "A8C2FF", "38|45|3F6CC6,40|41|4384EF,31|48|786B96,32|43|A7D1FF,25|36|465471,14|26|A1B5D2,-19|31|7D8CAC,-17|2|B0CDFC,-13|-17|6B6B7F", 0, 0.9, "探矿者"
-    )
-
-    // Builder Base Upgrade Colour
-    val RebuildGemMine = ColorSchema.parse(
-        522, 426, 789, 695, "8DFAE2", "17|0|8DFAE2,43|-1|8DFAE3,77|-1|8DFAE3,109|-1|8DFAE3,4|65|1FBC6D,37|61|1FBC6D,71|67|1FBC6D,95|68|1FBC6E,119|66|1FBC6D", 0, 0.9, "重建"
-    )
-
-    //UI Colours
-    val ReturnTask4 = ColorSchema.parse(
-        86, 587, 330, 626, "CD8C4B", "5|4|BF8545,12|1|C98D4C,16|-7|E29B56,22|1|CB8F4E,38|2|FFFFFF,40|3|FFFFFF,38|0|FFFFFF,38|-9|E49C58,36|-8|E39B57", 0, 0.98, "回归任务4"
-    )
-    val ClanLeagueReturnCamp = ColorSchema.parse(
-        60, 606, 102, 652, "AAE3FF", "9|0|7D98E6,17|0|364C9C,25|0|7DA0E8,34|0|34456A,0|23|2646C3,9|23|758FFF,17|23|7A9AFF,25|23|92BAFF,34|23|6576B1", 0, 0.9, "联赛回营"
-    )
-
-    //Clan League/War Colours
-    val ClanLeagueGreenWarIcon = ColorSchema.parse(
-        291, 612, 998, 705, "0DB63D", "1|11|0DB63D,0|27|0DB23B,39|25|0DB63D,29|12|0DB63D,39|4|0DB63D,39|-3|0DB63D,-1|-7|0DB63D,1|9|0DB63D,3|21|0DB63D", 0, 0.9, "竞赛绿色标志"
-    )
-    val IncreaseRank = ColorSchema.parse(
-        662, 604, 837, 644, "88E9BB", "35|0|88E8BB,70|0|88E9BB,105|0|88E9BB,140|0|88E9BB,0|20|3AD48B,35|20|3AD48B,70|20|3AD48B,105|20|3AD48B,140|20|3AD48B", 0, 0.9, "段位提示"
-    )
-    val ClanLeagueSeasonInfo = ColorSchema.parse(
-        1125, 597, 1268, 711, "CF933D", "2|14|CF933D,16|12|C68D3B,38|-11|2F5D74,61|-14|65C1E8,75|-10|CF933D,86|-1|CF933D,90|17|CF933D,81|58|CF933D,14|53|CF933D", 0, 0.9, "赛季信息"
-    )
-    val SmallBlueInfoIcon = ColorSchema.parse(
-        1097, 215, 1144, 258, "FFFFFF", "0|4|FFFFFF,-12|4|885119,-14|-7|D29866,-9|15|61300D,0|15|773C17,6|15|6F360D,10|9|66380D,12|1|73480D,12|-15|F4D372", 0, 0.9, "蓝色信息按钮"
-    )
-    val ClaimClanLeagueReward = ColorSchema.parse(
-        369, 383, 583, 496, "7BF7DA", "18|-3|81F7DD,37|0|7BF7DA,76|0|7BF7DA,131|5|70F3D2,-20|-43|FFFFFF,27|-43|FFFFFF,79|-41|FFFFFF,121|-41|FFFFFF,193|-49|FFFFFF", 0, 0.98, "领取部落联赛奖励教程"
-    )
-
-    //Builder Base Clock Tower Colours
-    val ClockTowerPotionOutside = ColorSchema.parse(
-        169, 494, 1146, 634, "F6BAD8", "-8|15|F9C4DE,-17|0|FFD5E5,-2|-7|FFE3F5,11|-4|82E0FC,18|0|416083,29|3|609DC9,-11|-12|FCD5EB,-22|-1|FFDDE8,-1|9|F4B5D6", 0, 0.9, "钟楼药水外部标志"
-    )
-    val ClockTowerPotionInner = ColorSchema.parse(
-        514, 398, 759, 512, "E5C286", "28|7|E5C286,38|19|E5C286,83|40|FFD2E4,93|32|FFE5F7,103|33|82E0FD,111|41|7BD8F6,99|43|403533,79|49|FFDDE7,30|51|CF932F", 0, 0.9, "钟楼药水内部"
-    )
-}
+    IMainBaseMagicItemColors by MainBaseMagicItemColors, IClanCapitalColors by ClanCapitalColors

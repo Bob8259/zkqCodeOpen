@@ -13,6 +13,7 @@ interface IMainBaseHelperColors {
     val LockedResearchHelper: ColorSchema
     val LockedBuilderHelper: ColorSchema
     val AssignHelper: ColorSchema
+    val Prospector: ColorSchema
 }
 
 object MainBaseHelperColors : IMainBaseHelperColors {
@@ -52,5 +53,10 @@ object MainBaseHelperColors : IMainBaseHelperColors {
     // Confirmation button used to assign the selected helper
     override val AssignHelper = ColorSchema.parse(
         1031, 284, 1126, 314, "89E9BC", "19|0|89E9BC,38|0|6EB494,57|0|89E9BC,76|0|89E9BC,0|15|3AD48B,19|15|3AD48B,67|14|3AD48B,57|15|3AD48B,76|15|3AD48B", 0, 0.9, "指派助手"
+    )
+
+    // Prospector helper icon
+    override val Prospector = ColorSchema.parse(
+        362, 555, 584, 666, "A8C2FF", "38|45|3F6CC6,40|41|4384EF,31|48|786B96,32|43|A7D1FF,25|36|465471,14|26|A1B5D2,-19|31|7D8CAC,-17|2|B0CDFC,-13|-17|6B6B7F", 0, 0.9, "探矿者"
     )
 }

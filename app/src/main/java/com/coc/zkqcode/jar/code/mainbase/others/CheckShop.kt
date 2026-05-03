@@ -17,8 +17,8 @@ suspend fun checkShop(): Boolean {
     if (!isClaimFreeRewards && !isBuyStarOre && !isBuyClockTowerPotion && !isBuyRingOfWall && !isBuyResearchPotion && !isBuyResourcePotion) {
         return true
     }
-
     zoomSmallMainBase(isForAttack = true)
     TouchActions.tap(255, 230)
+    
     return enterMainScreen()
 }

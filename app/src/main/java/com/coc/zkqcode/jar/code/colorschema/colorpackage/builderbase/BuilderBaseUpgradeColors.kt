@@ -11,6 +11,7 @@ interface IBuilderBaseUpgradeColors {
     val BuilderBaseInsufficientResources: ColorSchema
     val BuilderBaseWorker: ColorSchema
     val BuilderBaseWorker2: ColorSchema
+    val RebuildGemMine: ColorSchema
 }
 
 object BuilderBaseUpgradeColors : IBuilderBaseUpgradeColors {
@@ -31,5 +32,10 @@ object BuilderBaseUpgradeColors : IBuilderBaseUpgradeColors {
     )
     override val BuilderBaseWorker2 = ColorSchema.parse(
         518, 5, 1009, 78, "A0BBF5", "7|0|7687F1,14|0|7483EA,21|0|A8C6E7,28|0|DBD8E7,0|7|426BC0,7|7|5384E8,14|7|5081E5,21|7|3760B6,28|7|AEACCD", 0, 0.9,
+    )
+
+    // Rebuild gem mine button in builder base
+    override val RebuildGemMine = ColorSchema.parse(
+        522, 426, 789, 695, "8DFAE2", "17|0|8DFAE2,43|-1|8DFAE3,77|-1|8DFAE3,109|-1|8DFAE3,4|65|1FBC6D,37|61|1FBC6D,71|67|1FBC6D,95|68|1FBC6E,119|66|1FBC6D", 0, 0.9, "重建"
     )
 }

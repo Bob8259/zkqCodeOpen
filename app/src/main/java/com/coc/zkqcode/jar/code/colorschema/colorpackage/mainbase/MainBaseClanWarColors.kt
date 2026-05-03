@@ -12,6 +12,11 @@ interface IMainBaseClanWarColors {
     val ClanWarAttack: ColorSchema
     val ClanWarAttack2: ColorSchema
     val RecommendedOpponent: ColorSchema
+    val ClanLeagueGreenWarIcon: ColorSchema
+    val IncreaseRank: ColorSchema
+    val ClanLeagueSeasonInfo: ColorSchema
+    val SmallBlueInfoIcon: ColorSchema
+    val ClaimClanLeagueReward: ColorSchema
 }
 
 object MainBaseClanWarColors : IMainBaseClanWarColors {
@@ -46,5 +51,30 @@ object MainBaseClanWarColors : IMainBaseClanWarColors {
     // Recommended opponent indicator
     override val RecommendedOpponent = ColorSchema.parse(
         311, 232, 1092, 708, "2C98FD", "0|1|2D99FD,0|2|2C99FE,0|3|2C98FC,0|4|2C98FD,0|5|2D99FD,0|6|2C99FE,0|7|2C98FD,0|8|2C98FD,0|9|2C99FE", 0, 0.92, "推荐目标"
+    )
+
+    // Green war icon in clan league
+    override val ClanLeagueGreenWarIcon = ColorSchema.parse(
+        291, 612, 998, 705, "0DB63D", "1|11|0DB63D,0|27|0DB23B,39|25|0DB63D,29|12|0DB63D,39|4|0DB63D,39|-3|0DB63D,-1|-7|0DB63D,1|9|0DB63D,3|21|0DB63D", 0, 0.9, "竞赛绿色标志"
+    )
+
+    // Rank increase indicator
+    override val IncreaseRank = ColorSchema.parse(
+        662, 604, 837, 644, "88E9BB", "35|0|88E8BB,70|0|88E9BB,105|0|88E9BB,140|0|88E9BB,0|20|3AD48B,35|20|3AD48B,70|20|3AD48B,105|20|3AD48B,140|20|3AD48B", 0, 0.9, "段位提示"
+    )
+
+    // Clan league season info panel
+    override val ClanLeagueSeasonInfo = ColorSchema.parse(
+        1125, 597, 1268, 711, "CF933D", "2|14|CF933D,16|12|C68D3B,38|-11|2F5D74,61|-14|65C1E8,75|-10|CF933D,86|-1|CF933D,90|17|CF933D,81|58|CF933D,14|53|CF933D", 0, 0.9, "赛季信息"
+    )
+
+    // Small blue info icon button
+    override val SmallBlueInfoIcon = ColorSchema.parse(
+        1097, 215, 1144, 258, "FFFFFF", "0|4|FFFFFF,-12|4|885119,-14|-7|D29866,-9|15|61300D,0|15|773C17,6|15|6F360D,10|9|66380D,12|1|73480D,12|-15|F4D372", 0, 0.9, "蓝色信息按钮"
+    )
+
+    // Claim clan league reward tutorial button
+    override val ClaimClanLeagueReward = ColorSchema.parse(
+        369, 383, 583, 496, "7BF7DA", "18|-3|81F7DD,37|0|7BF7DA,76|0|7BF7DA,131|5|70F3D2,-20|-43|FFFFFF,27|-43|FFFFFF,79|-41|FFFFFF,121|-41|FFFFFF,193|-49|FFFFFF", 0, 0.98, "领取部落联赛奖励教程"
     )
 }
