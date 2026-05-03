@@ -64,4 +64,25 @@ object MyColors : IUIColors by UIColors, IFeatureColors by FeatureColors, IClanG
     IUniversalUpgradeColors by UniversalUpgradeColors, IMainBaseUpgradeColors by MainBaseUpgradeColors, IMainBaseResearchColors by MainBaseResearchColors, IMainBaseResearchLevelColors by MainBaseResearchLevelColors,
     IMainBaseResourcesColors by MainBaseResourcesColors, IClanCapitalTutorialColors by ClanCapitalTutorialColors, IMainBaseAttackColors by MainBaseAttackColors, IMainBaseClanColors by MainBaseClanColors,
     IMainBaseClanWarColors by MainBaseClanWarColors, IMainBaseHelperColors by MainBaseHelperColors, IMainBaseHeroHallColors by MainBaseHeroHallColors, IMainBaseSmallTutorialColors by MainBaseSmallTutorialColors,
-    IMainBaseMagicItemColors by MainBaseMagicItemColors, IClanCapitalColors by ClanCapitalColors
+    IMainBaseMagicItemColors by MainBaseMagicItemColors, IClanCapitalColors by ClanCapitalColors {
+    //Main Base Shop Colours
+    val Merchant = ColorSchema.parse(
+        207, 486, 286, 583, "2B5B50", "16|0|58A2A9,32|0|6B88DF,47|0|5A7DD7,63|0|7993E3,0|49|193C43,16|49|235052,32|49|3A707B,47|49|163FA5,63|49|203170", 0, 0.9, "商店商人"
+    )
+    val GemInShop = ColorSchema.parse(
+        307, 644, 326, 662, "50DAA3", "4|0|78F4DA,8|0|7EF8E1,11|0|85FCE5,15|0|8DFFEC,0|9|8BFADF,4|9|92FDE3,8|9|88FBDD,11|9|77F7D3,15|9|8AFEE3", 0, 0.9, "商店内宝石"
+    )
+    val RaidMedalInShop = ColorSchema.parse(
+        307, 644, 326, 662, "A47253", "4|0|FFFFFF,8|0|FFF8EB,11|0|D3B99C,15|0|CDB292,0|9|DECCB2,4|9|E0CEB6,8|9|BB9677,11|9|C6A88A,15|9|B89576", 0, 0.9, "商店内突袭币"
+    )
+    val ConfirmBuyWithRaidMedal = ColorSchema.parse(
+        582, 407, 756, 509, "84E4B9", "32|1|84E4B9,51|9|84E4B9,60|23|84E4B9,54|73|2CCD84,15|85|24C06E,7|38|F1E5D4,15|33|CDB294,25|37|A7785B,11|43|C9AC8E", 0, 0.9, "确认突袭币购买"
+    )
+    val GoldOre = ColorSchema.parse(
+        372, 134, 1114, 674, "0DF0FF", "-4|0|0DEBFA,-12|0|13D1F4,9|-15|8DD5F9,17|-4|0DAAFD,22|4|27C9F9,12|8|0DD6FD,5|15|0DBFFF,2|20|0DB0FB,4|25|337EFE", 0, 0.9, "黄矿"
+    )
+    val InsufficientMadel = ColorSchema.parse(
+        0, 0, 0, 0, "7F88FF", "0|2|7F88FF,0|4|7F88FF,-1|2|7F88FF,-1|1|7F88FF,-1|0|7F88FF,-1|-1|7F88FF,-1|-2|7F88FF,0|-3|7F88FF,1|-3|7F88FF", 0, 0.98
+    )
+}
+

@@ -83,7 +83,10 @@ object MainBaseSettings {
     val START_RAID = SettingDef("start_raid", "发起都城突袭", 0, "MAIN_BASE_SETTINGS")
 
     ////////////
-    val BUY_STAR_ORE_WITH_RAID_MEDAL = SettingDef("buy_star_ore_with_raid_medal", "突袭币买星辉矿石", 0, "MAIN_BASE_SETTINGS")
+    val BUY_GOLD_ORE_WITH_RAID_MEDAL = SettingDef("buy_gold_ore_with_raid_medal", "突袭币买黄矿", 0, "MAIN_BASE_SETTINGS")
+    val BUY_PURPLE_ORE_WITH_RAID_MEDAL = SettingDef("buy_purple_ore_with_raid_medal", "突袭币买紫矿", 0, "MAIN_BASE_SETTINGS")
+    
+    
     val BUY_CLOCK_TOWER_POTION_WITH_RAID_MEDAL = SettingDef(
         "buy_clock_tower_potion_with_raid_medal", "突袭币买钟楼药水", 0, "MAIN_BASE_SETTINGS"
     )
@@ -102,7 +105,7 @@ object MainBaseSettings {
     val BUY_BUILDER_POTION_WITH_LEAGUE_MEDAL = SettingDef(
         "buy_builder_potion_with_league_medal", "联赛币买工人药水", 0, "MAIN_BASE_SETTINGS"
     )
-    val BUY_STAR_ORE_WITH_EVENT_MEDAL = SettingDef("buy_star_ore_with_event_medal", "活动币买星辉矿石", 0, "MAIN_BASE_SETTINGS")
+    val BUY_GOLD_ORE_WITH_EVENT_MEDAL = SettingDef("buy_gold_ore_with_event_medal", "活动币买星辉矿石", 0, "MAIN_BASE_SETTINGS")
     val BUY_BUILDER_POTION_WITH_EVENT_MEDAL = SettingDef(
         "buy_builder_potion_with_event_medal", "活动币买工人药水", 0, "MAIN_BASE_SETTINGS"
     )
@@ -207,14 +210,15 @@ object MainBaseSettings {
         START_LEAGUE_SETTINGS,
         START_CLAN_WAR_SETTINGS,
         START_RAID,
-        BUY_STAR_ORE_WITH_RAID_MEDAL,
+        BUY_GOLD_ORE_WITH_RAID_MEDAL,
+        BUY_PURPLE_ORE_WITH_RAID_MEDAL,
         BUY_CLOCK_TOWER_POTION_WITH_RAID_MEDAL,
         BUY_RING_OF_WALL_WITH_RAID_MEDAL,
         BUY_RESEARCH_POTION_WITH_RAID_MEDAL,
         BUY_RESOURCE_POTION_WITH_RAID_MEDAL,
         BUY_RESEARCH_POTION_WITH_LEAGUE_MEDAL,
         BUY_BUILDER_POTION_WITH_LEAGUE_MEDAL,
-        BUY_STAR_ORE_WITH_EVENT_MEDAL,
+        BUY_GOLD_ORE_WITH_EVENT_MEDAL,
         BUY_BUILDER_POTION_WITH_EVENT_MEDAL,
         BUY_NEW_EQUIPMENT_WITH_EVENT_MEDAL,
         BUY_RESEARCH_POTION_WITH_EVENT_MEDAL,
