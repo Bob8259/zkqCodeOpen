@@ -18,9 +18,6 @@
 - 升级城墙失败后建造（UPGRADE_AFTER_FAIL_WALL_UPGRADE）
 
 ### 升级战宠及之后的所有主世界UI
-- 做竞赛任务（DO_CLAN_GAMES）
-- 领竞赛奖励（CLAIM_CLAN_GAME_REWARDS）
-- 打联赛（PLAY_LEAGUE）
 - 发起部落战（START_CLAN_WAR_SETTINGS）
 - 发起联赛（START_LEAGUE_SETTINGS）
 - 发起都城突袭（START_RAID）

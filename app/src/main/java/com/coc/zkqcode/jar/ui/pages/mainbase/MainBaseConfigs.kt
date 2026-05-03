@@ -271,12 +271,20 @@ fun LazyListScope.mainBaseConfig(
     // Pet upgrades
     item {
         SettingSection(visible = isPetExpanded) {
-            Column {
-                SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.UPGRADE_PETS.key}_c$index")
 
-                AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.UPGRADE_PETS.key}_c$index"]?.value == "1") {
-                    MainBasePetConfigs(index)
-                }
+            SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.UPGRADE_PETS.key}_c$index")
+
+            AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.UPGRADE_PETS.key}_c$index"]?.value == "1") {
+                MainBasePetConfigs(index)
+            }
+            FlowRow {
+                SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.UPGRADE_WERA_GEAR.key}_c$index")
+                SettingSwitchIcon(
+                    key = "${MAIN_BASE_SETTINGS.UPGRADE_ALL_GEAR.key}_c$index", explain = "启用后，辅助将同时自动升级已穿戴的装备。", afterChange = { checked ->
+                        if (checked) {
+                            GlobalVars.configStates["${MAIN_BASE_SETTINGS.UPGRADE_WERA_GEAR.key}_c$index"]?.value = "1"
+                        }
+                    })
             }
         }
     }
@@ -309,18 +317,23 @@ fun LazyListScope.mainBaseConfig(
     // Shop purchases
     item {
         SettingSection(visible = isPetExpanded) {
-            Column {
-                FlowRow {
-                    listOf(
-                        MAIN_BASE_SETTINGS.USE_RESEARCH_POTION,
-                        MAIN_BASE_SETTINGS.USE_BUILDER_POTION,
-                        MAIN_BASE_SETTINGS.USE_CLOCK_TOWER_POTION,
-                        MAIN_BASE_SETTINGS.SELL_RESOURCE_POTION,
-                        MAIN_BASE_SETTINGS.SELL_CLOCK_TOWER_POTION,
-                        MAIN_BASE_SETTINGS.SELL_RING_OF_WALL
-                    ).forEach { setting ->
-                        SettingSwitchIcon(key = "${setting.key}_c$index")
-                    }
+            FlowRow {
+                listOf(
+                    MAIN_BASE_SETTINGS.USE_RESEARCH_POTION,
+                    MAIN_BASE_SETTINGS.USE_BUILDER_POTION,
+                    MAIN_BASE_SETTINGS.USE_CLOCK_TOWER_POTION,
+                    MAIN_BASE_SETTINGS.SELL_RESOURCE_POTION,
+                    MAIN_BASE_SETTINGS.SELL_CLOCK_TOWER_POTION,
+                    MAIN_BASE_SETTINGS.SELL_RING_OF_WALL,
+                    MAIN_BASE_SETTINGS.BUY_STAR_ORE_WITH_RAID_MEDAL,
+                    MAIN_BASE_SETTINGS.BUY_CLOCK_TOWER_POTION_WITH_RAID_MEDAL,
+                    MAIN_BASE_SETTINGS.BUY_RING_OF_WALL_WITH_RAID_MEDAL,
+                    MAIN_BASE_SETTINGS.BUY_RESEARCH_POTION_WITH_RAID_MEDAL,
+                    MAIN_BASE_SETTINGS.BUY_RESOURCE_POTION_WITH_RAID_MEDAL,
+                    MAIN_BASE_SETTINGS.BUY_RESEARCH_POTION_WITH_LEAGUE_MEDAL,
+                    MAIN_BASE_SETTINGS.BUY_BUILDER_POTION_WITH_LEAGUE_MEDAL
+                ).forEach { setting ->
+                    SettingSwitchIcon(key = "${setting.key}_c$index")
                 }
             }
         }
@@ -330,13 +343,6 @@ fun LazyListScope.mainBaseConfig(
     item {
         SettingSection(visible = isPetExpanded) {
             FlowRow {
-                SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.UPGRADE_WERA_GEAR.key}_c$index")
-                SettingSwitchIcon(
-                    key = "${MAIN_BASE_SETTINGS.UPGRADE_ALL_GEAR.key}_c$index", explain = "启用后，辅助将同时自动升级已穿戴的装备。", afterChange = { checked ->
-                        if (checked) {
-                            GlobalVars.configStates["${MAIN_BASE_SETTINGS.UPGRADE_WERA_GEAR.key}_c$index"]?.value = "1"
-                        }
-                    })
                 SettingSwitchIcon(
                     key = "${MAIN_BASE_SETTINGS.REMOVE_OBSTACLES.key}_c$index", explain = "启用后，当主世界金币或圣水超过30万时生效。存在约5%的概率误移除稀有障碍物。"
                 )
