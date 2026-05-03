@@ -69,8 +69,9 @@ object UrlFallbackUtil {
                 return response
             } else {
                 // Close unsuccessful response and try backup
+                val code = response.code
                 response.close()
-                null
+                IOException("Primary server returned error: $code")
             }
         } catch (e: SocketTimeoutException) {
             e

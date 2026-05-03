@@ -193,7 +193,12 @@ fun LoginScreen(onAdFreeClick: () -> Unit = {}) {
                     }
                 }
             } catch (e: Exception) {
-                gemInfo = "登录失败: ${e.message}"
+                val errorMsg = e.message ?: ""
+                gemInfo = if (errorMsg.contains("403")) {
+                    "邮箱或密码错误，请检查后重试"
+                } else {
+                    "登录失败: $errorMsg"
+                }
                 showMessage = true
                 GlobalVars.configStates[GLOBAL_SETTINGS.GEM_COUNT.key]!!.value = ""
                 failTimesCount++
@@ -293,8 +298,8 @@ fun LoginScreen(onAdFreeClick: () -> Unit = {}) {
             )
             val context = LocalContext.current
             CustomButton(
-                text = "免广告", marginTop = 0.dp, onClick = {
-                    gemInfo = "前往官网即可注册，赞助后免广告，官网链接https://zkqcoc.store\n如有疑问请加群咨询。"
+                text = "捐赠", marginTop = 0.dp, onClick = {
+                    gemInfo = "前往官网即可注册捐赠，官网链接https://zkqcoc.store\n"
                     val url = UrlFallbackUtil.getPrimaryUrl()
                     val intent = Intent(Intent.ACTION_VIEW, url.toUri())
                     // Required when startActivity is called from a non-Activity context
