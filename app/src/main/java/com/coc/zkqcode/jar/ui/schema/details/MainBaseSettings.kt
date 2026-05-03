@@ -76,7 +76,7 @@ object MainBaseSettings {
     val DO_CLAN_GAMES = SettingDef("do_clan_games", "做部落竞赛任务", 1, "MAIN_BASE_SETTINGS")
     val CLAIM_CLAN_GAME_REWARDS = SettingDef("claim_clan_game_rewards", "领竞赛奖励", 0, "MAIN_BASE_SETTINGS")
     val PLAY_CLAN_WAR = SettingDef("play_clan_war", "打部落战", 0, "MAIN_BASE_SETTINGS")
-    val PLAY_LEAGUE = SettingDef("play_league", "打联赛", 0, "MAIN_BASE_SETTINGS")
+    val PLAY_LEAGUE = SettingDef("play_league", "打部落联赛", 0, "MAIN_BASE_SETTINGS")
     val PLAY_RAID = SettingDef("play_raid", "打都城突袭", 1, "MAIN_BASE_SETTINGS")
     val START_LEAGUE_SETTINGS = SettingDef("start_league_settings", "发起联赛", 0, "MAIN_BASE_SETTINGS")
     val START_CLAN_WAR_SETTINGS = SettingDef("start_clan_war_settings", "发起部落战", 0, "MAIN_BASE_SETTINGS")

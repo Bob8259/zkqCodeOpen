@@ -79,6 +79,11 @@ object MyColors : IUIColors by UIColors, IFeatureColors by FeatureColors, IClanG
     val ReturnTask4 = ColorSchema.parse(
         86, 587, 330, 626, "CD8C4B", "5|4|BF8545,12|1|C98D4C,16|-7|E29B56,22|1|CB8F4E,38|2|FFFFFF,40|3|FFFFFF,38|0|FFFFFF,38|-9|E49C58,36|-8|E39B57", 0, 0.98, "回归任务4"
     )
+
+    //Clan League/War Colours
+    val ClanLeagueGreenWarIcon = ColorSchema.parse(
+        291, 612, 998, 705, "0DB63D", "1|11|0DB63D,0|27|0DB23B,39|25|0DB63D,29|12|0DB63D,39|4|0DB63D,39|-3|0DB63D,-1|-7|0DB63D,1|9|0DB63D,3|21|0DB63D", 0, 0.9, "竞赛绿色标志"
+    )
     val IncreaseRank = ColorSchema.parse(
         662, 604, 837, 644, "88E9BB", "35|0|88E8BB,70|0|88E9BB,105|0|88E9BB,140|0|88E9BB,0|20|3AD48B,35|20|3AD48B,70|20|3AD48B,105|20|3AD48B,140|20|3AD48B", 0, 0.9, "段位提示"
     )
@@ -91,4 +96,5 @@ object MyColors : IUIColors by UIColors, IFeatureColors by FeatureColors, IClanG
     val ClaimClanLeagueReward = ColorSchema.parse(
         369, 383, 583, 496, "7BF7DA", "18|-3|81F7DD,37|0|7BF7DA,76|0|7BF7DA,131|5|70F3D2,-20|-43|FFFFFF,27|-43|FFFFFF,79|-41|FFFFFF,121|-41|FFFFFF,193|-49|FFFFFF", 0, 0.98, "领取部落联赛奖励教程"
     )
+
 }
