@@ -24,9 +24,13 @@ interface IMainBaseHeroHallColors {
     val MightyYak: ColorSchema
     val Unicorn: ColorSchema
     val Frosty: ColorSchema
+    val Frosty2: ColorSchema
     val Diggy: ColorSchema
+    val Diggy2: ColorSchema
     val PoisonLizard: ColorSchema
+    val PoisonLizard2: ColorSchema
     val Phoenix: ColorSchema
+    val Phoenix2: ColorSchema
     val SpiritFox: ColorSchema
     val AngryJelly: ColorSchema
     val AngryJelly2: ColorSchema
@@ -137,9 +141,19 @@ object MainBaseHeroHallColors : IMainBaseHeroHallColors {
         175, 385, 1110, 665, "947366", "11|-17|89695C,42|-26|5C8593,72|-14|B8A5A5,101|-13|968D96,84|-20|D3BCBF,114|-7|507D98,77|-39|7E6467,91|-65|362E2E,109|-37|8F8486", 0, 0.9, "冰牙"
     )
 
+    // Pet slot used to detect Frosty (color variant 2) in the hero hall upgrade screen
+    override val Frosty2 = ColorSchema.parse(
+        175, 385, 1110, 665, "937265", "31|0|63939F,69|2|9E8A8A,100|-10|9F959C,79|-41|735B5E,76|-65|AA8484,91|-71|463F3C,98|-60|FEDFDE,116|-48|FFEAEB,105|-7|8D8793", 0, 0.9, "冰牙2"
+    )
+
     // Pet slot used to detect Diggy in the hero hall upgrade screen
     override val Diggy = ColorSchema.parse(
         175, 385, 1110, 665, "AC5D7D", "7|-25|E87E92,28|-47|BBD5F6,44|-22|FE8696,80|-2|795D67,115|-12|8D6072,135|-36|D36E99,99|-49|FFA0B9,88|-61|FF9872,88|-89|FFB874", 0, 0.9, "地兽"
+    )
+
+    // Pet slot used to detect Diggy (color variant 2) in the hero hall upgrade screen
+    override val Diggy2 = ColorSchema.parse(
+        175, 385, 1110, 665, "AA5C7A", "24|-1|9F5964,57|0|B26A85,83|-7|B8708C,83|-44|FF90B9,79|-84|FFB87D,93|-103|FFA768,104|-87|FFAF70,117|-60|FFB3DB,129|-28|D7709A", 0, 0.9, "地兽2"
     )
 
     // Pet slot used to detect Poison Lizard in the hero hall upgrade screen
@@ -147,9 +161,19 @@ object MainBaseHeroHallColors : IMainBaseHeroHallColors {
         175, 385, 1110, 665, "9DB1BD", "38|-26|44DBFF,76|-59|3A86FB,94|-81|52A9FF,96|-47|4397FF,83|-39|4082FF,96|-29|44A9FF,116|-39|4AA2FF,116|-70|0D0F52,116|-94|6FD2FF", 0, 0.9, "猛蜥"
     )
 
+    // Pet slot used to detect Poison Lizard (color variant 2) in the hero hall upgrade screen
+    override val PoisonLizard2 = ColorSchema.parse(
+        175, 385, 1110, 665, "9DB1BD", "50|-1|3CD0E7,66|-10|45C3FF,70|-32|3E9BFF,90|-68|0D1142,83|-92|73C9FF,96|-101|479BFD,109|-91|8ADBFF,115|-66|0D0E55,94|-17|65F0FF", 0, 0.9, "猛蜥2"
+    )
+
     // Pet slot used to detect Phoenix in the hero hall upgrade screen
     override val Phoenix = ColorSchema.parse(
         175, 385, 1110, 665, "964EFF", "18|-33|AC4AFF,46|-14|48B6FF,67|-52|8956FF,84|-61|53FFFF,104|-43|576276,130|-46|546173,117|-28|35444D,75|-61|50C0DC,68|-108|C14FFF", 0, 0.9, "凤凰"
+    )
+
+    // Pet slot used to detect Phoenix (color variant 2) in the hero hall upgrade screen
+    override val Phoenix2 = ColorSchema.parse(
+        175, 385, 1110, 665, "8A54FF", "20|2|8C39FC,56|-2|42CCFF,68|-40|5467FF,68|-78|6178FF,78|-115|BB4DFF,104|-81|4ACCFF,128|-54|596476,128|-45|556274,108|-25|404B54", 0, 0.9, "凤凰2"
     )
 
     // Pet slot used to detect Spirit Fox in the hero hall upgrade screen
