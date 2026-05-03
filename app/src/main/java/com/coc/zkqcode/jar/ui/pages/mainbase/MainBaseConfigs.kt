@@ -141,6 +141,7 @@ fun LazyListScope.mainBaseConfig(
                 SettingSwitchIcon(
                     key = "${MAIN_BASE_SETTINGS.PLAY_LEAGUE.key}_c$index", explain = "默认打对位，如果对位已被打则随机进攻，不保证胜率。"
                 )
+                SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.PLAY_RAID.key}_c$index")
             }
             AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.DO_CLAN_GAMES.key}_c$index"]?.value == "1") {
                 Column {
@@ -302,16 +303,6 @@ fun LazyListScope.mainBaseConfig(
         }
     }
 
-    // Clan Games & War
-    item {
-        SettingSection(visible = isPetExpanded) {
-            Column {
-                FlowRow {
-                    SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.PLAY_RAID.key}_c$index")
-                }
-            }
-        }
-    }
 
     // Shop purchases
     item {
