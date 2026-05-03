@@ -48,7 +48,7 @@ suspend fun setZKQInputMethod() {
             waited += intervalMs.toInt()
         }
         if (ZKQInputMethodService.instance == null) {
-            logAndRestart("输入法服务启动超时 (${maxWaitMs}ms)，请检查输入法权限设置")
+            logAndRestart("输入法服务启动超时 (${maxWaitMs}ms)，请检查输入法权限设置", false)
         }
     }
 }

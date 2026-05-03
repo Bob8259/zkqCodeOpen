@@ -9,6 +9,7 @@ import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
 import com.coc.zkqcode.jar.code.auth.displayAds
 import com.coc.zkqcode.jar.code.auth.userAuth
 import com.coc.zkqcode.jar.code.builderbase.playBuilderBase
+import com.coc.zkqcode.jar.code.mainbase.clan.clanLeague
 import com.coc.zkqcode.jar.code.mainbase.playMainBase
 import com.coc.zkqcode.jar.code.universal.GameVersion
 import com.coc.zkqcode.jar.code.universal.InGameVars
@@ -66,7 +67,7 @@ suspend fun runMainScript() {
     var lastUpdateCheckTime = System.currentTimeMillis()
     var nextUpdateInterval = (3600_000L) + (Math.random() * 7200_000L).toLong()
     while (currentCoroutineContext().isActive) {
-//        runTestCode()
+        runTestCode()
         runAccountStepBlock()
         // Circularly search for the next enabled account, wrapping back to currentAccountNumber (inclusive)
         // Emit hot update signal at safe point, throttled to once every 2-3 hours randomly
@@ -95,16 +96,17 @@ private fun finishDataNumberEntryOnlyRun() {
 
 private suspend fun runTestCode() {
     while (true) {
-//        downloadAndInstallPlugin()
+        clanLeague()
         accountMessage("测试代码结束")
         delay(5000)
     }
 }
 
-private suspend fun cleanUp(){
+private suspend fun cleanUp() {
     RunShell.runNoOutput("input keyevent 4") // Press back
     RunShell.runNoOutput("input keyevent 3") // Press home
 }
+
 /** Handles hot-update signal on start and random-scheduling gate.
  *  Returns updateOption, or null if random scheduling took over. */
 private suspend fun checkHotUpdateAndScheduling(): Int? {
