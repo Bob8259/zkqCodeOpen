@@ -2,15 +2,26 @@ package com.coc.zkqcode.jar.code.mainbase.others
 
 import com.coc.zkqcode.jar.code.colorschema.ColorSchema
 import com.coc.zkqcode.jar.code.colorschema.MyColors
+import com.coc.zkqcode.jar.code.universal.InGameVars
 import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
+import com.coc.zkqcode.jar.code.universal.smalltools.StorageKeys
 import com.coc.zkqcode.jar.code.universal.smalltools.TouchActions
+import com.coc.zkqcode.jar.code.universal.smalltools.checkMemoryFile
 import com.coc.zkqcode.jar.code.universal.smalltools.getBooleanConfigRuntime
+import com.coc.zkqcode.jar.code.universal.smalltools.writeMemory
 import com.coc.zkqcode.jar.ui.schema.Schema
 
 suspend fun checkShop(): Boolean {
+    // Time guard: only check shop once per 2 days (2880 minutes)
+    val memoryKey = StorageKeys.withAccountNumber(StorageKeys.CHECK_SHOP, InGameVars.currentAccountNumber)
+    if (!checkMemoryFile(memoryKey, 2880)) {
+        accountMessage("商店检查冷却中，跳过")
+        return true
+    }
+
     // If all shop reward and raid medal purchase options are disabled, skip directly
     val isClaimFreeRewards = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.CLAIM_FREE_SHOP_REWARDS.key)
     val isBuyGoldOre = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.BUY_GOLD_ORE_WITH_RAID_MEDAL.key)
@@ -32,6 +43,8 @@ suspend fun checkShop(): Boolean {
             TouchActions.swipe(750, 650, 750, 200)
         }
     }
+    // Record current time so we don't check again within 2 days
+    writeMemory(memoryKey, (System.currentTimeMillis() / 60_000).toString())
     return enterMainScreen()
 }
 
