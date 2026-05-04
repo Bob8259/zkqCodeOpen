@@ -387,7 +387,7 @@ class MessageBoxService : Service(), LifecycleOwner, SavedStateRegistryOwner {
                         )
 
                         Text(
-                            text = "官网注册账号并赞助，可以免广告。每天仅需0.25卡班积分，用多久扣多少，精确到分钟。\n\n免费用户不限制多开数量，但多开超过2个账号后广告时间会成比例增加。广告播放时，只能退出辅助或等待，不能进行其他操作。",
+                            text = "官网注册账号并赞助，可以免广告。每天仅需0.15卡班积分，用多久扣多少，精确到分钟。\n\n免费用户不限制多开数量，减少多开数量会减少广告时间，增加多开数量会增加广告时间。广告播放时，只能退出辅助或等待，不能进行其他操作。",
                             fontSize = 8.sp,
                             color = Color.Gray,
                             modifier = Modifier.align(Alignment.CenterHorizontally)
