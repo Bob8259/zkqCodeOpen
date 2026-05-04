@@ -44,9 +44,9 @@ private suspend fun handleTutorialArrowIfNeeded() {
     ) ?: return
 
     TouchActions.tap(tutorialArrow.x + 20, tutorialArrow.y + 60, delayTime = 800)
-    val clanMadelTutorial = findMultiColors(MyColors.ClanMadelTutorial)
-    if (clanMadelTutorial != null) {
-        TouchActions.tap(clanMadelTutorial.x, clanMadelTutorial.y)
+    val clanMedalTutorial = findMultiColors(MyColors.ClanMedalTutorial)
+    if (clanMedalTutorial != null) {
+        TouchActions.tap(clanMedalTutorial.x, clanMedalTutorial.y)
     }
     if (findMultiColors(MyColors.OuterPetIcon) != null) {
         petsTutorial()

@@ -97,7 +97,7 @@ suspend fun findAttackTarget(): Boolean {
             if (raidButton != null) {
                 TouchActions.tap(raidButton.x, raidButton.y)
                 TouchActions.tap(1060, 400, delayTime = 1000)//Attack
-                TouchActions.tap(770, 460)//Full Madel
+                TouchActions.tap(770, 460)//Full Medal
                 return true
             }
         }

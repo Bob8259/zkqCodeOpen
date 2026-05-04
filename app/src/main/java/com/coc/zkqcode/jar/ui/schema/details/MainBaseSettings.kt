@@ -85,8 +85,7 @@ object MainBaseSettings {
     ////////////
     val BUY_GOLD_ORE_WITH_RAID_MEDAL = SettingDef("buy_gold_ore_with_raid_medal", "突袭币买黄矿", 0, "MAIN_BASE_SETTINGS")
     val BUY_PURPLE_ORE_WITH_RAID_MEDAL = SettingDef("buy_purple_ore_with_raid_medal", "突袭币买紫矿", 0, "MAIN_BASE_SETTINGS")
-    
-    
+
     val BUY_CLOCK_TOWER_POTION_WITH_RAID_MEDAL = SettingDef(
         "buy_clock_tower_potion_with_raid_medal", "突袭币买钟楼药水", 0, "MAIN_BASE_SETTINGS"
     )
@@ -132,7 +131,7 @@ object MainBaseSettings {
     val CLAIM_TOKEN_REWARDS = SettingDef("claim_token_rewards", "领令牌奖励", 0, "MAIN_BASE_SETTINGS")
     val CLAIM_CAPITAL_GOLD = SettingDef("claim_capital_gold", "领都城币", 0, "MAIN_BASE_SETTINGS")
     val DONATE_CAPITAL_GOLD = SettingDef("donate_capital_gold", "捐都城币", 0, "MAIN_BASE_SETTINGS")
-    val CLAIM_FREE_SHOP_REWARDS = SettingDef("claim_free_shop_rewards", "领商店免费奖励", 0, "MAIN_BASE_SETTINGS")
+    val CLAIM_FREE_SHOP_REWARDS = SettingDef("claim_free_shop_rewards", "领商店免费奖励", 1, "MAIN_BASE_SETTINGS")
     val AUTO_JOIN_CLAN = SettingDef("auto_join_clan", "自动加部落", 0, "MAIN_BASE_SETTINGS")
     val CLAIM_ACHIEVEMENT_GEMS = SettingDef("claim_achievement_gems", "领取成就宝石", 0, "MAIN_BASE_SETTINGS")
     val CLAN_TAG = SettingDef("clan_tag", "加指定部落标签(不填就随机加):", "", "MAIN_BASE_SETTINGS")

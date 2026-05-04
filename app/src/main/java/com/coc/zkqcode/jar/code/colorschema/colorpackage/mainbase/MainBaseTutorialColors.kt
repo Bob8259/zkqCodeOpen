@@ -29,7 +29,7 @@ interface IMainBaseTutorial {
     val UpgradeTHArrow: ColorSchema
     val TutorialTrainBarbarian: ColorSchema
     val BattlePageColor: ColorSchema
-    val ClanMadelTutorial: ColorSchema
+    val ClanMedalTutorial: ColorSchema
 }
 
 object MainBaseTutorial : IMainBaseTutorial {
@@ -105,7 +105,7 @@ object MainBaseTutorial : IMainBaseTutorial {
     override val BattlePageColor = ColorSchema.parse(
         180, 249, 389, 402, "79ADB4", "42|0|394D72,84|0|213F78,125|0|283228,167|0|2E3733,0|77|5F7D8A,42|77|253E4A,84|77|499DD4,125|77|5E67A5,167|77|394970", 0, 0.9,
     )
-    override val ClanMadelTutorial = ColorSchema.parse(
+    override val ClanMedalTutorial = ColorSchema.parse(
         280, 500, 1040, 620, "7F92B1", "9|0|7685A1,18|0|7789A5,27|0|F7FCFF,36|0|FFFFFF,0|19|8190A5,9|19|363B48,18|19|B4C7D6,27|19|F0F8FE,36|19|B59273", 0, 0.9, "突袭币教程"
     )
 }
