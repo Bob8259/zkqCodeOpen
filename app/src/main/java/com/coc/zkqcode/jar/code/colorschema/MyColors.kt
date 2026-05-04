@@ -66,4 +66,18 @@ object MyColors : IUIColors by UIColors, IFeatureColors by FeatureColors, IClanG
     IUniversalUpgradeColors by UniversalUpgradeColors, IMainBaseUpgradeColors by MainBaseUpgradeColors, IMainBaseResearchColors by MainBaseResearchColors, IMainBaseResearchLevelColors by MainBaseResearchLevelColors,
     IMainBaseResourcesColors by MainBaseResourcesColors, IClanCapitalTutorialColors by ClanCapitalTutorialColors, IMainBaseAttackColors by MainBaseAttackColors, IMainBaseClanColors by MainBaseClanColors,
     IMainBaseClanWarColors by MainBaseClanWarColors, IMainBaseHelperColors by MainBaseHelperColors, IMainBaseHeroHallColors by MainBaseHeroHallColors, IMainBaseSmallTutorialColors by MainBaseSmallTutorialColors,
-    IMainBaseMagicItemColors by MainBaseMagicItemColors, IClanCapitalColors by ClanCapitalColors, IMainBaseShopColors by MainBaseShopColors
+    IMainBaseMagicItemColors by MainBaseMagicItemColors, IClanCapitalColors by ClanCapitalColors, IMainBaseShopColors by MainBaseShopColors {
+    //Main Base Shop Colours
+    val ShopButton = ColorSchema.parse(
+        1138, 605, 1262, 697, "1B87C6", "13|0|2196DE,26|0|41669B,38|0|2EAFF9,51|0|4FD1FC,0|15|1DA8EF,13|15|335381,26|15|1C6494,38|15|50D4FF,51|15|3DD2FF", 0, 0.9, "商店按钮"
+    )
+    val OldVersion = ColorSchema.parse(
+        55, 6, 171, 54, "9FFCFF", "0|6|26A5F3,9|8|43D1F5,16|-6|EEF4E6,32|-7|DDFAF6,40|-7|DDFAF6,45|-8|DFFCF7,56|-7|DDFAF6,45|19|7AC6AF,55|20|7BC5B0", 0, 0.9, "切换旧版商店"
+    )
+    val LeaguePageButton = ColorSchema.parse(
+        46, 22, 1166, 109, "8FF5FB", "5|0|8DF5FB,11|0|87F4FB,16|0|85E1F4,21|0|A6F5FA,0|13|1176AF,5|13|021920,11|13|02161B,16|13|091E22,21|13|5DE2F8", 0, 0.9, "联赛页面按钮"
+    )
+    val LeaguePageButton2 = ColorSchema.parse(
+        127, 50, 1121, 146, "A9F8FC", "5|0|A8F8FD,11|0|A3F8FD,17|0|9BFAFE,22|0|B5F7FB,0|17|1588BD,5|17|021E25,11|17|031F25,17|17|051F25,22|17|41C1E4", 0, 0.9, "联赛页面按钮2"
+    )
+}
