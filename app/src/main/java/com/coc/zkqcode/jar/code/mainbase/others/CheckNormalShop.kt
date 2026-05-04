@@ -14,7 +14,7 @@ import com.coc.zkqcode.jar.code.universal.smalltools.getBooleanConfigRuntime
 import com.coc.zkqcode.jar.code.universal.smalltools.writeMemory
 import com.coc.zkqcode.jar.ui.schema.Schema
 
-suspend fun checkShop(): Boolean {
+suspend fun checkNormalShop(): Boolean {
     // Time guard: only check shop once per 2 days (2880 minutes)
     val memoryKey = StorageKeys.withAccountNumber(StorageKeys.CHECK_SHOP, InGameVars.currentAccountNumber)
     if (!checkMemoryFile(memoryKey, 2880)) {

@@ -14,6 +14,7 @@ import com.coc.zkqcode.jar.code.mainbase.clan.requestReinforcement
 import com.coc.zkqcode.jar.code.mainbase.herohall.placeHeroBanners
 import com.coc.zkqcode.jar.code.mainbase.herohall.upgradeGearsAndPets
 import com.coc.zkqcode.jar.code.mainbase.others.checkRandomSchedule
+import com.coc.zkqcode.jar.code.mainbase.others.checkNormalShop
 import com.coc.zkqcode.jar.code.mainbase.others.collectClanCastleResources
 import com.coc.zkqcode.jar.code.mainbase.others.mainBaseCheckTutorials
 import com.coc.zkqcode.jar.code.mainbase.others.mainBaseCollectResources
@@ -31,10 +32,11 @@ suspend fun playMainBase(): Boolean {
     if (!checkRandomSchedule()) return false
     if (!playClanCapital()) return false
     if (!clanGame(BaseType.Main)) return false
-    if (!collectClanGameReward()) return false
     if (!mainBaseCollectResources()) return false
     if (!mainBaseTrainTroops()) return false
     if (!mainBaseAttack()) return false
+    if (!collectClanGameReward()) return false
+    if (!checkNormalShop()) return false
     if (!clanWar()) return false
     if (!clanLeague()) return false
     if (!mainBaseRemoveObstacles()) return false
