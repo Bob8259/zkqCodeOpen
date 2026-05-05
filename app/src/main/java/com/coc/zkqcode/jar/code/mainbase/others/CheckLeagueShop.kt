@@ -3,11 +3,16 @@ package com.coc.zkqcode.jar.code.mainbase.others
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.jar.code.colorschema.ColorSchema
 import com.coc.zkqcode.jar.code.colorschema.MyColors
+import com.coc.zkqcode.jar.code.universal.InGameVars
+import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
+import com.coc.zkqcode.jar.code.universal.smalltools.StorageKeys
 import com.coc.zkqcode.jar.code.universal.smalltools.TouchActions
+import com.coc.zkqcode.jar.code.universal.smalltools.checkMemoryFile
 import com.coc.zkqcode.jar.code.universal.smalltools.getBooleanConfigRuntime
+import com.coc.zkqcode.jar.code.universal.smalltools.writeMemory
 import com.coc.zkqcode.jar.ui.schema.Schema
 
 // Data-driven list of league shop items to purchase
@@ -28,12 +33,21 @@ private val leagueShopItems = listOf(
 )
 
 suspend fun checkLeagueShop(): Boolean {
+    // Time guard: only check league shop once per 3 days (4320 minutes)
+    val memoryKey = StorageKeys.withAccountNumber(StorageKeys.CHECK_LEAGUE_SHOP, InGameVars.currentAccountNumber)
+    if (!checkMemoryFile(memoryKey, 4320)) {
+        accountMessage("联赛商店检查冷却中，跳过")
+        return true
+    }
+
     if (leagueShopItems.none { getBooleanConfigRuntime(it.configKey) }) return true
     val shopButton = findMultiColors(MyColors.ShopButton) ?: return enterMainScreen()
     TouchActions.tap(shopButton.x, shopButton.y)
     if (enterLeagueShopPage()) {
         leagueShopItems.forEach { buyLeagueShopItem(it) }
     }
+    // Record current time so we don't check again within 3 days
+    writeMemory(memoryKey, (System.currentTimeMillis() / 60_000).toString())
     return enterMainScreen()
 }
 
