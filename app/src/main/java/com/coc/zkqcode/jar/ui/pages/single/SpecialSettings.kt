@@ -44,4 +44,5 @@ fun LazyListScope.specialSettings() {
             }
         }
     }
+    legalDisclaimers()
 }
