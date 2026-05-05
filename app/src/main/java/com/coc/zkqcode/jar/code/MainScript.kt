@@ -3,6 +3,7 @@ package com.coc.zkqcode.jar.code
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.system.inputmethod.ZKQInputMethodService
 import com.coc.zkqcode.core.util.basic.RunShell
+import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.basic.waitForPlay
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
@@ -67,7 +68,7 @@ suspend fun runMainScript() {
     var lastUpdateCheckTime = System.currentTimeMillis()
     var nextUpdateInterval = (3600_000L) + (Math.random() * 7200_000L).toLong()
     while (currentCoroutineContext().isActive) {
-//        runTestCode()
+        runTestCode()
         runAccountStepBlock()
         // Circularly search for the next enabled account, wrapping back to currentAccountNumber (inclusive)
         // Emit hot update signal at safe point, throttled to once every 2-3 hours randomly
@@ -103,8 +104,17 @@ private suspend fun runTestCode() {
 }
 
 private suspend fun cleanUp() {
-    RunShell.runNoOutput("input keyevent 4") // Press back
     RunShell.runNoOutput("input keyevent 3") // Press home
+    RunShell.runNoOutput("input keyevent 4") // Press back
+    // Check resolution and warn if not 720x1280
+    val wmOutput = RunShell.run("wm size", checkIsPlaying = false)
+    val sizeLine = wmOutput.lastOrNull { it.contains("Override size") }
+        ?: wmOutput.lastOrNull { it.contains("Physical size") }
+    val resolution = sizeLine?.substringAfter(":")?.trim() ?: "unknown"
+    if (resolution != "720x1280") {
+        ShowMessage("当前分辨率${resolution}，最佳运行分辨率720*1280，DPI320。\n该分辨率可能会出现异常，建议调整分辨率以获得最佳运行效果。", isChecking = false)
+        delayWithMultiplier(2000)
+    }
 }
 
 /** Handles hot-update signal on start and random-scheduling gate.

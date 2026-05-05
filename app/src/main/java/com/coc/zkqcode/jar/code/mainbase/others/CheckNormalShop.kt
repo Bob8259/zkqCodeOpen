@@ -38,14 +38,21 @@ suspend fun checkNormalShop(): Boolean {
     TouchActions.tap(255, 230)
     if (findMultiColorsUntil(listOf(MyColors.Merchant), 5000) != null) {
         accountMessage("已进入商店")
-        for (i in 0..4) {
-            if (buyItems()) break
-            TouchActions.swipe(750, 650, 750, 200)
-        }
+        checkShopLoop()
+        TouchActions.tap(200, 240)
+        checkShopLoop()
+        TouchActions.tap(200, 300)
     }
     // Record current time so we don't check again within 2 days
     writeMemory(memoryKey, (System.currentTimeMillis() / 60_000).toString())
     return enterMainScreen()
+}
+
+private suspend fun checkShopLoop() {
+    for (i in 0..4) {
+        if (buyItems()) break
+        TouchActions.swipe(750, 650, 750, 200)
+    }
 }
 
 private suspend fun buyItems(): Boolean {
