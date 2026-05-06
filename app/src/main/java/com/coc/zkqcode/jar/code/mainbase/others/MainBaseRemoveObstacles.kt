@@ -42,6 +42,8 @@ suspend fun mainBaseRemoveObstacles(): Boolean {
 
 private suspend fun enhanceRemoveObstacles() {
     if (getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.REMOVE_OBSTACLES_ENHANCEMENT.key)) {
+        TouchActions.tap(615, 490, delayTime = 150)
+        TouchActions.tap(615, 490, delayTime = 50)
         repeat(25) {
             val randomX = (100..1180).random()
             val randomY = (1..560).random()
@@ -81,8 +83,8 @@ private suspend fun removeLowerObstacles() {
 
 // Helper function to keep the loop clean
 private suspend fun performRemoveSequence() {
-    TouchActions.tap(616, 488, delayTime = 50)
+    TouchActions.tap(615, 490, delayTime = 50)
     repeat(2) {
-        TouchActions.tap(14, 558, delayTime = 10)
+        TouchActions.tap(15, 560, delayTime = 10)
     }
 }
