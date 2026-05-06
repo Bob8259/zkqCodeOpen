@@ -61,8 +61,11 @@ private suspend fun checkPets() {
     val petColorMap = listOf(
         MainBasePets.LASSI to MyColors.Lassi,
         MainBasePets.LASSI to MyColors.Lassi2,
+        MainBasePets.LASSI to MyColors.Lassi3,
         MainBasePets.ELECTRO_OWL to MyColors.ElectroOwl,
+        MainBasePets.ELECTRO_OWL to MyColors.ElectroOwl2,
         MainBasePets.MIGHTY_YAK to MyColors.MightyYak,
+        MainBasePets.MIGHTY_YAK to MyColors.MightyYak2,
         MainBasePets.UNICORN to MyColors.Unicorn,
         MainBasePets.FROSTY to MyColors.Frosty,
         MainBasePets.FROSTY to MyColors.Frosty2,

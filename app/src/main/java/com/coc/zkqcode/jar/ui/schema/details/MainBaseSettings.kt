@@ -6,7 +6,7 @@ import com.coc.zkqcode.jar.ui.schema.SettingDef
 
 object MainBaseSettings {
     // Common settings
-    val CLAIM_DAILY_REWARD = SettingDef("claim_daily_reward", "领取国服每日奖励", 1, "MAIN_BASE_SETTINGS")
+    val CLAIM_DAILY_REWARD = SettingDef("claim_daily_reward", "领取国服签到奖励", 1, "MAIN_BASE_SETTINGS")
     val CONFIG_REMARK = SettingDef("config_remark", "备注:", "", "MAIN_BASE_SETTINGS")
     val AUTO_ATTACK = SettingDef("auto_attack", "自动进攻", 1, "MAIN_BASE_SETTINGS")
     val BATTLE_TIMES = SettingDef("battle_times", "对战局数", "1", "MAIN_BASE_SETTINGS")
@@ -131,7 +131,7 @@ object MainBaseSettings {
     val CLAIM_TOKEN_REWARDS = SettingDef("claim_token_rewards", "领令牌奖励", 0, "MAIN_BASE_SETTINGS")
     val CLAIM_CAPITAL_GOLD = SettingDef("claim_capital_gold", "领都城币", 0, "MAIN_BASE_SETTINGS")
     val DONATE_CAPITAL_GOLD = SettingDef("donate_capital_gold", "捐都城币", 0, "MAIN_BASE_SETTINGS")
-    val CLAIM_FREE_SHOP_REWARDS = SettingDef("claim_free_shop_rewards", "领商店免费奖励", 1, "MAIN_BASE_SETTINGS")
+    val CLAIM_FREE_SHOP_REWARDS = SettingDef("claim_free_shop_rewards", "领每周精选免费奖励", 1, "MAIN_BASE_SETTINGS")
     val AUTO_JOIN_CLAN = SettingDef("auto_join_clan", "自动加部落", 0, "MAIN_BASE_SETTINGS")
     val CLAIM_ACHIEVEMENT_GEMS = SettingDef("claim_achievement_gems", "领取成就宝石", 0, "MAIN_BASE_SETTINGS")
     val CLAN_TAG = SettingDef("clan_tag", "加指定部落标签(不填就随机加):", "", "MAIN_BASE_SETTINGS")

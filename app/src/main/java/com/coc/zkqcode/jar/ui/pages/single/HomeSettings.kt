@@ -63,7 +63,7 @@ fun LazyListScope.homeSettings(
                 CustomButton(
                     text = "停止计时", onClick = { GlobalVars.isAutoRunEnabled = false })
                 CustomButton(
-                    text = "公告", onClick = { onShowAnnouncement() })
+                    text = "更新日志", onClick = { onShowAnnouncement() })
             }
             LoginScreen(
                 onAdFreeClick = {

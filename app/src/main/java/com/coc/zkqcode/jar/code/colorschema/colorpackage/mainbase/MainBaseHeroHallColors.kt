@@ -20,8 +20,11 @@ interface IMainBaseHeroHallColors {
     val PetsShopInnerBanner: ColorSchema
     val Lassi: ColorSchema
     val Lassi2: ColorSchema
+    val Lassi3: ColorSchema
     val ElectroOwl: ColorSchema
+    val ElectroOwl2: ColorSchema
     val MightyYak: ColorSchema
+    val MightyYak2: ColorSchema
     val Unicorn: ColorSchema
     val Frosty: ColorSchema
     val Frosty2: ColorSchema
@@ -121,14 +124,29 @@ object MainBaseHeroHallColors : IMainBaseHeroHallColors {
         175, 385, 1110, 665, "7C483E", "52|-3|513835,93|-23|9D5545,87|-25|834B3C,81|-45|784736,81|-47|7A4838,81|-55|925243,133|-56|F5AF7D,126|-38|EB916F,109|-16|BC6353", 0, 0.9, "莱希2"
     )
 
+    // Pet slot used to detect Lassi (color variant 3) in the hero hall upgrade screen
+    override val Lassi3 = ColorSchema.parse(
+        175, 385, 1110, 665, "C76A5D", "24|0|4A2F29,73|-2|5B3D37,108|-25|D07059,97|-71|FFFFFF,112|-72|FFECFF,136|-35|EF9E79,118|-8|D27260,68|-96|E78D60,101|-97|EB916C", 0, 0.9, "莱希3"
+    )
+
     // Pet slot used to detect Electro Owl in the hero hall upgrade screen
     override val ElectroOwl = ColorSchema.parse(
         175, 385, 1110, 665, "E2CBB6", "22|-18|E3CDB7,48|-46|BC9562,101|-9|E3CBB5,106|-40|B79F6C,93|-76|BAB653,105|-83|857C4C,116|-19|7C503D,149|-12|8B5649,141|-5|8C584C", 0, 0.9, "闪枭"
     )
 
+    // Pet slot used to detect Electro Owl (color variant 2) in the hero hall upgrade screen
+    override val ElectroOwl2 = ColorSchema.parse(
+        175, 385, 1110, 665, "E1CBB5", "24|0|E0CAB4,59|1|D8C2AD,73|-14|D9C3AE,67|-52|FCF4DA,66|-78|FFFFFF,76|-92|DEDC66,100|-91|80784C,118|-63|FFFFA0,104|-48|C3AE72", 0, 0.9, "闪枭2"
+    )
+
     // Pet slot used to detect Mighty Yak in the hero hall upgrade screen
     override val MightyYak = ColorSchema.parse(
         175, 385, 1110, 665, "9DB1BD", "-12|-43|82AEC5,64|-38|255BA1,56|-63|215DA4,66|-62|2A63AF,77|-41|2765B5,80|-16|2868B9,96|-7|2869BF,101|-15|2B7ADB,122|-41|2975DA", 0, 0.9, "大牦"
+    )
+
+    // Pet slot used to detect Mighty Yak (color variant 2) in the hero hall upgrade screen
+    override val MightyYak2 = ColorSchema.parse(
+        175, 385, 1110, 665, "9DB1BD", "30|-1|4F678C,56|-1|1A4274,82|-18|2867B9,83|-87|2E6ABB,75|-110|3171C7,98|-101|6B8294,103|-74|317BE0,112|-58|378DFF,124|-27|2F74D2", 0, 0.9, "大牦2"
     )
 
     // Pet slot used to detect Unicorn in the hero hall upgrade screen

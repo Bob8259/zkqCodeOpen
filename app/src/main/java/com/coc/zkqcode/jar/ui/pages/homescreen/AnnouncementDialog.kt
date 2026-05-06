@@ -101,7 +101,7 @@ fun AnnouncementDialog(onDismiss: () -> Unit) {
         onDismissRequest = onDismiss,
         title = {
             Text(
-                text = "公告",
+                text = "更新日志",
                 style = MaterialTheme.typography.titleMedium,
                 color = AppColors.TextPrimary
             )
