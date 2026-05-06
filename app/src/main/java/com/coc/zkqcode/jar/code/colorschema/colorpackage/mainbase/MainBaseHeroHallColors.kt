@@ -119,12 +119,12 @@ object MainBaseHeroHallColors : IMainBaseHeroHallColors {
         175, 385, 1110, 665, "FA51FA", "15|-34|CEA79B,37|-33|AA604D,55|-7|4E322D,81|-6|694337,88|-57|DF6B8F,93|-75|FF85FF,135|-55|834D3F,135|-28|E88E6D,116|-17|C06350", 0, 0.9, "莱希"
     )
 
-    // Pet slot used to detect Lassi (color variant 2) in the hero hall upgrade screen
+    // Pet slot used to detect Lassi (colour variant 2) in the hero hall upgrade screen
     override val Lassi2 = ColorSchema.parse(
         175, 385, 1110, 665, "7C483E", "52|-3|513835,93|-23|9D5545,87|-25|834B3C,81|-45|784736,81|-47|7A4838,81|-55|925243,133|-56|F5AF7D,126|-38|EB916F,109|-16|BC6353", 0, 0.9, "莱希2"
     )
 
-    // Pet slot used to detect Lassi (color variant 3) in the hero hall upgrade screen
+    // Pet slot used to detect Lassi (colour variant 3) in the hero hall upgrade screen
     override val Lassi3 = ColorSchema.parse(
         175, 385, 1110, 665, "C76A5D", "24|0|4A2F29,73|-2|5B3D37,108|-25|D07059,97|-71|FFFFFF,112|-72|FFECFF,136|-35|EF9E79,118|-8|D27260,68|-96|E78D60,101|-97|EB916C", 0, 0.9, "莱希3"
     )
@@ -134,7 +134,7 @@ object MainBaseHeroHallColors : IMainBaseHeroHallColors {
         175, 385, 1110, 665, "E2CBB6", "22|-18|E3CDB7,48|-46|BC9562,101|-9|E3CBB5,106|-40|B79F6C,93|-76|BAB653,105|-83|857C4C,116|-19|7C503D,149|-12|8B5649,141|-5|8C584C", 0, 0.9, "闪枭"
     )
 
-    // Pet slot used to detect Electro Owl (color variant 2) in the hero hall upgrade screen
+    // Pet slot used to detect Electro Owl (colour variant 2) in the hero hall upgrade screen
     override val ElectroOwl2 = ColorSchema.parse(
         175, 385, 1110, 665, "E1CBB5", "24|0|E0CAB4,59|1|D8C2AD,73|-14|D9C3AE,67|-52|FCF4DA,66|-78|FFFFFF,76|-92|DEDC66,100|-91|80784C,118|-63|FFFFA0,104|-48|C3AE72", 0, 0.9, "闪枭2"
     )
@@ -144,7 +144,7 @@ object MainBaseHeroHallColors : IMainBaseHeroHallColors {
         175, 385, 1110, 665, "9DB1BD", "-12|-43|82AEC5,64|-38|255BA1,56|-63|215DA4,66|-62|2A63AF,77|-41|2765B5,80|-16|2868B9,96|-7|2869BF,101|-15|2B7ADB,122|-41|2975DA", 0, 0.9, "大牦"
     )
 
-    // Pet slot used to detect Mighty Yak (color variant 2) in the hero hall upgrade screen
+    // Pet slot used to detect Mighty Yak (colour variant 2) in the hero hall upgrade screen
     override val MightyYak2 = ColorSchema.parse(
         175, 385, 1110, 665, "9DB1BD", "30|-1|4F678C,56|-1|1A4274,82|-18|2867B9,83|-87|2E6ABB,75|-110|3171C7,98|-101|6B8294,103|-74|317BE0,112|-58|378DFF,124|-27|2F74D2", 0, 0.9, "大牦2"
     )
@@ -159,7 +159,7 @@ object MainBaseHeroHallColors : IMainBaseHeroHallColors {
         175, 385, 1110, 665, "947366", "11|-17|89695C,42|-26|5C8593,72|-14|B8A5A5,101|-13|968D96,84|-20|D3BCBF,114|-7|507D98,77|-39|7E6467,91|-65|362E2E,109|-37|8F8486", 0, 0.9, "冰牙"
     )
 
-    // Pet slot used to detect Frosty (color variant 2) in the hero hall upgrade screen
+    // Pet slot used to detect Frosty (colour variant 2) in the hero hall upgrade screen
     override val Frosty2 = ColorSchema.parse(
         175, 385, 1110, 665, "937265", "31|0|63939F,69|2|9E8A8A,100|-10|9F959C,79|-41|735B5E,76|-65|AA8484,91|-71|463F3C,98|-60|FEDFDE,116|-48|FFEAEB,105|-7|8D8793", 0, 0.9, "冰牙2"
     )
@@ -169,7 +169,7 @@ object MainBaseHeroHallColors : IMainBaseHeroHallColors {
         175, 385, 1110, 665, "AC5D7D", "7|-25|E87E92,28|-47|BBD5F6,44|-22|FE8696,80|-2|795D67,115|-12|8D6072,135|-36|D36E99,99|-49|FFA0B9,88|-61|FF9872,88|-89|FFB874", 0, 0.9, "地兽"
     )
 
-    // Pet slot used to detect Diggy (color variant 2) in the hero hall upgrade screen
+    // Pet slot used to detect Diggy (colour variant 2) in the hero hall upgrade screen
     override val Diggy2 = ColorSchema.parse(
         175, 385, 1110, 665, "AA5C7A", "24|-1|9F5964,57|0|B26A85,83|-7|B8708C,83|-44|FF90B9,79|-84|FFB87D,93|-103|FFA768,104|-87|FFAF70,117|-60|FFB3DB,129|-28|D7709A", 0, 0.9, "地兽2"
     )
@@ -179,7 +179,7 @@ object MainBaseHeroHallColors : IMainBaseHeroHallColors {
         175, 385, 1110, 665, "9DB1BD", "38|-26|44DBFF,76|-59|3A86FB,94|-81|52A9FF,96|-47|4397FF,83|-39|4082FF,96|-29|44A9FF,116|-39|4AA2FF,116|-70|0D0F52,116|-94|6FD2FF", 0, 0.9, "猛蜥"
     )
 
-    // Pet slot used to detect Poison Lizard (color variant 2) in the hero hall upgrade screen
+    // Pet slot used to detect Poison Lizard (colour variant 2) in the hero hall upgrade screen
     override val PoisonLizard2 = ColorSchema.parse(
         175, 385, 1110, 665, "9DB1BD", "50|-1|3CD0E7,66|-10|45C3FF,70|-32|3E9BFF,90|-68|0D1142,83|-92|73C9FF,96|-101|479BFD,109|-91|8ADBFF,115|-66|0D0E55,94|-17|65F0FF", 0, 0.9, "猛蜥2"
     )
@@ -189,7 +189,7 @@ object MainBaseHeroHallColors : IMainBaseHeroHallColors {
         175, 385, 1110, 665, "964EFF", "18|-33|AC4AFF,46|-14|48B6FF,67|-52|8956FF,84|-61|53FFFF,104|-43|576276,130|-46|546173,117|-28|35444D,75|-61|50C0DC,68|-108|C14FFF", 0, 0.9, "凤凰"
     )
 
-    // Pet slot used to detect Phoenix (color variant 2) in the hero hall upgrade screen
+    // Pet slot used to detect Phoenix (colour variant 2) in the hero hall upgrade screen
     override val Phoenix2 = ColorSchema.parse(
         175, 385, 1110, 665, "8A54FF", "20|2|8C39FC,56|-2|42CCFF,68|-40|5467FF,68|-78|6178FF,78|-115|BB4DFF,104|-81|4ACCFF,128|-54|596476,128|-45|556274,108|-25|404B54", 0, 0.9, "凤凰2"
     )
@@ -204,7 +204,7 @@ object MainBaseHeroHallColors : IMainBaseHeroHallColors {
         175, 385, 1110, 665, "C271FF", "16|-21|DA7EFF,42|-42|FFACFF,59|-29|DE94FF,89|1|A941FF,127|-11|5228E0,133|-38|A54AF4,130|-66|CD53E4,72|-87|FFC7FF,69|-66|FFA8FF", 0, 0.9, "愤怒水母"
     )
 
-    // Pet slot used to detect Angry Jelly (color variant 2) in the hero hall upgrade screen
+    // Pet slot used to detect Angry Jelly (colour variant 2) in the hero hall upgrade screen
     override val AngryJelly2 = ColorSchema.parse(
         175, 385, 1110, 665, "CE66FF", "26|0|882FE5,62|-5|723CD8,56|-30|FEA9FF,58|-50|110EFF,72|-58|120DFF,77|-56|8952FF,109|-73|F599FF,130|-72|E94ADF,116|-36|C182FF", 0, 0.9, "愤怒水母2"
     )
@@ -214,7 +214,7 @@ object MainBaseHeroHallColors : IMainBaseHeroHallColors {
         175, 385, 1110, 665, "9DB1BD", "34|-36|7F5652,69|-41|C3A19C,92|-61|C9B6E8,113|-32|846CA1,128|-68|947BBE,141|-61|8A6160,121|-42|C8AFDD,89|-12|0D0D0D,66|-32|BA948D", 0, 0.9, "阿啾"
     )
 
-    // Pet slot used to detect Sneezy (color variant 2) in the hero hall upgrade screen
+    // Pet slot used to detect Sneezy (colour variant 2) in the hero hall upgrade screen
     override val Sneezy2 = ColorSchema.parse(
         175, 385, 1110, 665, "9DB1BD", "18|-3|9DB1BD,59|-1|6D4946,62|-19|C59D97,77|-59|9877A9,83|-60|B99DD0,104|-43|A08FD1,122|-62|8F7CC0,131|-52|9F87CA,114|-29|826A99", 0, 0.9, "阿啾2"
     )

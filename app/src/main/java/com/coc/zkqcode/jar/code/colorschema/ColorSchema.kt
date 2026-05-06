@@ -31,7 +31,7 @@ class ColorSchema(
 
             val mainColor = parseBgrToRgb(mainColorStr)
 
-            // 2. Convert similarity to color difference threshold (0.9 similarity = 255 * 0.1 = 25 threshold)
+            // 2. Convert similarity to colour difference threshold (0.9 similarity = 255 * 0.1 = 25 threshold)
             val threshold = (255 * (1.0 - similarity)).toInt()
 
             // 3. Parse offset points string
