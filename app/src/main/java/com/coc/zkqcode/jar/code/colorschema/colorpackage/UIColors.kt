@@ -56,6 +56,7 @@ interface IUIColors {
     val TempGameContinue: ColorSchema
     val ReturnTask4: ColorSchema
     val ClanLeagueReturnCamp: ColorSchema
+    val UpgradeNotification: ColorSchema
 }
 
 object UIColors : IUIColors {
@@ -249,5 +250,10 @@ object UIColors : IUIColors {
     // Clan league return to camp button
     override val ClanLeagueReturnCamp = ColorSchema.parse(
         60, 606, 102, 652, "AAE3FF", "9|0|7D98E6,17|0|364C9C,25|0|7DA0E8,34|0|34456A,0|23|2646C3,9|23|758FFF,17|23|7A9AFF,25|23|92BAFF,34|23|6576B1", 0, 0.9, "联赛回营"
+    )
+
+    // Upgrade notification popup
+    override val UpgradeNotification = ColorSchema.parse(
+        414, 478, 584, 545, "69C3FE", "34|0|69C3FE,68|0|69C3FE,102|0|69C3FE,136|0|69C3FE,0|33|2554DF,34|33|2554DF,68|33|2554DF,102|33|2554DF,136|33|2554DF", 0, 0.9, "升级通知"
     )
 }
