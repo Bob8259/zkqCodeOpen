@@ -15,12 +15,9 @@
 1. **准备环境**
    下载最新版 Android Studio，然后配置好 Rust 环境，并构建 Rust 代码。
 2. **修改代码**
-   - 删掉 `CheckIntergrity.kt` 里的签名检测代码
-   - 删掉加载广告的代码
-   - 删掉 `anti_debug.rs` 里的反调试相关代码
-   - 删掉 `anti_debug.rs` 以及 `ad_track.rs` 里的反 hook 广告代码
+   开一个AI助理，把以下提示词给AI：帮我修改代码，删除Kotlin和Rust代码的完整性校验。然后删除所有和广告，用户登录，用户验证相关的代码。同时删掉Rust里所有反调试或反hook相关代码。
 3. **构建**
-   构建前记得把 `app\src\main\java\com\coc\zkqcode\jar` 删掉，构建完就能跑了。
+   构建完就能跑了。
 
 # 小技巧
 
