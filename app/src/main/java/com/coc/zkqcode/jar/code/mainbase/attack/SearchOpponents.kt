@@ -195,8 +195,7 @@ suspend fun searchOpponentsAndDeployTroops(): Boolean {
                     writeMemory(elixirKey, targetElixir.toString())
                     writeMemory(darkElixirKey, targetDarkElixir.toString())
                 }
-                // Upload a screenshot every 3 hours for monitoring
-                uploadSearchScreenshot()
+
                 battleStarted = true
                 mainBaseDeployTroops()
                 break
@@ -255,7 +254,7 @@ private suspend fun mainBaseBattleTutorial(): Boolean {
  * Take a screenshot and upload it to the server if at least 3 hours have passed since the last upload.
  * Uses the same upload logic as the bug report screenshot submission.
  */
-private suspend fun uploadSearchScreenshot() {
+suspend fun uploadSearchScreenshot() {
     val screenshotKey = StorageKeys.withAccountNumber(StorageKeys.SEARCH_SCREENSHOT_UPLOAD, InGameVars.currentAccountNumber)
     if (!checkMemoryFile(screenshotKey, 180)) return // 180 minutes = 3 hours
 
