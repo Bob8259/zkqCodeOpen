@@ -15,9 +15,9 @@ import com.coc.zkqcode.jar.code.universal.smalltools.writeMemory
 import com.coc.zkqcode.jar.ui.schema.Schema
 
 suspend fun checkNormalShop(): Boolean {
-    // Time guard: only check shop once per 2 days (2880 minutes)
+    // Time guard: only check shop once per 1 day (1440 minutes)
     val memoryKey = StorageKeys.withAccountNumber(StorageKeys.CHECK_SHOP, InGameVars.currentAccountNumber)
-    if (!checkMemoryFile(memoryKey, 2880)) {
+    if (!checkMemoryFile(memoryKey, 1440)) {
         accountMessage("商店检查冷却中，跳过")
         return true
     }
