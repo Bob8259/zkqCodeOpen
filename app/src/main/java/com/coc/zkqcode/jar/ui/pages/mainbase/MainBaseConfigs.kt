@@ -41,7 +41,15 @@ fun LazyListScope.mainBaseConfig(
     item {
         SettingSection(visible = isGeneralExpanded) {
             SettingInputRow(key = "${MAIN_BASE_SETTINGS.CONFIG_REMARK.key}_c$index")
-            SettingInputRow(key = "${MAIN_BASE_SETTINGS.SKIP_TH_LEVEL.key}_c$index", suffix = "级的账号")
+            SettingSwitchIcon(
+                key = "${MAIN_BASE_SETTINGS.SMART_DECISION.key}_c$index",
+                explain = "开启后，辅助会自动检测大本营等级，并根据大本营等级跳过部分内容（例如升级装备，战宠等）从而提升运行效率。"
+            )
+            AnimatedVisibility(
+                visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.SMART_DECISION.key}_c$index"]?.value == "1"
+            ) {
+                SettingInputRow(key = "${MAIN_BASE_SETTINGS.SKIP_TH_LEVEL.key}_c$index", suffix = "级的账号")
+            }
         }
     }
 
