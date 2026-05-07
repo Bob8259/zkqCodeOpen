@@ -50,6 +50,8 @@ object InGameVars {
 
     @Volatile
     var wallUpgradeNoWorkerBase: BaseType? = null
+
+    var townHallLevel: Int = 1
 }
 
 fun accountMessage(text: String, isChecking: Boolean = true) {

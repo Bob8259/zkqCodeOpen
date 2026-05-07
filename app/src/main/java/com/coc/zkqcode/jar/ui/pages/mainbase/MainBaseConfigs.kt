@@ -17,6 +17,8 @@ import com.coc.zkqcode.jar.ui.theme.AppColors
 
 fun LazyListScope.mainBaseConfig(
     index: Int,
+    isGeneralExpanded: Boolean,
+    onToggleGeneralExpanded: () -> Unit,
     isExpanded: Boolean,
     onToggleExpanded: () -> Unit,
     isClanExpanded: Boolean,
@@ -29,6 +31,20 @@ fun LazyListScope.mainBaseConfig(
     onTogglePet: () -> Unit,
     onNavigatePriority: (Int) -> Unit = {}
 ) {
+    // Banner — 通用设置
+    item {
+        SectionBanner(
+            title = "通用设置", isExpanded = isGeneralExpanded, onClick = onToggleGeneralExpanded
+        )
+    }
+
+    item {
+        SettingSection(visible = isGeneralExpanded) {
+            SettingInputRow(key = "${MAIN_BASE_SETTINGS.CONFIG_REMARK.key}_c$index")
+            SettingInputRow(key = "${MAIN_BASE_SETTINGS.SKIP_TH_LEVEL.key}_c$index", suffix = "级的账号")
+        }
+    }
+
     // Banner — 对战设置
     item {
         SectionBanner(
@@ -39,7 +55,6 @@ fun LazyListScope.mainBaseConfig(
     // Attack & Resource requirements
     item {
         SettingSection(visible = isExpanded) {
-            SettingInputRow(key = "${MAIN_BASE_SETTINGS.CONFIG_REMARK.key}_c$index")
             FlowRow {
                 SettingSwitchIcon(
                     key = "${MAIN_BASE_SETTINGS.AUTO_ATTACK.key}_c$index",

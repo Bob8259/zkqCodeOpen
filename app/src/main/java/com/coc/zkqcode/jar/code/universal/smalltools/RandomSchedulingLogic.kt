@@ -1,9 +1,11 @@
-package com.coc.zkqcode.jar.code.universal
+package com.coc.zkqcode.jar.code.universal.smalltools
 
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.jar.code.runAccountStepBlock
-import com.coc.zkqcode.jar.code.universal.smalltools.killGame
+import com.coc.zkqcode.jar.code.universal.GameVersion
+import com.coc.zkqcode.jar.code.universal.InGameVars
+import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.jar.ui.schema.Schema
 import com.coc.zkqcode.jar.ui.schema.Schema.GLOBAL_SETTINGS
 import kotlinx.coroutines.currentCoroutineContext
@@ -138,7 +140,7 @@ suspend fun runRandomSchedulingScript() {
 
             // Set current account
             InGameVars.currentAccountNumber = accountId
-            InGameVars.currentGameVersion = GameVersion.fromId(
+            InGameVars.currentGameVersion = GameVersion.Companion.fromId(
                 getIntConfig("${Schema.ACCOUNT_SETTINGS.GAME_VERSION.key}$accountId", 0)
             )
 

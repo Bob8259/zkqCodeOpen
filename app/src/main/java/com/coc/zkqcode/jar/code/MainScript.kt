@@ -1,7 +1,6 @@
 package com.coc.zkqcode.jar.code
 
 import com.coc.zkqcode.core.data.database.GlobalVars
-import com.coc.zkqcode.core.system.inputmethod.ZKQInputMethodService
 import com.coc.zkqcode.core.util.basic.RunShell
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
@@ -10,7 +9,6 @@ import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
 import com.coc.zkqcode.jar.code.auth.displayAds
 import com.coc.zkqcode.jar.code.auth.userAuth
 import com.coc.zkqcode.jar.code.builderbase.playBuilderBase
-import com.coc.zkqcode.jar.code.mainbase.clan.clanLeague
 import com.coc.zkqcode.jar.code.mainbase.others.checkLeagueShop
 import com.coc.zkqcode.jar.code.mainbase.playMainBase
 import com.coc.zkqcode.jar.code.universal.GameVersion
@@ -18,9 +16,9 @@ import com.coc.zkqcode.jar.code.universal.InGameVars
 import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.jar.code.universal.create.batchCreateAccounts
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
-import com.coc.zkqcode.jar.code.universal.runRandomSchedulingScript
+import com.coc.zkqcode.jar.code.universal.preCheck
+import com.coc.zkqcode.jar.code.universal.smalltools.runRandomSchedulingScript
 import com.coc.zkqcode.jar.code.universal.smalltools.StorageKeys
-import com.coc.zkqcode.jar.code.universal.smalltools.TouchActions
 import com.coc.zkqcode.jar.code.universal.smalltools.tapDataNumberEntryButtons
 import com.coc.zkqcode.jar.code.universal.smalltools.checkAndCoolDown
 import com.coc.zkqcode.jar.code.universal.smalltools.getConfigOrStop
@@ -183,12 +181,16 @@ suspend fun runAccountStepBlock() {
         accountMessage("进入游戏失败")
         return
     }
+    if (!preCheck()) {
+        accountMessage("前置检查错误")
+        return
+    }
     if (!playBuilderBase()) {
-        accountMessage("夜世界对战完成，准备进入主世界")
+        accountMessage("夜世界错误，准备尝试进入主世界")
         return
     }
     if (!playMainBase()) {
-        accountMessage("主世界对战完成")
+        accountMessage("主世界对战错误")
         return
     }
 }

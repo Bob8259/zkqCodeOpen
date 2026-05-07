@@ -106,6 +106,7 @@ fun HomeScreen(
     }
 
     // Hoisted expansion states keyed by config index (1-based)
+    val generalExpandedStates = remember { mutableStateMapOf<Int, Boolean>() }
     val mainBaseExpandedStates = remember { mutableStateMapOf<Int, Boolean>() }
     val researchExpandedStates = remember { mutableStateMapOf<Int, Boolean>() }
     val buildExpandedStates = remember { mutableStateMapOf<Int, Boolean>() }
@@ -116,7 +117,7 @@ fun HomeScreen(
     val configCount = configCountStr.toIntOrNull() ?: 1
     val tabs = listOf("主页设置", "账号设置", "提取存档", "配置文件", "特殊设置")
     val sectionItems = listOf(
-        "核心对战" to 0, "部落设置" to 4, "自动研究" to 6, "自动建造" to 8, "战宠设置" to 10, "夜世界" to 16
+        "通用设置" to 0, "核心对战" to 2, "部落设置" to 6, "自动研究" to 8, "自动建造" to 10, "战宠设置" to 12, "夜世界" to 18
     )
 
     val lazyListState = rememberLazyListState()
@@ -248,6 +249,7 @@ fun HomeScreen(
                             }
                         } else {
                             // State hoisting for expansion keyed by config index
+                            val currentGeneralExpanded = generalExpandedStates[cfgIdx] ?: true
                             val currentMainExpanded = mainBaseExpandedStates[cfgIdx] ?: true
                             val currentClanExpanded = clanExpandedStates[cfgIdx] ?: true
                             val currentResearchExpanded = researchExpandedStates[cfgIdx] ?: true
@@ -257,6 +259,8 @@ fun HomeScreen(
 
                             gameConfig(
                                 index = cfgIdx,
+                                isGeneralExpanded = currentGeneralExpanded,
+                                onToggleGeneralExpanded = { generalExpandedStates[cfgIdx] = !currentGeneralExpanded },
                                 isMainExpanded = currentMainExpanded,
                                 onToggleMainExpanded = { mainBaseExpandedStates[cfgIdx] = !currentMainExpanded },
                                 isClanExpanded = currentClanExpanded,

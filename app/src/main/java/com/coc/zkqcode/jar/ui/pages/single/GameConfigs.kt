@@ -6,6 +6,8 @@ import com.coc.zkqcode.jar.ui.pages.mainbase.mainBaseConfig
 
 fun LazyListScope.gameConfig(
     index: Int,
+    isGeneralExpanded: Boolean,
+    onToggleGeneralExpanded: () -> Unit,
     isMainExpanded: Boolean,
     onToggleMainExpanded: () -> Unit,
     isClanExpanded: Boolean,
@@ -24,6 +26,8 @@ fun LazyListScope.gameConfig(
 ) {
     mainBaseConfig(
         index = index,
+        isGeneralExpanded = isGeneralExpanded,
+        onToggleGeneralExpanded = onToggleGeneralExpanded,
         isExpanded = isMainExpanded,
         onToggleExpanded = onToggleMainExpanded,
         isClanExpanded = isClanExpanded,
