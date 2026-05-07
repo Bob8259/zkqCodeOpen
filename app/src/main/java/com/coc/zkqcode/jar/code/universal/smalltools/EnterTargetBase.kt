@@ -58,6 +58,7 @@ suspend fun enterMainBase(): Boolean {
  * Times out after 30 seconds and returns false if the transition did not succeed.
  */
 suspend fun enterBuilderBase(isCheck: Boolean): Boolean {
+    if (InGameVars.townHallLevel < 6) return false
     val loopStart = System.currentTimeMillis()
     clickRightBottom(1)
     while (System.currentTimeMillis() - loopStart < 60_000L) {
@@ -80,7 +81,7 @@ suspend fun enterBuilderBase(isCheck: Boolean): Boolean {
         for ((x, y) in boatLocations) {
             TouchActions.tap(x, y)
 
-            if (isCheck && InGameVars.townHallLevel >= 6) {
+            if (isCheck) {
                 val checkDuration = 500L
                 val loopStartTime = System.currentTimeMillis()
 

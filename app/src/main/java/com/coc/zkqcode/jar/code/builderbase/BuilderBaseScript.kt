@@ -18,16 +18,16 @@ suspend fun playBuilderBase(): Boolean {
     val noBuilderBase = getBooleanConfigRuntime(Schema.BUILDER_BASE_SETTINGS.NO_BUILDER_BASE.key)
     if (noBuilderBase) return true//if no builder base, then directly return.
     if (!enterBuilderBase(true)) return true
-    if (!clanGame(BaseType.Builder)) return true
+    if (!clanGame(BaseType.Builder)) return false
     if (!collectBuilderBaseResources()) return false
-    if (!enterBuilderBase(false)) return true
+    if (!enterBuilderBase(false)) return false
     if (!clickOttosOutPost()) return false
     if (!builderBaseRemoveObstacles()) return false
-    if (!enterBuilderBase(false)) return true
+    if (!enterBuilderBase(false)) return false
     if (!upgradeWallsThenBuildings(BaseType.Builder)) return false
     if (!builderBaseResearch()) return false
-    if (!turnOnClockTower()) return true
-    if (!enterBuilderBase(false)) return true
+    if (!turnOnClockTower()) return false
+    if (!enterBuilderBase(false)) return false
     if (!builderBaseTrainWithConditions()) return false
     if (!builderBaseAttack()) return false
     return true

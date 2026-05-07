@@ -83,6 +83,6 @@ suspend fun getJsonData(): Boolean {
         return false//force switch account
     }
     InGameVars.townHallLevel = firstBuildingLvl
-    clickRightBottom(1)
+    clickRightBottom(1, delayTime = 200)
     return enterMainScreen()
 }
