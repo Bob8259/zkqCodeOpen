@@ -13,6 +13,7 @@ import com.google.gson.Gson
 import com.google.gson.JsonObject
 
 suspend fun getJsonData(): Boolean {
+    if (!getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.SMART_DECISION.key)) return true
     if (InGameVars.currentGameVersion != GameVersion.CN) {
         TouchActions.tap(1230, 520)//settings
         TouchActions.tap(630, 610)//more settings

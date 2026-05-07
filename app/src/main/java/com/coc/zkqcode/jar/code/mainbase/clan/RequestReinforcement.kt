@@ -12,7 +12,7 @@ import com.coc.zkqcode.jar.code.universal.smalltools.getBooleanConfigRuntime
 import com.coc.zkqcode.jar.ui.schema.Schema
 
 suspend fun requestReinforcement(): Boolean {
-    if (!getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.REQUEST_REINFORCEMENT_SETTING.key)) return true
+    if (!getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.REQUEST_REINFORCEMENT_SETTING.key) || InGameVars.townHallLevel < 3) return true
     accountMessage("准备请求增援")
     val clanChat = findMultiColors(MyColors.ClanChatIcon)
     if (clanChat != null) {

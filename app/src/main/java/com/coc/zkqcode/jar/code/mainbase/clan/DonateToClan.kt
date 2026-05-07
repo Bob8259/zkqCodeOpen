@@ -24,7 +24,7 @@ import com.coc.zkqcode.jar.ui.schema.Schema
 suspend fun donateToClan(): Boolean {
     val notJoinClan = findMultiColors(schema = MyColors.NotJoinClanFlag, increment = 1)
     if (notJoinClan != null) return true
-    if (!getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.DONATION_SETTING.key)) return true
+    if (!getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.DONATION_SETTING.key) || InGameVars.townHallLevel < 3) return true
     val donationTimeInterval =
         getConfigRuntime(Schema.MAIN_BASE_SETTINGS.DONATION_DETECT_INTERVAL.key).toIntOrNull() ?: logAndRestart("${Schema.MAIN_BASE_SETTINGS.DONATION_DETECT_INTERVAL.displayName} 必须是数字，请检查配置")
     // Clamp lowerThreshold to a minimum of 25

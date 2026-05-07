@@ -21,7 +21,7 @@ import com.coc.zkqcode.jar.code.universal.smalltools.writeMemory
 import com.coc.zkqcode.jar.ui.schema.Schema
 
 suspend fun joinClan(): Boolean {
-    if (!getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.AUTO_JOIN_CLAN.key)) return true
+    if (!getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.AUTO_JOIN_CLAN.key) || InGameVars.townHallLevel < 3) return true
     val targetTAG = getConfigRuntime(Schema.MAIN_BASE_SETTINGS.CLAN_TAG.key)
     val clanCode = getConfigRuntime(Schema.MAIN_BASE_SETTINGS.CLAN_JOIN_MESSAGE.key)
 

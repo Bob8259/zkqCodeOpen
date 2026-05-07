@@ -17,7 +17,7 @@ import com.coc.zkqcode.jar.ui.schema.Schema
 
 
 suspend fun collectClanCastleResources(): Boolean {
-    if (!getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.COLLECT_CLAN_CASTLE.key)) return true
+    if (!getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.COLLECT_CLAN_CASTLE.key) || InGameVars.townHallLevel < 3) return true
     val storageKey = StorageKeys.withAccountNumber(
         StorageKeys.COLLECT_CLAN_CASTLE_RESOURCES, InGameVars.currentAccountNumber
     )

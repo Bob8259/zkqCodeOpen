@@ -40,7 +40,7 @@ suspend fun checkLeagueShop(): Boolean {
         return true
     }
 
-    if (leagueShopItems.none { getBooleanConfigRuntime(it.configKey) }) return true
+    if (leagueShopItems.none { getBooleanConfigRuntime(it.configKey) } || InGameVars.townHallLevel < 3) return true
     val shopButton = findMultiColors(MyColors.ShopButton) ?: return enterMainScreen()
     TouchActions.tap(shopButton.x, shopButton.y)
     if (enterLeagueShopPage()) {

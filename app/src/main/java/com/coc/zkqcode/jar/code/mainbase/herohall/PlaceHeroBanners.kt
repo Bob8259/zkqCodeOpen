@@ -17,6 +17,7 @@ import com.coc.zkqcode.jar.code.universal.smalltools.checkMemoryFile
 import com.coc.zkqcode.jar.code.universal.smalltools.writeMemory
 
 suspend fun placeHeroBanners(): Boolean {
+    if (InGameVars.townHallLevel < 7) return true
     val storageKey = StorageKeys.withAccountNumber(
         StorageKeys.PLACE_HERO_BANNERS, InGameVars.currentAccountNumber
     )
@@ -59,7 +60,7 @@ private suspend fun placeHeroBannerAction() {
                 moveWithDelay(635F, 330F)
                 zoomSmallMainBase(isForBuild = true)
                 targetTick = tryToFindBuildPosition(BaseType.Main)
-            } 
+            }
         }
 
         if (targetTick != null) {

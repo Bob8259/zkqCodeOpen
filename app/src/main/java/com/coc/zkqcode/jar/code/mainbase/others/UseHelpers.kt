@@ -20,6 +20,7 @@ import com.coc.zkqcode.jar.ui.schema.Schema
 
 suspend fun useHelpers(): Boolean {
     if (!getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.HELPER_SETTINGS.key) && !getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.PROSPECTOR_BLUE_TO_GOLD.key) && !getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.PROSPECTOR_BLUE_TO_PURPLE.key)) return true
+    if (InGameVars.townHallLevel < 9) return true
     val storageKey = StorageKeys.withAccountNumber(
         StorageKeys.USE_HELPERS, InGameVars.currentAccountNumber
     )

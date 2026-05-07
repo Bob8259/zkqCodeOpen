@@ -20,8 +20,12 @@ import com.coc.zkqcode.jar.code.universal.smalltools.writeMemory
 import com.coc.zkqcode.jar.ui.schema.Schema
 
 suspend fun upgradeGearsAndPets(): Boolean {
-    val shouldUpgradeGears = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.UPGRADE_ALL_GEAR.key) || getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.UPGRADE_WERA_GEAR.key)
-    val shouldUpgradePets = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.UPGRADE_PETS.key)
+    var shouldUpgradeGears = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.UPGRADE_ALL_GEAR.key) || getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.UPGRADE_WERA_GEAR.key)
+    var shouldUpgradePets = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.UPGRADE_PETS.key)
+
+    // Gears require TH8+, pets require TH14+
+    if (InGameVars.townHallLevel < 8) shouldUpgradeGears = false
+    if (InGameVars.townHallLevel < 14) shouldUpgradePets = false
 
     if (!shouldUpgradeGears && !shouldUpgradePets) return true
 
