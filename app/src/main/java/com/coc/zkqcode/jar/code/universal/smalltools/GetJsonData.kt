@@ -1,16 +1,56 @@
 package com.coc.zkqcode.jar.code.universal.smalltools
 
-suspend fun getJsonData() {
-    if (current game version is not CN) {
+import com.coc.zkqcode.core.system.inputmethod.ZKQInputMethodService
+import com.coc.zkqcode.core.util.basic.delayWithMultiplier
+import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
+import com.coc.zkqcode.jar.code.universal.GameVersion
+import com.coc.zkqcode.jar.code.universal.InGameVars
+import com.coc.zkqcode.jar.code.universal.accountMessage
+import com.coc.zkqcode.jar.code.universal.clickRightBottom
+import com.coc.zkqcode.jar.code.universal.enterMainScreen
+import com.google.gson.Gson
+import com.google.gson.JsonObject
+
+suspend fun getJsonData(): Boolean {
+    if (InGameVars.currentGameVersion != GameVersion.CN) {
         TouchActions.tap(1230, 520)//settings
         TouchActions.tap(630, 610)//more settings
-        TouchActions.swipe(630, 610, 630, -400, delayAfter = 200)
+        TouchActions.swipe(630, 500, 630, -1500, delayAfter = 200)
         TouchActions.tap(910, 450)//copy
-    }else if(current game version is CN){
+    } else {
         TouchActions.tap(1230, 450)//arrow
         TouchActions.tap(1210, 250)//settings
         TouchActions.tap(630, 610)//more settings
-        TouchActions.swipe(630, 610, 630, -400, delayAfter = 200)
+        TouchActions.swipe(630, 500, 630, -1500, delayAfter = 200)
         TouchActions.tap(900, 300)//copy
     }
+
+    // Wait for clipboard to be populated after copy action
+    delayWithMultiplier(500)
+
+    // Read clipboard content via input method service
+    val imeService = ZKQInputMethodService.instance
+        ?: logAndRestart("ZKQInputMethodService instance is null")
+    val clipboardText = imeService.readClipboard()
+    if (clipboardText.isNullOrBlank()) {
+        // Clipboard is empty — skip updating townHallLevel
+        accountMessage("剪贴板为空，跳过大本营等级检测")
+        clickRightBottom(1)
+        return enterMainScreen()
+    }
+
+    // Parse JSON and extract first building's lvl as townHallLevel
+    val jsonObject = Gson().fromJson(clipboardText, JsonObject::class.java)
+    val buildings = jsonObject.getAsJsonArray("buildings")
+    if (buildings == null || buildings.size() == 0) {
+        accountMessage("JSON中未找到buildings数据，跳过大本营等级检测")
+        clickRightBottom(1)
+        return enterMainScreen()
+    }
+    val firstBuildingLvl = buildings[0].asJsonObject.get("lvl").asInt
+
+    InGameVars.townHallLevel = firstBuildingLvl
+    accountMessage("大本营等级: $firstBuildingLvl")
+    clickRightBottom(1)
+    return enterMainScreen()
 }

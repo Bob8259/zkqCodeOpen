@@ -95,7 +95,7 @@ private fun finishDataNumberEntryOnlyRun() {
 
 private suspend fun runTestCode() {
     while (true) {
-        checkLeagueShop()
+        preCheck()
         accountMessage("测试代码结束")
         delay(500000)
     }
