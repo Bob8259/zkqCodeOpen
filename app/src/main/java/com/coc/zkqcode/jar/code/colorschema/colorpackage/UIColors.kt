@@ -204,7 +204,7 @@ object UIColors : IUIColors {
     )
     // Agree terms checkbox
     override val AgreeTerms = ColorSchema.parse(
-        260, 470, 299, 509, "ACBAC2", "8|0|ACBAC2,16|0|ACBAC2,23|0|ACBAC2,31|0|ACBAC2,0|19|ACBAC2,8|19|ACBAC2,16|19|ACBAC2,23|19|ACBAC2,31|19|ACBAC2", 0, 0.9, "同意条款"
+        260, 470, 299, 509, "ACBAC2", "8|0|ACBAC2,16|0|ACBAC2,23|0|ACBAC2,31|0|ACBAC2,0|19|ACBAC2,8|19|ACBAC2,16|19|ACBAC2,23|19|ACBAC2,31|19|ACBAC2", 0, 0.97, "同意条款"
     )
     // Agree privacy button
     override val AgreePrivacy = ColorSchema.parse(

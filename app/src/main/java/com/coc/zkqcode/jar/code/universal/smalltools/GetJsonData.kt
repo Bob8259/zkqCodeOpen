@@ -15,13 +15,13 @@ suspend fun getJsonData(): Boolean {
     if (InGameVars.currentGameVersion != GameVersion.CN) {
         TouchActions.tap(1230, 520)//settings
         TouchActions.tap(630, 610)//more settings
-        TouchActions.swipe(630, 500, 630, -1500, delayAfter = 200)
+        TouchActions.swipe(630, 500, 630, -1500, delayAfter = 400)
         TouchActions.tap(910, 450)//copy
     } else {
         TouchActions.tap(1230, 450)//arrow
         TouchActions.tap(1210, 250)//settings
         TouchActions.tap(630, 610)//more settings
-        TouchActions.swipe(630, 500, 630, -1500, delayAfter = 200)
+        TouchActions.swipe(630, 500, 630, -1500, delayAfter = 400)
         TouchActions.tap(900, 300)//copy
     }
 
