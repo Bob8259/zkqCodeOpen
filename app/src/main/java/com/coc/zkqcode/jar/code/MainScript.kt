@@ -182,7 +182,6 @@ suspend fun runAccountStepBlock() {
         return
     }
     if (!preCheck()) {
-        accountMessage("前置检查错误")
         return
     }
     if (!playBuilderBase()) {

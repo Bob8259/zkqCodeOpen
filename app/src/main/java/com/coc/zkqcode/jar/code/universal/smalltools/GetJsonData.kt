@@ -8,6 +8,7 @@ import com.coc.zkqcode.jar.code.universal.InGameVars
 import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.jar.code.universal.clickRightBottom
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
+import com.coc.zkqcode.jar.ui.schema.Schema
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 
@@ -29,8 +30,7 @@ suspend fun getJsonData(): Boolean {
     delayWithMultiplier(500)
 
     // Read clipboard content via input method service
-    val imeService = ZKQInputMethodService.instance
-        ?: logAndRestart("ZKQInputMethodService instance is null")
+    val imeService = ZKQInputMethodService.instance ?: logAndRestart("ZKQInputMethodService instance is null")
     val clipboardText = imeService.readClipboard()
     if (clipboardText.isNullOrBlank()) {
         // Clipboard is empty — skip updating townHallLevel
@@ -48,9 +48,12 @@ suspend fun getJsonData(): Boolean {
         return enterMainScreen()
     }
     val firstBuildingLvl = buildings[0].asJsonObject.get("lvl").asInt
-
+    val targetLevel = getConfigRuntime(Schema.MAIN_BASE_SETTINGS.SKIP_TH_LEVEL.key).toIntOrNull() ?: logAndRestart("${Schema.MAIN_BASE_SETTINGS.SKIP_TH_LEVEL.displayName} 必须是数字，请检查配置")
+    accountMessage("大本营等级: $firstBuildingLvl\n设定目标等级：$targetLevel")
+    if (firstBuildingLvl >= targetLevel) {
+        return false//force switch account
+    }
     InGameVars.townHallLevel = firstBuildingLvl
-    accountMessage("大本营等级: $firstBuildingLvl")
     clickRightBottom(1)
     return enterMainScreen()
 }
