@@ -172,6 +172,17 @@ object AiDetector {
         return true
     }
 
+    /**
+     * Launches the plugin's MainActivity to trigger its initialization,
+     * waits for it to complete, then returns to the game.
+     * Used as a recovery mechanism when the background service fails to start.
+     */
+    private suspend fun launchPluginAndReturnToGame() {
+        launchPluginMainActivity()
+        delay(PLUGIN_LAUNCH_WAIT_MS)
+        runGame()
+    }
+
     private suspend fun deletePluginApk(targetFile: File) = withContext(Dispatchers.IO) {
         if (targetFile.exists()) {
             targetFile.delete()
@@ -231,6 +242,8 @@ object AiDetector {
         }
 
         var updateAttempted = false
+        var serviceStartAttempts = 0
+        var activityRecoveryAttempted = false
         var startTime = System.currentTimeMillis()
         while (System.currentTimeMillis() - startTime < READY_TIMEOUT_MS) {
             var versionTooLow = false
@@ -250,6 +263,15 @@ object AiDetector {
                     }
                 }
             } catch (_: Exception) {
+                serviceStartAttempts++
+                if (serviceStartAttempts >= 2 && !activityRecoveryAttempted) {
+                    // Service command failed twice; launch plugin activity to trigger init
+                    activityRecoveryAttempted = true
+                    serviceStartAttempts = 0
+                    launchPluginAndReturnToGame()
+                    delay(POLL_INTERVAL_MS)
+                    continue
+                }
                 // If the service is unreachable, try starting it again and wait briefly.
                 RunShell.runNoOutput(SERVICE_START_CMD, checkIsPlaying = false)
                 delay(POLL_INTERVAL_MS)

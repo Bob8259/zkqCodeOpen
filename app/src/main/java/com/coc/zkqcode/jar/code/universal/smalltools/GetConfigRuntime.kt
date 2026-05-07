@@ -15,7 +15,7 @@ fun getConfigRuntime(configName: String): String {
             isShow = false
         )
     }
-    val result = GlobalVars.configStates["${configName}_c$configNumber"]?.value
+    val result = GlobalVars.configStates["${configName}_c$configNumber"]?.value?.trim()
         ?: logAndRestart("Can not get config value for ${configName}_c$configNumber", isShow = false)
     return result
 }
@@ -25,5 +25,5 @@ fun getBooleanConfigRuntime(configName: String): Boolean {
 }
 
 fun getStaticConfig(key: String): String {
-    return GlobalVars.configStates[key]?.value ?: Schema.getDefaultValue(key)
+    return (GlobalVars.configStates[key]?.value?.trim()) ?: Schema.getDefaultValue(key)
 }

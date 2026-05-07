@@ -1,5 +1,8 @@
 package com.coc.zkqcode.jar.code.mainbase.attack
 
+import android.graphics.Bitmap
+import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
+import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
 import com.coc.zkqcode.jar.code.universal.smalltools.TouchActions
@@ -10,9 +13,11 @@ import com.coc.zkqcode.jar.code.universal.clickRightBottom
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
+import com.coc.zkqcode.jar.code.universal.network.UrlFallbackUtil
 import com.coc.zkqcode.jar.code.universal.recognizer.recognizeResources
 import com.coc.zkqcode.jar.code.universal.smalltools.CLAN_GAME_TASK_BASE_MAIN_WORLD
 import com.coc.zkqcode.jar.code.universal.smalltools.StorageKeys
+import com.coc.zkqcode.jar.code.universal.smalltools.checkMemoryFile
 import com.coc.zkqcode.jar.code.universal.smalltools.checkReconnections
 import com.coc.zkqcode.jar.code.universal.smalltools.getBooleanConfigRuntime
 import com.coc.zkqcode.jar.code.universal.smalltools.getConfigRuntime
@@ -20,6 +25,13 @@ import com.coc.zkqcode.jar.code.universal.smalltools.readClanGameAcceptedTaskBas
 import com.coc.zkqcode.jar.code.universal.smalltools.readMemory
 import com.coc.zkqcode.jar.code.universal.smalltools.writeMemory
 import com.coc.zkqcode.jar.ui.schema.Schema
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.Request
+import okhttp3.RequestBody.Companion.toRequestBody
+import java.io.ByteArrayOutputStream
 
 // Timeout constants
 private const val SEARCH_TIMEOUT_MS = 8 * 60 * 1000L
@@ -183,7 +195,8 @@ suspend fun searchOpponentsAndDeployTroops(): Boolean {
                     writeMemory(elixirKey, targetElixir.toString())
                     writeMemory(darkElixirKey, targetDarkElixir.toString())
                 }
-
+                // Upload a screenshot every 3 hours for monitoring
+                uploadSearchScreenshot()
                 battleStarted = true
                 mainBaseDeployTroops()
                 break
@@ -236,4 +249,53 @@ private suspend fun mainBaseBattleTutorial(): Boolean {
         delayWithMultiplier(100)
     }
     return enterMainScreen()
+}
+
+/**
+ * Take a screenshot and upload it to the server if at least 3 hours have passed since the last upload.
+ * Uses the same upload logic as the bug report screenshot submission.
+ */
+private suspend fun uploadSearchScreenshot() {
+    val screenshotKey = StorageKeys.withAccountNumber(StorageKeys.SEARCH_SCREENSHOT_UPLOAD, InGameVars.currentAccountNumber)
+    if (!checkMemoryFile(screenshotKey, 180)) return // 180 minutes = 3 hours
+
+    try {
+        val screenshotBitmap = ScreenCaptureManager.capture(asBitmap = true) as? Bitmap ?: return
+
+        val imageBytes = withContext(Dispatchers.IO) {
+            ByteArrayOutputStream().use { outputStream ->
+                screenshotBitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
+                outputStream.toByteArray()
+            }
+        }
+        screenshotBitmap.recycle()
+
+        val fileName = "search_${InGameVars.currentAccountNumber}_${System.currentTimeMillis()}.png"
+        val requestBody = MultipartBody.Builder()
+            .setType(MultipartBody.FORM)
+            .addFormDataPart(
+                "image",
+                fileName,
+                imageBytes.toRequestBody("image/png".toMediaTypeOrNull())
+            )
+            .build()
+
+        withContext(Dispatchers.IO) {
+            UrlFallbackUtil.executeWithFallbackAndReadBody(
+                endpoint = "api/bug-report",
+                requestBuilder = { baseUrl ->
+                    Request.Builder()
+                        .url("${baseUrl}api/bug-report")
+                        .post(requestBody)
+                        .build()
+                }
+            )
+        }
+
+        // Update timestamp after successful upload
+        val currentMinutes = System.currentTimeMillis() / 60_000
+        writeMemory(screenshotKey, currentMinutes.toString())
+    } catch (e: Exception) {
+        ShowMessage("Screenshot upload failed: ${e.message}")
+    }
 }

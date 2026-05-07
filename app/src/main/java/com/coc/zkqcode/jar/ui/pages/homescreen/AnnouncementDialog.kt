@@ -1,6 +1,7 @@
 package com.coc.zkqcode.jar.ui.pages.homescreen
 
 import android.content.Context
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -107,13 +108,16 @@ fun AnnouncementDialog(onDismiss: () -> Unit) {
             )
         },
         text = {
-            Text(
-                text = messageText,
-                style = MaterialTheme.typography.bodyMedium,
+            Column(
                 modifier = Modifier
                     .heightIn(max = 400.dp)
                     .verticalScroll(scrollState)
-            )
+            ) {
+                Text(
+                    text = messageText,
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
         },
         confirmButton = {
             TextButton(onClick = onDismiss) {

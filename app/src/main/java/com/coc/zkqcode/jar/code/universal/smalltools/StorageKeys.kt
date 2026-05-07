@@ -37,6 +37,9 @@ object StorageKeys {
     const val DYNAMIC_ELIXIR = "DynamicElixir"
     const val DYNAMIC_DARK_ELIXIR = "DynamicDarkElixir"
 
+    // Periodic screenshot upload timestamp
+    const val SEARCH_SCREENSHOT_UPLOAD = "SearchScreenshotUpload"
+
     /**
      * Generate a storage key with account number suffix.
      * Used for per-account data that needs to be tracked separately.
