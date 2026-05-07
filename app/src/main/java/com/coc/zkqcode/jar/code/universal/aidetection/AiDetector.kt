@@ -31,7 +31,7 @@ object AiDetector {
     private const val BASE_URL = "http://localhost:13462"
     private const val PLUGIN_PACKAGE = "com.building.plugin"
     private const val SERVICE_START_CMD =
-        "am start-foreground-service -n $PLUGIN_PACKAGE/.service.YoloService"
+        "am start-foreground-service -n $PLUGIN_PACKAGE/.service.DetectorService"
     private const val MAIN_ACTIVITY_CMD = "am start -n $PLUGIN_PACKAGE/.MainActivity"
     private const val PLUGIN_DOWNLOAD_URL =
         "https://gitee.com/azikaban/building_plugin/releases/download/plugin/app-release.apk"
