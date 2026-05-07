@@ -40,15 +40,42 @@ suspend fun setZKQInputMethod() {
     //    After switching, Android binds the service asynchronously — onCreate() may not
     //    have fired yet, leaving ZKQInputMethodService.instance null.
     if (ZKQInputMethodService.instance == null) {
-        val maxWaitMs = 5000
+        val maxWaitMs = 3000
         val intervalMs = 100L
         var waited = 0
         while (ZKQInputMethodService.instance == null && waited < maxWaitMs) {
             delay(intervalMs)
             waited += intervalMs.toInt()
         }
+    }
+
+    // 4. If still null, force-trigger IME binding by showing/hiding the keyboard.
+    //    Some ROMs only bind the IME when a text field requests input.
+    if (ZKQInputMethodService.instance == null) {
+        showDebugInfo("IME not bound after initial wait, force-triggering keyboard binding...")
+        // Open a transient text input context to force the system to bind our IME
+        RunShell.run("input keyevent 66", checkIsPlaying = false) // KEYCODE_ENTER — triggers IME bind on some ROMs
+        delay(500)
+        // Alternative: use ime command to force rebind
+        RunShell.run("ime disable $imeId", checkIsPlaying = false)
+        delay(200)
+        RunShell.run("ime enable $imeId", checkIsPlaying = false)
+        delay(200)
+        RunShell.run("ime set $imeId", checkIsPlaying = false)
+        delay(1000)
+
+        // Final wait
+        val maxRetryMs = 5000
+        val retryInterval = 200L
+        var retryWaited = 0
+        while (ZKQInputMethodService.instance == null && retryWaited < maxRetryMs) {
+            delay(retryInterval)
+            retryWaited += retryInterval.toInt()
+        }
+
         if (ZKQInputMethodService.instance == null) {
-            logAndRestart("输入法服务启动超时 (${maxWaitMs}ms)，请检查输入法权限设置", false)
+            logAndRestart("输入法服务绑定失败，已尝试强制绑定。请检查系统设置中输入法权限。", false)
         }
     }
+    showDebugInfo("IME service bound successfully")
 }

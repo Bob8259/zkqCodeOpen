@@ -1,6 +1,8 @@
 package com.coc.zkqcode.core.app
 
+import android.annotation.SuppressLint
 import android.app.Application
+import android.content.Context
 import com.coc.zkqcode.core.util.fileactions.LogHelper
 import com.topjohnwu.superuser.Shell
 import timber.log.Timber
@@ -8,6 +10,7 @@ import timber.log.Timber
 class ZKQApplication : Application() {
     override fun onCreate() {
         super.onCreate()
+        appContext = this
         // Initialize Timber as early as possible so logging is available before any crash
         LogHelper.initTimber(this)
         // Install a global uncaught exception handler to log all crashes
@@ -47,5 +50,13 @@ class ZKQApplication : Application() {
     companion object {
         @Volatile
         private var libSuInitialized = false
+
+        /**
+         * Application-level context available throughout the app lifecycle.
+         * Set in onCreate() before any other initialization.
+         */
+        @SuppressLint("StaticFieldLeak")
+        lateinit var appContext: Context
+            private set
     }
 }

@@ -1,6 +1,6 @@
 package com.coc.zkqcode.jar.code.universal.tutorial
 
-import com.coc.zkqcode.core.system.inputmethod.ZKQInputMethodService
+import com.coc.zkqcode.core.system.inputmethod.inputTextReliable
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
@@ -158,7 +158,7 @@ suspend fun mainBaseTutorial(): Boolean {
             gameName += InGameVars.currentAccountNumber
         }
 
-        ZKQInputMethodService.instance?.inputText(gameName) ?: logAndRestart("获取输入法失败")
+        inputTextReliable(gameName)
         TouchActions.tap(641, 368, delayTime = 300)
     }
 

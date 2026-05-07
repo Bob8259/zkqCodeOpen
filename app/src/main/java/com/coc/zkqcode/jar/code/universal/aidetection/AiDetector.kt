@@ -4,8 +4,8 @@ import android.graphics.Bitmap
 import android.graphics.RectF
 import android.os.Handler
 import android.os.Looper
+import com.coc.zkqcode.core.app.ZKQApplication
 import com.coc.zkqcode.core.util.basic.RunShell
-import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.jar.code.universal.smalltools.runGame
 import com.google.gson.Gson
@@ -67,11 +67,7 @@ object AiDetector {
      * previously stored by ShowMessage and writes the temporary APK into private storage.
      */
     private fun getPluginApkFile(): File? {
-        val context = ShowMessage.getContext()
-        if (context == null) {
-            accountMessage("建筑插件安装失败：上下文未初始化")
-            return null
-        }
+        val context = ZKQApplication.appContext
         val downloadDir = File(context.filesDir, PLUGIN_DOWNLOAD_DIR)
         if (!downloadDir.exists() && !downloadDir.mkdirs()) {
             accountMessage("建筑插件安装失败：无法创建下载目录")

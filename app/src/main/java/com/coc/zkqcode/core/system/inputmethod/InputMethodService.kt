@@ -2,7 +2,11 @@ package com.coc.zkqcode.core.system.inputmethod
 
 import android.content.ClipboardManager
 import android.inputmethodservice.InputMethodService
+import com.coc.zkqcode.core.util.basic.ClipboardHelper
+import com.coc.zkqcode.core.util.basic.RunShell
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
+import com.coc.zkqcode.core.util.fileactions.LogHelper.showDebugInfo
+import kotlinx.coroutines.delay
 
 /**
  * Custom Input Method Service that provides a function to read the clipboard.
@@ -53,4 +57,29 @@ class ZKQInputMethodService : InputMethodService() {
         // 第二个参数 1 表示将光标移动到输入文字之后的第1个位置
         ic.commitText(text, 1)
     }
+}
+
+/**
+ * Reliable text input that works even when ZKQInputMethodService is not bound.
+ * Strategy:
+ *   1. Try IME commitText (fastest, handles all characters)
+ *   2. Fallback: set clipboard + simulate paste via shell (handles CJK)
+ */
+suspend fun inputTextReliable(text: String) {
+    val imeInstance = ZKQInputMethodService.instance
+    if (imeInstance != null) {
+        try {
+            imeInstance.inputText(text)
+            return
+        } catch (_: Exception) {
+            // IME instance exists but inputConnection failed — fall through to fallback
+        }
+    }
+
+    // Fallback: clipboard paste approach (works with CJK characters)
+    showDebugInfo("IME instance unavailable, using clipboard paste fallback for: $text")
+    ClipboardHelper.setClipboard(text)
+    delay(100) // Allow clipboard to settle
+    // Simulate Ctrl+V paste via key events
+    RunShell.run("input keyevent 279", checkIsPlaying = false) // KEYCODE_PASTE
 }
