@@ -76,5 +76,7 @@ object MyColors : IUIColors by UIColors, IFeatureColors by FeatureColors, IClanG
     val SailUP = ColorSchema.parse(
         691, 530, 726, 578, "3F41B7", "7|0|C4DEF2,14|0|3E41B3,21|0|CBE2F4,28|0|4143AA,0|24|4B6A9C,7|24|5D80AB,14|24|756D74,21|24|776A6B,28|24|9F9591", 0, 0.9, "启航"
     )
-
+    val BuilderMaster2 = ColorSchema.parse(
+        978, 484, 1126, 690, "143177", "29|0|123279,59|0|1C4593,89|0|3E537F,118|0|3A4E79,0|103|0E1D41,29|103|102045,59|103|273F70,89|103|08122F,118|103|79522B", 0, 0.9, "睡觉建筑大师2"
+    )
 }

@@ -8,7 +8,7 @@ import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 suspend fun builderBaseTutorial(): Boolean {
     // 1. Upgrade Builder Base TH
     listOf(
-        MyColors.UpgradeBuilderBaseTH, MyColors.UpgradeBarbarian, MyColors.BuilderMaster, MyColors.SailUP
+        MyColors.UpgradeBuilderBaseTH, MyColors.UpgradeBarbarian, MyColors.BuilderMaster, MyColors.SailUP, MyColors.BuilderMaster2
     ).forEach { schema ->
         findMultiColors(schema = schema, increment = 1)?.let {
             TouchActions.tap(it.x, it.y)
