@@ -70,10 +70,19 @@ suspend fun getJsonData(): Boolean {
         clickRightBottom(1)
         return enterMainScreen()
     }
+    // Townhall is identified by data == 1000001
+    val townHallBuilding = buildings.firstOrNull {
+        it.asJsonObject.get("data").asInt == 1000001
+    }
+    if (townHallBuilding == null) {
+        accountMessage("JSON中未找到大本营(1000001)数据，跳过大本营等级检测")
+        clickRightBottom(1)
+        return enterMainScreen()
+    }
     val firstBuildingLvl = try {
-        buildings[0].asJsonObject.get("lvl").asInt
+        townHallBuilding.asJsonObject.get("lvl").asInt
     } catch (e: Exception) {
-        accountMessage("无法从buildings中读取lvl字段，跳过大本营等级检测")
+        accountMessage("无法从大本营数据中读取lvl字段，跳过大本营等级检测")
         clickRightBottom(1)
         return enterMainScreen()
     }

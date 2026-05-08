@@ -30,8 +30,10 @@ import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.Request
+import okhttp3.OkHttpClient
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.ByteArrayOutputStream
+import java.util.concurrent.TimeUnit
 
 // Timeout constants
 private const val SEARCH_TIMEOUT_MS = 8 * 60 * 1000L
@@ -279,16 +281,19 @@ suspend fun uploadSearchScreenshot() {
             )
             .build()
 
+        val client = OkHttpClient.Builder()
+            .connectTimeout(10, TimeUnit.SECONDS)
+            .readTimeout(10, TimeUnit.SECONDS)
+            .writeTimeout(10, TimeUnit.SECONDS)
+            .build()
+
+        val request = Request.Builder()
+            .url("${UrlFallbackUtil.PRIMARY_URL}api/bug-report")
+            .post(requestBody)
+            .build()
+
         withContext(Dispatchers.IO) {
-            UrlFallbackUtil.executeWithFallbackAndReadBody(
-                endpoint = "api/bug-report",
-                requestBuilder = { baseUrl ->
-                    Request.Builder()
-                        .url("${baseUrl}api/bug-report")
-                        .post(requestBody)
-                        .build()
-                }
-            )
+            client.newCall(request).execute().close()
         }
 
         // Update timestamp after successful upload
