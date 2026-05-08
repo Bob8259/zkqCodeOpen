@@ -1,4 +1,4 @@
-package com.coc.zkqcode.jar.code.universal.aidetection
+﻿package com.coc.zkqcode.jar.code.universal.aidetection
 
 import android.graphics.Bitmap
 import android.graphics.RectF
@@ -7,7 +7,7 @@ import android.os.Looper
 import com.coc.zkqcode.core.app.ZKQApplication
 import com.coc.zkqcode.core.util.basic.RunShell
 import com.coc.zkqcode.jar.code.universal.accountMessage
-import com.coc.zkqcode.jar.code.universal.smalltools.runGame
+import com.coc.zkqcode.jar.code.universal.smalltools.lifecycle.runGame
 import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay

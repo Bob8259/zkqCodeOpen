@@ -1,4 +1,4 @@
-package com.coc.zkqcode.jar.code.mainbase.others
+﻿package com.coc.zkqcode.jar.code.mainbase.others
 
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.jar.code.colorschema.MyColors
@@ -7,7 +7,7 @@ import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.jar.code.universal.buildings.BaseType
 import com.coc.zkqcode.jar.code.universal.buildings.WorkerAndResearch
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
-import com.coc.zkqcode.jar.code.universal.smalltools.getConfigOrStop
+import com.coc.zkqcode.jar.code.universal.smalltools.data.getConfigOrStop
 import com.coc.zkqcode.jar.ui.schema.Schema
 import java.util.Calendar
 

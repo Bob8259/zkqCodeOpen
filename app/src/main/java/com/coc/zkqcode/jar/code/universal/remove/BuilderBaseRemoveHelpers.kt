@@ -1,8 +1,8 @@
-package com.coc.zkqcode.jar.code.universal.remove
+﻿package com.coc.zkqcode.jar.code.universal.remove
 
 import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
-import com.coc.zkqcode.jar.code.universal.smalltools.TouchActions
+import com.coc.zkqcode.jar.code.universal.smalltools.input.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.aidetection.tiledAiDetect
 import com.coc.zkqcode.jar.code.universal.GameVersion

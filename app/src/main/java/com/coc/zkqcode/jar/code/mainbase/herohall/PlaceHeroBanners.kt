@@ -1,6 +1,6 @@
-package com.coc.zkqcode.jar.code.mainbase.herohall
+﻿package com.coc.zkqcode.jar.code.mainbase.herohall
 
-import com.coc.zkqcode.jar.code.universal.smalltools.TouchActions
+import com.coc.zkqcode.jar.code.universal.smalltools.input.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.mainbase.others.zoomSmallMainBase
 import com.coc.zkqcode.jar.code.mainbase.upgrade.mainBaseFindBuildButton
@@ -12,9 +12,9 @@ import com.coc.zkqcode.jar.code.universal.buildings.upgrade.moveWithDelay
 import com.coc.zkqcode.jar.code.universal.buildings.upgrade.tryToFindBuildPosition
 import com.coc.zkqcode.jar.code.universal.clickRightBottom
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
-import com.coc.zkqcode.jar.code.universal.smalltools.StorageKeys
-import com.coc.zkqcode.jar.code.universal.smalltools.checkMemoryFile
-import com.coc.zkqcode.jar.code.universal.smalltools.writeMemory
+import com.coc.zkqcode.jar.code.universal.smalltools.data.StorageKeys
+import com.coc.zkqcode.jar.code.universal.smalltools.data.checkMemoryFile
+import com.coc.zkqcode.jar.code.universal.smalltools.data.writeMemory
 
 suspend fun placeHeroBanners(): Boolean {
     if (InGameVars.townHallLevel < 7) return true

@@ -1,4 +1,4 @@
-package com.coc.zkqcode.jar.code.universal.smalltools
+package com.coc.zkqcode.jar.code.universal.smalltools.lifecycle
 
 import com.coc.zkqcode.core.util.basic.RunShell
 import com.coc.zkqcode.jar.code.universal.accountMessage

@@ -66,15 +66,9 @@ object MyColors : IUIColors by UIColors, IFeatureColors by FeatureColors, IClanG
     IUniversalUpgradeColors by UniversalUpgradeColors, IMainBaseUpgradeColors by MainBaseUpgradeColors, IMainBaseResearchColors by MainBaseResearchColors, IMainBaseResearchLevelColors by MainBaseResearchLevelColors,
     IMainBaseResourcesColors by MainBaseResourcesColors, IClanCapitalTutorialColors by ClanCapitalTutorialColors, IMainBaseAttackColors by MainBaseAttackColors, IMainBaseClanColors by MainBaseClanColors,
     IMainBaseClanWarColors by MainBaseClanWarColors, IMainBaseHelperColors by MainBaseHelperColors, IMainBaseHeroHallColors by MainBaseHeroHallColors, IMainBaseSmallTutorialColors by MainBaseSmallTutorialColors,
-    IMainBaseMagicItemColors by MainBaseMagicItemColors, IClanCapitalColors by ClanCapitalColors, IMainBaseShopColors by MainBaseShopColors
-{
+    IMainBaseMagicItemColors by MainBaseMagicItemColors, IClanCapitalColors by ClanCapitalColors, IMainBaseShopColors by MainBaseShopColors {
     //Place Item Colours
-    val ItemsToBePlaced= ColorSchema.parse(        563,
-        461,
-        719,
-        496,
-        "B7FEFF",
-        "0|1|B7FEFF,0|2|B7FEFF,5|12|B7FEFE,5|13|B7FEFE,-24|10|B7FFFF,-117|8|B4FBFB,-115|8|B4FBFC,-112|8|B7FEFE,-110|8|B7FFFF",
-        0,
-        0.9,"")
+    val ItemsToBePlaced = ColorSchema.parse(
+        563, 461, 719, 496, "B7FEFF", "0|1|B7FEFF,0|2|B7FEFF,5|12|B7FEFE,5|13|B7FEFE,-24|10|B7FFFF,-117|8|B4FBFB,-115|8|B4FBFC,-112|8|B7FEFE,-110|8|B7FFFF", 0, 0.9, "待放置的物品"
+    )
 }

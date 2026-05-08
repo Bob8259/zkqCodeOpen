@@ -1,9 +1,11 @@
-package com.coc.zkqcode.jar.code.universal.smalltools
+package com.coc.zkqcode.jar.code.universal.smalltools.scheduling
 
 import com.coc.zkqcode.core.util.basic.RunShell
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
 import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
+import com.coc.zkqcode.jar.code.universal.smalltools.data.getStaticConfig
+import com.coc.zkqcode.jar.code.universal.smalltools.lifecycle.killGame
 import com.coc.zkqcode.jar.ui.schema.Schema
 import kotlinx.coroutines.delay
 

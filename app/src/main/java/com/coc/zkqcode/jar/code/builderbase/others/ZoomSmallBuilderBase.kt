@@ -1,8 +1,8 @@
-package com.coc.zkqcode.jar.code.builderbase.others
+﻿package com.coc.zkqcode.jar.code.builderbase.others
 
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
-import com.coc.zkqcode.jar.code.universal.smalltools.TouchActions.pinchIn
-import com.coc.zkqcode.jar.code.universal.smalltools.TouchActions.swipe
+import com.coc.zkqcode.jar.code.universal.smalltools.input.TouchActions.pinchIn
+import com.coc.zkqcode.jar.code.universal.smalltools.input.TouchActions.swipe
 import com.coc.zkqcode.jar.code.universal.clickRightBottom
 
 suspend fun zoomSmallBuilderBase(isForBuild: Boolean = false) {

@@ -1,4 +1,4 @@
-package com.coc.zkqcode.jar.code.universal.buildings
+﻿package com.coc.zkqcode.jar.code.universal.buildings
 
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
@@ -7,7 +7,7 @@ import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.recognizer.TextRecognizer
-import com.coc.zkqcode.jar.code.universal.smalltools.TouchActions
+import com.coc.zkqcode.jar.code.universal.smalltools.input.TouchActions
 
 /**
  * Detects building names from the screen.

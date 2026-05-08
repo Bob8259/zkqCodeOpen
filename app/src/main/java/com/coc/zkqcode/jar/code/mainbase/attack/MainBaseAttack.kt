@@ -1,4 +1,4 @@
-package com.coc.zkqcode.jar.code.mainbase.attack
+﻿package com.coc.zkqcode.jar.code.mainbase.attack
 
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
@@ -8,13 +8,13 @@ import com.coc.zkqcode.jar.code.universal.buildings.BaseType
 import com.coc.zkqcode.jar.code.universal.clangame.hasAcceptedClanGameTask
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
-import com.coc.zkqcode.jar.code.universal.smalltools.CLAN_GAME_TASK_BASE_MAIN_WORLD
-import com.coc.zkqcode.jar.code.universal.smalltools.TouchActions
-import com.coc.zkqcode.jar.code.universal.smalltools.getBooleanConfigRuntime
-import com.coc.zkqcode.jar.code.universal.smalltools.getConfigRuntime
-import com.coc.zkqcode.jar.code.universal.smalltools.readClanGameAcceptedTaskBase
-import com.coc.zkqcode.jar.code.universal.smalltools.killGame
-import com.coc.zkqcode.jar.code.universal.smalltools.runGame
+import com.coc.zkqcode.jar.code.universal.smalltools.data.CLAN_GAME_TASK_BASE_MAIN_WORLD
+import com.coc.zkqcode.jar.code.universal.smalltools.input.TouchActions
+import com.coc.zkqcode.jar.code.universal.smalltools.data.getBooleanConfigRuntime
+import com.coc.zkqcode.jar.code.universal.smalltools.data.getConfigRuntime
+import com.coc.zkqcode.jar.code.universal.smalltools.data.readClanGameAcceptedTaskBase
+import com.coc.zkqcode.jar.code.universal.smalltools.lifecycle.killGame
+import com.coc.zkqcode.jar.code.universal.smalltools.lifecycle.runGame
 import com.coc.zkqcode.jar.ui.schema.Schema
 import kotlinx.coroutines.delay
 

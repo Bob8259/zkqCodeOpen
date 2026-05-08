@@ -1,4 +1,4 @@
-package com.coc.zkqcode.jar.code.universal.smalltools
+package com.coc.zkqcode.jar.code.universal.smalltools.lifecycle
 
 import android.os.Environment
 import com.coc.zkqcode.core.data.database.GlobalVars
@@ -11,6 +11,7 @@ import com.coc.zkqcode.jar.code.universal.InGameVars
 import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.recognizer.TextRecognizer
+import com.coc.zkqcode.jar.code.universal.smalltools.input.TouchActions
 import com.coc.zkqcode.jar.ui.schema.Schema
 import kotlinx.coroutines.delay
 

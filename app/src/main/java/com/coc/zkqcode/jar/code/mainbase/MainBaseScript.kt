@@ -1,4 +1,4 @@
-package com.coc.zkqcode.jar.code.mainbase
+﻿package com.coc.zkqcode.jar.code.mainbase
 
 
 import com.coc.zkqcode.jar.code.clancapital.playClanCapital
@@ -26,7 +26,7 @@ import com.coc.zkqcode.jar.code.mainbase.research.mainBaseResearch
 import com.coc.zkqcode.jar.code.universal.buildings.BaseType
 import com.coc.zkqcode.jar.code.universal.buildings.upgradeWallsThenBuildings
 import com.coc.zkqcode.jar.code.universal.clangame.collectClanGameReward
-import com.coc.zkqcode.jar.code.universal.smalltools.enterMainBase
+import com.coc.zkqcode.jar.code.universal.smalltools.lifecycle.enterMainBase
 
 suspend fun playMainBase(): Boolean {
     if (!enterMainBase()) return false

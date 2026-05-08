@@ -1,11 +1,11 @@
-package com.coc.zkqcode.jar.code.universal.buildings.upgrade
+﻿package com.coc.zkqcode.jar.code.universal.buildings.upgrade
 
 import android.graphics.Bitmap
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
-import com.coc.zkqcode.jar.code.universal.smalltools.TouchActions
+import com.coc.zkqcode.jar.code.universal.smalltools.input.TouchActions
 import com.coc.zkqcode.jar.code.universal.aidetection.AiDetector
 import com.coc.zkqcode.jar.code.builderbase.others.zoomSmallBuilderBase
 import com.coc.zkqcode.jar.code.builderbase.upgrade.builderBaseFindBuildButton
@@ -19,8 +19,8 @@ import com.coc.zkqcode.jar.code.universal.buildings.iterateBuilderBaseBuildingUp
 import com.coc.zkqcode.jar.code.universal.clickRightBottom
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
-import com.coc.zkqcode.jar.code.universal.smalltools.getBooleanConfigRuntime
-import com.coc.zkqcode.jar.code.universal.smalltools.getConfigRuntime
+import com.coc.zkqcode.jar.code.universal.smalltools.data.getBooleanConfigRuntime
+import com.coc.zkqcode.jar.code.universal.smalltools.data.getConfigRuntime
 import com.coc.zkqcode.jar.ui.schema.Schema
 import kotlin.math.sqrt
 

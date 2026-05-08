@@ -1,8 +1,8 @@
-package com.coc.zkqcode.jar.code.mainbase.others
+﻿package com.coc.zkqcode.jar.code.mainbase.others
 
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
-import com.coc.zkqcode.jar.code.universal.smalltools.TouchActions
-import com.coc.zkqcode.jar.code.universal.smalltools.TouchActions.swipe
+import com.coc.zkqcode.jar.code.universal.smalltools.input.TouchActions
+import com.coc.zkqcode.jar.code.universal.smalltools.input.TouchActions.swipe
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.jar.code.universal.InGameVars
@@ -10,9 +10,9 @@ import com.coc.zkqcode.jar.code.universal.clickRightBottom
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
-import com.coc.zkqcode.jar.code.universal.smalltools.StorageKeys
-import com.coc.zkqcode.jar.code.universal.smalltools.checkMemoryFile
-import com.coc.zkqcode.jar.code.universal.smalltools.writeMemory
+import com.coc.zkqcode.jar.code.universal.smalltools.data.StorageKeys
+import com.coc.zkqcode.jar.code.universal.smalltools.data.checkMemoryFile
+import com.coc.zkqcode.jar.code.universal.smalltools.data.writeMemory
 
 suspend fun mainBaseCheckTutorials(): Boolean {
     val storageKey = StorageKeys.withAccountNumber(StorageKeys.MAIN_BASE_CHECK_TUTORIALS, InGameVars.currentAccountNumber)

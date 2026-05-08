@@ -1,10 +1,10 @@
-package com.coc.zkqcode.jar.code.mainbase.others
+﻿package com.coc.zkqcode.jar.code.mainbase.others
 
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
-import com.coc.zkqcode.jar.code.universal.smalltools.TouchActions
-import com.coc.zkqcode.jar.code.universal.smalltools.TouchActions.swipe
+import com.coc.zkqcode.jar.code.universal.smalltools.input.TouchActions
+import com.coc.zkqcode.jar.code.universal.smalltools.input.TouchActions.swipe
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.enterMainScreen

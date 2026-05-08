@@ -1,4 +1,4 @@
-package com.coc.zkqcode.jar.code.universal.smalltools
+package com.coc.zkqcode.jar.code.universal.smalltools.data
 
 import android.annotation.SuppressLint
 import android.os.Environment
@@ -10,6 +10,8 @@ import com.coc.zkqcode.core.util.fileactions.FileHelper
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
 import com.coc.zkqcode.jar.code.universal.GameVersion
 import com.coc.zkqcode.jar.code.universal.InGameVars
+import com.coc.zkqcode.jar.code.universal.smalltools.lifecycle.killGame
+import com.coc.zkqcode.jar.code.universal.smalltools.lifecycle.launchGameAndHandleDataNumberLogin
 import com.coc.zkqcode.jar.ui.schema.Schema
 import com.coc.zkqcode.jar.ui.schema.Schema.ACCOUNT_SETTINGS
 // Helper function: quickly get config value, trigger logAndRestart if empty

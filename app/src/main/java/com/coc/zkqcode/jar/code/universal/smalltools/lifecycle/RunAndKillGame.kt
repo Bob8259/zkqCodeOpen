@@ -1,9 +1,10 @@
-package com.coc.zkqcode.jar.code.universal.smalltools
+package com.coc.zkqcode.jar.code.universal.smalltools.lifecycle
 
 import com.coc.zkqcode.core.util.basic.RunShell
 import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.jar.code.universal.InGameVars
+import com.coc.zkqcode.jar.code.universal.smalltools.data.getStaticConfig
 
 suspend fun runGame() {
     // Launch component string is defined in GameVersion enum, keeping version-specific details centralized

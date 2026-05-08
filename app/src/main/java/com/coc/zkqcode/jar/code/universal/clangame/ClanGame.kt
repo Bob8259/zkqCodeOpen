@@ -1,4 +1,4 @@
-package com.coc.zkqcode.jar.code.universal.clangame
+﻿package com.coc.zkqcode.jar.code.universal.clangame
 
 import android.graphics.Bitmap
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
@@ -13,15 +13,15 @@ import com.coc.zkqcode.jar.code.universal.clickRightBottom
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
-import com.coc.zkqcode.jar.code.universal.smalltools.CLAN_GAME_TASK_BASE_MAIN_WORLD
-import com.coc.zkqcode.jar.code.universal.smalltools.CLAN_GAME_TASK_BASE_NIGHT_WORLD
-import com.coc.zkqcode.jar.code.universal.smalltools.CLAN_GAME_TASK_BASE_NONE
-import com.coc.zkqcode.jar.code.universal.smalltools.StorageKeys
-import com.coc.zkqcode.jar.code.universal.smalltools.TouchActions
-import com.coc.zkqcode.jar.code.universal.smalltools.getBooleanConfigRuntime
-import com.coc.zkqcode.jar.code.universal.smalltools.readMemory
-import com.coc.zkqcode.jar.code.universal.smalltools.writeClanGameAcceptedTaskBase
-import com.coc.zkqcode.jar.code.universal.smalltools.writeMemory
+import com.coc.zkqcode.jar.code.universal.smalltools.data.CLAN_GAME_TASK_BASE_MAIN_WORLD
+import com.coc.zkqcode.jar.code.universal.smalltools.data.CLAN_GAME_TASK_BASE_NIGHT_WORLD
+import com.coc.zkqcode.jar.code.universal.smalltools.data.CLAN_GAME_TASK_BASE_NONE
+import com.coc.zkqcode.jar.code.universal.smalltools.data.StorageKeys
+import com.coc.zkqcode.jar.code.universal.smalltools.input.TouchActions
+import com.coc.zkqcode.jar.code.universal.smalltools.data.getBooleanConfigRuntime
+import com.coc.zkqcode.jar.code.universal.smalltools.data.readMemory
+import com.coc.zkqcode.jar.code.universal.smalltools.data.writeClanGameAcceptedTaskBase
+import com.coc.zkqcode.jar.code.universal.smalltools.data.writeMemory
 import com.coc.zkqcode.jar.ui.schema.Schema
 import java.util.Calendar
 import java.util.TimeZone

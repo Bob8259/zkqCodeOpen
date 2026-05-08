@@ -1,7 +1,7 @@
-package com.coc.zkqcode.jar.code.universal.buildings.upgrade
+﻿package com.coc.zkqcode.jar.code.universal.buildings.upgrade
 
 import com.coc.zkqcode.jar.code.universal.accountMessage
-import com.coc.zkqcode.jar.code.universal.smalltools.TouchActions
+import com.coc.zkqcode.jar.code.universal.smalltools.input.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.buildings.BaseType
 import com.coc.zkqcode.jar.code.universal.buildings.iterateBuilderBaseBuildingUpgradeList

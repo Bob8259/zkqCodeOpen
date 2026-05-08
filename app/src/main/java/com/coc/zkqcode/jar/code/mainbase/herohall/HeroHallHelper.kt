@@ -1,7 +1,7 @@
-package com.coc.zkqcode.jar.code.mainbase.herohall
+﻿package com.coc.zkqcode.jar.code.mainbase.herohall
 
-import com.coc.zkqcode.jar.code.universal.smalltools.TouchActions
-import com.coc.zkqcode.jar.code.universal.smalltools.TouchActions.swipe
+import com.coc.zkqcode.jar.code.universal.smalltools.input.TouchActions
+import com.coc.zkqcode.jar.code.universal.smalltools.input.TouchActions.swipe
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.mainbase.others.zoomSmallMainBase
 import com.coc.zkqcode.jar.code.universal.clickRightBottom

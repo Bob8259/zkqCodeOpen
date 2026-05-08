@@ -1,4 +1,4 @@
-package com.coc.zkqcode.jar.code.universal.tutorial
+﻿package com.coc.zkqcode.jar.code.universal.tutorial
 
 import com.coc.zkqcode.core.system.inputmethod.inputTextReliable
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
@@ -6,14 +6,14 @@ import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
-import com.coc.zkqcode.jar.code.universal.smalltools.TouchActions
+import com.coc.zkqcode.jar.code.universal.smalltools.input.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.InGameVars
 import com.coc.zkqcode.jar.code.universal.clickRightBottom
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
-import com.coc.zkqcode.jar.code.universal.smalltools.getStaticConfig
-import com.coc.zkqcode.jar.code.universal.smalltools.reExtractGameSavings
-import com.coc.zkqcode.jar.code.universal.smalltools.setZKQInputMethod
+import com.coc.zkqcode.jar.code.universal.smalltools.data.getStaticConfig
+import com.coc.zkqcode.jar.code.universal.smalltools.lifecycle.reExtractGameSavings
+import com.coc.zkqcode.jar.code.universal.smalltools.input.setZKQInputMethod
 import com.coc.zkqcode.jar.ui.schema.Schema
 
 

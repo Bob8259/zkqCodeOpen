@@ -1,4 +1,4 @@
-package com.coc.zkqcode.jar.code.mainbase.clan
+﻿package com.coc.zkqcode.jar.code.mainbase.clan
 
 import com.coc.zkqcode.core.system.inputmethod.inputTextReliable
 import com.coc.zkqcode.core.util.basic.RunShell
@@ -10,13 +10,13 @@ import com.coc.zkqcode.jar.code.universal.clickRightBottom
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
-import com.coc.zkqcode.jar.code.universal.smalltools.StorageKeys
-import com.coc.zkqcode.jar.code.universal.smalltools.TouchActions
-import com.coc.zkqcode.jar.code.universal.smalltools.checkMemoryFile
-import com.coc.zkqcode.jar.code.universal.smalltools.getBooleanConfigRuntime
-import com.coc.zkqcode.jar.code.universal.smalltools.getConfigRuntime
-import com.coc.zkqcode.jar.code.universal.smalltools.setZKQInputMethod
-import com.coc.zkqcode.jar.code.universal.smalltools.writeMemory
+import com.coc.zkqcode.jar.code.universal.smalltools.data.StorageKeys
+import com.coc.zkqcode.jar.code.universal.smalltools.input.TouchActions
+import com.coc.zkqcode.jar.code.universal.smalltools.data.checkMemoryFile
+import com.coc.zkqcode.jar.code.universal.smalltools.data.getBooleanConfigRuntime
+import com.coc.zkqcode.jar.code.universal.smalltools.data.getConfigRuntime
+import com.coc.zkqcode.jar.code.universal.smalltools.input.setZKQInputMethod
+import com.coc.zkqcode.jar.code.universal.smalltools.data.writeMemory
 import com.coc.zkqcode.jar.ui.schema.Schema
 
 suspend fun joinClan(): Boolean {

@@ -1,4 +1,4 @@
-package com.coc.zkqcode.jar.code.universal.smalltools
+package com.coc.zkqcode.jar.code.universal.smalltools.data
 
 import com.coc.zkqcode.core.system.inputmethod.ZKQInputMethodService
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
@@ -10,6 +10,8 @@ import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.jar.code.universal.clickRightBottom
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
+import com.coc.zkqcode.jar.code.universal.smalltools.input.TouchActions
+import com.coc.zkqcode.jar.code.universal.smalltools.input.setZKQInputMethod
 import com.coc.zkqcode.jar.ui.schema.Schema
 import com.google.gson.Gson
 import com.google.gson.JsonObject

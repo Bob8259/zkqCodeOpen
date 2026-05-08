@@ -1,10 +1,10 @@
-package com.coc.zkqcode.jar.code.builderbase.attack
+﻿package com.coc.zkqcode.jar.code.builderbase.attack
 
 import android.graphics.Point
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
-import com.coc.zkqcode.jar.code.universal.smalltools.TouchActions
-import com.coc.zkqcode.jar.code.universal.smalltools.TouchActions.pinchIn
-import com.coc.zkqcode.jar.code.universal.smalltools.TouchActions.swipe
+import com.coc.zkqcode.jar.code.universal.smalltools.input.TouchActions
+import com.coc.zkqcode.jar.code.universal.smalltools.input.TouchActions.pinchIn
+import com.coc.zkqcode.jar.code.universal.smalltools.input.TouchActions.swipe
 import com.coc.zkqcode.jar.code.builderbase.others.collectBuilderBaseResources
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.jar.code.auth.displayAds
@@ -19,16 +19,16 @@ import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.clangame.hasAcceptedClanGameTask
-import com.coc.zkqcode.jar.code.universal.smalltools.CLAN_GAME_TASK_BASE_NIGHT_WORLD
-import com.coc.zkqcode.jar.code.universal.smalltools.StorageKeys
-import com.coc.zkqcode.jar.code.universal.smalltools.checkMemoryFile
-import com.coc.zkqcode.jar.code.universal.smalltools.checkReconnections
-import com.coc.zkqcode.jar.code.universal.smalltools.getBooleanConfigRuntime
-import com.coc.zkqcode.jar.code.universal.smalltools.getConfigRuntime
-import com.coc.zkqcode.jar.code.universal.smalltools.readClanGameAcceptedTaskBase
-import com.coc.zkqcode.jar.code.universal.smalltools.writeMemory
+import com.coc.zkqcode.jar.code.universal.smalltools.data.CLAN_GAME_TASK_BASE_NIGHT_WORLD
+import com.coc.zkqcode.jar.code.universal.smalltools.data.StorageKeys
+import com.coc.zkqcode.jar.code.universal.smalltools.data.checkMemoryFile
+import com.coc.zkqcode.jar.code.universal.smalltools.lifecycle.checkReconnections
+import com.coc.zkqcode.jar.code.universal.smalltools.data.getBooleanConfigRuntime
+import com.coc.zkqcode.jar.code.universal.smalltools.data.getConfigRuntime
+import com.coc.zkqcode.jar.code.universal.smalltools.data.readClanGameAcceptedTaskBase
+import com.coc.zkqcode.jar.code.universal.smalltools.data.writeMemory
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
-import com.coc.zkqcode.jar.code.universal.smalltools.enterBuilderBase
+import com.coc.zkqcode.jar.code.universal.smalltools.lifecycle.enterBuilderBase
 import com.coc.zkqcode.jar.ui.schema.Schema
 import kotlin.random.Random
 

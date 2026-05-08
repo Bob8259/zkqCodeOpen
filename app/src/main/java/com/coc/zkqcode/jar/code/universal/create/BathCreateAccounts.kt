@@ -1,4 +1,4 @@
-package com.coc.zkqcode.jar.code.universal.create
+﻿package com.coc.zkqcode.jar.code.universal.create
 
 import android.annotation.SuppressLint
 import android.os.Environment
@@ -8,9 +8,9 @@ import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
 import com.coc.zkqcode.jar.code.auth.displayAds
 import com.coc.zkqcode.jar.code.universal.GameVersion
 import com.coc.zkqcode.jar.code.universal.InGameVars
-import com.coc.zkqcode.jar.code.universal.smalltools.getConfigOrStop
-import com.coc.zkqcode.jar.code.universal.smalltools.killGame
-import com.coc.zkqcode.jar.code.universal.smalltools.runGame
+import com.coc.zkqcode.jar.code.universal.smalltools.data.getConfigOrStop
+import com.coc.zkqcode.jar.code.universal.smalltools.lifecycle.killGame
+import com.coc.zkqcode.jar.code.universal.smalltools.lifecycle.runGame
 import com.coc.zkqcode.jar.code.universal.tutorial.AllTutorials
 import com.coc.zkqcode.jar.ui.schema.Schema
 @SuppressLint("SdCardPath")

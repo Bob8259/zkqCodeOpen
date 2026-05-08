@@ -1,10 +1,10 @@
-package com.coc.zkqcode.jar.code.clancapital
+﻿package com.coc.zkqcode.jar.code.clancapital
 
 import android.graphics.Bitmap
 import androidx.core.graphics.get
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
-import com.coc.zkqcode.jar.code.universal.smalltools.TouchActions
+import com.coc.zkqcode.jar.code.universal.smalltools.input.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.mainbase.others.zoomSmallMainBase
 import com.coc.zkqcode.jar.code.universal.accountMessage
@@ -15,10 +15,10 @@ import com.coc.zkqcode.jar.code.universal.clickRightBottom
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
-import com.coc.zkqcode.jar.code.universal.smalltools.StorageKeys
-import com.coc.zkqcode.jar.code.universal.smalltools.killGame
-import com.coc.zkqcode.jar.code.universal.smalltools.runGame
-import com.coc.zkqcode.jar.code.universal.smalltools.writeMemory
+import com.coc.zkqcode.jar.code.universal.smalltools.data.StorageKeys
+import com.coc.zkqcode.jar.code.universal.smalltools.lifecycle.killGame
+import com.coc.zkqcode.jar.code.universal.smalltools.lifecycle.runGame
+import com.coc.zkqcode.jar.code.universal.smalltools.data.writeMemory
 import kotlin.random.Random
 
 suspend fun clanCapitalAttack(): Boolean {

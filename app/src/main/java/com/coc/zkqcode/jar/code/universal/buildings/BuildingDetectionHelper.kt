@@ -1,7 +1,7 @@
-package com.coc.zkqcode.jar.code.universal.buildings
+﻿package com.coc.zkqcode.jar.code.universal.buildings
 
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
-import com.coc.zkqcode.jar.code.universal.smalltools.TouchActions
+import com.coc.zkqcode.jar.code.universal.smalltools.input.TouchActions
 import com.coc.zkqcode.jar.ui.schema.details.BuilderBaseBuildings
 import com.coc.zkqcode.jar.ui.schema.details.MainBaseBuildings
 import kotlin.math.abs

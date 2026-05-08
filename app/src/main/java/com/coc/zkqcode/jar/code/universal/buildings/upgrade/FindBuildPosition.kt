@@ -1,9 +1,9 @@
-package com.coc.zkqcode.jar.code.universal.buildings.upgrade
+﻿package com.coc.zkqcode.jar.code.universal.buildings.upgrade
 
 import android.graphics.Point
 import com.coc.zkqcode.jar.code.universal.buildings.BaseType
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
-import com.coc.zkqcode.jar.code.universal.smalltools.TouchActions
+import com.coc.zkqcode.jar.code.universal.smalltools.input.TouchActions
 import com.coc.zkqcode.jar.code.builderbase.upgrade.builderBaseFindBuildButton
 import com.coc.zkqcode.jar.code.mainbase.upgrade.mainBaseFindBuildButton
 import kotlinx.coroutines.NonCancellable

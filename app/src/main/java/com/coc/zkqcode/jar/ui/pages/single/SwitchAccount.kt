@@ -1,4 +1,4 @@
-package com.coc.zkqcode.jar.ui.pages.single
+﻿package com.coc.zkqcode.jar.ui.pages.single
 
 import android.content.Context
 import android.graphics.BitmapFactory
@@ -38,8 +38,8 @@ import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.util.basic.RunShell
 import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.jar.code.universal.GameVersion
-import com.coc.zkqcode.jar.code.universal.smalltools.writeDataNumberFile
-import com.coc.zkqcode.jar.code.universal.smalltools.writeGameFilesCore
+import com.coc.zkqcode.jar.code.universal.smalltools.data.writeDataNumberFile
+import com.coc.zkqcode.jar.code.universal.smalltools.data.writeGameFilesCore
 import com.coc.zkqcode.jar.ui.components.CustomButton
 import com.coc.zkqcode.jar.ui.components.SettingDropdown
 import com.coc.zkqcode.jar.ui.schema.Schema.GLOBAL_SETTINGS

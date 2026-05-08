@@ -1,4 +1,4 @@
-package com.coc.zkqcode.jar.code.universal.smalltools
+package com.coc.zkqcode.jar.code.universal.smalltools.data
 
 import android.os.Environment
 import com.coc.zkqcode.core.util.fileactions.FileHelper

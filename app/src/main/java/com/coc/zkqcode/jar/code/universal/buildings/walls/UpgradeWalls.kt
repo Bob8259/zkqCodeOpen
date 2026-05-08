@@ -1,4 +1,4 @@
-package com.coc.zkqcode.jar.code.universal.buildings.walls
+﻿package com.coc.zkqcode.jar.code.universal.buildings.walls
 
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.jar.code.colorschema.MyColors
@@ -9,8 +9,8 @@ import com.coc.zkqcode.jar.code.universal.buildings.upgrade.UpgradeResult
 import com.coc.zkqcode.jar.code.universal.buildings.upgrade.WallType
 import com.coc.zkqcode.jar.code.universal.buildings.upgrade.upgradeAllExistingBuildings
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
-import com.coc.zkqcode.jar.code.universal.smalltools.getBooleanConfigRuntime
-import com.coc.zkqcode.jar.code.universal.smalltools.getConfigRuntime
+import com.coc.zkqcode.jar.code.universal.smalltools.data.getBooleanConfigRuntime
+import com.coc.zkqcode.jar.code.universal.smalltools.data.getConfigRuntime
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
 import com.coc.zkqcode.jar.ui.schema.Schema
 import com.coc.zkqcode.jar.code.universal.accountMessage

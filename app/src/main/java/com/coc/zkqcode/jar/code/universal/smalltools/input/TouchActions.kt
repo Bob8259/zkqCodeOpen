@@ -1,4 +1,4 @@
-package com.coc.zkqcode.jar.code.universal.smalltools
+package com.coc.zkqcode.jar.code.universal.smalltools.input
 
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.data.database.ServerConnectionMethod

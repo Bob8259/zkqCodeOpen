@@ -1,4 +1,4 @@
-package com.coc.zkqcode.jar.code.builderbase
+﻿package com.coc.zkqcode.jar.code.builderbase
 
 import com.coc.zkqcode.jar.code.builderbase.attack.builderBaseAttack
 import com.coc.zkqcode.jar.code.builderbase.attack.builderBaseTrainWithConditions
@@ -10,8 +10,8 @@ import com.coc.zkqcode.jar.code.builderbase.others.turnOnClockTower
 import com.coc.zkqcode.jar.code.universal.clangame.clanGame
 import com.coc.zkqcode.jar.code.universal.buildings.BaseType
 import com.coc.zkqcode.jar.code.universal.buildings.upgradeWallsThenBuildings
-import com.coc.zkqcode.jar.code.universal.smalltools.enterBuilderBase
-import com.coc.zkqcode.jar.code.universal.smalltools.getBooleanConfigRuntime
+import com.coc.zkqcode.jar.code.universal.smalltools.lifecycle.enterBuilderBase
+import com.coc.zkqcode.jar.code.universal.smalltools.data.getBooleanConfigRuntime
 import com.coc.zkqcode.jar.ui.schema.Schema
 
 suspend fun playBuilderBase(): Boolean {

@@ -1,4 +1,4 @@
-package com.coc.zkqcode.jar.code
+﻿package com.coc.zkqcode.jar.code
 
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.util.basic.RunShell
@@ -17,15 +17,15 @@ import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.jar.code.universal.create.batchCreateAccounts
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.preCheck
-import com.coc.zkqcode.jar.code.universal.smalltools.runRandomSchedulingScript
-import com.coc.zkqcode.jar.code.universal.smalltools.StorageKeys
-import com.coc.zkqcode.jar.code.universal.smalltools.tapDataNumberEntryButtons
-import com.coc.zkqcode.jar.code.universal.smalltools.checkAndCoolDown
-import com.coc.zkqcode.jar.code.universal.smalltools.getConfigOrStop
-import com.coc.zkqcode.jar.code.universal.smalltools.readMemory
-import com.coc.zkqcode.jar.code.universal.smalltools.setZKQInputMethod
-import com.coc.zkqcode.jar.code.universal.smalltools.writeGameFiles
-import com.coc.zkqcode.jar.code.universal.smalltools.writeMemory
+import com.coc.zkqcode.jar.code.universal.smalltools.scheduling.runRandomSchedulingScript
+import com.coc.zkqcode.jar.code.universal.smalltools.data.StorageKeys
+import com.coc.zkqcode.jar.code.universal.smalltools.lifecycle.tapDataNumberEntryButtons
+import com.coc.zkqcode.jar.code.universal.smalltools.scheduling.checkAndCoolDown
+import com.coc.zkqcode.jar.code.universal.smalltools.data.getConfigOrStop
+import com.coc.zkqcode.jar.code.universal.smalltools.data.readMemory
+import com.coc.zkqcode.jar.code.universal.smalltools.input.setZKQInputMethod
+import com.coc.zkqcode.jar.code.universal.smalltools.data.writeGameFiles
+import com.coc.zkqcode.jar.code.universal.smalltools.data.writeMemory
 import com.coc.zkqcode.jar.ui.schema.Schema
 import com.coc.zkqcode.statehelper.AppMode
 import com.coc.zkqcode.statehelper.AppStateManager
