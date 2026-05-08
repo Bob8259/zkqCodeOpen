@@ -18,7 +18,7 @@ import kotlinx.coroutines.isActive
 object AllTutorials {
 
     suspend fun allBaseTutorial(): Boolean {
-        val durationMillis = 300_000L
+        val durationMillis = 500_000L
         val inputMethodIntervalMillis = 15_000L
         val startTime = System.currentTimeMillis()
         var lastInputMethodTime = 0L
