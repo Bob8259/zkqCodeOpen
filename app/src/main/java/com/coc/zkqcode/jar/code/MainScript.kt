@@ -9,6 +9,7 @@ import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
 import com.coc.zkqcode.jar.code.auth.displayAds
 import com.coc.zkqcode.jar.code.auth.userAuth
 import com.coc.zkqcode.jar.code.builderbase.playBuilderBase
+import com.coc.zkqcode.jar.code.mainbase.daily.checkItemsToBePlaced
 import com.coc.zkqcode.jar.code.mainbase.playMainBase
 import com.coc.zkqcode.jar.code.universal.GameVersion
 import com.coc.zkqcode.jar.code.universal.InGameVars
@@ -59,7 +60,7 @@ suspend fun runMainScript() {
     // 3. Execute main logic loop
     InGameVars.currentAccountNumber = activeAccount
     InGameVars.currentGameVersion = resolveGameVersion(isBatchCreate)
-    InGameVars.adTime = (accountTotal * 5).coerceIn(10, 40)
+    InGameVars.adTime = (accountTotal * 5).coerceIn(10, 30)
     batchCreateAccounts()//Create all needed accounts first.
     // Track elapsed time for periodic hot update checks (updateOption 2)
     var lastUpdateCheckTime = System.currentTimeMillis()
@@ -94,7 +95,7 @@ private fun finishDataNumberEntryOnlyRun() {
 
 private suspend fun runTestCode() {
     while (true) {
-        preCheck()
+        checkItemsToBePlaced()
         accountMessage("测试代码结束")
         delay(500000)
     }

@@ -34,7 +34,7 @@ suspend fun clanCapitalAttack(): Boolean {
         if (!enterMainScreen()) return false
     }
     if (findAttackTarget()) {
-        val endBattleButton = findMultiColorsUntil(schemas = listOf(MyColors.EndBattle), duration = 10000)
+        val endBattleButton = findMultiColorsUntil(schemas = listOf(MyColors.EndBattle), duration = 20000)
         if (endBattleButton == null) {
             accountMessage("未找到结束战斗按钮")
             killGame()

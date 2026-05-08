@@ -28,9 +28,10 @@ suspend fun checkItemsToBePlaced(): Boolean {
         }
 
         if (greenTick != null) {
-            TouchActions.tap(greenTick.x, greenTick.y)
-            delayWithMultiplier(300)
             accountMessage("物品放置成功")
+            TouchActions.tap(greenTick.x, greenTick.y, delayTime = 700)
+            TouchActions.tap(640, 550, delayTime = 700)//store
+            TouchActions.tap(770, 450)//confirm
         } else {
             accountMessage("未找到可放置位置")
         }
