@@ -18,7 +18,7 @@ suspend fun collectBuilderBaseResources(): Boolean {
     TouchActions.swipe(587, 420, 587, 700, delayAfter = 100)
     goldMineAndElixirCollector()
     // Use a label so we can break out of both loops when a cart is found
-    val elixirCart = findMultiColorsUntil(schemas = listOf(MyColors.ElixirCart1, MyColors.ElixirCart2), duration = 200)
+    val elixirCart = findMultiColorsUntil(schemas = listOf(MyColors.ElixirCart1, MyColors.ElixirCart2, MyColors.ElixirCart3), duration = 200)
     if (elixirCart != null) {
         TouchActions.tap(elixirCart.x, elixirCart.y, delayTime = 100)
         val collectButton = findMultiColorsUntil(schemas = listOf(MyColors.CannotCollectExilerCart, MyColors.CollectExilerCart), duration = 200)

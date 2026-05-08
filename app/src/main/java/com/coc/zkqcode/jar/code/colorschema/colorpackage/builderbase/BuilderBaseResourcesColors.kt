@@ -16,6 +16,7 @@ interface IBuilderBaseResourcesColors {
     val BuilderBaseCollectGem3: ColorSchema
     val ElixirCart1: ColorSchema
     val ElixirCart2: ColorSchema
+    val ElixirCart3: ColorSchema
 }
 
 object BuilderBaseResourcesColors : IBuilderBaseResourcesColors {
@@ -29,7 +30,7 @@ object BuilderBaseResourcesColors : IBuilderBaseResourcesColors {
         115, 85, 1130, 610, "10CAEE", "-3|2|44D1EE,1|5|03B2E8,5|5|0DBEF1,4|0|1ED9EF,0|-2|46E9ED,-3|16|71B2A9,-13|4|90C0B9,-14|-3|A4C8C3,11|-2|A3CAC4", 0, 0.92, "收集金币1"
     )
 
-    // Additional gold color variant for builder base resource collection
+    // Additional gold colour variant for builder base resource collection
     override val BuilderBaseCollectGold2 = ColorSchema.parse(
         115, 85, 1130, 610, "46D5F6", "4|0|0DC8F6,3|-3|46EAF5,6|-3|26E3F5,8|-2|1EE2F5,8|1|12CEF6,8|4|08BDF7,4|4|03B4EA,-9|4|93C5BE,17|-3|A9CFCB", 0, 0.92, "收集金币2"
     )
@@ -37,7 +38,7 @@ object BuilderBaseResourcesColors : IBuilderBaseResourcesColors {
         115, 85, 1130, 610, "EA3494", "-3|0|DE217A,-3|-5|EB2C9D,-7|-11|B0D1CC,-11|-8|ABCCC9,10|-6|AFD5CF,3|-1|F294D2,1|2|E02280,-2|5|C41757,-5|5|9D114C", 0, 0.92, "收集圣水1"
     )
 
-    // Additional elixir color variant for builder base resource collection
+    // Additional elixir colour variant for builder base resource collection
     override val BuilderBaseCollectExiler2 = ColorSchema.parse(
         115, 85, 1130, 610, "F14FA8", "5|-2|EE94D1,7|2|E8218F,4|5|E6237D,-3|5|C01759,-3|-1|F055AA,-2|5|C9185C,3|7|D11B5F,13|4|90C1BA,13|-2|9FC5C0", 0, 0.92, "收集圣水2"
     )
@@ -57,5 +58,8 @@ object BuilderBaseResourcesColors : IBuilderBaseResourcesColors {
     )
     override val ElixirCart2 = ColorSchema.parse(
         643, 163, 896, 408, "D42D73", "-2|0|D0276A,1|-4|CC4B95,5|-4|CC8DB7,7|0|DB5CA4,4|5|C6195A,16|6|1B3FC7,14|-8|264BA6,-7|-9|264CA5,-7|10|183CD3", 0, 0.9, "圣水车2"
+    )
+    override val ElixirCart3 = ColorSchema.parse(
+        643, 163, 896, 408, "76B7AE", "3|-1|79B8AF,8|0|76B8AE,17|-2|78B3AB,18|-7|7FADA6,10|-25|84918E,6|-25|84918E,4|-25|84918E,3|-25|84918E,-1|-24|85928E", 0, 0.9, "圣水车3"
     )
 }
