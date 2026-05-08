@@ -6,7 +6,8 @@ import android.net.Uri
 import android.os.PowerManager
 import android.provider.Settings
 import com.coc.zkqcode.core.util.basic.RunShell
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 object BatteryOptimizationHelper {
     /**
@@ -20,25 +21,25 @@ object BatteryOptimizationHelper {
     /**
      * Use root access to add to whitelist. If still false, then start an intent ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS.
      */
-    fun requestIgnoreBatteryOptimizations(context: Context) {
+    suspend fun requestIgnoreBatteryOptimizations(context: Context) {
         val packageName = context.packageName
         if (!isIgnoringBatteryOptimizations(context)) {
-            // Try with root first
-            runBlocking {
-                RunShell.runNoOutput("dumpsys deviceidle whitelist +$packageName", checkIsPlaying = false)
-                RunShell.runNoOutput("cmd deviceidle whitelist +$packageName", checkIsPlaying = false)
-            }
+            // Try with root first.
+            RunShell.runNoOutput("dumpsys deviceidle whitelist +$packageName", checkIsPlaying = false)
+            RunShell.runNoOutput("cmd deviceidle whitelist +$packageName", checkIsPlaying = false)
 
-            // Check again. If still false, then start an intent ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS
+            // Check again. If still false, then start an intent ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS.
             if (!isIgnoringBatteryOptimizations(context)) {
-                try {
-                    val intent = Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS).apply {
-                        data = Uri.parse("package:$packageName")
-                        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                withContext(Dispatchers.Main) {
+                    try {
+                        val intent = Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS).apply {
+                            data = Uri.parse("package:$packageName")
+                            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                        }
+                        context.startActivity(intent)
+                    } catch (e: Exception) {
+                        e.printStackTrace()
                     }
-                    context.startActivity(intent)
-                } catch (e: Exception) {
-                    e.printStackTrace()
                 }
             }
         }

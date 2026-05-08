@@ -1,6 +1,8 @@
 package com.coc.zkqcode.core.util.basic
 
 import com.topjohnwu.superuser.Shell
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 /**
  * Utility for running shell commands.
@@ -14,7 +16,9 @@ object RunShell {
         if (checkIsPlaying) {
             waitForPlay()
         }
-        return Shell.cmd(cmd).exec().out
+        return withContext(Dispatchers.IO) {
+            Shell.cmd(cmd).exec().out
+        }
     }
 
     /**
@@ -25,7 +29,9 @@ object RunShell {
         if (checkIsPlaying) {
             waitForPlay()
         }
-        Shell.cmd(cmd).exec()
+        withContext(Dispatchers.IO) {
+            Shell.cmd(cmd).exec()
+        }
     }
 
     /**
@@ -33,9 +39,6 @@ object RunShell {
      * @param checkIsPlaying if true, waits until the script is playing before executing
      */
     suspend fun runAndGetFirst(cmd: String, checkIsPlaying: Boolean = true): String {
-        if (checkIsPlaying) {
-            waitForPlay()
-        }
         return run(cmd, checkIsPlaying).firstOrNull { it.isNotBlank() } ?: ""
     }
 

@@ -39,6 +39,8 @@ import com.coc.zkqcode.core.ui.localcomponents.LocalCustomButton
 import com.coc.zkqcode.core.util.basic.RunShell
 import com.coc.zkqcode.statehelper.AppMode
 import com.coc.zkqcode.statehelper.AppStateManager
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 // Local colour palette mirroring AppColors from the jar module
 private val ColorPrimary     = Color(0xFF4299E1)
@@ -51,9 +53,11 @@ fun CheckRootScreen() {
     val context = LocalContext.current
     var status by remember { mutableStateOf(RootStatus.CHECKING) }
 
-    // 使用 LaunchedEffect 监听并检测
+    // Use LaunchedEffect to perform startup checks without blocking the main thread.
     LaunchedEffect(Unit) {
-        CheckIntergrity.checkAppIntegrity(context)
+        withContext(Dispatchers.IO) {
+            CheckIntergrity.checkAppIntegrity(context)
+        }
         status = PermissionManager.checkAndGrantPermissions(context) { newStatus ->
             status = newStatus
         }
@@ -107,13 +111,15 @@ fun CheckRootScreen() {
             RootStatus.GRANTED -> {
                 // Initialize ServerActions and Configs once Root is GRANTED
                 LaunchedEffect(Unit) {
-                    // Get and store default IME
-                    RunShell.runNoOutput("appops set com.coc.zkqcode PROJECT_MEDIA allow", checkIsPlaying = false)
-                    RunShell.runNoOutput("cmd appops set com.coc.zkqcode PROJECT_MEDIA allow", checkIsPlaying = false)
-                    if (GlobalVars.defaultInputMethod == null) {
-                        val result = RunShell.run("settings get secure default_input_method", checkIsPlaying = false)
-                        if (result.isNotEmpty()) {
-                            GlobalVars.defaultInputMethod = result[0]
+                    withContext(Dispatchers.IO) {
+                        // Get and store default IME.
+                        RunShell.runNoOutput("appops set com.coc.zkqcode PROJECT_MEDIA allow", checkIsPlaying = false)
+                        RunShell.runNoOutput("cmd appops set com.coc.zkqcode PROJECT_MEDIA allow", checkIsPlaying = false)
+                        if (GlobalVars.defaultInputMethod == null) {
+                            val result = RunShell.run("settings get secure default_input_method", checkIsPlaying = false)
+                            if (result.isNotEmpty()) {
+                                GlobalVars.defaultInputMethod = result[0]
+                            }
                         }
                     }
 
