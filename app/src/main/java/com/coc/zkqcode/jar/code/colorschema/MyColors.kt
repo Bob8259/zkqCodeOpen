@@ -71,4 +71,10 @@ object MyColors : IUIColors by UIColors, IFeatureColors by FeatureColors, IClanG
     val ItemsToBePlaced = ColorSchema.parse(
         563, 461, 719, 496, "B7FEFF", "0|1|B7FEFF,0|2|B7FEFF,5|12|B7FEFE,5|13|B7FEFE,-24|10|B7FFFF,-117|8|B4FBFB,-115|8|B4FBFC,-112|8|B7FEFE,-110|8|B7FFFF", 0, 0.9, "待放置的物品"
     )
+
+    //Builder Base Tutorial Colours
+    val SailUP = ColorSchema.parse(
+        691, 530, 726, 578, "3F41B7", "7|0|C4DEF2,14|0|3E41B3,21|0|CBE2F4,28|0|4143AA,0|24|4B6A9C,7|24|5D80AB,14|24|756D74,21|24|776A6B,28|24|9F9591", 0, 0.9, "启航"
+    )
+
 }
