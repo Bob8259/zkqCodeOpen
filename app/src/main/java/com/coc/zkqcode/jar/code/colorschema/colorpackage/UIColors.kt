@@ -57,6 +57,7 @@ interface IUIColors {
     val ReturnTask4: ColorSchema
     val ClanLeagueReturnCamp: ColorSchema
     val UpgradeNotification: ColorSchema
+    val GameSettings: ColorSchema
 }
 
 object UIColors : IUIColors {
@@ -255,5 +256,10 @@ object UIColors : IUIColors {
     // Upgrade notification popup
     override val UpgradeNotification = ColorSchema.parse(
         414, 478, 584, 545, "69C3FE", "34|0|69C3FE,68|0|69C3FE,102|0|69C3FE,136|0|69C3FE,0|33|2554DF,34|33|2554DF,68|33|2554DF,102|33|2554DF,136|33|2554DF", 0, 0.9, "升级通知"
+    )
+
+    // Game settings button
+    override val GameSettings = ColorSchema.parse(
+        1167, 40, 1252, 390, "FFFFFF", "-12|4|E8F9F7,-19|-5|FFFFFF,-13|-15|FFFFFF,9|5|E4F7F5,21|11|E4F7F5,22|2|FFFFFF,2|15|E3F5F5,-4|18|E4F7F5,1|24|F0FEFC", 0, 0.9, "游戏设置"
     )
 }

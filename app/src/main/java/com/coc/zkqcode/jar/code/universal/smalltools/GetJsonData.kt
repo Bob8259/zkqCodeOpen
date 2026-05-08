@@ -3,10 +3,12 @@ package com.coc.zkqcode.jar.code.universal.smalltools
 import com.coc.zkqcode.core.system.inputmethod.ZKQInputMethodService
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
+import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.GameVersion
 import com.coc.zkqcode.jar.code.universal.InGameVars
 import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.jar.code.universal.clickRightBottom
+import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.ui.schema.Schema
 import com.google.gson.Gson
@@ -22,10 +24,13 @@ suspend fun getJsonData(): Boolean {
         TouchActions.tap(910, 450)//copy
     } else {
         TouchActions.tap(1230, 450)//arrow
-        TouchActions.tap(1210, 250)//settings
-        TouchActions.tap(630, 610)//more settings
-        TouchActions.swipe(630, 500, 630, -1500, delayAfter = 400)
-        TouchActions.tap(900, 300)//copy
+        val settings = findMultiColorsUntil(listOf(MyColors.GameSettings), 1000)
+        if (settings != null) {
+            TouchActions.tap(settings.x, settings.y)
+            TouchActions.tap(630, 610)//more settings
+            TouchActions.swipe(630, 500, 630, -1500, delayAfter = 400)
+            TouchActions.tap(900, 300)//copy
+        }
     }
 
     // Wait for clipboard to be populated after copy action
