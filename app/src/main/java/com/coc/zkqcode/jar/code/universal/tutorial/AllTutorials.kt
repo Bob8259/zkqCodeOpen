@@ -11,6 +11,7 @@ import com.coc.zkqcode.jar.code.universal.InGameVars
 import com.coc.zkqcode.jar.code.universal.smalltools.checkReconnections
 import com.coc.zkqcode.jar.code.universal.smalltools.isGameAtFront
 import com.coc.zkqcode.jar.code.universal.smalltools.runGame
+import com.coc.zkqcode.jar.code.universal.smalltools.setZKQInputMethod
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.isActive
 
@@ -18,13 +19,21 @@ object AllTutorials {
 
     suspend fun allBaseTutorial(): Boolean {
         val durationMillis = 300_000L
+        val inputMethodIntervalMillis = 15_000L
         val startTime = System.currentTimeMillis()
+        var lastInputMethodTime = 0L
 
         while (currentCoroutineContext().isActive) {
             val currentTime = System.currentTimeMillis()
             val elapsed = currentTime - startTime
 
             if (elapsed >= durationMillis) return false
+
+            // Run setZKQInputMethod() every 15 seconds
+            if (currentTime - lastInputMethodTime >= inputMethodIntervalMillis) {
+                setZKQInputMethod()
+                lastInputMethodTime = currentTime
+            }
 
             val remainingSeconds = ((durationMillis - elapsed) / 1000).toInt()
             accountMessage("教程中，还剩${remainingSeconds}秒")

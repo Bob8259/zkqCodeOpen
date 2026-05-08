@@ -9,12 +9,11 @@ import kotlinx.coroutines.delay
 suspend fun setZKQInputMethod() {
     val imeId = "com.coc.zkqcode/.core.system.inputmethod.ZKQInputMethodService"
 
-    // 1. Try the standard `ime enable` + `ime set` path first
-    RunShell.run("ime enable $imeId")
-
     val currentIme = RunShell.runAndGetFirst("settings get secure default_input_method")
 
     if (currentIme != imeId) {
+        // 1. Try the standard `ime enable` + `ime set` path first
+        RunShell.run("ime enable $imeId")
         RunShell.run("ime set $imeId")
 
         // 2. Verify `ime set` actually worked — some ROMs silently ignore it
