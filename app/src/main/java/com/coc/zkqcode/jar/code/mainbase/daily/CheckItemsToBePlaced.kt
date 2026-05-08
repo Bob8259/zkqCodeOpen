@@ -1,9 +1,15 @@
 package com.coc.zkqcode.jar.code.mainbase.daily
 
+import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.mainbase.others.zoomSmallMainBase
+import com.coc.zkqcode.jar.code.mainbase.upgrade.mainBaseFindBuildButton
 import com.coc.zkqcode.jar.code.universal.accountMessage
+import com.coc.zkqcode.jar.code.universal.buildings.BaseType
+import com.coc.zkqcode.jar.code.universal.buildings.upgrade.BuildButtonType
+import com.coc.zkqcode.jar.code.universal.buildings.upgrade.tryToFindBuildPosition
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
+import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.smalltools.input.TouchActions
 
 suspend fun checkItemsToBePlaced(): Boolean {
@@ -12,7 +18,24 @@ suspend fun checkItemsToBePlaced(): Boolean {
         accountMessage("准备放置物品")
         zoomSmallMainBase(isForBuild = true)
         TouchActions.tap(620, 560)
-        //TODO: Apply the building logic here.
-        // Check for main base green tick, if not found, then use the function that can find build position to find the position.
+        // Check for green tick (valid placement position)
+        var greenTick = mainBaseFindBuildButton(type = BuildButtonType.Tick)
+
+        if (greenTick == null) {
+            // No valid position at current location, try to find one
+            accountMessage("放置失败，尝试寻找空位")
+            greenTick = tryToFindBuildPosition(BaseType.Main)
+        }
+
+        if (greenTick != null) {
+            TouchActions.tap(greenTick.x, greenTick.y)
+            delayWithMultiplier(300)
+            accountMessage("物品放置成功")
+        } else {
+            accountMessage("未找到可放置位置")
+        }
+
+        return enterMainScreen()
     }
+    return true
 }

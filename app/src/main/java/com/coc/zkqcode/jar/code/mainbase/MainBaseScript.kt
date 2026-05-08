@@ -11,6 +11,7 @@ import com.coc.zkqcode.jar.code.mainbase.clan.clanWar
 import com.coc.zkqcode.jar.code.mainbase.clan.donateToClan
 import com.coc.zkqcode.jar.code.mainbase.clan.joinClan
 import com.coc.zkqcode.jar.code.mainbase.clan.requestReinforcement
+import com.coc.zkqcode.jar.code.mainbase.daily.checkItemsToBePlaced
 import com.coc.zkqcode.jar.code.mainbase.herohall.placeHeroBanners
 import com.coc.zkqcode.jar.code.mainbase.herohall.upgradeGearsAndPets
 import com.coc.zkqcode.jar.code.mainbase.daily.checkLeagueShop
@@ -30,6 +31,7 @@ import com.coc.zkqcode.jar.code.universal.smalltools.lifecycle.enterMainBase
 
 suspend fun playMainBase(): Boolean {
     if (!enterMainBase()) return false
+    if (!checkItemsToBePlaced()) return false
     if (!checkRandomSchedule()) return false
     if (!playClanCapital()) return false
     if (!clanGame(BaseType.Main)) return false
