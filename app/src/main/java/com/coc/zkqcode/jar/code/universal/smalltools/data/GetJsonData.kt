@@ -19,6 +19,7 @@ import com.google.gson.JsonSyntaxException
 
 suspend fun getJsonData(): Boolean {
     if (!getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.SMART_DECISION.key)) return true
+    accountMessage("准备读取账号数据，请稍后")
     if (InGameVars.currentGameVersion != GameVersion.CN) {
         TouchActions.tap(1230, 520)//settings
         TouchActions.tap(630, 610)//more settings

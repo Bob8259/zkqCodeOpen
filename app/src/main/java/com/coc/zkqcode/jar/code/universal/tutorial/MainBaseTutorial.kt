@@ -105,7 +105,7 @@ suspend fun mainBaseTutorial(): Boolean {
     }
 
     // Wizard Attack / Blue Troop anti-stuck (Restart App)
-    // Check for the multi-color schema before executing the sequence
+    // Check for the multicolour schema before executing the sequence
     findMultiColors(schema = MyColors.TutorialBlueTroop, increment = 1)?.let {
         // Define the tap sequence as a list of pairs (x, y)
         val tapPoints = listOf(
@@ -162,9 +162,9 @@ suspend fun mainBaseTutorial(): Boolean {
         TouchActions.tap(641, 368, delayTime = 300)
     }
 
-    // Tutorial Conclusion and Cleanup
+    // Tutorial Conclusion and Clean-up
     findMultiColors(schema = MyColors.TrainTroops, increment = 1)?.let {
-        accountMessage("教程结束，即将进行首尾工作")
+        accountMessage("教程结束，即将进行收尾工作")
 
         // Worker tap sequence
         TouchActions.tap(598, 43, delayTime = 300)
