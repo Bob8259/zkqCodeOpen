@@ -1,5 +1,6 @@
-﻿package com.coc.zkqcode.jar.code.mainbase.others
+﻿package com.coc.zkqcode.jar.code.mainbase.daily
 
+import com.coc.zkqcode.jar.code.mainbase.others.zoomSmallMainBase
 import com.coc.zkqcode.jar.code.universal.smalltools.input.TouchActions
 import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.jar.code.universal.InGameVars
