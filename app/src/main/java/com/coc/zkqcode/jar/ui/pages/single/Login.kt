@@ -194,7 +194,7 @@ fun LoginScreen(onAdFreeClick: () -> Unit = {}) {
                 }
             } catch (e: Exception) {
                 val errorMsg = e.message ?: ""
-                gemInfo = if (errorMsg.contains("403")) {
+                gemInfo = if (errorMsg.contains("邮箱或密码错误")) {
                     "邮箱或密码错误，请检查后重试"
                 } else {
                     "登录失败: $errorMsg"
