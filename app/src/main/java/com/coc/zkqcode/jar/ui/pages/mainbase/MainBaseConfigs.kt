@@ -43,7 +43,13 @@ fun LazyListScope.mainBaseConfig(
             SettingInputRow(key = "${MAIN_BASE_SETTINGS.CONFIG_REMARK.key}_c$index")
             SettingSwitchIcon(
                 key = "${MAIN_BASE_SETTINGS.SMART_DECISION.key}_c$index",
-                explain = "开启后，辅助会自动检测大本营等级，并根据大本营等级跳过部分内容（例如升级装备，战宠等）从而提升运行效率。"
+                explain = "开启后，辅助会自动检测大本营等级，并根据大本营等级跳过部分内容（例如升级装备，战宠等）从而提升运行效率。",
+                afterChange = { checked ->
+                    if (!checked) {
+                        GlobalVars.configStates["${MAIN_BASE_SETTINGS.SAVE_WORKER_BUILD_AFTER_WALL_FULL.key}_c$index"]?.value = "0"
+                        GlobalVars.configStates["${BUILDER_BASE_SETTINGS.BUILDER_BASE_SAVE_WORKER_BUILD_AFTER_WALL_FULL.key}_c$index"]?.value = "0"
+                    }
+                }
             )
             AnimatedVisibility(
                 visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.SMART_DECISION.key}_c$index"]?.value == "1"
@@ -258,6 +264,15 @@ fun LazyListScope.mainBaseConfig(
                 )
                 SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.WALL_UPGRADE_SETTINGS.key}_c$index")
                 SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.SAVE_WORKER.key}_c$index")
+                SettingSwitchIcon(
+                    key = "${MAIN_BASE_SETTINGS.SAVE_WORKER_BUILD_AFTER_WALL_FULL.key}_c$index",
+                    explain = "本功能依赖智能决策，启用本功能后会自动开启智能决策。",
+                    afterChange = { checked ->
+                        if (checked) {
+                            GlobalVars.configStates["${MAIN_BASE_SETTINGS.SMART_DECISION.key}_c$index"]?.value = "1"
+                        }
+                    }
+                )
             }
 
             AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.WALL_UPGRADE_SETTINGS.key}_c$index"]?.value == "1") {
