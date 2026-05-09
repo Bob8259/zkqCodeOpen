@@ -45,6 +45,9 @@ object InGameVars {
 
     @Volatile
     var townHallLevel: Int = 20
+
+    @Volatile
+    var clockTowerCooldown: Int = 0
 }
 
 fun accountMessage(text: String, isChecking: Boolean = true) {

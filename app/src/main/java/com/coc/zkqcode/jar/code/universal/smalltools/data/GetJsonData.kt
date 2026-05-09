@@ -100,6 +100,15 @@ suspend fun getJsonData(): Boolean {
         return false//force switch account
     }
     InGameVars.townHallLevel = firstBuildingLvl
+
+    // Parse clock tower cooldown from boosts (may not exist)
+    InGameVars.clockTowerCooldown = try {
+        val boosts = jsonObject.getAsJsonObject("boosts")
+        boosts?.get("clocktower_cooldown")?.asInt ?: 0
+    } catch (e: Exception) {
+        0
+    }
+
     clickRightBottom(1, delayTime = 200)
     return enterMainScreen()
 }

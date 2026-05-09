@@ -23,6 +23,7 @@ import com.coc.zkqcode.jar.ui.schema.Schema
 
 suspend fun turnOnClockTower(): Boolean {
     if (!getBooleanConfigRuntime(Schema.BUILDER_BASE_SETTINGS.BUILDER_BASE_ENABLE_CLOCK_TOWER.key)) return true
+    if (InGameVars.clockTowerCooldown > 5 && getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.SMART_DECISION.key)) return true
     val storageKey = StorageKeys.withAccountNumber(StorageKeys.TURN_ON_CLOCK_TOWER, InGameVars.currentAccountNumber)
 
     // Guard the Clock Tower check so each account only scans once every twenty-two hours.
