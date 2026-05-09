@@ -28,8 +28,8 @@ suspend fun upgradeWalls(currentBase: BaseType): Boolean {
     // If smart decision is enabled and current base has no walls, skip wall upgrade
     if (getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.SMART_DECISION.key)) {
         val hasWalls = when (currentBase) {
-            BaseType.Main -> InGameVars.hasMainBaseWalls
-            BaseType.Builder -> InGameVars.hasBuilderBaseWalls
+            BaseType.Main -> InGameVars.mainBaseWallLevel > 0
+            BaseType.Builder -> InGameVars.builderBaseWallLevel > 0
         }
         if (!hasWalls) return true
     }

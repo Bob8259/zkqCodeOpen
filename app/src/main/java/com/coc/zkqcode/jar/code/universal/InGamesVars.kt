@@ -50,10 +50,10 @@ object InGameVars {
     var clockTowerCooldown: Int = 0
 
     @Volatile
-    var hasMainBaseWalls: Boolean = false
+    var mainBaseWallLevel: Int = 0
 
     @Volatile
-    var hasBuilderBaseWalls: Boolean = false
+    var builderBaseWallLevel: Int = 0
 }
 
 fun accountMessage(text: String, isChecking: Boolean = true) {

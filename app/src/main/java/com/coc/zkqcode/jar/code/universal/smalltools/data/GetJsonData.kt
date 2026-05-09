@@ -109,19 +109,21 @@ suspend fun getJsonData(): Boolean {
         0
     }
 
-    // Check if main base has walls (data == 1000010 in "buildings")
-    InGameVars.hasMainBaseWalls = try {
-        buildings.any { it.asJsonObject.get("data").asInt == 1000010 }
+    // Parse highest main base wall level (data == 1000010 in "buildings")
+    InGameVars.mainBaseWallLevel = try {
+        buildings.filter { it.asJsonObject.get("data").asInt == 1000010 }
+            .maxOfOrNull { it.asJsonObject.get("lvl").asInt } ?: 0
     } catch (e: Exception) {
-        false
+        0
     }
 
-    // Check if builder base has walls (data == 1000033 in "buildings2")
-    InGameVars.hasBuilderBaseWalls = try {
+    // Parse highest builder base wall level (data == 1000033 in "buildings2")
+    InGameVars.builderBaseWallLevel = try {
         val buildings2 = jsonObject.getAsJsonArray("buildings2")
-        buildings2?.any { it.asJsonObject.get("data").asInt == 1000033 } ?: false
+        buildings2?.filter { it.asJsonObject.get("data").asInt == 1000033 }
+            ?.maxOfOrNull { it.asJsonObject.get("lvl").asInt } ?: 0
     } catch (e: Exception) {
-        false
+        0
     }
 
     clickRightBottom(1, delayTime = 200)

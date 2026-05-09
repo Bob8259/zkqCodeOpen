@@ -24,7 +24,7 @@ object BuilderBaseSettings {
         "builder_base_upgrade_wall_threshold", "金水高于以下百分比后升级城墙", "85", "BUILDER_BASE_SETTINGS"
     )
     val BUILDER_BASE_REMOVE_OBSTACLES = SettingDef("builder_base_remove_obstacles", "移除障碍物", 0, "BUILDER_BASE_SETTINGS")
-    val BUILDER_BASE_SAVE_WORKER = SettingDef("builder_base_save_worker", "留1工人升级城墙", 0, "BUILDER_BASE_SETTINGS")
+    val BUILDER_BASE_SAVE_WORKER = SettingDef("builder_base_save_worker", "留1工人", 0, "BUILDER_BASE_SETTINGS")
     val BUILDER_BASE_SAVE_WORKER_BUILD_AFTER_WALL_FULL = SettingDef("builder_base_save_worker_build_after_wall_full", "城墙全满后，将保留的工人用于建造", 0, "BUILDER_BASE_SETTINGS")
     val BUILDER_BASE_ENABLE_CLOCK_TOWER = SettingDef("builder_base_enable_clock_tower", "开启时光钟楼", 1, "BUILDER_BASE_SETTINGS")
 

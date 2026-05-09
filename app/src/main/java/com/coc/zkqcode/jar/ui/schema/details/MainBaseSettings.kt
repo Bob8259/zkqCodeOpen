@@ -54,7 +54,7 @@ object MainBaseSettings {
     )
 
     val BATCH_WALL_UPGRADE_SETTINGS = SettingDef("batch_wall_upgrade_settings", "批量升级城墙", 1, "MAIN_BASE_SETTINGS")
-    val SAVE_WORKER = SettingDef("save_worker", "留1工人升级城墙", 0, "MAIN_BASE_SETTINGS")
+    val SAVE_WORKER = SettingDef("save_worker", "留1工人", 0, "MAIN_BASE_SETTINGS")
     val SAVE_WORKER_BUILD_AFTER_WALL_FULL = SettingDef("save_worker_build_after_wall_full", "城墙全满后，将保留的工人用于建造", 0, "MAIN_BASE_SETTINGS")
     val GEAR_UP_SETTINGS = SettingDef("gear_up_settings", "改装建筑", 0, "MAIN_BASE_SETTINGS")
     val UPGRADE_AFTER_FAIL_WALL_UPGRADE = SettingDef("upgrade_after_fail_wall_upgrade", "升级城墙失败后建造", 0, "MAIN_BASE_SETTINGS")
