@@ -75,7 +75,16 @@ suspend fun upgradeWalls(currentBase: BaseType): Boolean {
         accountMessage("当前圣水百分比${currentResourcePercentage.elixir}\n设置阈值${thresholds}")
 
         if (currentResourcePercentage.elixir < thresholds) break
-
+        // Elixir wall upgrade requires minimum wall level
+        val wallLevel = when (currentBase) {
+            BaseType.Main -> InGameVars.mainBaseWallLevel
+            BaseType.Builder -> InGameVars.builderBaseWallLevel
+        }
+        val minLevelForElixir = when (currentBase) {
+            BaseType.Builder -> 7
+            BaseType.Main -> 5
+        }
+        if (wallLevel < minLevelForElixir) break
         when (upgradeAllExistingBuildings(listOf("城墙"), currentBase, skipOrdering = true, WallType.Elixir)) {
             UpgradeResult.Failure -> return false
             UpgradeResult.StopLoop -> break
