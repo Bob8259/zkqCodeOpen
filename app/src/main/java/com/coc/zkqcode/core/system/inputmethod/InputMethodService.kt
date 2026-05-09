@@ -6,7 +6,9 @@ import com.coc.zkqcode.core.util.basic.ClipboardHelper
 import com.coc.zkqcode.core.util.basic.RunShell
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
 import com.coc.zkqcode.core.util.fileactions.LogHelper.showDebugInfo
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.withContext
 
 /**
  * Custom Input Method Service that provides a function to read the clipboard.
@@ -29,19 +31,23 @@ class ZKQInputMethodService : InputMethodService() {
 
     /**
      * Reads the current text from the primary clipboard.
+     * Must run on the main thread because some Android 7.1 OEM ROMs require a Looper
+     * on the calling thread for ClipboardManager Binder IPC to succeed.
      * @return The text content of the primary clip, or null if empty or not text.
      */
-    fun readClipboard(): String? {
+    suspend fun readClipboard(): String? {
         return try {
-            val clipboard = getSystemService(CLIPBOARD_SERVICE) as? ClipboardManager
-            if (clipboard == null || !clipboard.hasPrimaryClip()) {
-                null
-            } else {
-                val clip = clipboard.primaryClip
-                if (clip != null && clip.itemCount > 0) {
-                    clip.getItemAt(0).text?.toString()
-                } else {
+            withContext(Dispatchers.Main) {
+                val clipboard = getSystemService(CLIPBOARD_SERVICE) as? ClipboardManager
+                if (clipboard == null || !clipboard.hasPrimaryClip()) {
                     null
+                } else {
+                    val clip = clipboard.primaryClip
+                    if (clip != null && clip.itemCount > 0) {
+                        clip.getItemAt(0).text?.toString()
+                    } else {
+                        null
+                    }
                 }
             }
         } catch (_: Exception) {

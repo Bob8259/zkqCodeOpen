@@ -8,26 +8,16 @@ import com.coc.zkqcode.jar.code.universal.buildings.BaseType
  * Use [fromId] to convert the integer stored in config to a [GameVersion].
  */
 enum class GameVersion(
-    val id: Int,
-    val packageName: String,
-    val launchComponent: String,
-    val folderName: String,
-    val subDirs: List<String>
+    val id: Int, val packageName: String, val launchComponent: String, val folderName: String, val subDirs: List<String>
 ) {
     CN(
-        0, "com.tencent.tmgp.supercell.clashofclans",
-        "com.tencent.tmgp.supercell.clashofclans/com.supercell.titan.tencent.GameAppTencent",
-        "zkqCNGameSave", listOf("shared_prefs", "databases")
+        0, "com.tencent.tmgp.supercell.clashofclans", "com.tencent.tmgp.supercell.clashofclans/com.supercell.titan.tencent.GameAppTencent", "zkqCNGameSave", listOf("shared_prefs", "databases")
     ),
     GLOBAL(
-        1, "com.supercell.clashofclans",
-        "com.supercell.clashofclans/com.supercell.titan.GameApp",
-        "zkqGlobalGameSave", listOf("shared_prefs")
+        1, "com.supercell.clashofclans", "com.supercell.clashofclans/com.supercell.titan.GameApp", "zkqGlobalGameSave", listOf("shared_prefs")
     ),
     PRIVATE(
-        2, "com.atrasis.original",
-        "com.atrasis.original/com.atrasis.main.AtrasisGameApp",
-        "", emptyList()
+        2, "com.atrasis.original", "com.atrasis.original/com.atrasis.main.AtrasisGameApp", "", emptyList()
     );
 
     companion object {
@@ -42,6 +32,8 @@ object InGameVars {
 
     @Volatile
     var currentGameVersion: GameVersion = GameVersion.CN
+
+    @Volatile
     var adTime: Int = 15
 
     // Set by checkRandomSchedule; read by RandomSchedulingLogic after stepBlock.
@@ -51,6 +43,7 @@ object InGameVars {
     @Volatile
     var wallUpgradeNoWorkerBase: BaseType? = null
 
+    @Volatile
     var townHallLevel: Int = 20
 }
 

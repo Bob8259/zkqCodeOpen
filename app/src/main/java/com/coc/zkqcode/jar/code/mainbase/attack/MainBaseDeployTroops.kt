@@ -34,7 +34,7 @@ suspend fun mainBaseDeployTroops() {
     // Record the start time of the battle
     zoomSmallMainBase(isForAttack = true)
     // Upload a screenshot every 3 hours for monitoring
-    uploadSearchScreenshot()
+//    uploadSearchScreenshot()
     deploySiegeMachine()
     repeat(3) {
         // Deploy each troop type if detected in the deployment bar
