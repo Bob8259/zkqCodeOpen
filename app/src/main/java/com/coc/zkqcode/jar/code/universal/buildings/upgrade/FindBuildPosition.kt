@@ -144,12 +144,12 @@ private suspend fun checkArea(startX: Int, endX: Int, y: Int, step: Int, baseTyp
     val xRange = if (startX <= endX) (startX..endX step step) else (startX downTo endX step step)
     for (x in xRange) {
         moveWithDelay(x.toFloat(), y.toFloat())
-        var greenTick = if (baseType == BaseType.Main) mainBaseFindBuildButton(type = BuildButtonType.Tick, duration = 120) else builderBaseFindBuildButton(type = BuildButtonType.Tick, duration = 120)
+        var greenTick = if (baseType == BaseType.Main) mainBaseFindBuildButton(type = BuildButtonType.Tick, duration = 160) else builderBaseFindBuildButton(type = BuildButtonType.Tick, duration = 120)
 
         if (greenTick != null) {
             delayWithMultiplier(200)
             TouchActions.touchUp(1)
-            greenTick = if (baseType == BaseType.Main) mainBaseFindBuildButton(type = BuildButtonType.Tick, duration = 80) else builderBaseFindBuildButton(type = BuildButtonType.Tick, duration = 80)
+            greenTick = if (baseType == BaseType.Main) mainBaseFindBuildButton(type = BuildButtonType.Tick, duration = 160) else builderBaseFindBuildButton(type = BuildButtonType.Tick, duration = 80)
 
             if (greenTick != null) {
                 delayWithMultiplier(100)//Do not click the green tick here
