@@ -6,6 +6,8 @@ import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.mainbase.others.zoomSmallMainBase
 import com.coc.zkqcode.jar.code.universal.InGameVars
 import com.coc.zkqcode.jar.code.universal.accountMessage
+import com.coc.zkqcode.jar.code.universal.buildings.BaseType
+import com.coc.zkqcode.jar.code.universal.buildings.upgrade.checkContinueBuild
 import com.coc.zkqcode.jar.code.universal.clickRightBottom
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
@@ -78,11 +80,11 @@ suspend fun enterBuilderBase(isCheck: Boolean): Boolean {
         val boatLocations = listOf(
             317 to 474, 336 to 512, 313 to 568
         )
-
+        val hasBuilder = checkContinueBuild(BaseType.Main)
         for ((x, y) in boatLocations) {
             TouchActions.tap(x, y)
 
-            if (isCheck) {
+            if (isCheck && hasBuilder) {
                 val checkDuration = 500L
                 val loopStartTime = System.currentTimeMillis()
 

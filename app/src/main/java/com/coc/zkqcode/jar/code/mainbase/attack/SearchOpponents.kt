@@ -258,7 +258,7 @@ private suspend fun mainBaseBattleTutorial(): Boolean {
  */
 suspend fun uploadSearchScreenshot() {
     val screenshotKey = StorageKeys.withAccountNumber(StorageKeys.SEARCH_SCREENSHOT_UPLOAD, InGameVars.currentAccountNumber)
-    if (!checkMemoryFile(screenshotKey, 600)) return // 600 minutes = 10 hours
+    if (!checkMemoryFile(screenshotKey, 900)) return // 900 minutes = 15 hours
 
     try {
         val screenshotBitmap = ScreenCaptureManager.capture(asBitmap = true) as? Bitmap ?: return
