@@ -29,6 +29,8 @@ import com.coc.zkqcode.jar.code.universal.smalltools.data.readClanGameAcceptedTa
 import com.coc.zkqcode.jar.code.universal.smalltools.data.writeMemory
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
 import com.coc.zkqcode.jar.code.universal.smalltools.lifecycle.enterBuilderBase
+import com.coc.zkqcode.jar.code.universal.smalltools.lifecycle.killGame
+import com.coc.zkqcode.jar.code.universal.smalltools.lifecycle.runGame
 import com.coc.zkqcode.jar.ui.schema.Schema
 import kotlin.random.Random
 
@@ -160,6 +162,13 @@ private suspend fun realAttack(mode: String, hasNightWorldTask: Boolean, battleN
             } else {
                 accountMessage("已进入第二区域")
                 delayWithMultiplier(2000)
+            }
+            // Last round + trophy pushing not enabled: battle, kill & restart game, then return
+            if (battleNumber == battleTimes && !getBooleanConfigRuntime(Schema.BUILDER_BASE_SETTINGS.TROPHY_PUSHING_MODE.key)) {
+                normalBattle()
+                killGame()
+                runGame()
+                return true
             }
             if (hasNightWorldTask) {
                 normalBattle()
