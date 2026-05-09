@@ -48,6 +48,12 @@ object InGameVars {
 
     @Volatile
     var clockTowerCooldown: Int = 0
+
+    @Volatile
+    var hasMainBaseWalls: Boolean = false
+
+    @Volatile
+    var hasBuilderBaseWalls: Boolean = false
 }
 
 fun accountMessage(text: String, isChecking: Boolean = true) {

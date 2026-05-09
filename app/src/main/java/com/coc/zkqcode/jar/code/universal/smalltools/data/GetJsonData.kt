@@ -109,6 +109,21 @@ suspend fun getJsonData(): Boolean {
         0
     }
 
+    // Check if main base has walls (data == 1000010 in "buildings")
+    InGameVars.hasMainBaseWalls = try {
+        buildings.any { it.asJsonObject.get("data").asInt == 1000010 }
+    } catch (e: Exception) {
+        false
+    }
+
+    // Check if builder base has walls (data == 1000033 in "buildings2")
+    InGameVars.hasBuilderBaseWalls = try {
+        val buildings2 = jsonObject.getAsJsonArray("buildings2")
+        buildings2?.any { it.asJsonObject.get("data").asInt == 1000033 } ?: false
+    } catch (e: Exception) {
+        false
+    }
+
     clickRightBottom(1, delayTime = 200)
     return enterMainScreen()
 }

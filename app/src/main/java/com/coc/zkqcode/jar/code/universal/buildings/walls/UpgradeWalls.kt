@@ -25,6 +25,14 @@ suspend fun upgradeWalls(currentBase: BaseType): Boolean {
     if (!getBooleanConfigRuntime(wallUpgradeKey)) {
         return true
     }
+    // If smart decision is enabled and current base has no walls, skip wall upgrade
+    if (getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.SMART_DECISION.key)) {
+        val hasWalls = when (currentBase) {
+            BaseType.Main -> InGameVars.hasMainBaseWalls
+            BaseType.Builder -> InGameVars.hasBuilderBaseWalls
+        }
+        if (!hasWalls) return true
+    }
     val workerNumber = WorkerAndResearch.detectWorkerNumber(currentBase)
     val hasNoUsableWorker = workerNumber.available < 1 || workerNumber.total < 1
     if (hasNoUsableWorker) {
