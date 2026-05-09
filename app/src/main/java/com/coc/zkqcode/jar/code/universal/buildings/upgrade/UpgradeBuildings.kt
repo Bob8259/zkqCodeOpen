@@ -121,14 +121,10 @@ suspend fun checkContinueBuild(currentBase: BaseType, isWallUpgrade: Boolean = f
         Schema.MAIN_BASE_SETTINGS.SAVE_WORKER_BUILD_AFTER_WALL_FULL.key
     }
     val hasWalls = if (isBuilder) InGameVars.hasBuilderBaseWalls else InGameVars.hasMainBaseWalls
-    val shouldReleaseSavedWorker = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.SMART_DECISION.key)
-        && getBooleanConfigRuntime(buildAfterWallFullKey)
-        && !hasWalls
+    val shouldReleaseSavedWorker = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.SMART_DECISION.key) && getBooleanConfigRuntime(buildAfterWallFullKey) && !hasWalls
 
     val isNoWorkerAvailable = workerNumber.available == 0
-    val isSavingLastWorker = !isWallUpgrade && workerNumber.available == 1
-        && getBooleanConfigRuntime(configKey)
-        && !shouldReleaseSavedWorker
+    val isSavingLastWorker = !isWallUpgrade && workerNumber.available == 1 && getBooleanConfigRuntime(configKey) && !shouldReleaseSavedWorker
     return !(isNoWorkerAvailable || isSavingLastWorker)
 }
 

@@ -44,13 +44,13 @@ suspend fun upgradeWalls(currentBase: BaseType): Boolean {
     }
     // Use the appropriate threshold key and display name based on the current base type
     val (wallThresholdKey, wallThresholdName) = when (currentBase) {
-        BaseType.Main -> Schema.MAIN_BASE_SETTINGS.UPGRADE_WALL_THRESHOLD.key to
-            Schema.MAIN_BASE_SETTINGS.UPGRADE_WALL_THRESHOLD.displayName
-        BaseType.Builder -> Schema.BUILDER_BASE_SETTINGS.BUILDER_BASE_UPGRADE_WALL_THRESHOLD.key to
-            Schema.BUILDER_BASE_SETTINGS.BUILDER_BASE_UPGRADE_WALL_THRESHOLD.displayName
+        BaseType.Main -> Schema.MAIN_BASE_SETTINGS.UPGRADE_WALL_THRESHOLD.key to Schema.MAIN_BASE_SETTINGS.UPGRADE_WALL_THRESHOLD.displayName
+
+        BaseType.Builder -> Schema.BUILDER_BASE_SETTINGS.BUILDER_BASE_UPGRADE_WALL_THRESHOLD.key to Schema.BUILDER_BASE_SETTINGS.BUILDER_BASE_UPGRADE_WALL_THRESHOLD.displayName
     }
-    val thresholds = 25.coerceAtLeast(getConfigRuntime(wallThresholdKey).toIntOrNull()
-        ?: logAndRestart("$wallThresholdName 必须是数字，请检查配置"))
+    val thresholds = 25.coerceAtLeast(
+        getConfigRuntime(wallThresholdKey).toIntOrNull() ?: logAndRestart("$wallThresholdName 必须是数字，请检查配置")
+    )
     val startTime = System.currentTimeMillis()
     val timeoutMs = 5 * 60 * 1000L // 5 minutes
 
@@ -58,9 +58,9 @@ suspend fun upgradeWalls(currentBase: BaseType): Boolean {
     while (System.currentTimeMillis() - startTime < timeoutMs) {
         val currentResourcePercentage = calculateResourcesPercentage(currentBase)
         accountMessage("当前金币百分比${currentResourcePercentage.gold}\n设置阈值${thresholds}")
-        
+
         if (currentResourcePercentage.gold < thresholds) break
-        
+
         when (upgradeAllExistingBuildings(listOf("城墙"), currentBase, skipOrdering = true, WallType.Gold)) {
             UpgradeResult.Failure -> return false
             UpgradeResult.StopLoop -> break
@@ -73,9 +73,9 @@ suspend fun upgradeWalls(currentBase: BaseType): Boolean {
     while (System.currentTimeMillis() - startTime < timeoutMs) {
         val currentResourcePercentage = calculateResourcesPercentage(currentBase)
         accountMessage("当前圣水百分比${currentResourcePercentage.elixir}\n设置阈值${thresholds}")
-        
+
         if (currentResourcePercentage.elixir < thresholds) break
-        
+
         when (upgradeAllExistingBuildings(listOf("城墙"), currentBase, skipOrdering = true, WallType.Elixir)) {
             UpgradeResult.Failure -> return false
             UpgradeResult.StopLoop -> break

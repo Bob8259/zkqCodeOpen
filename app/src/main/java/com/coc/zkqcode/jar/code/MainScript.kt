@@ -106,8 +106,7 @@ private suspend fun cleanUp() {
     RunShell.runNoOutput("input keyevent 4") // Press back
     // Check resolution and warn if not 720x1280
     val wmOutput = RunShell.run("wm size", checkIsPlaying = false)
-    val sizeLine = wmOutput.lastOrNull { it.contains("Override size") }
-        ?: wmOutput.lastOrNull { it.contains("Physical size") }
+    val sizeLine = wmOutput.lastOrNull { it.contains("Override size") } ?: wmOutput.lastOrNull { it.contains("Physical size") }
     val resolution = sizeLine?.substringAfter(":")?.trim() ?: "unknown"
     if (resolution != "720x1280") {
         ShowMessage("当前分辨率${resolution}，最佳运行分辨率720*1280，DPI320。\n该分辨率可能会出现异常，建议调整分辨率以获得最佳运行效果。", isChecking = false)
