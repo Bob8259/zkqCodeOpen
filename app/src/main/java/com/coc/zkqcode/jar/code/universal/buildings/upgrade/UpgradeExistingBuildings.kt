@@ -343,7 +343,7 @@ private suspend fun upgradeHero(building: String): LoopAction {
         }
         TouchActions.tap(x1 + 100, 500)//Upgrade Hero
         accountMessage("等待结束")
-        TouchActions.tap(902, 626)
+        TouchActions.tap(900, 625)
         clickRightBottom(times = 3, delayTime = 200)
     } else {
         // The unique logic for Dragon Duke
@@ -357,7 +357,7 @@ private suspend fun upgradeHero(building: String): LoopAction {
             return LoopAction.Break
         }
         TouchActions.tap(1020 + 100, 480)//Upgrade Hero
-        TouchActions.tap(902, 626)
+        TouchActions.tap(900, 625)
         clickRightBottom(times = 3, delayTime = 200)
     }
     return LoopAction.Proceed

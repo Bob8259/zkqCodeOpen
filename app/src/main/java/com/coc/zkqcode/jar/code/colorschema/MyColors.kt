@@ -79,4 +79,9 @@ object MyColors : IUIColors by UIColors, IFeatureColors by FeatureColors, IClanG
     val BuilderMaster2 = ColorSchema.parse(
         978, 484, 1126, 690, "143177", "29|0|123279,59|0|1C4593,89|0|3E537F,118|0|3A4E79,0|103|0E1D41,29|103|102045,59|103|273F70,89|103|08122F,118|103|79522B", 0, 0.9, "睡觉建筑大师2"
     )
+
+    //Clan Capital
+    val StartRaid = ColorSchema.parse(
+        1151, 592, 1254, 692, "64D4B4", "4|16|64D2B1,4|47|28BC8D,40|51|28BB8D,72|48|28BC8D,82|45|28BD8E,84|25|28C192,84|11|64D3B2,83|6|64D4B3,84|-3|64D5B5", 0, 0.9, "发起突袭"
+    )
 }

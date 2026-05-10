@@ -31,7 +31,11 @@ suspend fun clanCapitalAttack(): Boolean {
         // No attack times remaining; record the timestamp so the guard activates next cycle
         writeMemory(storageKey, (System.currentTimeMillis() / 60_000).toString())
         accountMessage("都城攻击次数已用完")
-        if (!enterMainScreen()) return false
+        return enterMainScreen()
+    }
+    if (findMultiColors(MyColors.StartRaid) != null) {
+        accountMessage("都城对战未开启")
+        return enterMainScreen()
     }
     if (findAttackTarget()) {
         val endBattleButton = findMultiColorsUntil(schemas = listOf(MyColors.EndBattle), duration = 40000)
