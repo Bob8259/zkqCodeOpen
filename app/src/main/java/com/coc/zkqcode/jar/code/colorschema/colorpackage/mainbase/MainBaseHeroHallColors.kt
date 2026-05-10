@@ -10,6 +10,7 @@ interface IMainBaseHeroHallColors {
     val OpenClanCastle: ColorSchema
     val PetShopIcon: ColorSchema
     val PetShopIcon2: ColorSchema
+    val PetShopIcon3: ColorSchema
     val RedExclamationMark: ColorSchema
     val PlaceBannerButton: ColorSchema
     val UpgradeGearArrow: ColorSchema
@@ -74,6 +75,9 @@ object MainBaseHeroHallColors : IMainBaseHeroHallColors {
     // Alternate direct pet shop entry button variant
     override val PetShopIcon2 = ColorSchema.parse(
         190, 540, 1090, 626, "45C1DD", "5|0|55D0ED,11|0|1981AD,16|0|39B3D2,21|0|2393BA,0|11|3CBDDF,5|11|42BEDC,11|11|3EB9D7,16|11|3AB3D2,21|11|2392B7", 0, 0.9, "直接开启宠物店按钮2"
+    )
+    override val PetShopIcon3 = ColorSchema.parse(
+        205, 528, 1077, 624, "44C0DC", "5|0|0D4586,10|0|197AA4,15|0|25A0C1,20|0|126090,0|13|1E81B5,5|13|42BEDB,10|13|3EB9D7,15|13|3BB5D5,20|13|0D518C", 0, 0.9, "宠物店按钮8按钮"
     )
 
     // Red indicator shown when a hero banner can be placed

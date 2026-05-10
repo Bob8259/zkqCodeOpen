@@ -176,7 +176,7 @@ private suspend fun upgradeGearsAndPetsAction(shouldUpgradeGears: Boolean, shoul
         val petsIcon = findMultiColorsUntil(schemas = listOf(MyColors.PetsIconInHeroHall, MyColors.PetsIconInHeroHall2), duration = 200)
         if (petsIcon != null) {
             TouchActions.tap(petsIcon.x, petsIcon.y)
-            val outerPetIcon = findMultiColorsUntil(schemas = listOf(MyColors.PetShopIcon, MyColors.PetShopIcon2), duration = 300)
+            val outerPetIcon = findMultiColorsUntil(schemas = listOf(MyColors.PetShopIcon, MyColors.PetShopIcon2, MyColors.PetShopIcon3), duration = 300)
             if (outerPetIcon != null) {
                 TouchActions.tap(outerPetIcon.x, outerPetIcon.y)
             }
