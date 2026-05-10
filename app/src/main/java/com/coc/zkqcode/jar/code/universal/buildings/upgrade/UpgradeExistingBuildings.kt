@@ -18,6 +18,8 @@ import com.coc.zkqcode.jar.code.universal.recognizer.recognizeResources
 import com.coc.zkqcode.jar.code.universal.recognizer.recognizeUpgradeResources
 import com.coc.zkqcode.jar.code.universal.smalltools.data.getBooleanConfigRuntime
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
+import com.coc.zkqcode.jar.code.universal.GameVersion
+import com.coc.zkqcode.jar.code.universal.InGameVars
 import com.coc.zkqcode.jar.code.universal.buildings.tapGoldBar
 import com.coc.zkqcode.jar.code.universal.smalltools.data.getConfigRuntime
 import com.coc.zkqcode.jar.ui.schema.Schema
@@ -323,6 +325,11 @@ private suspend fun upgradeWalls(currentBase: BaseType, wallType: WallType): Loo
 
 // Handles the hero upgrade flow; returns LoopAction to control the caller's loop
 private suspend fun upgradeHero(building: String): LoopAction {
+    if (InGameVars.currentGameVersion == GameVersion.GLOBAL) {
+        TouchActions.tap(900, 625)
+        clickRightBottom(times = 3, delayTime = 200)
+        return LoopAction.Proceed
+    }
     if (building != "飞龙公爵") {
         // Calculate the search area based on hero position
         // Base area for 野蛮人之王: x1=55, y1=500, x2=240, y2=530

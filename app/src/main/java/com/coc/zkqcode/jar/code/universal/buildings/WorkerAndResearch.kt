@@ -34,19 +34,13 @@ object WorkerAndResearch {
         // Must double-check to wait for a little bit, otherwise the detection will fail.
         if (!enterMainScreen(true)) return WorkerInfo(0, 0)
         // MainBase-only: goblin worker pre-check
-        if (baseType == BaseType.Main && findMultiColors(schema = MyColors.GoblinWorker) != null) {
+        if (baseType == BaseType.Main && (findMultiColors(schema = MyColors.GoblinWorker) != null || findMultiColors(schema = MyColors.GoblinWorker2) != null)) {
             return WorkerInfo(0, 6)
         }
 
         val workerSchemas = when (baseType) {
             BaseType.Builder -> listOf(MyColors.BuilderBaseWorker, MyColors.BuilderBaseWorker2)
             BaseType.Main -> MyColors.MainBaseWorkerSchemas
-        }
-        val baseName = when (baseType) {
-            BaseType.Builder -> "夜世界"; BaseType.Main -> "主世界"
-        }
-        val bugTag = when (baseType) {
-            BaseType.Builder -> "Builder_Base_Worker"; BaseType.Main -> "Main_Base_Worker"
         }
 
         val worker = findMultiColorsUntil(schemas = workerSchemas, duration = 200)
@@ -79,9 +73,6 @@ object WorkerAndResearch {
         val baseName = when (baseType) {
             BaseType.Builder -> "夜世界"; BaseType.Main -> "主世界"
         }
-        val bugTag = when (baseType) {
-            BaseType.Builder -> "Builder_Base_Research"; BaseType.Main -> "Main_Base_Research"
-        }
 
         // MainBase-only: goblin researcher pre-check
         if (baseType == BaseType.Main && findMultiColors(schema = MyColors.GoblinResearcher) != null) {
@@ -91,8 +82,7 @@ object WorkerAndResearch {
 
         // Detect research icon and count researchers
         // Fallback to ResearchIcon2 if ResearchIcon is not found
-        val research = findMultiColors(schema = MyColors.ResearchIcon)
-            ?: findMultiColors(schema = MyColors.ResearchIcon2)
+        val research = findMultiColors(schema = MyColors.ResearchIcon) ?: findMultiColors(schema = MyColors.ResearchIcon2)
         if (research != null) {
             // Define the crop region for the researcher number text
             val startX = research.x - 100
@@ -128,8 +118,7 @@ object WorkerAndResearch {
     private suspend fun detectWorkerByColorMatch(
         startX: Int, startY: Int, endX: Int, endY: Int
     ): WorkerInfo {
-        val screenBuffer = ScreenCaptureManager.capture(asBitmap = true) as? Bitmap
-            ?: return WorkerInfo(0, 0)
+        val screenBuffer = ScreenCaptureManager.capture(asBitmap = true) as? Bitmap ?: return WorkerInfo(0, 0)
 
         val cropWidth = endX - startX
         val cropHeight = endY - startY
@@ -143,8 +132,7 @@ object WorkerAndResearch {
 
         // Step 1: find the slash character "/" in the preprocessed bitmap
         val slashSchema = ColorSchema.rescope(MyColors.BinarySlash, 0, 0, cropWidth, cropHeight)
-        val slashPoint = findMultiColors(bitmap = preprocessed, schema = slashSchema)
-            ?: return WorkerInfo(0, 0)
+        val slashPoint = findMultiColors(bitmap = preprocessed, schema = slashSchema) ?: return WorkerInfo(0, 0)
         val zeroSchema = ColorSchema.rescope(MyColors.BinaryZero, 0, 0, slashPoint.x, cropHeight)
         val zeroPoint = findMultiColors(bitmap = preprocessed, schema = zeroSchema)
         if (zeroPoint != null) return WorkerInfo(0, 0)
@@ -152,6 +140,12 @@ object WorkerAndResearch {
         val oneSchema = ColorSchema.rescope(MyColors.BinaryOne, 0, 0, slashPoint.x, cropHeight)
         val onePoint = findMultiColors(bitmap = preprocessed, schema = oneSchema)
         if (onePoint != null) {
+            return WorkerInfo(1, 1)
+        }
+        // Step 3: try BinaryOne2 as an alternative pattern for "1"
+        val oneSchema2 = ColorSchema.rescope(MyColors.BinaryOne2, 0, 0, slashPoint.x, cropHeight)
+        val onePoint2 = findMultiColors(bitmap = preprocessed, schema = oneSchema2)
+        if (onePoint2 != null) {
             return WorkerInfo(1, 1)
         }
 

@@ -55,7 +55,7 @@ suspend fun mainBaseResearch(): Boolean {
             if (whiteNumber != null) {
                 TouchActions.tap(whiteNumber.x, whiteNumber.y, delayTime = 800)
                 TouchActions.tap(1130, 55)
-                TouchActions.swipe(240, 500, 4000, 500, delayAfter = 400)
+                TouchActions.swipe(240, 500, 4000, 500, delayAfter = 800)
                 findAllResearchItems()
             }
         }
