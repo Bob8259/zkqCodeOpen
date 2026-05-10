@@ -32,7 +32,7 @@ object WorkerAndResearch {
      */
     suspend fun detectWorkerNumber(baseType: BaseType): WorkerInfo {
         // Must double-check to wait for a little bit, otherwise the detection will fail.
-        if (!enterMainScreen(true)) return WorkerInfo(0, 0)
+//        if (!enterMainScreen(false)) return WorkerInfo(0, 0)
         // MainBase-only: goblin worker pre-check
         if (baseType == BaseType.Main && (findMultiColors(schema = MyColors.GoblinWorker) != null || findMultiColors(schema = MyColors.GoblinWorker2) != null)) {
             return WorkerInfo(0, 6)
@@ -69,7 +69,7 @@ object WorkerAndResearch {
      */
     suspend fun detectResearch(baseType: BaseType): Boolean {
         // Must double-check to wait for a little bit, otherwise the detection will fail.
-        if (!enterMainScreen(true)) return false
+//        if (!enterMainScreen(false)) return false
         val baseName = when (baseType) {
             BaseType.Builder -> "夜世界"; BaseType.Main -> "主世界"
         }

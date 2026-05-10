@@ -208,7 +208,6 @@ suspend fun searchOpponentsAndDeployTroops(): Boolean {
         val remainingMinutes = (SEARCH_TIMEOUT_MS - (System.currentTimeMillis() - battleStartTime)) / 60000.0
         accountMessage("搜索中... ${"%.1f".format(remainingMinutes)}分钟后强制退出")
         if (!checkReconnections()) return false
-        clickRightBottom(1)
         delayWithMultiplier(200)
     }
     return battleStarted
