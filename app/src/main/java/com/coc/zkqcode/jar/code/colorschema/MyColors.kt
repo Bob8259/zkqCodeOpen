@@ -84,4 +84,9 @@ object MyColors : IUIColors by UIColors, IFeatureColors by FeatureColors, IClanG
     val StartRaid = ColorSchema.parse(
         1151, 592, 1254, 692, "64D4B4", "4|16|64D2B1,4|47|28BC8D,40|51|28BB8D,72|48|28BC8D,82|45|28BD8E,84|25|28C192,84|11|64D3B2,83|6|64D4B3,84|-3|64D5B5", 0, 0.9, "发起突袭"
     )
+
+    //MainBaseAttackColors
+    val SetBaseIcon2 = ColorSchema.parse(
+        509, 133, 580, 181, "7ED3A3", "3|3|72CB98,9|7|7FD4A4,21|4|7AD1A4,6|-11|B78D7A,11|-7|FFEFE6,15|-14|EDE1DC,10|-15|FFEAE1,1|-18|FFF0E7,1|-15|FFF6EF", 0, 0.93, "布阵按钮2"
+    )
 }

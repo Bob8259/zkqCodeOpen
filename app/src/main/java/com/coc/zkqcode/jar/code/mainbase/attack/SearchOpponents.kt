@@ -5,11 +5,9 @@ import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
-import com.coc.zkqcode.jar.code.universal.smalltools.input.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.MyColors
-import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.jar.code.universal.InGameVars
-import com.coc.zkqcode.jar.code.universal.clickRightBottom
+import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
@@ -18,19 +16,20 @@ import com.coc.zkqcode.jar.code.universal.recognizer.recognizeResources
 import com.coc.zkqcode.jar.code.universal.smalltools.data.CLAN_GAME_TASK_BASE_MAIN_WORLD
 import com.coc.zkqcode.jar.code.universal.smalltools.data.StorageKeys
 import com.coc.zkqcode.jar.code.universal.smalltools.data.checkMemoryFile
-import com.coc.zkqcode.jar.code.universal.smalltools.lifecycle.checkReconnections
 import com.coc.zkqcode.jar.code.universal.smalltools.data.getBooleanConfigRuntime
 import com.coc.zkqcode.jar.code.universal.smalltools.data.getConfigRuntime
 import com.coc.zkqcode.jar.code.universal.smalltools.data.readClanGameAcceptedTaskBase
 import com.coc.zkqcode.jar.code.universal.smalltools.data.readMemory
 import com.coc.zkqcode.jar.code.universal.smalltools.data.writeMemory
+import com.coc.zkqcode.jar.code.universal.smalltools.input.TouchActions
+import com.coc.zkqcode.jar.code.universal.smalltools.lifecycle.checkReconnections
 import com.coc.zkqcode.jar.ui.schema.Schema
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
-import okhttp3.Request
 import okhttp3.OkHttpClient
+import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.ByteArrayOutputStream
 import java.util.concurrent.TimeUnit
@@ -135,8 +134,8 @@ suspend fun searchOpponentsAndDeployTroops(): Boolean {
             return false
         }
         val villagerSpeaking = findMultiColors(schema = MyColors.SpeakingVillager)
-        val setBaseIcon = findMultiColors(schema = MyColors.SetBaseIcon)
-        if (villagerSpeaking != null || setBaseIcon != null) {
+
+        if (villagerSpeaking != null) {
             if (!mainBaseBattleTutorial()) return false
         }
         listOf(MyColors.SearchOpponents, MyColors.AttackButton, MyColors.IncreaseRank).forEach { schema ->
@@ -220,16 +219,13 @@ private suspend fun mainBaseBattleTutorial(): Boolean {
         if (villagerSpeaking != null) {
             TouchActions.tap(villagerSpeaking.x, villagerSpeaking.y)
         }
-        val setBaseIcon = findMultiColors(schema = MyColors.SetBaseIcon)
+        val setBaseIcon = findMultiColorsUntil(listOf(MyColors.SetBaseIcon, MyColors.SetBaseIcon2), 10)
         if (setBaseIcon != null) {
             TouchActions.tap(557, 159)
         }
         val innerSetBaseIcon = findMultiColors(schema = MyColors.InnerSetBase)
         if (innerSetBaseIcon != null) {
-            TouchActions.tap(590, 293)
-            TouchActions.tap(844, 290)
-            TouchActions.tap(1085, 283)//Try three bases.
-            delayWithMultiplier(200)
+            TouchActions.tap(640, 300)
             TouchActions.tap(593, 591, delayTime = 1200)//Add backups
             TouchActions.swipe(1210, 562, -1000, 559, delayAfter = 400)
             TouchActions.tap(150, 494, delayTime = 200)//Furnace
@@ -239,13 +235,21 @@ private suspend fun mainBaseBattleTutorial(): Boolean {
             repeat(15) {
                 findMultiColors(schema = MyColors.TrainArcher)?.let { point ->
                     repeat(10) {
-                        TouchActions.tap(point.x, point.y)
+                        TouchActions.tap(point.x, point.y, delayTime = 50)
+                    }
+                    delayWithMultiplier(200)
+                }
+                findMultiColors(schema = MyColors.TrainBarbarian)?.let { point ->
+                    repeat(10) {
+                        TouchActions.tap(point.x, point.y, delayTime = 50)
                     }
                     delayWithMultiplier(200)
                 }
             }
             break
         }
+        val remainingSeconds = (TUTORIAL_TIMEOUT_MS - (System.currentTimeMillis() - startTime)) / 1000.0
+        accountMessage("主世界对战教程中，剩余${"%.1f".format(remainingSeconds)}秒后强制重启")
         delayWithMultiplier(100)
     }
     return enterMainScreen()
@@ -271,25 +275,13 @@ suspend fun uploadSearchScreenshot() {
         screenshotBitmap.recycle()
 
         val fileName = "search_${InGameVars.currentAccountNumber}_${System.currentTimeMillis()}.png"
-        val requestBody = MultipartBody.Builder()
-            .setType(MultipartBody.FORM)
-            .addFormDataPart(
-                "image",
-                fileName,
-                imageBytes.toRequestBody("image/png".toMediaTypeOrNull())
-            )
-            .build()
+        val requestBody = MultipartBody.Builder().setType(MultipartBody.FORM).addFormDataPart(
+            "image", fileName, imageBytes.toRequestBody("image/png".toMediaTypeOrNull())
+        ).build()
 
-        val client = OkHttpClient.Builder()
-            .connectTimeout(10, TimeUnit.SECONDS)
-            .readTimeout(10, TimeUnit.SECONDS)
-            .writeTimeout(10, TimeUnit.SECONDS)
-            .build()
+        val client = OkHttpClient.Builder().connectTimeout(10, TimeUnit.SECONDS).readTimeout(10, TimeUnit.SECONDS).writeTimeout(10, TimeUnit.SECONDS).build()
 
-        val request = Request.Builder()
-            .url("${UrlFallbackUtil.PRIMARY_URL}api/bug-report")
-            .post(requestBody)
-            .build()
+        val request = Request.Builder().url("${UrlFallbackUtil.PRIMARY_URL}api/bug-report").post(requestBody).build()
 
         withContext(Dispatchers.IO) {
             client.newCall(request).execute().close()
