@@ -3,23 +3,19 @@
 package com.coc.zkqcode.jar.ui.pages.single
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -34,13 +30,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.jar.ui.theme.AppColors
 import com.coc.zkqcode.jar.ui.components.CustomButton
 import com.coc.zkqcode.jar.ui.components.SettingInputRow
 import com.coc.zkqcode.jar.ui.components.SettingSection
 import com.coc.zkqcode.jar.ui.schema.ConfigManager
-import com.coc.zkqcode.jar.ui.schema.Schema
 import com.coc.zkqcode.jar.ui.schema.Schema.GLOBAL_SETTINGS
 
 // Grid of clickable cards for each config file
@@ -50,15 +44,7 @@ fun ConfigFileGrid(
     onConfigSelected: (Int) -> Unit,
     onShowMsg: (String) -> Unit = {}
 ) {
-    val allItems = (1..configCount).toList()
-    var searchQuery by remember { mutableStateOf("") }
-
-    // Filter items based on search query (matches index number or remark text)
-    val filteredItems = if (searchQuery.isBlank()) allItems else allItems.filter { i ->
-        val remark = GlobalVars.configStates["${Schema.MAIN_BASE_SETTINGS.CONFIG_REMARK.key}_c$i"]?.value ?: ""
-        i.toString().contains(searchQuery, ignoreCase = true) ||
-            remark.contains(searchQuery, ignoreCase = true)
-    }
+    val items = (1..configCount).toList()
 
     SettingSection {
         Column {
@@ -70,7 +56,7 @@ fun ConfigFileGrid(
                         // Clamp to max 100
                         val clamped = newCount.coerceAtMost(100)
                         if (clamped != newCount) {
-                            GlobalVars.configStates[GLOBAL_SETTINGS.CONFIG_COUNT.key]?.value = clamped.toString()
+                            com.coc.zkqcode.core.data.database.GlobalVars.configStates[GLOBAL_SETTINGS.CONFIG_COUNT.key]?.value = clamped.toString()
                         }
                         ConfigManager.expandProfileConfigs(clamped)
                     }
@@ -125,52 +111,11 @@ fun ConfigFileGrid(
                 style = MaterialTheme.typography.labelSmall,
                 color = Color.Gray
             )
-            // Search bar for filtering config files by index or remark
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 8.dp)
-                    .background(Color.White, RoundedCornerShape(8.dp))
-                    .border(1.dp, Color.LightGray, RoundedCornerShape(8.dp))
-                    .padding(horizontal = 10.dp, vertical = 8.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "🔍",
-                    modifier = Modifier.padding(end = 6.dp)
-                )
-                Box(modifier = Modifier.weight(1f)) {
-                    if (searchQuery.isEmpty()) {
-                        Text(
-                            text = "搜索配置文件（编号或备注）",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = Color.Gray
-                        )
-                    }
-                    BasicTextField(
-                        value = searchQuery,
-                        onValueChange = { searchQuery = it },
-                        singleLine = true,
-                        textStyle = MaterialTheme.typography.bodyMedium.copy(color = Color.Black),
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                }
-                if (searchQuery.isNotEmpty()) {
-                    Text(
-                        text = "✕",
-                        color = Color.Gray,
-                        modifier = Modifier
-                            .size(24.dp)
-                            .clickable { searchQuery = "" }
-                            .padding(4.dp)
-                    )
-                }
-            }
             BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
                 val spacing = 8.dp
                 val cellWidth = 110.dp
                 val columnsCount = maxOf(1, ((maxWidth + spacing) / (cellWidth + spacing)).toInt())
-                val actualRowCount = (filteredItems.size + columnsCount - 1) / columnsCount
+                val actualRowCount = (items.size + columnsCount - 1) / columnsCount
                 val itemHeight = 48.dp
                 val gridHeight = itemHeight * actualRowCount + spacing * (actualRowCount - 1).coerceAtLeast(0)
 
@@ -183,7 +128,7 @@ fun ConfigFileGrid(
                     horizontalArrangement = Arrangement.spacedBy(spacing),
                     verticalArrangement = Arrangement.spacedBy(spacing)
                 ) {
-                    items(filteredItems) { i ->
+                    items(items) { i ->
                         Box(
                             modifier = Modifier
                                 .height(itemHeight)
@@ -193,7 +138,7 @@ fun ConfigFileGrid(
                                 .padding(horizontal = 8.dp),
                             contentAlignment = Alignment.Center
                         ) {
-                            val remarkState = GlobalVars.configStates["${Schema.MAIN_BASE_SETTINGS.CONFIG_REMARK.key}_c$i"]?.value ?: ""
+                            val remarkState = com.coc.zkqcode.core.data.database.GlobalVars.configStates["${com.coc.zkqcode.jar.ui.schema.Schema.MAIN_BASE_SETTINGS.CONFIG_REMARK.key}_c$i"]?.value ?: ""
                             if (remarkState.isNotEmpty()) {
                                 Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
                                     Text(

@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -54,6 +55,7 @@ import com.coc.zkqcode.jar.ui.components.SettingSwitchIcon
 import com.coc.zkqcode.jar.ui.pages.single.ConfigFileGrid
 import com.coc.zkqcode.jar.ui.pages.single.ExtractGameSave
 import com.coc.zkqcode.jar.ui.pages.single.accountSettings
+import com.coc.zkqcode.jar.ui.pages.single.configSearchResults
 import com.coc.zkqcode.jar.ui.pages.single.gameConfig
 import com.coc.zkqcode.jar.ui.pages.single.homeSettings
 import com.coc.zkqcode.jar.ui.pages.single.specialSettings
@@ -97,12 +99,19 @@ fun HomeScreen(
 
     var selectedTabIndex by rememberSaveable { mutableIntStateOf(0) }
     var selectedConfigIndex by rememberSaveable { mutableStateOf<Int?>(null) }
+    var configSearchQuery by remember { mutableStateOf("") }
 
     // Reset config sub-navigation when switching away from the config tab
     LaunchedEffect(selectedTabIndex) {
         if (selectedTabIndex != 3) {
             selectedConfigIndex = null
+            configSearchQuery = ""
         }
+    }
+
+    // Reset search query when switching config files
+    LaunchedEffect(selectedConfigIndex) {
+        configSearchQuery = ""
     }
 
     // Hoisted expansion states keyed by config index (1-based)
@@ -208,7 +217,7 @@ fun HomeScreen(
         Box(modifier = Modifier.weight(1f)) {
             // Layer 1: Scrollable content with top padding to avoid being hidden behind the tab bar
             LazyColumn(
-                state = lazyListState, contentPadding = PaddingValues(top = if (selectedTabIndex == 3 && selectedConfigIndex != null) 40.dp else 55.dp), modifier = Modifier
+                state = lazyListState, contentPadding = PaddingValues(top = if (selectedTabIndex == 3 && selectedConfigIndex != null) (if (configSearchQuery.isBlank()) 80.dp else 48.dp) else 55.dp), modifier = Modifier
                     .fillMaxSize()
                     .padding(4.dp)
             ) {
@@ -248,39 +257,47 @@ fun HomeScreen(
                                 )
                             }
                         } else {
-                            // State hoisting for expansion keyed by config index
-                            val currentGeneralExpanded = generalExpandedStates[cfgIdx] ?: true
-                            val currentMainExpanded = mainBaseExpandedStates[cfgIdx] ?: true
-                            val currentClanExpanded = clanExpandedStates[cfgIdx] ?: true
-                            val currentResearchExpanded = researchExpandedStates[cfgIdx] ?: true
-                            val currentBuildExpanded = buildExpandedStates[cfgIdx] ?: true
-                            val currentPetExpanded = petExpandedStates[cfgIdx] ?: true
-                            val currentBuilderBaseExpanded = builderBaseExpandedStates[cfgIdx] ?: true
+                            if (configSearchQuery.isNotBlank()) {
+                                // Show filtered search results
+                                configSearchResults(
+                                    query = configSearchQuery,
+                                    configIndex = cfgIdx
+                                )
+                            } else {
+                                // State hoisting for expansion keyed by config index
+                                val currentGeneralExpanded = generalExpandedStates[cfgIdx] ?: true
+                                val currentMainExpanded = mainBaseExpandedStates[cfgIdx] ?: true
+                                val currentClanExpanded = clanExpandedStates[cfgIdx] ?: true
+                                val currentResearchExpanded = researchExpandedStates[cfgIdx] ?: true
+                                val currentBuildExpanded = buildExpandedStates[cfgIdx] ?: true
+                                val currentPetExpanded = petExpandedStates[cfgIdx] ?: true
+                                val currentBuilderBaseExpanded = builderBaseExpandedStates[cfgIdx] ?: true
 
-                            gameConfig(
-                                index = cfgIdx,
-                                isGeneralExpanded = currentGeneralExpanded,
-                                onToggleGeneralExpanded = { generalExpandedStates[cfgIdx] = !currentGeneralExpanded },
-                                isMainExpanded = currentMainExpanded,
-                                onToggleMainExpanded = { mainBaseExpandedStates[cfgIdx] = !currentMainExpanded },
-                                isClanExpanded = currentClanExpanded,
-                                onToggleClan = { clanExpandedStates[cfgIdx] = !currentClanExpanded },
-                                isResearchExpanded = currentResearchExpanded,
-                                onToggleResearch = { researchExpandedStates[cfgIdx] = !currentResearchExpanded },
-                                isBuildExpanded = currentBuildExpanded,
-                                onToggleBuild = { buildExpandedStates[cfgIdx] = !currentBuildExpanded },
-                                isPetExpanded = currentPetExpanded,
-                                onTogglePet = { petExpandedStates[cfgIdx] = !currentPetExpanded },
-                                isBuilderBaseExpanded = currentBuilderBaseExpanded,
-                                onToggleBuilderBaseExpanded = {
-                                    val newExpanded = !currentBuilderBaseExpanded
-                                    builderBaseExpandedStates[cfgIdx] = newExpanded
-                                    if (newExpanded) scrollToBottom()
-                                },
-                                onNavigatePriority = onNavigatePriority,
-                                onNavigateBuilderBasePriority = onNavigateBuilderBasePriority,
-                                onScrollToBottom = scrollToBottom
-                            )
+                                gameConfig(
+                                    index = cfgIdx,
+                                    isGeneralExpanded = currentGeneralExpanded,
+                                    onToggleGeneralExpanded = { generalExpandedStates[cfgIdx] = !currentGeneralExpanded },
+                                    isMainExpanded = currentMainExpanded,
+                                    onToggleMainExpanded = { mainBaseExpandedStates[cfgIdx] = !currentMainExpanded },
+                                    isClanExpanded = currentClanExpanded,
+                                    onToggleClan = { clanExpandedStates[cfgIdx] = !currentClanExpanded },
+                                    isResearchExpanded = currentResearchExpanded,
+                                    onToggleResearch = { researchExpandedStates[cfgIdx] = !currentResearchExpanded },
+                                    isBuildExpanded = currentBuildExpanded,
+                                    onToggleBuild = { buildExpandedStates[cfgIdx] = !currentBuildExpanded },
+                                    isPetExpanded = currentPetExpanded,
+                                    onTogglePet = { petExpandedStates[cfgIdx] = !currentPetExpanded },
+                                    isBuilderBaseExpanded = currentBuilderBaseExpanded,
+                                    onToggleBuilderBaseExpanded = {
+                                        val newExpanded = !currentBuilderBaseExpanded
+                                        builderBaseExpandedStates[cfgIdx] = newExpanded
+                                        if (newExpanded) scrollToBottom()
+                                    },
+                                    onNavigatePriority = onNavigatePriority,
+                                    onNavigateBuilderBasePriority = onNavigateBuilderBasePriority,
+                                    onScrollToBottom = scrollToBottom
+                                )
+                            }
                         }
                     }
 
@@ -304,39 +321,83 @@ fun HomeScreen(
                     shadowElevation = 0.dp
                 ) {
                     if (isConfigDetail) {
-                        // Back button + section chips when a config file is selected
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 4.dp, vertical = 4.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            CustomButton(
-                                text = "◀ 返回", onClick = { selectedConfigIndex = null }, marginTop = 0.dp
-                            )
-                            LazyRow(
-                                state = chipListState,
-                                modifier = Modifier.weight(1f),
-                                horizontalArrangement = Arrangement.spacedBy(6.dp),
+                        // Back button + search field + section chips when a config file is selected
+                        Column {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 4.dp, vertical = 4.dp),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                sectionItems.forEachIndexed { chipIndex, (label, itemIndex) ->
-                                    item {
-                                        val isActive = chipIndex == activeSectionIndex
-                                        Box(
-                                            modifier = Modifier
-                                                .clip(RoundedCornerShape(16.dp))
-                                                .background(if (isActive) AppColors.Primary else AppColors.Primary.copy(alpha = 0.15f))
-                                                .border(1.dp, AppColors.Primary, RoundedCornerShape(16.dp))
-                                                .clickable { scope.launch { lazyListState.animateScrollToItem(itemIndex) } }
-                                                .padding(horizontal = 12.dp, vertical = 6.dp),
-                                            contentAlignment = Alignment.Center
-                                        ) {
-                                            Text(
-                                                text = label,
-                                                style = MaterialTheme.typography.labelMedium,
-                                                color = if (isActive) Color.White else AppColors.Primary
-                                            )
+                                CustomButton(
+                                    text = "◀ 返回", onClick = {
+                                        configSearchQuery = ""
+                                        selectedConfigIndex = null
+                                    }, marginTop = 0.dp
+                                )
+                                // Search input field
+                                Box(
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .padding(horizontal = 4.dp)
+                                        .height(32.dp)
+                                        .clip(RoundedCornerShape(8.dp))
+                                        .background(AppColors.Background)
+                                        .border(1.dp, AppColors.Border, RoundedCornerShape(8.dp))
+                                        .padding(horizontal = 8.dp),
+                                    contentAlignment = Alignment.CenterStart
+                                ) {
+                                    if (configSearchQuery.isEmpty()) {
+                                        Text(
+                                            text = "搜索设置...",
+                                            style = MaterialTheme.typography.labelMedium,
+                                            color = Color.Gray
+                                        )
+                                    }
+                                    androidx.compose.foundation.text.BasicTextField(
+                                        value = configSearchQuery,
+                                        onValueChange = { configSearchQuery = it },
+                                        singleLine = true,
+                                        textStyle = MaterialTheme.typography.labelMedium.copy(
+                                            color = AppColors.TextPrimary
+                                        ),
+                                        modifier = Modifier.fillMaxWidth()
+                                    )
+                                }
+                                if (configSearchQuery.isNotEmpty()) {
+                                    CustomButton(
+                                        text = "✕", onClick = { configSearchQuery = "" }, marginTop = 0.dp, marginEnd = 0.dp
+                                    )
+                                }
+                            }
+                            // Section chips - only show when not searching
+                            if (configSearchQuery.isBlank()) {
+                                LazyRow(
+                                    state = chipListState,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 4.dp, vertical = 4.dp),
+                                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    sectionItems.forEachIndexed { chipIndex, (label, itemIndex) ->
+                                        item {
+                                            val isActive = chipIndex == activeSectionIndex
+                                            Box(
+                                                modifier = Modifier
+                                                    .clip(RoundedCornerShape(16.dp))
+                                                    .background(if (isActive) AppColors.Primary else AppColors.Primary.copy(alpha = 0.15f))
+                                                    .border(1.dp, AppColors.Primary, RoundedCornerShape(16.dp))
+                                                    .clickable { scope.launch { lazyListState.animateScrollToItem(itemIndex) } }
+                                                    .padding(horizontal = 12.dp, vertical = 6.dp),
+                                                contentAlignment = Alignment.Center
+                                            ) {
+                                                Text(
+                                                    text = label,
+                                                    style = MaterialTheme.typography.labelMedium,
+                                                    color = if (isActive) Color.White else AppColors.Primary
+                                                )
+                                            }
                                         }
                                     }
                                 }
