@@ -52,7 +52,6 @@ suspend fun mainBaseAttack(): Boolean {
     } else {
         while (true) {
             val elapsed = System.currentTimeMillis() - startTime
-
             // Force exit if battle has exceeded the maximum allowed duration
             if (elapsed >= maxDurationMs) {
                 killGame()

@@ -89,4 +89,7 @@ object MyColors : IUIColors by UIColors, IFeatureColors by FeatureColors, IClanG
     val SetBaseIcon2 = ColorSchema.parse(
         509, 133, 580, 181, "7ED3A3", "3|3|72CB98,9|7|7FD4A4,21|4|7AD1A4,6|-11|B78D7A,11|-7|FFEFE6,15|-14|EDE1DC,10|-15|FFEAE1,1|-18|FFF0E7,1|-15|FFF6EF", 0, 0.93, "布阵按钮2"
     )
+    val JoinTournament = ColorSchema.parse(
+        435, 496, 705, 568, "D8963B", "54|0|D8963B,108|0|D8963B,162|0|D8963B,216|0|D8963B,0|36|D8963B,54|36|D8963B,108|36|D8963B,162|36|D8963B,216|36|D8963B", 0, 0.9, "锦标赛"
+    )
 }
