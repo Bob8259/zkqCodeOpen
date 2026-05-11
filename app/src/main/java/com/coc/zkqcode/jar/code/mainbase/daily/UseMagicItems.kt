@@ -6,6 +6,7 @@ import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.mainbase.others.zoomSmallMainBase
 import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.jar.code.universal.InGameVars
+import com.coc.zkqcode.jar.code.universal.aidetection.DetectionRegion
 import com.coc.zkqcode.jar.code.universal.aidetection.tiledAiDetect
 import com.coc.zkqcode.jar.code.universal.clickRightBottom
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
@@ -48,7 +49,10 @@ suspend fun useMagicItems(): Boolean {
         )
         for (detection in scan) {
             val box = detection.boundingBox
-            TouchActions.tap(box.centerX().toInt(), box.centerY().toInt())
+            val cx = box.centerX().toInt()
+            val cy = box.centerY().toInt()
+            if (!DetectionRegion.isInsideRegion(cx, cy)) continue
+            TouchActions.tap(cx, cy)
             val magicItemIcon = findMultiColorsUntil(schemas = listOf(MyColors.MagicItemIcon, MyColors.MagicItemIcon2, MyColors.MagicItemIcon3, MyColors.MagicItemIcon4), duration = 200)
             if (magicItemIcon != null) {
                 TouchActions.tap(magicItemIcon.x, magicItemIcon.y, delayTime = 800)

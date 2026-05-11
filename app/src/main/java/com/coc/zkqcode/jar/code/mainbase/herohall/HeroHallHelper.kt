@@ -6,6 +6,7 @@ import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.mainbase.others.zoomSmallMainBase
 import com.coc.zkqcode.jar.code.universal.clickRightBottom
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
+import com.coc.zkqcode.jar.code.universal.aidetection.DetectionRegion
 import com.coc.zkqcode.jar.code.universal.aidetection.tiledAiDetect
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
 
@@ -20,8 +21,10 @@ suspend fun withHeroHall(action: suspend () -> Unit): Boolean {
         )
         for (detection in scan) {
             val box = detection.boundingBox
-            if (box.centerY() <= 85) continue
-            if (openHeroHall(box.centerX().toInt(), box.centerY().toInt())) {
+            val cx = box.centerX().toInt()
+            val cy = box.centerY().toInt()
+            if (!DetectionRegion.isInsideRegion(cx, cy)) continue
+            if (openHeroHall(cx, cy)) {
                 action()
                 return true
             }
