@@ -78,7 +78,7 @@ fun LazyListScope.mainBaseConfig(
                             GlobalVars.configStates["${MAIN_BASE_SETTINGS.ACCEPT_MAIN_WORLD_ADVANCED_TASK.key}_c$index"]?.value = "0"
                         }
                     },
-                )/*
+                )
                 SettingSwitchIcon(
                     key = "${MAIN_BASE_SETTINGS.PLAY_LADDER.key}_c$index",
                     explain = "排位赛不保证胜率，请谨慎开启。"
@@ -88,7 +88,6 @@ fun LazyListScope.mainBaseConfig(
                 ) {
                     SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.CHANGE_BASE.key}_c$index")
                 }
-                */
             }
             SettingInputRow(key = "${MAIN_BASE_SETTINGS.BATTLE_TIMES.key}_c$index")
             SettingInputRow(key = "${MAIN_BASE_SETTINGS.BATTLE_TIMES_WITH_TASKS.key}_c$index")

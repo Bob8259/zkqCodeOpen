@@ -2,6 +2,7 @@
 
 
 import com.coc.zkqcode.jar.code.clancapital.playClanCapital
+import com.coc.zkqcode.jar.code.mainbase.attack.adjustBaseAndReinforcements
 import com.coc.zkqcode.jar.code.mainbase.attack.mainBaseAttack
 import com.coc.zkqcode.jar.code.mainbase.attack.mainBaseRemainingAttack
 import com.coc.zkqcode.jar.code.mainbase.attack.mainBaseTrainTroops
@@ -38,6 +39,7 @@ suspend fun playMainBase(): Boolean {
     if (!mainBaseCollectResources()) return false
     if (!mainBaseTrainTroops()) return false
     if (!mainBaseAttack()) return false
+    if (!adjustBaseAndReinforcements()) return false
     if (!collectClanGameReward()) return false
     if (!checkNormalShop()) return false
     if (!checkLeagueShop()) return false

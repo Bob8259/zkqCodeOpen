@@ -116,7 +116,7 @@ suspend fun searchOpponentsAndDeployTroops(): Boolean {
     while (System.currentTimeMillis() - battleStartTime < SEARCH_TIMEOUT_MS) {
         val battleIcon = findMultiColorsUntil(schemas = listOf(MyColors.TrainTroops), duration = 500)
         if (battleIcon != null) {
-            TouchActions.tap(83, 631)
+            TouchActions.tap(80, 630)
         }
         // Detect attack cooldown screen; abort search so mainBaseAttack() can skip battle logic
         val battlePage = findMultiColors(MyColors.BattlePage)
@@ -221,16 +221,16 @@ private suspend fun mainBaseBattleTutorial(): Boolean {
         }
         val setBaseIcon = findMultiColorsUntil(listOf(MyColors.SetBaseIcon, MyColors.SetBaseIcon2), 10)
         if (setBaseIcon != null) {
-            TouchActions.tap(557, 159)
+            TouchActions.tap(560, 160)
         }
         val innerSetBaseIcon = findMultiColors(schema = MyColors.InnerSetBase)
         if (innerSetBaseIcon != null) {
             TouchActions.tap(640, 300)
-            TouchActions.tap(593, 591, delayTime = 1200)//Add backups
-            TouchActions.swipe(1210, 562, -1000, 559, delayAfter = 400)
-            TouchActions.tap(150, 494, delayTime = 200)//Furnace
-            TouchActions.tap(150, 494)
-            TouchActions.swipe(86, 562, 2500, 500, delayAfter = 400)
+            TouchActions.tap(590, 590, delayTime = 1200)//Add backups
+            TouchActions.swipe(1210, 560, -1000, 560, delayAfter = 400)
+            TouchActions.tap(280, 630, delayTime = 200)//Furnace
+            TouchActions.tap(280, 630)
+            TouchActions.swipe(85, 560, 2500, 500, delayAfter = 400)
             // Repeatedly find and tap the archer training icon
             repeat(15) {
                 findMultiColors(schema = MyColors.TrainArcher)?.let { point ->
@@ -249,7 +249,7 @@ private suspend fun mainBaseBattleTutorial(): Boolean {
             break
         }
         val remainingSeconds = (TUTORIAL_TIMEOUT_MS - (System.currentTimeMillis() - startTime)) / 1000.0
-        accountMessage("主世界对战教程中，剩余${"%.1f".format(remainingSeconds)}秒后强制重启")
+        accountMessage("主世界对战教程中，剩余${"%.1f".format(remainingSeconds)}秒后强制结束")
         delayWithMultiplier(100)
     }
     return enterMainScreen()

@@ -7,12 +7,11 @@ import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.smalltools.data.getBooleanConfigRuntime
-import com.coc.zkqcode.jar.code.universal.smalltools.data.getConfigRuntime
 import com.coc.zkqcode.jar.code.universal.smalltools.input.TouchActions
 import com.coc.zkqcode.jar.ui.schema.Schema
 
 suspend fun adjustBaseAndReinforcements(): Boolean {
-    if (!getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.CHANGE_BASE.key)) return true
+    if (!getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.CHANGE_BASE.key) || !getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.PLAY_LADDER.key)) return true
     val startTime = System.currentTimeMillis()
     val maxDuration = 20_000L
     while (System.currentTimeMillis() - startTime < maxDuration) {
@@ -30,8 +29,8 @@ suspend fun adjustBaseAndReinforcements(): Boolean {
             TouchActions.tap(1170, 500)//Clear reinforcements
             TouchActions.tap(590, 590, delayTime = 1200)//Add backups
             TouchActions.swipe(1210, 560, -1000, 560, delayAfter = 400)
-            TouchActions.tap(150, 495, delayTime = 200)//Furnace
-            TouchActions.tap(150, 495)
+            TouchActions.tap(280, 630, delayTime = 200)//Furnace
+            TouchActions.tap(280, 630)
             TouchActions.swipe(85, 560, 2500, 500, delayAfter = 400)
             // Repeatedly find and tap the archer training icon
             repeat(15) {
