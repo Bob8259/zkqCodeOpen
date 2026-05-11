@@ -84,7 +84,7 @@ suspend fun upgradeWalls(currentBase: BaseType): Boolean {
             BaseType.Builder -> 7
             BaseType.Main -> 5
         }
-        if (wallLevel < minLevelForElixir) break
+        if (wallLevel < minLevelForElixir && getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.SMART_DECISION.key)) break
         when (upgradeAllExistingBuildings(listOf("城墙"), currentBase, skipOrdering = true, WallType.Elixir)) {
             UpgradeResult.Failure -> return false
             UpgradeResult.StopLoop -> break
