@@ -40,6 +40,9 @@ object StorageKeys {
     // Per-account key for base/reinforcement adjustment
     const val ADJUST_BASE_AND_REINFORCEMENTS = "AdjustBaseAndReinforcements"
 
+    // Per-account key for ladder play
+    const val PLAY_LADDER = "PlayLadder"
+
     // Periodic screenshot upload timestamp
     const val SEARCH_SCREENSHOT_UPLOAD = "SearchScreenshotUpload"
 
