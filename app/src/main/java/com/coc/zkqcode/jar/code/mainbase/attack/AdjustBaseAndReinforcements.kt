@@ -15,7 +15,7 @@ import com.coc.zkqcode.jar.code.universal.smalltools.input.TouchActions
 import com.coc.zkqcode.jar.ui.schema.Schema
 
 suspend fun adjustBaseAndReinforcements(): Boolean {
-    if (!getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.CHANGE_BASE.key) || !getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.PLAY_LADDER.key)) return true
+    if (!getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.CHANGE_BASE.key) || !getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.PLAY_TOURNAMENT.key)) return true
 
     // Guard: only adjust base and reinforcements once per 3 days (4320 minutes)
     val storageKey = StorageKeys.withAccountNumber(StorageKeys.ADJUST_BASE_AND_REINFORCEMENTS, InGameVars.currentAccountNumber)

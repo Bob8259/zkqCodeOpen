@@ -64,7 +64,7 @@ object MainBaseSettings {
     val UPGRADE_PETS = SettingDef("upgrade_pets", "升级战宠", 1, "MAIN_BASE_SETTINGS")
     val STOP_BATTLE_WHEN_NO_STAR = SettingDef("stop_battle_when_no_star", "无胜利之星后停止对战", 0, "MAIN_BASE_SETTINGS")
     val RESTART_GAME = SettingDef("restart_game", "部署后重启游戏", 1, "MAIN_BASE_SETTINGS")
-    val PLAY_LADDER = SettingDef("play_ladder", "排位对战", 0, "MAIN_BASE_SETTINGS")
+    val PLAY_TOURNAMENT = SettingDef("play_tournament", "排位对战", 0, "MAIN_BASE_SETTINGS")
     val CHANGE_BASE = SettingDef("change_base", "调整援兵/阵型", 1, "MAIN_BASE_SETTINGS")
     val WAIT_FOR_BATTLE = SettingDef("wait_for_battle", "等待对战", 0, "MAIN_BASE_SETTINGS")
     val WAIT_FOR_BATTLE_AFTER_ACCEPT_MAIN_WORLD_TASK = SettingDef(
@@ -197,7 +197,7 @@ object MainBaseSettings {
         UPGRADE_PETS,
         STOP_BATTLE_WHEN_NO_STAR,
         RESTART_GAME,
-        PLAY_LADDER,
+        PLAY_TOURNAMENT,
         CHANGE_BASE,
         WAIT_FOR_BATTLE,
         WAIT_FOR_BATTLE_AFTER_ACCEPT_MAIN_WORLD_TASK,

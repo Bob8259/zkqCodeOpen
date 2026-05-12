@@ -80,11 +80,11 @@ fun LazyListScope.mainBaseConfig(
                     },
                 )
                 SettingSwitchIcon(
-                    key = "${MAIN_BASE_SETTINGS.PLAY_LADDER.key}_c$index",
+                    key = "${MAIN_BASE_SETTINGS.PLAY_TOURNAMENT.key}_c$index",
                     explain = "排位赛不保证胜率，请谨慎开启。"
                 )
                 AnimatedVisibility(
-                    visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.PLAY_LADDER.key}_c$index"]?.value == "1"
+                    visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.PLAY_TOURNAMENT.key}_c$index"]?.value == "1"
                 ) {
                     SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.CHANGE_BASE.key}_c$index")
                 }

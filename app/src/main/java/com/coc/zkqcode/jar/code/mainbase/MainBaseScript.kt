@@ -6,7 +6,7 @@ import com.coc.zkqcode.jar.code.mainbase.attack.adjustBaseAndReinforcements
 import com.coc.zkqcode.jar.code.mainbase.attack.mainBaseAttack
 import com.coc.zkqcode.jar.code.mainbase.attack.mainBaseRemainingAttack
 import com.coc.zkqcode.jar.code.mainbase.attack.mainBaseTrainTroops
-import com.coc.zkqcode.jar.code.mainbase.attack.playLadder
+import com.coc.zkqcode.jar.code.mainbase.attack.playTournament
 import com.coc.zkqcode.jar.code.mainbase.clan.clanLeague
 import com.coc.zkqcode.jar.code.universal.clangame.clanGame
 import com.coc.zkqcode.jar.code.mainbase.clan.clanWar
@@ -41,7 +41,7 @@ suspend fun playMainBase(): Boolean {
     if (!mainBaseTrainTroops()) return false
     if (!mainBaseAttack()) return false
     if (!adjustBaseAndReinforcements()) return false
-    if (!playLadder()) return false
+    if (!playTournament()) return false
     if (!collectClanGameReward()) return false
     if (!checkNormalShop()) return false
     if (!checkLeagueShop()) return false

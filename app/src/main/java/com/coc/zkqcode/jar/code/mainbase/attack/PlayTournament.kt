@@ -15,11 +15,11 @@ import com.coc.zkqcode.jar.code.universal.smalltools.lifecycle.killGame
 import com.coc.zkqcode.jar.code.universal.smalltools.lifecycle.runGame
 import com.coc.zkqcode.jar.ui.schema.Schema
 
-suspend fun playLadder(): Boolean {
-    if (!getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.PLAY_LADDER.key)) return true
+suspend fun playTournament(): Boolean {
+    if (!getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.PLAY_TOURNAMENT.key)) return true
 
-    // Guard: only check ladder once per day (1440 minutes)
-    val storageKey = StorageKeys.withAccountNumber(StorageKeys.PLAY_LADDER, InGameVars.currentAccountNumber)
+    // Guard: only check tournament once per day (1440 minutes)
+    val storageKey = StorageKeys.withAccountNumber(StorageKeys.PLAY_TOURNAMENT, InGameVars.currentAccountNumber)
     if (!checkMemoryFile(storageKey, 1440)) {
         accountMessage("今日已检测排位赛，暂不重复执行")
         return true
