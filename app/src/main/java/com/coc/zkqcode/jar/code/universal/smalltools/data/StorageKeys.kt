@@ -37,6 +37,9 @@ object StorageKeys {
     const val DYNAMIC_ELIXIR = "DynamicElixir"
     const val DYNAMIC_DARK_ELIXIR = "DynamicDarkElixir"
 
+    // Per-account key for base/reinforcement adjustment
+    const val ADJUST_BASE_AND_REINFORCEMENTS = "AdjustBaseAndReinforcements"
+
     // Periodic screenshot upload timestamp
     const val SEARCH_SCREENSHOT_UPLOAD = "SearchScreenshotUpload"
 

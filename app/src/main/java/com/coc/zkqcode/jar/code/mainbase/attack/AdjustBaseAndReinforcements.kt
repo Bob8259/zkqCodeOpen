@@ -2,16 +2,27 @@ package com.coc.zkqcode.jar.code.mainbase.attack
 
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.jar.code.colorschema.MyColors
+import com.coc.zkqcode.jar.code.universal.InGameVars
 import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
+import com.coc.zkqcode.jar.code.universal.smalltools.data.StorageKeys
+import com.coc.zkqcode.jar.code.universal.smalltools.data.checkMemoryFile
 import com.coc.zkqcode.jar.code.universal.smalltools.data.getBooleanConfigRuntime
+import com.coc.zkqcode.jar.code.universal.smalltools.data.writeMemory
 import com.coc.zkqcode.jar.code.universal.smalltools.input.TouchActions
 import com.coc.zkqcode.jar.ui.schema.Schema
 
 suspend fun adjustBaseAndReinforcements(): Boolean {
     if (!getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.CHANGE_BASE.key) || !getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.PLAY_LADDER.key)) return true
+
+    // Guard: only adjust base and reinforcements once per 3 days (4320 minutes)
+    val storageKey = StorageKeys.withAccountNumber(StorageKeys.ADJUST_BASE_AND_REINFORCEMENTS, InGameVars.currentAccountNumber)
+    if (!checkMemoryFile(storageKey, 4320)) {
+        accountMessage("3天内已调整过阵型和援军，暂不重复执行")
+        return true
+    }
     val startTime = System.currentTimeMillis()
     val maxDuration = 20_000L
     while (System.currentTimeMillis() - startTime < maxDuration) {
@@ -53,5 +64,7 @@ suspend fun adjustBaseAndReinforcements(): Boolean {
         accountMessage("调整阵型中，剩余${"%.1f".format(remainingSeconds)}秒后强制结束")
         delayWithMultiplier(100)
     }
+    // Record the timestamp so the guard activates for the next 3 days
+    writeMemory(storageKey, (System.currentTimeMillis() / 60_000).toString())
     return enterMainScreen()
 }

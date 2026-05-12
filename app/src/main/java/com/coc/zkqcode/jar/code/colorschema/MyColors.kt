@@ -92,4 +92,16 @@ object MyColors : IUIColors by UIColors, IFeatureColors by FeatureColors, IClanG
     val JoinTournament = ColorSchema.parse(
         435, 496, 705, 568, "D8963B", "54|0|D8963B,108|0|D8963B,162|0|D8963B,216|0|D8963B,0|36|D8963B,54|36|D8963B,108|36|D8963B,162|36|D8963B,216|36|D8963B", 0, 0.9, "锦标赛"
     )
+    val PlayTournament = ColorSchema.parse(
+        434, 496, 703, 571, "2DADF9", "28|0|2DADF9,54|-2|2DADF9,176|-4|2DADF9,206|-4|2DADF9,228|-4|2DADF9,7|34|2CADF9,28|35|2CADF9,178|37|2CADF9,235|33|2CADF9", 0, 0.9, "排位赛"
+    )
+    val ConfirmTournamentAttack = ColorSchema.parse(
+        669, 442, 855, 515, "77F4D8", "37|0|78F5D8,74|0|78F5D7,111|0|78F5D7,148|0|78F5D7,0|37|1EBD6E,37|37|1FBD6E,74|37|1FBD6E,111|37|1FBD6E,148|37|1FBD6E", 0, 0.9, "确认排位赛进攻"
+    )
+    val WaitForTournament = ColorSchema.parse(
+        434, 498, 706, 571, "9D9D9D", "20|0|9D9D9D,36|16|9D9D9D,180|18|9D9D9D,202|18|9D9D9D,213|11|9D9D9D,222|8|9D9D9D,218|26|9D9D9D,203|38|9D9D9D,192|37|9D9D9D", 0, 0.9, "排位赛等待"
+    )
+    val GreenSword = ColorSchema.parse(
+        491, 539, 542, 575, "15D85A", "3|-4|0DFFC6,9|-8|15CF5F,14|-13|15CF60,9|-14|30FFC2,6|-11|29FFB8,3|-7|22FFC4,2|-6|21FFC2,1|-2|10E15E,-2|-1|16D959", 0, 0.9, "绿色的剑"
+    )
 }

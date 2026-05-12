@@ -39,6 +39,7 @@ suspend fun mainBaseRemainingAttack(): Boolean {
 suspend fun mainBaseAttack(): Boolean {
     if (!getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.AUTO_ATTACK.key)) return true
     // Skip post-battle logic if no battle was started (e.g. cooldown, timeout, insufficient gold)
+
     val battleStarted = searchOpponentsAndDeployTroops()
     if (!battleStarted) return enterMainScreen()
     val maxDurationMs = 3 * 60 * 1000L // Maximum battle wait time: 3 minutes
