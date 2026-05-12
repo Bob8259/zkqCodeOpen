@@ -60,6 +60,10 @@ suspend fun adjustBaseAndReinforcements(): Boolean {
             }
             break
         }
+        if (findMultiColors(MyColors.TournamentNotAvailable) != null) {
+            writeMemory(storageKey, (System.currentTimeMillis() / 60_000).toString())
+            break
+        }
         val remainingSeconds = (maxDuration - (System.currentTimeMillis() - startTime)) / 1000.0
         accountMessage("调整阵型中，剩余${"%.1f".format(remainingSeconds)}秒后强制结束")
         delayWithMultiplier(100)

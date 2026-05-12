@@ -1,4 +1,4 @@
-﻿package com.coc.zkqcode.jar.code.builderbase.precheck
+﻿package com.coc.zkqcode.jar.code.universal.smalltools.lifecycle
 
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil

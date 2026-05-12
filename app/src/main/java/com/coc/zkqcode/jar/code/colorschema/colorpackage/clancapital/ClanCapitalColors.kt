@@ -17,6 +17,7 @@ interface IClanCapitalColors {
     val CapitalTrainTroopPage: ColorSchema
     val CapitalTrainTroopPage2: ColorSchema
     val TrainTroops2: ColorSchema
+    val StartRaid: ColorSchema
 }
 
 object ClanCapitalColors : IClanCapitalColors {
@@ -67,5 +68,9 @@ object ClanCapitalColors : IClanCapitalColors {
     // Capital train troops button (variant 2)
     override val TrainTroops2 = ColorSchema.parse(
         17, 483, 88, 559, "57F8FF", "33|13|E4DF1E,31|9|DBD815,11|0|57E8FF,14|0|50DEFF,0|17|E2CDEC,3|17|AF9EAF,7|17|ECDDF4,11|17|E3C7E3,14|17|35576E", 0, 0.9, "都城练兵按钮2"
+    )
+    // Start raid button
+    override val StartRaid = ColorSchema.parse(
+        1151, 592, 1254, 692, "64D4B4", "4|16|64D2B1,4|47|28BC8D,40|51|28BB8D,72|48|28BC8D,82|45|28BD8E,84|25|28C192,84|11|64D3B2,83|6|64D4B3,84|-3|64D5B5", 0, 0.9, "发起突袭"
     )
 }

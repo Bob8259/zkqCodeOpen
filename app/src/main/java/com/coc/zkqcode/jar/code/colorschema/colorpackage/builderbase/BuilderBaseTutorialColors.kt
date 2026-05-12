@@ -11,6 +11,8 @@ interface IBuilderBaseTutorial {
     val BuilderBaseAttack: ColorSchema
     val BuilderBaseDeployBarbs: ColorSchema
     val UpgradeStarLab: ColorSchema
+    val SailUP: ColorSchema
+    val BuilderMaster2: ColorSchema
 }
 
 object BuilderBaseTutorial : IBuilderBaseTutorial {
@@ -37,5 +39,13 @@ object BuilderBaseTutorial : IBuilderBaseTutorial {
     )
     override val UpgradeStarLab = ColorSchema.parse(
         196, 35, 976, 410, "20B7FF", "4|34|05ADFF,2|53|15ADFF,50|54|25C3FF,53|21|0AA0FF,77|2|4FA9FF,58|-23|4EAAFF,42|-22|2BA3FF,26|22|00A6FD,40|12|06A6FF", 0, 0.9, "升级星空实验室"
+    )
+    // Sail up button
+    override val SailUP = ColorSchema.parse(
+        691, 530, 726, 578, "3F41B7", "7|0|C4DEF2,14|0|3E41B3,21|0|CBE2F4,28|0|4143AA,0|24|4B6A9C,7|24|5D80AB,14|24|756D74,21|24|776A6B,28|24|9F9591", 0, 0.9, "启航"
+    )
+    // Sleeping builder master (variant 2)
+    override val BuilderMaster2 = ColorSchema.parse(
+        978, 484, 1126, 690, "143177", "29|0|123279,59|0|1C4593,89|0|3E537F,118|0|3A4E79,0|103|0E1D41,29|103|102045,59|103|273F70,89|103|08122F,118|103|79522B", 0, 0.9, "睡觉建筑大师2"
     )
 }

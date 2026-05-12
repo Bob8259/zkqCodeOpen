@@ -42,8 +42,7 @@ suspend fun playTournament(): Boolean {
         if (findMultiColors(MyColors.WaitForTournament) != null) {
             break
         }
-        if (findMultiColors(MyColors.GreenSword) != null || findMultiColors(MyColors.PreparingTournament) != null) {
-            accountMessage("排位赛准备中或已完成")
+        if (findMultiColors(MyColors.GreenSword) != null || findMultiColors(MyColors.PreparingTournament) != null || findMultiColors(MyColors.TournamentNotAvailable) != null) {
             writeMemory(storageKey, (System.currentTimeMillis() / 60_000).toString())
             break
         }

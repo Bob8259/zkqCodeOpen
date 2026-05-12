@@ -14,6 +14,7 @@ interface IFeatureColors {
     val ResearchIcon2: ColorSchema
     val WhiteNumberColor: ColorSchema
     val MiddleGreenConfirm: ColorSchema
+    val ItemsToBePlaced: ColorSchema
 }
 
 object FeatureColors : IFeatureColors {
@@ -43,5 +44,9 @@ object FeatureColors : IFeatureColors {
     )
     override val MiddleGreenConfirm = ColorSchema.parse(
         546, 427, 743, 501, "75F4D6", "39|0|75F4D6,79|0|75F4D6,118|0|74F4D6,157|0|74F4D6,0|37|20BE6F,39|37|20BE6F,79|37|20BE6F,118|37|20BE6F,157|37|1FBE6F", 0, 0.9, "中绿确认按钮"
+    )
+    // Place item colours
+    override val ItemsToBePlaced = ColorSchema.parse(
+        563, 461, 719, 496, "B7FEFF", "0|1|B7FEFF,0|2|B7FEFF,5|12|B7FEFE,5|13|B7FEFE,-24|10|B7FFFF,-117|8|B4FBFB,-115|8|B4FBFC,-112|8|B7FEFE,-110|8|B7FFFF", 0, 0.95, "待放置的物品"
     )
 }
