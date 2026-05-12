@@ -104,4 +104,7 @@ object MyColors : IUIColors by UIColors, IFeatureColors by FeatureColors, IClanG
     val GreenSword = ColorSchema.parse(
         491, 539, 542, 575, "15D85A", "3|-4|0DFFC6,9|-8|15CF5F,14|-13|15CF60,9|-14|30FFC2,6|-11|29FFB8,3|-7|22FFC4,2|-6|21FFC2,1|-2|10E15E,-2|-1|16D959", 0, 0.9, "绿色的剑"
     )
+    val PreparingTournament = ColorSchema.parse(
+        419, 117, 752, 623, "828282", "10|14|828282,12|-2|828282,184|-6|828282,196|12|828282,-22|-381|F6FCFD,-18|-373|E2DCC4,-12|-370|BBA57B,-15|-364|D8E0E3,-17|-362|F6FDFD", 0, 0.9, "排位赛准备中"
+    )
 }
