@@ -2,20 +2,25 @@
 
 package com.coc.zkqcode.jar.ui.pages.single
 
-import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.foundation.layout.padding
 import androidx.compose.ui.unit.dp
-import androidx.compose.foundation.lazy.LazyListScope
-import com.coc.zkqcode.jar.ui.components.SectionBanner
-import com.coc.zkqcode.jar.ui.components.SettingSection
+import com.coc.zkqcode.jar.ui.components.CustomAlertDialog
+import com.coc.zkqcode.jar.ui.components.CustomButton
+import com.coc.zkqcode.jar.ui.theme.AppColors
 
 // Hardcoded legal disclaimers text
 private val DISCLAIMER_TEXT = """
@@ -531,73 +536,66 @@ private val USER_AGREEMENT_TEXT = """
 紫孔雀对本条款享有最终解释权与修改权。
 """.trimIndent()
 
+@Composable
+private fun LegalDialogButton(
+    title: String,
+    content: String,
+) {
+    var showDialog by remember { mutableStateOf(false) }
+
+    CustomButton(
+        text = title,
+        onClick = { showDialog = true }
+    )
+
+    if (showDialog) {
+        CustomAlertDialog(
+            onDismissRequest = { showDialog = false },
+            title = {
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.titleMedium,
+                    color = AppColors.TextPrimary
+                )
+            },
+            text = {
+                Text(
+                    text = content,
+                    style = MaterialTheme.typography.bodySmall,
+                    modifier = Modifier
+                        .heightIn(max = 420.dp)
+                        .verticalScroll(rememberScrollState())
+                        .padding(end = 4.dp)
+                )
+            },
+            confirmButton = {
+                TextButton(onClick = { showDialog = false }) {
+                    Text("明白了", color = AppColors.Primary)
+                }
+            }
+        )
+    }
+}
+
 fun LazyListScope.legalDisclaimers() {
     item {
-        var disclaimerExpanded by remember { mutableStateOf(false) }
-        SectionBanner(
-            title = "免责声明",
-            isExpanded = disclaimerExpanded,
-            onClick = { disclaimerExpanded = !disclaimerExpanded }
-        )
-        AnimatedVisibility(visible = disclaimerExpanded) {
-            SettingSection {
-                Text(
-                    text = DISCLAIMER_TEXT,
-                    style = MaterialTheme.typography.bodySmall,
-                    modifier = Modifier.padding(4.dp)
-                )
-            }
-        }
-    }
-    item {
-        var privacyExpanded by remember { mutableStateOf(false) }
-        SectionBanner(
-            title = "隐私政策",
-            isExpanded = privacyExpanded,
-            onClick = { privacyExpanded = !privacyExpanded }
-        )
-        AnimatedVisibility(visible = privacyExpanded) {
-            SettingSection {
-                Text(
-                    text = PRIVACY_POLICY_TEXT,
-                    style = MaterialTheme.typography.bodySmall,
-                    modifier = Modifier.padding(4.dp)
-                )
-            }
-        }
-    }
-    item {
-        var rootExpanded by remember { mutableStateOf(false) }
-        SectionBanner(
-            title = "Root 授权须知",
-            isExpanded = rootExpanded,
-            onClick = { rootExpanded = !rootExpanded }
-        )
-        AnimatedVisibility(visible = rootExpanded) {
-            SettingSection {
-                Text(
-                    text = ROOT_DISCLAIMER_TEXT,
-                    style = MaterialTheme.typography.bodySmall,
-                    modifier = Modifier.padding(4.dp)
-                )
-            }
-        }
-    }
-    item {
-        var userAgreementExpanded by remember { mutableStateOf(false) }
-        SectionBanner(
-            title = "用户协议",
-            isExpanded = userAgreementExpanded,
-            onClick = { userAgreementExpanded = !userAgreementExpanded }
-        )
-        AnimatedVisibility(visible = userAgreementExpanded) {
-            SettingSection {
-                Text(
-                    text = USER_AGREEMENT_TEXT,
-                    style = MaterialTheme.typography.bodySmall,
-                    modifier = Modifier.padding(4.dp)
-                )
-            }
+        FlowRow {
+            LegalDialogButton(
+                title = "免责声明",
+                content = DISCLAIMER_TEXT
+            )
+            LegalDialogButton(
+                title = "隐私政策",
+                content = PRIVACY_POLICY_TEXT
+            )
+            LegalDialogButton(
+                title = "Root 授权须知",
+                content = ROOT_DISCLAIMER_TEXT
+            )
+            LegalDialogButton(
+                title = "用户协议",
+                content = USER_AGREEMENT_TEXT
+            )
         }
     }
 }
