@@ -149,7 +149,7 @@ suspend fun mainBaseTutorial(): Boolean {
     // Village Naming Logic
     findMultiColors(schema = MyColors.MyVillageIsCalled, increment = 1)?.let {
         setZKQInputMethod()
-        TouchActions.tap(625, 297, delayTime = 200)
+        TouchActions.tap(625, 300, delayTime = 200)
 
         var gameName = getStaticConfig(Schema.GLOBAL_SETTINGS.CREATE_PREFIX.key)
         val addSuffix = getStaticConfig(Schema.GLOBAL_SETTINGS.ADD_SUFFIX_SETTING.key) == "1"
@@ -159,7 +159,7 @@ suspend fun mainBaseTutorial(): Boolean {
         }
 
         inputTextReliable(gameName)
-        TouchActions.tap(641, 368, delayTime = 300)
+        TouchActions.tap(640, 370, delayTime = 300)
     }
 
     // Tutorial Conclusion and Clean-up

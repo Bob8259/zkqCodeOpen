@@ -1,6 +1,7 @@
 ﻿package com.coc.zkqcode.jar.code.universal
 
 import com.coc.zkqcode.core.data.database.GlobalVars
+import com.coc.zkqcode.core.system.inputmethod.inputTextReliable
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
@@ -12,6 +13,8 @@ import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.smalltools.lifecycle.checkReconnections
 import com.coc.zkqcode.jar.code.universal.smalltools.data.getBooleanConfigRuntime
+import com.coc.zkqcode.jar.code.universal.smalltools.data.getStaticConfig
+import com.coc.zkqcode.jar.code.universal.smalltools.input.setZKQInputMethod
 import com.coc.zkqcode.jar.code.universal.smalltools.lifecycle.isGameAtFront
 import com.coc.zkqcode.jar.code.universal.smalltools.lifecycle.killGame
 import com.coc.zkqcode.jar.code.universal.smalltools.lifecycle.runGame
@@ -199,7 +202,22 @@ private suspend fun closeAdvertisements() {
         TouchActions.tap(219, 139, delayTime = 1000)//close training tap
         TouchActions.tap(1232, 65, delayTime = 300)//close training page
     }
+    findMultiColors(byteBuffer = screenBuffer, schema = MyColors.MyVillageIsCalled, increment = 1)?.let {
+        setZKQInputMethod()
+        TouchActions.tap(625, 300, delayTime = 200)
+
+        var gameName = getStaticConfig(Schema.GLOBAL_SETTINGS.CREATE_PREFIX.key)
+        val addSuffix = getStaticConfig(Schema.GLOBAL_SETTINGS.ADD_SUFFIX_SETTING.key) == "1"
+
+        if (addSuffix) {
+            gameName += InGameVars.currentAccountNumber
+        }
+
+        inputTextReliable(gameName)
+        TouchActions.tap(640, 370, delayTime = 300)
+    }
 }
+
 suspend fun isInHomePage(): Boolean {
     // 1. Capture the screen and cast safely
     val screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult ?: logAndRestart("in isInHomePage, screen capture failed.")
