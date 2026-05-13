@@ -137,7 +137,8 @@ private suspend fun closeAdvertisements() {
         MyColors.TempGameContinue,
         MyColors.IncreaseRank,
         MyColors.ClanLeagueReturnCamp,
-        MyColors.UpgradeNotification
+        MyColors.UpgradeNotification,
+        MyColors.EnterLeague
     )
 
     // 3. Iterate through schemas

@@ -68,4 +68,11 @@ object MyColors : IUIColors by UIColors, IFeatureColors by FeatureColors, IClanG
     IUniversalUpgradeColors by UniversalUpgradeColors, IMainBaseUpgradeColors by MainBaseUpgradeColors, IMainBaseResearchColors by MainBaseResearchColors, IMainBaseResearchLevelColors by MainBaseResearchLevelColors,
     IMainBaseResourcesColors by MainBaseResourcesColors, IClanCapitalTutorialColors by ClanCapitalTutorialColors, IMainBaseAttackColors by MainBaseAttackColors, IMainBaseClanColors by MainBaseClanColors,
     IMainBaseClanWarColors by MainBaseClanWarColors, IMainBaseHelperColors by MainBaseHelperColors, IMainBaseHeroHallColors by MainBaseHeroHallColors, IMainBaseSmallTutorialColors by MainBaseSmallTutorialColors,
-    IMainBaseMagicItemColors by MainBaseMagicItemColors, IClanCapitalColors by ClanCapitalColors, IMainBaseShopColors by MainBaseShopColors, IMainBaseTournamentColors by MainBaseTournamentColors
+    IMainBaseMagicItemColors by MainBaseMagicItemColors, IClanCapitalColors by ClanCapitalColors, IMainBaseShopColors by MainBaseShopColors, IMainBaseTournamentColors by MainBaseTournamentColors {
+
+    //Main Base Attack Colours
+    val EnterLeague = ColorSchema.parse(
+        1210, 49, 1262, 98, "7B74FF", "0|-11|958DFF,7|-15|958DFF,14|0|FFFFFF,19|8|FAF6F6,30|12|1813E9,17|19|211BCE,28|1|7770FF,28|-8|918AFF,23|-14|958DFF", 0, 0.9, "您已进入联赛"
+    )
+
+}
