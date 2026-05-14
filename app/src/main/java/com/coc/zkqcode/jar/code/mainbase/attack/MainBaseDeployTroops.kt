@@ -50,21 +50,21 @@ suspend fun mainBaseDeployTroops() {
 private suspend fun deploySiegeMachine() {
     val siegeMachine = findMultiColors(MyColors.SiegeMachineAtDeploymentBar)
     if (siegeMachine != null) {
-        TouchActions.tap(siegeMachine.x + 10, siegeMachine.y + 20)
+        TouchActions.tap(siegeMachine.x + 10, siegeMachine.y + 20, delayTime = 100)
         TouchActions.tap(350, 250, delayTime = 100)
-        TouchActions.tap(DRAG_START_X.toInt(), DRAG_START_Y.toInt())
+        TouchActions.tap(DRAG_START_X.toInt(), DRAG_START_Y.toInt(), delayTime = 100)
     }
 }
 
 private suspend fun deployOthers() {
     //Deploy other troops and spells
-    repeat(10) {
+    repeat(3) {
         val troops = findMultiColorsUntil(
             schemas = listOf(MyColors.TroopColorAtDeploymentBar, MyColors.TroopColorAtDeploymentBar2, MyColors.SuperTroopColorAtDeploymentBar, MyColors.SpecialTroopColorAtDeploymentBar), duration = 20
         )
         if (troops != null) {
             TouchActions.tap(troops.x, troops.y, delayTime = 300)
-            repeat(3) {
+            repeat(9) {
                 TouchActions.tap(310, 247, delayTime = 100)
                 TouchActions.tap(386, 222, delayTime = 100)
             }
@@ -104,11 +104,11 @@ private suspend fun deployHeroes() {
         val found = findMultiColors(schema = hero, byteBuffer = screenBuffer)
         if (found != null) {
             // Tap the hero icon in the deployment bar to select it
-            TouchActions.tap(found.x, found.y)
+            TouchActions.tap(found.x, found.y, delayTime = 300)
             // Tap the deploy zone to place the hero on the battlefield
             TouchActions.tap(350, 250, delayTime = 100)
-            TouchActions.tap(DRAG_START_X.toInt(), DRAG_START_Y.toInt())
-            TouchActions.tap(found.x, found.y)
+            TouchActions.tap(DRAG_START_X.toInt(), DRAG_START_Y.toInt(), delayTime = 100)
+            TouchActions.tap(found.x, found.y, delayTime = 100)
         }
     }
 }

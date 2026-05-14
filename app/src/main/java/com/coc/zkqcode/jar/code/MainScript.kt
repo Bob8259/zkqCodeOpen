@@ -188,11 +188,9 @@ suspend fun runAccountStepBlock() {
         return
     }
     if (!playBuilderBase()) {
-        accountMessage("夜世界错误，准备尝试进入主世界")
         return
     }
     if (!playMainBase()) {
-        accountMessage("主世界对战错误")
         return
     }
 }

@@ -66,6 +66,7 @@ object MainBaseSettings {
     val RESTART_GAME = SettingDef("restart_game", "部署后重启游戏", 1, "MAIN_BASE_SETTINGS")
     val PLAY_TOURNAMENT = SettingDef("play_tournament", "排位对战", 0, "MAIN_BASE_SETTINGS")
     val CHANGE_BASE = SettingDef("change_base", "调整援兵/阵型", 1, "MAIN_BASE_SETTINGS")
+    val SWITCH_ACCOUNT_AFTER_BATTLE = SettingDef("switch_account_after_battle", "对战后直接切号", 0, "MAIN_BASE_SETTINGS")
     val WAIT_FOR_BATTLE = SettingDef("wait_for_battle", "等待对战", 0, "MAIN_BASE_SETTINGS")
     val WAIT_FOR_BATTLE_AFTER_ACCEPT_MAIN_WORLD_TASK = SettingDef(
         "wait_for_battle_after_accept_main_world_task", "接取任务后等待对战", 1, "MAIN_BASE_SETTINGS"
@@ -200,6 +201,7 @@ object MainBaseSettings {
         RESTART_GAME,
         PLAY_TOURNAMENT,
         CHANGE_BASE,
+        SWITCH_ACCOUNT_AFTER_BATTLE,
         WAIT_FOR_BATTLE,
         WAIT_FOR_BATTLE_AFTER_ACCEPT_MAIN_WORLD_TASK,
         HELPER_SETTINGS,

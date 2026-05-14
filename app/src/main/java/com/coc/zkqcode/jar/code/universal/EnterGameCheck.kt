@@ -46,8 +46,8 @@ suspend fun enterMainScreen(isDoubleCheck: Boolean = false): Boolean {
                     accountMessage("已进入主界面")
                     return true
                 }
-                if (InGameVars.currentGameVersion == GameVersion.CN) delayWithMultiplier(1500)
-                else delayWithMultiplier(800)
+                if (InGameVars.currentGameVersion == GameVersion.CN) delayWithMultiplier(1200)
+                else delayWithMultiplier(500)
                 if (isInHomePage()) {
                     return true
                 }

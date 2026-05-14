@@ -148,8 +148,15 @@ suspend fun searchOpponentsAndDeployTroops(): Boolean {
 
         val nextOpponent = findMultiColors(schema = MyColors.NextOpponent)
         if (nextOpponent != null) {
+            // Fast path: all targets below 10 → attack immediately without OCR
+            if (targetGold < 10 && targetElixir < 10 && targetDarkElixir < 10) {
+                battleStarted = true
+                mainBaseDeployTroops()
+                break
+            }
+
             searchTimes++
-            delayWithMultiplier(200)
+            delayWithMultiplier(100)
             val res = recognizeResources(true)
 
             // Cap recognized resource values to their in-game maximums to filter out OCR misreads

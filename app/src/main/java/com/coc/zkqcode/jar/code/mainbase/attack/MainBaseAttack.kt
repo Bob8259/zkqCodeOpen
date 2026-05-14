@@ -42,6 +42,7 @@ suspend fun mainBaseAttack(): Boolean {
 
     val battleStarted = searchOpponentsAndDeployTroops()
     if (!battleStarted) return enterMainScreen()
+    if (getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.SWITCH_ACCOUNT_AFTER_BATTLE.key)) return false
     val maxDurationMs = 3 * 60 * 1000L // Maximum battle wait time: 3 minutes
     val startTime = System.currentTimeMillis()
     val isRestartGame = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.RESTART_GAME.key)
