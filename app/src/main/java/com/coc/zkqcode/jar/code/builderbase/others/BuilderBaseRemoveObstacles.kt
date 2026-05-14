@@ -19,9 +19,10 @@ import com.coc.zkqcode.jar.ui.schema.Schema
 
 suspend fun builderBaseRemoveObstacles(): Boolean {
     if (!getBooleanConfigRuntime(Schema.BUILDER_BASE_SETTINGS.BUILDER_BASE_REMOVE_OBSTACLES.key)) return true
+    val continuous = getBooleanConfigRuntime(Schema.BUILDER_BASE_SETTINGS.BUILDER_BASE_CONTINUOUS_REMOVE_OBSTACLES.key)
     val storageKey = StorageKeys.withAccountNumber(StorageKeys.BUILDER_BASE_REMOVE_OBSTACLES, InGameVars.currentAccountNumber)
-    // Skip if obstacle removal was done within 24 hours
-    if (!checkMemoryFile(storageKey, 1440)) {
+    // Skip if obstacle removal was done within 24 hours (skip check in continuous mode)
+    if (!continuous && !checkMemoryFile(storageKey, 1440)) {
         accountMessage("今天已移除障碍物，暂不移除")
         return true
     }
@@ -31,13 +32,17 @@ suspend fun builderBaseRemoveObstacles(): Boolean {
     if (worker.total == 2) {
         if (resources.gold < 600000 || resources.elixir < 600000) {
             accountMessage("检测金：${resources.gold}，检测水：${resources.elixir}\n不足60万，暂不移除")
-            writeMemory(storageKey, (System.currentTimeMillis() / 60_000).toString())
+            if (!continuous) {
+                writeMemory(storageKey, (System.currentTimeMillis() / 60_000).toString())
+            }
             return true
         }
     } else {
         if (resources.gold < 300000 || resources.elixir < 300000) {
             accountMessage("检测金：${resources.gold}，检测水：${resources.elixir}\n不足30万，暂不移除")
-            writeMemory(storageKey, (System.currentTimeMillis() / 60_000).toString())
+            if (!continuous) {
+                writeMemory(storageKey, (System.currentTimeMillis() / 60_000).toString())
+            }
             return true
         }
     }
@@ -61,6 +66,8 @@ suspend fun builderBaseRemoveObstacles(): Boolean {
         removeObstacles()
     }
 
-    writeMemory(storageKey, (System.currentTimeMillis() / 60_000).toString())
+    if (!continuous) {
+        writeMemory(storageKey, (System.currentTimeMillis() / 60_000).toString())
+    }
     return enterMainScreen()
 }

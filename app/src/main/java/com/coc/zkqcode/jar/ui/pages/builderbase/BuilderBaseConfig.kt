@@ -128,6 +128,16 @@ fun LazyListScope.builderBaseConfig(
                     key = "${BUILDER_BASE_SETTINGS.BUILDER_BASE_REMOVE_OBSTACLES.key}_c${index}",
                     explain = "若尚未解锁第二区域，当金币或圣水超过30万时生效；\n若已解锁第二区域，当金币或圣水超过60万时生效。\n注意：此功能会移除野蛮人雕像，请谨慎使用。"
                 )
+                AnimatedVisibility(visible = GlobalVars.configStates["${BUILDER_BASE_SETTINGS.BUILDER_BASE_REMOVE_OBSTACLES.key}_c${index}"]?.value == "1") {
+                    Column {
+                        FlowRow {
+                            SettingSwitchIcon(
+                                key = "${BUILDER_BASE_SETTINGS.BUILDER_BASE_CONTINUOUS_REMOVE_OBSTACLES.key}_c${index}",
+                                explain = "启用后，辅助将不再记录移除时间，每次运行都会尝试移除障碍物，实现连续移除。"
+                            )
+                        }
+                    }
+                }
                 SettingSwitchIcon(key = "${BUILDER_BASE_SETTINGS.BUILDER_BASE_SAVE_WORKER.key}_c${index}")
                 SettingSwitchIcon(
                     key = "${BUILDER_BASE_SETTINGS.BUILDER_BASE_SAVE_WORKER_BUILD_AFTER_WALL_FULL.key}_c${index}",

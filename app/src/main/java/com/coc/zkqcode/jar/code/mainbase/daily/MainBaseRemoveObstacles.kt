@@ -16,16 +16,19 @@ import com.coc.zkqcode.jar.ui.schema.Schema
 
 suspend fun mainBaseRemoveObstacles(): Boolean {
     if (!getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.REMOVE_OBSTACLES.key)) return true
+    val continuous = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.CONTINUOUS_REMOVE_OBSTACLES.key)
     val storageKey = StorageKeys.withAccountNumber(StorageKeys.MAIN_BASE_REMOVE_OBSTACLES, InGameVars.currentAccountNumber)
-    // Skip if obstacle removal was done within 24 hours
-    if (!checkMemoryFile(storageKey, 1440)) {
+    // Skip if obstacle removal was done within 24 hours (skip check in continuous mode)
+    if (!continuous && !checkMemoryFile(storageKey, 1440)) {
         accountMessage("今天已移除障碍物，暂不移除")
         return true
     }
     val resources = recognizeResources()
     if (resources.gold < 300000 || resources.elixir < 300000) {
         accountMessage("检测金：${resources.gold}，检测水：${resources.elixir}\n不足30万，暂不移除")
-        writeMemory(storageKey, (System.currentTimeMillis() / 60_000).toString())
+        if (!continuous) {
+            writeMemory(storageKey, (System.currentTimeMillis() / 60_000).toString())
+        }
         return true
     }
     accountMessage("准备移除主世界障碍物")
@@ -37,7 +40,9 @@ suspend fun mainBaseRemoveObstacles(): Boolean {
     TouchActions.swipe(981, 86, 290, 470)
     removeObstacles()
     enhanceRemoveObstacles()
-    writeMemory(storageKey, (System.currentTimeMillis() / 60_000).toString())
+    if (!continuous) {
+        writeMemory(storageKey, (System.currentTimeMillis() / 60_000).toString())
+    }
     return enterMainScreen()
 }
 

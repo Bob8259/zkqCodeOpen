@@ -8,6 +8,7 @@ import com.coc.zkqcode.jar.code.universal.aidetection.tiledAiDetect
 import com.coc.zkqcode.jar.code.universal.GameVersion
 import com.coc.zkqcode.jar.code.universal.InGameVars
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
+import com.coc.zkqcode.jar.code.universal.smalltools.lifecycle.checkReconnections
 
 suspend fun enterEditMode() {
     // Select the initial schema based on the game package version
@@ -56,6 +57,7 @@ suspend fun removeObstacles() {
     val obstacles = tiledAiDetect(
         modelName = "remove-obstacle", callerTag = "BuilderBaseRemoveObstacles"
     )
+    checkReconnections()
     obstacles.forEach { obstacle ->
         val box = obstacle.boundingBox
         val centerX = box.centerX().toInt()
