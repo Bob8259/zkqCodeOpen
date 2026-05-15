@@ -95,7 +95,8 @@ private suspend fun deployHeroes() {
         MyColors.GrandWarden5,
         MyColors.RoyalChampion,
         MyColors.RoyalChampion2,
-        MyColors.DragonDuke
+        MyColors.DragonDuke,
+        MyColors.DragonDuke2
     )
     for (hero in heroes) {
         // Take a fresh screenshot for each hero to get the latest state of the bar

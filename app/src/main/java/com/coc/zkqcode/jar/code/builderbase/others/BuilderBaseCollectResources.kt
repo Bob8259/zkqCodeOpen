@@ -27,18 +27,20 @@ suspend fun collectBuilderBaseResources(): Boolean {
             clickRightBottom(1)
             return enterMainScreen()
         }
+    } else {
+        outerLoop@ for (tx in 745..920 step 40) {
+            for (ty in 260..415 step 40) {
+                TouchActions.tap(tx, ty, isJitter = false, delayTime = 100)
+                val collectButton = findMultiColorsUntil(schemas = listOf(MyColors.CannotCollectExilerCart, MyColors.CollectExilerCart), duration = 200)
+                if (collectButton != null) {
+                    TouchActions.tap(collectButton.x, collectButton.y, delayTime = 300)
+                    clickRightBottom(1)
+                    break@outerLoop
+                }
+            }
+        }
     }
-//    outerLoop@ for (tx in 745..920 step 40) {
-//        for (ty in 260..415 step 40) {
-//            TouchActions.tap(tx, ty, isJitter = false, delayTime = 100)
-//            val collectButton = findMultiColorsUntil(schemas = listOf(MyColors.CannotCollectExilerCart, MyColors.CollectExilerCart), duration = 200)
-//            if (collectButton != null) {
-//                TouchActions.tap(collectButton.x, collectButton.y, delayTime = 300)
-//                clickRightBottom(1)
-//                break@outerLoop
-//            }
-//        }
-//    }
+
     return enterMainScreen()
 }
 
