@@ -41,8 +41,11 @@ suspend fun checkNormalShop(): Boolean {
         accountMessage("已进入商店")
         checkShopLoop()
         TouchActions.tap(200, 240)
+        TouchActions.swipe(750, 300, 750, 1000)
         checkShopLoop()
         TouchActions.tap(200, 300)
+        TouchActions.swipe(750, 300, 750, 1000)
+        checkShopLoop()
     }
     // Record current time so we don't check again within 2 days
     writeMemory(memoryKey, (System.currentTimeMillis() / 60_000).toString())
