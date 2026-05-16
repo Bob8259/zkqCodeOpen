@@ -45,7 +45,7 @@ suspend fun collectClanCastleResources(): Boolean {
             if (!DetectionRegion.isInsideRegion(cx, cy)) continue
             TouchActions.tap(cx, cy)
             val openClanCastle = findMultiColorsUntil(
-                schemas = listOf(MyColors.OpenClanCastle, MyColors.OpenClanCastle7, MyColors.OpenClanCastle2, MyColors.OpenClanCastle3, MyColors.OpenClanCastle4, MyColors.OpenClanCastle5), duration = 200
+                schemas = listOf(MyColors.OpenClanCastle, MyColors.OpenClanCastle7, MyColors.OpenClanCastle2, MyColors.OpenClanCastle3, MyColors.OpenClanCastle4, MyColors.OpenClanCastle5, MyColors.OpenClanCastle8), duration = 200
             )
             if (openClanCastle != null) {
                 TouchActions.tap(openClanCastle.x, openClanCastle.y)

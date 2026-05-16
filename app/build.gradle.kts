@@ -89,7 +89,7 @@ tasks.register<Exec>("buildJar") {
 
     // --- Path configuration ---
     val workingDir = project.projectDir.absolutePath
-    val sdkDir = "C:/Users/Azikaban/AppData/Local/Android/Sdk"
+    val sdkDir = "C:/Users/Azika/AppData/Local/Android/Sdk"
 
     // Auto-detect the highest installed Build-Tools version (e.g. 36.1.0)
     val buildToolsDir = file("$sdkDir/build-tools")
@@ -199,7 +199,7 @@ tasks.register<Exec>("buildJar") {
             println("--- SUCCESS: JAR built at ${outFile.name} ---")
 
             // Encrypt the JAR using conda base Python
-            val pythonExe = "C:/Users/Azikaban/anaconda3/python.exe"
+            val pythonExe = "C:/Users/Azika/miniconda3/python.exe"
             val scriptPath = file("encrypt_jar.py").absolutePath
             val proc = ProcessBuilder(pythonExe, scriptPath, outFile.absolutePath)
                 .inheritIO().start()
@@ -256,7 +256,7 @@ tasks.register("uploadJar") {
             ?.firstOrNull { it.name.startsWith("encrypted_") && it.extension == "jar" }
             ?: throw GradleException("No encrypted jar found in assets directory")
 
-        val pythonExe = "C:/Users/Azikaban/anaconda3/python.exe"
+        val pythonExe = "C:/Users/Azika/miniconda3/python.exe"
         val scriptPath = file("upload_jar.py").absolutePath
 
         println("Uploading ${encryptedJar.name} to hot update server...")

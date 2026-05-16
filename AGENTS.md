@@ -27,4 +27,4 @@ Planning: For complex tasks, you are required to generate a development plan. Yo
 
 Modification: If you fail to modify some files, then it may because they are changed during the chat. In this case, you should re-read them, and apply new changes based on the new file. Do not revert the changes.
 
-Build: You should try gradle debug build and fix all bugs.
+Build: You should try gradle debug build and fix all bugs after each task.

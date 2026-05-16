@@ -51,6 +51,7 @@ interface IMainBaseHeroHallColors {
     val OpenClanCastle5: ColorSchema
     val OpenClanCastle6: ColorSchema
     val OpenClanCastle7: ColorSchema
+    val OpenClanCastle8: ColorSchema
 }
 
 object MainBaseHeroHallColors : IMainBaseHeroHallColors {
@@ -260,5 +261,8 @@ object MainBaseHeroHallColors : IMainBaseHeroHallColors {
     )
     override val OpenClanCastle7 = ColorSchema.parse(
         203, 526, 1095, 625, "4A78B5", "9|0|3CA2CB,17|0|3E4353,25|0|3EB7E1,34|0|558EC8,0|21|477CB2,9|21|40AED7,17|21|8AF4FF,25|21|3C8EB8,34|21|4272A8", 0, 0.9, "领取宝库按钮8按钮2"
+    )
+    override val OpenClanCastle8 = ColorSchema.parse(
+        196, 556, 1091, 626, "35527A", "7|0|43A6CF,13|0|2C545F,19|0|41B5DE,26|0|558BC8,0|13|4271A4,7|13|399EC8,13|13|19191C,19|13|3799C4,26|13|497EB4", 0, 0.9, "领取宝库11按钮"
     )
 }
