@@ -165,7 +165,7 @@ private suspend fun realAttack(mode: String, hasNightWorldTask: Boolean, battleN
             }
             // Last round + trophy pushing not enabled: battle, kill & restart game, then return
             if (battleNumber == battleTimes && !getBooleanConfigRuntime(Schema.BUILDER_BASE_SETTINGS.TROPHY_PUSHING_MODE.key)) {
-                normalBattle()
+                normalBattle(skipSkills = true)
                 killGame()
                 runGame()
                 return true
@@ -201,7 +201,7 @@ private suspend fun deployAndExit() {
     }
 }
 
-private suspend fun normalBattle(isNormal: Boolean = true) {
+private suspend fun normalBattle(isNormal: Boolean = true, skipSkills: Boolean = false) {
     // Define possible deploy positions for each swipe direction
     val deployPositions = listOf(
         Pair(605, 553), Pair(108, 183), Pair(330, 358), Pair(855, 371)
@@ -241,16 +241,18 @@ private suspend fun normalBattle(isNormal: Boolean = true) {
             TouchActions.touchUp(1)
             accountMessage("等女巫走一会")
             delayWithMultiplier(Random.nextInt(5000, 10000))
-            repeat(6) {
-                val skillsPos = findMultiColors(
-                    schema = ColorSchema.rescope(
-                        MyColors.TroopSkills, MyColors.TroopSkills.x1, MyColors.TroopSkills.y1, MyColors.TroopSkills.x2, MyColors.TroopSkills.y2, direction = Random.nextInt(0, 2)
+            if (!skipSkills) {
+                repeat(6) {
+                    val skillsPos = findMultiColors(
+                        schema = ColorSchema.rescope(
+                            MyColors.TroopSkills, MyColors.TroopSkills.x1, MyColors.TroopSkills.y1, MyColors.TroopSkills.x2, MyColors.TroopSkills.y2, direction = Random.nextInt(0, 2)
+                        )
                     )
-                )
 
-                if (skillsPos != null) {
-                    TouchActions.tap(skillsPos.x, 620)
-                    delayWithMultiplier(Random.nextInt(500, 4000))
+                    if (skillsPos != null) {
+                        TouchActions.tap(skillsPos.x, 620)
+                        delayWithMultiplier(Random.nextInt(500, 4000))
+                    }
                 }
             }
         } else {
