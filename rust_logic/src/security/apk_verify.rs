@@ -46,6 +46,11 @@ const ENC_TARGET_HASH_2: [u8; 64] = xor_bytes(
     *b"BD6CACAC7CE26263E5652FACC4B5D158FA4C988EEEFF2476BB2546BE0D971DAE",
     K_SIG,
 );
+// Debug signing key SHA-256 fingerprint
+const ENC_TARGET_HASH_3: [u8; 64] = xor_bytes(
+    *b"447F7932222A19904789A1D46A392FF0B99AC43DC4845E0ECCF91A9DCC942DA1",
+    K_SIG,
+);
 
 // --- Helper Functions ---
 
@@ -303,9 +308,10 @@ pub fn verify_apk_signature_inline() {
 
         let target_hash_1 = xor_decode(&ENC_TARGET_HASH_1, K_SIG);
         let target_hash_2 = xor_decode(&ENC_TARGET_HASH_2, K_SIG);
+        let target_hash_3 = xor_decode(&ENC_TARGET_HASH_3, K_SIG);
 
         match verification_result {
-            Ok(ref hash) if hash == &target_hash_1 || hash == &target_hash_2 => {}
+            Ok(ref hash) if hash == &target_hash_1 || hash == &target_hash_2 || hash == &target_hash_3 => {}
             Ok(_) | Err(_) => {
                 unsafe { libc::exit(1) };
             }
