@@ -40,6 +40,9 @@ suspend fun mainBaseTrainTroops(): Boolean {
         if (point == null) {
             accountMessage("未找到训练标志")
             GlobalVars.absorbEdge = 0
+            repeat(2) {
+                TouchActions.tap(70, 220)
+            }
             return enterMainScreen()
         }
 
@@ -47,14 +50,13 @@ suspend fun mainBaseTrainTroops(): Boolean {
         point = findMultiColorsUntil(schemas = listOf(MyColors.DeleteAll1), duration = 1000)
         if (point != null) {
             TouchActions.tap(point.x, point.y)
-            delayWithMultiplier(500)
             findMultiColorsUntil(schemas = listOf(MyColors.MiddleGreenYes), duration = 1500)?.let {
                 TouchActions.tap(it.x, it.y)
             }
         }
 
         // Train Troops Tab
-        TouchActions.tap(891, 234, delayTime = 800)
+        TouchActions.tap(890, 235, delayTime = 800)
 
         for (i in 1..8) {
             // Priority training check
@@ -78,11 +80,10 @@ suspend fun mainBaseTrainTroops(): Boolean {
         }
 
         // Close tab and Clean Queue 2
-        TouchActions.tap(219, 139, delayTime = 1000)
+        TouchActions.tap(220, 140, delayTime = 1000)
         point = findMultiColorsUntil(schemas = listOf(MyColors.DeleteAll2), duration = 500)
         if (point != null) {
             TouchActions.tap(point.x, point.y)
-            delayWithMultiplier(500)
             findMultiColorsUntil(schemas = listOf(MyColors.MiddleGreenYes), duration = 1500)?.let {
                 TouchActions.tap(it.x, it.y)
             }
@@ -99,18 +100,17 @@ suspend fun mainBaseTrainTroops(): Boolean {
         }
 
         // Close tab and Clean Queue 3
-        TouchActions.tap(219, 139, delayTime = 1000)
+        TouchActions.tap(220, 140, delayTime = 1000)
         point = findMultiColorsUntil(schemas = listOf(MyColors.DeleteAll3), duration = 500)
         if (point != null) {
             TouchActions.tap(point.x, point.y)
-            delayWithMultiplier(500)
             findMultiColorsUntil(schemas = listOf(MyColors.MiddleGreenYes), duration = 1500)?.let {
                 TouchActions.tap(it.x, it.y)
             }
         }
 
         // Siege Machines Tab
-        TouchActions.tap(1126, 423, delayTime = 1000)
+        TouchActions.tap(1125, 425, delayTime = 1000)
         if (findMultiColorsUntil(schemas = listOf(MyColors.TrainSiegeMachine), duration = 500) != null) {
             val siegeCoords = listOf(1047 to 543, 610 to 535, 364 to 536, 138 to 541)
             for (coord in siegeCoords) {
@@ -119,8 +119,8 @@ suspend fun mainBaseTrainTroops(): Boolean {
         }
 
         // Final Close
-        TouchActions.tap(219, 139, delayTime = 1000)
-        TouchActions.tap(1232, 65, delayTime = 300)
+        TouchActions.tap(220, 140, delayTime = 1000)
+        TouchActions.tap(1230, 65, delayTime = 300)
 
         writeMemory(storageKey, (System.currentTimeMillis() / 60_000).toString())
         GlobalVars.absorbEdge = 0

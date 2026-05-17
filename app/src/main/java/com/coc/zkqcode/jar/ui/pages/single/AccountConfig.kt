@@ -49,7 +49,7 @@ fun AccountConfig(
         }
         FlowRow {
             SettingDropdown(
-                key = "${ACCOUNT_SETTINGS.GAME_VERSION.key}${index}", options = listOf("国服", "国际服", "私服")
+                key = "${ACCOUNT_SETTINGS.GAME_VERSION.key}${index}", options = listOf("国服", "国际服", "Atrasis")
             )
             SettingInputRow(key = "${ACCOUNT_SETTINGS.ACCOUNT_CONFIG.key}${index}")
             SettingDropdown(

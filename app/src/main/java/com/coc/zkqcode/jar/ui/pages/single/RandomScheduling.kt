@@ -81,7 +81,7 @@ private val RS_GRID_MAX_HEIGHT: Dp = 320.dp
 private fun gameVersionLabel(value: String?): String = when (value) {
     "0" -> "国服"
     "1" -> "国际服"
-    "2" -> "私服"
+    "2" -> "Atrasis"
     else -> ""
 }
 
