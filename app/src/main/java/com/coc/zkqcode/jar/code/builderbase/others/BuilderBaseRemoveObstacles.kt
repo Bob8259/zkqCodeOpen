@@ -21,9 +21,9 @@ suspend fun builderBaseRemoveObstacles(): Boolean {
     if (!getBooleanConfigRuntime(Schema.BUILDER_BASE_SETTINGS.BUILDER_BASE_REMOVE_OBSTACLES.key)) return true
     val continuous = getBooleanConfigRuntime(Schema.BUILDER_BASE_SETTINGS.BUILDER_BASE_CONTINUOUS_REMOVE_OBSTACLES.key)
     val storageKey = StorageKeys.withAccountNumber(StorageKeys.BUILDER_BASE_REMOVE_OBSTACLES, InGameVars.currentAccountNumber)
-    // Skip if obstacle removal was done within 24 hours (skip check in continuous mode)
-    if (!continuous && !checkMemoryFile(storageKey, 1440)) {
-        accountMessage("今天已移除障碍物，暂不移除")
+    // Skip if obstacle removal was done within 6 hours (skip check in continuous mode)
+    if (!continuous && !checkMemoryFile(storageKey, 360)) {
+        accountMessage("6小时内已移除障碍物，暂不移除")
         return true
     }
     val worker = WorkerAndResearch.detectWorkerNumber(BaseType.Builder)
