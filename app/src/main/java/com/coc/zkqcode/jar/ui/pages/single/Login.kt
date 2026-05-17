@@ -249,7 +249,7 @@ fun LoginScreen(onAdFreeClick: () -> Unit = {}) {
         var isPasswordVisible by remember { mutableStateOf(false) }
         Row {
             Text(
-                text = GLOBAL_SETTINGS.PASSWORD.displayName,
+                text = Strings.password,
                 modifier = Modifier
                     .padding(end = 8.dp)
                     .align(Alignment.CenterVertically),

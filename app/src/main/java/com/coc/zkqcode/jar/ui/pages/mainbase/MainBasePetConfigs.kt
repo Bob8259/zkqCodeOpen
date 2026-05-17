@@ -13,6 +13,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import com.coc.zkqcode.jar.ui.Strings
 import com.coc.zkqcode.jar.ui.components.CustomButton
 import com.coc.zkqcode.jar.ui.components.SettingToggleButton
 import com.coc.zkqcode.core.data.database.GlobalVars
@@ -52,11 +53,11 @@ fun MainBasePetConfigs(index: Int) {
     }
     Column {
         Row {
-            CustomButton(text = if (isExpanded.value) "缩起列表" else "展开列表", onClick = { isExpanded.value = !isExpanded.value }, containerColor = AppColors.Teal)
+            CustomButton(text = if (isExpanded.value) Strings.collapseList else Strings.expandList, onClick = { isExpanded.value = !isExpanded.value }, containerColor = AppColors.Teal)
             AnimatedVisibility(visible = isExpanded.value) {
                 Row {
-                    CustomButton(text = "一键全选", onClick = selectAll)
-                    CustomButton(text = "一键反选", onClick = invertSelection)
+                    CustomButton(text = Strings.selectAll, onClick = selectAll)
+                    CustomButton(text = Strings.invertSelection, onClick = invertSelection)
                 }
             }
         }
