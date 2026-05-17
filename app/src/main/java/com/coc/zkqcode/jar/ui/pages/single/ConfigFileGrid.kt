@@ -63,7 +63,8 @@ fun ConfigFileGrid(
                 },
             )
             var fromText by remember { mutableStateOf("") }
-            var toText by remember { mutableStateOf("") }
+            var toStartText by remember { mutableStateOf("") }
+            var toEndText by remember { mutableStateOf("") }
             FlowRow(modifier = Modifier.padding(top = 6.dp)) {
                 Text(
                     text = "将配置文件",
@@ -78,7 +79,7 @@ fun ConfigFileGrid(
                     onValueChange = { fromText = it }
                 )
                 Text(
-                    text = "的内容同步至配置文件",
+                    text = "同步至配置文件",
                     style = MaterialTheme.typography.labelMedium,
                     modifier = Modifier
                         .padding(horizontal = 4.dp)
@@ -88,21 +89,56 @@ fun ConfigFileGrid(
                     modifier = Modifier
                         .align(Alignment.CenterVertically)
                         .padding(end = 4.dp),
-                    value = toText,
-                    onValueChange = { toText = it }
+                    value = toStartText,
+                    onValueChange = { toStartText = it }
+                )
+                Text(
+                    text = "-",
+                    style = MaterialTheme.typography.labelMedium,
+                    modifier = Modifier
+                        .padding(end = 4.dp)
+                        .align(Alignment.CenterVertically)
+                )
+                SmallTextField(
+                    modifier = Modifier
+                        .align(Alignment.CenterVertically)
+                        .padding(end = 4.dp),
+                    value = toEndText,
+                    onValueChange = { toEndText = it }
                 )
                 CustomButton(
                     text = "确认",
                     marginTop = 6.dp,
-                    onClick = {
+                    onClick = syncButton@{
                         val from = fromText.toIntOrNull()
-                        val to = toText.toIntOrNull()
-                        if (from != null && to != null && from != to
-                            && from in 1..configCount && to in 1..configCount
-                        ) {
-                            ConfigManager.syncProfileConfigs(from, to)
-                            onShowMsg("配置文件$from 已同步至 配置文件$to")
+                        val toStart = toStartText.toIntOrNull()
+                        val toEnd = toEndText.toIntOrNull()
+                        if (from == null || toStart == null || toEnd == null) {
+                            onShowMsg("请输入有效的配置文件序号")
+                            return@syncButton
                         }
+                        if (from !in 1..configCount) {
+                            onShowMsg("源配置文件序号必须在 1-$configCount 之间")
+                            return@syncButton
+                        }
+                        if (toStart !in 1..configCount || toEnd !in 1..configCount) {
+                            onShowMsg("目标配置文件序号必须在 1-$configCount 之间")
+                            return@syncButton
+                        }
+                        if (toStart > toEnd) {
+                            onShowMsg("目标配置文件起始序号不能大于结束序号")
+                            return@syncButton
+                        }
+
+                        val targets = (toStart..toEnd).filter { it != from }
+                        if (targets.isEmpty()) {
+                            onShowMsg("目标范围内没有可同步的配置文件")
+                            return@syncButton
+                        }
+
+                        targets.forEach { to -> ConfigManager.syncProfileConfigs(from, to) }
+                        val skippedSelfText = if (from in toStart..toEnd) "（已跳过配置文件$from）" else ""
+                        onShowMsg("配置文件$from 已同步至 配置文件${targets.joinToString("、")}$skippedSelfText")
                     }
                 )
             }
