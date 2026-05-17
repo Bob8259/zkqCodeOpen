@@ -72,16 +72,23 @@ fun CheckRootScreen() {
     ) {
         when (status) {
             RootStatus.CHECKING -> {
-                FullScreenMessage("正在检测Root环境...")
+                FullScreenMessage(
+                    message = "正在检测Root环境...",
+                    englishMessage = "Checking Root environment..."
+                )
             }
 
             RootStatus.ROOT_DENIED -> {
-                FullScreenMessage("请授予 Root 权限后，再启动本软件（本软件名：紫孔雀）\n若授权失败，请尝试重启软件/设备。")
+                FullScreenMessage(
+                    message = "请授予 Root 权限后，再启动本软件（本软件名：紫孔雀）\n若授权失败，请尝试重启软件/设备。",
+                    englishMessage = "Please grant Root permission before starting this app (App name: 紫孔雀).\nIf authorization fails, try restarting the app/device."
+                )
             }
 
             RootStatus.PERMISSION_DENIED -> {
                 FullScreenMessage(
-                    message = "Root 授权成功，但仍需手动开启悬浮窗和通知权限。开启后请重启软件。"
+                    message = "Root 授权成功，但仍需手动开启悬浮窗和通知权限。开启后请重启软件。",
+                    englishMessage = "Root authorized, but you still need to manually enable floating window and notification permissions.\nPlease restart the app after enabling."
                 ) {
                     Button(
                         onClick = {
@@ -95,17 +102,23 @@ fun CheckRootScreen() {
                         shape = RoundedCornerShape(8.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = ColorPrimary)
                     ) {
-                        Text("去设置中心开启", style = MaterialTheme.typography.labelMedium)
+                        Text("去设置中心开启 / Open Settings", style = MaterialTheme.typography.labelMedium)
                     }
                 }
             }
 
             RootStatus.WAITING_FOR_SERVER -> {
-                FullScreenMessage("等待Root服务器启动...")
+                FullScreenMessage(
+                    message = "等待Root服务器启动...",
+                    englishMessage = "Waiting for Root server to start..."
+                )
             }
 
             RootStatus.SERVER_ERROR -> {
-                FullScreenMessage("连接到Root服务器失败。")
+                FullScreenMessage(
+                    message = "连接到Root服务器失败。",
+                    englishMessage = "Failed to connect to Root server."
+                )
             }
 
             RootStatus.GRANTED -> {
@@ -136,10 +149,11 @@ fun CheckRootScreen() {
                 }
 
                 FullScreenMessage(
-                    message = "权限检查通过，配置加载完成。\n\n若未能自动显示主界面，请手动点击按钮。"
+                    message = "权限检查通过，配置加载完成。\n\n若未能自动显示主界面，请手动点击按钮。",
+                    englishMessage = "Permission check passed, configuration loaded.\n\nIf the main interface doesn't appear automatically, click the button to start the UI manually."
                 ) {
                     LocalCustomButton(
-                        text = "显示主界面",
+                        text = "显示主界面 / Show Main Interface",
                         onClick = {
                             AppStateManager.setMode(AppMode.Main)
                             val serviceIntent = Intent(context, UIWindowService::class.java)
@@ -165,6 +179,7 @@ fun CheckRootScreen() {
 @Composable
 fun FullScreenMessage(
     message: String,
+    englishMessage: String? = null,
     action: (@Composable () -> Unit)? = null
 ) {
     val cardShape = RoundedCornerShape(16.dp)
@@ -186,6 +201,18 @@ fun FullScreenMessage(
                 lineHeight = 24.sp,
                 color = ColorTextPrimary
             )
+
+            if (englishMessage != null) {
+                Spacer(modifier = Modifier.height(6.dp))
+                Text(
+                    text = englishMessage,
+                    textAlign = TextAlign.Center,
+                    fontWeight = FontWeight.Normal,
+                    fontSize = 11.sp,
+                    lineHeight = 16.sp,
+                    color = ColorTextPrimary.copy(alpha = 0.7f)
+                )
+            }
 
             if (action != null) {
                 Spacer(modifier = Modifier.height(20.dp))
