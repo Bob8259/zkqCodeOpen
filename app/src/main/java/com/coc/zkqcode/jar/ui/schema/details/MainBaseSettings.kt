@@ -84,6 +84,8 @@ object MainBaseSettings {
     val PLAY_RAID = SettingDef("play_raid", "打都城突袭", 1, "MAIN_BASE_SETTINGS")
     val START_LEAGUE_SETTINGS = SettingDef("start_league_settings", "发起联赛", 0, "MAIN_BASE_SETTINGS")
     val START_CLAN_WAR_SETTINGS = SettingDef("start_clan_war_settings", "发起部落战", 0, "MAIN_BASE_SETTINGS")
+    val START_CLAN_WAR = SettingDef("start_clan_war", "开部落战", 0, "MAIN_BASE_SETTINGS")
+    val START_CLAN_WAR_METHOD = SettingDef("start_clan_war_method", "开启方式", "0", "MAIN_BASE_SETTINGS")
     val START_RAID = SettingDef("start_raid", "发起都城突袭", 0, "MAIN_BASE_SETTINGS")
 
     ////////////
@@ -217,6 +219,8 @@ object MainBaseSettings {
         PLAY_RAID,
         START_LEAGUE_SETTINGS,
         START_CLAN_WAR_SETTINGS,
+        START_CLAN_WAR,
+        START_CLAN_WAR_METHOD,
         START_RAID,
         BUY_GOLD_ORE_WITH_RAID_MEDAL,
         BUY_PURPLE_ORE_WITH_RAID_MEDAL,

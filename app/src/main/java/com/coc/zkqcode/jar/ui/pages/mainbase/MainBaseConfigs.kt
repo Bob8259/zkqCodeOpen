@@ -8,6 +8,7 @@ import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.jar.ui.components.CustomButton
 import com.coc.zkqcode.jar.ui.components.InputRowWithCheckBox
 import com.coc.zkqcode.jar.ui.components.SectionBanner
+import com.coc.zkqcode.jar.ui.components.SettingDropdown
 import com.coc.zkqcode.jar.ui.components.SettingInputRow
 import com.coc.zkqcode.jar.ui.components.SettingSection
 import com.coc.zkqcode.jar.ui.components.SettingSwitchIcon
@@ -212,6 +213,17 @@ fun LazyListScope.mainBaseConfig(
                     key = "${MAIN_BASE_SETTINGS.PLAY_LEAGUE.key}_c$index", explain = "默认打对位，如果对位已被打则随机进攻，不保证胜率。"
                 )
                 SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.PLAY_RAID.key}_c$index")
+            }
+
+            SettingSwitchIcon(
+                key = "${MAIN_BASE_SETTINGS.START_CLAN_WAR.key}_c$index",
+                explain = "直接开启：凑够5的倍数就立刻开启\n最近上线：只选择挂绿牌，并且最近上线过的玩家。"
+            )
+            AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.START_CLAN_WAR.key}_c$index"]?.value == "1") {
+                SettingDropdown(
+                    key = "${MAIN_BASE_SETTINGS.START_CLAN_WAR_METHOD.key}_c$index",
+                    options = listOf("直接开启", "最近上线")
+                )
             }
 
             SettingSwitchIcon(
