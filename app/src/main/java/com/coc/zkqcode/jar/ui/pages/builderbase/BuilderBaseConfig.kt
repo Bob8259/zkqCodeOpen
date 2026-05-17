@@ -17,15 +17,16 @@ import com.coc.zkqcode.jar.ui.components.SettingSwitchIcon
 import com.coc.zkqcode.jar.ui.schema.Schema.BUILDER_BASE_SETTINGS
 import com.coc.zkqcode.jar.ui.schema.Schema.MAIN_BASE_SETTINGS
 import com.coc.zkqcode.jar.ui.theme.AppColors
+import com.coc.zkqcode.jar.ui.Strings
 
 fun LazyListScope.builderBaseConfig(
     index: Int, isExpanded: Boolean, onToggleExpanded: () -> Unit, onNavigateBuilderBasePriority: (Int) -> Unit = {},
     onScrollToBottom: () -> Unit = {}
 ) {
-    // Banner — 夜世界专属设置
+    // Banner — Builder Base Settings
     item {
         SectionBanner(
-            title = "夜世界专属设置",
+            title = Strings.builderBaseSettings,
             isExpanded = isExpanded,
             onClick = onToggleExpanded
         )
@@ -42,7 +43,7 @@ fun LazyListScope.builderBaseConfig(
             }
             SettingSwitchIcon(
                 key = "${BUILDER_BASE_SETTINGS.NO_BUILDER_BASE.key}_c${index}",
-                explain = "启用后，辅助将不再进入夜世界，夜世界的所有相关设置均会失效。",
+                explain = Strings.noBuilderBaseExplain,
                 afterChange = { checked ->
                     if (checked) {
                         GlobalVars.configStates["${MAIN_BASE_SETTINGS.ACCEPT_NIGHT_WORLD_NORMAL_TASK.key}_c$index"]?.value = "0"
@@ -60,7 +61,7 @@ fun LazyListScope.builderBaseConfig(
             Row {
                 SettingSwitchIcon(
                     key = "${BUILDER_BASE_SETTINGS.BUILDER_BASE_FARMING.key}_c${index}",
-                    explain = "辅助将自动完成兵种配置，暂不支持手动配兵。若未启用\u201C上分模式\u201D或\u201C刷圣水车\u201D，辅助将根据当前账号的资源状况智能选择对战模式。",
+                    explain = Strings.builderBaseFarmingExplain,
                     afterChange = { checked ->
                         if (!checked) {
                             GlobalVars.configStates["${MAIN_BASE_SETTINGS.ACCEPT_NIGHT_WORLD_NORMAL_TASK.key}_c$index"]?.value = "0"
@@ -84,7 +85,7 @@ fun LazyListScope.builderBaseConfig(
             Row {
                 SettingSwitchIcon(
                     key = trophyKey,
-                    explain = "启用后，辅助将使用暗夜女巫进行上分，圣水获取效率会显著下降，请谨慎启用。此选项不可与\u201C刷圣水车\u201D同时开启。",
+                    explain = Strings.trophyPushingExplain,
                     afterChange = { checked ->
                         if (checked) {
                             GlobalVars.configStates[elixirCartKey]?.value = "0"
@@ -93,7 +94,7 @@ fun LazyListScope.builderBaseConfig(
                 )
                 SettingSwitchIcon(
                     key = elixirCartKey,
-                    explain = "启用后，夜世界对战中部署兵种后将立即投降，因此几乎无法获取金币，请谨慎启用。此选项不可与\u201C上分模式\u201D同时开启。",
+                    explain = Strings.elixirCartExplain,
                     afterChange = { checked ->
                         if (checked) {
                             GlobalVars.configStates[trophyKey]?.value = "0"
@@ -126,14 +127,14 @@ fun LazyListScope.builderBaseConfig(
 
                 SettingSwitchIcon(
                     key = "${BUILDER_BASE_SETTINGS.BUILDER_BASE_REMOVE_OBSTACLES.key}_c${index}",
-                    explain = "若尚未解锁第二区域，当金币或圣水超过30万时生效；\n若已解锁第二区域，当金币或圣水超过60万时生效。\n注意：此功能会移除野蛮人雕像，请谨慎使用。"
+                    explain = Strings.builderBaseRemoveObstaclesExplain
                 )
                 AnimatedVisibility(visible = GlobalVars.configStates["${BUILDER_BASE_SETTINGS.BUILDER_BASE_REMOVE_OBSTACLES.key}_c${index}"]?.value == "1") {
                     Column {
                         FlowRow {
                             SettingSwitchIcon(
                                 key = "${BUILDER_BASE_SETTINGS.BUILDER_BASE_CONTINUOUS_REMOVE_OBSTACLES.key}_c${index}",
-                                explain = "启用后，辅助将不再记录移除时间，每次运行都会尝试移除障碍物，实现连续移除。"
+                                explain = Strings.builderBaseContinuousRemoveExplain
                             )
                         }
                     }
@@ -141,7 +142,7 @@ fun LazyListScope.builderBaseConfig(
                 SettingSwitchIcon(key = "${BUILDER_BASE_SETTINGS.BUILDER_BASE_SAVE_WORKER.key}_c${index}")
                 SettingSwitchIcon(
                     key = "${BUILDER_BASE_SETTINGS.BUILDER_BASE_SAVE_WORKER_BUILD_AFTER_WALL_FULL.key}_c${index}",
-                    explain = "本功能依赖智能决策，启用本功能后会自动开启智能决策。",
+                    explain = Strings.builderBaseSaveWorkerBuildExplain,
                     afterChange = { checked ->
                         if (checked) {
                             GlobalVars.configStates["${MAIN_BASE_SETTINGS.SMART_DECISION.key}_c$index"]?.value = "1"
@@ -159,7 +160,7 @@ fun LazyListScope.builderBaseConfig(
             AnimatedVisibility(visible = GlobalVars.configStates["${BUILDER_BASE_SETTINGS.BUILDER_BASE_BUILD_SETTING.key}_c${index}"]?.value == "1") {
                 CustomButton(
                     onClick = { onNavigateBuilderBasePriority(index) },
-                    text = "点击调整夜世界建筑升级",
+                    text = Strings.adjustBuilderBasePriority,
                     containerColor = AppColors.Teal
                 )
             }

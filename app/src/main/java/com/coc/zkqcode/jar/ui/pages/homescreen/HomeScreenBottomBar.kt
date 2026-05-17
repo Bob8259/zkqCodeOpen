@@ -18,6 +18,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.coc.zkqcode.core.util.basic.RunShell
 import com.coc.zkqcode.core.util.exit.AppExitHelper
+import com.coc.zkqcode.jar.ui.Strings
 import com.coc.zkqcode.jar.ui.components.CustomAlertDialog
 import com.coc.zkqcode.jar.ui.components.CustomButton
 import com.coc.zkqcode.jar.ui.components.CustomNotificationWindow
@@ -41,15 +42,15 @@ fun HomeScreenBottomBar(
     SettingSection(modifier = Modifier.padding(horizontal = 4.dp)) {
         Row {
             CustomButton(
-                text = "保存并运行", marginTop = 0.dp, onClick = {
+                text = Strings.saveAndRun, marginTop = 0.dp, onClick = {
                     saveAndSetPlaying(true)
                 })
             CustomButton(
-                text = "保存并暂停", marginTop = 0.dp, onClick = {
+                text = Strings.saveAndPause, marginTop = 0.dp, onClick = {
                     saveAndSetPlaying(false)
                 })
             CustomButton(
-                text = "保存并退出", marginTop = 0.dp, marginEnd = 0.dp, onClick = {
+                text = Strings.saveAndExit, marginTop = 0.dp, marginEnd = 0.dp, onClick = {
                     showExitConfirmation = true
                 })
         }
@@ -58,16 +59,16 @@ fun HomeScreenBottomBar(
     if (showExitConfirmation) {
         CustomAlertDialog(onDismissRequest = { showExitConfirmation = false }, title = {
             Text(
-                text = "退出提示", style = MaterialTheme.typography.titleMedium
+                text = Strings.exitTitle, style = MaterialTheme.typography.titleMedium
             )
         }, text = {
             Text(
-                text = "确认要退出吗？", style = MaterialTheme.typography.bodyMedium
+                text = Strings.exitMessage, style = MaterialTheme.typography.bodyMedium
             )
         }, confirmButton = {
             Row {
                 TextButton(onClick = { showExitConfirmation = false }) {
-                    Text("取消")
+                    Text(Strings.cancel)
                 }
                 TextButton(onClick = {
                     showExitConfirmation = false
@@ -78,7 +79,7 @@ fun HomeScreenBottomBar(
                         }
                     }
                 }) {
-                    Text("确认")
+                    Text(Strings.confirm)
                 }
             }
         })
@@ -87,16 +88,16 @@ fun HomeScreenBottomBar(
     if (showCleanAllConfirmation) {
         CustomAlertDialog(onDismissRequest = onDismissCleanAll, title = {
             Text(
-                text = "清除全部数据", style = MaterialTheme.typography.titleMedium
+                text = Strings.cleanAllTitle, style = MaterialTheme.typography.titleMedium
             )
         }, text = {
             Text(
-                text = "确认要删除所有数据吗？\n此操作不可撤销，将删除辅助设置、账号信息等全部数据。\n\n清除数据后，辅助将自动关闭，请手动重启辅助。", style = MaterialTheme.typography.bodyMedium
+                text = Strings.cleanAllMessage, style = MaterialTheme.typography.bodyMedium
             )
         }, confirmButton = {
             Row {
                 TextButton(onClick = onDismissCleanAll) {
-                    Text("取消")
+                    Text(Strings.cancel)
                 }
                 TextButton(onClick = {
                     onDismissCleanAll()
@@ -110,7 +111,7 @@ fun HomeScreenBottomBar(
                         AppExitHelper.exitApplication(context)
                     }
                 }) {
-                    Text("确认")
+                    Text(Strings.confirm)
                 }
             }
         })

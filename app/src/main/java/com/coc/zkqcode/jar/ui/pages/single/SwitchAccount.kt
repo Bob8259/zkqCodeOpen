@@ -40,6 +40,7 @@ import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.jar.code.universal.GameVersion
 import com.coc.zkqcode.jar.code.universal.smalltools.data.writeDataNumberFile
 import com.coc.zkqcode.jar.code.universal.smalltools.data.writeGameFilesCore
+import com.coc.zkqcode.jar.ui.Strings
 import com.coc.zkqcode.jar.ui.components.CustomButton
 import com.coc.zkqcode.jar.ui.components.SettingDropdown
 import com.coc.zkqcode.jar.ui.schema.Schema.GLOBAL_SETTINGS
@@ -83,7 +84,7 @@ fun SwitchAccount(onClose: () -> Unit) {
         Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
             // Top Text aligned to start
             Text(
-                text = "小提示：在悬浮窗点击此按钮，即可回到切号工具。", color = Color.Black, modifier = Modifier
+                text = Strings.switchTip, color = Color.Black, modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 8.dp)
             )
@@ -111,7 +112,7 @@ fun SwitchAccount(onClose: () -> Unit) {
             FlowRow {
                 SettingDropdown(
                     key = GLOBAL_SETTINGS.SWITCH_ACCOUNT_VERSION.key,
-                    options = listOf("国服", "国际服", "测试功能")
+                    options = listOf(Strings.cnServer, Strings.globalServer, Strings.testMode)
                 )
                 Row {
                     CustomButton(text = "▼", onClick = {
@@ -130,7 +131,7 @@ fun SwitchAccount(onClose: () -> Unit) {
                     verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(top = 8.dp), horizontalArrangement = Arrangement.Center
                 ) {
                     Text(
-                        text = "切换到第",
+                        text = Strings.switchToNth,
                         modifier = Modifier.padding(end = 8.dp),
                         color = Color.Black,
                         style = MaterialTheme.typography.labelMedium
@@ -154,7 +155,7 @@ fun SwitchAccount(onClose: () -> Unit) {
                     )
 
                     Text(
-                        text = "个账号",
+                        text = Strings.nthAccount,
                         modifier = Modifier.padding(start = 8.dp),
                         color = Color.Black,
                         style = MaterialTheme.typography.labelMedium
@@ -168,7 +169,7 @@ fun SwitchAccount(onClose: () -> Unit) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 CustomButton(
-                    text = "确认切号", onClick = {
+                    text = Strings.confirmSwitch, onClick = {
                         scope.launch(Dispatchers.IO) {
                             GlobalVars.isSwitchingAccount = true
                             GlobalVars.updateWindowPosition = true
@@ -208,13 +209,13 @@ fun SwitchAccount(onClose: () -> Unit) {
                                 GlobalVars.isPlaying.value = true
                             }
                             withContext(Dispatchers.Main) {
-                                accountMessage("切号完成", false)
+                                accountMessage(Strings.switchComplete, false)
                                 onClose()
                             }
                         }
                     })
                 CustomButton(
-                    text = "关闭窗口", onClick = {
+                    text = Strings.closeWindow, onClick = {
                         AppStateManager.setMode(AppMode.Run) //just to close the ui
                         GlobalVars.isPlaying.value = false
                         GlobalVars.updateWindowPosition = true

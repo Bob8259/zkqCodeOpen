@@ -46,6 +46,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.util.fileactions.FileHelper
+import com.coc.zkqcode.jar.ui.Strings
 import com.coc.zkqcode.jar.ui.pages.mainbase.BackgroundImage
 import com.coc.zkqcode.jar.ui.components.CustomButton
 import com.coc.zkqcode.jar.ui.components.SettingDropdown
@@ -89,7 +90,7 @@ fun HomeScreen(
                     .background(AppColors.Background)
                     .padding(16.dp), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(text = "正在初始化配置...", color = Color.Gray)
+                Text(text = Strings.initializing, color = Color.Gray)
             }
         }
         return
@@ -124,9 +125,15 @@ fun HomeScreen(
     val builderBaseExpandedStates = remember { mutableStateMapOf<Int, Boolean>() }
 
     val configCount = configCountStr.toIntOrNull() ?: 1
-    val tabs = listOf("主页设置", "账号设置", "提取存档", "配置文件", "特殊设置")
+    val tabs = listOf(Strings.homeTab, Strings.accountTab, Strings.extractTab, Strings.configTab, Strings.specialTab)
     val sectionItems = listOf(
-        "通用设置" to 0, "核心对战" to 2, "部落设置" to 6, "自动研究" to 8, "自动建造" to 10, "战宠设置" to 12, "夜世界" to 18
+        Strings.sectionGeneral to 0,
+        Strings.sectionCoreBattle to 2,
+        Strings.sectionClan to 6,
+        Strings.sectionResearch to 8,
+        Strings.sectionBuild to 10,
+        Strings.sectionPet to 12,
+        Strings.sectionNightBase to 18
     )
 
     val lazyListState = rememberLazyListState()
@@ -179,7 +186,7 @@ fun HomeScreen(
             val sdPath = Environment.getExternalStorageDirectory().path
             val memoryPath = "$sdPath/zkqFiles/memory.json"
             val success = FileHelper.deleteJson(memoryPath)
-            showMsg(if (success) "记忆文件清除成功" else "清除失败，可能记忆文件不存在")
+            showMsg(if (success) Strings.memoryCleanSuccess else Strings.memoryCleanFail)
         }
     }
 
@@ -330,7 +337,7 @@ fun HomeScreen(
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 CustomButton(
-                                    text = "◀ 返回", onClick = {
+                                    text = Strings.back, onClick = {
                                         configSearchQuery = ""
                                         selectedConfigIndex = null
                                     }, marginTop = 0.dp
@@ -349,7 +356,7 @@ fun HomeScreen(
                                 ) {
                                     if (configSearchQuery.isEmpty()) {
                                         Text(
-                                            text = "搜索设置...",
+                                            text = Strings.searchSettings,
                                             style = MaterialTheme.typography.labelMedium,
                                             color = Color.Gray
                                         )
@@ -439,29 +446,29 @@ fun HomeScreen(
         if (showImportOldDataConfirmation) {
             com.coc.zkqcode.jar.ui.components.CustomAlertDialog(
                 onDismissRequest = { showImportOldDataConfirmation = false },
-                title = { Text("导入旧版数据", style = MaterialTheme.typography.titleMedium) },
+                title = { Text(Strings.importOldTitle, style = MaterialTheme.typography.titleMedium) },
                 text = {
                     Text(
-                        "导入旧版数据将覆盖当前配置，是否继续？\n\n因新旧版差距过大，此功能可能无法导入100%的数据。导入完成后，请仔细检查配置是否正确。\n\n导入后请手动重启辅助。",
+                        Strings.importOldMessage,
                         style = MaterialTheme.typography.bodyMedium
                     )
                 },
                 confirmButton = {
                     Row {
-                        androidx.compose.material3.TextButton(onClick = { showImportOldDataConfirmation = false }) { Text("取消") }
+                        androidx.compose.material3.TextButton(onClick = { showImportOldDataConfirmation = false }) { Text(Strings.cancel) }
                         androidx.compose.material3.TextButton(onClick = {
                             showImportOldDataConfirmation = false
                             scope.launch(kotlinx.coroutines.Dispatchers.IO) {
-                                showMsg("正在扫描导入并覆盖配置...")
+                                showMsg(Strings.scanningImport)
                                 val success = com.coc.zkqcode.jar.ui.schema.OldDataImporter.importOldData()
                                 if (success) {
                                     ConfigManager.saveConfigs()
-                                    showMsg("旧版本数据导入成功且已保存")
+                                    showMsg(Strings.importSuccess)
                                 } else {
-                                    showMsg("未找到任何旧版数据")
+                                    showMsg(Strings.noOldData)
                                 }
                             }
-                        }) { Text("确认") }
+                        }) { Text(Strings.confirm) }
                     }
                 }
             )

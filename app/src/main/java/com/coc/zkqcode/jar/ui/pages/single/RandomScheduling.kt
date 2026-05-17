@@ -45,6 +45,7 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.coc.zkqcode.core.data.database.GlobalVars
+import com.coc.zkqcode.jar.ui.Strings
 import com.coc.zkqcode.jar.ui.components.CustomButton
 import com.coc.zkqcode.jar.ui.components.SectionBanner
 import com.coc.zkqcode.jar.ui.components.SettingInputRow
@@ -72,16 +73,16 @@ private val GROUP_KEYS = listOf(
     groupKeysFor("dawn"), groupKeysFor("morning"), groupKeysFor("afternoon"), groupKeysFor("night")
 )
 
-private val GROUP_TITLES = listOf(
-    "凌晨组  0:00 - 6:00", "上午组  6:00 - 12:00", "下午组  12:00 - 18:00", "夜晚组  18:00 - 24:00"
+private val GROUP_TITLES get() = listOf(
+    Strings.dawnGroup, Strings.morningGroup, Strings.afternoonGroup, Strings.nightGroup
 )
 
 private val RS_GRID_MAX_HEIGHT: Dp = 320.dp
 
 private fun gameVersionLabel(value: String?): String = when (value) {
-    "0" -> "国服"
-    "1" -> "国际服"
-    "2" -> "Atrasis"
+    "0" -> Strings.cnServer
+    "1" -> Strings.globalServer
+    "2" -> Strings.atrasis
     else -> ""
 }
 
@@ -103,7 +104,7 @@ fun RandomScheduling() {
     val isEnabled = rsState.value == "1"
     SettingSwitchIcon(
         key = GLOBAL_SETTINGS.RANDOM_SCHEDULING.key,
-        explain = "启用随机上号后，脚本将根据当前时间段，从对应组的账号中随机选取顺序依次运行。每个账号运行完毕后，根据设定的概率决定是否继续对战或直接下线，并按对战时间比例计算等待时间后再运行下一个账号。\n\n随机上号与批量创号不能同时启用。",
+        explain = Strings.randomSchedulingExplain,
         afterChange = { checked ->
             if (checked) {
                 GlobalVars.configStates[GLOBAL_SETTINGS.BATCH_CREATE_ACCOUNT.key]?.value = "0"
@@ -137,7 +138,7 @@ private fun TimeGroupSection(title: String, keys: GroupKeys) {
                 ) {
                     SettingInputRow(key = keys.stopProb, topPadding = 0.dp, suffix = "%")
                     Text(
-                        text = "剩余概率随机持续对战", style = MaterialTheme.typography.labelMedium, modifier = Modifier
+                        text = Strings.remainingProbBattle, style = MaterialTheme.typography.labelMedium, modifier = Modifier
                             .padding(end = 4.dp)
                             .align(Alignment.CenterVertically)
                     )
@@ -146,8 +147,8 @@ private fun TimeGroupSection(title: String, keys: GroupKeys) {
                 FlowRow(
                     verticalArrangement = Arrangement.Center, modifier = Modifier.padding(top = 6.dp)
                 ) {
-                    SettingInputRow(key = keys.continueMin, topPadding = 0.dp, suffix = "至")
-                    SettingInputRow(key = keys.continueMax, topPadding = 0.dp, suffix = "分钟后下线")
+                    SettingInputRow(key = keys.continueMin, topPadding = 0.dp, suffix = Strings.to)
+                    SettingInputRow(key = keys.continueMax, topPadding = 0.dp, suffix = Strings.minutesThenOffline)
                 }
 
                 SettingSwitchIcon(key = keys.noWorker)
@@ -241,21 +242,21 @@ private fun AccountGroupSelector(accountsKey: String) {
             .padding(8.dp)
     ) {
         Text(
-            text = "选择加入本组的账号：", style = MaterialTheme.typography.labelMedium
+            text = Strings.selectAccountsForGroup, style = MaterialTheme.typography.labelMedium
         )
         Text(
-            text = "点击或长按拖拽均可调节账号开启状态。", color = Color.Gray, style = MaterialTheme.typography.labelSmall, modifier = Modifier.padding(bottom = 4.dp)
+            text = Strings.tapOrDragHint, color = Color.Gray, style = MaterialTheme.typography.labelSmall, modifier = Modifier.padding(bottom = 4.dp)
         )
 
         Row(
             horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.padding(bottom = 4.dp)
         ) {
             CustomButton(
-                text = "一键全选", marginTop = 0.dp, onClick = {
+                text = Strings.selectAll, marginTop = 0.dp, onClick = {
                     accountsState.value = (1..accountCount).joinToString(",")
                 })
             CustomButton(
-                text = "一键反选", marginTop = 0.dp, onClick = {
+                text = Strings.invertSelection, marginTop = 0.dp, onClick = {
                     val inverted = (1..accountCount).filter { it !in selectedAccounts }
                     accountsState.value = inverted.joinToString(",")
                 })

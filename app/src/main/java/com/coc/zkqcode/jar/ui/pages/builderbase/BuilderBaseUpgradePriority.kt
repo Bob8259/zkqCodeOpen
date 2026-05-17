@@ -37,6 +37,7 @@ import com.coc.zkqcode.jar.ui.pages.homescreen.BackgroundImage
 import com.coc.zkqcode.jar.ui.components.CustomButton
 import com.coc.zkqcode.jar.ui.schema.Schema
 import com.coc.zkqcode.jar.ui.theme.AppColors
+import com.coc.zkqcode.jar.ui.Strings
 import kotlinx.coroutines.launch
 
 // Inline equivalent of the private rememberConfigState in Components.kt
@@ -81,14 +82,14 @@ fun BuilderBaseUpgradePriority(index: Int, onSaveSuccess: () -> Unit) {
                 .background(AppColors.Background)
         ) {
         Text(
-            text = "长按单元格拖动调整优先度，点击切换启用/禁用。越靠上，越靠左表示优先度越高。",
+            text = Strings.priorityHint,
             style = MaterialTheme.typography.labelMedium,
             modifier = Modifier.padding(horizontal = 8.dp)
         )
 
         Row(modifier = Modifier.padding(start = 8.dp, bottom = 6.dp)) {
             // Select all
-            CustomButton(text = "一键全选", onClick = {
+            CustomButton(text = Strings.selectAll, onClick = {
                 list.forEach { item ->
                     val buildingKey = item.key.removeSuffix("_priority")
                     val enableKey = "${buildingKey}_c$index"
@@ -97,7 +98,7 @@ fun BuilderBaseUpgradePriority(index: Int, onSaveSuccess: () -> Unit) {
                 }
             })
             // Invert selection
-            CustomButton(text = "一键反选", onClick = {
+            CustomButton(text = Strings.invertSelection, onClick = {
                 list.forEach { item ->
                     val buildingKey = item.key.removeSuffix("_priority")
                     val enableKey = "${buildingKey}_c$index"
@@ -106,7 +107,7 @@ fun BuilderBaseUpgradePriority(index: Int, onSaveSuccess: () -> Unit) {
                 }
             })
             // Reset priority to default order and enable all
-            CustomButton(text = "重置优先度", onClick = {
+            CustomButton(text = Strings.resetPriority, onClick = {
                 list = allPriorities.sortedBy { def ->
                     def.defaultValue.toString().toIntOrNull() ?: Int.MAX_VALUE
                 }
@@ -184,7 +185,7 @@ fun BuilderBaseUpgradePriority(index: Int, onSaveSuccess: () -> Unit) {
                 }
             },
             marginBottom = 4.dp,
-            text = if (isSaving) "保存中，请稍候" else "完成",
+            text = if (isSaving) Strings.savingWait else Strings.done,
             enable = !isSaving,
             containerColor = AppColors.Teal
         )

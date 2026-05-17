@@ -40,6 +40,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
+import com.coc.zkqcode.jar.ui.Strings
 import com.coc.zkqcode.jar.ui.components.CustomButton
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.jar.ui.components.SettingInputRow
@@ -88,14 +89,14 @@ fun LoginScreen(onAdFreeClick: () -> Unit = {}) {
         scope.launch {
             if (!email.contains("@")) {
                 // Update UI to show error message
-                gemInfo = "请输入正确的邮箱！"
+                gemInfo = Strings.invalidEmail
                 isLoginButtonEnabled = true
                 showMessage = true
                 return@launch // Exit function
             }
 
             // 0. Fetch PoW Challenge with fallback
-            gemInfo = "登录中，请稍后..."
+            gemInfo = Strings.loggingIn
 
             var powNonce: String
 
@@ -106,7 +107,7 @@ fun LoginScreen(onAdFreeClick: () -> Unit = {}) {
                 val json = JSONObject(responseStr)
                 powNonce = json.getString("nonce")
             } catch (e: Exception) {
-                gemInfo = "验证获取失败: ${e.message}"
+                gemInfo = Strings.powFailed(e.message)
                 isLoginButtonEnabled = true
                 showMessage = true
                 return@launch
@@ -124,14 +125,14 @@ fun LoginScreen(onAdFreeClick: () -> Unit = {}) {
             val encryptionResult = try {
                 RustTools.encryptLoginPayload(payload)
             } catch (e: Exception) {
-                gemInfo = "准备信息失败: ${e.message}"
+                gemInfo = Strings.prepFailed(e.message)
                 isLoginButtonEnabled = true
                 showMessage = true
                 return@launch
             }
             val parts = encryptionResult.split(",")
             if (parts.size != 3) {
-                gemInfo = "传输信息失败，请重试"
+                gemInfo = Strings.transmitFailed
                 isLoginButtonEnabled = true
                 showMessage = true
                 return@launch
@@ -171,7 +172,7 @@ fun LoginScreen(onAdFreeClick: () -> Unit = {}) {
                 // 5. Parse Decrypted Result
                 // Expected format: gem=xxx OR Error message
                 if (decrypted.startsWith("Error")) {
-                    gemInfo = "登录失败: $decrypted"
+                    gemInfo = Strings.loginFailed(decrypted)
                     showMessage = true
                     GlobalVars.configStates[GLOBAL_SETTINGS.GEM_COUNT.key]!!.value = ""
                 } else {
@@ -185,9 +186,9 @@ fun LoginScreen(onAdFreeClick: () -> Unit = {}) {
                             showMessage = (it < 0.000001)
                         }
                         GlobalVars.configStates[GLOBAL_SETTINGS.GEM_COUNT.key]!!.value = gem
-                        gemInfo = "登录成功！卡班积分数量 $formattedGem"
+                        gemInfo = Strings.loginSuccess(formattedGem)
                     } else {
-                        gemInfo = "登录成功，但无法解析数据: $decrypted"
+                        gemInfo = Strings.loginSuccessParseFail(decrypted)
                         showMessage = true
                         GlobalVars.configStates[GLOBAL_SETTINGS.GEM_COUNT.key]!!.value = ""
                     }
@@ -195,9 +196,9 @@ fun LoginScreen(onAdFreeClick: () -> Unit = {}) {
             } catch (e: Exception) {
                 val errorMsg = e.message ?: ""
                 gemInfo = if (errorMsg.contains("邮箱或密码错误")) {
-                    "邮箱或密码错误，请检查后重试"
+                    Strings.emailPasswordError
                 } else {
-                    "登录失败: $errorMsg"
+                    Strings.loginFailed(errorMsg)
                 }
                 showMessage = true
                 GlobalVars.configStates[GLOBAL_SETTINGS.GEM_COUNT.key]!!.value = ""
@@ -213,11 +214,11 @@ fun LoginScreen(onAdFreeClick: () -> Unit = {}) {
     ) {
         if (showMessage) {
             Text(
-                text = "登录后免广告，运行更高效！不登陆也可以运行。免广告每天花费0.15卡班积分，用多久扣多久。",
+                text = Strings.adFreeMessage,
                 style = MaterialTheme.typography.labelMedium
             )
             Text(
-                text = "免费辅助制作不易，希望大家多多赞助。你的赞助是紫孔雀继续发展的唯一动力！",
+                text = Strings.sponsorMessage,
                 color = Color.Red,
                 style = MaterialTheme.typography.labelMedium.copy(
                     fontSize = (MaterialTheme.typography.labelMedium.fontSize.value + 2).sp
@@ -225,7 +226,7 @@ fun LoginScreen(onAdFreeClick: () -> Unit = {}) {
             )
         } else {
             Text(
-                text = "欢迎回来，感谢赞助！紫孔雀因你而变得更好！",
+                text = Strings.welcomeBack,
                 style = MaterialTheme.typography.labelMedium
             )
         }
@@ -234,7 +235,7 @@ fun LoginScreen(onAdFreeClick: () -> Unit = {}) {
             val gemValue = gemInfo.toDoubleOrNull()
             if (gemValue != null) {
                 Text(
-                    text = "当前宝石数量：%.5f".format(gemValue),
+                    text = Strings.currentGems(gemValue),
                     style = MaterialTheme.typography.labelMedium,
                     color = Color.Black
                 )
@@ -289,7 +290,7 @@ fun LoginScreen(onAdFreeClick: () -> Unit = {}) {
 
         Row(Modifier.padding(bottom = 4.dp)) {
             CustomButton(
-                text = "登录", marginTop = 0.dp, onClick = {
+                text = Strings.login, marginTop = 0.dp, onClick = {
                     login(
                         GlobalVars.configStates[GLOBAL_SETTINGS.EMAIL.key]!!.value,
                         GlobalVars.configStates[GLOBAL_SETTINGS.PASSWORD.key]!!.value
@@ -298,8 +299,8 @@ fun LoginScreen(onAdFreeClick: () -> Unit = {}) {
             )
             val context = LocalContext.current
             CustomButton(
-                text = "捐赠", marginTop = 0.dp, onClick = {
-                    gemInfo = "前往官网即可注册捐赠，官网链接https://zkqcoc.store\n"
+                text = Strings.donate, marginTop = 0.dp, onClick = {
+                    gemInfo = Strings.donateInfo
                     val url = UrlFallbackUtil.getPrimaryUrl()
                     val intent = Intent(Intent.ACTION_VIEW, url.toUri())
                     // Required when startActivity is called from a non-Activity context
@@ -309,7 +310,7 @@ fun LoginScreen(onAdFreeClick: () -> Unit = {}) {
                 }, enable = isLoginButtonEnabled
             )
             CustomButton(
-                text = "退出", marginTop = 0.dp, onClick = {
+                text = Strings.logout, marginTop = 0.dp, onClick = {
                     showMessage = true
                     scope.launch {
                         GlobalVars.serverActions?.writeToConfigFile(
@@ -320,7 +321,7 @@ fun LoginScreen(onAdFreeClick: () -> Unit = {}) {
                         GlobalVars.configStates[GLOBAL_SETTINGS.PASSWORD.key]!!.value = ""
                         GlobalVars.configStates[GLOBAL_SETTINGS.GEM_COUNT.key]!!.value = ""
                     }
-                    gemInfo = "退出成功"
+                    gemInfo = Strings.logoutSuccess
                 }, enable = isLoginButtonEnabled
             )
         }

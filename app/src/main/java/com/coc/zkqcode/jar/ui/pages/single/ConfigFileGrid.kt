@@ -30,6 +30,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.coc.zkqcode.jar.ui.Strings
 import com.coc.zkqcode.jar.ui.theme.AppColors
 import com.coc.zkqcode.jar.ui.components.CustomButton
 import com.coc.zkqcode.jar.ui.components.SettingInputRow
@@ -67,7 +68,7 @@ fun ConfigFileGrid(
             var toEndText by remember { mutableStateOf("") }
             FlowRow(modifier = Modifier.padding(top = 6.dp)) {
                 Text(
-                    text = "将配置文件",
+                    text = Strings.syncProfileLabel,
                     style = MaterialTheme.typography.labelMedium,
                     modifier = Modifier
                         .padding(end = 4.dp)
@@ -79,7 +80,7 @@ fun ConfigFileGrid(
                     onValueChange = { fromText = it }
                 )
                 Text(
-                    text = "同步至配置文件",
+                    text = Strings.syncToProfile,
                     style = MaterialTheme.typography.labelMedium,
                     modifier = Modifier
                         .padding(horizontal = 4.dp)
@@ -107,43 +108,43 @@ fun ConfigFileGrid(
                     onValueChange = { toEndText = it }
                 )
                 CustomButton(
-                    text = "确认",
+                    text = Strings.confirm,
                     marginTop = 6.dp,
                     onClick = syncButton@{
                         val from = fromText.toIntOrNull()
                         val toStart = toStartText.toIntOrNull()
                         val toEnd = toEndText.toIntOrNull()
                         if (from == null || toStart == null || toEnd == null) {
-                            onShowMsg("请输入有效的配置文件序号")
+                            onShowMsg(Strings.invalidProfileNumber)
                             return@syncButton
                         }
                         if (from !in 1..configCount) {
-                            onShowMsg("源配置文件序号必须在 1-$configCount 之间")
+                            onShowMsg(Strings.sourceOutOfRange(configCount))
                             return@syncButton
                         }
                         if (toStart !in 1..configCount || toEnd !in 1..configCount) {
-                            onShowMsg("目标配置文件序号必须在 1-$configCount 之间")
+                            onShowMsg(Strings.targetOutOfRange(configCount))
                             return@syncButton
                         }
                         if (toStart > toEnd) {
-                            onShowMsg("目标配置文件起始序号不能大于结束序号")
+                            onShowMsg(Strings.startGreaterThanEnd)
                             return@syncButton
                         }
 
                         val targets = (toStart..toEnd).filter { it != from }
                         if (targets.isEmpty()) {
-                            onShowMsg("目标范围内没有可同步的配置文件")
+                            onShowMsg(Strings.noTargetsToSync)
                             return@syncButton
                         }
 
                         targets.forEach { to -> ConfigManager.syncProfileConfigs(from, to) }
-                        val skippedSelfText = if (from in toStart..toEnd) "（已跳过配置文件$from）" else ""
-                        onShowMsg("配置文件$from 已同步至 配置文件${targets.joinToString("、")}$skippedSelfText")
+                        val skippedSelfText = if (from in toStart..toEnd) Strings.skippedSelf(from) else ""
+                        onShowMsg(Strings.syncSuccess(from, targets.joinToString("、")) + skippedSelfText)
                     }
                 )
             }
             Text(
-                text = "点击方格调整配置文件。调整完成后，回到\"账号设置\"，给每个账号分配所需的配置文件。",
+                text = Strings.profileHint,
                 style = MaterialTheme.typography.labelSmall,
                 color = Color.Gray
             )
@@ -178,7 +179,7 @@ fun ConfigFileGrid(
                             if (remarkState.isNotEmpty()) {
                                 Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
                                     Text(
-                                        text = "配置文件$i",
+                                        text = Strings.profileFile(i),
                                         style = MaterialTheme.typography.labelSmall,
                                         fontWeight = FontWeight.Medium,
                                         color = Color.White,
@@ -187,7 +188,7 @@ fun ConfigFileGrid(
                                         overflow = TextOverflow.Ellipsis
                                     )
                                     Text(
-                                        text = "备注: $remarkState",
+                                        text = Strings.remark(remarkState),
                                         style = MaterialTheme.typography.labelLarge,
                                         fontWeight = FontWeight.Medium,
                                         color = Color.White,
@@ -198,7 +199,7 @@ fun ConfigFileGrid(
                                 }
                             } else {
                                 Text(
-                                    text = "配置文件$i",
+                                    text = Strings.profileFile(i),
                                     style = MaterialTheme.typography.labelLarge,
                                     fontWeight = FontWeight.Medium,
                                     color = Color.White,

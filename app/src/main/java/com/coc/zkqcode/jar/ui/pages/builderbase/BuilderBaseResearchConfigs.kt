@@ -18,6 +18,7 @@ import com.coc.zkqcode.jar.ui.components.SettingToggleButton
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.jar.ui.theme.AppColors
 import com.coc.zkqcode.jar.ui.schema.Schema.BUILDER_BASE_TROOPS
+import com.coc.zkqcode.jar.ui.Strings
 import kotlin.collections.set
 
 @Composable
@@ -53,13 +54,13 @@ fun BuilderBaseResearchConfigs(index: Int) {
     Column {
         Row {
             CustomButton(
-                text = if (isExpanded.value) "缩起列表" else "展开列表",
+                text = if (isExpanded.value) Strings.collapseList else Strings.expandList,
                 onClick = { isExpanded.value = !isExpanded.value },
                 containerColor = AppColors.Teal)
             AnimatedVisibility(visible = isExpanded.value) {
                 Row {
-                    CustomButton(text = "一键全选", onClick = selectAll)
-                    CustomButton(text = "一键反选", onClick = invertSelection)
+                    CustomButton(text = Strings.selectAll, onClick = selectAll)
+                    CustomButton(text = Strings.invertSelection, onClick = invertSelection)
                 }
             }
         }

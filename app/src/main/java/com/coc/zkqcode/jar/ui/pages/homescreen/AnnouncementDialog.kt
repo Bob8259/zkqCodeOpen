@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.coc.zkqcode.jar.code.universal.network.UrlFallbackUtil
+import com.coc.zkqcode.jar.ui.Strings
 import com.coc.zkqcode.jar.ui.components.CustomAlertDialog
 import com.coc.zkqcode.jar.ui.theme.AppColors
 import kotlinx.coroutines.Dispatchers
@@ -31,7 +32,7 @@ fun AnnouncementDialog(onDismiss: () -> Unit) {
     val context = LocalContext.current
     var localVersion by remember { mutableStateOf<Long?>(null) }
     var serverVersion by remember { mutableStateOf<Long?>(null) }
-    var updateLog by remember { mutableStateOf("正在获取更新记录...") }
+    var updateLog by remember { mutableStateOf(Strings.fetchingUpdates) }
     var isLoading by remember { mutableStateOf(true) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
 
@@ -58,7 +59,7 @@ fun AnnouncementDialog(onDismiss: () -> Unit) {
                     val updateLogResponse = UrlFallbackUtil.executeGetWithFallbackAndReadBody("api/update-log")
                     val updateLogJson = JSONObject(updateLogResponse)
                     val updatesArray: JSONArray = updateLogJson.getJSONArray("updates")
-                    val logBuilder = StringBuilder("更新记录:\n")
+                    val logBuilder = StringBuilder(Strings.updateLogHeader)
                     for (i in 0 until updatesArray.length()) {
                         logBuilder.append(updatesArray.getString(i))
                         if (i < updatesArray.length() - 1) {
@@ -67,7 +68,7 @@ fun AnnouncementDialog(onDismiss: () -> Unit) {
                     }
                     updateLog = logBuilder.toString()
                 } catch (e: Exception) {
-                    updateLog = "获取更新记录失败: ${e.message}"
+                    updateLog = Strings.fetchFailed(e.message)
                 }
             }
         } catch (e: Exception) {
@@ -81,19 +82,19 @@ fun AnnouncementDialog(onDismiss: () -> Unit) {
         loadVersionInfo(context)
     }
 
-    val footer = "\n\n更多更新记录可前往官网教程文档内查看"
+    val footer = Strings.moreLogsFooter
 
     val messageText = when {
-        isLoading -> "正在检查版本信息..."
-        errorMessage != null -> "检查版本失败: $errorMessage"
+        isLoading -> Strings.checkingVersion
+        errorMessage != null -> Strings.checkFailed(errorMessage)
         localVersion != null && serverVersion != null -> {
             if (serverVersion!! > localVersion!!) {
-                "检测到新版本!\n当前版本: $localVersion，服务器版本: $serverVersion\n\n$updateLog$footer"
+                "${Strings.newVersionDetected(localVersion!!, serverVersion!!)}\n\n$updateLog$footer"
             } else {
-                "当前已是最新版本\n当前版本: $localVersion，服务器版本: $serverVersion\n\n$updateLog$footer"
+                "${Strings.alreadyLatest(localVersion!!, serverVersion!!)}\n\n$updateLog$footer"
             }
         }
-        else -> "无法获取版本信息\n\n$updateLog$footer"
+        else -> "${Strings.versionInfoUnavailable}\n\n$updateLog$footer"
     }
 
     val scrollState = rememberScrollState()
@@ -102,7 +103,7 @@ fun AnnouncementDialog(onDismiss: () -> Unit) {
         onDismissRequest = onDismiss,
         title = {
             Text(
-                text = "更新日志",
+                text = Strings.changelogTitle,
                 style = MaterialTheme.typography.titleMedium,
                 color = AppColors.TextPrimary
             )
@@ -121,7 +122,7 @@ fun AnnouncementDialog(onDismiss: () -> Unit) {
         },
         confirmButton = {
             TextButton(onClick = onDismiss) {
-                Text("明白了", color = AppColors.Primary)
+                Text(Strings.gotIt, color = AppColors.Primary)
             }
         }
     )

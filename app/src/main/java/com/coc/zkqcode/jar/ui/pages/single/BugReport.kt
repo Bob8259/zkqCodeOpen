@@ -33,6 +33,7 @@ import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.jar.code.universal.network.UrlFallbackUtil
 import com.coc.zkqcode.jar.code.universal.accountMessage
+import com.coc.zkqcode.jar.ui.Strings
 import com.coc.zkqcode.jar.ui.components.CustomButton
 import com.coc.zkqcode.statehelper.AppMode
 import com.coc.zkqcode.statehelper.AppStateManager
@@ -72,7 +73,7 @@ fun BugReport(onClose: () -> Unit) {
                 .padding(end = 6.dp)
         ) {
             Text(
-                text = "问题反馈",
+                text = Strings.bugReportTitle,
                 color = Color.Black,
                 style = MaterialTheme.typography.labelMedium,
                 modifier = Modifier
@@ -81,7 +82,7 @@ fun BugReport(onClose: () -> Unit) {
             )
 
             Text(
-                text = "提交截图前，请先与作者/客服联系，确认出现问题的页面。\n确认页面后，请进入问题页面，并点击提交截图。\n提交截图后，请告知作者/客服截图已提交(一定要告知，否则截图无效)。",
+                text = Strings.bugReportInstructions,
                 style = MaterialTheme.typography.labelMedium,
                 modifier = Modifier.padding(bottom = 8.dp)
             )
@@ -98,12 +99,12 @@ fun BugReport(onClose: () -> Unit) {
 
             Row {
                 CustomButton(
-                    text = "提交截图",
+                    text = Strings.submitScreenshot,
                     marginTop = 0.dp,
                     enable = !isSubmitting,
                     onClick = {
                         isSubmitting = true
-                        statusMessage = "正在提交..."
+                        statusMessage = Strings.submitting
 
                         // Auto-generate image name using timestamp
                         val nameToSubmit = "bug_${System.currentTimeMillis()}"
@@ -113,7 +114,7 @@ fun BugReport(onClose: () -> Unit) {
                         scope.launch {
                             try {
                                 // Wait for the transparent recomposition to render
-                                accountMessage("截屏中，请耐心等待")
+                                accountMessage(Strings.capturing)
                                 delay(300)
                                 val sanitizedName =
                                     if (nameToSubmit.endsWith(".png")) nameToSubmit else "$nameToSubmit.png"
@@ -121,7 +122,7 @@ fun BugReport(onClose: () -> Unit) {
                                 val screenshotBitmap =
                                     ScreenCaptureManager.capture(asBitmap = true) as? Bitmap
                                 if (screenshotBitmap == null) {
-                                    statusMessage = "截图保存失败，截图为空。"
+                                    statusMessage = Strings.screenshotFailed
                                     return@launch
                                 }
 
@@ -160,14 +161,14 @@ fun BugReport(onClose: () -> Unit) {
                                 statusMessage = if (hasKnownServerError(responseBody)) {
                                     translateServerError(responseBody)
                                 } else {
-                                    "截图提交成功！请与作者/客服联系。"
+                                    Strings.submitSuccess
                                 }
                             } catch (e: Exception) {
                                 val errorMessage = e.message.orEmpty()
                                 statusMessage = if (hasKnownServerError(errorMessage)) {
                                     translateServerError(errorMessage)
                                 } else {
-                                    "提交失败：${e.message}"
+                                    Strings.submitFailed(e.message)
                                 }
                             } finally {
                                 // Restore the window so the user sees the result
@@ -179,7 +180,7 @@ fun BugReport(onClose: () -> Unit) {
                 )
 
                 CustomButton(
-                    text = "关闭窗口",
+                    text = Strings.closeWindow,
                     marginTop = 0.dp,
                     onClick = {
                         AppStateManager.setMode(AppMode.Run)
@@ -230,16 +231,16 @@ private fun translateServerError(responseBody: String): String {
 
     return when {
         message.contains("folder is full", ignoreCase = true) ->
-            "服务器截图已满，上传失败。请与作者/客服联系。"
+            Strings.serverFolderFull
 
         message.contains("No file uploaded", ignoreCase = true) ->
-            "未上传文件。"
+            Strings.noFileUploaded
 
         message.contains("Missing", ignoreCase = true) && message.contains("image", ignoreCase = true) ->
-            "表单数据中缺少图片字段。"
+            Strings.missingImageField
 
         else ->
-            "提交失败：$message"
+            Strings.submitFailed(message)
     }
 }
 

@@ -19,6 +19,7 @@ import androidx.compose.material3.Text
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.coc.zkqcode.jar.ui.Strings
 import com.coc.zkqcode.jar.ui.components.CustomButton
 import com.coc.zkqcode.jar.ui.components.CustomNotificationWindow
 import com.coc.zkqcode.jar.ui.components.SettingDropdown
@@ -85,11 +86,11 @@ fun ExtractGameSaveContent() {
             // 1. Check if save already exists (use Shell to check shared_prefs folder)
             val checkExistCmd = "[ -d \"$targetSaveDir/shared_prefs\" ]"
             if (ShellHelper.runBlocking(checkExistCmd).isSuccess) {
-                showMsg("提取失败，存档已存在")
+                showMsg(Strings.extractFailedExists)
                 return@launch
             }
 
-            showMsg("提取中...")
+            showMsg(Strings.extracting)
 
             // 2. Ensure directory structure exists
             // mkdir -p will recursively create directories: if zkqFiles doesn't exist it will be created, if zkqCNGameSave doesn't exist it will also be created
@@ -105,7 +106,7 @@ fun ExtractGameSaveContent() {
                 RunShell.runNoOutput("cp -r /data/data/${variant.gameVersion.packageName}/$dir/* \"$destPath\"", false)
             }
 
-            showMsg("提取成功！")
+            showMsg(Strings.extractSuccess)
         }
     }
 
@@ -115,7 +116,7 @@ fun ExtractGameSaveContent() {
             val suffix = GlobalVars.configStates[variant.settingKey]!!.value
 
             if (suffix.isEmpty()) {
-                showMsg("错误：未获取到路径序号")
+                showMsg(Strings.errorNoSlot)
                 return@launch
             }
 
@@ -125,19 +126,19 @@ fun ExtractGameSaveContent() {
             // 使用 Shell 检查目录是否存在
             val checkExistCmd = "[ -d \"$targetPath\" ]"
             if (!ShellHelper.runBlocking(checkExistCmd).isSuccess) {
-                showMsg("删除失败，存档不存在")
+                showMsg(Strings.deleteFailedNotExist)
                 return@launch
             }
 
-            showMsg("删除中...")
+            showMsg(Strings.deleting)
 
             // 执行删除
             val result = ShellHelper.runBlocking("rm -rf \"$targetPath\"")
 
             if (result.isSuccess) {
-                showMsg("删除成功！")
+                showMsg(Strings.deleteSuccess)
             } else {
-                showMsg("删除失败，请检查权限")
+                showMsg(Strings.deleteFailedPermission)
             }
         }
     }
@@ -149,11 +150,11 @@ fun ExtractGameSaveContent() {
             val content = GlobalVars.configStates[GLOBAL_SETTINGS.EXTRACT_DATA_CONTENT.key]!!.value.trim()
 
             if (slot.isEmpty()) {
-                showMsg("错误：序号不能为空")
+                showMsg(Strings.errorSlotEmpty)
                 return@launch
             }
             if (content.isEmpty()) {
-                showMsg("错误：数据内容不能为空")
+                showMsg(Strings.errorContentEmpty)
                 return@launch
             }
 
@@ -165,7 +166,7 @@ fun ExtractGameSaveContent() {
             json.addProperty(slot, content)
 
             val success = FileHelper.writeJson(dataPath, json.toString())
-            showMsg(if (success) "保存成功！" else "保存失败，请检查权限")
+            showMsg(if (success) Strings.saveSuccess else Strings.saveFailedPermission)
         }
     }
 
@@ -175,7 +176,7 @@ fun ExtractGameSaveContent() {
             val slot = GlobalVars.configStates[GLOBAL_SETTINGS.EXTRACT_DATA_NUMBER.key]!!.value.trim()
 
             if (slot.isEmpty()) {
-                showMsg("错误：序号不能为空")
+                showMsg(Strings.errorSlotEmpty)
                 return@launch
             }
 
@@ -184,7 +185,7 @@ fun ExtractGameSaveContent() {
 
             val json = FileHelper.readJson(dataPath)
             if (json == null || !json.has(slot)) {
-                showMsg("删除失败，该序号数据不存在")
+                showMsg(Strings.deleteDataFailedNotExist)
                 return@launch
             }
 
@@ -196,7 +197,7 @@ fun ExtractGameSaveContent() {
             } else {
                 FileHelper.writeJson(dataPath, json.toString())
             }
-            showMsg(if (success) "删除成功！" else "删除失败，请检查权限")
+            showMsg(if (success) Strings.deleteSuccess else Strings.deleteFailedPermission)
         }
     }
 
@@ -216,7 +217,7 @@ fun ExtractGameSaveContent() {
             FlowRow {
                 SettingDropdown(
                     key = GLOBAL_SETTINGS.EXTRACT_VERSION.key,
-                    options = listOf("国服", "国际服", "测试功能")
+                    options = listOf(Strings.cnServer, Strings.globalServer, Strings.testMode)
                 )
                 Row {
                     CustomButton(text = "▼", onClick = {
@@ -234,14 +235,14 @@ fun ExtractGameSaveContent() {
             SettingInputRow(key = GLOBAL_SETTINGS.EXTRACT_DATA_NUMBER.key)
             SettingInputRow(key = GLOBAL_SETTINGS.EXTRACT_DATA_CONTENT.key)
             Row {
-                CustomButton(text = "保存数据", onClick = { performSaveDataNumber() })
-                CustomButton(text = "删除数据", onClick = { performDeleteDataNumber() })
+                CustomButton(text = Strings.saveData, onClick = { performSaveDataNumber() })
+                CustomButton(text = Strings.deleteData, onClick = { performDeleteDataNumber() })
             }
         } else {
             FlowRow {
                 SettingDropdown(
                     key = GLOBAL_SETTINGS.EXTRACT_VERSION.key,
-                    options = listOf("国服", "国际服", "测试功能")
+                    options = listOf(Strings.cnServer, Strings.globalServer, Strings.testMode)
                 )
                 Row {
                     CustomButton(text = "▼", onClick = {
@@ -282,8 +283,8 @@ private fun GameConfigSection(
 ) {
     SettingInputRow(key = variant.settingKey)
     Row {
-        val regionName = if (variant == GameVariant.CN) "国服" else "国际服"
-        CustomButton(text = "提取${regionName}数据", onClick = onExtract)
-        CustomButton(text = "删除现有数据", onClick = onDelete)
+        val regionName = if (variant == GameVariant.CN) Strings.cnServer else Strings.globalServer
+        CustomButton(text = Strings.extractRegionData(regionName), onClick = onExtract)
+        CustomButton(text = Strings.deleteExistingData, onClick = onDelete)
     }
 }

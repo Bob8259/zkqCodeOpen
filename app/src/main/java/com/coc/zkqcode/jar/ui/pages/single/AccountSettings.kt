@@ -34,6 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.coc.zkqcode.jar.ui.Strings
 import com.coc.zkqcode.jar.ui.components.CustomButton
 import com.coc.zkqcode.jar.ui.components.SettingSection
 import com.coc.zkqcode.core.data.database.GlobalVars
@@ -110,12 +111,12 @@ fun LazyListScope.accountSettings() {
             )
             Row {
                 CustomButton(
-                    text = "一键全选",
+                    text = Strings.selectAll,
                     marginTop = 6.dp,
                     onClick = { batchUpdateAllAccounts(ACCOUNT_SETTINGS.ISOPEN.key) { "1" } }
                 )
                 CustomButton(
-                    text = "一键反选",
+                    text = Strings.invertSelection,
                     marginTop = 6.dp,
                     onClick = { batchUpdateAllAccounts(ACCOUNT_SETTINGS.ISOPEN.key) { if (it == "1") "0" else "1" } }
                 )
@@ -128,13 +129,13 @@ fun LazyListScope.accountSettings() {
             var batchVerEndAccount by remember { mutableStateOf("") }
             var selectedVerIndex by remember { mutableIntStateOf(0) }
             var expandedVer by remember { mutableStateOf(false) }
-            val verOptions = listOf("国服", "国际服", "Atrasis")
+            val verOptions = listOf(Strings.cnServer, Strings.globalServer, Strings.atrasis)
 
             FlowRow(
                 modifier = Modifier.padding(top = 6.dp)
             ) {
                 Text(
-                    text = "将配置",
+                    text = Strings.applyConfigLabel,
                     style = MaterialTheme.typography.labelMedium,
                     modifier = Modifier
                         .padding(end = 4.dp)
@@ -146,7 +147,7 @@ fun LazyListScope.accountSettings() {
                     onValueChange = { configValue = it },
                 )
                 Text(
-                    text = "应用到账号",
+                    text = Strings.toAccounts,
                     style = MaterialTheme.typography.labelMedium,
                     modifier = Modifier
                         .padding(horizontal = 4.dp)
@@ -170,7 +171,7 @@ fun LazyListScope.accountSettings() {
                     onValueChange = { endAccount = it }
                 )
                 CustomButton(
-                    text = "确认",
+                    text = Strings.confirm,
                     onClick = {
                         batchUpdateByRange(startAccount, endAccount, ACCOUNT_SETTINGS.ACCOUNT_CONFIG.key, configValue)
                     },
@@ -182,7 +183,7 @@ fun LazyListScope.accountSettings() {
                 modifier = Modifier.padding(top = 6.dp)
             ) {
                 Text(
-                    text = "将账号",
+                    text = Strings.applyAccountLabel,
                     style = MaterialTheme.typography.labelMedium,
                     modifier = Modifier
                         .padding(end = 4.dp)
@@ -206,7 +207,7 @@ fun LazyListScope.accountSettings() {
                     onValueChange = { batchVerEndAccount = it }
                 )
                 Text(
-                    text = "改为",
+                    text = Strings.changeTo,
                     style = MaterialTheme.typography.labelMedium,
                     modifier = Modifier
                         .padding(horizontal = 4.dp)
@@ -253,7 +254,7 @@ fun LazyListScope.accountSettings() {
                 }
 
                 CustomButton(
-                    text = "确认",
+                    text = Strings.confirm,
                     onClick = {
                         batchUpdateByRange(batchVerStartAccount, batchVerEndAccount, ACCOUNT_SETTINGS.GAME_VERSION.key, selectedVerIndex.toString())
                     },

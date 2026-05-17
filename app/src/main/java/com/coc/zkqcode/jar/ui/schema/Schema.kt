@@ -3,18 +3,23 @@
 package com.coc.zkqcode.jar.ui.schema
 
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
+import com.coc.zkqcode.jar.ui.LanguageManager
 import com.coc.zkqcode.jar.ui.schema.details.*
 
 /**
  * The single source of truth for any setting in the app.
  */
 data class SettingDef(
-    val key: String, val displayName: String, val defaultValue: Any, val category: String
+    val key: String,
+    val displayName: String,
+    val englishDisplayName: String = "",
+    val defaultValue: Any,
+    val category: String
 )
 
 object Schema {
-    private val keyToDisplayName by lazy {
-        SchemaRegistry.ALL_MODULES.flatMap { it.settings }.associateBy({ it.key }, { it.displayName })
+    private val keyToSettingDef by lazy {
+        SchemaRegistry.ALL_MODULES.flatMap { it.settings }.associateBy { it.key }
     }
 
     private val keyToDefaultValue by lazy {
@@ -28,7 +33,13 @@ object Schema {
         if (baseKey == fullKey) {
             baseKey = fullKey.replace(Regex("\\d+$"), "")
         }
-        return keyToDisplayName[baseKey] ?: fullKey
+        val def = keyToSettingDef[baseKey]
+        if (def != null) {
+            val en = def.englishDisplayName
+            if (!LanguageManager.isChinese && en.isNotEmpty()) return en
+            return def.displayName
+        }
+        return fullKey
     }
 
     // Returns the Schema-defined default value for a key.

@@ -68,6 +68,7 @@ import androidx.compose.ui.window.PopupProperties
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.jar.ui.theme.AppColors
 import com.coc.zkqcode.jar.ui.schema.Schema
+import com.coc.zkqcode.jar.ui.Strings
 import kotlinx.coroutines.delay
 
 
@@ -151,13 +152,13 @@ internal fun ExplainIcon(explain: String) {
     if (showExplanation) {
         CustomAlertDialog(onDismissRequest = { showExplanation = false }, title = {
             Text(
-                text = "注意事项", style = MaterialTheme.typography.titleMedium, color = AppColors.TextPrimary
+                text = Strings.noticeTitle, style = MaterialTheme.typography.titleMedium, color = AppColors.TextPrimary
             )
         }, text = {
             Text(text = explain, style = MaterialTheme.typography.bodyMedium)
         }, confirmButton = {
             TextButton(onClick = { showExplanation = false }) {
-                Text("明白了", color = AppColors.Primary)
+                Text(Strings.gotIt, color = AppColors.Primary)
             }
         })
     }

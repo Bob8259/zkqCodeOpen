@@ -26,6 +26,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.jar.ui.LanguageManager
+import com.coc.zkqcode.jar.ui.Strings
 import com.coc.zkqcode.jar.ui.components.CustomButton
 import com.coc.zkqcode.jar.ui.components.SettingDropdown
 import com.coc.zkqcode.jar.ui.components.SettingInputRow
@@ -56,15 +57,15 @@ fun LazyListScope.homeSettings(
                     .padding(vertical = 4.dp), horizontalArrangement = Arrangement.Start
             ) {
                 Text(
-                    text = if (GlobalVars.isAutoRunEnabled) "${GlobalVars.autoRunTimer}秒后运行" else "计时已停止",
+                    text = if (GlobalVars.isAutoRunEnabled) Strings.timerRunning(GlobalVars.autoRunTimer) else Strings.timerStopped,
                     style = MaterialTheme.typography.labelMedium,
                     color = Color.Red,
                     modifier = Modifier.padding(top = 8.dp, end = 6.dp)
                 )
                 CustomButton(
-                    text = "停止计时", onClick = { GlobalVars.isAutoRunEnabled = false })
+                    text = Strings.stopTimer, onClick = { GlobalVars.isAutoRunEnabled = false })
                 CustomButton(
-                    text = "日志", onClick = { onShowAnnouncement() })
+                    text = Strings.log, onClick = { onShowAnnouncement() })
                 CustomButton(
                     text = LanguageManager.toggleButtonText,
                     onClick = { LanguageManager.toggleLanguage() },
@@ -83,13 +84,13 @@ fun LazyListScope.homeSettings(
                 .padding(vertical = 4.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             QuickActionCard(
-                title = "手动切号？", subtitle = "点击切号", dotColor = Color(0xFFED8936), onClick = {
+                title = Strings.manualSwitch, subtitle = Strings.clickSwitch, dotColor = Color(0xFFED8936), onClick = {
                     AppStateManager.setMode(AppMode.SwitchAccount)
                     onSaveSuccess()
                 }, modifier = Modifier.weight(1f)
             )
             QuickActionCard(
-                title = "发现问题？", subtitle = "点击反馈", dotColor = AppColors.Teal, onClick = {
+                title = Strings.foundBug, subtitle = Strings.clickFeedback, dotColor = AppColors.Teal, onClick = {
                     AppStateManager.setMode(AppMode.BugReport)
                     onSaveSuccess()
                 }, modifier = Modifier.weight(1f)
@@ -102,7 +103,7 @@ fun LazyListScope.homeSettings(
                 .padding(vertical = 4.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             QuickActionCard(
-                title = "自定义背景", subtitle = "选择图片", dotColor = AppColors.PrimaryLight, onClick = {
+                title = Strings.customBg, subtitle = Strings.selectImage, dotColor = AppColors.PrimaryLight, onClick = {
                     saveAndSetPlaying(false)
                     val intent = Intent(context, ImagePickerActivity::class.java)
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -110,9 +111,9 @@ fun LazyListScope.homeSettings(
                 }, modifier = Modifier.weight(1f)
             )
             QuickActionCard(
-                title = "重置背景", subtitle = "恢复默认", dotColor = AppColors.NavInactive, onClick = {
+                title = Strings.resetBg, subtitle = Strings.restoreDefault, dotColor = AppColors.NavInactive, onClick = {
                     val success = resetCustomBackground(context)
-                    showMsg(if (success) "背景已重置" else "重置失败")
+                    showMsg(if (success) Strings.bgResetSuccess else Strings.bgResetFail)
                 }, modifier = Modifier.weight(1f)
             )
         }
@@ -129,7 +130,7 @@ fun LazyListScope.homeSettings(
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = "换机前务必清除数据 保护账号安全", style = MaterialTheme.typography.labelMedium, color = AppColors.TextPrimary
+                    text = Strings.tipChangeDevice, style = MaterialTheme.typography.labelMedium, color = AppColors.TextPrimary
                 )
             }
             // Two-tile grid
@@ -137,13 +138,13 @@ fun LazyListScope.homeSettings(
                 horizontalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.padding(bottom = 8.dp)
             ) {
                 TipsActionTile(
-                    text = "清除账号记忆",
-                    explain = "辅助会缓存账号的运行状态，例如当前账号是否已完成突袭、部落竞赛等任务。切换账号后若未清除缓存，辅助将沿用先前账号的状态信息，可能导致异常操作。",
+                    text = Strings.clearMemory,
+                    explain = Strings.clearMemoryExplain,
                     onClick = { cleanMemory() },
                     modifier = Modifier.weight(1f)
                 )
                 TipsActionTile(
-                    text = "清除全部数据", onClick = { cleanAllData() }, modifier = Modifier.weight(1f)
+                    text = Strings.cleanAllTitle, onClick = { cleanAllData() }, modifier = Modifier.weight(1f)
                 )
             }
             // Settings FlowRow
@@ -155,15 +156,15 @@ fun LazyListScope.homeSettings(
                 SettingSwitchIcon(key = GLOBAL_SETTINGS.RECORD_PROGRESS.key)
 
                 SettingDropdown(
-                    key = GLOBAL_SETTINGS.AUTO_UPDATE.key, options = listOf("关闭自动更新", "仅启动时更新", "实时自动更新")
+                    key = GLOBAL_SETTINGS.AUTO_UPDATE.key, options = listOf(Strings.autoUpdateOff, Strings.autoUpdateOnLaunch, Strings.autoUpdateRealtime)
                 )
                 SettingSwitchIcon(key = GLOBAL_SETTINGS.AUTO_START.key)
                 SettingSwitchIcon(
                     key = GLOBAL_SETTINGS.DISABLE_RESTART_GAME.key,
-                    explain = "勾选后，所有重启游戏的设定将失效，可能会导致卡界面。建议谨慎使用。"
+                    explain = Strings.disableRestartExplain
                 )
                 SettingDropdown(
-                    key = GLOBAL_SETTINGS.AFTER_KICK_OPTION.key, options = listOf("立刻重连", "切换账号", "原地等待"),
+                    key = GLOBAL_SETTINGS.AFTER_KICK_OPTION.key, options = listOf(Strings.afterKickReconnect, Strings.afterKickSwitch, Strings.afterKickWait),
                     afterChange = { selectedIndex ->
                         if (selectedIndex != 0) {
                             GlobalVars.configStates[GLOBAL_SETTINGS.BATCH_CREATE_ACCOUNT.key]?.value = "0"
@@ -171,12 +172,12 @@ fun LazyListScope.homeSettings(
                     })
                 SettingInputRow(key = GLOBAL_SETTINGS.DEVICE_REMARK.key)
                 CustomButton(
-                    text = "导入旧版数据",
+                    text = Strings.importOldData,
                     onClick = { onShowImportOldData() },
                     marginTop = 6.dp
                 )
                 CustomButton(
-                    text = "同步时间",
+                    text = Strings.syncTime,
                     onClick = { autoSyncSystemTime { msg -> showMsg(msg) } },
                     marginTop = 6.dp
                 )

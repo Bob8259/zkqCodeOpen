@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.coc.zkqcode.jar.ui.Strings
 import com.coc.zkqcode.jar.ui.components.SettingSwitchIcon
 import com.coc.zkqcode.jar.ui.components.SettingInputRow
 import com.coc.zkqcode.core.data.database.GlobalVars
@@ -25,7 +26,7 @@ fun BatchCreateAccount() {
 
     SettingSwitchIcon(
         key = GLOBAL_SETTINGS.BATCH_CREATE_ACCOUNT.key,
-        explain = "启用批量创号后，辅助将优先检查所有游戏存档是否存在，若存档缺失则自动创建账号；若存档齐全，则按照指定序号依次运行对应账号。序号与游戏存档编号一致，且所有账号均采用配置1的设定。\n" + "部分云手机在创号过程中可能出现异常，建议改用模拟器完成创号操作。启用批量创号时，掉线重连选项须设置为\u201C立即重连\u201D。",
+        explain = Strings.batchCreateExplain,
         afterChange = { checked ->
             if (checked) {
                 GlobalVars.configStates[GLOBAL_SETTINGS.AFTER_KICK_OPTION.key]?.value = "0"

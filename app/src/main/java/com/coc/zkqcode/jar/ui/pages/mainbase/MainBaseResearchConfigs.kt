@@ -20,6 +20,7 @@ import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.jar.ui.theme.AppColors
 import com.coc.zkqcode.jar.ui.schema.Schema.MAIN_BASE_TROOPS_AND_SPELLS
 import com.coc.zkqcode.jar.ui.schema.Schema.MAIN_BASE_SETTINGS
+import com.coc.zkqcode.jar.ui.Strings
 
 @Composable
 fun MainBaseResearchConfigs(index: Int) {
@@ -53,11 +54,11 @@ fun MainBaseResearchConfigs(index: Int) {
     }
     Column {
         Row {
-            CustomButton(text = if (isExpanded.value) "缩起列表" else "展开列表", onClick = { isExpanded.value = !isExpanded.value }, containerColor = AppColors.Teal)
+            CustomButton(text = if (isExpanded.value) Strings.collapseList else Strings.expandList, onClick = { isExpanded.value = !isExpanded.value }, containerColor = AppColors.Teal)
             AnimatedVisibility(visible = isExpanded.value) {
                 Row {
-                    CustomButton(text = "一键全选", onClick = selectAll)
-                    CustomButton(text = "一键反选", onClick = invertSelection)
+                    CustomButton(text = Strings.selectAll, onClick = selectAll)
+                    CustomButton(text = Strings.invertSelection, onClick = invertSelection)
                 }
             }
         }
@@ -67,7 +68,7 @@ fun MainBaseResearchConfigs(index: Int) {
                 // Research level dropdown
                 SettingDropdown(
                     key = "${MAIN_BASE_SETTINGS.RESEARCH_LEVEL.key}_c${index}",
-                    options = listOf("满级", "满级减一", "满级减二")
+                    options = listOf(Strings.maxLevel, Strings.maxLevelMinus1, Strings.maxLevelMinus2)
                 )
                 FlowRow(modifier = Modifier.padding(top = 6.dp).border(1.dp, Color.Gray, RoundedCornerShape(8.dp)).padding(8.dp)) {
                     items.forEach { item ->

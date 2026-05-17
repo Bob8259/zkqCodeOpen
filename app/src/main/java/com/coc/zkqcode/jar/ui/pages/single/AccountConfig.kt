@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.coc.zkqcode.core.data.database.GlobalVars
+import com.coc.zkqcode.jar.ui.Strings
 import com.coc.zkqcode.jar.ui.components.SettingDropdown
 import com.coc.zkqcode.jar.ui.components.SettingInputRow
 import com.coc.zkqcode.jar.ui.components.SettingSection
@@ -28,13 +29,13 @@ fun AccountConfig(
     index: Int
 ) {
     SettingSection {
-        Text(text = "账号${index}", style = MaterialTheme.typography.labelMedium)
+        Text(text = Strings.account(index), style = MaterialTheme.typography.labelMedium)
         FlowRow {
             // Remove the switch label's extra text offset so it aligns with the remark label.
             val isRandomScheduling = GlobalVars.configStates[GLOBAL_SETTINGS.RANDOM_SCHEDULING.key]?.value == "1"
             if (isRandomScheduling) {
                 Text(
-                    text = "已开启随机上号，请在右上角前往特殊设置页面->随机上号，通过调整账号分组来控制该账号是否开启。",
+                    text = Strings.randomSchedulingNote,
                     modifier = Modifier.padding(end = 10.dp),
                     style = MaterialTheme.typography.labelMedium,
                     color = Color.Gray
@@ -49,11 +50,11 @@ fun AccountConfig(
         }
         FlowRow {
             SettingDropdown(
-                key = "${ACCOUNT_SETTINGS.GAME_VERSION.key}${index}", options = listOf("国服", "国际服", "Atrasis")
+                key = "${ACCOUNT_SETTINGS.GAME_VERSION.key}${index}", options = listOf(Strings.cnServer, Strings.globalServer, Strings.atrasis)
             )
             SettingInputRow(key = "${ACCOUNT_SETTINGS.ACCOUNT_CONFIG.key}${index}")
             SettingDropdown(
-                key = "${ACCOUNT_SETTINGS.START_METHOD.key}${index}", options = listOf("游戏存档", "直接启动", "测试功能")
+                key = "${ACCOUNT_SETTINGS.START_METHOD.key}${index}", options = listOf(Strings.gameSave, Strings.directLaunch, Strings.testMode)
             )
         }
         when (GlobalVars.configStates["${ACCOUNT_SETTINGS.START_METHOD.key}${index}"]!!.value) {
@@ -74,7 +75,7 @@ fun UseDataPackage(
         }
     } else {
         Text(
-            text = "国际服不支持测试功能，请更换启动游戏方式！",
+            text = Strings.globalNotSupported,
             modifier = Modifier.padding(end = 10.dp, bottom = 6.dp),
             style = MaterialTheme.typography.labelMedium,
         )
