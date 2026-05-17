@@ -35,7 +35,7 @@ fun AccountConfig(
             val isRandomScheduling = GlobalVars.configStates[GLOBAL_SETTINGS.RANDOM_SCHEDULING.key]?.value == "1"
             if (isRandomScheduling) {
                 Text(
-                    text = Strings.randomSchedulingNote,
+                    text = Strings.randomSchedulingRemark,
                     modifier = Modifier.padding(end = 10.dp),
                     style = MaterialTheme.typography.labelMedium,
                     color = Color.Gray

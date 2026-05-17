@@ -82,7 +82,7 @@ object Strings {
 
     // AccountConfig
     fun account(index: Int) = if (LanguageManager.isChinese) "账号$index" else "Account $index"
-    val randomSchedulingNote get() = if (LanguageManager.isChinese) "已开启随机上号，请在右上角前往特殊设置页面->随机上号，通过调整账号分组来控制该账号是否开启。" else "Random scheduling enabled. Go to Advanced > Random Scheduling to manage account groups."
+    val randomSchedulingRemark get() = if (LanguageManager.isChinese) "已开启随机上号，请在右上角前往特殊设置页面->随机上号，通过调整账号分组来控制该账号是否开启。" else "Random scheduling enabled. Go to Advanced > Random Scheduling to manage account groups."
     val globalNotSupported get() = if (LanguageManager.isChinese) "国际服不支持测试功能，请更换启动游戏方式！" else "Test mode not supported for Global server! Please change launch method."
     val gameSave get() = if (LanguageManager.isChinese) "游戏存档" else "Game Save"
     val directLaunch get() = if (LanguageManager.isChinese) "直接启动" else "Direct Launch"
@@ -119,7 +119,7 @@ object Strings {
     fun skippedSelf(n: Int) = if (LanguageManager.isChinese) "（已跳过配置文件$n）" else " (Skipped profile $n)"
     val profileHint get() = if (LanguageManager.isChinese) "点击方格调整配置文件。调整完成后，回到\"账号设置\"，给每个账号分配所需的配置文件。" else "Tap a cell to edit. Then go to Accounts to assign profiles."
     fun profileFile(i: Int) = if (LanguageManager.isChinese) "配置文件$i" else "Profile $i"
-    fun remark(text: String) = if (LanguageManager.isChinese) "备注: $text" else "Note: $text"
+    fun remark(text: String) = if (LanguageManager.isChinese) "备注: $text" else "Remark: $text"
 
     // Login
     val adFreeMessage get() = if (LanguageManager.isChinese) "登录后免广告，运行更高效！不登陆也可以运行。免广告每天花费0.15卡班积分，用多久扣多久。" else "Login for ad-free experience! Works without login too. Ad-free costs 0.15 Caban points per day, pay as you go."
@@ -139,7 +139,7 @@ object Strings {
     val donate get() = if (LanguageManager.isChinese) "捐赠" else "Donate"
     val logout get() = if (LanguageManager.isChinese) "退出" else "Logout"
     val logoutSuccess get() = if (LanguageManager.isChinese) "退出成功" else "Logged out"
-    val donateInfo get() = if (LanguageManager.isChinese) "前往官网即可注册捐赠，官网链接https://zkqcoc.store\n" else "Visit the website to register and donate: https://zkqcoc.store\n"
+    val donateInfo get() = if (LanguageManager.isChinese) "前往官网即可注册捐赠，详情请加QQ频道pd92187355，或QQ群954346388 \n" else "Visit the website to register and donate. Join our channel for more information: https://t.me/+cApT2jSTaNtiYTZl"
 
     // RandomScheduling
     val dawnGroup get() = if (LanguageManager.isChinese) "凌晨组  0:00 - 6:00" else "Dawn 0:00 - 6:00"
@@ -226,7 +226,7 @@ object Strings {
     val waitForBattleExplain get() = if (LanguageManager.isChinese) "启用后，若当前处于对战冷却期，辅助将持续等待直至冷却结束。无论是否接取竞赛任务都生效。" else "Wait during battle cooldown until ready. Works regardless of clan games tasks."
     val waitForBattleAfterTaskExplain get() = if (LanguageManager.isChinese) "启用后，若已接取主世界竞赛任务且当前处于对战冷却期，辅助将持续等待直至冷却结束。" else "Wait during battle cooldown if a clan games task is active."
     val restartGameExplain get() = if (LanguageManager.isChinese) "启用后，辅助将在部署全部部队后自动重启游戏。此功能仅适用于主世界对战。" else "Restart game after deploying all troops. Main base only."
-    val manualTrainingExplain get() = if (LanguageManager.isChinese) "启用后，辅助将跳过配兵流程，请自行完成兵种配置。\n\n注意：辅助不会自动开启超级兵种。" else "Skip troop training - configure manually. Note: Super troops will not be auto-activated."
+    val manualTrainingExplain get() = if (LanguageManager.isChinese) "启用后，辅助将跳过配兵流程，请自行完成兵种配置。\n\n注意：辅助不会自动开启超级兵种。" else "Skip troop training - configure manually. Remark: Super troops will not be auto-activated."
     val claimRewardsExplain get() = if (LanguageManager.isChinese) "优先领取魔法书和宝石，其他随机领取。" else "Prioritize books and gems, others random."
     val clanWarExplain get() = if (LanguageManager.isChinese) "部落战其中一次打对位，另一次打推荐对手。\n不保证胜率，请谨慎使用。" else "One attack on mirror, one on recommended. No win rate guarantee."
     val leagueExplain get() = if (LanguageManager.isChinese) "默认打对位，如果对位已被打则随机进攻，不保证胜率。" else "Default attack on mirror. If already hit, attack random. No win rate guarantee."
@@ -247,7 +247,7 @@ object Strings {
     val builderBaseFarmingExplain get() = if (LanguageManager.isChinese) "辅助将自动完成兵种配置，暂不支持手动配兵。若未启用“上分模式”或“刷圣水车”，辅助将根据当前账号的资源状况智能选择对战模式。" else "Auto-configure troops (manual not supported). If no specific mode set, chooses based on resources."
     val trophyPushingExplain get() = if (LanguageManager.isChinese) "启用后，辅助将使用暗夜女巫进行上分，圣水获取效率会显著下降，请谨慎启用。此选项不可与“刷圣水车”同时开启。" else "Uses Night Witch for trophy pushing. Elixir efficiency will drop. Cannot be used with Elixir Cart mode."
     val elixirCartExplain get() = if (LanguageManager.isChinese) "启用后，夜世界对战中部署兵种后将立即投降，因此几乎无法获取金币，请谨慎启用。此选项不可与“上分模式”同时开启。" else "Deploy then surrender for elixir. Gold gain will be near zero. Cannot be used with Trophy Pushing."
-    val builderBaseRemoveObstaclesExplain get() = if (LanguageManager.isChinese) "若尚未解锁第二区域，当金币或圣水超过30万时生效；\n若已解锁第二区域，当金币或圣水超过60万时生效。\n注意：此功能会移除野蛮人雕像，请谨慎使用。" else "Active at 300k gold/elixir (Area 1) or 600k (Area 2). Note: May remove Barbarian Statue."
+    val builderBaseRemoveObstaclesExplain get() = if (LanguageManager.isChinese) "若尚未解锁第二区域，当金币或圣水超过30万时生效；\n若已解锁第二区域，当金币或圣水超过60万时生效。\n注意：此功能会移除野蛮人雕像，请谨慎使用。" else "Active at 300k gold/elixir (Area 1) or 600k (Area 2). Remark: May remove Barbarian Statue."
     val builderBaseContinuousRemoveExplain get() = if (LanguageManager.isChinese) "启用后，辅助将不再记录移除时间，每次运行都会尝试移除障碍物，实现连续移除。" else "Remove obstacles every run without tracking time."
     val builderBaseSaveWorkerBuildExplain get() = if (LanguageManager.isChinese) "本功能依赖智能决策，启用本功能后会自动开启智能决策。" else "Requires Smart Decision to be enabled."
 

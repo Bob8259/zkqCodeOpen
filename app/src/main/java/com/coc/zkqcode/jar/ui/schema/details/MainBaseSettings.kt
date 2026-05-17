@@ -7,7 +7,7 @@ import com.coc.zkqcode.jar.ui.schema.SettingDef
 object MainBaseSettings {
     // Common settings
     val CLAIM_DAILY_REWARD = SettingDef("claim_daily_reward", "领取国服签到奖励", "Claim CN Daily Reward", 1, "MAIN_BASE_SETTINGS")
-    val CONFIG_REMARK = SettingDef("config_remark", "备注:", "Note:", "", "MAIN_BASE_SETTINGS")
+    val CONFIG_REMARK = SettingDef("config_remark", "备注:", "Remark:", "", "MAIN_BASE_SETTINGS")
     val SMART_DECISION = SettingDef("smart_decision", "智能决策", "Smart Decision", 1, "MAIN_BASE_SETTINGS")
     val SKIP_TH_LEVEL = SettingDef("skip_th_level", "跳过大本营等级达到", "Skip if TH level reaches", "20", "MAIN_BASE_SETTINGS")
     val AUTO_ATTACK = SettingDef("auto_attack", "自动进攻", "Auto Attack", 1, "MAIN_BASE_SETTINGS")

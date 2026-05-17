@@ -30,7 +30,7 @@ object GlobalSettings {
     val CREATE_GEM_BUILD = SettingDef("create_gem_build", "创号时宝石秒建筑", "Gem Build", 0, "GLOBAL_SETTINGS")
     val GEM_COUNT = SettingDef("gem_count", "宝石数量", "Gems", "", "GLOBAL_SETTINGS")
     val AFTER_KICK_OPTION = SettingDef("after_kick_option", "顶号后选项", "After Kick", "1", "GLOBAL_SETTINGS")
-    val DEVICE_REMARK = SettingDef("device_remark", "设备备注", "Device Note", "", "GLOBAL_SETTINGS")
+    val DEVICE_REMARK = SettingDef("device_remark", "设备备注", "Device Remark", "", "GLOBAL_SETTINGS")
     val RUNTIME_SCREENSHOT = SettingDef("runtime_screenshot", "运行时截图", "Runtime Screenshot", 0, "GLOBAL_SETTINGS")
 
     // ── Temperature Protection (温度保护) ────────────────────────────────────
@@ -131,7 +131,7 @@ object GlobalSettings {
 
 object AccountSettings {
     val ISOPEN = SettingDef("isopen", "开启状态", "Enabled", 0, "ACCOUNT_SETTINGS")
-    val REMARK = SettingDef("remark", "备注", "Note", "", "ACCOUNT_SETTINGS")
+    val REMARK = SettingDef("remark", "备注", "Remark", "", "ACCOUNT_SETTINGS")
     val GAME_VERSION = SettingDef("game_version", "游戏版本", "Game Version", "0", "ACCOUNT_SETTINGS")
     val ACCOUNT_CONFIG = SettingDef("account_config", "配置文件序号", "Profile Slot", "1", "ACCOUNT_SETTINGS")
     val START_METHOD = SettingDef("start_method", "启动方式", "Start Method", "0", "ACCOUNT_SETTINGS")

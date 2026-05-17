@@ -297,16 +297,9 @@ fun LoginScreen(onAdFreeClick: () -> Unit = {}) {
                     )
                 }, enable = isLoginButtonEnabled
             )
-            val context = LocalContext.current
             CustomButton(
                 text = Strings.donate, marginTop = 0.dp, onClick = {
                     gemInfo = Strings.donateInfo
-                    val url = UrlFallbackUtil.getPrimaryUrl()
-                    val intent = Intent(Intent.ACTION_VIEW, url.toUri())
-                    // Required when startActivity is called from a non-Activity context
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                    context.startActivity(intent)
-                    onAdFreeClick()
                 }, enable = isLoginButtonEnabled
             )
             CustomButton(
