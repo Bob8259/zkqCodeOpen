@@ -25,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.coc.zkqcode.core.data.database.GlobalVars
+import com.coc.zkqcode.jar.ui.LanguageManager
 import com.coc.zkqcode.jar.ui.components.CustomButton
 import com.coc.zkqcode.jar.ui.components.SettingDropdown
 import com.coc.zkqcode.jar.ui.components.SettingInputRow
@@ -49,13 +50,13 @@ fun LazyListScope.homeSettings(
 ) {
     item {
         SettingSection {
-            Row(
+            FlowRow(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 4.dp), horizontalArrangement = Arrangement.Start, verticalAlignment = Alignment.CenterVertically
+                    .padding(vertical = 4.dp), horizontalArrangement = Arrangement.Start
             ) {
                 Text(
-                    text = if (GlobalVars.isAutoRunEnabled) "${GlobalVars.autoRunTimer}秒后自动运行" else "计时已停止",
+                    text = if (GlobalVars.isAutoRunEnabled) "${GlobalVars.autoRunTimer}秒后运行" else "计时已停止",
                     style = MaterialTheme.typography.labelMedium,
                     color = Color.Red,
                     modifier = Modifier.padding(top = 8.dp, end = 6.dp)
@@ -63,7 +64,12 @@ fun LazyListScope.homeSettings(
                 CustomButton(
                     text = "停止计时", onClick = { GlobalVars.isAutoRunEnabled = false })
                 CustomButton(
-                    text = "更新日志", onClick = { onShowAnnouncement() })
+                    text = "日志", onClick = { onShowAnnouncement() })
+                CustomButton(
+                    text = LanguageManager.toggleButtonText,
+                    onClick = { LanguageManager.toggleLanguage() },
+                    containerColor = AppColors.Teal
+                )
             }
             LoginScreen(
                 onAdFreeClick = {

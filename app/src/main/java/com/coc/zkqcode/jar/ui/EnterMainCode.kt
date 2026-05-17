@@ -35,6 +35,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.coc.zkqcode.core.data.database.GlobalVars
+import com.coc.zkqcode.jar.ui.LanguageManager
 import com.coc.zkqcode.core.util.basic.RunShell
 import com.coc.zkqcode.interfaces.MainCode
 import com.coc.zkqcode.jar.code.runMainScript
@@ -61,6 +62,9 @@ class EnterMainCode : MainCode {
         var isConfigInitialized by remember { mutableStateOf(false) }
 
         LaunchedEffect(Unit) {
+            // Detect device language on first UI launch
+            LanguageManager.detectDeviceLanguage()
+
             if (GlobalVars.isConfigLoaded) {
                 isConfigInitialized = true
                 return@LaunchedEffect
