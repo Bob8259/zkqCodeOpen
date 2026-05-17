@@ -50,7 +50,7 @@ fun AccountConfig(
         }
         FlowRow {
             SettingDropdown(
-                key = "${ACCOUNT_SETTINGS.GAME_VERSION.key}${index}", options = listOf(Strings.cnServer, Strings.globalServer, Strings.atrasis)
+                key = "${ACCOUNT_SETTINGS.GAME_VERSION.key}${index}", options = listOf(Strings.cnVersion, Strings.globalVersion, Strings.atrasis)
             )
             SettingInputRow(key = "${ACCOUNT_SETTINGS.ACCOUNT_CONFIG.key}${index}")
             SettingDropdown(
@@ -99,7 +99,7 @@ fun GameFiles(
     LaunchedEffect(currentVersion) {
         selectedOption = GlobalVars.configStates["${ACCOUNT_SETTINGS.GAME_VERSION.key}${index}"]!!.value
     }
-    if (selectedOption == "0") {//0 means CN server
+    if (selectedOption == "0") {//0 means CN Version
         SettingInputRow(key = "${ACCOUNT_SETTINGS.CN_PATH.key}${index}")
     } else {
         SettingInputRow(key = "${ACCOUNT_SETTINGS.GLOBAL_PATH.key}${index}")

@@ -217,7 +217,7 @@ fun ExtractGameSaveContent() {
             FlowRow {
                 SettingDropdown(
                     key = GLOBAL_SETTINGS.EXTRACT_VERSION.key,
-                    options = listOf(Strings.cnServer, Strings.globalServer, Strings.testMode)
+                    options = listOf(Strings.cnVersion, Strings.globalVersion, Strings.testMode)
                 )
                 Row {
                     CustomButton(text = "▼", onClick = {
@@ -242,7 +242,7 @@ fun ExtractGameSaveContent() {
             FlowRow {
                 SettingDropdown(
                     key = GLOBAL_SETTINGS.EXTRACT_VERSION.key,
-                    options = listOf(Strings.cnServer, Strings.globalServer, Strings.testMode)
+                    options = listOf(Strings.cnVersion, Strings.globalVersion, Strings.testMode)
                 )
                 Row {
                     CustomButton(text = "▼", onClick = {
@@ -283,7 +283,7 @@ private fun GameConfigSection(
 ) {
     SettingInputRow(key = variant.settingKey)
     Row {
-        val regionName = if (variant == GameVariant.CN) Strings.cnServer else Strings.globalServer
+        val regionName = if (variant == GameVariant.CN) Strings.cnVersion else Strings.globalVersion
         CustomButton(text = Strings.extractRegionData(regionName), onClick = onExtract)
         CustomButton(text = Strings.deleteExistingData, onClick = onDelete)
     }

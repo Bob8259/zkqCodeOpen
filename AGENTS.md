@@ -1,11 +1,13 @@
-The application consists of a host loader and a JAR module. Code is dynamically loaded from the source path: app/src/main/java/com/coc/zkqcode/jar. You must treat this directory as an independent module intended for JAR packaging. The application operates within a Root environment.
+The application has a host loader and a dynamically loaded JAR module under `app/src/main/java/com/coc/zkqcode/jar`. Treat that path as an independent JAR-packaged module. The app runs in a Root environment.
 
 UI Implementation Rules:
 
-You must add localization for new UI.
+- Add new UI text through the existing localization layer instead of hardcoding it.
+- When creating a screen or dialog, define the string key(s) first, then reference them from the UI code.
+- Keep translations aligned across supported languages.
 
 I/O and Networking Constraints:
-All JSON file reading and writing operations performed outside of the application's private path must be routed through the WebSocket server.
+Route JSON I/O outside the app's private path through the WebSocket server.
 
 Technical Standards:
 

@@ -76,14 +76,14 @@ object Strings {
     val applyAccountLabel get() = if (LanguageManager.isChinese) "将账号" else "Apply account"
     val toAccounts get() = if (LanguageManager.isChinese) "应用到账号" else "to accounts"
     val changeTo get() = if (LanguageManager.isChinese) "改为" else "to"
-    val cnServer get() = if (LanguageManager.isChinese) "国服" else "CN Server"
-    val globalServer get() = if (LanguageManager.isChinese) "国际服" else "Global Server"
+    val cnVersion get() = if (LanguageManager.isChinese) "国服" else "CN Version"
+    val globalVersion get() = if (LanguageManager.isChinese) "国际服" else "Global Version"
     val atrasis get() = if (LanguageManager.isChinese) "Atrasis" else "Atrasis"
 
     // AccountConfig
     fun account(index: Int) = if (LanguageManager.isChinese) "账号$index" else "Account $index"
     val randomSchedulingRemark get() = if (LanguageManager.isChinese) "已开启随机上号，请在右上角前往特殊设置页面->随机上号，通过调整账号分组来控制该账号是否开启。" else "Random scheduling enabled. Go to Advanced > Random Scheduling to manage account groups."
-    val globalNotSupported get() = if (LanguageManager.isChinese) "国际服不支持测试功能，请更换启动游戏方式！" else "Test mode not supported for Global server! Please change launch method."
+    val globalNotSupported get() = if (LanguageManager.isChinese) "国际服不支持测试功能，请更换启动游戏方式！" else "Test mode not supported for Global Version! Please change launch method."
     val gameSave get() = if (LanguageManager.isChinese) "游戏存档" else "Game Save"
     val directLaunch get() = if (LanguageManager.isChinese) "直接启动" else "Direct Launch"
     val testMode get() = if (LanguageManager.isChinese) "测试功能" else "Test Mode"

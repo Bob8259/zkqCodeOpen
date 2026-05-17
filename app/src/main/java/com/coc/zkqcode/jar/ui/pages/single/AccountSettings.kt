@@ -129,7 +129,7 @@ fun LazyListScope.accountSettings() {
             var batchVerEndAccount by remember { mutableStateOf("") }
             var selectedVerIndex by remember { mutableIntStateOf(0) }
             var expandedVer by remember { mutableStateOf(false) }
-            val verOptions = listOf(Strings.cnServer, Strings.globalServer, Strings.atrasis)
+            val verOptions = listOf(Strings.cnVersion, Strings.globalVersion, Strings.atrasis)
 
             FlowRow(
                 modifier = Modifier.padding(top = 6.dp)

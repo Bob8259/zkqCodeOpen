@@ -1,6 +1,5 @@
 package com.coc.zkqcode.jar.ui.pages.single
 
-import android.content.Intent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
@@ -34,12 +33,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import com.coc.zkqcode.jar.ui.theme.AppColors
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.net.toUri
 import com.coc.zkqcode.jar.ui.Strings
 import com.coc.zkqcode.jar.ui.components.CustomButton
 import com.coc.zkqcode.core.data.database.GlobalVars

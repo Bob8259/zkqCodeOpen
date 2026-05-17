@@ -80,8 +80,8 @@ private val GROUP_TITLES get() = listOf(
 private val RS_GRID_MAX_HEIGHT: Dp = 320.dp
 
 private fun gameVersionLabel(value: String?): String = when (value) {
-    "0" -> Strings.cnServer
-    "1" -> Strings.globalServer
+    "0" -> Strings.cnVersion
+    "1" -> Strings.globalVersion
     "2" -> Strings.atrasis
     else -> ""
 }
