@@ -150,7 +150,7 @@ fun BuilderBaseUpgradePriority(index: Int, onSaveSuccess: () -> Unit) {
                     ) {
                         Box(Modifier.fillMaxSize()) {
                             Text(
-                                text = item.displayName,
+                                text = Schema.getDisplayName(item.key),
                                 modifier = Modifier
                                     .align(Alignment.Center)
                                     .padding(horizontal = 6.dp),
@@ -184,7 +184,7 @@ fun BuilderBaseUpgradePriority(index: Int, onSaveSuccess: () -> Unit) {
                     onSaveSuccess()
                 }
             },
-            marginBottom = 4.dp,
+            marginBottom = 4.dp, marginStart = 8.dp,
             text = if (isSaving) Strings.savingWait else Strings.done,
             enable = !isSaving,
             containerColor = AppColors.Teal

@@ -35,6 +35,7 @@ import com.coc.zkqcode.jar.ui.components.CustomButton
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.jar.ui.theme.AppColors
 import com.coc.zkqcode.jar.ui.schema.Schema
+import com.coc.zkqcode.jar.ui.Strings
 import com.coc.zkqcode.core.ui.reorderable.ReorderableItem
 import com.coc.zkqcode.core.ui.reorderable.rememberReorderableLazyGridState
 import kotlinx.coroutines.launch
@@ -84,12 +85,12 @@ fun MainBaseUpgradePriority(index: Int, onSaveSuccess: () -> Unit) {
                 .background(AppColors.Background)
         ) {
         Text(
-            text = "长按单元格拖动调整优先度，点击切换启用/禁用。越靠上，越靠左表示优先度越高。", style = MaterialTheme.typography.labelMedium, modifier = Modifier.padding(horizontal = 8.dp)
+            text = Strings.priorityHint, style = MaterialTheme.typography.labelMedium, modifier = Modifier.padding(horizontal = 8.dp)
         )
 
         Row(modifier = Modifier.padding(start = 8.dp, bottom = 6.dp)) {
             // Select all
-            CustomButton(text = "一键全选", onClick = {
+            CustomButton(text = Strings.selectAll, onClick = {
                 list.forEach { item ->
                     val buildingKey = item.key.removeSuffix("_priority")
                     val enableKey = "${buildingKey}_c$index"
@@ -98,7 +99,7 @@ fun MainBaseUpgradePriority(index: Int, onSaveSuccess: () -> Unit) {
                 }
             })
             // Invert selection
-            CustomButton(text = "一键反选", onClick = {
+            CustomButton(text = Strings.invertSelection, onClick = {
                 list.forEach { item ->
                     val buildingKey = item.key.removeSuffix("_priority")
                     val enableKey = "${buildingKey}_c$index"
@@ -107,7 +108,7 @@ fun MainBaseUpgradePriority(index: Int, onSaveSuccess: () -> Unit) {
                 }
             })
             // Reset priority to default order and enable all
-            CustomButton(text = "重置优先度", onClick = {
+            CustomButton(text = Strings.resetPriority, onClick = {
                 list = allPriorities.sortedBy { def ->
                     def.defaultValue.toString().toIntOrNull() ?: Int.MAX_VALUE
                 }
@@ -147,7 +148,7 @@ fun MainBaseUpgradePriority(index: Int, onSaveSuccess: () -> Unit) {
                     ) {
                         Box(Modifier.fillMaxSize()) {
                             Text(
-                                text = item.displayName,
+                                text = Schema.getDisplayName(item.key),
                                 modifier = Modifier
                                     .align(Alignment.Center)
                                     .padding(horizontal = 6.dp),
@@ -182,7 +183,7 @@ fun MainBaseUpgradePriority(index: Int, onSaveSuccess: () -> Unit) {
                     isSaving = false
                     onSaveSuccess()
                 }
-            }, marginBottom = 4.dp, text = if (isSaving) "保存中，请稍候" else "完成", enable = !isSaving, containerColor = AppColors.Teal
+            }, marginBottom = 4.dp, marginStart = 8.dp, text = if (isSaving) Strings.savingWait else Strings.done, enable = !isSaving, containerColor = AppColors.Teal
         )
         }
     }
