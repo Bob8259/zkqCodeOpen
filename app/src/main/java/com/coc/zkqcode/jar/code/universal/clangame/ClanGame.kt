@@ -14,7 +14,7 @@ import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.smalltools.data.CLAN_GAME_TASK_BASE_MAIN_WORLD
-import com.coc.zkqcode.jar.code.universal.smalltools.data.CLAN_GAME_TASK_BASE_NIGHT_WORLD
+import com.coc.zkqcode.jar.code.universal.smalltools.data.CLAN_GAME_TASK_BASE_BUILDER_BASE
 import com.coc.zkqcode.jar.code.universal.smalltools.data.CLAN_GAME_TASK_BASE_NONE
 import com.coc.zkqcode.jar.code.universal.smalltools.data.StorageKeys
 import com.coc.zkqcode.jar.code.universal.smalltools.input.TouchActions
@@ -364,17 +364,17 @@ private enum class ClanGameTaskState {
 private enum class ClanGameBase(
     val displayName: String, val baseType: BaseType?, val acceptedTaskBase: String
 ) {
-    Main("主世界", BaseType.Main, CLAN_GAME_TASK_BASE_MAIN_WORLD), Builder("夜世界", BaseType.Builder, CLAN_GAME_TASK_BASE_NIGHT_WORLD), Unknown("未知世界", null, CLAN_GAME_TASK_BASE_NONE)
+    Main("主世界", BaseType.Main, CLAN_GAME_TASK_BASE_MAIN_WORLD), Builder("Builder Base", BaseType.Builder, CLAN_GAME_TASK_BASE_BUILDER_BASE), Unknown("未知世界", null, CLAN_GAME_TASK_BASE_NONE)
 }
 
 private enum class ClanGameTaskClass(
     val classIndex: Int, val displayName: String, private val mainBaseSettingKey: String, private val builderBaseSettingKey: String
 ) {
     Normal(
-        CLAN_GAME_NORMAL_TASK_CLASS, "普通任务", Schema.MAIN_BASE_SETTINGS.ACCEPT_MAIN_WORLD_NORMAL_TASK.key, Schema.MAIN_BASE_SETTINGS.ACCEPT_NIGHT_WORLD_NORMAL_TASK.key
+        CLAN_GAME_NORMAL_TASK_CLASS, "普通任务", Schema.MAIN_BASE_SETTINGS.ACCEPT_MAIN_WORLD_NORMAL_TASK.key, Schema.MAIN_BASE_SETTINGS.ACCEPT_BUILDER_BASE_NORMAL_TASK.key
     ),
     Pro(
-        CLAN_GAME_PRO_TASK_CLASS, "高级任务", Schema.MAIN_BASE_SETTINGS.ACCEPT_MAIN_WORLD_ADVANCED_TASK.key, Schema.MAIN_BASE_SETTINGS.ACCEPT_NIGHT_WORLD_ADVANCED_TASK.key
+        CLAN_GAME_PRO_TASK_CLASS, "高级任务", Schema.MAIN_BASE_SETTINGS.ACCEPT_MAIN_WORLD_ADVANCED_TASK.key, Schema.MAIN_BASE_SETTINGS.ACCEPT_BUILDER_BASE_ADVANCED_TASK.key
     );
 
     fun settingKeyFor(clanGameBase: ClanGameBase): String? {

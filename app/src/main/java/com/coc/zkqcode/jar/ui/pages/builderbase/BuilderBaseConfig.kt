@@ -46,8 +46,8 @@ fun LazyListScope.builderBaseConfig(
                 explain = Strings.noBuilderBaseExplain,
                 afterChange = { checked ->
                     if (checked) {
-                        GlobalVars.configStates["${MAIN_BASE_SETTINGS.ACCEPT_NIGHT_WORLD_NORMAL_TASK.key}_c$index"]?.value = "0"
-                        GlobalVars.configStates["${MAIN_BASE_SETTINGS.ACCEPT_NIGHT_WORLD_ADVANCED_TASK.key}_c$index"]?.value = "0"
+                        GlobalVars.configStates["${MAIN_BASE_SETTINGS.ACCEPT_BUILDER_BASE_NORMAL_TASK.key}_c$index"]?.value = "0"
+                        GlobalVars.configStates["${MAIN_BASE_SETTINGS.ACCEPT_BUILDER_BASE_ADVANCED_TASK.key}_c$index"]?.value = "0"
                     }
                 }
             )
@@ -64,8 +64,8 @@ fun LazyListScope.builderBaseConfig(
                     explain = Strings.builderBaseFarmingExplain,
                     afterChange = { checked ->
                         if (!checked) {
-                            GlobalVars.configStates["${MAIN_BASE_SETTINGS.ACCEPT_NIGHT_WORLD_NORMAL_TASK.key}_c$index"]?.value = "0"
-                            GlobalVars.configStates["${MAIN_BASE_SETTINGS.ACCEPT_NIGHT_WORLD_ADVANCED_TASK.key}_c$index"]?.value = "0"
+                            GlobalVars.configStates["${MAIN_BASE_SETTINGS.ACCEPT_BUILDER_BASE_NORMAL_TASK.key}_c$index"]?.value = "0"
+                            GlobalVars.configStates["${MAIN_BASE_SETTINGS.ACCEPT_BUILDER_BASE_ADVANCED_TASK.key}_c$index"]?.value = "0"
                         }
                     }
                 )

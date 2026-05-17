@@ -149,10 +149,10 @@ object MainBaseSettings {
     val CLAN_NAME = SettingDef("clan_name", "部落名称:", "Clan Name:", "", "MAIN_BASE_SETTINGS")
     val CONSECUTIVE_COUNT = SettingDef("consecutive_count", "连号数量:", "Consecutive Count:", 3, "MAIN_BASE_SETTINGS")
 
-    val ACCEPT_MAIN_WORLD_NORMAL_TASK = SettingDef("accept_main_world_normal_task", "接取主世界普通任务", "Accept Main Normal Task", 1, "MAIN_BASE_SETTINGS")
-    val ACCEPT_MAIN_WORLD_ADVANCED_TASK = SettingDef("accept_main_world_advanced_task", "接取主世界高级任务", "Accept Main Advanced Task", 0, "MAIN_BASE_SETTINGS")
-    val ACCEPT_NIGHT_WORLD_NORMAL_TASK = SettingDef("accept_night_world_normal_task", "接取夜世界普通任务", "Accept Night Normal Task", 1, "MAIN_BASE_SETTINGS")
-    val ACCEPT_NIGHT_WORLD_ADVANCED_TASK = SettingDef("accept_night_world_advanced_task", "接取夜世界高级任务", "Accept Night Advanced Task", 0, "MAIN_BASE_SETTINGS")
+    val ACCEPT_MAIN_WORLD_NORMAL_TASK = SettingDef("accept_main_world_normal_task", "接取主世界普通任务", "Accept Main Base Normal Task", 1, "MAIN_BASE_SETTINGS")
+    val ACCEPT_MAIN_WORLD_ADVANCED_TASK = SettingDef("accept_main_world_advanced_task", "接取主世界高级任务", "Accept Main Base Advanced Task", 0, "MAIN_BASE_SETTINGS")
+    val ACCEPT_BUILDER_BASE_NORMAL_TASK = SettingDef("accept_builder_base_normal_task", "接取夜世界普通任务", "Accept Builder Base Normal Task", 1, "MAIN_BASE_SETTINGS")
+    val ACCEPT_BUILDER_BASE_ADVANCED_TASK = SettingDef("accept_builder_base_advanced_task", "接取夜世界高级任务", "Accept Builder Base Advanced Task", 0, "MAIN_BASE_SETTINGS")
     val STOP_CLAN_GAMES_AFTER_4000_POINTS = SettingDef(
         "stop_clan_games_after_4000_points", "积分到达4000后，停止竞赛", "Stop at 4000 points", 0, "MAIN_BASE_SETTINGS"
     )
@@ -261,8 +261,8 @@ object MainBaseSettings {
         CONSECUTIVE_COUNT,
         ACCEPT_MAIN_WORLD_NORMAL_TASK,
         ACCEPT_MAIN_WORLD_ADVANCED_TASK,
-        ACCEPT_NIGHT_WORLD_NORMAL_TASK,
-        ACCEPT_NIGHT_WORLD_ADVANCED_TASK,
+        ACCEPT_BUILDER_BASE_NORMAL_TASK,
+        ACCEPT_BUILDER_BASE_ADVANCED_TASK,
         STOP_CLAN_GAMES_AFTER_4000_POINTS
     )
 }

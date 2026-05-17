@@ -185,7 +185,7 @@ fun LazyListScope.mainBaseConfig(
                             }
                         )
                         SettingSwitchIcon(
-                            key = "${MAIN_BASE_SETTINGS.ACCEPT_NIGHT_WORLD_NORMAL_TASK.key}_c$index", afterChange = { checked ->
+                            key = "${MAIN_BASE_SETTINGS.ACCEPT_BUILDER_BASE_NORMAL_TASK.key}_c$index", afterChange = { checked ->
                                 if (checked) {
                                     GlobalVars.configStates["${BUILDER_BASE_SETTINGS.NO_BUILDER_BASE.key}_c$index"]?.value = "0"
                                     GlobalVars.configStates["${BUILDER_BASE_SETTINGS.BUILDER_BASE_FARMING.key}_c$index"]?.value = "1"
@@ -193,7 +193,7 @@ fun LazyListScope.mainBaseConfig(
                             }
                         )
                         SettingSwitchIcon(
-                            key = "${MAIN_BASE_SETTINGS.ACCEPT_NIGHT_WORLD_ADVANCED_TASK.key}_c$index", afterChange = { checked ->
+                            key = "${MAIN_BASE_SETTINGS.ACCEPT_BUILDER_BASE_ADVANCED_TASK.key}_c$index", afterChange = { checked ->
                                 if (checked) {
                                     GlobalVars.configStates["${BUILDER_BASE_SETTINGS.NO_BUILDER_BASE.key}_c$index"]?.value = "0"
                                     GlobalVars.configStates["${BUILDER_BASE_SETTINGS.BUILDER_BASE_FARMING.key}_c$index"]?.value = "1"

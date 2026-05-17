@@ -133,7 +133,7 @@ fun HomeScreen(
         Strings.sectionResearch to 8,
         Strings.sectionBuild to 10,
         Strings.sectionPet to 12,
-        Strings.sectionNightBase to 18
+        Strings.sectionBuilderBase to 18
     )
 
     val lazyListState = rememberLazyListState()

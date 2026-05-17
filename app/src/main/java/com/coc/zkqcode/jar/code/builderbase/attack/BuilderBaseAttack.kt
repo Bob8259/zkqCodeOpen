@@ -19,7 +19,7 @@ import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.clangame.hasAcceptedClanGameTask
-import com.coc.zkqcode.jar.code.universal.smalltools.data.CLAN_GAME_TASK_BASE_NIGHT_WORLD
+import com.coc.zkqcode.jar.code.universal.smalltools.data.CLAN_GAME_TASK_BASE_BUILDER_BASE
 import com.coc.zkqcode.jar.code.universal.smalltools.data.StorageKeys
 import com.coc.zkqcode.jar.code.universal.smalltools.data.checkMemoryFile
 import com.coc.zkqcode.jar.code.universal.smalltools.lifecycle.checkReconnections
@@ -45,7 +45,7 @@ suspend fun builderBaseAttack(): Boolean {
     // 1. Check if Builder Base farming is enabled
     val isEnabled = getBooleanConfigRuntime(Schema.BUILDER_BASE_SETTINGS.BUILDER_BASE_FARMING.key)
     if (!isEnabled) {
-        accountMessage("未开启打夜世界")
+        accountMessage("未开启打 Builder Base")
         return true
     }
 
@@ -57,10 +57,10 @@ suspend fun builderBaseAttack(): Boolean {
     val isExileFull = resourcePercentage.elixir >= 96
     val stopIfFull = getBooleanConfigRuntime(Schema.BUILDER_BASE_SETTINGS.BUILDER_BASE_STOP_BATTLE_AFTER_FULL_RESOURCES.key)
     val acceptedTaskBase = readClanGameAcceptedTaskBase()
-    val hasNightWorldTask = acceptedTaskBase == CLAN_GAME_TASK_BASE_NIGHT_WORLD
+    val hasBuilderBaseTask = acceptedTaskBase == CLAN_GAME_TASK_BASE_BUILDER_BASE
 
     // 3. Determine action based on resource state and settings
-    if (isGoldFull && isExileFull && stopIfFull && !hasNightWorldTask) {
+    if (isGoldFull && isExileFull && stopIfFull && !hasBuilderBaseTask) {
         accountMessage("资源已满，停止对战")
     } else {
         // Evaluate attack strategy
@@ -78,7 +78,7 @@ suspend fun builderBaseAttack(): Boolean {
             resourcePercentage.gold < 96 -> "gold"
             else -> "exile"
         }
-        val battleTimesSetting = if (hasNightWorldTask) {
+        val battleTimesSetting = if (hasBuilderBaseTask) {
             Schema.BUILDER_BASE_SETTINGS.BUILDER_BASE_BATTLE_TIMES_WITH_TASKS
         } else {
             Schema.BUILDER_BASE_SETTINGS.BUILDER_BASE_BATTLE_TIMES
@@ -88,7 +88,7 @@ suspend fun builderBaseAttack(): Boolean {
             getConfigRuntime(Schema.BUILDER_BASE_SETTINGS.BUILDER_BASE_BATTLE_TIMES.key).toIntOrNull() ?: logAndRestart("${Schema.BUILDER_BASE_SETTINGS.BUILDER_BASE_BATTLE_TIMES.displayName} 必须是数字，请检查配置")
         val shouldCheckClanGameTask = battleTimesSetting == Schema.BUILDER_BASE_SETTINGS.BUILDER_BASE_BATTLE_TIMES_WITH_TASKS && battleTimes > normalBattleTimes
         repeat(battleTimes) { index ->
-            if (!realAttack(attackType, hasNightWorldTask, index + 1, battleTimes)) return false
+            if (!realAttack(attackType, hasBuilderBaseTask, index + 1, battleTimes)) return false
             val completedBattleTimes = index + 1
             if (shouldCheckClanGameTask && completedBattleTimes >= normalBattleTimes && !hasAcceptedClanGameTask(BaseType.Builder)) return true
 
@@ -103,7 +103,7 @@ suspend fun builderBaseAttack(): Boolean {
     return enterMainScreen()
 }
 
-private suspend fun realAttack(mode: String, hasNightWorldTask: Boolean, battleNumber: Int = 1, battleTimes: Int): Boolean {
+private suspend fun realAttack(mode: String, hasBuilderBaseTask: Boolean, battleNumber: Int = 1, battleTimes: Int): Boolean {
     val startTime = System.currentTimeMillis()
     // Track first detection of SwitchTroopButton for shorter initial delay
     var isFirstSwitchTroop = true
@@ -114,7 +114,7 @@ private suspend fun realAttack(mode: String, hasNightWorldTask: Boolean, battleN
             break
         }
         val remainingMin = (8 * 60 * 1000L - elapsed) / 60000.0
-        accountMessage("夜世界对战中，第${battleNumber}/${battleTimes}局\n若${"%.1f".format(remainingMin)}分钟内未完成对战，则强制重启")
+        accountMessage("Builder Base对战中，第${battleNumber}/${battleTimes}局\n若${"%.1f".format(remainingMin)}分钟内未完成对战，则强制重启")
         if (!checkReconnections()) return false
         // Capture a single screenshot and reuse it for all state checks in this iteration
         val capturedScreen = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult
@@ -170,7 +170,7 @@ private suspend fun realAttack(mode: String, hasNightWorldTask: Boolean, battleN
                 runGame()
                 return true
             }
-            if (hasNightWorldTask) {
+            if (hasBuilderBaseTask) {
                 normalBattle()
             } else {
                 when (mode) {
@@ -313,7 +313,7 @@ private suspend fun builderBaseTrainTroops() {
     val trainingButton = findMultiColorsUntil(schemas = listOf(MyColors.TrainTroops), duration = 1500)
 
     if (trainingButton == null) {
-        accountMessage("夜世界练兵失败")
+        accountMessage("Builder Base练兵失败")
         return
     }
 

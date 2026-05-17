@@ -15,7 +15,7 @@ object Strings {
     val sectionResearch get() = if (LanguageManager.isChinese) "自动研究" else "Research"
     val sectionBuild get() = if (LanguageManager.isChinese) "自动建造" else "Build"
     val sectionPet get() = if (LanguageManager.isChinese) "战宠设置" else "Pets"
-    val sectionNightBase get() = if (LanguageManager.isChinese) "夜世界" else "Builder Base"
+    val sectionBuilderBase get() = if (LanguageManager.isChinese) "夜世界" else "Builder Base"
 
     // HomeScreenBottomBar
     val saveAndRun get() = if (LanguageManager.isChinese) "保存并运行" else "Save&Run"
