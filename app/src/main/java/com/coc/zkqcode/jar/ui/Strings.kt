@@ -18,9 +18,9 @@ object Strings {
     val sectionNightBase get() = if (LanguageManager.isChinese) "夜世界" else "Builder Base"
 
     // HomeScreenBottomBar
-    val saveAndRun get() = if (LanguageManager.isChinese) "保存并运行" else "Save & Run"
-    val saveAndPause get() = if (LanguageManager.isChinese) "保存并暂停" else "Save & Pause"
-    val saveAndExit get() = if (LanguageManager.isChinese) "保存并退出" else "Save & Exit"
+    val saveAndRun get() = if (LanguageManager.isChinese) "保存并运行" else "Save&Run"
+    val saveAndPause get() = if (LanguageManager.isChinese) "保存并暂停" else "Save&Pause"
+    val saveAndExit get() = if (LanguageManager.isChinese) "保存并退出" else "Save&Exit"
     val exitTitle get() = if (LanguageManager.isChinese) "退出提示" else "Exit Confirmation"
     val exitMessage get() = if (LanguageManager.isChinese) "确认要退出吗？" else "Are you sure you want to exit?"
     val cancel get() = if (LanguageManager.isChinese) "取消" else "Cancel"
