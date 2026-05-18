@@ -7,21 +7,22 @@ import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.core.util.basic.RunShell
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
-import com.coc.zkqcode.jar.code.universal.smalltools.input.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.mainbase.attack.mainBaseDeployTroops
 import com.coc.zkqcode.jar.code.mainbase.others.zoomSmallMainBase
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
-import com.coc.zkqcode.jar.code.universal.smalltools.lifecycle.checkReconnections
 import com.coc.zkqcode.jar.code.universal.smalltools.data.getBooleanConfigRuntime
 import com.coc.zkqcode.jar.code.universal.smalltools.data.getStaticConfig
+import com.coc.zkqcode.jar.code.universal.smalltools.input.TouchActions
 import com.coc.zkqcode.jar.code.universal.smalltools.input.setZKQInputMethod
+import com.coc.zkqcode.jar.code.universal.smalltools.lifecycle.checkReconnections
 import com.coc.zkqcode.jar.code.universal.smalltools.lifecycle.isGameAtFront
 import com.coc.zkqcode.jar.code.universal.smalltools.lifecycle.killGame
 import com.coc.zkqcode.jar.code.universal.smalltools.lifecycle.runGame
 import com.coc.zkqcode.jar.code.universal.tutorial.AllTutorials
 import com.coc.zkqcode.jar.ui.schema.Schema
+import java.util.Locale
 
 
 /**
@@ -103,7 +104,58 @@ private suspend fun closeClanLeaguePopups() {
     }
 }
 
+private fun getCNGameUpdateMaxWaitMillis(): Int {
+    val maxWaitMinutes =
+        getStaticConfig(Schema.GLOBAL_SETTINGS.MAX_DOWNLOAD_WAITING_TIME.key).toDoubleOrNull() ?: logAndRestart("${Schema.GLOBAL_SETTINGS.MAX_DOWNLOAD_WAITING_TIME.displayName} 必须是数字，请检查配置")
+    if (maxWaitMinutes <= 0.0) {
+        logAndRestart("${Schema.GLOBAL_SETTINGS.MAX_DOWNLOAD_WAITING_TIME.displayName} 必须大于0，请检查配置")
+    }
+    return (maxWaitMinutes * 60_000).toInt().coerceAtLeast(1)
+}
+
+private val cnGameUpdateApkDir: String
+    get() = "${Environment.getExternalStorageDirectory().path}/Android/data/com.tencent.tmgp.supercell.clashofclans/files"
+
+private fun shellSingleQuote(value: String): String {
+    return "'${value.replace("'", "'\"'\"'")}'"
+}
+
+private suspend fun installCNGameUpdateApkIfExists() {
+    val apkPath = RunShell.runAndGetFirst(
+        "find ${shellSingleQuote(cnGameUpdateApkDir)} -maxdepth 1 -type f -name '*.apk' | sort | head -n 1",
+        checkIsPlaying = true
+    )
+    if (apkPath.isBlank()) return
+
+    val quotedApkPath = shellSingleQuote(apkPath)
+    accountMessage("检测到国服更新安装包，开始安装")
+    RunShell.runNoOutput("pm install -r $quotedApkPath; rm -f $quotedApkPath", checkIsPlaying = true)
+    accountMessage("国服更新安装包已安装并删除")
+}
+
+private suspend fun updateCNGame(maxWaitMillis: Int) {
+    val startTime = System.currentTimeMillis()
+
+    while (true) {
+        val elapsedMillis = (System.currentTimeMillis() - startTime).toInt()
+        if (elapsedMillis >= maxWaitMillis) break
+        val remainingMinutes = ((maxWaitMillis - elapsedMillis).coerceAtLeast(0)) / 60_000.0
+        accountMessage("国服更新等待剩余 ${String.format(Locale.US, "%.2f", remainingMinutes)} 分钟")
+        delayWithMultiplier(3000)
+        findMultiColors(MyColors.CNGameUpdating) ?: break
+    }
+    installCNGameUpdateApkIfExists()
+}
+
 private suspend fun closeAdvertisements() {
+    if (getStaticConfig(Schema.GLOBAL_SETTINGS.UPDATE_CN_GAME.key) == "1") {
+        val updateCNGameButton = findMultiColors(MyColors.CNGameUpdate)
+        if (updateCNGameButton != null) {
+            TouchActions.tap(updateCNGameButton.x, updateCNGameButton.y)
+            updateCNGame(getCNGameUpdateMaxWaitMillis())
+            return
+        }
+    }
     // 1. Capture the screen and cast safely (Use 'var' so we can update it)
     var screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult ?: logAndRestart("failed to take screenshot at close advertisement")
 

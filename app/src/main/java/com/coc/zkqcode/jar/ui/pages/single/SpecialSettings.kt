@@ -21,6 +21,18 @@ fun LazyListScope.specialSettings() {
     }
     item {
         SettingSection {
+            val updateCnGameState = GlobalVars.configStates.getOrPut(GLOBAL_SETTINGS.UPDATE_CN_GAME.key) {
+                mutableStateOf("0")
+            }
+            val isUpdateCnGameEnabled = updateCnGameState.value == "1"
+            SettingSwitchIcon(key = GLOBAL_SETTINGS.UPDATE_CN_GAME.key)
+            if (isUpdateCnGameEnabled) {
+                SettingInputRow(key = GLOBAL_SETTINGS.MAX_DOWNLOAD_WAITING_TIME.key)
+            }
+        }
+    }
+    item {
+        SettingSection {
             val tempState = GlobalVars.configStates.getOrPut(GLOBAL_SETTINGS.TEMP_PROTECTION.key) {
                 mutableStateOf("0")
             }

@@ -22,6 +22,10 @@ object GlobalSettings {
     )
     val RECORD_PROGRESS = SettingDef("record_progress", "记录账号进度", "Record Progress", 1, "GLOBAL_SETTINGS")
     val AUTO_UPDATE = SettingDef("auto_update", "自动更新", "Auto Update", "2", "GLOBAL_SETTINGS")
+    val UPDATE_CN_GAME = SettingDef("update_cn_game", "更新国服游戏", "Update CN Game", 0, "GLOBAL_SETTINGS")
+    val MAX_DOWNLOAD_WAITING_TIME = SettingDef(
+        "max_download_waiting_time", "最长下载等待时间(分)", "Maximum Download Waiting Time (m)", "60", "GLOBAL_SETTINGS"
+    )
     val BATCH_CREATE_ACCOUNT = SettingDef("batch_create_account", "批量创号", "Batch Create", 0, "GLOBAL_SETTINGS")
     val CREATE_START_ID = SettingDef("create_start_id", "创号开始序号", "Start ID", 1, "GLOBAL_SETTINGS")
     val CREATE_END_ID = SettingDef("create_end_id", "创号结束序号", "End ID", 10, "GLOBAL_SETTINGS")
@@ -105,6 +109,8 @@ object GlobalSettings {
         DELAY_MULTIPLIER,
         RECORD_PROGRESS,
         AUTO_UPDATE,
+        UPDATE_CN_GAME,
+        MAX_DOWNLOAD_WAITING_TIME,
         BATCH_CREATE_ACCOUNT,
         CREATE_START_ID,
         CREATE_END_ID,

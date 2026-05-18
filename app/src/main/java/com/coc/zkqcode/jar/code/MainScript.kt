@@ -95,7 +95,7 @@ private fun finishDataNumberEntryOnlyRun() {
 
 private suspend fun runTestCode() {
     while (true) {
-        selectClanWarParticipant()
+        enterMainScreen()
         delay(500000)
     }
 }

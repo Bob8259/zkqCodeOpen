@@ -76,7 +76,7 @@ object MyColors : IUIColors by UIColors, IFeatureColors by FeatureColors, IClanG
         1210, 49, 1262, 98, "7B74FF", "0|-11|958DFF,7|-15|958DFF,14|0|FFFFFF,19|8|FAF6F6,30|12|1813E9,17|19|211BCE,28|1|7770FF,28|-8|918AFF,23|-14|958DFF", 0, 0.9, "您已进入联赛"
     )
 
-    //Clan War Colors
+    //Clan War Colours
     val StartClanWar = ColorSchema.parse(
         654, 508, 1003, 669, "37BCFC", "31|0|37BCFC,62|0|37BCFC,93|0|37BCFC,124|0|37BCFC,0|30|0D5AE8,31|30|0D5AE8,62|30|0D5AE8,93|30|0D5AE8,124|30|0D5AE8", 0, 0.9, "发起战争"
     )
@@ -93,5 +93,13 @@ object MyColors : IUIColors by UIColors, IFeatureColors by FeatureColors, IClanG
     //UI Feature
     val EditMode = ColorSchema.parse(
         6, 607, 271, 707, "AE8A39", "4|15|C8A142,10|34|C28A37,101|-9|E8C256,103|14|F1BF4C,103|32|DC9F3C,141|-8|E9C356,147|12|F6CF5C,144|32|D2983C,238|-6|F4CB55", 0, 0.9, "编辑模式"
+    )
+
+    // Game Update Colours
+    val CNGameUpdate = ColorSchema.parse(
+        150, 436, 1113, 674, "60DFB8", "42|0|60DFB8,215|-1|62DFBA,269|1|5EDDB6,115|-146|E5A4DE,239|-138|E39EDC,398|-114|BC28AC,457|-4|68E2C0,667|1|5EDDB6,685|30|23AA61", 0, 0.9, "国服更新"
+    )
+    val CNGameUpdating = ColorSchema.parse(
+        150, 436, 1113, 674, "C5C5C5", "53|-7|CECECE,205|-7|CECECE,287|-4|CACACA,210|23|929292,269|25|8F8F8F,486|-4|CACACA,557|-10|D2D2D2,742|-12|D3D3D3,725|28|898989", 0, 0.9, "国服更新中"
     )
 }
