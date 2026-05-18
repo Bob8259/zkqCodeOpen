@@ -75,8 +75,6 @@ suspend fun enterMainScreen(isDoubleCheck: Boolean = false): Boolean {
 
     // Return false if the loop finishes without finding the main screen
     killGame()
-    val screenshotPath = "${Environment.getExternalStorageDirectory().path}/test.png"
-    RunShell.runNoOutput("screencap -p \"$screenshotPath\"", checkIsPlaying = false)
     return false
 }
 

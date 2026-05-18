@@ -14,9 +14,39 @@ import com.coc.zkqcode.jar.code.universal.recognizer.TextRecognizer
 import com.coc.zkqcode.jar.code.universal.smalltools.input.TouchActions
 import com.coc.zkqcode.jar.ui.schema.Schema
 import kotlinx.coroutines.delay
+import java.text.SimpleDateFormat
+import java.util.Locale
+
+private const val ANR_DIALOG_LEFT = 160
+private const val ANR_DIALOG_TOP = 120
+private const val ANR_DIALOG_RIGHT = 1120
+private const val ANR_DIALOG_BOTTOM = 640
+private const val ANR_LOGCAT_CHECK_INTERVAL_MS = 5_000L
+private const val ANR_DROPBOX_CHECK_INTERVAL_MS = 20_000L
+private const val ANR_OCR_RETRY_INTERVAL_MS = 5_000L
+private const val ANR_SIGNAL_RECENT_WINDOW_MS = 120_000L
+private const val ANR_LOGCAT_LINE_LIMIT = 300
+private const val ANR_DROPBOX_TAIL_LINE_LIMIT = 500
+
+private val anrDetectorStartTime = System.currentTimeMillis()
+private val logcatEpochRegex = """^\s*(\d{10})(?:\.(\d{1,9}))?""".toRegex()
+private val dropboxHeaderRegex = """^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})(?:\.\d+)?\s+(data_app_anr|system_app_anr)\b""".toRegex()
+private val ignoredAnrSignals = mutableSetOf<String>()
+
+private var lastAnrLogcatCheckTime = 0L
+private var lastAnrDropboxCheckTime = 0L
+private var lastAnrOcrAttemptTime = 0L
+private var lastAnrOcrAttemptSignal = ""
+private var lastHandledAnrSignal = ""
+
+private data class AnrSignal(
+    val source: String,
+    val signature: String
+)
 
 
 suspend fun checkReconnections(): Boolean {
+    checkAnrDialog()
     checkPrivacy()
 
     val homeSchemas = listOf(
@@ -78,6 +108,166 @@ suspend fun checkReconnections(): Boolean {
 
 private suspend fun captureOrRestart(): ScreenCaptureManager.CaptureResult =
     ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult ?: logAndRestart("failed to take screenshot at reconnection check")
+
+private suspend fun checkAnrDialog(): Boolean {
+    val anrSignal = findRecentAnrSignal() ?: return false
+    val signalKey = "${anrSignal.source}:${anrSignal.signature}"
+    if (signalKey == lastHandledAnrSignal || ignoredAnrSignals.contains(signalKey)) return false
+
+    val now = System.currentTimeMillis()
+    if (signalKey == lastAnrOcrAttemptSignal && now - lastAnrOcrAttemptTime < ANR_OCR_RETRY_INTERVAL_MS) return false
+    lastAnrOcrAttemptSignal = signalKey
+    lastAnrOcrAttemptTime = now
+
+    val handled = clickWaitOnAnrDialog(anrSignal)
+    if (handled) {
+        lastHandledAnrSignal = signalKey
+    } else {
+        rememberIgnoredAnrSignal(signalKey)
+    }
+    return handled
+}
+
+private suspend fun findRecentAnrSignal(): AnrSignal? {
+    val packageName = InGameVars.currentGameVersion.packageName
+    val now = System.currentTimeMillis()
+
+    if (now - lastAnrLogcatCheckTime >= ANR_LOGCAT_CHECK_INTERVAL_MS) {
+        lastAnrLogcatCheckTime = now
+        val logcatSignal = findRecentAnrFromLogcat(packageName)
+        if (logcatSignal != null) return logcatSignal
+    }
+
+    if (now - lastAnrDropboxCheckTime >= ANR_DROPBOX_CHECK_INTERVAL_MS) {
+        lastAnrDropboxCheckTime = now
+        return findRecentAnrFromDropbox(packageName)
+    }
+
+    return null
+}
+
+private suspend fun findRecentAnrFromLogcat(packageName: String): AnrSignal? {
+    val packageArg = shellSingleQuote(packageName)
+    val eventCommand = "logcat -b events -d -t $ANR_LOGCAT_LINE_LIMIT -v epoch 2>/dev/null | grep -F 'am_anr' | grep -F $packageArg | tail -n 1"
+    val eventSignature = RunShell.run(eventCommand, checkIsPlaying = false).joinToString(" ").trim()
+    if (eventSignature.isNotBlank() && isRecentLogcatLine(eventSignature)) return AnrSignal("logcat-events", eventSignature)
+
+    val textCommand = "logcat -d -t $ANR_LOGCAT_LINE_LIMIT -v epoch 2>/dev/null | grep -F $packageArg | grep -F 'ANR in' | tail -n 1"
+    val textSignature = RunShell.run(textCommand, checkIsPlaying = false).joinToString(" ").trim()
+    if (textSignature.isNotBlank() && isRecentLogcatLine(textSignature)) return AnrSignal("logcat", textSignature)
+
+    return null
+}
+
+private suspend fun findRecentAnrFromDropbox(packageName: String): AnrSignal? {
+    val command = "(dumpsys dropbox --print data_app_anr 2>/dev/null; dumpsys dropbox --print system_app_anr 2>/dev/null) | tail -n $ANR_DROPBOX_TAIL_LINE_LIMIT"
+    val lines = RunShell.run(command, checkIsPlaying = false)
+    val signature = findRecentDropboxSignature(lines, packageName) ?: return null
+    return AnrSignal("dropbox", signature)
+}
+
+private fun findRecentDropboxSignature(lines: List<String>, packageName: String): String? {
+    var currentEntryHeader = ""
+    var currentEntryIsRecent = false
+    var latestSignature: String? = null
+
+    lines.forEach { line ->
+        val headerTime = parseDropboxHeaderTime(line)
+        if (headerTime != null) {
+            currentEntryHeader = line.trim()
+            currentEntryIsRecent = isRecentSignalTime(headerTime)
+        }
+
+        if (currentEntryIsRecent && line.contains(packageName)) {
+            latestSignature = "$currentEntryHeader | ${line.trim()}"
+        }
+    }
+
+    return latestSignature?.takeIf { it.isNotBlank() }
+}
+
+private fun isRecentLogcatLine(line: String): Boolean {
+    val signalTime = parseLogcatEpochTime(line) ?: return false
+    return isRecentSignalTime(signalTime)
+}
+
+private fun parseLogcatEpochTime(line: String): Long? {
+    val match = logcatEpochRegex.find(line) ?: return null
+    val seconds = match.groupValues[1].toLongOrNull() ?: return null
+    val millis = match.groupValues[2]
+        .padEnd(3, '0')
+        .take(3)
+        .toLongOrNull() ?: 0L
+    return seconds * 1000L + millis
+}
+
+private fun parseDropboxHeaderTime(line: String): Long? {
+    val timestamp = dropboxHeaderRegex.find(line)?.groupValues?.getOrNull(1) ?: return null
+    return runCatching {
+        SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US).parse(timestamp)?.time
+    }.getOrNull()
+}
+
+private fun isRecentSignalTime(signalTime: Long): Boolean {
+    if (signalTime < anrDetectorStartTime) return false
+    val age = System.currentTimeMillis() - signalTime
+    return age in 0..ANR_SIGNAL_RECENT_WINDOW_MS
+}
+
+private fun rememberIgnoredAnrSignal(signalKey: String) {
+    if (ignoredAnrSignals.size > 20) ignoredAnrSignals.clear()
+    ignoredAnrSignals.add(signalKey)
+}
+
+private suspend fun clickWaitOnAnrDialog(anrSignal: AnrSignal): Boolean {
+    val recognizedTexts = TextRecognizer.recognize(
+        startX = ANR_DIALOG_LEFT,
+        startY = ANR_DIALOG_TOP,
+        endX = ANR_DIALOG_RIGHT,
+        endY = ANR_DIALOG_BOTTOM,
+        useChinese = true,
+        threshold = 180,
+        applyPreprocess = false,
+        invertBinarization = true
+    )
+
+    if (recognizedTexts.isEmpty()) {
+        accountMessage("检测到最近游戏ANR(${anrSignal.source})，但OCR未识别到文本")
+        return false
+    }
+
+    val recognizedTextString = recognizedTexts.joinToString(" ") { it.text }
+    val compactText = recognizedTextString.replace(" ", "")
+    val isAnrDialog = compactText.contains("没有响应")
+            || compactText.contains("无响应")
+            || compactText.contains("未响应")
+            || compactText.contains("停止响应")
+            || (compactText.contains("等待") && (compactText.contains("关闭应用") || compactText.contains("反馈")))
+
+    if (!isAnrDialog) {
+        accountMessage("检测到最近游戏ANR(${anrSignal.source})，但当前屏幕不是ANR对话框，识别文本: $recognizedTextString")
+        return false
+    }
+
+    val waitButton = recognizedTexts.firstOrNull { recognizedText ->
+        recognizedText.text.replace(" ", "").contains("等待")
+    }
+
+    if (waitButton?.position != null) {
+        val waitButtonX = ANR_DIALOG_LEFT + waitButton.position.centerX()
+        val waitButtonY = ANR_DIALOG_TOP + waitButton.position.centerY()
+        accountMessage("检测到游戏ANR(${anrSignal.source})，点击等待，识别文本: $recognizedTextString")
+        TouchActions.tap(waitButtonX, waitButtonY, delayTime = 800)
+        return true
+    }
+
+    accountMessage("检测到游戏ANR(${anrSignal.source})，但未识别到等待按钮，识别文本: $recognizedTextString")
+    return false
+}
+
+private fun shellSingleQuote(value: String): String {
+    return "'" + value.replace("'", "'\\''") + "'"
+}
 
 /**
  * Counts pixels in the confirmation area (270,230)→(1010,430) where R,G,B > 235 (white).
