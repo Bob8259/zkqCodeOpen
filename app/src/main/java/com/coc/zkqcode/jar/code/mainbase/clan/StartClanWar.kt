@@ -42,7 +42,7 @@ suspend fun startClanWar(): Boolean {
         TouchActions.tap(60, 420)
     } else return enterMainScreen()
     val startTime = System.currentTimeMillis()
-    while (System.currentTimeMillis() - startTime < 10_000L) {
+    while (System.currentTimeMillis() - startTime < 6_000L) {
         val startClanWar = findMultiColors(MyColors.StartClanWar)
         if (startClanWar != null) {
             TouchActions.tap(startClanWar.x, startClanWar.y)

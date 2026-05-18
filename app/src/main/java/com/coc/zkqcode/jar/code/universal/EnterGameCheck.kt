@@ -1,8 +1,10 @@
 ﻿package com.coc.zkqcode.jar.code.universal
 
+import android.os.Environment
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.system.inputmethod.inputTextReliable
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
+import com.coc.zkqcode.core.util.basic.RunShell
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
 import com.coc.zkqcode.jar.code.universal.smalltools.input.TouchActions
@@ -73,6 +75,8 @@ suspend fun enterMainScreen(isDoubleCheck: Boolean = false): Boolean {
 
     // Return false if the loop finishes without finding the main screen
     killGame()
+    val screenshotPath = "${Environment.getExternalStorageDirectory().path}/test.png"
+    RunShell.runNoOutput("screencap -p \"$screenshotPath\"", checkIsPlaying = false)
     return false
 }
 
