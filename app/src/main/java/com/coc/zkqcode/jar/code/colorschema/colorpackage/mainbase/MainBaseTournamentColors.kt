@@ -6,6 +6,7 @@ import com.coc.zkqcode.jar.code.colorschema.ColorSchema
 
 interface IMainBaseTournamentColors {
     val SetBaseIcon2: ColorSchema
+    val SetBaseIcon3: ColorSchema
     val JoinTournament: ColorSchema
     val PlayTournament: ColorSchema
     val ConfirmTournamentAttack: ColorSchema
@@ -19,6 +20,10 @@ object MainBaseTournamentColors : IMainBaseTournamentColors {
     // Set base icon (variant 2)
     override val SetBaseIcon2 = ColorSchema.parse(
         509, 133, 580, 181, "7ED3A3", "3|3|72CB98,9|7|7FD4A4,21|4|7AD1A4,6|-11|B78D7A,11|-7|FFEFE6,15|-14|EDE1DC,10|-15|FFEAE1,1|-18|FFF0E7,1|-15|FFF6EF", 0, 0.93, "布阵按钮2"
+    )
+    // Set base icon (variant 3)
+    override val SetBaseIcon3 = ColorSchema.parse(
+        508, 127, 579, 182, "884575", "14|0|CCBBB6,29|0|C7A18F,43|0|512A44,57|0|88406E,0|27|8B598C,14|27|4C8F6B,29|27|7FD4A4,43|27|101311,57|27|8D5B8D", 0, 0.9, "布阵按钮3"
     )
     // Join tournament button
     override val JoinTournament = ColorSchema.parse(

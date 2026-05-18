@@ -30,7 +30,7 @@ suspend fun adjustBaseAndReinforcements(): Boolean {
         if (battleIcon != null) {
             TouchActions.tap(80, 630)
         }
-        val setBaseIcon = findMultiColorsUntil(listOf(MyColors.SetBaseIcon, MyColors.SetBaseIcon2), 10)
+        val setBaseIcon = findMultiColorsUntil(listOf(MyColors.SetBaseIcon, MyColors.SetBaseIcon2, MyColors.SetBaseIcon3), 10)
         if (setBaseIcon != null) {
             TouchActions.tap(560, 160)
         }

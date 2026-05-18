@@ -226,7 +226,7 @@ private suspend fun mainBaseBattleTutorial(): Boolean {
         if (villagerSpeaking != null) {
             TouchActions.tap(villagerSpeaking.x, villagerSpeaking.y)
         }
-        val setBaseIcon = findMultiColorsUntil(listOf(MyColors.SetBaseIcon, MyColors.SetBaseIcon2), 10)
+        val setBaseIcon = findMultiColorsUntil(listOf(MyColors.SetBaseIcon, MyColors.SetBaseIcon2, MyColors.SetBaseIcon3), 10)
         if (setBaseIcon != null) {
             TouchActions.tap(560, 160)
         }
