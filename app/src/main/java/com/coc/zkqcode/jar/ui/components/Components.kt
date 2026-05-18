@@ -374,6 +374,7 @@ fun CustomButton(
     marginStart: Dp = 0.dp,
     marginEnd: Dp = 8.dp,
     containerColor: Color = AppColors.Primary,
+    contentPadding: PaddingValues = PaddingValues(horizontal = 18.dp, vertical = 0.dp),
 ) {
     Row(modifier = Modifier.padding(top = marginTop, bottom = marginBottom, start = marginStart, end = marginEnd)) {
         Button(
@@ -382,7 +383,7 @@ fun CustomButton(
                 onClick()
             }, modifier = Modifier.height(32.dp), shape = RoundedCornerShape(8.dp), enabled = enable, colors = ButtonDefaults.buttonColors(
                 containerColor = containerColor
-            )
+            ), contentPadding = contentPadding
         ) {
             Text(text, style = MaterialTheme.typography.labelMedium)
         }

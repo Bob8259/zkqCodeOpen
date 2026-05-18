@@ -71,7 +71,7 @@ object Strings {
 
     // AccountSettings
     val selectAll get() = if (LanguageManager.isChinese) "一键全选" else "Select All"
-    val invertSelection get() = if (LanguageManager.isChinese) "一键反选" else "Invert Selection"
+    val invertSelection get() = if (LanguageManager.isChinese) "一键反选" else "Invert All"
     val applyConfigLabel get() = if (LanguageManager.isChinese) "将配置" else "Apply profile"
     val applyAccountLabel get() = if (LanguageManager.isChinese) "将账号" else "Apply account"
     val toAccounts get() = if (LanguageManager.isChinese) "应用到账号" else "to accounts"
@@ -125,14 +125,14 @@ object Strings {
     val adFreeMessage get() = if (LanguageManager.isChinese) "登录后免广告，运行更高效！不登陆也可以运行。免广告每天花费0.15卡班积分，用多久扣多久。" else "Login for ad-free experience! Works without login too. Ad-free costs 0.15 Caban points per day, pay as you go."
     val sponsorMessage get() = if (LanguageManager.isChinese) "免费辅助制作不易，希望大家多多赞助。你的赞助是紫孔雀继续发展的唯一动力！" else "Free tool development is hard. Your sponsorship keeps this project going!"
     val welcomeBack get() = if (LanguageManager.isChinese) "欢迎回来，感谢赞助！紫孔雀因你而变得更好！" else "Welcome back! Thank you for sponsoring!"
-    fun currentGems(value: Double) = if (LanguageManager.isChinese) "当前宝石数量：%.5f".format(value) else "Current Gems: %.5f".format(value)
+    fun currentGems(value: Double) = if (LanguageManager.isChinese) "当前积分：%.5f".format(value) else "Current Points: %.5f".format(value)
     val invalidEmail get() = if (LanguageManager.isChinese) "请输入正确的邮箱！" else "Please enter a valid email!"
     val loggingIn get() = if (LanguageManager.isChinese) "登录中，请稍后..." else "Logging in..."
     fun powFailed(error: String?) = if (LanguageManager.isChinese) "验证获取失败: $error" else "Verification failed: $error"
     fun prepFailed(error: String?) = if (LanguageManager.isChinese) "准备信息失败: $error" else "Preparation failed: $error"
     val transmitFailed get() = if (LanguageManager.isChinese) "传输信息失败，请重试" else "Transmission failed, please retry"
     fun loginFailed(error: String?) = if (LanguageManager.isChinese) "登录失败: $error" else "Login failed: $error"
-    fun loginSuccess(value: String) = if (LanguageManager.isChinese) "登录成功！卡班积分数量 $value" else "Login successful! Caban Points: $value"
+    fun loginSuccess(value: String) = if (LanguageManager.isChinese) "登录成功！卡班积分数量 $value" else "Login successful! Points: $value"
     fun loginSuccessParseFail(data: String) = if (LanguageManager.isChinese) "登录成功，但无法解析数据: $data" else "Login successful but failed to parse data: $data"
     val emailPasswordError get() = if (LanguageManager.isChinese) "邮箱或密码错误，请检查后重试" else "Incorrect email or password"
     val password get() = if (LanguageManager.isChinese) "密码" else "Password"
