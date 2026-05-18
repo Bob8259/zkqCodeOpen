@@ -1,6 +1,10 @@
 package com.coc.zkqcode.jar.ui
 
 object Strings {
+    // EnterMainCode
+    fun configLoadingMessage(countdown: Int) = if (LanguageManager.isChinese) "正在初始化配置文件...\n若长时间卡在此界面，将在 $countdown 秒后自动重启。" else "Initializing config files...\nIf this screen is stuck for too long, the app will automatically restart in $countdown seconds."
+    val manualCloseAssistant get() = if (LanguageManager.isChinese) "点击此处手动关闭辅助" else "Tap here to manually close the assistant"
+
     // HomeScreen tabs
     val homeTab get() = if (LanguageManager.isChinese) "主页设置" else "Home"
     val accountTab get() = if (LanguageManager.isChinese) "账号设置" else "Accounts"

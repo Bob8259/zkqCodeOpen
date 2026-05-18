@@ -36,6 +36,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.jar.ui.LanguageManager
+import com.coc.zkqcode.jar.ui.Strings
 import com.coc.zkqcode.core.util.basic.RunShell
 import com.coc.zkqcode.interfaces.MainCode
 import com.coc.zkqcode.jar.code.runMainScript
@@ -181,7 +182,7 @@ private fun ConfigLoadingScreen() {
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(
-                    text = "正在初始化配置文件...\n若长时间卡在此界面，将在 $countdown 秒后自动重启。",
+                    text = Strings.configLoadingMessage(countdown),
                     textAlign = TextAlign.Center,
                     fontWeight = FontWeight.Medium,
                     fontSize = 15.sp,
@@ -190,7 +191,7 @@ private fun ConfigLoadingScreen() {
                 )
                 Spacer(modifier = Modifier.height(20.dp))
                 CustomButton(
-                    text = "点击此处手动关闭辅助", onClick = {
+                    text = Strings.manualCloseAssistant, onClick = {
                         // Launch on IO dispatcher to avoid blocking the main thread (ANR)
                         scope.launch(Dispatchers.IO) {
                             RunShell.runNoOutput("am force-stop com.coc.zkqcode >>/dev/null 2>&1", checkIsPlaying = false)
