@@ -54,6 +54,8 @@ suspend fun playTournament(): Boolean {
             runGame()
             break
         }
+        val remainingSeconds = ((maxDuration - (System.currentTimeMillis() - startTime)).coerceAtLeast(0L) / 1000L)
+        accountMessage("排位赛检测中，剩余${remainingSeconds}秒后强行结束")
     }
     return enterMainScreen()
 }
