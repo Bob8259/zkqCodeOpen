@@ -14,6 +14,7 @@ import com.coc.zkqcode.jar.code.mainbase.attack.mainBaseTrainTroops
 import com.coc.zkqcode.jar.code.mainbase.attack.playTournament
 import com.coc.zkqcode.jar.code.mainbase.attack.searchOpponentsAndDeployTroops
 import com.coc.zkqcode.jar.code.mainbase.clan.joinClan
+import com.coc.zkqcode.jar.code.mainbase.clan.startClanWar
 import com.coc.zkqcode.jar.code.mainbase.daily.checkItemsToBePlaced
 import com.coc.zkqcode.jar.code.mainbase.playMainBase
 import com.coc.zkqcode.jar.code.universal.GameVersion
@@ -101,9 +102,7 @@ private fun finishDataNumberEntryOnlyRun() {
 
 private suspend fun runTestCode() {
     while (true) {
-        val results = TextRecognizer.recognize(486, 113, 657, 570, useChinese = true)
-        val recognizedText = results.joinToString("\n") { it.text }
-        ShowMessage("OCR Result: $recognizedText", isChecking = false)
+        startClanWar()
         delay(500000)
     }
 }
