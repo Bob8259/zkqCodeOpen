@@ -122,8 +122,7 @@ private fun shellSingleQuote(value: String): String {
 
 private suspend fun installCNGameUpdateApkIfExists() {
     val apkPath = RunShell.runAndGetFirst(
-        "find ${shellSingleQuote(cnGameUpdateApkDir)} -maxdepth 1 -type f -name '*.apk' | sort | head -n 1",
-        checkIsPlaying = true
+        "find ${shellSingleQuote(cnGameUpdateApkDir)} -maxdepth 1 -type f -name '*.apk' | sort | head -n 1", checkIsPlaying = true
     )
     if (apkPath.isBlank()) return
 
@@ -149,7 +148,7 @@ private suspend fun updateCNGame(maxWaitMillis: Int) {
 
 private suspend fun closeAdvertisements() {
     if (getStaticConfig(Schema.GLOBAL_SETTINGS.UPDATE_CN_GAME.key) == "1") {
-        val updateCNGameButton = findMultiColors(MyColors.CNGameUpdate)
+        val updateCNGameButton = findMultiColorsUntil(listOf(MyColors.CNGameUpdate, MyColors.CNGameUpdating), 10)
         if (updateCNGameButton != null) {
             TouchActions.tap(updateCNGameButton.x, updateCNGameButton.y)
             updateCNGame(getCNGameUpdateMaxWaitMillis())
