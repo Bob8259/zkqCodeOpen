@@ -4,13 +4,17 @@ import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.jar.code.colorschema.ColorSchema
 import com.coc.zkqcode.jar.code.colorschema.MyColors
+import com.coc.zkqcode.jar.code.universal.InGameVars
 import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.recognizer.TextRecognizer
+import com.coc.zkqcode.jar.code.universal.smalltools.data.StorageKeys
+import com.coc.zkqcode.jar.code.universal.smalltools.data.checkMemoryFile
 import com.coc.zkqcode.jar.code.universal.smalltools.data.getBooleanConfigRuntime
 import com.coc.zkqcode.jar.code.universal.smalltools.data.getConfigRuntime
+import com.coc.zkqcode.jar.code.universal.smalltools.data.writeMemory
 import com.coc.zkqcode.jar.code.universal.smalltools.input.TouchActions
 import com.coc.zkqcode.jar.ui.schema.Schema
 import kotlinx.coroutines.delay
@@ -26,12 +30,19 @@ private const val CLAN_WAR_JOIN_BUTTON_SEARCH_BOTTOM_OFFSET = 20
 
 suspend fun startClanWar(): Boolean {
     if (!getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.START_CLAN_WAR.key)) return true
+
+    val storageKey = StorageKeys.withAccountNumber(StorageKeys.START_CLAN_WAR, InGameVars.currentAccountNumber)
+    if (!checkMemoryFile(storageKey, 1440)) {
+        accountMessage("今日已检测开启部落战，暂不重复执行")
+        return true
+    }
+
     val trainTroopButton = findMultiColorsUntil(listOf(MyColors.TrainTroops, MyColors.TrainTroops2), 100)
     if (trainTroopButton != null) {
         TouchActions.tap(60, 420)
     } else return enterMainScreen()
     val startTime = System.currentTimeMillis()
-    while (System.currentTimeMillis() - startTime < 15_000L) {
+    while (System.currentTimeMillis() - startTime < 10_000L) {
         val startClanWar = findMultiColors(MyColors.StartClanWar)
         if (startClanWar != null) {
             TouchActions.tap(startClanWar.x, startClanWar.y)
@@ -39,10 +50,12 @@ suspend fun startClanWar(): Boolean {
         val innerStartClanWar = findMultiColorsUntil(listOf(MyColors.InnerStartClanWar, MyColors.GrayInnerButton), 100)
         if (innerStartClanWar != null) {
             selectClanWarParticipant()
-            return enterMainScreen()
+            break
         }
-        delay(100)
+        delay(200)
     }
+    writeMemory(storageKey, (System.currentTimeMillis() / 60_000).toString())
+
     return enterMainScreen()
 }
 
@@ -52,25 +65,7 @@ suspend fun selectClanWarParticipant() {
     }
     delayWithMultiplier(300)
     when (getConfigRuntime(Schema.MAIN_BASE_SETTINGS.START_CLAN_WAR_METHOD.key)) {
-        "0" -> {
-            repeat(8) {
-                repeat(6) {
-                    val startButton = findMultiColors(MyColors.InnerStartClanWar)
-                    if (startButton != null) {
-                        accountMessage("开启成功")
-                        TouchActions.tap(startButton.x, startButton.y)
-                        return
-                    } else {
-                        val joinButton = findMultiColors(MyColors.JoinedClanWar)
-                        if (joinButton != null) {
-                            TouchActions.tap(joinButton.x, joinButton.y)
-                        }
-                    }
-                }
-                TouchActions.swipe(600, 110, 600, 530)
-                delayWithMultiplier(200)
-            }
-        }
+        "0" -> selectDirectClanWarParticipants()
 
         "1" -> {
             repeat(8) {
@@ -78,11 +73,38 @@ suspend fun selectClanWarParticipant() {
                 TouchActions.swipe(600, 110, 600, 530)
                 delayWithMultiplier(200)
             }
-            //TODO: execute  selectClanWarParticipant(), but as if getConfigRuntime(Schema.MAIN_BASE_SETTINGS.START_CLAN_WAR_METHOD.key) were 0
+            if (!tapStartClanWarIfAvailable()) {
+                repeat(2) {
+                    TouchActions.swipe(600, 530, 600, -1000)
+                }
+                delayWithMultiplier(300)
+                selectDirectClanWarParticipants()
+            }
         }
 
         else -> ShowMessage("Invalid Start Clan War method configuration")
     }
+}
+
+private suspend fun selectDirectClanWarParticipants() {
+    repeat(8) {
+        repeat(6) {
+            if (tapStartClanWarIfAvailable()) return
+            val joinButton = findMultiColors(MyColors.JoinedClanWar)
+            if (joinButton != null) {
+                TouchActions.tap(joinButton.x, joinButton.y)
+            }
+        }
+        TouchActions.swipe(600, 110, 600, 530)
+        delayWithMultiplier(200)
+    }
+}
+
+private suspend fun tapStartClanWarIfAvailable(): Boolean {
+    val startButton = findMultiColors(MyColors.InnerStartClanWar) ?: return false
+    accountMessage("开启成功")
+    TouchActions.tap(startButton.x, startButton.y)
+    return true
 }
 
 private suspend fun selectRecentOnlineClanWarParticipants() {

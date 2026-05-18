@@ -13,6 +13,7 @@ import com.coc.zkqcode.jar.code.mainbase.clan.clanWar
 import com.coc.zkqcode.jar.code.mainbase.clan.donateToClan
 import com.coc.zkqcode.jar.code.mainbase.clan.joinClan
 import com.coc.zkqcode.jar.code.mainbase.clan.requestReinforcement
+import com.coc.zkqcode.jar.code.mainbase.clan.startClanWar
 import com.coc.zkqcode.jar.code.mainbase.daily.checkItemsToBePlaced
 import com.coc.zkqcode.jar.code.mainbase.herohall.placeHeroBanners
 import com.coc.zkqcode.jar.code.mainbase.herohall.upgradeGearsAndPets
@@ -42,6 +43,7 @@ suspend fun playMainBase(): Boolean {
     if (!mainBaseAttack()) return false
     if (!adjustBaseAndReinforcements()) return false
     if (!playTournament()) return false
+    if (!startClanWar()) return false
     if (!collectClanGameReward()) return false
     if (!checkNormalShop()) return false
     if (!checkLeagueShop()) return false

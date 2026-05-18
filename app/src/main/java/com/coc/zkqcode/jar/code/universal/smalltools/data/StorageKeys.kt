@@ -27,6 +27,7 @@ object StorageKeys {
     const val CHECK_LEAGUE_SHOP = "CheckLeagueShop"
     const val CLAN_CAPITAL_TRAIN_TROOPS = "ClanCapitalTrainTroops"
     const val CLAN_CAPITAL_ATTACK = "ClanCapitalAttack"
+    const val START_CLAN_WAR = "StartClanWar"
     const val CLAN_WAR_LAST_STRATEGY = "ClanWarLastStrategy"
     const val CLAN_GAME_ACCEPTED_TASK_BASE = "ClanGameAcceptedTaskBase"
     const val CLAN_GAME_FINISHED_MONTH = "ClanGameFinishedMonth"
