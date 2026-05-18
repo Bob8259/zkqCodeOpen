@@ -153,7 +153,7 @@ fun CheckRootScreen() {
                     englishMessage = "Permission check passed, configuration loaded.\n\nIf the main interface doesn't appear automatically, click the button to start the UI manually."
                 ) {
                     LocalCustomButton(
-                        text = "显示主界面 / Show Main Interface",
+                        text = "显示主界面 / Show Main Page",
                         onClick = {
                             AppStateManager.setMode(AppMode.Main)
                             val serviceIntent = Intent(context, UIWindowService::class.java)
