@@ -66,6 +66,9 @@ class EnterMainCode : MainCode {
             LanguageManager.detectDeviceLanguage()
 
             if (GlobalVars.isConfigLoaded) {
+                // The UI service can be closed and recreated while configStates stays in memory.
+                // Re-apply the language value so reopened UI keeps the user's current choice.
+                LanguageManager.syncWithConfig()
                 isConfigInitialized = true
                 return@LaunchedEffect
             }
@@ -79,7 +82,7 @@ class EnterMainCode : MainCode {
             // Wait for configs to load
             snapshotFlow { actions.isLoading }.first { !it }
             ConfigManager.initializeAllConfigs(actions)
-            // Override auto-detected language with the saved preference
+            // Override auto-detected language with the current config value
             LanguageManager.syncWithConfig()
             isConfigInitialized = true
             GlobalVars.isConfigLoaded = true

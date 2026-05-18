@@ -14,10 +14,11 @@ import java.util.Locale
  * - Anything else → default to English
  *
  * After configs are loaded, [syncWithConfig] should be called so that
- * the saved language preference overrides the auto-detected value.
+ * the current in-memory config value overrides the auto-detected value.
  *
  * Users can toggle the language at runtime via [toggleLanguage],
- * which also persists the choice into [GlobalVars.configStates].
+ * which stores the choice in [GlobalVars.configStates]. The value is
+ * persisted later by the normal config-save flow.
  *
  * UI components can read [toggleButtonText] and [isChinese] (both
  * Compose-reactive) to update themselves automatically.
@@ -45,27 +46,33 @@ object LanguageManager {
     }
 
     /**
-     * Sync the in-memory language state with the persisted config value.
+     * Sync the display language with the current config state.
      *
-     * If a saved preference exists in [GlobalVars.configStates] it takes
-     * precedence over the auto-detected device language. This should be
-     * called once after [ConfigManager.initializeAllConfigs] completes.
+     * If a language value exists in [GlobalVars.configStates], it takes
+     * precedence over the auto-detected device language. If the key is
+     * absent, create it from the current auto-detected state so later
+     * config saves include a language value.
      */
     fun syncWithConfig() {
-        val saved = GlobalVars.configStates[CONFIG_KEY]?.value
-        if (saved != null) {
-            isChinese = saved == "zh"
-        } else {
-            // No saved value yet — persist the current (auto-detected) state
-            GlobalVars.configStates[CONFIG_KEY] = mutableStateOf(if (isChinese) "zh" else "en")
+        val languageState = GlobalVars.configStates[CONFIG_KEY]
+        if (languageState != null) {
+            isChinese = languageState.value == "zh"
+            return
         }
+
+        GlobalVars.configStates[CONFIG_KEY] = mutableStateOf(currentLanguageCode())
     }
 
-    /** Toggle between Chinese and English, and persist the choice. */
+    /** Toggle between Chinese and English, and store the choice in memory. */
     fun toggleLanguage() {
         isChinese = !isChinese
-        GlobalVars.configStates[CONFIG_KEY] = mutableStateOf(if (isChinese) "zh" else "en")
+        val languageCode = currentLanguageCode()
+        GlobalVars.configStates.getOrPut(CONFIG_KEY) {
+            mutableStateOf(languageCode)
+        }.value = languageCode
     }
+
+    private fun currentLanguageCode(): String = if (isChinese) "zh" else "en"
 
     /**
      * Text shown on the language-toggle button.
