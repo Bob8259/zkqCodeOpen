@@ -32,6 +32,7 @@ object GlobalSettings {
     val AFTER_KICK_OPTION = SettingDef("after_kick_option", "顶号后选项", "After Kick", "1", "GLOBAL_SETTINGS")
     val DEVICE_REMARK = SettingDef("device_remark", "设备备注", "Device Remark", "", "GLOBAL_SETTINGS")
     val RUNTIME_SCREENSHOT = SettingDef("runtime_screenshot", "运行时截图", "Runtime Screenshot", 0, "GLOBAL_SETTINGS")
+    val LANGUAGE = SettingDef("language", "语言", "Language", "zh", "GLOBAL_SETTINGS")
 
     // ── Temperature Protection (温度保护) ────────────────────────────────────
     val TEMP_PROTECTION = SettingDef("temp_protection", "温度保护", "Temp Protection", 0, "GLOBAL_SETTINGS")
@@ -114,6 +115,7 @@ object GlobalSettings {
         AFTER_KICK_OPTION,
         DEVICE_REMARK,
         RUNTIME_SCREENSHOT,
+        LANGUAGE,
         TEMP_PROTECTION,
         TEMP_PAUSE_THRESHOLD,
         TEMP_RESUME_THRESHOLD,

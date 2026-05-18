@@ -79,6 +79,8 @@ class EnterMainCode : MainCode {
             // Wait for configs to load
             snapshotFlow { actions.isLoading }.first { !it }
             ConfigManager.initializeAllConfigs(actions)
+            // Override auto-detected language with the saved preference
+            LanguageManager.syncWithConfig()
             isConfigInitialized = true
             GlobalVars.isConfigLoaded = true
         }
