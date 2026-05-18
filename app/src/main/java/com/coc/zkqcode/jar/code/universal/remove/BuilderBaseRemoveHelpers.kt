@@ -63,12 +63,14 @@ suspend fun removeObstacles() {
         val box = obstacle.boundingBox
         val centerX = box.centerX().toInt()
         val centerY = box.centerY().toInt()
-        accountMessage("x: $centerX, y: $centerY")
-        TouchActions.tap(centerX, centerY, delayTime = 120)
-        // Tap confirmation/action button
-        TouchActions.tap(615, 490, delayTime = 100)
-        repeat(2) {
-            TouchActions.tap(15, 558, delayTime = 100)
+        if (centerX in 100..1185) {
+            accountMessage("x: $centerX, y: $centerY")
+            TouchActions.tap(centerX, centerY, delayTime = 120)
+            // Tap confirmation/action button
+            TouchActions.tap(615, 490, delayTime = 100)
+            repeat(2) {
+                TouchActions.tap(15, 558, delayTime = 100)
+            }
         }
     }
 }
