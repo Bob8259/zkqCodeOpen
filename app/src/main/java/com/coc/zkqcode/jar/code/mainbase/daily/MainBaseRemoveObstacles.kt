@@ -32,7 +32,7 @@ suspend fun mainBaseRemoveObstacles(): Boolean {
         return true
     }
     accountMessage("准备移除主世界障碍物")
-    enterEditMode()
+    if (!enterEditMode()) return enterMainScreen()
     zoomSmallMainBase()
     removeObstacles()
     enhanceRemoveObstacles()

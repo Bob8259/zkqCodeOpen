@@ -10,7 +10,7 @@ import com.coc.zkqcode.jar.code.universal.InGameVars
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.smalltools.lifecycle.checkReconnections
 
-suspend fun enterEditMode() {
+suspend fun enterEditMode(): Boolean {
     // Select the initial schema based on the game package version
     val initialSchema = if (InGameVars.currentGameVersion == GameVersion.CN) {
         MyColors.CNEditBaseButton
@@ -21,7 +21,7 @@ suspend fun enterEditMode() {
     // Attempt to locate the initial edit button
     findMultiColorsUntil(schemas = listOf(initialSchema), duration = 1500)?.let {
         TouchActions.tap(it.x, it.y)
-    } ?: return
+    } ?: return false
 
     // Sequence of interactions to navigate through the edit menus
     // 1. Locate and click the specific Green Edit Button
@@ -30,6 +30,7 @@ suspend fun enterEditMode() {
     }
 
     removeAllBuildings()
+    return findMultiColorsUntil(listOf(MyColors.EditMode), 1000) != null
 }
 
 suspend fun removeAllBuildings() {
@@ -65,9 +66,9 @@ suspend fun removeObstacles() {
         accountMessage("x: $centerX, y: $centerY")
         TouchActions.tap(centerX, centerY, delayTime = 120)
         // Tap confirmation/action button
-        TouchActions.tap(616, 488, delayTime = 100)
+        TouchActions.tap(615, 490, delayTime = 100)
         repeat(2) {
-            TouchActions.tap(14, 558, delayTime = 100)
+            TouchActions.tap(15, 558, delayTime = 100)
         }
     }
 }

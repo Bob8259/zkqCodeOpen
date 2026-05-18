@@ -89,4 +89,9 @@ object MyColors : IUIColors by UIColors, IFeatureColors by FeatureColors, IClanG
     val JoinedClanWar = ColorSchema.parse(
         959, 97, 1134, 540, "8CEABD", "28|0|8CEABD,56|0|8CEABD,83|0|8CEABD,111|0|8CEABD,0|19|3AD48B,28|19|3AD48B,56|19|3AD48B,83|19|3AD48B,111|19|3AD48B", 1, 0.95, "参战按钮"
     )
+
+    //UI Feature
+    val EditMode = ColorSchema.parse(
+        6, 607, 271, 707, "AE8A39", "4|15|C8A142,10|34|C28A37,101|-9|E8C256,103|14|F1BF4C,103|32|DC9F3C,141|-8|E9C356,147|12|F6CF5C,144|32|D2983C,238|-6|F4CB55", 0, 0.9, "编辑模式"
+    )
 }

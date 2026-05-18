@@ -15,8 +15,7 @@ object TouchActions {
     private val activePointers = mutableSetOf<Int>()
 
     private fun getDelayMultiplier(): Float {
-        return GlobalVars.configStates["delay_multiplier"]?.value?.toFloat()
-            ?: LogHelper.logAndRestart("Failed to get delayMultiplier")
+        return GlobalVars.configStates["delay_multiplier"]?.value?.toFloat() ?: LogHelper.logAndRestart("Failed to get delayMultiplier")
     }
 
     private fun getServerActions() = GlobalVars.serverActions ?: LogHelper.logAndRestart("Server actions not found")
@@ -25,11 +24,7 @@ object TouchActions {
         activePointers.add(id)
         getServerActions().sendActionSync(
             mapOf(
-                "actionType" to "touch_action",
-                "subAction" to "touchdown",
-                "x" to x,
-                "y" to y,
-                "id" to id
+                "actionType" to "touch_action", "subAction" to "touchdown", "x" to x, "y" to y, "id" to id
             )
         )
     }
@@ -38,16 +33,12 @@ object TouchActions {
         var finalX = x
         var finalY = y
         if (isJitter) {
-            finalX += Random.Default.nextInt(-1, 2).toFloat()
-            finalY += Random.Default.nextInt(-1, 2).toFloat()
+            finalX += Random.nextInt(-1, 2).toFloat()
+            finalY += Random.nextInt(-1, 2).toFloat()
         }
         getServerActions().sendActionSync(
             mapOf(
-                "actionType" to "touch_action",
-                "subAction" to "touchmove",
-                "x" to finalX,
-                "y" to finalY,
-                "id" to id
+                "actionType" to "touch_action", "subAction" to "touchmove", "x" to finalX, "y" to finalY, "id" to id
             )
         )
     }
@@ -56,52 +47,25 @@ object TouchActions {
         activePointers.remove(id)
         getServerActions().sendActionSync(
             mapOf(
-                "actionType" to "touch_action",
-                "subAction" to "touchup",
-                "id" to id
+                "actionType" to "touch_action", "subAction" to "touchup", "id" to id
             )
         )
     }
 
-    suspend fun releaseAllPointers() {
-        val pointersCopy = activePointers.toSet()
-        for (id in pointersCopy) {
-            try {
-                touchUp(id)
-            } catch (_: Exception) {
-            }
-        }
-        activePointers.clear()
-    }
-
     suspend fun moveSmoothly(
-        fromX: Float,
-        fromY: Float,
-        toX: Float,
-        toY: Float,
-        duration: Int,
-        id: Int = 1,
-        isJitter: Boolean = false
+        fromX: Float, fromY: Float, toX: Float, toY: Float, duration: Int, id: Int = 1, isJitter: Boolean = false
     ) {
         performMove(
-            duration = duration,
-            isJitter = isJitter,
-            PointerMove(id, fromX, fromY, toX, toY)
+            duration = duration, isJitter = isJitter, PointerMove(id, fromX, fromY, toX, toY)
         )
     }
 
 
     suspend fun swipe(
-        startX: Int,
-        startY: Int,
-        endX: Int,
-        endY: Int,
-        delayTime: Int? = null,
-        isJitter: Boolean = true,
-        delayAfter: Int = 100
+        startX: Int, startY: Int, endX: Int, endY: Int, delayTime: Int? = null, isJitter: Boolean = true, delayAfter: Int = 100
     ) {
         waitForPlay()
-        val actualDelayTime = delayTime ?: Random.Default.nextInt(200, 301)
+        val actualDelayTime = delayTime ?: Random.nextInt(200, 301)
         val delayMultiplier = getDelayMultiplier()
 
         touchDown(startX.toFloat(), startY.toFloat(), 1)
@@ -112,9 +76,7 @@ object TouchActions {
             // Move loop
             val moveDuration = (actualDelayTime * 0.5 * delayMultiplier).toInt()
             performMove(
-                duration = moveDuration,
-                isJitter = isJitter,
-                PointerMove(1, startX.toFloat(), startY.toFloat(), endX.toFloat(), endY.toFloat())
+                duration = moveDuration, isJitter = isJitter, PointerMove(1, startX.toFloat(), startY.toFloat(), endX.toFloat(), endY.toFloat())
             )
 
             // Delay for 'time'
@@ -130,17 +92,10 @@ object TouchActions {
     }
 
     suspend fun pinchIn(
-        x1: Int,
-        y1: Int,
-        x2: Int,
-        y2: Int,
-        finalX: Int,
-        finalY: Int,
-        duration: Long? = null,
-        isJitter: Boolean = true
+        x1: Int, y1: Int, x2: Int, y2: Int, finalX: Int, finalY: Int, duration: Long? = null, isJitter: Boolean = true
     ) {
         waitForPlay()
-        val actualDuration = duration ?: Random.Default.nextLong(100, 201)
+        val actualDuration = duration ?: Random.nextLong(100, 201)
         val delayMultiplier = getDelayMultiplier()
 
         touchDown(x1.toFloat(), y1.toFloat(), 1)
@@ -162,17 +117,10 @@ object TouchActions {
     }
 
     suspend fun pinchOut(
-        x1: Int,
-        y1: Int,
-        x2: Int,
-        y2: Int,
-        finalX: Int,
-        finalY: Int,
-        duration: Long? = null,
-        isJitter: Boolean = true
+        x1: Int, y1: Int, x2: Int, y2: Int, finalX: Int, finalY: Int, duration: Long? = null, isJitter: Boolean = true
     ) {
         waitForPlay()
-        val actualDuration = duration ?: Random.Default.nextLong(300, 501)
+        val actualDuration = duration ?: Random.nextLong(300, 501)
         val delayMultiplier = getDelayMultiplier()
 
         touchDown(finalX.toFloat(), finalY.toFloat(), 1)
@@ -194,25 +142,17 @@ object TouchActions {
     }
 
     private class PointerMove(
-        val id: Int,
-        val fromX: Float,
-        val fromY: Float,
-        val toX: Float,
-        val toY: Float
+        val id: Int, val fromX: Float, val fromY: Float, val toX: Float, val toY: Float
     )
 
     private suspend fun performMove(
-        duration: Int,
-        isJitter: Boolean,
-        vararg pointers: PointerMove
+        duration: Int, isJitter: Boolean, vararg pointers: PointerMove
     ) {
         GlobalVars.serverActions ?: LogHelper.logAndRestart("Server actions not found at performMove")
-        val delayMultiplier = GlobalVars.configStates["delay_multiplier"]?.value?.toFloat()
-            ?: LogHelper.logAndRestart("Failed to get delayMultiplier at performMove")
+        val delayMultiplier = GlobalVars.configStates["delay_multiplier"]?.value?.toFloat() ?: LogHelper.logAndRestart("Failed to get delayMultiplier at performMove")
 
         // curl/wget transports are slower; reduce step count by 30% to lower command overhead.
-        val isSlowTransport = GlobalVars.serverConnectionMethod == ServerConnectionMethod.LIBSU_CURL
-                || GlobalVars.serverConnectionMethod == ServerConnectionMethod.LIBSU_WGET
+        val isSlowTransport = GlobalVars.serverConnectionMethod == ServerConnectionMethod.LIBSU_CURL || GlobalVars.serverConnectionMethod == ServerConnectionMethod.LIBSU_WGET
 
         if (!isJitter) {
             // Non-websocket transports are slower, so a larger step interval reduces command overhead.
@@ -238,16 +178,13 @@ object TouchActions {
         val totalDistance = sqrt(dx * dx + dy * dy).toDouble()
 
         // steps = distance / random(10..20)
-        val stepDivisor = Random.Default.nextInt(10, 20)
+        val stepDivisor = Random.nextInt(10, 20)
         val rawSteps = maxOf(3, (totalDistance / stepDivisor).toInt())
         val steps = if (isSlowTransport) maxOf(1, (rawSteps * 0.5f).toInt()) else rawSteps
         val avgDelay = duration.toFloat() / steps
 
         class PointerState(
-            val p1X: Float,
-            val p1Y: Float,
-            var lastNoiseX: Float = 0f,
-            var lastNoiseY: Float = 0f
+            val p1X: Float, val p1Y: Float, var lastNoiseX: Float = 0f, var lastNoiseY: Float = 0f
         )
 
         val pointerStates = pointers.map { p ->
@@ -263,8 +200,8 @@ object TouchActions {
             if (perpLen > 0) {
                 val unitPerpX = perpX / perpLen
                 val unitPerpY = pDx / perpLen
-                val offsetMag = pDist * Random.Default.nextDouble(0.05, 0.10).toFloat()
-                val side = if (Random.Default.nextBoolean()) 1f else -1f
+                val offsetMag = pDist * Random.nextDouble(0.05, 0.10).toFloat()
+                val side = if (Random.nextBoolean()) 1f else -1f
                 PointerState(midX + unitPerpX * offsetMag * side, midY + unitPerpY * offsetMag * side)
             } else {
                 PointerState(midX, midY)
@@ -275,7 +212,7 @@ object TouchActions {
         for (i in 1..steps) {
             val idealIncrement = 1f / steps
             // Small drift in time progression progression (t)
-            val drift = (Random.Default.nextFloat() - 0.5f) * (idealIncrement * 0.4f)
+            val drift = (Random.nextFloat() - 0.5f) * (idealIncrement * 0.4f)
             currentTLinear += (idealIncrement + drift)
             val t = if (i == steps) 1f else currentTLinear.coerceIn(0f, 1f)
 
@@ -290,42 +227,38 @@ object TouchActions {
                 val bY = invT * invT * p.fromY + 2 * invT * easedT * state.p1Y + easedT * easedT * p.toY
 
                 // Continuous micro-offsets
-                state.lastNoiseX += (Random.Default.nextFloat() - 0.5f) * 0.4f
-                state.lastNoiseY += (Random.Default.nextFloat() - 0.5f) * 0.4f
+                state.lastNoiseX += (Random.nextFloat() - 0.5f) * 0.4f
+                state.lastNoiseY += (Random.nextFloat() - 0.5f) * 0.4f
 
                 touchMove(bX + state.lastNoiseX, bY + state.lastNoiseY, p.id, isJitter = false)
             }
 
-            val varDelay = (avgDelay * Random.Default.nextDouble(0.8, 1.2)).toLong()
+            val varDelay = (avgDelay * Random.nextDouble(0.8, 1.2)).toLong()
             delay((varDelay * delayMultiplier).toLong())
         }
     }
 
     suspend fun tap(
-        x: Int,
-        y: Int,
-        isJitter: Boolean = true,
-        delayTime: Int = 500
+        x: Int, y: Int, isJitter: Boolean = true, delayTime: Int = 500
     ) {
         waitForPlay()
         val delayMultiplier = getDelayMultiplier()
 
         // curl/wget transports are slower; reduce post-tap delay to avoid unnecessary wait time.
-        val isSlowTransport = GlobalVars.serverConnectionMethod == ServerConnectionMethod.LIBSU_CURL
-                || GlobalVars.serverConnectionMethod == ServerConnectionMethod.LIBSU_WGET
+        val isSlowTransport = GlobalVars.serverConnectionMethod == ServerConnectionMethod.LIBSU_CURL || GlobalVars.serverConnectionMethod == ServerConnectionMethod.LIBSU_WGET
         val effectiveDelayTime = if (isSlowTransport) maxOf(0, delayTime - 20) else delayTime
 
         touchDown(x.toFloat(), y.toFloat(), 1)
         try {
             // Random delay; skipped on slow transports to reduce overhead.
             if (!isSlowTransport) {
-                val randomDelay = Random.Default.nextLong(20, 31)
+                val randomDelay = Random.nextLong(20, 31)
                 delay((randomDelay * delayMultiplier).toLong())
             }
 
             if (isJitter) {
-                val offsetX = Random.Default.nextInt(-3, 4)
-                val offsetY = Random.Default.nextInt(-3, 4)
+                val offsetX = Random.nextInt(-3, 4)
+                val offsetY = Random.nextInt(-3, 4)
                 touchMove((x + offsetX).toFloat(), (y + offsetY).toFloat(), 1, isJitter = false)
             }
         } finally {
