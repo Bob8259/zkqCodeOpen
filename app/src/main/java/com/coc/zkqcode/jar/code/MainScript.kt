@@ -14,6 +14,7 @@ import com.coc.zkqcode.jar.code.mainbase.attack.mainBaseTrainTroops
 import com.coc.zkqcode.jar.code.mainbase.attack.playTournament
 import com.coc.zkqcode.jar.code.mainbase.attack.searchOpponentsAndDeployTroops
 import com.coc.zkqcode.jar.code.mainbase.clan.joinClan
+import com.coc.zkqcode.jar.code.mainbase.clan.selectClanWarParticipant
 import com.coc.zkqcode.jar.code.mainbase.clan.startClanWar
 import com.coc.zkqcode.jar.code.mainbase.daily.checkItemsToBePlaced
 import com.coc.zkqcode.jar.code.mainbase.playMainBase
@@ -102,7 +103,7 @@ private fun finishDataNumberEntryOnlyRun() {
 
 private suspend fun runTestCode() {
     while (true) {
-        startClanWar()
+        selectClanWarParticipant()
         delay(500000)
     }
 }

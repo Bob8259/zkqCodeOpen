@@ -83,4 +83,10 @@ object MyColors : IUIColors by UIColors, IFeatureColors by FeatureColors, IClanG
     val InnerStartClanWar = ColorSchema.parse(
         964, 586, 1109, 647, "37BCFC", "29|0|0D4393,58|0|83BAFF,87|0|37BCFC,116|0|37BCFC,0|31|0D5AE8,29|31|2E80ED,58|31|3D8FFC,87|31|0D5AE8,116|31|0D5AE8", 0, 0.9, "内部发起战争"
     )
+    val GrayInnerButton = ColorSchema.parse(
+        964, 586, 1109, 647, "C1C1C1", "29|0|555555,58|0|CCCCCC,87|0|C1C1C1,116|0|C1C1C1,0|31|7C7C7C,29|31|989898,58|31|A7A7A7,87|31|7C7C7C,116|31|7C7C7C", 0, 0.9, "灰色发起战争"
+    )
+    val JoinedClanWar = ColorSchema.parse(
+        959, 97, 1134, 540, "8CEABD", "28|0|8CEABD,56|0|8CEABD,83|0|8CEABD,111|0|8CEABD,0|19|3AD48B,28|19|3AD48B,56|19|3AD48B,83|19|3AD48B,111|19|3AD48B", 1, 0.95, "参战按钮"
+    )
 }
