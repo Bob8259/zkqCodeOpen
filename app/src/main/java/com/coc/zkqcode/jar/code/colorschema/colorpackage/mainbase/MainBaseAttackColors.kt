@@ -59,6 +59,9 @@ interface IMainBaseAttackColors {
     val CanNotAttack: ColorSchema
     val CanNotAttack2: ColorSchema
     val CanNotAttack3: ColorSchema
+
+    // League entry indicator
+    val EnterLeague: ColorSchema
 }
 
 object MainBaseAttackColors : IMainBaseAttackColors {
@@ -247,5 +250,10 @@ object MainBaseAttackColors : IMainBaseAttackColors {
     // Third variant for cannot-attack detection
     override val CanNotAttack3 = ColorSchema.parse(
         636, 382, 691, 422, "C5C6FB", "0|1|C5C5F7,0|2|C6C6F6,0|3|C6C7F4,-14|3|C6C6FE,-15|3|C6C6FE,-17|3|BFBFFF,-18|10|C0C0FF,-17|10|BFBFFF,-16|10|C0C0FF", 0, 0.9, "无法进攻3"
+    )
+
+    // League entry indicator
+    override val EnterLeague = ColorSchema.parse(
+        1210, 49, 1262, 98, "7B74FF", "0|-11|958DFF,7|-15|958DFF,14|0|FFFFFF,19|8|FAF6F6,30|12|1813E9,17|19|211BCE,28|1|7770FF,28|-8|918AFF,23|-14|958DFF", 0, 0.9, "您已进入联赛"
     )
 }

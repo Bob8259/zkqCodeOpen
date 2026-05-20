@@ -58,6 +58,10 @@ interface IUIColors {
     val ClanLeagueReturnCamp: ColorSchema
     val UpgradeNotification: ColorSchema
     val GameSettings: ColorSchema
+
+    // Clan war UI indicators
+    val ClanWarTutorialArrow: ColorSchema
+    val TopRightClanWarInfo: ColorSchema
 }
 
 object UIColors : IUIColors {
@@ -261,5 +265,15 @@ object UIColors : IUIColors {
     // Game settings button
     override val GameSettings = ColorSchema.parse(
         1167, 40, 1252, 390, "FFFFFF", "-12|4|E8F9F7,-19|-5|FFFFFF,-13|-15|FFFFFF,9|5|E4F7F5,21|11|E4F7F5,22|2|FFFFFF,2|15|E3F5F5,-4|18|E4F7F5,1|24|F0FEFC", 0, 0.9, "游戏设置"
+    )
+
+    // Clan war tutorial arrow indicator
+    override val ClanWarTutorialArrow = ColorSchema.parse(
+        1143, 310, 1226, 416, "4D5057", "31|5|FFFFFF,37|14|FFFFFF,56|-9|4C4E55,60|-6|4C4F56,65|15|50535A,66|24|36383D,9|31|3A3D41,6|36|3F4145,6|44|41444A", 0, 0.9, "部落战教程箭头"
+    )
+
+    // Top right clan war info indicator
+    override val TopRightClanWarInfo = ColorSchema.parse(
+        1216, 22, 1252, 57, "FED398", "7|0|FEE5B3,14|0|FFFFFF,21|0|FFE6B8,28|0|FCCA8E,0|17|E38B39,7|17|E79D4B,14|17|FFFFFF,21|17|E49C59,28|17|995A11", 0, 0.9, "右上角部落战信息"
     )
 }

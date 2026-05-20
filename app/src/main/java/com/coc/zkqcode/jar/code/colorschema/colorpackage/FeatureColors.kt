@@ -15,6 +15,9 @@ interface IFeatureColors {
     val WhiteNumberColor: ColorSchema
     val MiddleGreenConfirm: ColorSchema
     val ItemsToBePlaced: ColorSchema
+
+    // Edit mode indicator
+    val EditMode: ColorSchema
 }
 
 object FeatureColors : IFeatureColors {
@@ -48,5 +51,10 @@ object FeatureColors : IFeatureColors {
     // Place item colours
     override val ItemsToBePlaced = ColorSchema.parse(
         563, 461, 719, 496, "B7FEFF", "0|1|B7FEFF,0|2|B7FEFF,5|12|B7FEFE,5|13|B7FEFE,-24|10|B7FFFF,-117|8|B4FBFB,-115|8|B4FBFC,-112|8|B7FEFE,-110|8|B7FFFF", 0, 0.95, "待放置的物品"
+    )
+
+    // Edit mode indicator
+    override val EditMode = ColorSchema.parse(
+        6, 607, 271, 707, "AE8A39", "4|15|C8A142,10|34|C28A37,101|-9|E8C256,103|14|F1BF4C,103|32|DC9F3C,141|-8|E9C356,147|12|F6CF5C,144|32|D2983C,238|-6|F4CB55", 0, 0.9, "编辑模式"
     )
 }

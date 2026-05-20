@@ -2,8 +2,10 @@ package com.coc.zkqcode.jar.code.colorschema
 
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.ClanGameColors
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.FeatureColors
+import com.coc.zkqcode.jar.code.colorschema.colorpackage.GameUpdateColors
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.IClanGameColors
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.IFeatureColors
+import com.coc.zkqcode.jar.code.colorschema.colorpackage.IGameUpdateColors
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.IUIColors
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.IUniversalUpgradeColors
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.UIColors
@@ -69,45 +71,5 @@ object MyColors : IUIColors by UIColors, IFeatureColors by FeatureColors, IClanG
     IMainBaseResearchLevelColors by MainBaseResearchLevelColors, IMainBaseResourcesColors by MainBaseResourcesColors, IClanCapitalTutorialColors by ClanCapitalTutorialColors,
     IMainBaseAttackColors by MainBaseAttackColors, IMainBaseClanColors by MainBaseClanColors, IMainBaseClanWarColors by MainBaseClanWarColors, IMainBaseHelperColors by MainBaseHelperColors,
     IMainBaseHeroHallColors by MainBaseHeroHallColors, IMainBaseSmallTutorialColors by MainBaseSmallTutorialColors, IMainBaseMagicItemColors by MainBaseMagicItemColors,
-    IClanCapitalColors by ClanCapitalColors, IMainBaseShopColors by MainBaseShopColors, IMainBaseTournamentColors by MainBaseTournamentColors {
-
-    //Main Base Attack Colours
-    val EnterLeague = ColorSchema.parse(
-        1210, 49, 1262, 98, "7B74FF", "0|-11|958DFF,7|-15|958DFF,14|0|FFFFFF,19|8|FAF6F6,30|12|1813E9,17|19|211BCE,28|1|7770FF,28|-8|918AFF,23|-14|958DFF", 0, 0.9, "您已进入联赛"
-    )
-
-    //Clan War Colours
-    val StartClanWar = ColorSchema.parse(
-        654, 508, 1003, 669, "37BCFC", "31|0|37BCFC,62|0|37BCFC,93|0|37BCFC,124|0|37BCFC,0|30|0D5AE8,31|30|0D5AE8,62|30|0D5AE8,93|30|0D5AE8,124|30|0D5AE8", 0, 0.9, "发起战争"
-    )
-    val InnerStartClanWar = ColorSchema.parse(
-        964, 586, 1109, 647, "37BCFC", "29|0|0D4393,58|0|83BAFF,87|0|37BCFC,116|0|37BCFC,0|31|0D5AE8,29|31|2E80ED,58|31|3D8FFC,87|31|0D5AE8,116|31|0D5AE8", 0, 0.9, "内部发起战争"
-    )
-    val GrayInnerButton = ColorSchema.parse(
-        964, 586, 1109, 647, "C1C1C1", "29|0|555555,58|0|CCCCCC,87|0|C1C1C1,116|0|C1C1C1,0|31|7C7C7C,29|31|989898,58|31|A7A7A7,87|31|7C7C7C,116|31|7C7C7C", 0, 0.9, "灰色发起战争"
-    )
-    val JoinedClanWar = ColorSchema.parse(
-        959, 97, 1134, 540, "8CEABD", "28|0|8CEABD,56|0|8CEABD,83|0|8CEABD,111|0|8CEABD,0|19|3AD48B,28|19|3AD48B,56|19|3AD48B,83|19|3AD48B,111|19|3AD48B", 1, 0.95, "参战按钮"
-    )
-
-    //UI Feature
-    val EditMode = ColorSchema.parse(
-        6, 607, 271, 707, "AE8A39", "4|15|C8A142,10|34|C28A37,101|-9|E8C256,103|14|F1BF4C,103|32|DC9F3C,141|-8|E9C356,147|12|F6CF5C,144|32|D2983C,238|-6|F4CB55", 0, 0.9, "编辑模式"
-    )
-
-    // Game Update Colours
-    val CNGameUpdate = ColorSchema.parse(
-        150, 436, 1113, 674, "60DFB8", "42|0|60DFB8,215|-1|62DFBA,269|1|5EDDB6,115|-146|E5A4DE,239|-138|E39EDC,398|-114|BC28AC,457|-4|68E2C0,667|1|5EDDB6,685|30|23AA61", 0, 0.97, "国服更新"
-    )
-    val CNGameUpdating = ColorSchema.parse(
-        150, 436, 1113, 674, "E4A2DE", "5|3|E39FDC,0|24|BC2AA9,2|30|BB2AA9,188|166|929292,247|168|8F8F8F,464|139|CACACA,535|133|D2D2D2,720|131|D3D3D3,703|171|898989", 0, 0.97, "国服更新中"
-    )
-
-    //UI Colours
-    val ClanWarTutorialArrow = ColorSchema.parse(
-        1143, 310, 1226, 416, "4D5057", "31|5|FFFFFF,37|14|FFFFFF,56|-9|4C4E55,60|-6|4C4F56,65|15|50535A,66|24|36383D,9|31|3A3D41,6|36|3F4145,6|44|41444A", 0, 0.9, "部落战教程箭头"
-    )
-    val TopRightClanWarInfo = ColorSchema.parse(
-        1216, 22, 1252, 57, "FED398", "7|0|FEE5B3,14|0|FFFFFF,21|0|FFE6B8,28|0|FCCA8E,0|17|E38B39,7|17|E79D4B,14|17|FFFFFF,21|17|E49C59,28|17|995A11", 0, 0.9, "右上角部落战信息"
-    )
-}
+    IClanCapitalColors by ClanCapitalColors, IMainBaseShopColors by MainBaseShopColors, IMainBaseTournamentColors by MainBaseTournamentColors,
+    IGameUpdateColors by GameUpdateColors
