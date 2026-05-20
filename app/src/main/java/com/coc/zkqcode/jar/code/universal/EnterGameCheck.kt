@@ -191,7 +191,9 @@ private suspend fun closeAdvertisements() {
         MyColors.IncreaseRank,
         MyColors.ClanLeagueReturnCamp,
         MyColors.UpgradeNotification,
-        MyColors.EnterLeague
+        MyColors.EnterLeague,
+        MyColors.ClanWarTutorialArrow,
+        MyColors.TopRightClanWarInfo
     )
 
     // 3. Iterate through schemas

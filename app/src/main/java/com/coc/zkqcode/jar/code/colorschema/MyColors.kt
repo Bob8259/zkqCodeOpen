@@ -102,4 +102,12 @@ object MyColors : IUIColors by UIColors, IFeatureColors by FeatureColors, IClanG
     val CNGameUpdating = ColorSchema.parse(
         150, 436, 1113, 674, "E4A2DE", "5|3|E39FDC,0|24|BC2AA9,2|30|BB2AA9,188|166|929292,247|168|8F8F8F,464|139|CACACA,535|133|D2D2D2,720|131|D3D3D3,703|171|898989", 0, 0.97, "国服更新中"
     )
+
+    //UI Colours
+    val ClanWarTutorialArrow = ColorSchema.parse(
+        1143, 310, 1226, 416, "4D5057", "31|5|FFFFFF,37|14|FFFFFF,56|-9|4C4E55,60|-6|4C4F56,65|15|50535A,66|24|36383D,9|31|3A3D41,6|36|3F4145,6|44|41444A", 0, 0.9, "部落战教程箭头"
+    )
+    val TopRightClanWarInfo = ColorSchema.parse(
+        1216, 22, 1252, 57, "FED398", "7|0|FEE5B3,14|0|FFFFFF,21|0|FFE6B8,28|0|FCCA8E,0|17|E38B39,7|17|E79D4B,14|17|FFFFFF,21|17|E49C59,28|17|995A11", 0, 0.9, "右上角部落战信息"
+    )
 }

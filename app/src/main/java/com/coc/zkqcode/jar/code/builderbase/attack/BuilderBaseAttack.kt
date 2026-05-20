@@ -84,8 +84,8 @@ suspend fun builderBaseAttack(): Boolean {
             Schema.BUILDER_BASE_SETTINGS.BUILDER_BASE_BATTLE_TIMES
         }
         val battleTimes = getConfigRuntime(battleTimesSetting.key).toIntOrNull() ?: logAndRestart("${battleTimesSetting.displayName} 必须是数字，请检查配置")
-        val normalBattleTimes =
-            getConfigRuntime(Schema.BUILDER_BASE_SETTINGS.BUILDER_BASE_BATTLE_TIMES.key).toIntOrNull() ?: logAndRestart("${Schema.BUILDER_BASE_SETTINGS.BUILDER_BASE_BATTLE_TIMES.displayName} 必须是数字，请检查配置")
+        val normalBattleTimes = getConfigRuntime(Schema.BUILDER_BASE_SETTINGS.BUILDER_BASE_BATTLE_TIMES.key).toIntOrNull()
+            ?: logAndRestart("${Schema.BUILDER_BASE_SETTINGS.BUILDER_BASE_BATTLE_TIMES.displayName} 必须是数字，请检查配置")
         val shouldCheckClanGameTask = battleTimesSetting == Schema.BUILDER_BASE_SETTINGS.BUILDER_BASE_BATTLE_TIMES_WITH_TASKS && battleTimes > normalBattleTimes
         repeat(battleTimes) { index ->
             if (!realAttack(attackType, hasBuilderBaseTask, index + 1, battleTimes)) return false
@@ -239,9 +239,10 @@ private suspend fun normalBattle(isNormal: Boolean = true, skipSkills: Boolean =
             TouchActions.touchDown((deployPos.first + Random.nextInt(1, 4)).toFloat(), (deployPos.second + Random.nextInt(1, 4)).toFloat(), 1)
             delayWithMultiplier(4000)
             TouchActions.touchUp(1)
-            accountMessage("等女巫走一会")
-            delayWithMultiplier(Random.nextInt(5000, 10000))
             if (!skipSkills) {
+                accountMessage("等女巫走一会")
+                delayWithMultiplier(Random.nextInt(5000, 10000))
+
                 repeat(6) {
                     val skillsPos = findMultiColors(
                         schema = ColorSchema.rescope(

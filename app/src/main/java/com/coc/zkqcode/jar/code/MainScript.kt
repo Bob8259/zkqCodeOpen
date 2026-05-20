@@ -195,7 +195,7 @@ suspend fun runAccountStepBlock() {
 /**
  * Searches [searchOrder] for the first enabled account.
  * When [skipIsOpenCheck] is true, all accounts are treated as active (used for batch-create mode).
- * If none is found, loops showing a message until the coroutine is canceled,
+ * If none is found, loops showing a message until the coroutine is cancelled,
  * then returns null — the caller should return immediately on null.
  */
 private suspend fun findAndActivateAccount(
