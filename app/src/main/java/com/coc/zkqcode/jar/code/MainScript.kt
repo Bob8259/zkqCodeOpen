@@ -10,6 +10,7 @@ import com.coc.zkqcode.jar.code.auth.displayAds
 import com.coc.zkqcode.jar.code.auth.userAuth
 import com.coc.zkqcode.jar.code.builderbase.playBuilderBase
 import com.coc.zkqcode.jar.code.mainbase.clan.selectClanWarParticipant
+import com.coc.zkqcode.jar.code.mainbase.daily.checkNormalShop
 import com.coc.zkqcode.jar.code.mainbase.playMainBase
 import com.coc.zkqcode.jar.code.universal.GameVersion
 import com.coc.zkqcode.jar.code.universal.InGameVars
@@ -95,7 +96,7 @@ private fun finishDataNumberEntryOnlyRun() {
 
 private suspend fun runTestCode() {
     while (true) {
-        enterMainScreen()
+        checkNormalShop()
         delay(500000)
     }
 }

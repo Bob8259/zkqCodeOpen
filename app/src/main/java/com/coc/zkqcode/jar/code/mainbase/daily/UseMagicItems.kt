@@ -85,22 +85,23 @@ private suspend fun checkMagicItems() {
             action()
         }
     }
-
-    // Each configured item uses the same interaction pattern after its icon is found.
-    handleMagicItem(Schema.MAIN_BASE_SETTINGS.USE_RESEARCH_POTION.key, MyColors.ResearchPotion) {
-        usePotion()
-    }
-    handleMagicItem(Schema.MAIN_BASE_SETTINGS.USE_BUILDER_POTION.key, MyColors.BuilderPotion) {
-        usePotion()
-    }
-    handleMagicItem(Schema.MAIN_BASE_SETTINGS.SELL_RESOURCE_POTION.key, MyColors.ResourcePotion) {
-        sellPotion()
-    }
-    handleMagicItem(Schema.MAIN_BASE_SETTINGS.SELL_CLOCK_TOWER_POTION.key, MyColors.ClockTowerPotion) {
-        sellPotion()
-    }
-    handleMagicItem(Schema.MAIN_BASE_SETTINGS.SELL_RING_OF_WALL.key, MyColors.WallRings) {
-        sellPotion()
+    repeat(3) {
+        // Each configured item uses the same interaction pattern after its icon is found.
+        handleMagicItem(Schema.MAIN_BASE_SETTINGS.USE_RESEARCH_POTION.key, MyColors.ResearchPotion) {
+            usePotion()
+        }
+        handleMagicItem(Schema.MAIN_BASE_SETTINGS.USE_BUILDER_POTION.key, MyColors.BuilderPotion) {
+            usePotion()
+        }
+        handleMagicItem(Schema.MAIN_BASE_SETTINGS.SELL_RESOURCE_POTION.key, MyColors.ResourcePotion) {
+            sellPotion()
+        }
+        handleMagicItem(Schema.MAIN_BASE_SETTINGS.SELL_CLOCK_TOWER_POTION.key, MyColors.ClockTowerPotion) {
+            sellPotion()
+        }
+        handleMagicItem(Schema.MAIN_BASE_SETTINGS.SELL_RING_OF_WALL.key, MyColors.WallRings) {
+            sellPotion()
+        }
     }
 }
 
