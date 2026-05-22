@@ -11,7 +11,9 @@ Route JSON I/O outside the app's private path through the WebSocket server.
 
 Technical Standards:
 
-Debugging: Use the ShowMessage utility for all debug information. It must be imported from: com.coc.zkqcode.core.util.basic.ShowMessage.
+Show Message: Use the ShowMessage utility for all information showen to users. Import from: com.coc.zkqcode.core.util.basic.ShowMessage.
+
+Debugging: Use showDebugInfo to show all debug information. Import from com.coc.zkqcode.core.util.fileactions.
 
 Import Style: Use full package names in the import statements at the top of the file. Within the code body, use only the simple class name (e.g., import androidx.compose.ui.Modifierandroidx.compose.ui.Modifier; then use Modifier. Do not directly use androidx.compose.ui.Modifierandroidx.compose.ui.Modifier).
 

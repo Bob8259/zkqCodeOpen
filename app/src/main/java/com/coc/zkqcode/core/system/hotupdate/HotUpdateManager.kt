@@ -368,7 +368,6 @@ object HotUpdateManager {
         }
 
         if (backupUrl.isNotBlank()) {
-            ShowMessage("主服务器连接失败，正在尝试备用服务器...")
             val backupRequest = requestBuilder(backupUrl)
             try {
                 val response = withContext(Dispatchers.IO) {

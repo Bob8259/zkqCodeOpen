@@ -1,6 +1,7 @@
 package com.coc.zkqcode.jar.code.universal.network
 
 import com.coc.zkqcode.core.util.basic.ShowMessage
+import com.coc.zkqcode.core.util.fileactions.LogHelper.showDebugInfo
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
@@ -68,10 +69,12 @@ object UrlFallbackUtil {
             if (response.isSuccessful) {
                 return response
             } else {
-                // Close unsuccessful response and try backup
+                // Read error body before closing for debug info
                 val code = response.code
+                val errorBody = try { response.body.string() } catch (_: Exception) { "" }
                 response.close()
-                IOException("Primary server returned error: $code")
+                showDebugInfo("Primary $endpoint → $code: $errorBody")
+                IOException("Primary server returned error: $code — $errorBody")
             }
         } catch (e: SocketTimeoutException) {
             e
@@ -81,8 +84,6 @@ object UrlFallbackUtil {
 
         // Primary failed, try backup URL
         if (backupUrl.isNotBlank()) {
-            ShowMessage("主服务器连接失败，正在尝试备用服务器...")
-
             val backupRequest = requestBuilder(backupUrl)
             try {
                 val response = withContext(Dispatchers.IO) {
@@ -91,8 +92,12 @@ object UrlFallbackUtil {
                 if (response.isSuccessful) {
                     return response
                 } else {
+                    // Read error body before closing for debug info
+                    val code = response.code
+                    val errorBody = try { response.body.string() } catch (_: Exception) { "" }
                     response.close()
-                    throw IOException("Backup server returned error: ${response.code}")
+                    showDebugInfo("Backup $endpoint → $code: $errorBody")
+                    throw IOException("Backup server returned error: $code — $errorBody")
                 }
             } catch (e: Exception) {
                 // Both failed

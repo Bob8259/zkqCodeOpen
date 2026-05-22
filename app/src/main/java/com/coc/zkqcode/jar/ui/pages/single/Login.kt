@@ -32,6 +32,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import com.coc.zkqcode.jar.ui.theme.AppColors
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -61,6 +62,7 @@ import kotlinx.coroutines.withContext
 @Composable
 fun LoginScreen(onAdFreeClick: () -> Unit = {}) {
     val scope = rememberCoroutineScope()
+    val context = LocalContext.current
     var isLoginButtonEnabled by remember { mutableStateOf(true) }
     var gemInfo by remember { mutableStateOf(GlobalVars.configStates[GLOBAL_SETTINGS.GEM_COUNT.key]!!.value) }
     var showMessage by remember {
@@ -148,10 +150,10 @@ fun LoginScreen(onAdFreeClick: () -> Unit = {}) {
             try {
                 val responseBody = withContext(Dispatchers.IO) {
                     UrlFallbackUtil.executeWithFallbackAndReadBody(
-                        endpoint = "api/mobile-login",
+                        endpoint = "api/mobile-session-login",
                         requestBuilder = { baseUrl ->
                             Request.Builder()
-                                .url("${baseUrl}api/mobile-login")
+                                .url("${baseUrl}api/mobile-session-login")
                                 .post(requestBody)
                                 .build()
                         }
@@ -167,17 +169,29 @@ fun LoginScreen(onAdFreeClick: () -> Unit = {}) {
                 }
 
                 // 5. Parse Decrypted Result
-                // Expected format: gem=xxx OR Error message
+                // Expected format: session_key=xxx&gem=yyy OR Error message
                 if (decrypted.startsWith("Error")) {
                     gemInfo = Strings.loginFailed(decrypted)
                     showMessage = true
                     GlobalVars.configStates[GLOBAL_SETTINGS.GEM_COUNT.key]!!.value = ""
                 } else {
-                    val gemRegex = """gem=([\d.]+)""".toRegex()
-                    val gemMatch = gemRegex.find(decrypted)
+                    val fields = decrypted.split("&").associate {
+                        val kv = it.split("=", limit = 2)
+                        if (kv.size == 2) kv[0] to kv[1] else kv[0] to ""
+                    }
+                    val sessionKey = fields["session_key"]
+                    val gem = fields["gem"]
 
-                    if (gemMatch != null) {
-                        val gem = gemMatch.groupValues[1]
+                    if (sessionKey != null && gem != null) {
+                        // Store session key in private file
+                        withContext(Dispatchers.IO) {
+                            try {
+                                context.openFileOutput("session_key", android.content.Context.MODE_PRIVATE).use {
+                                    it.write(sessionKey.toByteArray())
+                                }
+                            } catch (_: Exception) { }
+                        }
+                        // Update gem display
                         formattedGem = String.format(Locale.US, "%.4f", gem.toDouble())
                         gem.toDoubleOrNull()?.let {
                             showMessage = (it < 0.000001)
@@ -310,6 +324,12 @@ fun LoginScreen(onAdFreeClick: () -> Unit = {}) {
                         GlobalVars.configStates[GLOBAL_SETTINGS.EMAIL.key]!!.value = ""
                         GlobalVars.configStates[GLOBAL_SETTINGS.PASSWORD.key]!!.value = ""
                         GlobalVars.configStates[GLOBAL_SETTINGS.GEM_COUNT.key]!!.value = ""
+                        // Clear session key from private file
+                        withContext(Dispatchers.IO) {
+                            try {
+                                context.deleteFile("session_key")
+                            } catch (_: Exception) { }
+                        }
                     }
                     gemInfo = Strings.logoutSuccess
                 }, enable = isLoginButtonEnabled
