@@ -37,6 +37,8 @@ suspend fun adjustBaseAndReinforcements(): Boolean {
         val innerSetBaseIcon = findMultiColors(schema = MyColors.InnerSetBase)
         if (innerSetBaseIcon != null) {
             TouchActions.tap(640, 300)
+            TouchActions.tap(930, 300)
+            TouchActions.tap(260, 300)
             TouchActions.tap(1170, 500)//Clear reinforcements
             TouchActions.tap(590, 590, delayTime = 1200)//Add backups
             TouchActions.swipe(1210, 560, -1000, 560, delayAfter = 400)
