@@ -53,7 +53,7 @@ suspend fun useMagicItems(): Boolean {
             val cy = box.centerY().toInt()
             if (!DetectionRegion.isInsideRegion(cx, cy)) continue
             TouchActions.tap(cx, cy)
-            val magicItemIcon = findMultiColorsUntil(schemas = listOf(MyColors.MagicItemIcon, MyColors.MagicItemIcon2, MyColors.MagicItemIcon3, MyColors.MagicItemIcon4), duration = 200)
+            val magicItemIcon = findMultiColorsUntil(schemas = listOf(MyColors.MagicItemIcon, MyColors.MagicItemIcon2, MyColors.MagicItemIcon3, MyColors.MagicItemIcon4, MyColors.MagicItemIcon5), duration = 200)
             if (magicItemIcon != null) {
                 TouchActions.tap(magicItemIcon.x, magicItemIcon.y, delayTime = 800)
                 // Record memory immediately after the magic item entry is opened.

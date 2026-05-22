@@ -1,5 +1,7 @@
 package com.coc.zkqcode.jar.code.auth
 
+import android.content.Context
+import com.coc.zkqcode.core.app.ZKQApplication
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
@@ -12,6 +14,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
+import java.io.File
 import java.net.SocketTimeoutException
 import kotlin.random.Random
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -136,6 +139,101 @@ suspend fun userAuth() {
             return
         }
 
+        // --- Session token check: skip login if session_key file exists ---
+        val sessionKeyFile = File(ZKQApplication.appContext.filesDir, "session_key")
+        if (sessionKeyFile.exists()) {
+            ShowMessage("Session exists, skipping login / 会话存在，跳过登录")
+        } else {
+            // Perform session login (mirrors Login.kt login() flow)
+            ShowMessage("Session not found, logging in... / 未找到会话，正在登录...")
+            try {
+                // Fetch PoW challenge
+                val powNonceForSession = withContext(Dispatchers.IO) {
+                    UrlFallbackUtil.executeGetWithFallbackAndReadBody("api/pow/challenge").let { responseBody ->
+                        JSONObject(responseBody).getString("nonce")
+                    }
+                }
+
+                // Solve PoW locally
+                val powSaltForSession = solvePoW(powNonceForSession)
+
+                // Get timestamp and build payload (no last_time for session login)
+                val timestampForSession = getNetworkTimestamp()
+                val sessionPayload = "email=${urlEncode(email)}&password=${urlEncode(password)}&timestamp=$timestampForSession"
+
+                // Encrypt payload via native layer
+                val sessionEncryptionParts = try {
+                    RustTools.encryptLoginPayload(sessionPayload).split(",", limit = 3)
+                } catch (_: Exception) {
+                    GlobalVars.isShowAd = true
+                    return
+                }
+                if (sessionEncryptionParts.size != 3) {
+                    GlobalVars.isShowAd = true
+                    return
+                }
+
+                // Build and send session login request
+                val sessionPostData = "public_key=${sessionEncryptionParts[0]}" +
+                    "&nonce=${sessionEncryptionParts[1]}" +
+                    "&data=${sessionEncryptionParts[2]}" +
+                    "&pow_nonce=$powNonceForSession" +
+                    "&pow_salt=$powSaltForSession"
+
+                val sessionResponseBody = withContext(Dispatchers.IO) {
+                    UrlFallbackUtil.executeWithFallbackAndReadBody(
+                        endpoint = "api/mobile-session-login",
+                        requestBuilder = { baseUrl ->
+                            Request.Builder()
+                                .url("${baseUrl}api/mobile-session-login")
+                                .post(sessionPostData.toRequestBody("application/x-www-form-urlencoded".toMediaTypeOrNull()))
+                                .build()
+                        }
+                    )
+                }
+
+                // Decrypt response
+                val sessionDecrypted = try {
+                    RustTools.decryptLoginResponse(sessionResponseBody)
+                } catch (_: Exception) {
+                    GlobalVars.isShowAd = true
+                    return
+                }
+                if (sessionDecrypted.startsWith("Error")) {
+                    GlobalVars.isShowAd = true
+                    return
+                }
+
+                // Parse response: expected session_key=xxx&gem=yyy
+                val sessionResult = parseUrlEncoded(sessionDecrypted)
+                val sessionKey = sessionResult["session_key"]
+                val sessionGem = sessionResult["gem"]
+
+                if (sessionKey != null && sessionGem != null) {
+                    // Store session key in private file
+                    withContext(Dispatchers.IO) {
+                        try {
+                            ZKQApplication.appContext.openFileOutput("session_key", Context.MODE_PRIVATE).use {
+                                it.write(sessionKey.toByteArray())
+                            }
+                        } catch (_: Exception) { }
+                    }
+                    // Update gem count
+                    GlobalVars.configStates["gem_count"]?.value = sessionGem
+                    ShowMessage("Login successful / 登录成功")
+                } else {
+                    ShowMessage("Session login failed: unexpected response / 会话登录失败：响应异常")
+                    GlobalVars.isShowAd = true
+                    return
+                }
+            } catch (_: Exception) {
+                ShowMessage("Session login failed / 会话登录失败")
+                GlobalVars.isShowAd = true
+                return
+            }
+        }
+
+        // --- Existing deduct flow (unchanged) ---
         val timestamp = getNetworkTimestamp()
         // Retrieve last_time from native Rust storage (auto-initializes on first call)
         val lastTime = RustTools.getLastTime()

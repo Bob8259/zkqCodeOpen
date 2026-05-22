@@ -10,6 +10,7 @@ interface IMainBaseMagicItemColors {
     val MagicItemIcon2: ColorSchema
     val MagicItemIcon3: ColorSchema
     val MagicItemIcon4: ColorSchema
+    val MagicItemIcon5: ColorSchema
 
     // Individual potion type identifiers
     val BuilderPotion: ColorSchema
@@ -40,6 +41,11 @@ object MainBaseMagicItemColors : IMainBaseMagicItemColors {
     )
     override val MagicItemIcon4 = ColorSchema.parse(
         179, 557, 1105, 630, "2934B7", "7|3|98D0FD,0|13|2F3ABF,-4|4|1E345A,6|5|9AD3FF,20|13|CB6A23,25|9|FCA362,28|8|FCA05C,25|7|FFAD70,12|6|89BDE9", 0, 0.9, "魔法道具12按钮"
+    )
+
+    // Magic item dialog header icon variant 5
+    override val MagicItemIcon5 = ColorSchema.parse(
+        178, 542, 1093, 631, "9AD5FF", "-10|-12|252657,5|-16|A7E6FF,8|-7|8DC2EF,11|2|8DC4EF,30|7|F3924B,31|0|FB9E5A,25|-2|FFB57D,20|5|C4631C,2|7|9AD4FF", 0, 0.9, "魔法物品10按钮"
     )
 
     // Builder potion detected by its golden icon in the magic item list
