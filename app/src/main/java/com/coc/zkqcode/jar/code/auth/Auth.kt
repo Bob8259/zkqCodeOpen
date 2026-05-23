@@ -141,11 +141,8 @@ suspend fun userAuth() {
 
         // --- Session token check: skip login if session_key file exists ---
         val sessionKeyFile = File(ZKQApplication.appContext.filesDir, "session_key")
-        if (sessionKeyFile.exists()) {
-            ShowMessage("Session exists, skipping login / 会话存在，跳过登录")
-        } else {
+        if (!sessionKeyFile.exists()) {
             // Perform session login (mirrors Login.kt login() flow)
-            ShowMessage("Session not found, logging in... / 未找到会话，正在登录...")
             try {
                 // Fetch PoW challenge
                 val powNonceForSession = withContext(Dispatchers.IO) {
@@ -175,10 +172,10 @@ suspend fun userAuth() {
 
                 // Build and send session login request
                 val sessionPostData = "public_key=${sessionEncryptionParts[0]}" +
-                    "&nonce=${sessionEncryptionParts[1]}" +
-                    "&data=${sessionEncryptionParts[2]}" +
-                    "&pow_nonce=$powNonceForSession" +
-                    "&pow_salt=$powSaltForSession"
+                        "&nonce=${sessionEncryptionParts[1]}" +
+                        "&data=${sessionEncryptionParts[2]}" +
+                        "&pow_nonce=$powNonceForSession" +
+                        "&pow_salt=$powSaltForSession"
 
                 val sessionResponseBody = withContext(Dispatchers.IO) {
                     UrlFallbackUtil.executeWithFallbackAndReadBody(
@@ -216,11 +213,11 @@ suspend fun userAuth() {
                             ZKQApplication.appContext.openFileOutput("session_key", Context.MODE_PRIVATE).use {
                                 it.write(sessionKey.toByteArray())
                             }
-                        } catch (_: Exception) { }
+                        } catch (_: Exception) {
+                        }
                     }
                     // Update gem count
                     GlobalVars.configStates["gem_count"]?.value = sessionGem
-                    ShowMessage("Login successful / 登录成功")
                 } else {
                     ShowMessage("Session login failed: unexpected response / 会话登录失败：响应异常")
                     GlobalVars.isShowAd = true

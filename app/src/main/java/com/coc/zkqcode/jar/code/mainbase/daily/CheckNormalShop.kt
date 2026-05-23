@@ -89,7 +89,6 @@ private suspend fun buyItems(): Boolean {
                 }
             }
         }
-        return true
     }
     return false
 }

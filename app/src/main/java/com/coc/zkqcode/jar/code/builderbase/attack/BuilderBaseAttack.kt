@@ -303,7 +303,7 @@ private suspend fun waitLoop() {
         if (remainingMs <= 0) break
 
         val remainingSeconds = remainingMs / 1000.0
-        accountMessage("搜索中，剩余 ${"%.1f".format(remainingSeconds)} 秒")
+        accountMessage("夜世界搜索中，剩余 ${"%.1f".format(remainingSeconds)} 秒")
         delayWithMultiplier(1000)
     }
     TouchActions.tap(lastPosition.x, lastPosition.y, delayTime = 200)
