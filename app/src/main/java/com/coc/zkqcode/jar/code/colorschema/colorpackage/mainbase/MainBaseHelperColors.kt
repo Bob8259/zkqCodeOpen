@@ -14,6 +14,7 @@ interface IMainBaseHelperColors {
     val LockedBuilderHelper: ColorSchema
     val AssignHelper: ColorSchema
     val Prospector: ColorSchema
+    val ProspectorIcon: ColorSchema
 }
 
 object MainBaseHelperColors : IMainBaseHelperColors {
@@ -58,5 +59,10 @@ object MainBaseHelperColors : IMainBaseHelperColors {
     // Prospector helper icon
     override val Prospector = ColorSchema.parse(
         362, 555, 584, 666, "A8C2FF", "38|45|3F6CC6,40|41|4384EF,31|48|786B96,32|43|A7D1FF,25|36|465471,14|26|A1B5D2,-19|31|7D8CAC,-17|2|B0CDFC,-13|-17|6B6B7F", 0, 0.9, "探矿者"
+    )
+
+    // Alternative prospector helper icon for hut detection
+    override val ProspectorIcon = ColorSchema.parse(
+        565, 493, 1015, 626, "6E8ABE", "6|0|9D9D8C,13|0|8CA8FC,19|0|BCE0FF,25|0|CCEEFF,0|21|90B3D6,6|21|C8DCF7,13|21|D2ECFF,19|21|A9C3E1,25|21|C0E1FD", 0, 0.9, "探矿者"
     )
 }

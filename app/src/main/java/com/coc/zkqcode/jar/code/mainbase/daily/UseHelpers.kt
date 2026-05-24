@@ -49,7 +49,13 @@ suspend fun useHelpers(): Boolean {
             val cy = box.centerY().toInt()
             if (!DetectionRegion.isInsideRegion(cx, cy)) continue
             TouchActions.tap(cx, cy)
-            val openHelperHut = findMultiColorsUntil(schemas = listOf(MyColors.BuilderHelperIcon, MyColors.ResearchHelperIcon, MyColors.ResearchHelperIcon2), duration = 200)
+            val helperSchemas = mutableListOf(MyColors.BuilderHelperIcon, MyColors.ResearchHelperIcon, MyColors.ResearchHelperIcon2)
+            if (getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.PROSPECTOR_BLUE_TO_GOLD.key) ||
+                getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.PROSPECTOR_BLUE_TO_PURPLE.key) ||
+                getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.PROSPECTOR_PURPLE_TO_GOLD.key)) {
+                helperSchemas.add(MyColors.ProspectorIcon)
+            }
+            val openHelperHut = findMultiColorsUntil(schemas = helperSchemas, duration = 200)
             if (openHelperHut != null) {
                 TouchActions.tap(openHelperHut.x, openHelperHut.y)
                 configureAndAssignHelpers(isUpgradeHelper)
