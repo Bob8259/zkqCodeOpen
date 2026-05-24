@@ -38,6 +38,7 @@ import androidx.savedstate.setViewTreeSavedStateRegistryOwner
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.system.hotupdate.HotUpdateManager
 import com.coc.zkqcode.core.util.basic.RunShell
+import com.coc.zkqcode.core.util.fileactions.LogHelper
 import com.coc.zkqcode.statehelper.AppMode
 import com.coc.zkqcode.statehelper.AppStateManager
 import timber.log.Timber
@@ -302,20 +303,37 @@ class ControlWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner 
 
     override fun onTaskRemoved(rootIntent: Intent?) {
         super.onTaskRemoved(rootIntent)
-        RunShell.runBlockingNoOutput("am start -n com.coc.zkqcode/.MainActivity >>/dev/null 2>&1")
+        LogHelper.showDebugInfo("ControlWindowService: task removed, relaunching MainActivity with detached shell")
+        relaunchMainActivityDetached()
         GlobalVars.autoRunTimer = 5
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         // Detect START_STICKY restart: system delivers null intent after LMKD kill
         if (intent == null) {
-            // Relaunch MainActivity to re-initialize the full app (JAR loading, etc.)
-            RunShell.runBlockingNoOutput("am start -n com.coc.zkqcode/.MainActivity >>/dev/null 2>&1")
-            GlobalVars.autoRunTimer = 5
+            LogHelper.showDebugInfo("ControlWindowService: received null intent, relaunching MainActivity with detached shell")
+            relaunchMainActivityDetached()
         }
         updateForegroundRecord()
         lifecycleRegistry.currentState = Lifecycle.State.STARTED
         return START_STICKY
+    }
+
+    private fun relaunchMainActivityDetached() {
+        val command = "setsid sh -c 'sleep 2; am force-stop com.coc.zkqcode; sleep 1; am start -n com.coc.zkqcode/.MainActivity' >/dev/null 2>&1 &"
+        try {
+            val process = ProcessBuilder("su").redirectErrorStream(true).start()
+            process.outputStream.bufferedWriter().use { writer ->
+                writer.write(command)
+                writer.newLine()
+                writer.write("exit")
+                writer.newLine()
+                writer.flush()
+            }
+            LogHelper.showDebugInfo("ControlWindowService: detached root restart command started")
+        } catch (e: Exception) {
+            LogHelper.showDebugInfo("ControlWindowService: detached root restart command failed: ${e.message}")
+        }
     }
 
     @SuppressLint("WakelockTimeout")
