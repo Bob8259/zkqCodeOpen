@@ -38,7 +38,6 @@ import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.ui.localcomponents.LocalCustomAlertDialog
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.exit.AppExitHelper
-import com.coc.zkqcode.core.util.exit.AppExitHelper.restoreDefaultInputMethod
 import com.coc.zkqcode.statehelper.AppMode
 import com.coc.zkqcode.statehelper.AppStateManager
 import kotlinx.coroutines.delay
@@ -157,7 +156,7 @@ fun ControlWindow(
             }
         } else {
             ShowMessage("暂停中，请稍后...")
-            restoreDefaultInputMethod()
+            AppExitHelper.restoreDefaultInputMethod(context)
             ShowMessage("已暂停")
         }
     }
@@ -195,7 +194,7 @@ fun ControlWindow(
                         // Skip auto-pause when ad is playing
                         if (wasCollapsed && isPlaying && !GlobalVars.isAdPlaying) {
                             ShowMessage("检测到悬浮窗展开，辅助已自动暂停，避免干扰用户操作\n为节省资源，暂停60分钟后会自动退出。", false)
-                            restoreDefaultInputMethod()
+                            AppExitHelper.restoreDefaultInputMethod(context)
                             isPlaying = false
                         }
                         internalInteractionCount++
@@ -230,7 +229,7 @@ fun ControlWindow(
                             if (GlobalVars.isAdPlaying) return@clickable
                             internalInteractionCount++
                             AppStateManager.setMode(AppMode.Main)
-                            restoreDefaultInputMethod()
+                            AppExitHelper.restoreDefaultInputMethod(context)
                             onOpenMainUI()
                         }
                 )
@@ -245,7 +244,7 @@ fun ControlWindow(
                             if (GlobalVars.isAdPlaying) return@clickable
                             internalInteractionCount++
                             AppStateManager.setMode(AppMode.SwitchAccount)
-                            restoreDefaultInputMethod()
+                            AppExitHelper.restoreDefaultInputMethod(context)
                             onSwitchAccount()
                         }
                 )
@@ -288,7 +287,7 @@ fun ControlWindow(
                             if (GlobalVars.isAdPlaying) return@clickable
                             internalInteractionCount++
                             AppStateManager.setMode(AppMode.SwitchAccount)
-                            restoreDefaultInputMethod()
+                            AppExitHelper.restoreDefaultInputMethod(context)
                             onSwitchAccount()
                         }
                 )
@@ -303,7 +302,7 @@ fun ControlWindow(
                             if (GlobalVars.isAdPlaying) return@clickable
                             internalInteractionCount++
                             AppStateManager.setMode(AppMode.Main)
-                            restoreDefaultInputMethod()
+                            AppExitHelper.restoreDefaultInputMethod(context)
                             onOpenMainUI()
                         }
                 )
@@ -342,7 +341,7 @@ fun ControlWindow(
                         // Skip auto-pause when ad is playing
                         if (wasCollapsed && isPlaying && !GlobalVars.isAdPlaying) {
                             ShowMessage("检测到悬浮窗展开，辅助已自动暂停，避免干扰用户操作\n为节省资源，暂停60分钟后会自动退出。", false)
-                            restoreDefaultInputMethod()
+                            AppExitHelper.restoreDefaultInputMethod(context)
                             isPlaying = false
                         }
                         internalInteractionCount++

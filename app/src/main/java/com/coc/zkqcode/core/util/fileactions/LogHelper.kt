@@ -4,8 +4,10 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.util.Log
 import com.coc.zkqcode.BuildConfig
+import com.coc.zkqcode.core.app.ZKQApplication
 import com.coc.zkqcode.core.util.basic.RunShell
 import com.coc.zkqcode.core.util.basic.ShowMessage
+import com.coc.zkqcode.core.util.exit.AppExitHelper
 import timber.log.Timber
 import java.io.File
 import java.io.FileOutputStream
@@ -45,6 +47,7 @@ object LogHelper {
                 Thread.sleep(1000)
             }
         }
+        AppExitHelper.restoreDefaultInputMethod(ZKQApplication.appContext)
         // Spawn a detached process via setsid to restart the app after killing it.
         // The new session ensures this child survives the parent process termination.
         RunShell.runBlockingNoOutput(

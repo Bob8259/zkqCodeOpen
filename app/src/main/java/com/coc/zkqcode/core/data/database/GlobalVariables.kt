@@ -22,8 +22,6 @@ object GlobalVars {
     @Volatile
     var serverConnectionMethod: ServerConnectionMethod? = null
 
-    @Volatile
-    var defaultInputMethod: String? = null
 
     @Volatile
     var isSwitchingAccount: Boolean = false

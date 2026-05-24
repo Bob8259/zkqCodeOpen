@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.sp
 import com.coc.zkqcode.MainActivity
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.data.websocket.ServerActions
+import com.coc.zkqcode.core.util.exit.AppExitHelper
 import com.coc.zkqcode.core.ui.floatingwindows.ControlWindowService
 import com.coc.zkqcode.core.ui.floatingwindows.UIWindowService
 import com.coc.zkqcode.core.ui.localcomponents.LocalCustomButton
@@ -128,10 +129,15 @@ fun CheckRootScreen() {
                         // Get and store default IME.
                         RunShell.runNoOutput("appops set com.coc.zkqcode PROJECT_MEDIA allow", checkIsPlaying = false)
                         RunShell.runNoOutput("cmd appops set com.coc.zkqcode PROJECT_MEDIA allow", checkIsPlaying = false)
-                        if (GlobalVars.defaultInputMethod == null) {
+                        val savedIme = AppExitHelper.getSavedInputMethod(context)
+                        if (savedIme.isNullOrBlank()) {
                             val result = RunShell.run("settings get secure default_input_method", checkIsPlaying = false)
-                            if (result.isNotEmpty()) {
-                                GlobalVars.defaultInputMethod = result[0]
+                            if (result.isNotEmpty() && result[0].isNotBlank()) {
+                                val currentIme = result[0].trim()
+                                val ourIme = "com.coc.zkqcode/.core.system.inputmethod.ZKQInputMethodService"
+                                if (currentIme != ourIme) {
+                                    AppExitHelper.saveDefaultInputMethod(context, currentIme)
+                                }
                             }
                         }
                     }

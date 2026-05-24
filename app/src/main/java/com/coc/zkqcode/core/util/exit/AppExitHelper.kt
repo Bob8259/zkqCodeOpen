@@ -2,19 +2,19 @@ package com.coc.zkqcode.core.util.exit
 
 import android.content.Context
 import android.content.Intent
-import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.system.daemon.DaemonService
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.core.ui.floatingwindows.ControlWindowService
 import com.coc.zkqcode.core.ui.floatingwindows.MessageBoxService
 import com.coc.zkqcode.core.ui.floatingwindows.UIWindowService
 import com.coc.zkqcode.core.util.basic.RunShell
+import java.io.File
 import kotlin.system.exitProcess
 
 object AppExitHelper {
 
     fun exitApplication(context: Context) {
-        restoreDefaultInputMethod()
+        restoreDefaultInputMethod(context)
         stopDaemonProcess()
         stopAllServices(context)
         stopShellServer()
@@ -22,10 +22,39 @@ object AppExitHelper {
         exitProcess(0)
     }
 
-    fun restoreDefaultInputMethod() {
-        val defaultIme = GlobalVars.defaultInputMethod
+    fun saveDefaultInputMethod(context: Context, ime: String) {
+        try {
+            val file = File(context.filesDir, "default_ime.txt")
+            file.writeText(ime)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    fun getSavedInputMethod(context: Context): String? {
+        return try {
+            val file = File(context.filesDir, "default_ime.txt")
+            if (file.exists()) {
+                val content = file.readText().trim()
+                if (content.isNotEmpty()) content else null
+            } else {
+                null
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
+    }
+
+    fun restoreDefaultInputMethod(context: Context) {
+        val defaultIme = getSavedInputMethod(context)
         if (!defaultIme.isNullOrBlank()) {
             RunShell.runBlockingNoOutput("ime set $defaultIme")
+            try {
+                File(context.filesDir, "default_ime.txt").delete()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
     }
 

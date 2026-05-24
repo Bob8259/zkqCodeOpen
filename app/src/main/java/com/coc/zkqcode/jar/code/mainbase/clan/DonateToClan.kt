@@ -1,4 +1,4 @@
-﻿package com.coc.zkqcode.jar.code.mainbase.clan
+package com.coc.zkqcode.jar.code.mainbase.clan
 
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
@@ -40,31 +40,35 @@ suspend fun donateToClan(): Boolean {
     // Track farming mode state across donation loop iterations
     var inFarmingMode = false
     var lastBattleTime = 0L
+    var loopCount = 0
     while (System.currentTimeMillis() - startTime < intervalMillis) {
-        if (System.currentTimeMillis() - lastAdTime >= 8000L) {
+        loopCount++
+        if (System.currentTimeMillis() - lastAdTime >= 1500L) {
             displayAds()
             lastAdTime = System.currentTimeMillis()
         }
         // Capture a single frame buffer and reuse it for all colour checks in this iteration
         val screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult ?: logAndRestart("in donateToClan, screen capture failed.")
 
-        val clanChat = findMultiColors(schema = MyColors.ClanChatIcon, byteBuffer = screenBuffer, increment = 1)
-        if (clanChat != null) {
-            // Tap the clan chat icon to open the chat panel
-            TouchActions.tap(clanChat.x, clanChat.y)
-            if (InGameVars.currentGameVersion == GameVersion.CN) {
-                TouchActions.tap(523, 239, delayTime = 200)
-                TouchActions.tap(152, 88, delayTime = 200)
-            } else {
-                TouchActions.tap(523, 98, delayTime = 300)//Global version chat area
+        if (System.currentTimeMillis() - startTime < 10000) {
+            val clanChat = findMultiColors(schema = MyColors.ClanChatIcon, byteBuffer = screenBuffer, increment = 1)
+            if (clanChat != null) {
+                // Tap the clan chat icon to open the chat panel
+                TouchActions.tap(clanChat.x, clanChat.y)
+                if (InGameVars.currentGameVersion == GameVersion.CN) {
+                    TouchActions.tap(523, 239, delayTime = 200)
+                    TouchActions.tap(152, 88, delayTime = 200)
+                } else {
+                    TouchActions.tap(523, 98, delayTime = 300)//Global version chat area
+                }
+                TouchActions.tap(40, 608)//Goto bottom
+                continue
             }
-            TouchActions.tap(40, 608)//Goto bottom
-            continue
-        }
-        val iUnderstandButton = findMultiColors(schema = MyColors.IUnderstand, byteBuffer = screenBuffer, increment = 1)
-        if (iUnderstandButton != null) {
-            TouchActions.tap(iUnderstandButton.x, iUnderstandButton.y)
-            continue
+            val iUnderstandButton = findMultiColors(schema = MyColors.IUnderstand, byteBuffer = screenBuffer, increment = 1)
+            if (iUnderstandButton != null) {
+                TouchActions.tap(iUnderstandButton.x, iUnderstandButton.y)
+                continue
+            }
         }
         val donationButton = findMultiColors(MyColors.DonationButton, byteBuffer = screenBuffer, increment = 1)
         if (donationButton != null) {
@@ -137,8 +141,10 @@ suspend fun donateToClan(): Boolean {
                 lastBattleTime = System.currentTimeMillis()
             }
         }
-        if (!checkReconnections()) return false
-        delayWithMultiplier(1500)
+        if (loopCount % 5 == 0) {
+            if (!checkReconnections()) return false
+        }
+        delayWithMultiplier(1000)
     }
 
     return enterMainScreen()

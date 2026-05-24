@@ -35,9 +35,11 @@ import androidx.savedstate.SavedStateRegistry
 import androidx.savedstate.SavedStateRegistryController
 import androidx.savedstate.SavedStateRegistryOwner
 import androidx.savedstate.setViewTreeSavedStateRegistryOwner
+import com.coc.zkqcode.core.app.ZKQApplication
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.system.hotupdate.HotUpdateManager
 import com.coc.zkqcode.core.util.basic.RunShell
+import com.coc.zkqcode.core.util.exit.AppExitHelper
 import com.coc.zkqcode.core.util.fileactions.LogHelper
 import com.coc.zkqcode.statehelper.AppMode
 import com.coc.zkqcode.statehelper.AppStateManager
@@ -320,6 +322,7 @@ class ControlWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner 
     }
 
     private fun relaunchMainActivityDetached() {
+        AppExitHelper.restoreDefaultInputMethod(ZKQApplication.appContext)
         val command = "setsid sh -c 'sleep 2; am force-stop com.coc.zkqcode; sleep 1; am start -n com.coc.zkqcode/.MainActivity' >/dev/null 2>&1 &"
         try {
             val process = ProcessBuilder("su").redirectErrorStream(true).start()
