@@ -37,7 +37,7 @@ class Loadjar(private val context: Context) {
     @Composable
     fun LoadAndShowUI(loadStatus: String, onClose: () -> Unit) {
         if (loadStatus == "Plugin loaded successfully") {
-            Column() {
+            Column {
                 pluginUI?.ShowMainUI(context, onClose)
             }
         } else {

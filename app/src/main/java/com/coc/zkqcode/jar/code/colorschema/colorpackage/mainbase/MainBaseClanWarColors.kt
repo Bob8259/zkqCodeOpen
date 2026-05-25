@@ -12,6 +12,7 @@ interface IMainBaseClanWarColors {
     val ClanWarAttack: ColorSchema
     val ClanWarAttack2: ColorSchema
     val RecommendedOpponent: ColorSchema
+    val RecommendedOpponent2: ColorSchema
     val ClanLeagueGreenWarIcon: ColorSchema
     val IncreaseRank: ColorSchema
     val ClanLeagueSeasonInfo: ColorSchema
@@ -56,7 +57,10 @@ object MainBaseClanWarColors : IMainBaseClanWarColors {
 
     // Recommended opponent indicator
     override val RecommendedOpponent = ColorSchema.parse(
-        311, 232, 1092, 708, "2C98FD", "0|1|2D99FD,0|2|2C99FE,0|3|2C98FC,0|4|2C98FD,0|5|2D99FD,0|6|2C99FE,0|7|2C98FD,0|8|2C98FD,0|9|2C99FE", 0, 0.92, "推荐目标"
+        310, 230, 1090, 710, "2C98FD", "0|1|2D99FD,0|2|2C99FE,0|3|2C98FC,0|4|2C98FD,0|5|2D99FD,0|6|2C99FE,0|7|2C98FD,0|8|2C98FD,0|9|2C99FE", 0, 0.92, "推荐目标"
+    )
+    override val RecommendedOpponent2 = ColorSchema.parse(
+        310, 230, 1090, 710, "2C98FD", "0|2|2C99FE,0|5|2C98FE,0|8|2C98FE,10|8|3795EC,10|6|3291E9,10|4|3391EA,10|3|3495ED,7|3|3B8DD9,5|7|3685CD", 0, 0.92, "推荐目标2"
     )
 
     // Green war icon in clan league

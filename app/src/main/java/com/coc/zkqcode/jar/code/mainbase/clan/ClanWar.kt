@@ -74,6 +74,8 @@ private suspend fun attackByPosition() {
         val attackButton = findMultiColorsUntil(listOf(MyColors.ClanWarAttack, MyColors.ClanWarAttack2), duration = 1000) ?: return
         accountMessage("已找到目标，尝试进入对战")
         executeClanWarAttack(attackButton.x, attackButton.y)
+    } else {
+        accountMessage("未找到部落战信息")
     }
 }
 
@@ -81,7 +83,10 @@ private suspend fun attackByPosition() {
  * Find the recommended opponent and attempt to attack.
  */
 private suspend fun attackByRecommendation() {
-    val recommended = findMultiColorsUntil(schemas = listOf(MyColors.RecommendedOpponent), duration = 3000) ?: return
+    val recommended = findMultiColorsUntil(schemas = listOf(MyColors.RecommendedOpponent), duration = 3000) ?: run {
+        accountMessage("未找到推荐对手")
+        return
+    }
     accountMessage("已找到推荐对手，准备尝试进攻")
     TouchActions.tap(recommended.x, recommended.y - 100)
     val attackButton = findMultiColorsUntil(listOf(MyColors.ClanWarAttack, MyColors.ClanWarAttack2), duration = 1000) ?: return
