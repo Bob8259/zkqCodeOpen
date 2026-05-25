@@ -144,7 +144,7 @@ suspend fun donateToClan(): Boolean {
         if (loopCount % 5 == 0) {
             if (!checkReconnections()) return false
         }
-        delayWithMultiplier(1000)
+        delayWithMultiplier(500)
     }
 
     return enterMainScreen()

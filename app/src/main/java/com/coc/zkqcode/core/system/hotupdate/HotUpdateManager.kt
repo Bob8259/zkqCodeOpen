@@ -358,8 +358,11 @@ object HotUpdateManager {
             if (response.isSuccessful) {
                 return response
             } else {
+                val code = response.code
+                val errorBody = try { response.body.string() } catch (_: Exception) { "" }
                 response.close()
-                null
+                LogHelper.showDebugInfo("Primary $endpoint → $code: $errorBody")
+                IOException("Primary server returned error: $code — $errorBody")
             }
         } catch (e: SocketTimeoutException) {
             e
@@ -376,14 +379,17 @@ object HotUpdateManager {
                 if (response.isSuccessful) {
                     return response
                 } else {
+                    val code = response.code
+                    val errorBody = try { response.body.string() } catch (_: Exception) { "" }
                     response.close()
-                    throw IOException("Backup server returned error: ${response.code}")
+                    LogHelper.showDebugInfo("Backup $endpoint → $code: $errorBody")
+                    throw IOException("Backup server returned error: $code — $errorBody")
                 }
             } catch (e: Exception) {
-                throw IOException("Both primary and backup servers failed. Primary: ${primaryException?.message}, Backup: ${e.message}", e)
+                throw IOException("Both primary and backup servers failed. Primary: ${primaryException.message}, Backup: ${e.message}", e)
             }
         } else {
-            throw IOException("Primary server failed and no backup URL configured: ${primaryException?.message}", primaryException)
+            throw IOException("Primary server failed and no backup URL configured: ${primaryException.message}", primaryException)
         }
     }
 
