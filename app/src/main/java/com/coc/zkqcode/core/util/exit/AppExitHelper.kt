@@ -8,7 +8,6 @@ import com.coc.zkqcode.core.ui.floatingwindows.ControlWindowService
 import com.coc.zkqcode.core.ui.floatingwindows.MessageBoxService
 import com.coc.zkqcode.core.ui.floatingwindows.UIWindowService
 import com.coc.zkqcode.core.util.basic.RunShell
-import java.io.File
 import kotlin.system.exitProcess
 
 object AppExitHelper {
@@ -24,8 +23,8 @@ object AppExitHelper {
 
     fun saveDefaultInputMethod(context: Context, ime: String) {
         try {
-            val file = File(context.filesDir, "default_ime.txt")
-            file.writeText(ime)
+            val prefs = context.getSharedPreferences("ime_prefs", Context.MODE_PRIVATE)
+            prefs.edit().putString("default_ime", ime).apply()
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -33,13 +32,9 @@ object AppExitHelper {
 
     fun getSavedInputMethod(context: Context): String? {
         return try {
-            val file = File(context.filesDir, "default_ime.txt")
-            if (file.exists()) {
-                val content = file.readText().trim()
-                if (content.isNotEmpty()) content else null
-            } else {
-                null
-            }
+            val prefs = context.getSharedPreferences("ime_prefs", Context.MODE_PRIVATE)
+            val ime = prefs.getString("default_ime", null)
+            if (!ime.isNullOrBlank()) ime else null
         } catch (e: Exception) {
             e.printStackTrace()
             null
@@ -51,7 +46,8 @@ object AppExitHelper {
         if (!defaultIme.isNullOrBlank()) {
             RunShell.runBlockingNoOutput("ime set $defaultIme")
             try {
-                File(context.filesDir, "default_ime.txt").delete()
+                context.getSharedPreferences("ime_prefs", Context.MODE_PRIVATE)
+                    .edit().remove("default_ime").apply()
             } catch (e: Exception) {
                 e.printStackTrace()
             }

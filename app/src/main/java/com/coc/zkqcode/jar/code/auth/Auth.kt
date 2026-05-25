@@ -14,7 +14,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
-import java.io.File
 import java.net.SocketTimeoutException
 import kotlin.random.Random
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -139,9 +138,9 @@ suspend fun userAuth() {
             return
         }
 
-        // --- Session token check: skip login if session_key file exists ---
-        val sessionKeyFile = File(ZKQApplication.appContext.filesDir, "session_key")
-        if (!sessionKeyFile.exists()) {
+        // --- Session token check: skip login if session_key exists in SharedPreferences ---
+        val authPrefs = ZKQApplication.appContext.getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
+        if (!authPrefs.contains("session_key")) {
             // Perform session login (mirrors Login.kt login() flow)
             try {
                 // Fetch PoW challenge
@@ -207,14 +206,11 @@ suspend fun userAuth() {
                 val sessionGem = sessionResult["gem"]
 
                 if (sessionKey != null && sessionGem != null) {
-                    // Store session key in private file
-                    withContext(Dispatchers.IO) {
-                        try {
-                            ZKQApplication.appContext.openFileOutput("session_key", Context.MODE_PRIVATE).use {
-                                it.write(sessionKey.toByteArray())
-                            }
-                        } catch (_: Exception) {
-                        }
+                    // Store session key in SharedPreferences
+                    try {
+                        ZKQApplication.appContext.getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
+                            .edit().putString("session_key", sessionKey).apply()
+                    } catch (_: Exception) {
                     }
                     // Update gem count
                     GlobalVars.configStates["gem_count"]?.value = sessionGem

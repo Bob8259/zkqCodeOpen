@@ -183,14 +183,11 @@ fun LoginScreen(onAdFreeClick: () -> Unit = {}) {
                     val gem = fields["gem"]
 
                     if (sessionKey != null && gem != null) {
-                        // Store session key in private file
-                        withContext(Dispatchers.IO) {
-                            try {
-                                context.openFileOutput("session_key", android.content.Context.MODE_PRIVATE).use {
-                                    it.write(sessionKey.toByteArray())
-                                }
-                            } catch (_: Exception) { }
-                        }
+                        // Store session key in SharedPreferences
+                        try {
+                            context.getSharedPreferences("auth_prefs", android.content.Context.MODE_PRIVATE)
+                                .edit().putString("session_key", sessionKey).apply()
+                        } catch (_: Exception) { }
                         // Update gem display
                         formattedGem = String.format(Locale.US, "%.4f", gem.toDouble())
                         gem.toDoubleOrNull()?.let {
@@ -324,12 +321,11 @@ fun LoginScreen(onAdFreeClick: () -> Unit = {}) {
                         GlobalVars.configStates[GLOBAL_SETTINGS.EMAIL.key]!!.value = ""
                         GlobalVars.configStates[GLOBAL_SETTINGS.PASSWORD.key]!!.value = ""
                         GlobalVars.configStates[GLOBAL_SETTINGS.GEM_COUNT.key]!!.value = ""
-                        // Clear session key from private file
-                        withContext(Dispatchers.IO) {
-                            try {
-                                context.deleteFile("session_key")
-                            } catch (_: Exception) { }
-                        }
+                        // Clear session key from SharedPreferences
+                        try {
+                            context.getSharedPreferences("auth_prefs", android.content.Context.MODE_PRIVATE)
+                                .edit().remove("session_key").apply()
+                        } catch (_: Exception) { }
                     }
                     gemInfo = Strings.logoutSuccess
                 }, enable = isLoginButtonEnabled
