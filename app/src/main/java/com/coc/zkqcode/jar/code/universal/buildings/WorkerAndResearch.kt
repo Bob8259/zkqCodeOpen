@@ -39,7 +39,7 @@ object WorkerAndResearch {
         }
 
         val workerSchemas = when (baseType) {
-            BaseType.Builder -> listOf(MyColors.BuilderBaseWorker, MyColors.BuilderBaseWorker2)
+            BaseType.Builder -> listOf(MyColors.BuilderBaseWorker, MyColors.BuilderBaseWorker2, MyColors.BuilderBaseWorker3)
             BaseType.Main -> MyColors.MainBaseWorkerSchemas
         }
 

@@ -19,7 +19,7 @@ suspend fun builderBaseTutorial(): Boolean {
         TouchActions.tap(it.x - 80, it.y + 100)
         TouchActions.tap(707, 558)
     }
-    findMultiColorsUntil(schemas = listOf(MyColors.BuilderBaseWorker, MyColors.BuilderBaseWorker2), duration = 200, increment = 1)?.let {
+    findMultiColorsUntil(schemas = listOf(MyColors.BuilderBaseWorker, MyColors.BuilderBaseWorker2, MyColors.BuilderBaseWorker3), duration = 200, increment = 1)?.let {
         TouchActions.tap(it.x, it.y)
     }
     // 3. Tutorial Builder Base Barb
