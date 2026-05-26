@@ -137,7 +137,7 @@ object MainBaseSettings {
     val CLAIM_TIMED_REWARDS = SettingDef("claim_timed_rewards", "领限时活动奖励", "Claim Timed Rewards", 0, "MAIN_BASE_SETTINGS")
     val CLAIM_TOKEN_REWARDS = SettingDef("claim_token_rewards", "领令牌奖励", "Claim Token Rewards", 0, "MAIN_BASE_SETTINGS")
     val COLLECT_CAPITAL_COINS = SettingDef("collect_capital_coins", "领都城币", "Collect Capital Coins", 0, "MAIN_BASE_SETTINGS")
-    val DONATE_CAPITAL_GOLD = SettingDef("donate_capital_gold", "捐都城币", "Donate Capital Gold", 0, "MAIN_BASE_SETTINGS")
+    val CONTRIBUTE_CAPITAL_COINS = SettingDef("contribute_capital_coins", "捐都城币", "Contribute Capital Coins", 0, "MAIN_BASE_SETTINGS")
     val CLAIM_FREE_SHOP_REWARDS = SettingDef("claim_free_shop_rewards", "领每周精选免费奖励", "Claim Weekly Free Rewards", 1, "MAIN_BASE_SETTINGS")
     val AUTO_JOIN_CLAN = SettingDef("auto_join_clan", "自动加部落", "Auto Join Clan", 0, "MAIN_BASE_SETTINGS")
     val CLAIM_ACHIEVEMENT_GEMS = SettingDef("claim_achievement_gems", "领取成就宝石", "Claim Achievement Gems", 0, "MAIN_BASE_SETTINGS")
@@ -248,7 +248,7 @@ object MainBaseSettings {
         CLAIM_TIMED_REWARDS,
         CLAIM_TOKEN_REWARDS,
         COLLECT_CAPITAL_COINS,
-        DONATE_CAPITAL_GOLD,
+        CONTRIBUTE_CAPITAL_COINS,
         CLAIM_FREE_SHOP_REWARDS,
         AUTO_JOIN_CLAN,
         CLAIM_ACHIEVEMENT_GEMS,

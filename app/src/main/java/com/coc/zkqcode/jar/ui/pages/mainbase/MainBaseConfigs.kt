@@ -214,6 +214,7 @@ fun LazyListScope.mainBaseConfig(
                     key = "${MAIN_BASE_SETTINGS.PLAY_LEAGUE.key}_c$index", explain = Strings.leagueExplain
                 )
                 SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.PLAY_RAID.key}_c$index")
+                SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.CONTRIBUTE_CAPITAL_COINS.key}_c$index")
                 SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.COLLECT_CAPITAL_COINS.key}_c$index")
             }
 
