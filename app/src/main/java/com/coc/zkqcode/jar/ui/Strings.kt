@@ -260,4 +260,6 @@ object Strings {
     val memoryCleanSuccess get() = if (LanguageManager.isChinese) "记忆文件清除成功" else "Memory cache cleared"
     val memoryCleanFail get() = if (LanguageManager.isChinese) "清除失败，可能记忆文件不存在" else "Clear failed - cache may not exist"
     val clearMemoryExplain get() = if (LanguageManager.isChinese) "辅助会缓存账号的运行状态，例如当前账号是否已完成突袭、部落竞赛等任务。切换账号后若未清除缓存，辅助将沿用先前账号的状态信息，可能导致异常操作。" else "The app caches account status (e.g., Raid, Clan Games). If not cleared when switching accounts, it may use old data and cause issues."
+    val copyLogs get() = if (LanguageManager.isChinese) "复制日志" else "Copy Logs"
 }
+
