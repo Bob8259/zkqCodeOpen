@@ -16,6 +16,16 @@ import com.coc.zkqcode.jar.ui.schema.Schema
 import java.util.Calendar
 
 suspend fun playClanCapital(): Boolean {
+    if (!collectCapitalCoins()) return false
+    if (!performClanCapitalRaid()) return false
+    return true
+}
+
+/**
+ * Execute the Clan Capital raid loop: validate prerequisites, train troops,
+ * check cooldown, and attack up to 6 times.
+ */
+suspend fun performClanCapitalRaid(): Boolean {
     if (!getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.PLAY_RAID.key) || InGameVars.townHallLevel < 3) return true
     // All clan capital actions are only relevant during raid weekend
     if (!isWithinRaidWeekend()) {
