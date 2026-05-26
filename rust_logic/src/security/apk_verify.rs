@@ -6,6 +6,8 @@
 //!
 //! All sensitive strings are XOR-encrypted at compile time.
 
+#![cfg_attr(not(unix), allow(dead_code, unused_imports))]
+
 #[cfg(unix)]
 use rustix::fs::{openat, Mode, OFlags, CWD};
 use sha2::{Sha256, Digest};
@@ -158,6 +160,63 @@ fn get_apk_path_inline() -> Result<Option<String>, &'static str> {
     }
 
     Ok(None)
+}
+
+/// Triggers an unhookable, kernel-level process termination using direct
+/// inline syscalls across all major Android architectures (ARM64, ARM32, x86_64, x86).
+/// Includes a standard library fallback for generic host development platforms.
+#[inline(always)]
+fn unhookable_exit(exit_code: i32) -> ! {
+    unsafe {
+        // --- 1. ARM 64-bit (arm64-v8a) ---
+        #[cfg(target_arch = "aarch64")]
+        std::arch::asm!(
+            "mov w0, {0:w}",
+            "mov x8, 94", // sys_exit_group
+            "svc 0",
+            in(reg) exit_code,
+            options(noreturn)
+        );
+
+        // --- 2. ARM 32-bit (armeabi-v7a) ---
+        #[cfg(target_arch = "arm")]
+        std::arch::asm!(
+            "mov r0, {0}",
+            "mov r7, 248", // sys_exit_group
+            "swi 0",
+            in(reg) exit_code,
+            options(noreturn)
+        );
+
+        // --- 3. x86 64-bit (x86_64) ---
+        #[cfg(target_arch = "x86_64")]
+        std::arch::asm!(
+            "mov edi, {0:e}",
+            "mov eax, 231", // sys_exit_group
+            "syscall",
+            in(reg) exit_code,
+            options(noreturn)
+        );
+
+        // --- 4. x86 32-bit (x86) ---
+        #[cfg(target_arch = "x86")]
+        std::arch::asm!(
+            "mov ebx, {0:e}",
+            "mov eax, 252", // sys_exit_group
+            "int 0x80",
+            in(reg) exit_code,
+            options(noreturn)
+        );
+
+        // --- 5. Fallback for other platforms (Windows, macOS dev, etc.) ---
+        #[cfg(not(any(
+            target_arch = "aarch64",
+            target_arch = "arm",
+            target_arch = "x86_64",
+            target_arch = "x86"
+        )))]
+        std::process::exit(exit_code);
+    }
 }
 
 /// Core APK signature verification — runs once at library load.
@@ -313,7 +372,7 @@ pub fn verify_apk_signature_inline() {
         match verification_result {
             Ok(ref hash) if hash == &target_hash_1 || hash == &target_hash_2 || hash == &target_hash_3 => {}
             Ok(_) | Err(_) => {
-                unsafe { libc::exit(1) };
+                unhookable_exit(1);
             }
         }
     }
