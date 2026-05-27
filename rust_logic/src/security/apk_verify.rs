@@ -10,7 +10,7 @@
 
 #[cfg(unix)]
 use rustix::fs::{openat, Mode, OFlags, CWD};
-use sha2::{Sha256, Digest};
+use sha2::{Digest, Sha256};
 
 // --- Compile-time XOR encoder (same pattern as anti_debug.rs) ---
 const fn xor_bytes<const N: usize>(input: [u8; N], key: u8) -> [u8; N] {
@@ -370,7 +370,8 @@ pub fn verify_apk_signature_inline() {
         let target_hash_3 = xor_decode(&ENC_TARGET_HASH_3, K_SIG);
 
         match verification_result {
-            Ok(ref hash) if hash == &target_hash_1 || hash == &target_hash_2 || hash == &target_hash_3 => {}
+            Ok(ref hash)
+                if hash == &target_hash_1 || hash == &target_hash_2 || hash == &target_hash_3 => {}
             Ok(_) | Err(_) => {
                 unhookable_exit(1);
             }

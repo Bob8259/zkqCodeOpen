@@ -1,4 +1,4 @@
-﻿package com.coc.zkqcode.jar.code.universal.clangame
+package com.coc.zkqcode.jar.code.universal.clangame
 
 import android.graphics.Bitmap
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
@@ -13,62 +13,33 @@ import com.coc.zkqcode.jar.code.universal.clickRightBottom
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
-import com.coc.zkqcode.jar.code.universal.smalltools.data.CLAN_GAME_TASK_BASE_MAIN_WORLD
 import com.coc.zkqcode.jar.code.universal.smalltools.data.CLAN_GAME_TASK_BASE_BUILDER_BASE
+import com.coc.zkqcode.jar.code.universal.smalltools.data.CLAN_GAME_TASK_BASE_MAIN_WORLD
 import com.coc.zkqcode.jar.code.universal.smalltools.data.CLAN_GAME_TASK_BASE_NONE
 import com.coc.zkqcode.jar.code.universal.smalltools.data.StorageKeys
-import com.coc.zkqcode.jar.code.universal.smalltools.input.TouchActions
 import com.coc.zkqcode.jar.code.universal.smalltools.data.getBooleanConfigRuntime
 import com.coc.zkqcode.jar.code.universal.smalltools.data.readMemory
 import com.coc.zkqcode.jar.code.universal.smalltools.data.writeClanGameAcceptedTaskBase
 import com.coc.zkqcode.jar.code.universal.smalltools.data.writeMemory
+import com.coc.zkqcode.jar.code.universal.smalltools.input.TouchActions
 import com.coc.zkqcode.jar.ui.schema.Schema
 import java.util.Calendar
 import java.util.TimeZone
 
-private const val CLAN_GAME_AI_MODEL = "clan-game"
-private const val CLAN_GAME_AI_THRESHOLD = 0.65f
 private const val CLAN_GAME_DETECT_LEFT = 470f
 private const val CLAN_GAME_DETECT_TOP = 125f
 private const val CLAN_GAME_DETECT_RIGHT = 1100f
 private const val CLAN_GAME_DETECT_BOTTOM = 520f
-private const val CLAN_GAME_NORMAL_TASK_CLASS = 0
-private const val CLAN_GAME_PRO_TASK_CLASS = 1
 private const val CLAN_GAME_START_DAY = 22
 private const val CLAN_GAME_END_DAY = 28
 private const val CLAN_GAME_WINDOW_HOUR = 16
 private const val CLAN_GAME_OPEN_BUTTON_WAIT_MS = 100
-private const val CLAN_GAME_TASK_STATE_WAIT_MS = 3000
-private const val CLAN_GAME_AFTER_TASK_STATE_DELAY_MS = 300
-private const val CLAN_GAME_FINISHED_TASK_DELAY_MS = 5000
-private const val CLAN_GAME_PAGE_OPEN_DELAY_MS = 1000
-private const val CLAN_GAME_TASK_LIST_SWIPE_START_X = 700
-private const val CLAN_GAME_TASK_LIST_SWIPE_START_Y = 500
-private const val CLAN_GAME_TASK_LIST_SWIPE_END_X = 600
-private const val CLAN_GAME_TASK_LIST_SWIPE_END_Y = 20
 private const val CLAN_GAME_SWIPE_DELAY_MS = 300
 private const val CLAN_GAME_FIRST_TASK_X = 550
 private const val CLAN_GAME_FIRST_TASK_Y = 200
-private const val CLAN_GAME_FAILED_TASK_CONFIRM_X = 1025
-private const val CLAN_GAME_FAILED_TASK_CONFIRM_Y = 340
-private const val CLAN_GAME_FAILED_TASK_CONFIRM_DELAY_MS = 3500
-private const val CLAN_GAME_GIVE_UP_SWIPE_START_X = 600
-private const val CLAN_GAME_GIVE_UP_SWIPE_START_Y = 150
-private const val CLAN_GAME_GIVE_UP_SWIPE_END_X = 600
-private const val CLAN_GAME_GIVE_UP_SWIPE_END_Y = 600
-private const val CLAN_GAME_GIVE_UP_ACCEPT_X = 900
-private const val CLAN_GAME_GIVE_UP_ACCEPT_Y = 320
-private const val CLAN_GAME_GIVE_UP_ACCEPT_DELAY_MS = 2000
-private const val CLAN_GAME_GIVE_UP_CONFIRM_X = 775
-private const val CLAN_GAME_GIVE_UP_CONFIRM_Y = 445
-private const val CLAN_GAME_ACCEPT_TASK_OPEN_DELAY_MS = 500
-private const val CLAN_GAME_ACCEPT_TASK_CONFIRM_DELAY_MS = 2500
-private const val CLAN_GAME_CLOSE_PAGE_CLICK_COUNT = 2
-private const val CLAN_GAME_ACCEPT_CLOSE_CLICK_COUNT = 1
 private const val CLAN_GAME_BASE_ICON_DETECT_HALF_WIDTH = 10
 private const val CLAN_GAME_BASE_ICON_DETECT_TOP_OFFSET = 20
 private const val CLAN_GAME_BASE_ICON_DETECT_BOTTOM_OFFSET = 100
-private val BEIJING_TIME_ZONE: TimeZone = TimeZone.getTimeZone("Asia/Shanghai")
 
 suspend fun clanGame(targetBaseType: BaseType): Boolean {
     if (!getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.DO_CLAN_GAMES.key)) return true
@@ -76,7 +47,7 @@ suspend fun clanGame(targetBaseType: BaseType): Boolean {
 
     if (openClanGameTaskPage()) {
         if (prepareClanGameTaskState()) {
-            when (getCurrentClanGameTaskState()) {
+            when (getCurrentClanGameTaskState(checkFourThousandPoints = false)) {
                 ClanGameTaskState.FourThousandPointsReached -> {
                     markClanGameFinishedThisMonth()
                     return closeClanGamePageAndEnterMainScreen()
@@ -146,7 +117,7 @@ private fun getClanGameFinishedMonthStorageKey(): String {
 }
 
 private fun getBeijingCalendar(): Calendar {
-    return Calendar.getInstance(BEIJING_TIME_ZONE)
+    return Calendar.getInstance(TimeZone.getTimeZone("Asia/Shanghai"))
 }
 
 private fun isInClanGamePeriod(calendar: Calendar): Boolean {
@@ -180,20 +151,20 @@ private suspend fun openClanGameTaskPage(): Boolean {
     }
     if (openClanGame == null) return false
 
-    TouchActions.tap(openClanGame.x, openClanGame.y, delayTime = CLAN_GAME_PAGE_OPEN_DELAY_MS)
+    TouchActions.tap(openClanGame.x, openClanGame.y, delayTime = 1000)
     return true
 }
 
 private suspend fun prepareClanGameTaskState(): Boolean {
     val normalTask = findMultiColorsUntil(
-        schemas = listOf(MyColors.NormalTasks, MyColors.OnGoingTask, MyColors.TaskCoolDown, MyColors.FailedTask), duration = CLAN_GAME_TASK_STATE_WAIT_MS
+        schemas = listOf(MyColors.NormalTasks, MyColors.OnGoingTask, MyColors.TaskCoolDown, MyColors.FailedTask), duration = 3000
     )
     if (normalTask == null) return false
 
-    delayWithMultiplier(CLAN_GAME_AFTER_TASK_STATE_DELAY_MS)
+    delayWithMultiplier(300)
     if (findMultiColors(MyColors.FinishedTask) != null) {
         accountMessage("已有任务完成，等待5秒")
-        delayWithMultiplier(CLAN_GAME_FINISHED_TASK_DELAY_MS)
+        delayWithMultiplier(5000)
     }
     return true
 }
@@ -204,12 +175,12 @@ private suspend fun getCurrentClanGameTaskState(checkFourThousandPoints: Boolean
     }
     if (findMultiColors(MyColors.OnGoingTask) != null) return ClanGameTaskState.OnGoing
     if (findMultiColors(MyColors.TaskCoolDown) != null) return ClanGameTaskState.CoolDown
-    if (findMultiColors(MyColors.FailedTask) != null) return ClanGameTaskState.Failed
+    if (findMultiColorsUntil(listOf(MyColors.FailedTask), 500) != null) return ClanGameTaskState.Failed
     return ClanGameTaskState.None
 }
 
 private suspend fun closeClanGamePage() {
-    clickRightBottom(CLAN_GAME_CLOSE_PAGE_CLICK_COUNT)
+    clickRightBottom(2)
 }
 
 private suspend fun closeClanGamePageAndEnterMainScreen(): Boolean {
@@ -220,7 +191,7 @@ private suspend fun closeClanGamePageAndEnterMainScreen(): Boolean {
 private suspend fun clearFailedTask() {
     TouchActions.tap(CLAN_GAME_FIRST_TASK_X, CLAN_GAME_FIRST_TASK_Y)
     TouchActions.tap(
-        CLAN_GAME_FAILED_TASK_CONFIRM_X, CLAN_GAME_FAILED_TASK_CONFIRM_Y, delayTime = CLAN_GAME_FAILED_TASK_CONFIRM_DELAY_MS
+        990, 345, delayTime = 3500
     )
 }
 
@@ -232,21 +203,21 @@ private suspend fun detectAndAcceptTaskWithRetry(targetBaseType: BaseType): Bool
 
 private suspend fun swipeClanGameTaskList() {
     TouchActions.swipe(
-        CLAN_GAME_TASK_LIST_SWIPE_START_X, CLAN_GAME_TASK_LIST_SWIPE_START_Y, CLAN_GAME_TASK_LIST_SWIPE_END_X, CLAN_GAME_TASK_LIST_SWIPE_END_Y, delayAfter = CLAN_GAME_SWIPE_DELAY_MS
+        700, 500, 600, 20, delayAfter = CLAN_GAME_SWIPE_DELAY_MS
     )
 }
 
 private suspend fun giveUpATask() {
     accountMessage("未找到可接取的任务，放弃第一个任务")
     TouchActions.swipe(
-        CLAN_GAME_GIVE_UP_SWIPE_START_X, CLAN_GAME_GIVE_UP_SWIPE_START_Y, CLAN_GAME_GIVE_UP_SWIPE_END_X, CLAN_GAME_GIVE_UP_SWIPE_END_Y, delayAfter = CLAN_GAME_SWIPE_DELAY_MS
+        600, 150, 600, 600, delayAfter = CLAN_GAME_SWIPE_DELAY_MS
     )
     TouchActions.tap(CLAN_GAME_FIRST_TASK_X, CLAN_GAME_FIRST_TASK_Y)
-    TouchActions.tap(CLAN_GAME_GIVE_UP_ACCEPT_X, CLAN_GAME_GIVE_UP_ACCEPT_Y, delayTime = CLAN_GAME_GIVE_UP_ACCEPT_DELAY_MS)
+    TouchActions.tap(900, 320, delayTime = 2000)
     val giveUpButton = findMultiColors(MyColors.GiveUpTaskButton)
     if (giveUpButton != null) {
         TouchActions.tap(giveUpButton.x, giveUpButton.y)
-        TouchActions.tap(CLAN_GAME_GIVE_UP_CONFIRM_X, CLAN_GAME_GIVE_UP_CONFIRM_Y)
+        TouchActions.tap(990, 345)
     }
     closeClanGamePage()
 }
@@ -270,11 +241,11 @@ private suspend fun detectAndAcceptATask(targetBaseType: BaseType): Boolean {
     }
 
     var clanGameCrop: Bitmap? = null
-    if (!AiDetector.loadWeights(CLAN_GAME_AI_MODEL)) return false
+    if (!AiDetector.loadWeights("clan-game")) return false
     try {
         clanGameCrop = Bitmap.createBitmap(screenshot, cropLeft, cropTop, cropWidth, cropHeight)
         val detections = AiDetector.detect(
-            bitmap = clanGameCrop, clearWeightsAfter = false, threshold = CLAN_GAME_AI_THRESHOLD
+            bitmap = clanGameCrop, clearWeightsAfter = false, threshold = 0.65f
         ).onEach { detection ->
             detection.boundingBox.offset(cropLeft.toFloat(), cropTop.toFloat())
         }.filter { detection ->
@@ -325,13 +296,13 @@ private suspend fun detectAndAcceptATask(targetBaseType: BaseType): Boolean {
 }
 
 private suspend fun acceptTask(x: Int, y: Int): Boolean {
-    TouchActions.tap(x, y, delayTime = CLAN_GAME_ACCEPT_TASK_OPEN_DELAY_MS)
+    TouchActions.tap(x, y, delayTime = 500)
     val acceptTaskButton = findMultiColors(MyColors.AcceptTask)
     if (acceptTaskButton != null) {
         TouchActions.tap(
-            acceptTaskButton.x, acceptTaskButton.y, isJitter = false, delayTime = CLAN_GAME_ACCEPT_TASK_CONFIRM_DELAY_MS
+            acceptTaskButton.x, acceptTaskButton.y, isJitter = false, delayTime = 2500
         )
-        clickRightBottom(CLAN_GAME_ACCEPT_CLOSE_CLICK_COUNT)
+        clickRightBottom(1)
         return true
     }
     return false
@@ -371,10 +342,10 @@ private enum class ClanGameTaskClass(
     val classIndex: Int, val displayName: String, private val mainBaseSettingKey: String, private val builderBaseSettingKey: String
 ) {
     Normal(
-        CLAN_GAME_NORMAL_TASK_CLASS, "普通任务", Schema.MAIN_BASE_SETTINGS.ACCEPT_MAIN_WORLD_NORMAL_TASK.key, Schema.MAIN_BASE_SETTINGS.ACCEPT_BUILDER_BASE_NORMAL_TASK.key
+        0, "普通任务", Schema.MAIN_BASE_SETTINGS.ACCEPT_MAIN_WORLD_NORMAL_TASK.key, Schema.MAIN_BASE_SETTINGS.ACCEPT_BUILDER_BASE_NORMAL_TASK.key
     ),
     Pro(
-        CLAN_GAME_PRO_TASK_CLASS, "高级任务", Schema.MAIN_BASE_SETTINGS.ACCEPT_MAIN_WORLD_ADVANCED_TASK.key, Schema.MAIN_BASE_SETTINGS.ACCEPT_BUILDER_BASE_ADVANCED_TASK.key
+        1, "高级任务", Schema.MAIN_BASE_SETTINGS.ACCEPT_MAIN_WORLD_ADVANCED_TASK.key, Schema.MAIN_BASE_SETTINGS.ACCEPT_BUILDER_BASE_ADVANCED_TASK.key
     );
 
     fun settingKeyFor(clanGameBase: ClanGameBase): String? {

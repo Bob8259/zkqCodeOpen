@@ -44,7 +44,8 @@ private suspend fun handleTutorialArrowIfNeeded() {
         schemas = listOf(MyColors.MainBaseSmallTutorial), duration = 1500
     ) ?: return
 
-    TouchActions.tap(tutorialArrow.x + 20, tutorialArrow.y + 60, delayTime = 800)
+    TouchActions.tap(tutorialArrow.x + 20, tutorialArrow.y + 90)
+
     val clanMedalTutorial = findMultiColors(MyColors.ClanMedalTutorial)
     if (clanMedalTutorial != null) {
         TouchActions.tap(clanMedalTutorial.x, clanMedalTutorial.y)

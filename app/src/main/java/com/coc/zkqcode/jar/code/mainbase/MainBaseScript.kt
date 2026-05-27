@@ -35,6 +35,7 @@ import com.coc.zkqcode.jar.code.universal.smalltools.lifecycle.enterMainBase
 suspend fun playMainBase(): Boolean {
     if (!enterMainBase()) return false
     if (!checkItemsToBePlaced()) return false
+    if (!mainBaseCheckTutorials()) return false
     if (!checkRandomSchedule()) return false
     if (!playClanCapital()) return false
     if (!clanGame(BaseType.Main)) return false
@@ -56,7 +57,6 @@ suspend fun playMainBase(): Boolean {
     if (!upgradeWallsThenBuildings(BaseType.Main)) return false
     if (!mainBaseResearch()) return false
     if (!placeHeroBanners()) return false
-    if (!mainBaseCheckTutorials()) return false
     if (!upgradeGearsAndPets()) return false
     if (!collectClanCastleResources()) return false
     if (!useHelpers()) return false

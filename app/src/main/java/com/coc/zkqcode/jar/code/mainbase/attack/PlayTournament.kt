@@ -11,6 +11,7 @@ import com.coc.zkqcode.jar.code.universal.smalltools.data.checkMemoryFile
 import com.coc.zkqcode.jar.code.universal.smalltools.data.getBooleanConfigRuntime
 import com.coc.zkqcode.jar.code.universal.smalltools.data.writeMemory
 import com.coc.zkqcode.jar.code.universal.smalltools.input.TouchActions
+import com.coc.zkqcode.jar.code.universal.smalltools.lifecycle.checkReconnections
 import com.coc.zkqcode.jar.code.universal.smalltools.lifecycle.killGame
 import com.coc.zkqcode.jar.code.universal.smalltools.lifecycle.runGame
 import com.coc.zkqcode.jar.ui.schema.Schema
@@ -54,6 +55,7 @@ suspend fun playTournament(): Boolean {
             runGame()
             break
         }
+        if (!checkReconnections()) break
         val remainingSeconds = ((maxDuration - (System.currentTimeMillis() - startTime)).coerceAtLeast(0L) / 1000L)
         accountMessage("排位赛检测中，剩余${remainingSeconds}秒后强行结束")
     }
