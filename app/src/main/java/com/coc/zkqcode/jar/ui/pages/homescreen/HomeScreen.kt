@@ -46,6 +46,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.util.fileactions.FileHelper
+import com.coc.zkqcode.jar.code.universal.InGameVars
 import com.coc.zkqcode.jar.ui.Strings
 import com.coc.zkqcode.jar.ui.pages.mainbase.BackgroundImage
 import com.coc.zkqcode.jar.ui.components.CustomButton
@@ -203,11 +204,11 @@ fun HomeScreen(
     }
 
     // Auto-Run Timer Logic
-    LaunchedEffect(GlobalVars.isAutoRunEnabled, GlobalVars.autoRunTimer) {
+    LaunchedEffect(GlobalVars.isAutoRunEnabled, InGameVars.autoRunTimer) {
         if (GlobalVars.isAutoRunEnabled) {
             delay(1000L)
-            GlobalVars.autoRunTimer--
-            if (GlobalVars.autoRunTimer <= 0) {
+            InGameVars.autoRunTimer--
+            if (InGameVars.autoRunTimer <= 0) {
                 saveAndSetPlaying(true)
             }
         }

@@ -1,5 +1,8 @@
 package com.coc.zkqcode.jar.code.universal
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.setValue
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.jar.code.universal.buildings.BaseType
 
@@ -54,6 +57,9 @@ object InGameVars {
 
     @Volatile
     var builderBaseWallLevel: Int = 0
+
+    // Compose-reactive auto-run timer (observed by UI for recomposition)
+    var autoRunTimer by mutableIntStateOf(30)
 }
 
 fun accountMessage(text: String, isChecking: Boolean = true) {

@@ -164,7 +164,6 @@ fun CheckRootScreen() {
                             AppStateManager.setMode(AppMode.Main)
                             val serviceIntent = Intent(context, UIWindowService::class.java)
                             GlobalVars.isAutoRunEnabled = true
-                            GlobalVars.autoRunTimer = 60
                             GlobalVars.updateWindowPosition = false
                             context.startService(Intent(context, ControlWindowService::class.java))
                             context.startService(serviceIntent)

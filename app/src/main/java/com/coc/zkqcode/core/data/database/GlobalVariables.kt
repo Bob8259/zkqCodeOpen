@@ -2,7 +2,6 @@ package com.coc.zkqcode.core.data.database
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.coc.zkqcode.core.data.websocket.ServerActions
@@ -48,7 +47,6 @@ object GlobalVars {
     // --- Compose-reactive fields (observed by UI for recomposition) ---
     var serverActions by mutableStateOf<ServerActions?>(null)
     var isAutoRunEnabled by mutableStateOf(true)
-    var autoRunTimer by mutableIntStateOf(60)
     var isPlaying = mutableStateOf(true)
 
     // --- Thread-safe map for concurrent access from UI and background threads ---

@@ -25,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.coc.zkqcode.core.data.database.GlobalVars
+import com.coc.zkqcode.jar.code.universal.InGameVars
 import com.coc.zkqcode.jar.ui.LanguageManager
 import com.coc.zkqcode.jar.ui.Strings
 import com.coc.zkqcode.jar.ui.components.CustomButton
@@ -57,7 +58,7 @@ fun LazyListScope.homeSettings(
                     .padding(vertical = 4.dp), horizontalArrangement = Arrangement.Start
             ) {
                 Text(
-                    text = if (GlobalVars.isAutoRunEnabled) Strings.timerRunning(GlobalVars.autoRunTimer) else Strings.timerStopped,
+                    text = if (GlobalVars.isAutoRunEnabled) Strings.timerRunning(InGameVars.autoRunTimer) else Strings.timerStopped,
                     style = MaterialTheme.typography.labelMedium,
                     color = Color.Red,
                     modifier = Modifier.padding(top = 8.dp, end = 6.dp)

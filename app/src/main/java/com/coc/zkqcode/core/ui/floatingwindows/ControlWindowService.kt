@@ -252,7 +252,6 @@ class ControlWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner 
                             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                         }
                     GlobalVars.isAutoRunEnabled = true
-                    GlobalVars.autoRunTimer = 60
                     GlobalVars.updateWindowPosition = false
                     startService(intent)
                 },
@@ -307,7 +306,6 @@ class ControlWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner 
         super.onTaskRemoved(rootIntent)
         LogHelper.showDebugInfo("ControlWindowService: task removed, relaunching MainActivity with detached shell")
         relaunchMainActivityDetached()
-        GlobalVars.autoRunTimer = 5
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
