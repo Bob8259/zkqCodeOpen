@@ -61,7 +61,7 @@ fun LazyListScope.homeSettings(
                     text = if (GlobalVars.isAutoRunEnabled) Strings.timerRunning(InGameVars.autoRunTimer) else Strings.timerStopped,
                     style = MaterialTheme.typography.labelMedium,
                     color = Color.Red,
-                    modifier = Modifier.padding(top = 8.dp, end = 6.dp)
+                    modifier = Modifier.padding(top = 16.dp, end = 6.dp)
                 )
                 CustomButton(
                     text = Strings.stopTimer, onClick = { GlobalVars.isAutoRunEnabled = false })
