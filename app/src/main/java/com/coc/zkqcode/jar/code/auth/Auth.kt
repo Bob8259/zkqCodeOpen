@@ -1,6 +1,7 @@
 package com.coc.zkqcode.jar.code.auth
 
 import android.content.Context
+import androidx.core.content.edit
 import com.coc.zkqcode.core.app.ZKQApplication
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.util.basic.ShowMessage
@@ -14,19 +15,19 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
-import java.net.SocketTimeoutException
-import kotlin.random.Random
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONObject
+import java.net.SocketTimeoutException
 import java.net.URLDecoder
 import java.net.URLEncoder
 import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.TimeZone
 import java.util.concurrent.TimeUnit
+import kotlin.random.Random
 
 private val authMutex = Mutex()
 
@@ -170,22 +171,14 @@ suspend fun userAuth() {
                 }
 
                 // Build and send session login request
-                val sessionPostData = "public_key=${sessionEncryptionParts[0]}" +
-                        "&nonce=${sessionEncryptionParts[1]}" +
-                        "&data=${sessionEncryptionParts[2]}" +
-                        "&pow_nonce=$powNonceForSession" +
-                        "&pow_salt=$powSaltForSession"
+                val sessionPostData =
+                    "public_key=${sessionEncryptionParts[0]}" + "&nonce=${sessionEncryptionParts[1]}" + "&data=${sessionEncryptionParts[2]}" + "&pow_nonce=$powNonceForSession" + "&pow_salt=$powSaltForSession"
 
                 val sessionResponseBody = withContext(Dispatchers.IO) {
                     UrlFallbackUtil.executeWithFallbackAndReadBody(
-                        endpoint = "api/mobile-session-login",
-                        requestBuilder = { baseUrl ->
-                            Request.Builder()
-                                .url("${baseUrl}api/mobile-session-login")
-                                .post(sessionPostData.toRequestBody("application/x-www-form-urlencoded".toMediaTypeOrNull()))
-                                .build()
-                        }
-                    )
+                        endpoint = "api/mobile-session-login", requestBuilder = { baseUrl ->
+                            Request.Builder().url("${baseUrl}api/mobile-session-login").post(sessionPostData.toRequestBody("application/x-www-form-urlencoded".toMediaTypeOrNull())).build()
+                        })
                 }
 
                 // Decrypt response
@@ -208,8 +201,7 @@ suspend fun userAuth() {
                 if (sessionKey != null && sessionGem != null) {
                     // Store session key in SharedPreferences
                     try {
-                        ZKQApplication.appContext.getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
-                            .edit().putString("session_key", sessionKey).apply()
+                        ZKQApplication.appContext.getSharedPreferences("auth_prefs", Context.MODE_PRIVATE).edit { putString("session_key", sessionKey) }
                     } catch (_: Exception) {
                     }
                     // Update gem count
@@ -226,12 +218,18 @@ suspend fun userAuth() {
             }
         }
 
-        // --- Existing deduct flow (unchanged) ---
+        // --- Session deduct flow ---
+        val sessionKey = authPrefs.getString("session_key", null)
+        if (sessionKey.isNullOrBlank()) {
+            GlobalVars.isShowAd = true
+            return
+        }
+
         val timestamp = getNetworkTimestamp()
         // Retrieve last_time from native Rust storage (auto-initializes on first call)
         val lastTime = RustTools.getLastTime()
 
-        val payload = "email=${urlEncode(email)}" + "&password=${urlEncode(password)}" + "&timestamp=$timestamp" + "&last_time=$lastTime"
+        val payload = "session_key=${urlEncode(sessionKey)}" + "&timestamp=$timestamp" + "&last_time=$lastTime"
 
         val encryptionParts = try {
             RustTools.encryptLoginPayload(payload).split(",", limit = 3)
@@ -246,7 +244,7 @@ suspend fun userAuth() {
             return
         }
 
-        // A PoW challenge is only valid for 20 s, so fetch a fresh one for every deduct attempt.
+        // A PoW challenge is only valid for 30 s, so fetch a fresh one for every deduct attempt.
         // The entire challenge→solve→deduct sequence is retried together on connection timeout.
         val (responseCode, responseBody) = try {
             retryOnTimeout {
@@ -264,19 +262,22 @@ suspend fun userAuth() {
                 val postData = "public_key=${encryptionParts[0]}" + "&nonce=${encryptionParts[1]}" + "&data=${encryptionParts[2]}" + "&pow_nonce=$powNonce" + "&pow_salt=$powSalt"
                 withContext(Dispatchers.IO) {
                     UrlFallbackUtil.executeWithFallbackAndReadBody(
-                        endpoint = "api/mobile-deduct",
-                        requestBuilder = { baseUrl ->
-                            Request.Builder()
-                                .url("${baseUrl}api/mobile-deduct")
-                                .post(postData.toRequestBody("application/x-www-form-urlencoded".toMediaTypeOrNull()))
-                                .build()
-                        }
-                    ).let { responseBody ->
+                        endpoint = "api/mobile-session-deduct", requestBuilder = { baseUrl ->
+                            Request.Builder().url("${baseUrl}api/mobile-session-deduct").post(postData.toRequestBody("application/x-www-form-urlencoded".toMediaTypeOrNull())).build()
+                        }).let { responseBody ->
                         Pair(200, responseBody)
                     }
                 }
             }
-        } catch (_: Exception) {
+        } catch (e: Exception) {
+            val errorMsg = e.message ?: ""
+            if (errorMsg.contains("会话") || errorMsg.contains("过期") || errorMsg.contains("401")) {
+                ShowMessage("会话无效或已过期，请重新登录")
+                try {
+                    authPrefs.edit { remove("session_key") }
+                } catch (_: Exception) {
+                }
+            }
             // Flag ad display on PoW challenge or deduct request failure
             GlobalVars.isShowAd = true
             return
@@ -286,10 +287,6 @@ suspend fun userAuth() {
             // Flag ad display on non-200 deduct response
             ShowMessage("登录失败，错误信息：$responseBody")
             delayWithMultiplier(2000)
-            if (responseBody.contains("密码错误")) {
-                GlobalVars.serverActions?.writeToConfigFile("gem_count", "0")
-                GlobalVars.configStates["gem_count"]?.value = "0"
-            }
             GlobalVars.isShowAd = true
             return
         }
@@ -302,6 +299,12 @@ suspend fun userAuth() {
             return
         }
         if (decrypted.startsWith("Error")) {
+            if (decrypted.contains("会话") || decrypted.contains("过期") || decrypted.contains("401")) {
+                try {
+                    authPrefs.edit { remove("session_key") }
+                } catch (_: Exception) {
+                }
+            }
             // Flag ad display on decrypted error response
             GlobalVars.isShowAd = true
             return
@@ -316,7 +319,13 @@ suspend fun userAuth() {
                 GlobalVars.isShowAd = false
             }
 
-            result["msg"] == "gem_not_enough" || decrypted.contains("邮箱或密码错误") -> {
+            result["msg"] == "gem_not_enough" || decrypted.contains("邮箱或密码错误") || decrypted.contains("会话无效") -> {
+                if (decrypted.contains("会话") || decrypted.contains("过期")) {
+                    try {
+                        authPrefs.edit { remove("session_key") }
+                    } catch (_: Exception) {
+                    }
+                }
                 // Reset gem_count to zero in config file and UI state
                 GlobalVars.serverActions?.writeToConfigFile("gem_count", "0")
                 GlobalVars.configStates["gem_count"]?.value = "0"
