@@ -52,11 +52,13 @@ object InGameVars {
     @Volatile
     var clockTowerCooldown: Int = 0
 
+    // True means there are upgradable or unbuilt walls; false means walls are complete (full quantity and all at max level).
     @Volatile
-    var mainBaseWallLevel: Int = 0
+    var mainBaseWallsNeedUpgrade: Boolean = false
 
+    // True means there are upgradable or unbuilt builder base walls; false means builder base walls are complete.
     @Volatile
-    var builderBaseWallLevel: Int = 0
+    var builderBaseWallsNeedUpgrade: Boolean = false
 
     // Compose-reactive auto-run timer (observed by UI for recomposition)
     var autoRunTimer by mutableIntStateOf(30)

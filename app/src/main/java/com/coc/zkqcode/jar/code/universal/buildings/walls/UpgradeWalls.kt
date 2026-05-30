@@ -28,8 +28,8 @@ suspend fun upgradeWalls(currentBase: BaseType): Boolean {
     // If smart decision is enabled and current base has no walls, skip wall upgrade
     if (getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.SMART_DECISION.key)) {
         val hasWalls = when (currentBase) {
-            BaseType.Main -> InGameVars.mainBaseWallLevel > 0
-            BaseType.Builder -> InGameVars.builderBaseWallLevel > 0
+            BaseType.Main -> InGameVars.mainBaseWallsNeedUpgrade
+            BaseType.Builder -> InGameVars.builderBaseWallsNeedUpgrade
         }
         if (!hasWalls) return true
     }
@@ -75,16 +75,12 @@ suspend fun upgradeWalls(currentBase: BaseType): Boolean {
         accountMessage("当前圣水百分比${currentResourcePercentage.elixir}\n设置阈值${thresholds}")
 
         if (currentResourcePercentage.elixir < thresholds) break
-        // Elixir wall upgrade requires minimum wall level
-        val wallLevel = when (currentBase) {
-            BaseType.Main -> InGameVars.mainBaseWallLevel
-            BaseType.Builder -> InGameVars.builderBaseWallLevel
+        // Skip elixir upgrades when walls are already complete for the given base.
+        val skipElixir = when (currentBase) {
+            BaseType.Builder -> !InGameVars.builderBaseWallsNeedUpgrade
+            BaseType.Main -> !InGameVars.mainBaseWallsNeedUpgrade
         }
-        val minLevelForElixir = when (currentBase) {
-            BaseType.Builder -> 7
-            BaseType.Main -> 5
-        }
-        if (wallLevel < minLevelForElixir && getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.SMART_DECISION.key)) break
+        if (skipElixir && getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.SMART_DECISION.key)) break
         when (upgradeAllExistingBuildings(listOf("城墙"), currentBase, skipOrdering = true, WallType.Elixir)) {
             UpgradeResult.Failure -> return false
             UpgradeResult.StopLoop -> break

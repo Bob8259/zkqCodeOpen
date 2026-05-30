@@ -7,7 +7,6 @@ import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
-import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.recognizer.TextRecognizer
 import com.coc.zkqcode.jar.code.universal.recognizer.cleanOcrDigits
 
@@ -32,7 +31,6 @@ object WorkerAndResearch {
      */
     suspend fun detectWorkerNumber(baseType: BaseType): WorkerInfo {
         // Must double-check to wait for a little bit, otherwise the detection will fail.
-//        if (!enterMainScreen(false)) return WorkerInfo(0, 0)
         // MainBase-only: goblin worker pre-check
         if (baseType == BaseType.Main && (findMultiColors(schema = MyColors.GoblinWorker) != null || findMultiColors(schema = MyColors.GoblinWorker2) != null)) {
             return WorkerInfo(0, 6)
@@ -69,7 +67,6 @@ object WorkerAndResearch {
      */
     suspend fun detectResearch(baseType: BaseType): Boolean {
         // Must double-check to wait for a little bit, otherwise the detection will fail.
-//        if (!enterMainScreen(false)) return false
         val baseName = when (baseType) {
             BaseType.Builder -> "夜世界"; BaseType.Main -> "主世界"
         }
