@@ -9,6 +9,7 @@ import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
 import com.coc.zkqcode.jar.code.auth.displayAds
 import com.coc.zkqcode.jar.code.auth.userAuth
 import com.coc.zkqcode.jar.code.builderbase.playBuilderBase
+import com.coc.zkqcode.jar.code.clancapital.contributeCapitalCoins
 import com.coc.zkqcode.jar.code.mainbase.clan.selectClanWarParticipant
 import com.coc.zkqcode.jar.code.mainbase.daily.checkNormalShop
 import com.coc.zkqcode.jar.code.mainbase.playMainBase
@@ -67,7 +68,7 @@ suspend fun runMainScript() {
     var lastUpdateCheckTime = System.currentTimeMillis()
     var nextUpdateInterval = (3600_000L) + (Math.random() * 7200_000L).toLong()
     while (currentCoroutineContext().isActive) {
-//        runTestCode()
+        runTestCode()
         runAccountStepBlock()
         // Circularly search for the next enabled account, wrapping back to currentAccountNumber (inclusive)
         // Emit hot update signal at safe point, throttled to once every 2-3 hours randomly
@@ -96,7 +97,7 @@ private fun finishDataNumberEntryOnlyRun() {
 
 private suspend fun runTestCode() {
     while (true) {
-        checkNormalShop()
+        contributeCapitalCoins()
         delay(500000)
     }
 }

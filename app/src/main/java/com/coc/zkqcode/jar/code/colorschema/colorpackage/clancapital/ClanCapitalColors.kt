@@ -18,6 +18,7 @@ interface IClanCapitalColors {
     val CapitalTrainTroopPage2: ColorSchema
     val TrainTroops2: ColorSchema
     val StartRaid: ColorSchema
+    val CapitalDistrictLocked: ColorSchema  // 区域未解锁检测
 }
 
 object ClanCapitalColors : IClanCapitalColors {
@@ -72,5 +73,17 @@ object ClanCapitalColors : IClanCapitalColors {
     // Start raid button
     override val StartRaid = ColorSchema.parse(
         1151, 592, 1254, 692, "64D4B4", "4|16|64D2B1,4|47|28BC8D,40|51|28BB8D,72|48|28BC8D,82|45|28BD8E,84|25|28C192,84|11|64D3B2,83|6|64D4B3,84|-3|64D5B5", 0, 0.9, "发起突袭"
+    )
+    // District locked indicator
+    override val CapitalDistrictLocked = ColorSchema.parse(
+        1232,
+        160,
+        1258,
+        188,
+        "DBA34F",
+        "5|0|D7A351,10|0|FFFFFF,15|0|A2783B,20|0|DCA24F,0|14|A96E25,5|14|A96E2A,10|14|F4F4F4,15|14|B5742A,20|14|A96F25",
+        0,
+        0.9,
+        "区域未解锁"
     )
 }

@@ -243,7 +243,7 @@ private const val TAPPED_TARGET_MIN_DISTANCE = 56f
 // ---------------------------------------------------------------------------
 
 /** Represents a named screen region that maps to one clan capital district. */
-private data class CapitalDistrict(
+internal data class CapitalDistrict(
     val x1: Int, val y1: Int, val x2: Int, val y2: Int, val name: String
 )
 
@@ -251,7 +251,7 @@ private data class CapitalDistrict(
  * Screen regions (in game-pixel coordinates) whose white-pixel density reveals
  * whether a district still has destructible buildings to attack.
  */
-private val CAPITAL_DISTRICTS = listOf(
+internal val CAPITAL_DISTRICTS = listOf(
     CapitalDistrict(829, 343, 850, 370, "野蛮兵营"),
     CapitalDistrict(662, 420, 682, 444, "法师山谷"),
     CapitalDistrict(954, 515, 972, 537, "飞龙悬崖"),

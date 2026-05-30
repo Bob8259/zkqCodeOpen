@@ -2,11 +2,11 @@ package com.coc.zkqcode.nativehelper
 
 object RustTools {
     init {
-        // 名字必须和 Cargo.toml 中的 name 一致
+        // The name must match the name in Cargo.toml
         System.loadLibrary("rust_logic")
     }
 
-    // 声明 native 方法，名字必须和 Rust 里的对应
+    // Declare native methods, names must correspond to those in Rust
     external fun sayHello(input: String): String
 
     external fun decryptJar(data: ByteArray): ByteArray
