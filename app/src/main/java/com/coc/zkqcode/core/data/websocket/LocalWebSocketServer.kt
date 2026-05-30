@@ -55,7 +55,7 @@ class LocalWebSocketServer {
                         }
                     }
                 } catch (e: Exception) {
-                    showDebugInfo("LocalWebSocketServer: session error: ${e.message}")
+                    logAndRestart("LocalWebSocketServer: session error: ${e.message}")
                 } finally {
                     // Clear session on disconnect so a reconnecting client can re-establish
                     if (clientSession == this) {
@@ -84,7 +84,7 @@ class LocalWebSocketServer {
             // Treat any other message as a response to a pending action
             responseDeferred?.complete(json)
         } catch (e: Exception) {
-            showDebugInfo("LocalWebSocketServer: error parsing frame: ${e.message}")
+            logAndRestart("LocalWebSocketServer: error parsing frame: ${e.message}")
         }
     }
 
@@ -99,7 +99,7 @@ class LocalWebSocketServer {
         try {
             server.start(wait = false)
         } catch (e: BindException) {
-            showDebugInfo("LocalWebSocketServer: port $PORT already in use, cannot bind: ${e.message}")
+            logAndRestart("LocalWebSocketServer: port $PORT already in use, cannot bind: ${e.message}")
             return false
         }
         showDebugInfo("LocalWebSocketServer: listening on port $PORT")
@@ -111,7 +111,7 @@ class LocalWebSocketServer {
             showDebugInfo("LocalWebSocketServer: client ready")
             true
         } catch (_: Exception) {
-            showDebugInfo("LocalWebSocketServer: client did not connect within ${timeoutMs}ms")
+            logAndRestart("LocalWebSocketServer: client did not connect within ${timeoutMs}ms")
             false
         }
     }
@@ -136,7 +136,7 @@ class LocalWebSocketServer {
                     deferred.await()
                 }
             } catch (e: Exception) {
-                showDebugInfo("LocalWebSocketServer: action timeout or error: ${e.message}")
+                logAndRestart("LocalWebSocketServer: action timeout or error: ${e.message}")
                 null
             } finally {
                 responseDeferred = null
@@ -151,7 +151,7 @@ class LocalWebSocketServer {
             clientSession = null
             server.stop(gracePeriodMillis = 500, timeoutMillis = 1000)
         } catch (e: Exception) {
-            showDebugInfo("LocalWebSocketServer: error stopping server: ${e.message}")
+            logAndRestart("LocalWebSocketServer: error stopping server: ${e.message}")
         }
     }
 }

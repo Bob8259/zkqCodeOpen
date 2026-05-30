@@ -3,6 +3,7 @@
 | Name | URL |
 |------|-----|
 | `origin` | https://github.com/Bob8259/zkqCode.git |
+| `collaborate` | https://github.com/Bob8259/zkqCode-collaborate.git |
 | `open` | https://github.com/Bob8259/zkqCodeOpen.git |
 
 Please help me analyze this file to create an optimization plan. I want to maintain all existing functionality while removing code redundancy. File Path:

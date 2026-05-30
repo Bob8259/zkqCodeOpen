@@ -10,6 +10,7 @@ import com.coc.zkqcode.jar.code.auth.displayAds
 import com.coc.zkqcode.jar.code.auth.userAuth
 import com.coc.zkqcode.jar.code.builderbase.playBuilderBase
 import com.coc.zkqcode.jar.code.clancapital.contributeCapitalCoins
+import com.coc.zkqcode.jar.code.clancapital.enterClanCapital
 import com.coc.zkqcode.jar.code.mainbase.clan.selectClanWarParticipant
 import com.coc.zkqcode.jar.code.mainbase.daily.checkNormalShop
 import com.coc.zkqcode.jar.code.mainbase.playMainBase
@@ -98,6 +99,8 @@ private fun finishDataNumberEntryOnlyRun() {
 private suspend fun runTestCode() {
     while (true) {
         contributeCapitalCoins()
+//        enterClanCapital()
+        ShowMessage("测试代码结束")
         delay(500000)
     }
 }
