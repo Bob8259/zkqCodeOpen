@@ -85,7 +85,13 @@ fun LoginScreen(onAdFreeClick: () -> Unit = {}) {
             gemInfo = Strings.loggingIn
 
             try {
-                val result = performSessionLogin(email, password)
+                // Read any existing session key to send to the server for re-login
+                val existingSessionKey = try {
+                    context.getSharedPreferences("auth_prefs", android.content.Context.MODE_PRIVATE)
+                        .getString("session_key", null)
+                } catch (_: Exception) { null }
+
+                val result = performSessionLogin(email, password, existingSessionKey)
 
                 isLoginButtonEnabled = true
 

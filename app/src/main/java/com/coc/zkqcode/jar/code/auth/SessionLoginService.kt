@@ -31,16 +31,24 @@ internal fun urlEncode(value: String): String {
  *  1. Fetch PoW challenge from `api/pow/challenge`
  *  2. Solve PoW locally
  *  3. Get network timestamp
- *  4. Build and encrypt payload (email, password, timestamp) via native layer
+ *  4. Build and encrypt payload (email, password, timestamp, optional session_key) via native layer
  *  5. POST to `api/mobile-session-login`
  *  6. Decrypt and parse the response
  *
+ * If [existingSessionKey] is provided it is included in the encrypted payload so the server can
+ * reuse or replace it.  The caller must **always** overwrite its stored key with the one returned
+ * by the server because the server may create a new key even when an existing one was sent.
+ *
+ * @param email                User email.
+ * @param password             User password.
+ * @param existingSessionKey   Previously stored session key (null or blank on first login).
  * @return [SessionLoginResult] on success.
  * @throws Exception on any network, encryption, or server error.
  */
 suspend fun performSessionLogin(
     email: String,
-    password: String
+    password: String,
+    existingSessionKey: String? = null
 ): SessionLoginResult = withContext(Dispatchers.IO) {
     // 1. Fetch PoW challenge
     val powNonce = UrlFallbackUtil
@@ -54,7 +62,10 @@ suspend fun performSessionLogin(
     val timestamp = getNetworkTimestamp()
 
     // 4. Build payload and encrypt via native layer
-    val payload = "email=${urlEncode(email)}&password=${urlEncode(password)}&timestamp=$timestamp"
+    var payload = "email=${urlEncode(email)}&password=${urlEncode(password)}&timestamp=$timestamp"
+    if (!existingSessionKey.isNullOrBlank()) {
+        payload += "&session_key=${urlEncode(existingSessionKey)}"
+    }
     val encryptionParts = RustTools.encryptLoginPayload(payload).split(",", limit = 3)
     require(encryptionParts.size == 3) { "Encryption returned unexpected format" }
 
