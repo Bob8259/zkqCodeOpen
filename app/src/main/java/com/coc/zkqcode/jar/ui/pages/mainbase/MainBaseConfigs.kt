@@ -44,15 +44,12 @@ fun LazyListScope.mainBaseConfig(
         SettingSection(visible = isGeneralExpanded) {
             SettingInputRow(key = "${MAIN_BASE_SETTINGS.CONFIG_REMARK.key}_c$index")
             SettingSwitchIcon(
-                key = "${MAIN_BASE_SETTINGS.SMART_DECISION.key}_c$index",
-                explain = Strings.smartDecisionExplain,
-                afterChange = { checked ->
+                key = "${MAIN_BASE_SETTINGS.SMART_DECISION.key}_c$index", explain = Strings.smartDecisionExplain, afterChange = { checked ->
                     if (!checked) {
                         GlobalVars.configStates["${MAIN_BASE_SETTINGS.SAVE_WORKER_BUILD_AFTER_WALL_FULL.key}_c$index"]?.value = "0"
                         GlobalVars.configStates["${BUILDER_BASE_SETTINGS.BUILDER_BASE_SAVE_WORKER_BUILD_AFTER_WALL_FULL.key}_c$index"]?.value = "0"
                     }
-                }
-            )
+                })
             AnimatedVisibility(
                 visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.SMART_DECISION.key}_c$index"]?.value == "1"
             ) {
@@ -82,8 +79,7 @@ fun LazyListScope.mainBaseConfig(
                     },
                 )
                 SettingSwitchIcon(
-                    key = "${MAIN_BASE_SETTINGS.PLAY_TOURNAMENT.key}_c$index",
-                    explain = Strings.tournamentExplain
+                    key = "${MAIN_BASE_SETTINGS.PLAY_TOURNAMENT.key}_c$index", explain = Strings.tournamentExplain
                 )
                 AnimatedVisibility(
                     visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.PLAY_TOURNAMENT.key}_c$index"]?.value == "1"
@@ -175,31 +171,27 @@ fun LazyListScope.mainBaseConfig(
                                 if (checked) {
                                     GlobalVars.configStates["${MAIN_BASE_SETTINGS.AUTO_ATTACK.key}_c$index"]?.value = "1"
                                 }
-                            }
-                        )
+                            })
                         SettingSwitchIcon(
                             key = "${MAIN_BASE_SETTINGS.ACCEPT_MAIN_WORLD_ADVANCED_TASK.key}_c$index", afterChange = { checked ->
                                 if (checked) {
                                     GlobalVars.configStates["${MAIN_BASE_SETTINGS.AUTO_ATTACK.key}_c$index"]?.value = "1"
                                 }
-                            }
-                        )
+                            })
                         SettingSwitchIcon(
                             key = "${MAIN_BASE_SETTINGS.ACCEPT_BUILDER_BASE_NORMAL_TASK.key}_c$index", afterChange = { checked ->
                                 if (checked) {
                                     GlobalVars.configStates["${BUILDER_BASE_SETTINGS.NO_BUILDER_BASE.key}_c$index"]?.value = "0"
                                     GlobalVars.configStates["${BUILDER_BASE_SETTINGS.BUILDER_BASE_FARMING.key}_c$index"]?.value = "1"
                                 }
-                            }
-                        )
+                            })
                         SettingSwitchIcon(
                             key = "${MAIN_BASE_SETTINGS.ACCEPT_BUILDER_BASE_ADVANCED_TASK.key}_c$index", afterChange = { checked ->
                                 if (checked) {
                                     GlobalVars.configStates["${BUILDER_BASE_SETTINGS.NO_BUILDER_BASE.key}_c$index"]?.value = "0"
                                     GlobalVars.configStates["${BUILDER_BASE_SETTINGS.BUILDER_BASE_FARMING.key}_c$index"]?.value = "1"
                                 }
-                            }
-                        )
+                            })
                         SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.STOP_CLAN_GAMES_AFTER_4000_POINTS.key}_c$index")
                     }
                 }
@@ -214,24 +206,21 @@ fun LazyListScope.mainBaseConfig(
                     key = "${MAIN_BASE_SETTINGS.PLAY_LEAGUE.key}_c$index", explain = Strings.leagueExplain
                 )
                 SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.PLAY_RAID.key}_c$index")
-                SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.CONTRIBUTE_CAPITAL_COINS.key}_c$index")
+                SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.CONTRIBUTE_CAPITAL_COINS.key}_c$index", explain = "只支持捐到本部落，不支持偷币，不支持捐到其他部落")
                 SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.COLLECT_CAPITAL_COINS.key}_c$index")
             }
 
             SettingSwitchIcon(
-                key = "${MAIN_BASE_SETTINGS.START_CLAN_WAR.key}_c$index",
-                explain = Strings.startClanWarExplain
+                key = "${MAIN_BASE_SETTINGS.START_CLAN_WAR.key}_c$index", explain = Strings.startClanWarExplain
             )
             AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.START_CLAN_WAR.key}_c$index"]?.value == "1") {
                 SettingDropdown(
-                    key = "${MAIN_BASE_SETTINGS.START_CLAN_WAR_METHOD.key}_c$index",
-                    options = listOf(Strings.directStart, Strings.recentOnline)
+                    key = "${MAIN_BASE_SETTINGS.START_CLAN_WAR_METHOD.key}_c$index", options = listOf(Strings.directStart, Strings.recentOnline)
                 )
             }
 
             SettingSwitchIcon(
-                key = "${MAIN_BASE_SETTINGS.AUTO_JOIN_CLAN.key}_c$index",
-                explain = Strings.autoJoinClanExplain
+                key = "${MAIN_BASE_SETTINGS.AUTO_JOIN_CLAN.key}_c$index", explain = Strings.autoJoinClanExplain
             )
             AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.AUTO_JOIN_CLAN.key}_c$index"]?.value == "1") {
                 Column {
@@ -280,14 +269,11 @@ fun LazyListScope.mainBaseConfig(
                 SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.WALL_UPGRADE_SETTINGS.key}_c$index")
                 SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.SAVE_WORKER.key}_c$index")
                 SettingSwitchIcon(
-                    key = "${MAIN_BASE_SETTINGS.SAVE_WORKER_BUILD_AFTER_WALL_FULL.key}_c$index",
-                    explain = Strings.saveWorkerBuildExplain,
-                    afterChange = { checked ->
+                    key = "${MAIN_BASE_SETTINGS.SAVE_WORKER_BUILD_AFTER_WALL_FULL.key}_c$index", explain = Strings.saveWorkerBuildExplain, afterChange = { checked ->
                         if (checked) {
                             GlobalVars.configStates["${MAIN_BASE_SETTINGS.SMART_DECISION.key}_c$index"]?.value = "1"
                         }
-                    }
-                )
+                    })
             }
 
             AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.WALL_UPGRADE_SETTINGS.key}_c$index"]?.value == "1") {
@@ -404,12 +390,10 @@ fun LazyListScope.mainBaseConfig(
                     Column {
                         FlowRow {
                             SettingSwitchIcon(
-                                key = "${MAIN_BASE_SETTINGS.CONTINUOUS_REMOVE_OBSTACLES.key}_c$index",
-                                explain = Strings.continuousRemoveExplain
+                                key = "${MAIN_BASE_SETTINGS.CONTINUOUS_REMOVE_OBSTACLES.key}_c$index", explain = Strings.continuousRemoveExplain
                             )
                             SettingSwitchIcon(
-                                key = "${MAIN_BASE_SETTINGS.REMOVE_OBSTACLES_ENHANCEMENT.key}_c$index",
-                                explain = Strings.removeObstaclesEnhanceExplain
+                                key = "${MAIN_BASE_SETTINGS.REMOVE_OBSTACLES_ENHANCEMENT.key}_c$index", explain = Strings.removeObstaclesEnhanceExplain
                             )
                         }
                     }
