@@ -22,7 +22,6 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONObject
 import java.net.SocketTimeoutException
 import java.net.URLDecoder
-import java.net.URLEncoder
 import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.TimeZone
@@ -118,10 +117,6 @@ private fun parseUrlEncoded(raw: String): Map<String, String> {
     return result
 }
 
-private fun urlEncode(value: String): String {
-    return URLEncoder.encode(value, Charsets.UTF_8.name())
-}
-
 suspend fun userAuth() {
     authMutex.withLock {
         // Early exit if gem_count is insufficient
@@ -142,75 +137,16 @@ suspend fun userAuth() {
         // --- Session token check: skip login if session_key exists in SharedPreferences ---
         val authPrefs = ZKQApplication.appContext.getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
         if (!authPrefs.contains("session_key")) {
-            // Perform session login (mirrors Login.kt login() flow)
+            // Perform session login via shared service
             try {
-                // Fetch PoW challenge
-                val powNonceForSession = withContext(Dispatchers.IO) {
-                    UrlFallbackUtil.executeGetWithFallbackAndReadBody("api/pow/challenge").let { responseBody ->
-                        JSONObject(responseBody).getString("nonce")
-                    }
-                }
-
-                // Solve PoW locally
-                val powSaltForSession = solvePoW(powNonceForSession)
-
-                // Get timestamp and build payload (no last_time for session login)
-                val timestampForSession = getNetworkTimestamp()
-                val sessionPayload = "email=${urlEncode(email)}&password=${urlEncode(password)}&timestamp=$timestampForSession"
-
-                // Encrypt payload via native layer
-                val sessionEncryptionParts = try {
-                    RustTools.encryptLoginPayload(sessionPayload).split(",", limit = 3)
+                val loginResult = performSessionLogin(email, password)
+                // Store session key in SharedPreferences
+                try {
+                    authPrefs.edit { putString("session_key", loginResult.sessionKey) }
                 } catch (_: Exception) {
-                    GlobalVars.isShowAd = true
-                    return
                 }
-                if (sessionEncryptionParts.size != 3) {
-                    GlobalVars.isShowAd = true
-                    return
-                }
-
-                // Build and send session login request
-                val sessionPostData =
-                    "public_key=${sessionEncryptionParts[0]}" + "&nonce=${sessionEncryptionParts[1]}" + "&data=${sessionEncryptionParts[2]}" + "&pow_nonce=$powNonceForSession" + "&pow_salt=$powSaltForSession"
-
-                val sessionResponseBody = withContext(Dispatchers.IO) {
-                    UrlFallbackUtil.executeWithFallbackAndReadBody(
-                        endpoint = "api/mobile-session-login", requestBuilder = { baseUrl ->
-                            Request.Builder().url("${baseUrl}api/mobile-session-login").post(sessionPostData.toRequestBody("application/x-www-form-urlencoded".toMediaTypeOrNull())).build()
-                        })
-                }
-
-                // Decrypt response
-                val sessionDecrypted = try {
-                    RustTools.decryptLoginResponse(sessionResponseBody)
-                } catch (_: Exception) {
-                    GlobalVars.isShowAd = true
-                    return
-                }
-                if (sessionDecrypted.startsWith("Error")) {
-                    GlobalVars.isShowAd = true
-                    return
-                }
-
-                // Parse response: expected session_key=xxx&gem=yyy
-                val sessionResult = parseUrlEncoded(sessionDecrypted)
-                val sessionKey = sessionResult["session_key"]
-                val sessionGem = sessionResult["gem"]
-
-                if (sessionKey != null && sessionGem != null) {
-                    // Store session key in SharedPreferences
-                    try {
-                        ZKQApplication.appContext.getSharedPreferences("auth_prefs", Context.MODE_PRIVATE).edit { putString("session_key", sessionKey) }
-                    } catch (_: Exception) {
-                    }
-                    // Update gem count
-                    GlobalVars.configStates["gem_count"]?.value = sessionGem
-                } else {
-                    ShowMessage("Session login failed: unexpected response / 会话登录失败：响应异常")
-                    GlobalVars.isShowAd = true
-                    return
-                }
+                // Update gem count
+                GlobalVars.configStates["gem_count"]?.value = loginResult.gem
             } catch (_: Exception) {
                 ShowMessage("Session login failed / 会话登录失败")
                 GlobalVars.isShowAd = true

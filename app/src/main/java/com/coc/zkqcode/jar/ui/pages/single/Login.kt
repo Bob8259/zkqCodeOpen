@@ -43,21 +43,9 @@ import com.coc.zkqcode.jar.ui.components.CustomButton
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.jar.ui.components.SettingInputRow
 import com.coc.zkqcode.jar.ui.schema.Schema.GLOBAL_SETTINGS
-import com.coc.zkqcode.nativehelper.RustTools
+import com.coc.zkqcode.jar.code.auth.performSessionLogin
 import kotlinx.coroutines.launch
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.RequestBody.Companion.toRequestBody
-import okhttp3.Response
-import java.io.IOException
 import java.util.Locale
-import com.coc.zkqcode.core.util.crypto.solvePoW
-import com.coc.zkqcode.jar.code.universal.network.UrlFallbackUtil
-import com.coc.zkqcode.jar.code.auth.getNetworkTimestamp
-import org.json.JSONObject
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 
 @Composable
 fun LoginScreen(onAdFreeClick: () -> Unit = {}) {
@@ -94,117 +82,33 @@ fun LoginScreen(onAdFreeClick: () -> Unit = {}) {
                 return@launch // Exit function
             }
 
-            // 0. Fetch PoW Challenge with fallback
             gemInfo = Strings.loggingIn
 
-            var powNonce: String
-
             try {
-                val responseStr = withContext(Dispatchers.IO) {
-                    UrlFallbackUtil.executeGetWithFallbackAndReadBody("api/pow/challenge")
-                }
-                val json = JSONObject(responseStr)
-                powNonce = json.getString("nonce")
-            } catch (e: Exception) {
-                gemInfo = Strings.powFailed(e.message)
-                isLoginButtonEnabled = true
-                showMessage = true
-                return@launch
-            }
-
-            // 0.5 Solve PoW
-            val powSalt: String = solvePoW(powNonce)
-
-            // 1. Prepare Payload
-            val timestamp = getNetworkTimestamp()
-
-            val payload = "email=$email&password=$password&timestamp=$timestamp"
-            // 2. Encrypt Payload via Native Layer
-            // Returns: "my_public_key,nonce,ciphertext" (comma separated)
-            val encryptionResult = try {
-                RustTools.encryptLoginPayload(payload)
-            } catch (e: Exception) {
-                gemInfo = Strings.prepFailed(e.message)
-                isLoginButtonEnabled = true
-                showMessage = true
-                return@launch
-            }
-            val parts = encryptionResult.split(",")
-            if (parts.size != 3) {
-                gemInfo = Strings.transmitFailed
-                isLoginButtonEnabled = true
-                showMessage = true
-                return@launch
-            }
-            val myPublicKey = parts[0]
-            val nonce = parts[1]
-            val ciphertext = parts[2]
-
-            // 3. Send Request with fallback
-            // Assuming server expects: public_key, nonce, data (ciphertext)
-            val postData =
-                "public_key=$myPublicKey&nonce=$nonce&data=$ciphertext&pow_nonce=$powNonce&pow_salt=$powSalt"
-            val requestBody =
-                postData.toRequestBody("application/x-www-form-urlencoded".toMediaTypeOrNull())
-
-            try {
-                val responseBody = withContext(Dispatchers.IO) {
-                    UrlFallbackUtil.executeWithFallbackAndReadBody(
-                        endpoint = "api/mobile-session-login",
-                        requestBuilder = { baseUrl ->
-                            Request.Builder()
-                                .url("${baseUrl}api/mobile-session-login")
-                                .post(requestBody)
-                                .build()
-                        }
-                    )
-                }
+                val result = performSessionLogin(email, password)
 
                 isLoginButtonEnabled = true
-                // 4. Decrypt Response via Native Layer
-                val decrypted = try {
-                    RustTools.decryptLoginResponse(responseBody)
-                } catch (e: Exception) {
-                    "Error: Decryption exception: ${e.message}"
-                }
 
-                // 5. Parse Decrypted Result
-                // Expected format: session_key=xxx&gem=yyy OR Error message
-                if (decrypted.startsWith("Error")) {
-                    gemInfo = Strings.loginFailed(decrypted)
-                    showMessage = true
-                    GlobalVars.configStates[GLOBAL_SETTINGS.GEM_COUNT.key]!!.value = ""
-                } else {
-                    val fields = decrypted.split("&").associate {
-                        val kv = it.split("=", limit = 2)
-                        if (kv.size == 2) kv[0] to kv[1] else kv[0] to ""
-                    }
-                    val sessionKey = fields["session_key"]
-                    val gem = fields["gem"]
+                // Store session key in SharedPreferences
+                try {
+                    context.getSharedPreferences("auth_prefs", android.content.Context.MODE_PRIVATE)
+                        .edit().putString("session_key", result.sessionKey).apply()
+                } catch (_: Exception) { }
 
-                    if (sessionKey != null && gem != null) {
-                        // Store session key in SharedPreferences
-                        try {
-                            context.getSharedPreferences("auth_prefs", android.content.Context.MODE_PRIVATE)
-                                .edit().putString("session_key", sessionKey).apply()
-                        } catch (_: Exception) { }
-                        // Update gem display
-                        formattedGem = String.format(Locale.US, "%.4f", gem.toDouble())
-                        gem.toDoubleOrNull()?.let {
-                            showMessage = (it < 0.000001)
-                        }
-                        GlobalVars.configStates[GLOBAL_SETTINGS.GEM_COUNT.key]!!.value = gem
-                        gemInfo = Strings.loginSuccess(formattedGem)
-                    } else {
-                        gemInfo = Strings.loginSuccessParseFail(decrypted)
-                        showMessage = true
-                        GlobalVars.configStates[GLOBAL_SETTINGS.GEM_COUNT.key]!!.value = ""
-                    }
+                // Update gem display
+                val gem = result.gem
+                formattedGem = String.format(Locale.US, "%.4f", gem.toDouble())
+                gem.toDoubleOrNull()?.let {
+                    showMessage = (it < 0.000001)
                 }
+                GlobalVars.configStates[GLOBAL_SETTINGS.GEM_COUNT.key]!!.value = gem
+                gemInfo = Strings.loginSuccess(formattedGem)
             } catch (e: Exception) {
                 val errorMsg = e.message ?: ""
                 gemInfo = if (errorMsg.contains("邮箱或密码错误")) {
                     Strings.emailPasswordError
+                } else if (errorMsg.startsWith("Error")) {
+                    Strings.loginFailed(errorMsg)
                 } else {
                     Strings.loginFailed(errorMsg)
                 }
