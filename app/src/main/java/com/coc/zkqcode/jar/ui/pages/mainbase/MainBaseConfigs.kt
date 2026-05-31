@@ -336,20 +336,20 @@ fun LazyListScope.mainBaseConfig(
             }
 
             // Gear upgrade: custom gear selection (new mode, mutually exclusive with all)
-            SettingSwitchIcon(
-                key = "${MAIN_BASE_SETTINGS.UPGRADE_CUSTOM_GEAR.key}_c$index",
-                explain = Strings.upgradeGearExplain,
-                afterChange = { checked ->
-                    if (checked) {
-                        GlobalVars.configStates["${MAIN_BASE_SETTINGS.UPGRADE_ALL_GEAR.key}_c$index"]?.value = "0"
-                    }
-                }
-            )
+            // SettingSwitchIcon(
+            //     key = "${MAIN_BASE_SETTINGS.UPGRADE_CUSTOM_GEAR.key}_c$index",
+            //     explain = Strings.upgradeGearExplain,
+            //     afterChange = { checked ->
+            //         if (checked) {
+            //             GlobalVars.configStates["${MAIN_BASE_SETTINGS.UPGRADE_ALL_GEAR.key}_c$index"]?.value = "0"
+            //         }
+            //     }
+            // )
 
             // Custom gear selection list visible when UPGRADE_CUSTOM_GEAR is on
-            AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.UPGRADE_CUSTOM_GEAR.key}_c$index"]?.value == "1") {
-                MainBaseGearConfigs(index)
-            }
+            // AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.UPGRADE_CUSTOM_GEAR.key}_c$index"]?.value == "1") {
+            //     MainBaseGearConfigs(index)
+            // }
         }
     }
 
