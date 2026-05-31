@@ -74,7 +74,6 @@ class LocalWebSocketServer {
 
             if (actionType == "client_connected") {
                 // Announcement message from the app_process client
-                showDebugInfo("LocalWebSocketServer: received client_connected announcement")
                 if (!clientConnectedDeferred.isCompleted) {
                     clientConnectedDeferred.complete(Unit)
                 }
@@ -102,8 +101,6 @@ class LocalWebSocketServer {
             logAndRestart("LocalWebSocketServer: port $PORT already in use, cannot bind: ${e.message}")
             return false
         }
-        showDebugInfo("LocalWebSocketServer: listening on port $PORT")
-
         return try {
             withTimeout(timeoutMs) {
                 clientConnectedDeferred.await()

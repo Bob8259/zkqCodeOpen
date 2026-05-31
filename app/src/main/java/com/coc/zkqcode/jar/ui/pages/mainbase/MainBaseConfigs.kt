@@ -210,9 +210,12 @@ fun LazyListScope.mainBaseConfig(
                 SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.COLLECT_CAPITAL_COINS.key}_c$index")
             }
 
-            SettingSwitchIcon(
-                key = "${MAIN_BASE_SETTINGS.START_CLAN_WAR.key}_c$index", explain = Strings.startClanWarExplain
-            )
+            FlowRow {
+                SettingSwitchIcon(
+                    key = "${MAIN_BASE_SETTINGS.START_CLAN_WAR.key}_c$index", explain = Strings.startClanWarExplain
+                )
+                SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.OPEN_RAID.key}_c$index")
+            }
             AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.START_CLAN_WAR.key}_c$index"]?.value == "1") {
                 SettingDropdown(
                     key = "${MAIN_BASE_SETTINGS.START_CLAN_WAR_METHOD.key}_c$index", options = listOf(Strings.directStart, Strings.recentOnline)
