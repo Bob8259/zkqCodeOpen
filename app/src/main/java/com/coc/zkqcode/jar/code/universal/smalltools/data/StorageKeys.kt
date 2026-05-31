@@ -46,6 +46,9 @@ object StorageKeys {
     // Per-account key for tournament play
     const val PLAY_TOURNAMENT = "PlayTournament"
 
+    // Per-account key for clan capital raid start
+    const val START_RAID = "StartRaid"
+
     // Periodic screenshot upload timestamp
     const val SEARCH_SCREENSHOT_UPLOAD = "SearchScreenshotUpload"
 

@@ -85,4 +85,5 @@ object MyColors : IUIColors by UIColors, IFeatureColors by FeatureColors, IClanG
     val SufficientCapitalCoin = ColorSchema.parse(
         1194, 25, 1222, 60, "90EDFD", "0|1|8BEDFD,0|2|86EBFD,0|3|82E9FD,0|4|7CE8FD,0|5|77E7FD,0|6|70E5FD,0|7|69E3FD,0|8|17D5FF,0|9|0DD2FF", 0, 0.9, "都城币足够"
     )
+
 }
