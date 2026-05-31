@@ -50,25 +50,23 @@ suspend fun donateToClan(): Boolean {
         // Capture a single frame buffer and reuse it for all colour checks in this iteration
         val screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult ?: logAndRestart("in donateToClan, screen capture failed.")
 
-        if (System.currentTimeMillis() - startTime < 10000) {
-            val clanChat = findMultiColors(schema = MyColors.ClanChatIcon, byteBuffer = screenBuffer, increment = 1)
-            if (clanChat != null) {
-                // Tap the clan chat icon to open the chat panel
-                TouchActions.tap(clanChat.x, clanChat.y)
-                if (InGameVars.currentGameVersion == GameVersion.CN) {
-                    TouchActions.tap(523, 239, delayTime = 200)
-                    TouchActions.tap(152, 88, delayTime = 200)
-                } else {
-                    TouchActions.tap(523, 98, delayTime = 300)//Global version chat area
-                }
-                TouchActions.tap(40, 608)//Goto bottom
-                continue
+        val clanChat = findMultiColors(schema = MyColors.ClanChatIcon, byteBuffer = screenBuffer, increment = 1)
+        if (clanChat != null) {
+            // Tap the clan chat icon to open the chat panel
+            TouchActions.tap(clanChat.x, clanChat.y)
+            if (InGameVars.currentGameVersion == GameVersion.CN) {
+                TouchActions.tap(523, 239, delayTime = 200)
+                TouchActions.tap(152, 88, delayTime = 200)
+            } else {
+                TouchActions.tap(523, 98, delayTime = 300)//Global version chat area
             }
-            val iUnderstandButton = findMultiColors(schema = MyColors.IUnderstand, byteBuffer = screenBuffer, increment = 1)
-            if (iUnderstandButton != null) {
-                TouchActions.tap(iUnderstandButton.x, iUnderstandButton.y)
-                continue
-            }
+            TouchActions.tap(40, 608)//Goto bottom
+            continue
+        }
+        val iUnderstandButton = findMultiColors(schema = MyColors.IUnderstand, byteBuffer = screenBuffer, increment = 1)
+        if (iUnderstandButton != null) {
+            TouchActions.tap(iUnderstandButton.x, iUnderstandButton.y)
+            continue
         }
         val donationButton = findMultiColors(MyColors.DonationButton, byteBuffer = screenBuffer, increment = 1)
         if (donationButton != null) {
