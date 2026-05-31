@@ -13,6 +13,7 @@ import com.coc.zkqcode.jar.code.clancapital.contributeCapitalCoins
 import com.coc.zkqcode.jar.code.clancapital.enterClanCapital
 import com.coc.zkqcode.jar.code.mainbase.clan.selectClanWarParticipant
 import com.coc.zkqcode.jar.code.mainbase.daily.checkNormalShop
+import com.coc.zkqcode.jar.code.mainbase.others.upgradeGearsAction
 import com.coc.zkqcode.jar.code.mainbase.playMainBase
 import com.coc.zkqcode.jar.code.universal.GameVersion
 import com.coc.zkqcode.jar.code.universal.InGameVars
@@ -69,7 +70,7 @@ suspend fun runMainScript() {
     var lastUpdateCheckTime = System.currentTimeMillis()
     var nextUpdateInterval = (3600_000L) + (Math.random() * 7200_000L).toLong()
     while (currentCoroutineContext().isActive) {
-//        runTestCode()
+        runTestCode()
         runAccountStepBlock()
         // Circularly search for the next enabled account, wrapping back to currentAccountNumber (inclusive)
         // Emit hot update signal at safe point, throttled to once every 2-3 hours randomly
@@ -98,8 +99,7 @@ private fun finishDataNumberEntryOnlyRun() {
 
 private suspend fun runTestCode() {
     while (true) {
-        contributeCapitalCoins()
-//        enterClanCapital()
+        upgradeGearsAction(false, true)
         ShowMessage("测试代码结束")
         delay(500000)
     }
@@ -159,8 +159,7 @@ private fun resolveGameVersion(isBatchCreate: Boolean): GameVersion {
         GameVersion.GLOBAL
     } else {
         GameVersion.fromId(
-            getConfigOrStop("${Schema.ACCOUNT_SETTINGS.GAME_VERSION.key}${InGameVars.currentAccountNumber}").toIntOrNull()
-                ?: logAndRestart("${Schema.ACCOUNT_SETTINGS.GAME_VERSION.displayName} 必须是数字，请检查配置")
+            getConfigOrStop("${Schema.ACCOUNT_SETTINGS.GAME_VERSION.key}${InGameVars.currentAccountNumber}").toIntOrNull() ?: logAndRestart("${Schema.ACCOUNT_SETTINGS.GAME_VERSION.displayName} 必须是数字，请检查配置")
         )
     }
 }

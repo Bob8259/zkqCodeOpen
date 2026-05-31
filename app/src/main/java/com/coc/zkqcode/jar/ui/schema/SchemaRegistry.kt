@@ -24,6 +24,7 @@ object SchemaRegistry {
         ),
         ConfigModule("MAIN_BASE_BUILDINGS", Scope.PROFILE, Schema.MAIN_BASE_BUILDINGS.all),
         ConfigModule("MAIN_BASE_PETS", Scope.PROFILE, Schema.MAIN_BASE_PETS.all),
+        ConfigModule("MAIN_BASE_GEARS", Scope.PROFILE, Schema.MAIN_BASE_GEARS.all),
         ConfigModule("BUILDER_BASE_SETTINGS", Scope.PROFILE, Schema.BUILDER_BASE_SETTINGS.all),
         ConfigModule("BUILDER_BASE_TROOPS", Scope.PROFILE, Schema.BUILDER_BASE_TROOPS.all),
         ConfigModule(

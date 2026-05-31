@@ -7,6 +7,7 @@ import com.coc.zkqcode.jar.code.universal.smalltools.input.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.ColorSchema
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.mainbase.MainBaseResearchColors
+import com.coc.zkqcode.jar.code.mainbase.others.upgradeGearsAction
 import com.coc.zkqcode.jar.ui.schema.details.MainBasePets
 import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.jar.code.universal.InGameVars
@@ -20,7 +21,7 @@ import com.coc.zkqcode.jar.code.universal.smalltools.data.writeMemory
 import com.coc.zkqcode.jar.ui.schema.Schema
 
 suspend fun upgradeGearsAndPets(): Boolean {
-    var shouldUpgradeGears = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.UPGRADE_ALL_GEAR.key) || getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.UPGRADE_WERA_GEAR.key)
+    var shouldUpgradeGears = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.UPGRADE_ALL_GEAR.key) || getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.UPGRADE_WERA_GEAR.key) || getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.UPGRADE_CUSTOM_GEAR.key)
     var shouldUpgradePets = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.UPGRADE_PETS.key)
 
     // Gears require TH8+, pets require TH14+
@@ -136,15 +137,20 @@ private suspend fun checkPets() {
 
 private suspend fun upgradeGearsAndPetsAction(shouldUpgradeGears: Boolean, shouldUpgradePets: Boolean) {
     if (shouldUpgradeGears) {
-        TouchActions.tap(685, 590)//Open Smith
-        val upgradeGear = findMultiColorsUntil(schemas = listOf(MyColors.UpgradeGearArrow, MyColors.NewGear), duration = 800)
-        if (upgradeGear != null) {
-            TouchActions.tap(upgradeGear.x, upgradeGear.y)
-            repeat(2) { TouchActions.tap(1130, 640, delayTime = 300) }
-            TouchActions.tap(1220, 635, delayTime = 300)
-        }
-        run upgradeGears@{
-            if (getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.UPGRADE_ALL_GEAR.key)) {
+        val shouldUpgradeAllGear = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.UPGRADE_ALL_GEAR.key)
+        val shouldUpgradeWear = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.UPGRADE_WERA_GEAR.key)
+        val shouldUpgradeCustom = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.UPGRADE_CUSTOM_GEAR.key)
+
+        if (shouldUpgradeAllGear) {
+            // Old workflow: open smith, scan rows for arrows, upgrade, swipe, repeat
+            TouchActions.tap(685, 590) // Open Smith
+            val upgradeGear = findMultiColorsUntil(schemas = listOf(MyColors.UpgradeGearArrow, MyColors.NewGear), duration = 800)
+            if (upgradeGear != null) {
+                TouchActions.tap(upgradeGear.x, upgradeGear.y)
+                repeat(2) { TouchActions.tap(1130, 640, delayTime = 300) }
+                TouchActions.tap(1220, 635, delayTime = 300)
+            }
+            run upgradeGears@{
                 suspend fun tryUpgradeInVisibleRows(): Boolean {
                     val firstRowArrow = ColorSchema.rescope(MyColors.UpgradeGearArrow, 80, 425, 1210, 460)
                     val firstRowNewGear = ColorSchema.rescope(MyColors.NewGear, 80, 425, 1210, 460)
@@ -169,8 +175,13 @@ private suspend fun upgradeGearsAndPetsAction(shouldUpgradeGears: Boolean, shoul
                 TouchActions.swipe(1220, 510, 0, 510, delayTime = 300)
                 if (tryUpgradeInVisibleRows()) return@upgradeGears
             }
+            backToHeroHall()
         }
-        backToHeroHall()
+
+        // New workflow: per-hero iteration with equipped and/or custom gear modes
+        if (shouldUpgradeWear || shouldUpgradeCustom) {
+            upgradeGearsAction(shouldUpgradeWear, shouldUpgradeCustom)
+        }
     }
     if (shouldUpgradePets) {
         val petsIcon = findMultiColorsUntil(schemas = listOf(MyColors.PetsIconInHeroHall, MyColors.PetsIconInHeroHall2), duration = 200)
@@ -191,7 +202,7 @@ private suspend fun upgradeGearsAndPetsAction(shouldUpgradeGears: Boolean, shoul
     }
 }
 
-private suspend fun backToHeroHall() {
+internal suspend fun backToHeroHall() {
     // Stop retrying after 10 seconds to avoid getting stuck in an endless back loop.
     val deadline = System.currentTimeMillis() + 10_000
     while (System.currentTimeMillis() < deadline) {

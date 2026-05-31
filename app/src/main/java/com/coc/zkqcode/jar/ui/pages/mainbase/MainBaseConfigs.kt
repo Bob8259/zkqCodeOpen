@@ -206,7 +206,7 @@ fun LazyListScope.mainBaseConfig(
                     key = "${MAIN_BASE_SETTINGS.PLAY_LEAGUE.key}_c$index", explain = Strings.leagueExplain
                 )
                 SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.PLAY_RAID.key}_c$index")
-                SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.CONTRIBUTE_CAPITAL_COINS.key}_c$index", explain = "只支持捐到本部落，不支持偷币，不支持捐到其他部落")
+                SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.CONTRIBUTE_CAPITAL_COINS.key}_c$index", explain = "只支持捐到本部落，不支持偷币，不支持捐到其他部落。都城币需攒够一定数量后才会捐，币太少的话不会捐。")
                 SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.COLLECT_CAPITAL_COINS.key}_c$index")
             }
 
@@ -317,13 +317,38 @@ fun LazyListScope.mainBaseConfig(
                 MainBasePetConfigs(index)
             }
             FlowRow {
-                SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.UPGRADE_WERA_GEAR.key}_c$index")
+                // Gear upgrade: upgrade equipped gear (independent)
                 SettingSwitchIcon(
-                    key = "${MAIN_BASE_SETTINGS.UPGRADE_ALL_GEAR.key}_c$index", explain = Strings.upgradeAllGearExplain, afterChange = { checked ->
+                    key = "${MAIN_BASE_SETTINGS.UPGRADE_WERA_GEAR.key}_c$index",
+                    explain = Strings.upgradeWearGearExplain
+                )
+
+                // Gear upgrade: upgrade all gear (old mode, mutually exclusive with custom)
+                SettingSwitchIcon(
+                    key = "${MAIN_BASE_SETTINGS.UPGRADE_ALL_GEAR.key}_c$index",
+                    explain = Strings.upgradeAllGearExplain,
+                    afterChange = { checked ->
                         if (checked) {
-                            GlobalVars.configStates["${MAIN_BASE_SETTINGS.UPGRADE_WERA_GEAR.key}_c$index"]?.value = "1"
+                            GlobalVars.configStates["${MAIN_BASE_SETTINGS.UPGRADE_CUSTOM_GEAR.key}_c$index"]?.value = "0"
                         }
-                    })
+                    }
+                )
+            }
+
+            // Gear upgrade: custom gear selection (new mode, mutually exclusive with all)
+            SettingSwitchIcon(
+                key = "${MAIN_BASE_SETTINGS.UPGRADE_CUSTOM_GEAR.key}_c$index",
+                explain = Strings.upgradeGearExplain,
+                afterChange = { checked ->
+                    if (checked) {
+                        GlobalVars.configStates["${MAIN_BASE_SETTINGS.UPGRADE_ALL_GEAR.key}_c$index"]?.value = "0"
+                    }
+                }
+            )
+
+            // Custom gear selection list visible when UPGRADE_CUSTOM_GEAR is on
+            AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.UPGRADE_CUSTOM_GEAR.key}_c$index"]?.value == "1") {
+                MainBaseGearConfigs(index)
             }
         }
     }

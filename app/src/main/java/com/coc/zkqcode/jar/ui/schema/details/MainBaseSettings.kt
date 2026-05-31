@@ -130,6 +130,7 @@ object MainBaseSettings {
     //////////////
     val UPGRADE_WERA_GEAR = SettingDef("upgrade_wear_gear", "升级穿戴装备", "Upgrade Equipped Gear", 0, "MAIN_BASE_SETTINGS")
     val UPGRADE_ALL_GEAR = SettingDef("upgrade_all_gear", "升所有装备", "Upgrade All Gear", 0, "MAIN_BASE_SETTINGS")
+    val UPGRADE_CUSTOM_GEAR = SettingDef("upgrade_gear", "升级指定装备", "Upgrade Custom Gear", 0, "MAIN_BASE_SETTINGS")
     val REMOVE_OBSTACLES = SettingDef("remove_obstacles", "移除障碍物", "Remove Obstacles", 0, "MAIN_BASE_SETTINGS")
     val CONTINUOUS_REMOVE_OBSTACLES = SettingDef("continuous_remove_obstacles", "连续移除障碍物", "Continuous Removal", 0, "MAIN_BASE_SETTINGS")
     val REMOVE_OBSTACLES_ENHANCEMENT = SettingDef("remove_obstacles_enhancement", "增强移除", "Enhanced Removal", 0, "MAIN_BASE_SETTINGS")
@@ -242,6 +243,7 @@ object MainBaseSettings {
         SELL_RING_OF_WALL,
         UPGRADE_WERA_GEAR,
         UPGRADE_ALL_GEAR,
+        UPGRADE_CUSTOM_GEAR,
         REMOVE_OBSTACLES,
         CONTINUOUS_REMOVE_OBSTACLES,
         REMOVE_OBSTACLES_ENHANCEMENT,

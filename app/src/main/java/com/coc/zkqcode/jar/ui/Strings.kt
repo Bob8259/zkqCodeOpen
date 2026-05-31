@@ -242,6 +242,27 @@ object Strings {
     val saveWorkerBuildExplain get() = if (LanguageManager.isChinese) "本功能依赖智能决策，启用本功能后会自动开启智能决策。" else "Requires Smart Decision to be enabled."
     val batchWallExplain get() = if (LanguageManager.isChinese) "此功能对已开启月卡（黄金令牌）的账号不生效。" else "Does not apply to Gold Pass accounts."
     val upgradeAllGearExplain get() = if (LanguageManager.isChinese) "启用后，辅助将同时自动升级已穿戴的装备。" else "Auto-upgrade equipped gear simultaneously."
+    val upgradeGearExplain get() = if (LanguageManager.isChinese) "开启后，辅助将自动升级选中的装备" else "Auto-upgrade selected gear"
+    val upgradeWearGearExplain get() = if (LanguageManager.isChinese) "仅升级当前英雄穿戴的装备" else "Only upgrade currently equipped gear"
+
+    // Hero names for gear grouping
+    val barbarianKing get() = if (LanguageManager.isChinese) "野蛮人之王" else "Barbarian King"
+    val archerQueen get() = if (LanguageManager.isChinese) "弓箭女皇" else "Archer Queen"
+    val grandWarden get() = if (LanguageManager.isChinese) "大守护者" else "Grand Warden"
+    val royalChampion get() = if (LanguageManager.isChinese) "飞盾战神" else "Royal Champion"
+    val dragonDuke get() = if (LanguageManager.isChinese) "飞龙公爵" else "Dragon Duke"
+    val minionPrince get() = if (LanguageManager.isChinese) "亡灵王子" else "Minion Prince"
+
+    // Helper to get hero display name by key prefix
+    fun getHeroName(heroKey: String) = when (heroKey) {
+        "barbarian_king" -> barbarianKing
+        "archer_queen" -> archerQueen
+        "grand_warden" -> grandWarden
+        "royal_champion" -> royalChampion
+        "dragon_duke" -> dragonDuke
+        "minion_prince" -> minionPrince
+        else -> heroKey
+    }
     val helperExplain get() = if (LanguageManager.isChinese) "启用后，辅助将自动使用实验助手及建筑工人学徒。" else "Auto-use Research Helper and Builder Apprentice."
     val researchHelperExplain get() = if (LanguageManager.isChinese) "实验助手的升级优先级低于购买新建筑工人，但高于工人学徒的升级。" else "Research Helper upgrade priority is below new builders but above Builder Apprentice."
     val builderApprenticeExplain get() = if (LanguageManager.isChinese) "工人学徒的升级优先级低于购买新建筑工人及升级实验助手。" else "Builder Apprentice upgrade priority is below new builders and Research Helper."
