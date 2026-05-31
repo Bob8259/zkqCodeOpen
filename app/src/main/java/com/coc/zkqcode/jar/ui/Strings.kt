@@ -283,7 +283,7 @@ object Strings {
         else "Stop battling when no victory stars are available. Can be used together with the resource-full condition."
 
     val exitOnOneStarExplain get() = if (LanguageManager.isChinese)
-        "启用后，部队部署完毕并进入战斗轮询阶段时，将持续检测对战结果。一旦检测到一星，立即退出对战。若启用了「部署后重启游戏」（或夜世界最后一局自动重启），此设置不生效。"
+        "启用后，主世界对战获得一星后退出对战。"
         else "Continuously checks for a 1-star result while polling after deployment, and exits the battle immediately when detected. Ignored if 'Restart after deploy' or builder base final round restart is active."
 
     // Memory cleaning
