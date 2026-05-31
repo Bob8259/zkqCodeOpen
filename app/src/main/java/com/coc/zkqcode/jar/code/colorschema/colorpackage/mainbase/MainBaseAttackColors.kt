@@ -62,6 +62,11 @@ interface IMainBaseAttackColors {
 
     // League entry indicator
     val EnterLeague: ColorSchema
+
+    // Star detection for stop/exit conditions
+    val MainBaseStarsAvailable: ColorSchema
+    val MainBaseOneStar1: ColorSchema
+    val MainBaseOneStar2: ColorSchema
 }
 
 object MainBaseAttackColors : IMainBaseAttackColors {
@@ -255,5 +260,16 @@ object MainBaseAttackColors : IMainBaseAttackColors {
     // League entry indicator
     override val EnterLeague = ColorSchema.parse(
         1210, 49, 1262, 98, "7B74FF", "0|-11|958DFF,7|-15|958DFF,14|0|FFFFFF,19|8|FAF6F6,30|12|1813E9,17|19|211BCE,28|1|7770FF,28|-8|918AFF,23|-14|958DFF", 0, 0.9, "您已进入联赛"
+    )
+
+    // Star detection for stop/exit conditions (no-star state)
+    override val MainBaseStarsAvailable = ColorSchema.parse(
+        32, 576, 140, 602, "81F6FE", "20|3|3895DF,40|1|3998E1,60|2|3A9AE5,77|2|7EF0FE,76|-3|5098FF,63|-2|285DBB,75|-5|71EAFE,64|-3|4FB2FE,-5|2|6DEEFE", 0, 0.9, "主世界胜利之星"
+    )
+    override val MainBaseOneStar1 = ColorSchema.parse(
+        547, 266, 743, 455, "D3D8D3", "41|-2|D1D6D2,-10|37|C3C8C6,20|57|CBD2CE,58|39|C5CDCC,9|26|C0C6C3,33|23|C3CAC3,22|46|C7CECB,42|46|CBCECB,99|71|452E34", 0, 0.9, "主世界一星1"
+    )
+    override val MainBaseOneStar2 = ColorSchema.parse(
+        1069, 522, 1105, 558, "EFF3F0", "-6|9|C5CBC6,-5|16|CED3CE,5|16|D3D6D3,7|7|D6DBD6,4|13|CBCFCE,-3|11|C3C9C3,2|10|C6C8C6,0|4|E4E6E5,-3|7|C9CEC9", 0, 0.9, "主世界一星2"
     )
 }

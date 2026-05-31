@@ -70,6 +70,10 @@ fun LazyListScope.builderBaseConfig(
                     }
                 )
                 SettingSwitchIcon(key = "${BUILDER_BASE_SETTINGS.BUILDER_BASE_STOP_BATTLE_AFTER_FULL_RESOURCES.key}_c${index}")
+                SettingSwitchIcon(
+                    key = "${BUILDER_BASE_SETTINGS.BUILDER_BASE_STOP_BATTLE_WHEN_NO_STAR.key}_c${index}",
+                    explain = Strings.stopBattleWhenNoStarExplain
+                )
             }
             SettingInputRow(key = "${BUILDER_BASE_SETTINGS.BUILDER_BASE_BATTLE_TIMES.key}_c${index}")
             SettingInputRow(key = "${BUILDER_BASE_SETTINGS.BUILDER_BASE_BATTLE_TIMES_WITH_TASKS.key}_c${index}")
@@ -100,6 +104,12 @@ fun LazyListScope.builderBaseConfig(
                             GlobalVars.configStates[trophyKey]?.value = "0"
                         }
                     }
+                )
+            }
+            Row {
+                SettingSwitchIcon(
+                    key = "${BUILDER_BASE_SETTINGS.EXIT_ON_ONE_STAR_BUILDER.key}_c${index}",
+                    explain = Strings.exitOnOneStarExplain
                 )
             }
         }

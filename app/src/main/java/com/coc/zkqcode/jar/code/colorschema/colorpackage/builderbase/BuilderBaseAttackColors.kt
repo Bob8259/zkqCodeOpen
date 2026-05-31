@@ -17,6 +17,11 @@ interface IBuilderBaseAttackColors {
     val BuilderBaseBarbarian: ColorSchema
     val TroopsWithSkills: ColorSchema
     val TroopsWithOutSkills: ColorSchema
+
+    // Star detection for stop/exit conditions
+    val BuilderBaseStarsAvailable: ColorSchema
+    val BuilderBaseOneStar1: ColorSchema
+    val BuilderBaseOneStar2: ColorSchema
 }
 
 object BuilderBaseAttackColors : IBuilderBaseAttackColors {
@@ -57,5 +62,16 @@ object BuilderBaseAttackColors : IBuilderBaseAttackColors {
     )
     override val TroopsWithOutSkills = ColorSchema.parse(
         80, 570, 1210, 630, "FF763A", "7|0|FF763A,17|1|FF763A,22|2|FF773B,26|2|FF773B,24|8|FF7C3F,16|12|FF7E41,8|13|FF7C3F,3|12|FF793C,1|9|FF773A", 1, 0.9, "无技能部队"
+    )
+
+    // Star detection for stop/exit conditions
+    override val BuilderBaseStarsAvailable = ColorSchema.parse(
+        23, 574, 142, 614, "FFFFFF", "1|12|FFFFFF,5|24|858174,19|19|286690,85|16|2A6993,93|4|2D6F96,-9|12|A09B91,-3|22|F1EFE9,0|13|FFFFFF,8|19|BFB9AF", 0, 0.9, "夜世界胜利之星"
+    )
+    override val BuilderBaseOneStar1 = ColorSchema.parse(
+        543, 262, 735, 455, "71EAFF", "-33|29|73EAFF,-17|61|3CADF2,20|63|2E9FE9,33|29|2696E7,-12|25|73EAFF,9|24|47BDFF,-20|46|6BE7FF,21|44|2C9CE9,4|38|36A6EF", 0, 0.9, "夜世界一星1"
+    )
+    override val BuilderBaseOneStar2 = ColorSchema.parse(
+        1068, 521, 1102, 557, "DFFFFF", "-5|19|1167C5,4|20|002098,4|13|2C9EEA,-1|10|58D0FF,-3|8|74E9FF,-9|10|003BAB,4|21|011B93,10|9|207FD5,-5|5|BDF6FF", 0, 0.9, "夜世界一星2"
     )
 }

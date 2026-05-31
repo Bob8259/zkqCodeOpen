@@ -63,6 +63,7 @@ object MainBaseSettings {
     )
     val UPGRADE_PETS = SettingDef("upgrade_pets", "升级战宠", "Upgrade Pets", 1, "MAIN_BASE_SETTINGS")
     val STOP_BATTLE_WHEN_NO_STAR = SettingDef("stop_battle_when_no_star", "无胜利之星后停止对战", "Stop if no stars", 0, "MAIN_BASE_SETTINGS")
+    val EXIT_ON_ONE_STAR_MAIN = SettingDef("exit_on_one_star_main", "一星退出", "Exit on 1-star", 0, "MAIN_BASE_SETTINGS")
     val RESTART_GAME = SettingDef("restart_game", "部署后重启游戏", "Restart after deploy", 1, "MAIN_BASE_SETTINGS")
     val PLAY_TOURNAMENT = SettingDef("play_tournament", "排位对战", "Ranked Battle", 0, "MAIN_BASE_SETTINGS")
     val CHANGE_BASE = SettingDef("change_base", "调整援兵/阵型", "Adjust Reinforcements/Base", 1, "MAIN_BASE_SETTINGS")
@@ -267,6 +268,7 @@ object MainBaseSettings {
         ACCEPT_MAIN_WORLD_ADVANCED_TASK,
         ACCEPT_BUILDER_BASE_NORMAL_TASK,
         ACCEPT_BUILDER_BASE_ADVANCED_TASK,
-        STOP_CLAN_GAMES_AFTER_4000_POINTS
+        STOP_CLAN_GAMES_AFTER_4000_POINTS,
+        EXIT_ON_ONE_STAR_MAIN
     )
 }

@@ -49,62 +49,87 @@ suspend fun builderBaseAttack(): Boolean {
         return true
     }
 
-    // 2. Calculate resource percentages using shared utility
-    val resourcePercentage = calculateResourcesPercentage(BaseType.Builder)
-    accountMessage("金币百分比: ${resourcePercentage.gold}%, 圣水百分比: ${resourcePercentage.elixir}%")
-    // Consider resource full if percentage >= 96%
-    val isGoldFull = resourcePercentage.gold >= 96
-    val isExileFull = resourcePercentage.elixir >= 96
+    // 2. Read shared configs (unchanged across battles)
     val stopIfFull = getBooleanConfigRuntime(Schema.BUILDER_BASE_SETTINGS.BUILDER_BASE_STOP_BATTLE_AFTER_FULL_RESOURCES.key)
+    val stopNoStarConfig = getBooleanConfigRuntime(Schema.BUILDER_BASE_SETTINGS.BUILDER_BASE_STOP_BATTLE_WHEN_NO_STAR.key)
     val acceptedTaskBase = readClanGameAcceptedTaskBase()
     val hasBuilderBaseTask = acceptedTaskBase == CLAN_GAME_TASK_BASE_BUILDER_BASE
 
-    // 3. Determine action based on resource state and settings
-    if (isGoldFull && isExileFull && stopIfFull && !hasBuilderBaseTask) {
-        accountMessage("资源已满，停止对战")
+    // 3. Evaluate battle times
+    val battleTimesSetting = if (hasBuilderBaseTask) {
+        Schema.BUILDER_BASE_SETTINGS.BUILDER_BASE_BATTLE_TIMES_WITH_TASKS
     } else {
-        // Evaluate attack strategy
+        Schema.BUILDER_BASE_SETTINGS.BUILDER_BASE_BATTLE_TIMES
+    }
+    val battleTimes = getConfigRuntime(battleTimesSetting.key).toIntOrNull() ?: logAndRestart("${battleTimesSetting.displayName} 必须是数字，请检查配置")
+    val normalBattleTimes = getConfigRuntime(Schema.BUILDER_BASE_SETTINGS.BUILDER_BASE_BATTLE_TIMES.key).toIntOrNull()
+        ?: logAndRestart("${Schema.BUILDER_BASE_SETTINGS.BUILDER_BASE_BATTLE_TIMES.displayName} 必须是数字，请检查配置")
+    val shouldCheckClanGameTask = battleTimesSetting == Schema.BUILDER_BASE_SETTINGS.BUILDER_BASE_BATTLE_TIMES_WITH_TASKS && battleTimes > normalBattleTimes
+
+    // 4. Per-battle loop: recalculate resources and re-evaluate stop conditions before each battle
+    repeat(battleTimes) { index ->
+        // ---- Recalculate resource percentages every battle ----
+        val resourcePercentage = calculateResourcesPercentage(BaseType.Builder)
+        accountMessage("金币百分比: ${resourcePercentage.gold}%, 圣水百分比: ${resourcePercentage.elixir}%")
+        val isGoldFull = resourcePercentage.gold >= 96
+        val isExileFull = resourcePercentage.elixir >= 96
+
+        // ---- Evaluate stop conditions every battle ----
+        val stopResourcesEnabled = stopIfFull && !hasBuilderBaseTask
+        val stopNoStarEnabled = stopNoStarConfig && !hasBuilderBaseTask
+
+        val shouldStopResources = stopResourcesEnabled && isGoldFull && isExileFull
+        val shouldStopNoStars = if (stopNoStarEnabled) {
+            findMultiColors(schema = MyColors.BuilderBaseStarsAvailable) == null
+        } else false
+
+        // Combined decision: when both are enabled, both must be satisfied; when only one is enabled, that one decides
+        val finalStop = when {
+            stopResourcesEnabled && stopNoStarEnabled -> shouldStopResources && shouldStopNoStars
+            stopResourcesEnabled                       -> shouldStopResources
+            stopNoStarEnabled                          -> shouldStopNoStars
+            else                                       -> false
+        }
+        if (finalStop) {
+            val reasons = mutableListOf<String>()
+            if (shouldStopResources) reasons.add("资源已满")
+            if (shouldStopNoStars) reasons.add("无胜利之星")
+            accountMessage("${reasons.joinToString("，")}，停止对战")
+            return@repeat // break out of repeat loop
+        }
+
+        // ---- Determine attack strategy based on current resource state ----
         val attackType = when {
             getBooleanConfigRuntime(Schema.BUILDER_BASE_SETTINGS.TROPHY_PUSHING_MODE.key) -> {
                 accountMessage("已勾选上分模式")
                 "gold"
             }
-
             getBooleanConfigRuntime(Schema.BUILDER_BASE_SETTINGS.ELIXIR_CART_FARMING.key) -> {
                 accountMessage("已勾选刷圣水车模式")
                 "exile"
             }
-            // If gold is not full (< 96%), prioritize gold; otherwise, default to exile
             resourcePercentage.gold < 96 -> "gold"
             else -> "exile"
         }
-        val battleTimesSetting = if (hasBuilderBaseTask) {
-            Schema.BUILDER_BASE_SETTINGS.BUILDER_BASE_BATTLE_TIMES_WITH_TASKS
-        } else {
-            Schema.BUILDER_BASE_SETTINGS.BUILDER_BASE_BATTLE_TIMES
-        }
-        val battleTimes = getConfigRuntime(battleTimesSetting.key).toIntOrNull() ?: logAndRestart("${battleTimesSetting.displayName} 必须是数字，请检查配置")
-        val normalBattleTimes = getConfigRuntime(Schema.BUILDER_BASE_SETTINGS.BUILDER_BASE_BATTLE_TIMES.key).toIntOrNull()
-            ?: logAndRestart("${Schema.BUILDER_BASE_SETTINGS.BUILDER_BASE_BATTLE_TIMES.displayName} 必须是数字，请检查配置")
-        val shouldCheckClanGameTask = battleTimesSetting == Schema.BUILDER_BASE_SETTINGS.BUILDER_BASE_BATTLE_TIMES_WITH_TASKS && battleTimes > normalBattleTimes
-        repeat(battleTimes) { index ->
-            if (!realAttack(attackType, hasBuilderBaseTask, index + 1, battleTimes)) return false
-            val completedBattleTimes = index + 1
-            if (shouldCheckClanGameTask && completedBattleTimes >= normalBattleTimes && !hasAcceptedClanGameTask(BaseType.Builder)) return true
 
-            if ((index + 1) % 5 == 0) {
-                if (!enterMainScreen()) return false
-                displayAds()
-                collectBuilderBaseResources()
-            }
+        if (!realAttack(attackType, hasBuilderBaseTask, index + 1, battleTimes)) return false
+        val completedBattleTimes = index + 1
+        if (shouldCheckClanGameTask && completedBattleTimes >= normalBattleTimes && !hasAcceptedClanGameTask(BaseType.Builder)) return true
+
+        if ((index + 1) % 5 == 0) {
+            if (!enterMainScreen()) return false
+            displayAds()
+            collectBuilderBaseResources()
         }
     }
-    // 4. Return to main screen
+    // 5. Return to main screen
     return enterMainScreen()
 }
 
 private suspend fun realAttack(mode: String, hasBuilderBaseTask: Boolean, battleNumber: Int = 1, battleTimes: Int): Boolean {
     val startTime = System.currentTimeMillis()
+    val exitOnOneStar = getBooleanConfigRuntime(Schema.BUILDER_BASE_SETTINGS.EXIT_ON_ONE_STAR_BUILDER.key)
+    var troopsDeployed = false
     // Track first detection of SwitchTroopButton for shorter initial delay
     var isFirstSwitchTroop = true
     while (true) {
@@ -148,6 +173,20 @@ private suspend fun realAttack(mode: String, hasBuilderBaseTask: Boolean, battle
             waitLoop()
             continue
         }
+        // Detect 1-star result and exit immediately
+        if (exitOnOneStar && troopsDeployed) {
+            val oneStar1 = findMultiColors(byteBuffer = capturedScreen, schema = MyColors.BuilderBaseOneStar1)
+            val oneStar2 = findMultiColors(byteBuffer = capturedScreen, schema = MyColors.BuilderBaseOneStar2)
+            if (oneStar1 != null || oneStar2 != null) {
+                accountMessage("检测到一星，退出对战")
+                val exitButton = findMultiColorsUntil(schemas = listOf(MyColors.ExitBattleButton), duration = 2000)
+                if (exitButton != null) {
+                    TouchActions.tap(exitButton.x, exitButton.y, delayTime = 200)
+                    TouchActions.tap(775, 470)
+                }
+                break
+            }
+        }
         val builderBaseEndBattle = findMultiColors(byteBuffer = capturedScreen, schema = MyColors.BuilderBackToCamp)
         if (builderBaseEndBattle != null) {
             TouchActions.tap(builderBaseEndBattle.x, builderBaseEndBattle.y, delayTime = 200)
@@ -178,6 +217,7 @@ private suspend fun realAttack(mode: String, hasBuilderBaseTask: Boolean, battle
                     "exile" -> deployAndExit()
                 }
             }
+            troopsDeployed = true
             continue
         }
 

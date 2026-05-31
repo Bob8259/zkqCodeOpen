@@ -107,8 +107,28 @@ suspend fun searchOpponentsAndDeployTroops(): Boolean {
     }
     val acceptedTaskBase = readClanGameAcceptedTaskBase()
     val hasMainWorldTask = acceptedTaskBase == CLAN_GAME_TASK_BASE_MAIN_WORLD
-    if (getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.STOP_BATTLE_AFTER_FULL_RESOURCES.key) && !hasMainWorldTask) {
-        if (targetGold == 0 && targetElixir == 0 && targetDarkElixir == 0) return false
+    // Evaluate each stop condition independently
+    val stopResourcesEnabled = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.STOP_BATTLE_AFTER_FULL_RESOURCES.key) && !hasMainWorldTask
+    val stopNoStarEnabled = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.STOP_BATTLE_WHEN_NO_STAR.key) && !hasMainWorldTask
+    val shouldStopResources = stopResourcesEnabled && targetGold == 0 && targetElixir == 0 && targetDarkElixir == 0
+    var shouldStopNoStars = false
+    if (stopNoStarEnabled) {
+        val starsAvailable = findMultiColors(schema = MyColors.MainBaseStarsAvailable)
+        shouldStopNoStars = starsAvailable == null
+    }
+    // Combined decision: when both are enabled, both must be satisfied; when only one is enabled, that one decides
+    val finalStop = when {
+        stopResourcesEnabled && stopNoStarEnabled -> shouldStopResources && shouldStopNoStars
+        stopResourcesEnabled                       -> shouldStopResources
+        stopNoStarEnabled                          -> shouldStopNoStars
+        else                                       -> false
+    }
+    if (finalStop) {
+        val reasons = mutableListOf<String>()
+        if (shouldStopResources) reasons.add("资源已满")
+        if (shouldStopNoStars) reasons.add("无胜利之星")
+        accountMessage("${reasons.joinToString("，")}，停止对战")
+        return false
     }
     var searchTimes = 0
     var battleStarted = false

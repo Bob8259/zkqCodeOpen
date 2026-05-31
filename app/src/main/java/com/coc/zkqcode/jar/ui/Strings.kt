@@ -277,6 +277,15 @@ object Strings {
     val builderBaseContinuousRemoveExplain get() = if (LanguageManager.isChinese) "启用后，辅助将不再记录移除时间，每次运行都会尝试移除障碍物，实现连续移除。" else "Remove obstacles every run without tracking time."
     val builderBaseSaveWorkerBuildExplain get() = if (LanguageManager.isChinese) "本功能依赖智能决策，启用本功能后会自动开启智能决策。" else "Requires Smart Decision to be enabled."
 
+    // Stop battle conditions & one-star exit
+    val stopBattleWhenNoStarExplain get() = if (LanguageManager.isChinese)
+        "启用后，检测到无胜利之星时将停止对战。可与「资源满后停止对战」同时开启，若同时开启，则只有同时满足2个条件时才停止对战。"
+        else "Stop battling when no victory stars are available. Can be used together with the resource-full condition."
+
+    val exitOnOneStarExplain get() = if (LanguageManager.isChinese)
+        "启用后，部队部署完毕并进入战斗轮询阶段时，将持续检测对战结果。一旦检测到一星，立即退出对战。若启用了「部署后重启游戏」（或夜世界最后一局自动重启），此设置不生效。"
+        else "Continuously checks for a 1-star result while polling after deployment, and exits the battle immediately when detected. Ignored if 'Restart after deploy' or builder base final round restart is active."
+
     // Memory cleaning
     val memoryCleanSuccess get() = if (LanguageManager.isChinese) "记忆文件清除成功" else "Memory cache cleared"
     val memoryCleanFail get() = if (LanguageManager.isChinese) "清除失败，可能记忆文件不存在" else "Clear failed - cache may not exist"

@@ -105,6 +105,10 @@ fun LazyListScope.mainBaseConfig(
                     key = "${MAIN_BASE_SETTINGS.DYNAMIC_ADJUSTMENT.key}_c$index", explain = Strings.dynamicAdjustExplain
                 )
                 SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.STOP_BATTLE_AFTER_FULL_RESOURCES.key}_c$index")
+                SettingSwitchIcon(
+                    key = "${MAIN_BASE_SETTINGS.STOP_BATTLE_WHEN_NO_STAR.key}_c$index",
+                    explain = Strings.stopBattleWhenNoStarExplain
+                )
             }
         }
     }
@@ -124,6 +128,10 @@ fun LazyListScope.mainBaseConfig(
                 )
                 SettingSwitchIcon(
                     key = "${MAIN_BASE_SETTINGS.MANUAL_TRAINING.key}_c$index", explain = Strings.manualTrainingExplain
+                )
+                SettingSwitchIcon(
+                    key = "${MAIN_BASE_SETTINGS.EXIT_ON_ONE_STAR_MAIN.key}_c$index",
+                    explain = Strings.exitOnOneStarExplain
                 )
             }
         }

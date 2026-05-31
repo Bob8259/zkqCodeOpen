@@ -7,6 +7,7 @@ import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.jar.code.universal.buildings.BaseType
 import com.coc.zkqcode.jar.code.universal.clangame.hasAcceptedClanGameTask
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
+import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.smalltools.data.CLAN_GAME_TASK_BASE_MAIN_WORLD
 import com.coc.zkqcode.jar.code.universal.smalltools.input.TouchActions
@@ -52,12 +53,35 @@ suspend fun mainBaseAttack(): Boolean {
         delayWithMultiplier(1000)
         runGame()
     } else {
+        val exitOnOneStar = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.EXIT_ON_ONE_STAR_MAIN.key)
         while (true) {
             val elapsed = System.currentTimeMillis() - startTime
             // Force exit if battle has exceeded the maximum allowed duration
             if (elapsed >= maxDurationMs) {
                 killGame()
                 break
+            }
+
+            // Detect 1-star result and exit immediately
+            if (exitOnOneStar) {
+                val oneStar1 = findMultiColors(schema = MyColors.MainBaseOneStar1)
+                val oneStar2 = findMultiColors(schema = MyColors.MainBaseOneStar2)
+                if (oneStar1 != null || oneStar2 != null) {
+                    accountMessage("检测到一星，退出对战")
+                    // 1. Click EndBattle to open surrender confirmation popup
+                    val endBattleBtn = findMultiColors(schema = MyColors.EndBattle)
+                    if (endBattleBtn != null) {
+                        TouchActions.tap(endBattleBtn.x, endBattleBtn.y, delayTime = 200)
+                        // 2. Click MiddleGreenYes to confirm surrender
+                        val confirmBtn = findMultiColorsUntil(schemas = listOf(MyColors.MiddleGreenYes), duration = 1000)
+                        if (confirmBtn != null) {
+                            TouchActions.tap(confirmBtn.x, confirmBtn.y, delayTime = 200)
+                        }
+                    }
+                    // 3. Tap return-to-camp button on settlement page
+                    TouchActions.tap(640, 610, delayTime = 1500)
+                    break
+                }
             }
 
             // Show remaining minutes with 1 decimal place
