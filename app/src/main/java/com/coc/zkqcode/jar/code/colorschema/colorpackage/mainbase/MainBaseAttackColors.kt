@@ -67,6 +67,9 @@ interface IMainBaseAttackColors {
     val MainBaseStarsAvailable: ColorSchema
     val MainBaseOneStar1: ColorSchema
     val MainBaseOneStar2: ColorSchema
+
+    /** Screen crop bounds for OCR of destruction % (top-center HUD, 1280x720). */
+    val BattleDestructionPercentOcrRegion: ColorSchema
 }
 
 object MainBaseAttackColors : IMainBaseAttackColors {
@@ -271,5 +274,10 @@ object MainBaseAttackColors : IMainBaseAttackColors {
     )
     override val MainBaseOneStar2 = ColorSchema.parse(
         1069, 522, 1105, 558, "EFF3F0", "-6|9|C5CBC6,-5|16|CED3CE,5|16|D3D6D3,7|7|D6DBD6,4|13|CBCFCE,-3|11|C3C9C3,2|10|C6C8C6,0|4|E4E6E5,-3|7|C9CEC9", 0, 0.9, "主世界一星2"
+    )
+
+    // OCR crop for battle destruction percentage (bounds only; color match not used for OCR)
+    override val BattleDestructionPercentOcrRegion = ColorSchema.parse(
+        530, 12, 750, 58, "FFFFFF", "0|0|FFFFFF", 0, 0.5, "主世界破坏百分比OCR区域"
     )
 }

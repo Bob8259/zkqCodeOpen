@@ -54,6 +54,7 @@ suspend fun mainBaseAttack(): Boolean {
         runGame()
     } else {
         val exitOnOneStar = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.EXIT_ON_ONE_STAR_MAIN.key)
+        val destructionOcrState = BattleDestructionOcrState()
         while (true) {
             val elapsed = System.currentTimeMillis() - startTime
             // Force exit if battle has exceeded the maximum allowed duration
@@ -67,21 +68,25 @@ suspend fun mainBaseAttack(): Boolean {
                 val oneStar1 = findMultiColors(schema = MyColors.MainBaseOneStar1)
                 val oneStar2 = findMultiColors(schema = MyColors.MainBaseOneStar2)
                 if (oneStar1 != null || oneStar2 != null) {
-                    accountMessage("检测到一星，退出对战")
-                    // 1. Click EndBattle to open surrender confirmation popup
-                    val endBattleBtn = findMultiColors(schema = MyColors.EndBattle)
-                    if (endBattleBtn != null) {
-                        TouchActions.tap(endBattleBtn.x, endBattleBtn.y, delayTime = 200)
-                        // 2. Click MiddleGreenYes to confirm surrender
-                        val confirmBtn = findMultiColorsUntil(schemas = listOf(MyColors.MiddleGreenYes), duration = 1000)
-                        if (confirmBtn != null) {
-                            TouchActions.tap(confirmBtn.x, confirmBtn.y, delayTime = 200)
-                        }
-                    }
-                    // 3. Tap return-to-camp button on settlement page
-                    TouchActions.tap(640, 610, delayTime = 1500)
+                    surrenderMainBaseBattle("检测到一星，退出对战")
                     break
                 }
+            }
+
+            when (checkBattleDestructionOcrExit(destructionOcrState)) {
+                BattleDestructionOcrExitResult.ExitTargetMet -> {
+                    surrenderMainBaseBattle("破坏百分比已达目标，退出对战")
+                    break
+                }
+                BattleDestructionOcrExitResult.ExitStale -> {
+                    surrenderMainBaseBattle("破坏百分比长时间未变化，退出对战")
+                    break
+                }
+                BattleDestructionOcrExitResult.ExitOcrFailed -> {
+                    surrenderMainBaseBattle("破坏百分比识别失败超时，退出对战")
+                    break
+                }
+                BattleDestructionOcrExitResult.Continue -> { /* keep polling */ }
             }
 
             // Show remaining minutes with 1 decimal place
@@ -100,4 +105,18 @@ suspend fun mainBaseAttack(): Boolean {
         }
     }
     return enterMainScreen(isRestartGame)
+}
+
+/** Surrender via EndBattle and return to camp (shared by one-star and OCR destruction-% exit). */
+private suspend fun surrenderMainBaseBattle(reason: String) {
+    accountMessage(reason)
+    val endBattleBtn = findMultiColors(schema = MyColors.EndBattle)
+    if (endBattleBtn != null) {
+        TouchActions.tap(endBattleBtn.x, endBattleBtn.y, delayTime = 200)
+        val confirmBtn = findMultiColorsUntil(schemas = listOf(MyColors.MiddleGreenYes), duration = 1000)
+        if (confirmBtn != null) {
+            TouchActions.tap(confirmBtn.x, confirmBtn.y, delayTime = 200)
+        }
+    }
+    TouchActions.tap(640, 610, delayTime = 1500)
 }

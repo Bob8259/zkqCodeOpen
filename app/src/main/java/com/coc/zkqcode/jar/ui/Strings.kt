@@ -286,6 +286,17 @@ object Strings {
         "启用后，主世界对战获得一星后退出对战。"
         else "Continuously checks for a 1-star result while polling after deployment, and exits the battle immediately when detected. Ignored if 'Restart after deploy' or builder base final round restart is active."
 
+    // OCR destruction-% battle exit
+    val percentTargetSuffix get() = if (LanguageManager.isChinese) "％时退出" else "% exit"
+    val percentStaleSuffix get() = if (LanguageManager.isChinese) "秒内％未变则退出" else "s if % unchanged"
+    val ocrExitExplain get() = if (LanguageManager.isChinese)
+        "OCR 检测对战破坏百分比。设定目标%为 0 则不触发目标退出；\n" +
+        "默认 20 秒内百分比不变化则自动退出。\n" +
+        "安全兜底：连续检测失败超过 30 秒后强制退出。"
+        else "OCR-based destruction % detection. Set target to 0 to disable target exit.\n" +
+        "Default: exit if % unchanged for 20s.\n" +
+        "Safety: force exit if detection fails for 30s continuously."
+
     // Memory cleaning
     val memoryCleanSuccess get() = if (LanguageManager.isChinese) "记忆文件清除成功" else "Memory cache cleared"
     val memoryCleanFail get() = if (LanguageManager.isChinese) "清除失败，可能记忆文件不存在" else "Clear failed - cache may not exist"

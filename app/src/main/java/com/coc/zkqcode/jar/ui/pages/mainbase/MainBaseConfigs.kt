@@ -133,6 +133,24 @@ fun LazyListScope.mainBaseConfig(
                     key = "${MAIN_BASE_SETTINGS.EXIT_ON_ONE_STAR_MAIN.key}_c$index",
                     explain = Strings.exitOnOneStarExplain
                 )
+                SettingSwitchIcon(
+                    key = "${MAIN_BASE_SETTINGS.OCR_EXIT_ENABLED.key}_c$index",
+                    explain = Strings.ocrExitExplain
+                )
+            }
+            AnimatedVisibility(
+                visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.OCR_EXIT_ENABLED.key}_c$index"]?.value == "1"
+            ) {
+                FlowRow {
+                    SettingInputRow(
+                        key = "${MAIN_BASE_SETTINGS.OCR_EXIT_TARGET_PERCENT.key}_c$index",
+                        suffix = Strings.percentTargetSuffix
+                    )
+                    SettingInputRow(
+                        key = "${MAIN_BASE_SETTINGS.OCR_EXIT_STALE_SECONDS.key}_c$index",
+                        suffix = Strings.percentStaleSuffix
+                    )
+                }
             }
         }
     }
