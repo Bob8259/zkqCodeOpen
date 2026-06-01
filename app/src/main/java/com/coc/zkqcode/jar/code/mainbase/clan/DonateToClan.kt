@@ -68,18 +68,47 @@ suspend fun donateToClan(): Boolean {
             TouchActions.tap(iUnderstandButton.x, iUnderstandButton.y)
             continue
         }
-        val donationButton = findMultiColors(MyColors.DonationButton, byteBuffer = screenBuffer, increment = 1)
-        if (donationButton != null) {
-            // Check if a troop config castle icon is present to the left of the donation button.
-            // Its presence means this is a troop configuration row (not a real donation request) — skip it.
-            val castleIconSchema = ColorSchema.rescope(
-                MyColors.TroopConfigCastleIcon, x1 = donationButton.x - 200, y1 = donationButton.y - 30, x2 = donationButton.x - 90, y2 = donationButton.y + 40
-            )
-            val castleIcon = findMultiColors(schema = castleIconSchema, byteBuffer = screenBuffer, increment = 1)
-            if (castleIcon != null) {
-                // This is a troop config row, not a real donation request — skip
-                continue
+        // Grid-search donation buttons by scanning vertical slices.
+        // This avoids missing real donation requests when the first detected button belongs to a troop-config row
+        // (which is identified by a castle icon to the left of the button).
+        val donationBaseSchema = MyColors.DonationButton
+        val donationSearchStartY = 70
+        val donationSearchEndY = 630
+        val donationSliceHeight = 60
+        val donationButton = run {
+            var found: android.graphics.Point? = null
+            outer@ for (sliceStartY in donationSearchStartY..donationSearchEndY step donationSliceHeight) {
+                val sliceEndY = (sliceStartY + donationSliceHeight).coerceAtMost(donationSearchEndY)
+                var currentY1 = sliceStartY
+                while (currentY1 < sliceEndY) {
+                    val sliceSchema = ColorSchema.rescope(
+                        donationBaseSchema, donationBaseSchema.x1, currentY1, donationBaseSchema.x2, sliceEndY
+                    )
+                    val candidate = findMultiColors(schema = sliceSchema, byteBuffer = screenBuffer, increment = 1) ?: break
+
+                    // Check if a troop config castle icon is present to the left of the donation button.
+                    // Its presence means this is a troop configuration row (not a real donation request) — skip it.
+                    val castleIconSchema = ColorSchema.rescope(
+                        MyColors.TroopConfigCastleIcon,
+                        x1 = candidate.x - 200,
+                        y1 = candidate.y - 30,
+                        x2 = candidate.x - 90,
+                        y2 = candidate.y + 40
+                    )
+                    val castleIcon = findMultiColors(schema = castleIconSchema, byteBuffer = screenBuffer, increment = 1)
+                    if (castleIcon == null) {
+                        found = candidate
+                        break@outer
+                    }
+
+                    // Continue searching within the current slice after this candidate.
+                    currentY1 = (candidate.y + 1).coerceAtLeast(currentY1 + 1).coerceAtMost(sliceEndY)
+                }
             }
+            found
+        }
+
+        if (donationButton != null) {
             TouchActions.tap(donationButton.x, donationButton.y)
             donateActions()
             TouchActions.swipe(1155, 237, -500, 250, delayTime = 100)//Swipe troops
@@ -141,6 +170,9 @@ suspend fun donateToClan(): Boolean {
         }
         if (loopCount % 5 == 0) {
             if (!checkReconnections()) return false
+        }
+        if (loopCount % 12 == 0) {
+            if (!enterMainScreen()) return false
         }
         delayWithMultiplier(500)
     }
