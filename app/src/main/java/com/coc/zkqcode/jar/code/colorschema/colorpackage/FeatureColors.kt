@@ -18,6 +18,7 @@ interface IFeatureColors {
 
     // Edit mode indicator
     val EditMode: ColorSchema
+    val EditMode2: ColorSchema
 }
 
 object FeatureColors : IFeatureColors {
@@ -56,5 +57,8 @@ object FeatureColors : IFeatureColors {
     // Edit mode indicator
     override val EditMode = ColorSchema.parse(
         6, 607, 271, 707, "AE8A39", "4|15|C8A142,10|34|C28A37,101|-9|E8C256,103|14|F1BF4C,103|32|DC9F3C,141|-8|E9C356,147|12|F6CF5C,144|32|D2983C,238|-6|F4CB55", 0, 0.9, "编辑模式"
+    )
+    override val EditMode2 = ColorSchema.parse(
+        41, 586, 131, 708, "F2D263", "2|13|EFCB5A,1|25|E7B24A,-1|41|DDA842,-2|53|DFA13F,-4|61|C68D39,-7|60|CB8E39,-9|38|F3C652,-10|24|EBBA4E,-4|9|E8C559", 0, 0.9, "编辑模式2"
     )
 }

@@ -1,6 +1,6 @@
 # ZKQbuilding — Detector Inference Service for Android
 
-**Version:** 1.09
+**Version:** 1.10
 
 An Android app that runs a local HTTP server exposing detector inference. The app launches a foreground service on startup, making the detection API available to other apps or automation tools on the device via `http://localhost:13462`.
 
@@ -79,7 +79,7 @@ Health check. Returns the server status, version, and current model state.
 ```json
 {
   "status": "running",
-  "version": "1.09",
+  "version": "1.10",
   "modelLoaded": true,
   "modelType": "walls-detect"
 }

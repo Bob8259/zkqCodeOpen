@@ -1,5 +1,6 @@
 ﻿package com.coc.zkqcode.jar.code.universal.remove
 
+import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.jar.code.universal.smalltools.input.TouchActions
@@ -30,7 +31,7 @@ suspend fun enterEditMode(): Boolean {
     }
 
     removeAllBuildings()
-    return findMultiColorsUntil(listOf(MyColors.EditMode), 1000) != null
+    return findMultiColorsUntil(listOf(MyColors.EditMode, MyColors.EditMode2), 1000) != null
 }
 
 suspend fun removeAllBuildings() {
