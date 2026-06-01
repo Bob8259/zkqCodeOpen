@@ -43,7 +43,11 @@ suspend fun playTournament(): Boolean {
         if (findMultiColors(MyColors.WaitForTournament) != null) {
             break
         }
-        if (findMultiColors(MyColors.GreenSword) != null || findMultiColors(MyColors.PreparingTournament) != null || findMultiColors(MyColors.TournamentNotAvailable) != null) {
+        val tournamentTerminal = findMultiColorsUntil(
+            schemas = listOf(MyColors.GreenSword, MyColors.PreparingTournament, MyColors.PreparingTournament2, MyColors.TournamentNotAvailable),
+            duration = 100,
+        )
+        if (tournamentTerminal != null) {
             writeMemory(storageKey, (System.currentTimeMillis() / 60_000).toString())
             break
         }
