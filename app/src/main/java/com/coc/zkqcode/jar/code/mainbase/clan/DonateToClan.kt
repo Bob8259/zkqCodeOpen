@@ -168,10 +168,10 @@ suspend fun donateToClan(): Boolean {
                 lastBattleTime = System.currentTimeMillis()
             }
         }
-        if (loopCount % 5 == 0) {
+        if (loopCount % 20 == 0) {
             if (!checkReconnections()) return false
         }
-        if (loopCount % 12 == 0) {
+        if (loopCount % 100 == 0) {
             if (!enterMainScreen()) return false
         }
         delayWithMultiplier(500)
