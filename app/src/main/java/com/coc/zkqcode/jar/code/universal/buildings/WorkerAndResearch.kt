@@ -201,7 +201,7 @@ object WorkerAndResearch {
         val black = 0xFF000000.toInt()
         for (y in 0 until height) {
             for (x in 0 until width) {
-                if (x < left || x >= right || y < top || y >= bottom) {
+                if (x !in left..<right || y < top || y >= bottom) {
                     pixels[y * width + x] = black
                 }
             }

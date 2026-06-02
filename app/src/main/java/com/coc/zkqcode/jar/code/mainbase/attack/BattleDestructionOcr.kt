@@ -2,11 +2,12 @@ package com.coc.zkqcode.jar.code.mainbase.attack
 
 import com.coc.zkqcode.core.util.fileactions.LogHelper.showDebugInfo
 import com.coc.zkqcode.jar.code.colorschema.MyColors
+import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.jar.code.universal.recognizer.TextRecognizer
 import com.coc.zkqcode.jar.code.universal.recognizer.cleanOcrDigits
 import com.coc.zkqcode.jar.code.universal.smalltools.data.getBooleanConfigRuntime
 import com.coc.zkqcode.jar.code.universal.smalltools.data.getConfigRuntime
-import com.coc.zkqcode.jar.ui.schema.Schema
+import com.coc.zkqcode.jar.ui.schema.details.MainBaseSettings
 
 /** Force exit after this many milliseconds of consecutive OCR read failures. */
 private const val OCR_FAIL_SAFE_MS = 30_000L
@@ -68,22 +69,22 @@ suspend fun readBattleDestructionPercent(): Int? {
 
 /**
  * Evaluates OCR destruction-% exit rules once per poll tick.
- * Skipped entirely when [Schema.MAIN_BASE_SETTINGS.OCR_EXIT_ENABLED] is off.
+ * Skipped entirely when [MainBaseSettings.OCR_EXIT_ENABLED] is off.
  */
 suspend fun checkBattleDestructionOcrExit(state: BattleDestructionOcrState): BattleDestructionOcrExitResult {
-    if (!getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.OCR_EXIT_ENABLED.key)) {
+    if (!getBooleanConfigRuntime(MainBaseSettings.OCR_EXIT_ENABLED.key)) {
         return BattleDestructionOcrExitResult.Continue
     }
 
-    val targetPercent = getConfigRuntime(Schema.MAIN_BASE_SETTINGS.OCR_EXIT_TARGET_PERCENT.key)
+    val targetPercent = getConfigRuntime(MainBaseSettings.OCR_EXIT_TARGET_PERCENT.key)
         .toIntOrNull()?.coerceIn(0, 100) ?: 0
-    val staleSeconds = getConfigRuntime(Schema.MAIN_BASE_SETTINGS.OCR_EXIT_STALE_SECONDS.key)
+    val staleSeconds = getConfigRuntime(MainBaseSettings.OCR_EXIT_STALE_SECONDS.key)
         .toIntOrNull()?.coerceAtLeast(1) ?: DEFAULT_STALE_SECONDS
     val staleMs = staleSeconds * 1000L
 
     val percent = readBattleDestructionPercent()
     val now = System.currentTimeMillis()
-
+    accountMessage("当前摧毁率：$percent")
     if (percent == null) {
         val failStart = state.ocrFailStartMs
         if (failStart == null) {
@@ -96,7 +97,7 @@ suspend fun checkBattleDestructionOcrExit(state: BattleDestructionOcrState): Bat
 
     state.ocrFailStartMs = null
 
-    if (targetPercent > 0 && percent >= targetPercent) {
+    if (targetPercent in 1..percent) {
         return BattleDestructionOcrExitResult.ExitTargetMet
     }
 
