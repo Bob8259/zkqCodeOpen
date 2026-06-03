@@ -50,9 +50,7 @@ suspend fun useHelpers(): Boolean {
             if (!DetectionRegion.isInsideRegion(cx, cy)) continue
             TouchActions.tap(cx, cy)
             val helperSchemas = mutableListOf(MyColors.BuilderHelperIcon, MyColors.ResearchHelperIcon, MyColors.ResearchHelperIcon2)
-            if (getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.PROSPECTOR_BLUE_TO_GOLD.key) ||
-                getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.PROSPECTOR_BLUE_TO_PURPLE.key) ||
-                getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.PROSPECTOR_PURPLE_TO_GOLD.key)) {
+            if (getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.PROSPECTOR_BLUE_TO_GOLD.key) || getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.PROSPECTOR_BLUE_TO_PURPLE.key) || getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.PROSPECTOR_PURPLE_TO_GOLD.key)) {
                 helperSchemas.add(MyColors.ProspectorIcon)
             }
             val openHelperHut = findMultiColorsUntil(schemas = helperSchemas, duration = 200)
@@ -127,15 +125,18 @@ private suspend fun configureAndAssignHelpers(isUpgradeHelper: Boolean) {
             if (getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.PROSPECTOR_BLUE_TO_PURPLE.key)) {
                 TouchActions.swipe(1030, 340, 1030, 275, delayAfter = 300)
                 TouchActions.tap(1060, 520)//convert
+                TouchActions.tap(730, 550)// confirm
             }
             if (getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.PROSPECTOR_BLUE_TO_GOLD.key)) {
                 TouchActions.swipe(1030, 340, 1030, 0, delayAfter = 300)
                 TouchActions.tap(1060, 520)//convert
+                TouchActions.tap(730, 550)// confirm
             }
             if (getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.PROSPECTOR_PURPLE_TO_GOLD.key)) {
                 TouchActions.swipe(1030, 340, 1030, 0, delayAfter = 300)
                 TouchActions.swipe(730, 340, 1030, 275, delayAfter = 300)
                 TouchActions.tap(1060, 520)//convert
+                TouchActions.tap(730, 550)// confirm
             }
         }
         if (isInHelperPage) return

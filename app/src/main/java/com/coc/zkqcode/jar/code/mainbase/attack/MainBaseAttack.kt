@@ -14,6 +14,7 @@ import com.coc.zkqcode.jar.code.universal.smalltools.input.TouchActions
 import com.coc.zkqcode.jar.code.universal.smalltools.data.getBooleanConfigRuntime
 import com.coc.zkqcode.jar.code.universal.smalltools.data.getConfigRuntime
 import com.coc.zkqcode.jar.code.universal.smalltools.data.readClanGameAcceptedTaskBase
+import com.coc.zkqcode.jar.code.universal.smalltools.lifecycle.enterMainBase
 import com.coc.zkqcode.jar.code.universal.smalltools.lifecycle.killGame
 import com.coc.zkqcode.jar.code.universal.smalltools.lifecycle.runGame
 import com.coc.zkqcode.jar.ui.schema.Schema
@@ -40,7 +41,7 @@ suspend fun mainBaseRemainingAttack(): Boolean {
 suspend fun mainBaseAttack(): Boolean {
     if (!getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.AUTO_ATTACK.key)) return true
     // Skip post-battle logic if no battle was started (e.g. cooldown, timeout, insufficient gold)
-
+    if (!enterMainBase()) return false
     val battleStarted = searchOpponentsAndDeployTroops()
     if (!battleStarted) return enterMainScreen()
     if (getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.SWITCH_ACCOUNT_AFTER_BATTLE.key)) return false
@@ -78,15 +79,19 @@ suspend fun mainBaseAttack(): Boolean {
                     surrenderMainBaseBattle("破坏百分比已达目标，退出对战")
                     break
                 }
+
                 BattleDestructionOcrExitResult.ExitStale -> {
                     surrenderMainBaseBattle("破坏百分比长时间未变化，退出对战")
                     break
                 }
+
                 BattleDestructionOcrExitResult.ExitOcrFailed -> {
                     surrenderMainBaseBattle("破坏百分比识别失败超时，退出对战")
                     break
                 }
-                BattleDestructionOcrExitResult.Continue -> { /* keep polling */ }
+
+                BattleDestructionOcrExitResult.Continue -> { /* keep polling */
+                }
             }
 
             // Show remaining minutes with 1 decimal place
