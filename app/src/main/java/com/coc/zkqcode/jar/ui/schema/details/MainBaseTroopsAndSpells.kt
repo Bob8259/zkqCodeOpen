@@ -69,6 +69,7 @@ object MainBaseTroopsAndSpells {
     val SIEGE_FLAME_FLINGER = SettingDef("siege_flame_flinger", "攻城烈焰车", "Flame Flinger", 1, "MAIN_BASE_TROOPS_AND_SPELLS")
     val SIEGE_BATTLE_DRILL = SettingDef("siege_battle_drill", "攻城钻机", "Battle Drill", 1, "MAIN_BASE_TROOPS_AND_SPELLS")
     val SIEGE_TROOP_LAUNCHER = SettingDef("siege_troop_launcher", "部队发射器", "Troop Launcher", 1, "MAIN_BASE_TROOPS_AND_SPELLS")
+    val SIEGE_SKY_WAGON = SettingDef("siege_sky_wagon", "空中战车", "Sky Wagon", 1, "MAIN_BASE_TROOPS_AND_SPELLS")
 
     val all = listOf(
         TROOP_BARBARIAN,
@@ -126,6 +127,7 @@ object MainBaseTroopsAndSpells {
         SIEGE_LOG_LAUNCHER,
         SIEGE_FLAME_FLINGER,
         SIEGE_BATTLE_DRILL,
-        SIEGE_TROOP_LAUNCHER
+        SIEGE_TROOP_LAUNCHER,
+        SIEGE_SKY_WAGON
     )
 }

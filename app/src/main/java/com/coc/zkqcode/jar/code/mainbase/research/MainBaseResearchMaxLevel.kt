@@ -80,6 +80,7 @@ object MainBaseResearchMaxLevel {
         "攻城烈焰车" to 5,
         "攻城钻机" to 5,
         "部队发射器" to 4,
+        "空中战车" to 4,
     )
 
     /** Combined map of all research items to their max levels. */
