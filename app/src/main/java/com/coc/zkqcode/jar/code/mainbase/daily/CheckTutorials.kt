@@ -44,24 +44,32 @@ private suspend fun handleTutorialArrowIfNeeded() {
         schemas = listOf(MyColors.MainBaseSmallTutorial), duration = 1500
     ) ?: return
 
-    TouchActions.tap(tutorialArrow.x + 20, tutorialArrow.y + 90)
-
-    val clanMedalTutorial = findMultiColors(MyColors.ClanMedalTutorial)
-    if (clanMedalTutorial != null) {
-        TouchActions.tap(clanMedalTutorial.x, clanMedalTutorial.y)
+    val xOffsets = (-20..20 step 15).toMutableList()
+    if (xOffsets.last() != 20) {
+        xOffsets.add(20)
     }
-    if (findMultiColors(MyColors.OuterPetIcon) != null) {
-        petsTutorial()
-        return
-    }
+    for (xOffset in xOffsets) {
+        for (yOffset in 40..100 step 15) {
+            TouchActions.tap(tutorialArrow.x + xOffset, tutorialArrow.y + yOffset)
+            val clanMedalTutorial = findMultiColors(MyColors.ClanMedalTutorial)
+            if (clanMedalTutorial != null) {
+                TouchActions.tap(clanMedalTutorial.x, clanMedalTutorial.y)
+            }
+            if (findMultiColors(MyColors.OuterPetIcon) != null) {
+                petsTutorial()
+                return
+            }
 
-    if (findMultiColors(MyColors.ClanCastleAddReinforcement) != null) {
-        clanCastleTutorialHelper()
-    }
+            if (findMultiColors(MyColors.ClanCastleAddReinforcement) != null) {
+                clanCastleTutorialHelper()
+            }
 
-    val th18Tutorial = findMultiColorsUntil(schemas = listOf(MyColors.RemoteGuardsIcon, MyColors.MeleeGuardsIcon), duration = 200)
-    if (th18Tutorial != null) {
-        TouchActions.tap(th18Tutorial.x, th18Tutorial.y)
+            val th18Tutorial = findMultiColorsUntil(schemas = listOf(MyColors.RemoteGuardsIcon, MyColors.MeleeGuardsIcon), duration = 200)
+            if (th18Tutorial != null) {
+                TouchActions.tap(th18Tutorial.x, th18Tutorial.y)
+            }
+
+        }
     }
 
     delayWithMultiplier(1000)
