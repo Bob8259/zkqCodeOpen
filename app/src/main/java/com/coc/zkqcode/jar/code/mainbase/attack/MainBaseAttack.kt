@@ -14,11 +14,9 @@ import com.coc.zkqcode.jar.code.universal.smalltools.input.TouchActions
 import com.coc.zkqcode.jar.code.universal.smalltools.data.getBooleanConfigRuntime
 import com.coc.zkqcode.jar.code.universal.smalltools.data.getConfigRuntime
 import com.coc.zkqcode.jar.code.universal.smalltools.data.readClanGameAcceptedTaskBase
-import com.coc.zkqcode.jar.code.universal.smalltools.lifecycle.enterMainBase
 import com.coc.zkqcode.jar.code.universal.smalltools.lifecycle.killGame
 import com.coc.zkqcode.jar.code.universal.smalltools.lifecycle.runGame
 import com.coc.zkqcode.jar.ui.schema.Schema
-import kotlinx.coroutines.delay
 
 suspend fun mainBaseRemainingAttack(): Boolean {
     val battleTimesSetting = if (readClanGameAcceptedTaskBase() == CLAN_GAME_TASK_BASE_MAIN_WORLD) {
@@ -41,13 +39,13 @@ suspend fun mainBaseRemainingAttack(): Boolean {
 suspend fun mainBaseAttack(): Boolean {
     if (!getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.AUTO_ATTACK.key)) return true
     // Skip post-battle logic if no battle was started (e.g. cooldown, timeout, insufficient gold)
-    if (!enterMainBase()) return false
     val battleStarted = searchOpponentsAndDeployTroops()
     if (!battleStarted) return enterMainScreen()
     if (getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.SWITCH_ACCOUNT_AFTER_BATTLE.key)) return false
     val maxDurationMs = 3 * 60 * 1000L // Maximum battle wait time: 3 minutes
     val startTime = System.currentTimeMillis()
     val isRestartGame = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.RESTART_GAME.key)
+    val hasMainWorldTask = readClanGameAcceptedTaskBase() == CLAN_GAME_TASK_BASE_MAIN_WORLD
     if (isRestartGame) {
         accountMessage("部署完成，准备重启游戏")
         killGame()
@@ -55,7 +53,10 @@ suspend fun mainBaseAttack(): Boolean {
         runGame()
     } else {
         val exitOnOneStar = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.EXIT_ON_ONE_STAR_MAIN.key)
+        val ocrExitEnabled = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.OCR_EXIT_ENABLED.key)
         val destructionOcrState = BattleDestructionOcrState()
+        // Show disabled message once at the beginning if has task
+        var taskDisableMessageShown = false
         while (true) {
             val elapsed = System.currentTimeMillis() - startTime
             // Force exit if battle has exceeded the maximum allowed duration
@@ -64,8 +65,19 @@ suspend fun mainBaseAttack(): Boolean {
                 break
             }
 
-            // Detect 1-star result and exit immediately
-            if (exitOnOneStar) {
+            // Show task disabled message once
+            if (hasMainWorldTask && !taskDisableMessageShown) {
+                val disabledFeatures = mutableListOf<String>()
+                if (exitOnOneStar) disabledFeatures.add("一星退出")
+                if (ocrExitEnabled) disabledFeatures.add("摧毁率退出")
+                if (disabledFeatures.isNotEmpty()) {
+                    accountMessage("已接取任务 不生效${disabledFeatures.joinToString("/")}")
+                }
+                taskDisableMessageShown = true
+            }
+
+            // Detect 1-star result and exit immediately (disabled when has clan game task)
+            if (exitOnOneStar && !hasMainWorldTask) {
                 val oneStar1 = findMultiColors(schema = MyColors.MainBaseOneStar1)
                 val oneStar2 = findMultiColors(schema = MyColors.MainBaseOneStar2)
                 if (oneStar1 != null || oneStar2 != null) {
@@ -74,30 +86,27 @@ suspend fun mainBaseAttack(): Boolean {
                 }
             }
 
-            when (checkBattleDestructionOcrExit(destructionOcrState)) {
-                BattleDestructionOcrExitResult.ExitTargetMet -> {
-                    surrenderMainBaseBattle("破坏百分比已达目标，退出对战")
-                    break
-                }
-
-                BattleDestructionOcrExitResult.ExitStale -> {
-                    surrenderMainBaseBattle("破坏百分比长时间未变化，退出对战")
-                    break
-                }
-
-                BattleDestructionOcrExitResult.ExitOcrFailed -> {
-                    surrenderMainBaseBattle("破坏百分比识别失败超时，退出对战")
-                    break
-                }
-
-                BattleDestructionOcrExitResult.Continue -> { /* keep polling */
+            // OCR destruction-% exit detection (only when enabled and no task)
+            if (ocrExitEnabled && !hasMainWorldTask) {
+                val (_, ocrResult) = checkBattleDestructionOcrExit(destructionOcrState)
+                when (ocrResult) {
+                    BattleDestructionOcrExitResult.ExitTargetMet -> {
+                        surrenderMainBaseBattle("破坏百分比已达目标，退出对战")
+                        break
+                    }
+                    BattleDestructionOcrExitResult.ExitStale -> {
+                        surrenderMainBaseBattle("破坏百分比长时间未变化，退出对战")
+                        break
+                    }
+                    BattleDestructionOcrExitResult.ExitOcrFailed -> {
+                        surrenderMainBaseBattle("破坏百分比识别失败超时，退出对战")
+                        break
+                    }
+                    BattleDestructionOcrExitResult.Continue -> { /* keep polling */ }
                 }
             }
 
-            // Show remaining minutes with 1 decimal place
-            val remainingMinutes = (maxDurationMs - elapsed) / 60000.0
 
-            accountMessage("主世界对战中，${"%.1f".format(remainingMinutes)}分钟后强制退出对战")
             val endBattleButton = findMultiColors(schema = MyColors.EndBattle)
             if (endBattleButton == null) {
                 accountMessage("未找到放弃按钮，对战结束")
@@ -106,7 +115,7 @@ suspend fun mainBaseAttack(): Boolean {
                 break
             }
 
-            delay(500) // Poll every second to avoid busy-waiting
+            delayWithMultiplier(200) // Poll every 200ms
         }
     }
     return enterMainScreen(isRestartGame)
@@ -123,5 +132,6 @@ private suspend fun surrenderMainBaseBattle(reason: String) {
             TouchActions.tap(confirmBtn.x, confirmBtn.y, delayTime = 200)
         }
     }
+    delayWithMultiplier(1000)
     TouchActions.tap(640, 610, delayTime = 1500)
 }

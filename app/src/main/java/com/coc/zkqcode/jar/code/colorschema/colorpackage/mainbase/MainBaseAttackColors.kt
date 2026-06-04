@@ -278,6 +278,6 @@ object MainBaseAttackColors : IMainBaseAttackColors {
 
     // OCR crop for battle destruction percentage (bounds only; color match not used for OCR)
     override val BattleDestructionPercentOcrRegion = ColorSchema.parse(
-        530, 12, 750, 58, "FFFFFF", "0|0|FFFFFF", 0, 0.5, "主世界破坏百分比OCR区域"
+        1177, 526, 1261, 560, "FFFFFF", "0|0|FFFFFF", 0, 0.5, "主世界破坏百分比OCR区域"
     )
 }
