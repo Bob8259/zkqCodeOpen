@@ -60,7 +60,7 @@ object WorkerAndResearch {
             val endY = 70
 
             val keepLeft = worker.x + 30 - startX
-            val keepTop = worker.y - 4 - startY
+            val keepTop = worker.y - 15 - startY
             val keepRight = worker.x + 100 - startX
             val keepBottom = worker.y + 24 - startY
 

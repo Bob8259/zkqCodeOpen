@@ -68,6 +68,8 @@ suspend fun upgradeBuildings(currentBase: BaseType): Boolean {
             val upgradableList = upgradableBuildingsMap.filter { it.value }.keys.toList()
             val summary = upgradableList.joinToString("\n")
             accountMessage("所有可升级建筑: $summary")
+            clickRightBottom(1)
+            delayWithMultiplier(500)
             if (isNewBuildingDetected) {
                 if (!buildAllNewBuildings(currentBase)) return false
                 upgradeBuildings(currentBase)
