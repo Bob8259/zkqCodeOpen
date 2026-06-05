@@ -108,8 +108,7 @@ fun LazyListScope.builderBaseConfig(
             }
             Row {
                 SettingSwitchIcon(
-                    key = "${BUILDER_BASE_SETTINGS.EXIT_ON_ONE_STAR_BUILDER.key}_c${index}",
-                    explain = Strings.exitOnOneStarExplain
+                    key = "${BUILDER_BASE_SETTINGS.EXIT_ON_ONE_STAR_BUILDER.key}_c${index}"
                 )
             }
         }
