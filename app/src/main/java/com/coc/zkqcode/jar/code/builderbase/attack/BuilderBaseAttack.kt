@@ -174,10 +174,11 @@ private suspend fun realAttack(mode: String, hasBuilderBaseTask: Boolean, battle
             continue
         }
         // Detect 1-star result and exit immediately
-        if (exitOnOneStar && troopsDeployed) {
-            val oneStar1 = findMultiColors(byteBuffer = capturedScreen, schema = MyColors.BuilderBaseOneStar1)
-            val oneStar2 = findMultiColors(byteBuffer = capturedScreen, schema = MyColors.BuilderBaseOneStar2)
-            if (oneStar1 != null || oneStar2 != null) {
+        if (exitOnOneStar && troopsDeployed && !hasBuilderBaseTask) {
+            val oneStar = findMultiColorsUntil(
+                schemas = listOf(MyColors.BuilderBaseOneStar1, MyColors.BuilderBaseOneStar2), duration = 200, byteBuffer = capturedScreen
+            )
+            if (oneStar != null) {
                 accountMessage("检测到一星，退出对战")
                 val exitButton = findMultiColorsUntil(schemas = listOf(MyColors.ExitBattleButton), duration = 2000)
                 if (exitButton != null) {
