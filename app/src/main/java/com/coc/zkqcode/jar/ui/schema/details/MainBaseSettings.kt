@@ -64,7 +64,7 @@ object MainBaseSettings {
     val UPGRADE_PETS = SettingDef("upgrade_pets", "升级战宠", "Upgrade Pets", 1, "MAIN_BASE_SETTINGS")
     val STOP_BATTLE_WHEN_NO_STAR = SettingDef("stop_battle_when_no_star", "无胜利之星后停止对战", "Stop if no stars", 0, "MAIN_BASE_SETTINGS")
     val EXIT_ON_ONE_STAR_MAIN = SettingDef("exit_on_one_star_main", "一星退出", "Exit on 1-star", 0, "MAIN_BASE_SETTINGS")
-    val OCR_EXIT_ENABLED = SettingDef("ocr_exit_enabled", "破坏%退出", "Destruction % Exit", 1, "MAIN_BASE_SETTINGS")
+    val OCR_EXIT_ENABLED = SettingDef("ocr_exit_enabled", "破坏%退出", "Destruction % Exit", 0, "MAIN_BASE_SETTINGS")
     val OCR_EXIT_TARGET_PERCENT = SettingDef("ocr_exit_target_percent", "目标破坏", "Target Destruction", "0", "MAIN_BASE_SETTINGS")
     val OCR_EXIT_STALE_SECONDS = SettingDef("ocr_exit_stale_seconds", "百分比不变", "Unchanged for", "20", "MAIN_BASE_SETTINGS")
     val RESTART_GAME = SettingDef("restart_game", "部署后重启游戏", "Restart after deploy", 1, "MAIN_BASE_SETTINGS")
