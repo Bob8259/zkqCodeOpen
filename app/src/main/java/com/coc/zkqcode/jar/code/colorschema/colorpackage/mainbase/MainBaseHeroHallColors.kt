@@ -20,6 +20,9 @@ interface IMainBaseHeroHallColors {
     val UpgradeGearArrow5: ColorSchema
     val UpgradeGearArrow6: ColorSchema
     val UpgradeGearArrow7: ColorSchema
+    val Zone1EquippedArrow: ColorSchema
+    val Zone2EquipCheckmark: ColorSchema
+    val Zone2GearArrow: ColorSchema
     val NewGear: ColorSchema
     val GearMaxLevel: ColorSchema
     val SmithOreIcon: ColorSchema
@@ -50,6 +53,8 @@ interface IMainBaseHeroHallColors {
     val GreedyRaven: ColorSchema
     val ConfirmUpgradePet: ColorSchema
     val AlreadyBeingUpgraded: ColorSchema
+    val GearUpgradingAnimation: ColorSchema
+    val GearListReturned: ColorSchema
 
     // Gear identification schemas
     val BarbarianKingIronFist: ColorSchema
@@ -155,6 +160,33 @@ object MainBaseHeroHallColors : IMainBaseHeroHallColors {
     // Equipped gear icon variant 7 (dynamic region, used by custom gear upgrade check)
     override val UpgradeGearArrow7 = ColorSchema.parse(
         0, 0, 0, 0, "3BD58E", "1|0|3BD58E,3|0|3BD58E,5|0|3BD58E,6|0|3BD58E,0|7|2EC87D,1|7|2EC87D,3|7|2EC87D,5|7|2EC87D,6|7|2ECA7F", 0, 0.9, "升级装备箭头7"
+    )
+
+    // Zone1 equipped gear upgrade arrow (covers the top equipped-gear area)
+    override val Zone1EquippedArrow = ColorSchema.parse(
+        110, 274, 1167, 352,
+        "2FC87D",
+        "0|-8|60FFD2,-4|-2|38D38D,4|-2|38D38D,-1|5|2FC87D,3|5|2EC77C,0|4|2FC87D,1|-6|52F6BB,-1|-5|4BEDAF,2|-2|38D38D",
+        0, 0.9,
+        "Zone1 穿戴装备升级箭头"
+    )
+
+    // Zone2 equip-checkmark ✓ (indicates a gear is worn by the hero, in the gear list area)
+    override val Zone2EquipCheckmark = ColorSchema.parse(
+        32, 412, 1248, 610,
+        "FFFFFF",
+        "-3|-2|FFFFFF,4|-3|FAFAFA,1|-7|1CE590,6|5|21D67F,-5|5|21D67F,1|7|21D47C,4|-6|0D0D0D,9|-4|1DE18B,-4|1|0D0D0D",
+        0, 0.9,
+        "Zone2 穿戴装备✓标记"
+    )
+
+    // Zone2 custom gear upgrade arrow (wide region covering the gear list area)
+    override val Zone2GearArrow = ColorSchema.parse(
+        32, 412, 1248, 610,
+        "30CA7F",
+        "0|-8|59FFC7,-5|-3|3DDA97,6|-1|35D48D,-4|6|2EC67A,2|6|2FC87D,2|2|2FC87D,-2|-6|4FF2B5,-2|4|2FC87D,3|1|2FC87D",
+        0, 0.9,
+        "Zone2 自定义装备升级箭头"
     )
 
     // New gear indicator shown in the hero hall list
@@ -305,100 +337,110 @@ object MainBaseHeroHallColors : IMainBaseHeroHallColors {
         1018, 165, 1052, 326, "7AF7DB", "3|0|81F9DE,7|0|88FDE5,10|0|8DFEEA,13|0|94FFEF,0|9|99FFE7,3|9|6DF3C4,7|9|87FCDD,10|9|7BFBD9,13|9|76FCD9", 0, 0.9, "已有战宠升级中"
     )
 
+    // Gear upgrading animation indicator
+    override val GearUpgradingAnimation = ColorSchema.parse(
+        855, 589, 1147, 665, "447C6B", "59|0|447C6B,117|0|1C2321,175|0|447C6B,234|0|447C6B,0|38|256A51,59|38|256A51,117|38|61706A,175|38|256A51,234|38|256A51", 0, 0.9, "装备升级动画"
+    )
+    
+    // Gear list returned indicator
+    override val GearListReturned = ColorSchema.parse(
+        1212, 66, 1237, 92, "5F5AA1", "5|0|FFFFFF,10|0|97919B,15|0|FFFFFF,20|0|938CFF,0|13|0E0E45,5|13|F9F7F6,10|13|878687,15|13|E2DFE2,20|13|1814EB", 0, 0.9, "返回装备列表"
+    )
+
     // Barbarian King gears
     override val BarbarianKingIronFist = ColorSchema.parse(
         0, 0, 0, 0, "000000", "0|0|000000", 0, 0.9, "铁剑"
     )
     override val BarbarianKingPuppet = ColorSchema.parse(
-        102, 438, 168, 484, "2E27B9", "13|0|4C75D0,26|0|A9FCFF,39|0|4FFFFF,52|0|CAFFFF,0|23|626D7B,13|23|5782D9,26|23|537EDD,39|23|CFFFFF,52|23|D8973B", 0, 0.9, "野蛮人木偶"
+        32, 412, 1248, 610, "2E27B9", "13|0|4C75D0,26|0|A9FCFF,39|0|4FFFFF,52|0|CAFFFF,0|23|626D7B,13|23|5782D9,26|23|537EDD,39|23|CFFFFF,52|23|D8973B", 0, 0.9, "野蛮人木偶"
     )
     override val BarbarianKingRageVial = ColorSchema.parse(
-        99, 518, 174, 587, "2C274D", "16|-4|575A5F,9|7|494A4F,33|9|BC6C89,17|15|8F6C67,38|21|FF45FF,26|27|FF4088,50|35|FF4EFF,43|41|FF3C86,12|-10|5F9BD3", 0, 0.9, "狂暴药水瓶"
+        32, 412, 1248, 610, "2C274D", "16|-4|575A5F,9|7|494A4F,33|9|BC6C89,17|15|8F6C67,38|21|FF45FF,26|27|FF4088,50|35|FF4EFF,43|41|FF3C86,12|-10|5F9BD3", 0, 0.9, "狂暴药水瓶"
     )
     override val BarbarianKingEarthquakeBoots = ColorSchema.parse(
-        184, 433, 256, 508, "55C5F4", "31|-10|5DCFFB,7|11|257CD0,32|1|254F99,15|19|153177,37|6|5582B5,16|26|0F2550,38|24|2EB5E9,54|4|71EBFE,38|34|36BEEC", 0, 0.9, "地震金靴"
+        32, 412, 1248, 610, "55C5F4", "31|-10|5DCFFB,7|11|257CD0,32|1|254F99,15|19|153177,37|6|5582B5,16|26|0F2550,38|24|2EB5E9,54|4|71EBFE,38|34|36BEEC", 0, 0.9, "地震金靴"
     )
     override val BarbarianKingHealingBeard = ColorSchema.parse(
-        188, 513, 261, 586, "55E6FE", "12|-8|55C2FD,31|-14|67CBFF,46|-3|74D5FF,61|6|A7FFFF,47|14|3466FF,49|26|38578C,59|17|A9FFFF,29|5|4757FF,61|20|A8F7FF", 0, 0.9, "治疗胡须"
+        32, 412, 1248, 610, "55E6FE", "12|-8|55C2FD,31|-14|67CBFF,46|-3|74D5FF,61|6|A7FFFF,47|14|3466FF,49|26|38578C,59|17|A9FFFF,29|5|4757FF,61|20|A8F7FF", 0, 0.9, "治疗胡须"
     )
     override val BarbarianKingSpikedSoccer = ColorSchema.parse(
-        278, 437, 346, 501, "254F67", "13|-6|958253,49|-14|CAD0B2,16|10|1B4156,28|21|48573E,49|10|2E82B9,54|8|72E9FF,30|-28|88F0FF,10|-17|806D41,20|-27|285667", 0, 0.9, "尖刺足球"
+        32, 412, 1248, 610, "254F67", "13|-6|958253,49|-14|CAD0B2,16|10|1B4156,28|21|48573E,49|10|2E82B9,54|8|72E9FF,30|-28|88F0FF,10|-17|806D41,20|-27|285667", 0, 0.9, "尖刺足球"
     )
 
     // Archer Queen gears
     override val ArcherQueenCloak = ColorSchema.parse(
-        102, 521, 172, 586, "5A8CC0", "-11|13|273B40,7|7|475258,17|14|998B4E,5|23|948361,29|33|FFFF80,14|35|FFB954,39|40|EEFF65,31|49|FFA74F,-23|12|36904A", 0, 0.9, "隐形披风"
+        32, 412, 1248, 610, "5A8CC0", "-11|13|273B40,7|7|475258,17|14|998B4E,5|23|948361,29|33|FFFF80,14|35|FFB954,39|40|EEFF65,31|49|FFA74F,-23|12|36904A", 0, 0.9, "隐形披风"
     )
     override val ArcherQueenPuppet = ColorSchema.parse(
-        102, 433, 170, 505, "E561FF", "1|7|1A2233,22|2|BDFFFF,6|22|2EA35F,39|4|A0F0FF,13|33|238ADB,17|44|2E9257,28|48|437A84,32|28|44586A,20|-6|FFB7FF", 0, 0.9, "弓箭手木偶"
+        32, 412, 1248, 610, "E561FF", "1|7|1A2233,22|2|BDFFFF,6|22|2EA35F,39|4|A0F0FF,13|33|238ADB,17|44|2E9257,28|48|437A84,32|28|44586A,20|-6|FFB7FF", 0, 0.9, "弓箭手木偶"
     )
     override val ArcherQueenGiantArrow = ColorSchema.parse(
-        192, 436, 259, 490, "FFFFFF", "14|14|FFFFFF,-5|4|BBBEBB,8|4|FFFFFF,11|1|FFFFFF,1|12|1F2737,-3|19|3F5C94,-16|32|36507E,-19|34|2B4065,22|-8|FFFFFF", 0, 0.9, "巨型箭矢"
+        32, 412, 1248, 610, "FFFFFF", "14|14|FFFFFF,-5|4|BBBEBB,8|4|FFFFFF,11|1|FFFFFF,1|12|1F2737,-3|19|3F5C94,-16|32|36507E,-19|34|2B4065,22|-8|FFFFFF", 0, 0.9, "巨型箭矢"
     )
     override val ArcherQueenFrostArrow = ColorSchema.parse(
         0, 0, 0, 0, "000000", "0|0|000000", 0, 0.9, "冰冻箭"
     )
     override val ArcherQueenHealerPuppet = ColorSchema.parse(
-        192, 519, 256, 588, "70EEFF", "9|-1|BAFFFF,-7|4|8BFFFF,-7|15|498BDA,37|7|80D5FF,6|18|1ED9FF,23|18|28F6FF,20|49|3E6EA2,42|44|75ADEE,16|-12|BAFFFF", 0, 0.9, "天使木偶"
+        32, 412, 1248, 610, "70EEFF", "9|-1|BAFFFF,-7|4|8BFFFF,-7|15|498BDA,37|7|80D5FF,6|18|1ED9FF,23|18|28F6FF,20|49|3E6EA2,42|44|75ADEE,16|-12|BAFFFF", 0, 0.9, "天使木偶"
     )
 
     // Grand Warden gears
     override val GrandWardenEternalTome = ColorSchema.parse(
-        102, 435, 172, 506, "6FFFFF", "3|0|FFB2FF,12|5|CE4BFF,20|11|460D83,26|12|3656AE,37|15|19FFFF,6|39|4F9FFC,17|37|5F7C8F,-13|16|2E3F33,-19|0|306BBD", 0, 0.9, "永恒书卷"
+        32, 412, 1248, 610, "6FFFFF", "3|0|FFB2FF,12|5|CE4BFF,20|11|460D83,26|12|3656AE,37|15|19FFFF,6|39|4F9FFC,17|37|5F7C8F,-13|16|2E3F33,-19|0|306BBD", 0, 0.9, "永恒书卷"
     )
     override val GrandWardenLifeGem = ColorSchema.parse(
-        99, 522, 170, 588, "18365A", "17|7|4F6AFF,18|19|234572,37|22|255EFF,20|39|302EFF,32|50|0D91FF,45|52|0D3D96,55|43|1BF1FF,37|36|58BCDD,6|20|1B28FF", 0, 0.9, "生命宝石"
+        32, 412, 1248, 610, "18365A", "17|7|4F6AFF,18|19|234572,37|22|255EFF,20|39|302EFF,32|50|0D91FF,45|52|0D3D96,55|43|1BF1FF,37|36|58BCDD,6|20|1B28FF", 0, 0.9, "生命宝石"
     )
     override val GrandWardenHealingTome = ColorSchema.parse(
-        188, 520, 258, 589, "F6FFFF", "12|-7|78F6FF,2|12|3666FF,18|12|0D11A7,13|23|55F6FF,0|40|2B6AD0,18|41|86B6D8,37|21|2369DF,-10|28|5094AB,-22|9|2546B2", 0, 0.9, "治疗书卷"
+        32, 412, 1248, 610, "F6FFFF", "12|-7|78F6FF,2|12|3666FF,18|12|0D11A7,13|23|55F6FF,0|40|2B6AD0,18|41|86B6D8,37|21|2369DF,-10|28|5094AB,-22|9|2546B2", 0, 0.9, "治疗书卷"
     )
     override val GrandWardenGiantFireball = ColorSchema.parse(
-        275, 436, 343, 504, "C8F5FF", "-13|18|B7F4FF,-19|30|4CB7FF,-3|43|A8F8FF,3|50|38B5FE,14|45|2EB3FF,26|38|3B9DFF,24|26|EEFFFF,18|15|5978FF,0|-9|7CC8FF", 0, 0.9, "巨大火球"
+        32, 412, 1248, 610, "C8F5FF", "-13|18|B7F4FF,-19|30|4CB7FF,-3|43|A8F8FF,3|50|38B5FE,14|45|2EB3FF,26|38|3B9DFF,24|26|EEFFFF,18|15|5978FF,0|-9|7CC8FF", 0, 0.9, "巨大火球"
     )
     override val GrandWardenRageGem = ColorSchema.parse(
-        188, 435, 258, 503, "4F1978", "13|-1|D553FF,7|7|FFA0EC,1|12|4B268F,13|12|613C94,24|26|B8A3E2,21|40|494FFF,29|47|1F1AFF,42|45|281EAF,-13|-7|471A71", 0, 0.9, "狂暴宝石"
+        32, 412, 1248, 610, "4F1978", "13|-1|D553FF,7|7|FFA0EC,1|12|4B268F,13|12|613C94,24|26|B8A3E2,21|40|494FFF,29|47|1F1AFF,42|45|281EAF,-13|-7|471A71", 0, 0.9, "狂暴宝石"
     )
 
     // Royal Champion gears
     override val RoyalChampionSeekingShield = ColorSchema.parse(
-        100, 436, 172, 504, "515451", "4|-5|E9FBFC,17|0|2653AB,47|5|254EA1,55|1|868F8E,44|27|4C4C4C,25|-7|B5C4C5,18|-7|204184,30|13|0D214F,30|-2|A0ABAC", 0, 0.9, "寻踪飞盾"
+        32, 412, 1248, 610, "515451", "4|-5|E9FBFC,17|0|2653AB,47|5|254EA1,55|1|868F8E,44|27|4C4C4C,25|-7|B5C4C5,18|-7|204184,30|13|0D214F,30|-2|A0ABAC", 0, 0.9, "寻踪飞盾"
     )
     override val RoyalChampionHogPuppet = ColorSchema.parse(
-        191, 436, 255, 504, "6A7791", "33|-9|5F8DFF,25|-5|91A7EB,20|17|3E5FC7,47|17|2627C0,27|28|2525BE,31|35|253146,52|37|1D2868,9|15|577AB2,24|-21|23233B", 0, 0.9, "野猪骑士木偶"
+        32, 412, 1248, 610, "6A7791", "33|-9|5F8DFF,25|-5|91A7EB,20|17|3E5FC7,47|17|2627C0,27|28|2525BE,31|35|253146,52|37|1D2868,9|15|577AB2,24|-21|23233B", 0, 0.9, "野猪骑士木偶"
     )
     override val RoyalChampionRoyalGem = ColorSchema.parse(
-        100, 518, 167, 588, "0D37FF", "8|11|473A2E,25|0|BFAF7A,33|-4|D9D0A4,41|3|C0AF76,19|21|483B2F,35|21|35CFFF,50|27|44FFFF,59|31|187EA9,21|-14|158AFF", 0, 0.9, "皇家宝石"
+        32, 412, 1248, 610, "0D37FF", "8|11|473A2E,25|0|BFAF7A,33|-4|D9D0A4,41|3|C0AF76,19|21|483B2F,35|21|35CFFF,50|27|44FFFF,59|31|187EA9,21|-14|158AFF", 0, 0.9, "皇家宝石"
     )
     override val RoyalChampionSpeedVial = ColorSchema.parse(
-        190, 519, 254, 589, "25384F", "24|-8|3E454F,10|4|464546,19|13|8C68FF,38|4|464380,17|17|FF58BA,23|23|313236,29|33|303439,52|26|8B64FF,12|-14|5787BD", 0, 0.9, "急速药水瓶"
+        32, 412, 1248, 610, "25384F", "24|-8|3E454F,10|4|464546,19|13|8C68FF,38|4|464380,17|17|FF58BA,23|23|313236,29|33|303439,52|26|8B64FF,12|-14|5787BD", 0, 0.9, "急速药水瓶"
     )
 
     // Dragon Duke gears
     override val DragonDukeFireRing = ColorSchema.parse(
-        103, 435, 171, 500, "2923D2", "-18|23|5F7999,3|18|465FFF,19|19|9EE0FF,31|-1|727AFF,21|43|0D117D,9|40|252D77,33|32|83A9D8,-4|33|7B93DA,-19|8|B4D3FB", 0, 0.9, "烈焰之心"
+        32, 412, 1248, 610, "2923D2", "-18|23|5F7999,3|18|465FFF,19|19|9EE0FF,31|-1|727AFF,21|43|0D117D,9|40|252D77,33|32|83A9D8,-4|33|7B93DA,-19|8|B4D3FB", 0, 0.9, "烈焰之心"
     )
     override val DragonDukeScaleArmor = ColorSchema.parse(
-        188, 433, 261, 505, "B3FFFF", "-9|15|AFFFFF,2|10|2E2C91,9|15|DE956E,15|13|DBF5FF,16|22|864B23,22|22|1D7091,9|26|8396FB,21|36|394D7D,-24|-4|C8FFFF", 0, 0.9, "爆震器"
+        32, 412, 1248, 610, "B3FFFF", "-9|15|AFFFFF,2|10|2E2C91,9|15|DE956E,15|13|DBF5FF,16|22|864B23,22|22|1D7091,9|26|8396FB,21|36|394D7D,-24|-4|C8FFFF", 0, 0.9, "爆震器"
     )
     override val DragonDukeCombustor = ColorSchema.parse(
-        102, 520, 170, 590, "94FFFF", "10|4|1582D3,29|0|617893,52|-12|3890D1,45|10|D5EBFF,40|45|1E5771,28|30|102C42,43|2|807A78,45|30|49617B,4|-9|50A8FF", 0, 0.9, "助燃器"
+        32, 412, 1248, 610, "94FFFF", "10|4|1582D3,29|0|617893,52|-12|3890D1,45|10|D5EBFF,40|45|1E5771,28|30|102C42,43|2|807A78,45|30|49617B,4|-9|50A8FF", 0, 0.9, "助燃器"
     )
     override val DragonDukeLightningFang = ColorSchema.parse(
-        192, 520, 260, 590, "FFEABA", "29|-8|FFE8BD,49|-4|E9C883,20|7|70451D,13|19|F4DC80,32|41|8C6222,37|14|FFFFFF,24|21|F7DC8C,32|19|663F1C,27|-22|D3AB91", 0, 0.9, "雷电獠牙"
+        32, 412, 1248, 610, "FFEABA", "29|-8|FFE8BD,49|-4|E9C883,20|7|70451D,13|19|F4DC80,32|41|8C6222,37|14|FFFFFF,24|21|F7DC8C,32|19|663F1C,27|-22|D3AB91", 0, 0.9, "雷电獠牙"
     )
 
     // Minion Prince gears
     override val MinionPrinceGuardianPuppet = ColorSchema.parse(
-        105, 435, 170, 504, "9E968E", "19|-8|DAD9DA,18|1|B3AEA3,24|14|CCC4B8,42|17|FCE81D,53|14|4E4946,18|32|494949,37|51|9E7E0D,53|40|F4DC1D,57|41|EACE2C", 0, 0.9, "护卫玩偶"
+        32, 412, 1248, 610, "9E968E", "19|-8|DAD9DA,18|1|B3AEA3,24|14|CCC4B8,42|17|FCE81D,53|14|4E4946,18|32|494949,37|51|9E7E0D,53|40|F4DC1D,57|41|EACE2C", 0, 0.9, "护卫玩偶"
     )
     override val MinionPrinceIronPants = ColorSchema.parse(
-        191, 433, 259, 506, "4F76A1", "-45|5|917657,-30|12|4D6991,-2|19|92937A,-49|19|716452,-14|36|DED8C0,-27|-1|9ABEB8,-40|-9|98C1BF,-8|5|A2E1EC,-40|-9|98C1BF", 0, 0.9, "铁甲短裤"
+        32, 412, 1248, 610, "4F76A1", "-45|5|917657,-30|12|4D6991,-2|19|92937A,-49|19|716452,-14|36|DED8C0,-27|-1|9ABEB8,-40|-9|98C1BF,-8|5|A2E1EC,-40|-9|98C1BF", 0, 0.9, "铁甲短裤"
     )
     override val MinionPrinceNobleDumbbell = ColorSchema.parse(
-        186, 519, 258, 586, "575149", "-18|9|DAC6A4,-9|17|8EB361,4|18|91CDD6,14|21|C2B094,32|17|7DB8C8,27|30|68A7A3,14|42|B3A770,9|37|8F7238,-8|-3|AF9780", 0, 0.9, "贵族哑铃"
+        32, 412, 1248, 610, "575149", "-18|9|DAC6A4,-9|17|8EB361,4|18|91CDD6,14|21|C2B094,32|17|7DB8C8,27|30|68A7A3,14|42|B3A770,9|37|8F7238,-8|-3|AF9780", 0, 0.9, "贵族哑铃"
     )
     override val MinionPrinceDarkOrb = ColorSchema.parse(
-        101, 522, 171, 588, "361136", "18|-7|FFFFFF,29|-7|7D4475,48|11|23141B,23|15|675064,37|27|FFFFC2,45|22|403B15,49|-3|CF5FB1,16|4|FFB7FF,12|-14|572546", 0, 0.9, "暗黑魔球"
+        32, 412, 1248, 610, "361136", "18|-7|FFFFFF,29|-7|7D4475,48|11|23141B,23|15|675064,37|27|FFFFC2,45|22|403B15,49|-3|CF5FB1,16|4|FFB7FF,12|-14|572546", 0, 0.9, "暗黑魔球"
     )
 
     // Clan castle collect button variant 2 shown near hero hall

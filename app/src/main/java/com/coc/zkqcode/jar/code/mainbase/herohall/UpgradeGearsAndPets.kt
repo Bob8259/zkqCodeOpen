@@ -1,4 +1,4 @@
-﻿package com.coc.zkqcode.jar.code.mainbase.herohall
+package com.coc.zkqcode.jar.code.mainbase.herohall
 
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
@@ -21,7 +21,12 @@ import com.coc.zkqcode.jar.code.universal.smalltools.data.writeMemory
 import com.coc.zkqcode.jar.ui.schema.Schema
 
 suspend fun upgradeGearsAndPets(): Boolean {
-    var shouldUpgradeGears = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.UPGRADE_ALL_GEAR.key) || getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.UPGRADE_WERA_GEAR.key) || getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.UPGRADE_CUSTOM_GEAR.key)
+    val gearMasterOn = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.UPGRADE_GEAR_MASTER.key)
+    var shouldUpgradeGears = if (gearMasterOn) {
+        getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.UPGRADE_ALL_GEAR.key) || getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.UPGRADE_WERA_GEAR.key) || getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.UPGRADE_CUSTOM_GEAR.key)
+    } else {
+        false
+    }
     var shouldUpgradePets = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.UPGRADE_PETS.key)
 
     // Gears require TH8+, pets require TH14+

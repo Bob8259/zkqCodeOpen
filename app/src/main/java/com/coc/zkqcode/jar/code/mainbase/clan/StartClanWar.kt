@@ -29,6 +29,10 @@ private const val CLAN_WAR_JOIN_BUTTON_SEARCH_RIGHT_OFFSET = 550
 private const val CLAN_WAR_JOIN_BUTTON_SEARCH_BOTTOM_OFFSET = 20
 
 suspend fun startClanWar(): Boolean {
+    if (isInClanLeaguePeriod()) {
+        accountMessage("当前处于部落联赛期间，跳过开启部落战")
+        return true
+    }
     if (!getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.START_CLAN_WAR.key)) return true
 
     val storageKey = StorageKeys.withAccountNumber(StorageKeys.START_CLAN_WAR, InGameVars.currentAccountNumber)

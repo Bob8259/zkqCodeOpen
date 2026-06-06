@@ -1,5 +1,6 @@
 package com.coc.zkqcode.jar.code.mainbase.others
 
+import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.jar.code.colorschema.ColorSchema
 import com.coc.zkqcode.jar.code.colorschema.MyColors
@@ -13,36 +14,32 @@ import com.coc.zkqcode.jar.code.universal.smalltools.input.TouchActions
 import com.coc.zkqcode.jar.ui.schema.Schema
 import kotlin.math.abs
 
-/**
- * Represents a hero entry in the smith/gear upgrade page.
- * Each hero has a fixed tap coordinate to enter their gear list,
- * and a list of gears with their ColorSchema for identification.
- *
- * @param heroKey The config key prefix for this hero (e.g. "barbarian_king")
- * @param displayName The display name for logging
- * @param tapX The x coordinate to tap this hero in the smith page
- * @param tapY The y coordinate to tap this hero in the smith page
- * @param gears The list of gear config keys and their ColorSchema for identification
- */
 data class HeroGearEntry(
-    val heroKey: String, val displayName: String, val tapX: Int, val tapY: Int, val gears: List<Pair<String, ColorSchema>> // (gearConfigKey, gearColorSchema)
+    val heroKey: String, val displayName: String, val tapX: Int, val tapY: Int, val gears: List<Pair<String, ColorSchema>>
 )
 
-/** Result of gear upgrade confirm flow */
+data class Zone2Slot(
+    val x: Int,
+    val y: Int,
+    val hasCheckmark: Boolean,
+    val hasArrow: Boolean,
+    val gearKey: String?,
+    val gearSchema: ColorSchema?
+)
+
+data class DetectionResult(
+    val zone1Arrows: List<Pair<Int, Int>>,
+    val zone2Slots: List<Zone2Slot>
+)
+
 private const val UPGRADE_SUCCESS = 0
 private const val UPGRADE_MAX_LEVEL = 1
 private const val UPGRADE_ALREADY_UPGRADING = 2
 
-/** Maximum number of equipped gear slots per hero */
-private const val MAX_EQUIPPED_GEARS = 2
-
-/** Step delay for observation (3 seconds) */
 private const val STEP_DELAY = 1000
 
-/**
- * Hero entries with their tap coordinates and gear identification schemas.
- * New heroes can be added here as their coordinates and gear ColorSchema data become available.
- */
+private data class RawDetection(val x: Int, val y: Int, val type: String)
+
 private val HERO_ENTRIES = listOf(
     HeroGearEntry(
         heroKey = "barbarian_king", displayName = "野蛮人之王", tapX = 129, tapY = 395, gears = listOf(
@@ -98,271 +95,47 @@ private val HERO_ENTRIES = listOf(
     ),
 )
 
-/**
- * The gear upgrade action performed inside the hero hall.
- * Enters the smith page, then processes each hero with the unified flow.
- *
- * @param shouldUpgradeWear Whether to upgrade equipped gears (arrow detection)
- * @param shouldUpgradeCustom Whether to upgrade custom-selected gears (ColorSchema detection)
- */
-suspend fun upgradeGearsAction(shouldUpgradeWear: Boolean, shouldUpgradeCustom: Boolean) {
-    TouchActions.tap(685, 590, delayTime = STEP_DELAY)
-
-    // Verify we're in the smith page
-    if (findMultiColorsUntil(schemas = listOf(MyColors.SmithOreIcon), duration = 2000) == null) {
-        accountMessage("未找到铁匠铺标志")
-        backToHeroHall()
-        return
+private fun getAllEnabledCustomGears(): List<Pair<String, ColorSchema>> {
+    val allGears = mutableListOf<Pair<String, ColorSchema>>()
+    for (heroEntry in HERO_ENTRIES) {
+        val enabledGears = heroEntry.gears.filter { (gearKey, _) -> getBooleanConfigRuntime(gearKey) }
+        allGears.addAll(enabledGears)
     }
-    delayWithMultiplier(STEP_DELAY)
-
-    var totalUpgraded = 0
-
-    for ((_, heroEntry) in HERO_ENTRIES.withIndex()) {
-
-        // Skip heroes with placeholder coordinates
-        if (heroEntry.tapX == 0 && heroEntry.tapY == 0) {
-            accountMessage("${heroEntry.displayName} 坐标未设置，跳过")
-            continue
-        }
-
-        // Count how many custom gears are enabled for this hero
-        val enabledCustomGears = if (shouldUpgradeCustom) {
-            heroEntry.gears.filter { (gearKey, _) -> getBooleanConfigRuntime(gearKey) }
-        } else {
-            emptyList()
-        }
-
-        // Equipped gear upgrade doesn't need per-gear config check — it detects arrows
-        val needsProcessing = shouldUpgradeWear || enabledCustomGears.isNotEmpty()
-        if (!needsProcessing) {
-            accountMessage("${heroEntry.displayName} 没有选中任何装备，跳过")
-            continue
-        }
-
-        // Calculate total gears to upgrade for this hero
-        val wearCount = if (shouldUpgradeWear) MAX_EQUIPPED_GEARS else 0
-        val customCount = enabledCustomGears.size
-        val totalGearCount = wearCount + customCount
-
-        accountMessage("处理 ${heroEntry.displayName} 的装备升级")
-
-        // Tap the hero entry in the smith page
-        TouchActions.tap(heroEntry.tapX, heroEntry.tapY)
-
-        // Track upgraded count for this hero
-        @Suppress("AssignedValueIsNeverRead")
-        var heroUpgraded = 0
-
-        // Phase 1: Upgrade equipped gears (arrow detection), max 2 per hero
-        val upgradedSchemas = mutableSetOf<ColorSchema>()
-        if (shouldUpgradeWear) {
-            val wearUpgraded = upgradeEquippedGears(heroEntry, upgradedSchemas, heroUpgraded, totalGearCount)
-            heroUpgraded += wearUpgraded
-            totalUpgraded += wearUpgraded
-            if (wearUpgraded > 0) {
-                accountMessage("${heroEntry.displayName} 穿戴升级完成，升级${wearUpgraded}件")
-            }
-            delayWithMultiplier(STEP_DELAY)
-        }
-
-        // Phase 2: Upgrade custom-selected gears, skip already upgraded ones
-        if (shouldUpgradeCustom) {
-            val customUpgraded = upgradeCustomGears(heroEntry, upgradedSchemas, heroUpgraded, totalGearCount)
-            heroUpgraded += customUpgraded
-            totalUpgraded += customUpgraded
-        }
-
-        // Switch to next hero by tapping its coordinate (no need to close hero gear list separately)
-        // The next iteration will tap the next hero's coordinate directly
-        delayWithMultiplier(STEP_DELAY)
-    }
-
-    if (totalUpgraded == 0) {
-        accountMessage("没有升级任何装备")
-    } else {
-        accountMessage("升级装备完成，共升级${totalUpgraded}件")
-    }
-
-    // Exit smith page, navigate back to hero hall
-    backToHeroHall()
+    return allGears
 }
 
-/**
- * Performs the gear upgrade confirm flow using fixed coordinates.
- * This is the original equipment upgrade flow:
- * 0. Check GearMaxLevel — if detected, skip this gear (already at max level)
- * 1. tap(1130, 640) — upgrade
- * 2. tap(1130, 640) — confirm
- * 3. tap(1220, 635) — exit gear detail view, return to hero's gear list
- *
- * After confirm, checks for AlreadyBeingUpgraded to detect if another upgrade is running.
- *
- * @return UPGRADE_SUCCESS if upgrade was performed,
- *         UPGRADE_MAX_LEVEL if gear is already at max level (skipped),
- *         UPGRADE_ALREADY_UPGRADING if another upgrade is running (stop all)
- */
-private suspend fun confirmAndExitGearDetail(): Int {
-    // Step 0: Check if gear is already at max level before tapping upgrade
-    if (findMultiColors(schema = MyColors.GearMaxLevel, increment = 1) != null) {
-        accountMessage("该装备已升到最高等级，跳过")
-        // Exit gear detail view to return to gear list
-        TouchActions.tap(1220, 635, delayTime = STEP_DELAY)
-        return UPGRADE_MAX_LEVEL
-    }
-
-    // Step 1: tap upgrade button (1130, 640) — upgrade
-    TouchActions.tap(1130, 640, delayTime = STEP_DELAY)
-
-    // Step 2: tap confirm button (1130, 640) — confirm
-    TouchActions.tap(1130, 640, delayTime = STEP_DELAY)
-
-    // Close gem shop popup if it appears (insufficient resources)
-    clickRightBottom(1)
-
-    // Step 3: tap exit button (1220, 635) — exit gear detail view
-    TouchActions.tap(1220, 635, delayTime = STEP_DELAY)
-
-    // Check if another gear is already being upgraded
-    if (findMultiColors(schema = MyColors.AlreadyBeingUpgraded, increment = 1) != null) {
-        accountMessage("已有装备升级中，停止升级")
-        return UPGRADE_ALREADY_UPGRADING
-    }
-
-    return UPGRADE_SUCCESS
-}
-
-/**
- * Upgrades currently equipped gears for a hero by detecting upgrade arrows.
- * Uses [MyColors.UpgradeGearArrow] variants and [MyColors.NewGear] to find upgradable equipped gears.
- * Limited to [MAX_EQUIPPED_GEARS] upgrades per hero (2 equipped slots).
- *
- * Bug fix: Previously, after upgrading the 1st equipped gear, re-scanning would find
- * the same coordinate again. Now we collect ALL arrow coordinates FIRST, then click
- * only the pre-collected coordinates sequentially — no re-scanning after each upgrade.
- *
- * After each successful upgrade, identifies which gear was upgraded by matching
- * its ColorSchema against the hero's known gear list, and adds it to [upgradedSchemas]
- * for deduplication in the custom upgrade phase.
- *
- * @param heroEntry The hero being processed
- * @param upgradedSchemas Set to collect ColorSchemas of upgraded gears for dedup
- * @param heroUpgradedCount Current number of already upgraded gears for this hero (for progress display)
- * @param totalGearCount Total number of gears to upgrade for this hero (for progress display)
- * @return Number of gears successfully upgraded
- */
-private suspend fun upgradeEquippedGears(
-    heroEntry: HeroGearEntry, upgradedSchemas: MutableSet<ColorSchema>, heroUpgradedCount: Int, totalGearCount: Int
-): Int {
-    var upgraded = 0
-    val allArrowPoints = mutableListOf<Pair<Int, Int>>()
-
-    // Step 1: Collect ALL upgrade arrow positions BEFORE any upgrades (no re-scanning)
-    val arrowSchemas = listOf(
-        MyColors.UpgradeGearArrow, MyColors.UpgradeGearArrow2, MyColors.UpgradeGearArrow3, MyColors.UpgradeGearArrow4, MyColors.UpgradeGearArrow5, MyColors.UpgradeGearArrow6, MyColors.NewGear
-    )
-
-    for (arrowSchema in arrowSchemas) {
-        val point = findMultiColors(schema = arrowSchema, increment = 1)
-        if (point != null) {
-            // Filter duplicates: skip if too close (within 20px) to an already-found point
-            val isDuplicate = allArrowPoints.any { (ex, ey) ->
-                abs(point.x - ex) < 20 && abs(point.y - ey) < 20
-            }
-            if (!isDuplicate) {
-                allArrowPoints.add(Pair(point.x, point.y))
+private fun findHeroAndGearByKey(gearKey: String): Pair<HeroGearEntry, Pair<String, ColorSchema>>? {
+    for (heroEntry in HERO_ENTRIES) {
+        for (gear in heroEntry.gears) {
+            if (gear.first == gearKey) {
+                return Pair(heroEntry, gear)
             }
         }
     }
-
-    if (allArrowPoints.isEmpty()) {
-        accountMessage("${heroEntry.displayName} 未找到可升级的穿戴装备")
-        return 0
-    }
-
-    // Limit to MAX_EQUIPPED_GEARS (2 equipped slots per hero)
-    val upgradePoints = allArrowPoints.take(MAX_EQUIPPED_GEARS)
-    accountMessage("${heroEntry.displayName} 找到${allArrowPoints.size}个穿戴装备升级箭头，将升级${upgradePoints.size}个")
-
-    // Step 2: Click each pre-collected arrow coordinate for upgrade (no re-scanning)
-    for (arrowCoord in upgradePoints) {
-        val (tapX, tapY) = arrowCoord
-
-        // Identify which gear this arrow belongs to BEFORE clicking (coordinate-based, no screen reading)
-        val identifiedGear = identifyGearByPosition(heroEntry, tapX, tapY)
-
-        TouchActions.tap(tapX, tapY, delayTime = STEP_DELAY)
-
-        // Confirm upgrade and exit gear detail using fixed coordinates
-        val result = confirmAndExitGearDetail()
-        if (result == UPGRADE_ALREADY_UPGRADING) {
-            // AlreadyBeingUpgraded detected — stop all upgrades
-            backToHeroHall()
-            return upgraded
-        }
-        if (result == UPGRADE_MAX_LEVEL) {
-            // Gear is at max level — skip to next gear
-            val gearName = identifiedGear?.let { Schema.getDisplayName(it.first) } ?: "未知装备"
-            accountMessage("${heroEntry.displayName} $gearName 该装备已升到最高等级，跳过")
-            continue
-        }
-
-        upgraded++
-        @Suppress("UNUSED_VARIABLE")
-        val currentProgress = heroUpgradedCount + upgraded
-        val gearName = identifiedGear?.let { Schema.getDisplayName(it.first) } ?: "未知装备"
-        accountMessage("${heroEntry.displayName} $gearName 穿戴升级成功，已升级${upgraded}件")
-
-        // Add identified gear to dedup set (coordinate-based, no visual matching needed)
-        if (identifiedGear != null) {
-            val (gearKey, gearSchema) = identifiedGear
-            upgradedSchemas.add(gearSchema)
-            accountMessage("识别到已升级装备: ${Schema.getDisplayName(gearKey)}")
-        }
-    }
-
-    return upgraded
+    return null
 }
 
-/**
- * Identifies which gear an upgrade arrow belongs to by checking if the arrow
- * coordinate falls within the gear ColorSchema bounding box.
- *
- * This is a pure coordinate calculation — no screen reading required,
- * so it works correctly even after the screen has changed.
- *
- * Uses ±15px tolerance to account for slight position variations.
- * If multiple gears match, returns the one whose center is closest to the arrow.
- *
- * @param heroEntry The hero being processed
- * @param arrowX The x coordinate of the upgrade arrow
- * @param arrowY The y coordinate of the upgrade arrow
- * @return Pair of (gearConfigKey, gearColorSchema) if found, null otherwise
- */
-private fun identifyGearByPosition(
-    heroEntry: HeroGearEntry, arrowX: Int, arrowY: Int
-): Pair<String, ColorSchema>? {
+private fun findHeroAndGearByPosition(arrowX: Int, arrowY: Int): Pair<HeroGearEntry, Pair<String, ColorSchema>>? {
     val TOLERANCE = 15
-    var bestMatch: Pair<String, ColorSchema>? = null
+    var bestMatch: Pair<HeroGearEntry, Pair<String, ColorSchema>>? = null
     var bestDistance = Int.MAX_VALUE
 
-    for ((gearKey, gearSchema) in heroEntry.gears) {
-        // Skip placeholder ColorSchema
-        if (gearSchema.x1 == 0 && gearSchema.x2 == 0 && gearSchema.y1 == 0 && gearSchema.y2 == 0) continue
+    for (heroEntry in HERO_ENTRIES) {
+        for ((gearKey, gearSchema) in heroEntry.gears) {
+            if (gearSchema.x1 == 0 && gearSchema.x2 == 0 && gearSchema.y1 == 0 && gearSchema.y2 == 0) continue
 
-        // Check if arrow coordinate falls within the gear bounding box (with tolerance)
-        val inX = arrowX >= gearSchema.x1 - TOLERANCE && arrowX <= gearSchema.x2 + TOLERANCE
-        val inY = arrowY >= gearSchema.y1 - TOLERANCE && arrowY <= gearSchema.y2 + TOLERANCE
+            val inX = arrowX >= gearSchema.x1 - TOLERANCE && arrowX <= gearSchema.x2 + TOLERANCE
+            val inY = arrowY >= gearSchema.y1 - TOLERANCE && arrowY <= gearSchema.y2 + TOLERANCE
 
-        if (inX && inY) {
-            // Calculate distance from arrow to gear centre
-            val centerX = (gearSchema.x1 + gearSchema.x2) / 2
-            val centerY = (gearSchema.y1 + gearSchema.y2) / 2
-            val distance = abs(arrowX - centerX) + abs(arrowY - centerY)
+            if (inX && inY) {
+                val centerX = (gearSchema.x1 + gearSchema.x2) / 2
+                val centerY = (gearSchema.y1 + gearSchema.y2) / 2
+                val distance = abs(arrowX - centerX) + abs(arrowY - centerY)
 
-            if (distance < bestDistance) {
-                bestDistance = distance
-                bestMatch = Pair(gearKey, gearSchema)
+                if (distance < bestDistance) {
+                    bestDistance = distance
+                    bestMatch = Pair(heroEntry, Pair(gearKey, gearSchema))
+                }
             }
         }
     }
@@ -370,107 +143,361 @@ private fun identifyGearByPosition(
     return bestMatch
 }
 
-/**
- * Upgrades custom-selected gears for a hero, skipping any gears already
- * upgraded in the equipped phase (identified by [skipSchemas]).
- *
- * For each gear enabled in user config:
- * 1. Skip if its ColorSchema is in [skipSchemas] (already upgraded as equipped gear)
- * 2. Skip if ColorSchema is placeholder (0,0,0,0)
- * 3. Find the gear on screen using its ColorSchema
- * 4. Tap the gear to open upgrade dialog
- * 5. Confirm upgrade using fixed coordinates: tap(1130,640) x2 + tap(1220,635) exit
- *
- * @param heroEntry The hero being processed
- * @param skipSchemas ColorSchemas of gears already upgraded in the equipped phase
- * @param heroUpgradedCount Current number of already upgraded gears for this hero (for progress display)
- * @param totalGearCount Total number of gears to upgrade for this hero (for progress display)
- * @return Number of gears successfully upgraded
- */
-private suspend fun upgradeCustomGears(
-    heroEntry: HeroGearEntry, skipSchemas: Set<ColorSchema>, heroUpgradedCount: Int, totalGearCount: Int
+suspend fun upgradeGearsAction(shouldUpgradeWear: Boolean, shouldUpgradeCustom: Boolean) {
+    accountMessage("开始升级装备流程")
+    
+    TouchActions.tap(685, 590, delayTime = STEP_DELAY)
+    accountMessage("点击进入铁匠铺")
+
+    if (findMultiColorsUntil(schemas = listOf(MyColors.SmithOreIcon), duration = 2000) == null) {
+        accountMessage("未找到铁匠铺标志，返回英雄殿堂")
+        backToHeroHall()
+        return
+    }
+    accountMessage("确认已进入铁匠铺")
+    delayWithMultiplier(STEP_DELAY)
+
+    var totalUpgraded = 0
+
+    accountMessage("===== 开始第一轮检测 =====")
+    val enabledCustomGears = getAllEnabledCustomGears()
+    val detectionResult = detectBothZones(enabledCustomGears)
+    if (detectionResult == null) {
+        accountMessage("截屏失败")
+        backToHeroHall()
+        return
+    }
+
+    accountMessage("第一轮检测完成：Zone1 检测到 ${detectionResult.zone1Arrows.size} 个箭头，Zone2 检测到 ${detectionResult.zone2Slots.size} 个槽位")
+
+    if (shouldUpgradeWear && detectionResult.zone1Arrows.isNotEmpty()) {
+        accountMessage("===== 开始升级 Zone1（穿戴装备） =====")
+        val zone1Upgraded = upgradeZone1(detectionResult.zone1Arrows)
+        totalUpgraded += zone1Upgraded
+        accountMessage("Zone1 升级完成，共升级 $zone1Upgraded 件")
+    } else if (shouldUpgradeWear) {
+        accountMessage("Zone1 未检测到可升级的穿戴装备")
+    }
+
+    if (shouldUpgradeCustom && detectionResult.zone2Slots.isNotEmpty()) {
+        accountMessage("===== 开始升级 Zone2 第一轮（自定义装备） =====")
+        val zone2UpgradedRound1 = upgradeZone2(
+            detectionResult.zone2Slots,
+            shouldUpgradeWear,
+            "Zone2第一轮"
+        )
+        totalUpgraded += zone2UpgradedRound1
+        accountMessage("Zone2 第一轮升级完成，共升级 $zone2UpgradedRound1 件")
+    } else if (shouldUpgradeCustom) {
+        accountMessage("Zone2 第一轮未检测到可升级的自定义装备")
+    }
+
+    accountMessage("===== 滑动到第二页 =====")
+    TouchActions.swipe(1236, 495, -200, 495, delayAfter = 100)
+    delayWithMultiplier(STEP_DELAY)
+
+    if (shouldUpgradeCustom) {
+        accountMessage("===== 开始第二轮检测（仅 Zone2） =====")
+        val screenBufferRound2 = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult
+        if (screenBufferRound2 == null) {
+            accountMessage("第二轮截屏失败")
+        } else {
+            val zone2SlotsRound2 = detectZone2(screenBufferRound2, enabledCustomGears)
+            accountMessage("第二轮检测完成：Zone2 检测到 ${zone2SlotsRound2.size} 个槽位")
+
+            if (zone2SlotsRound2.isNotEmpty()) {
+                accountMessage("===== 开始升级 Zone2 第二轮（自定义装备） =====")
+                val zone2UpgradedRound2 = upgradeZone2(
+                    zone2SlotsRound2,
+                    shouldUpgradeWear,
+                    "Zone2第二轮"
+                )
+                totalUpgraded += zone2UpgradedRound2
+                accountMessage("Zone2 第二轮升级完成，共升级 $zone2UpgradedRound2 件")
+            } else {
+                accountMessage("Zone2 第二轮未检测到可升级的自定义装备")
+            }
+        }
+    }
+
+    if (totalUpgraded == 0) {
+        accountMessage("所有英雄都没有升级任何装备")
+    } else {
+        accountMessage("升级装备全部完成，共升级 $totalUpgraded 件")
+    }
+
+    backToHeroHall()
+}
+
+private suspend fun detectBothZones(
+    enabledCustomGears: List<Pair<String, ColorSchema>>
+): DetectionResult? {
+    accountMessage("开始截屏并检测两个区域")
+    val screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult
+    if (screenBuffer == null) {
+        accountMessage("截屏失败")
+        return null
+    }
+
+    val zone1Arrows = detectZone1Arrows(screenBuffer)
+    accountMessage("Zone1 检测到 ${zone1Arrows.size} 个穿戴装备箭头")
+
+    val zone2Slots = detectZone2(screenBuffer, enabledCustomGears)
+    accountMessage("Zone2 检测到 ${zone2Slots.size} 个装备槽位")
+
+    return DetectionResult(zone1Arrows, zone2Slots)
+}
+
+private suspend fun upgradeZone1(
+    initialArrows: List<Pair<Int, Int>>
 ): Int {
-    var upgraded = 0
+    if (initialArrows.isEmpty()) {
+        return 0
+    }
 
-    for (gearPair in heroEntry.gears) {
-        val (gearKey, gearSchema) = gearPair
+    val (tapX, tapY) = initialArrows.first()
+    val identifiedHeroAndGear = findHeroAndGearByPosition(tapX, tapY)
+    val gearName = identifiedHeroAndGear?.let { Schema.getDisplayName(it.second.first) } ?: "未知装备"
+    val heroName = identifiedHeroAndGear?.first?.displayName ?: "未知英雄"
+    
+    accountMessage("准备升级 Zone1 装备：$heroName - $gearName")
+    TouchActions.tap(tapX, tapY, delayTime = STEP_DELAY)
 
-        // Check if this specific gear is enabled in config
-        if (!getBooleanConfigRuntime(gearKey)) {
-            continue
+    val result = confirmAndExitGearDetail()
+    if (result == UPGRADE_ALREADY_UPGRADING) {
+        accountMessage("已有装备升级中，停止所有升级")
+        backToHeroHall()
+        return 0
+    }
+    if (result == UPGRADE_MAX_LEVEL) {
+        accountMessage("$gearName 已最高等级，跳过")
+        return 0
+    }
+
+    accountMessage("$heroName - $gearName 穿戴升级成功")
+    return 1
+}
+
+private suspend fun upgradeZone2(
+    initialSlots: List<Zone2Slot>,
+    shouldUpgradeWear: Boolean,
+    phaseName: String
+): Int {
+    val slot = initialSlots.firstOrNull { slot ->
+        slot.hasArrow &&
+        !(shouldUpgradeWear && slot.hasCheckmark)
+    }
+
+    if (slot == null) {
+        accountMessage("$phaseName 没有符合条件的装备可升级")
+        return 0
+    }
+
+    val identifiedHeroAndGear = if (slot.gearKey != null) {
+        findHeroAndGearByKey(slot.gearKey)
+    } else {
+        null
+    }
+    val gearName = slot.gearKey?.let { Schema.getDisplayName(it) } ?: "未知装备"
+    val heroName = identifiedHeroAndGear?.first?.displayName ?: "未知英雄"
+
+    accountMessage("准备升级 $phaseName 装备：$heroName - $gearName")
+    TouchActions.tap(slot.x, slot.y, delayTime = STEP_DELAY)
+
+    val result = confirmAndExitGearDetail()
+    if (result == UPGRADE_ALREADY_UPGRADING) {
+        accountMessage("已有装备升级中，停止所有升级")
+        backToHeroHall()
+        return 0
+    }
+    if (result == UPGRADE_MAX_LEVEL) {
+        accountMessage("$gearName 已最高等级，跳过")
+        return 0
+    }
+
+    accountMessage("$heroName - $gearName 升级成功")
+    return 1
+}
+
+private suspend fun confirmAndExitGearDetail(): Int {
+    accountMessage("进入装备详情页")
+
+    accountMessage("点击升级按钮 (1130, 640)")
+    TouchActions.tap(1130, 640, delayTime = STEP_DELAY)
+
+    accountMessage("点击确认按钮 (1130, 640)")
+    TouchActions.tap(1130, 640, delayTime = STEP_DELAY)
+
+    accountMessage("检测是否已返回装备列表")
+    var returnAttempt = 0
+    val maxReturnAttempts = 10 // 最多尝试 10 次返回
+    val returnCheckIntervalMs = 500
+    
+    while (findMultiColors(schema = MyColors.GearListReturned, increment = 1) == null && returnAttempt < maxReturnAttempts) {
+        returnAttempt++
+        accountMessage("第 ${returnAttempt} 次尝试返回装备列表")
+        clickRightBottom(1)
+        delayWithMultiplier(returnCheckIntervalMs)
+    }
+
+    if (findMultiColors(schema = MyColors.GearListReturned, increment = 1) != null) {
+        accountMessage("确认已返回装备列表")
+    } else {
+        accountMessage("尝试返回装备列表超时")
+    }
+
+    accountMessage("升级流程完成")
+    return UPGRADE_SUCCESS
+}
+
+private suspend fun detectZone1Arrows(byteBuffer: ScreenCaptureManager.CaptureResult): List<Pair<Int, Int>> {
+    val points = mutableListOf<Pair<Int, Int>>()
+    val baseSchema = MyColors.Zone1EquippedArrow
+    var searchSchema = baseSchema
+
+    accountMessage("开始检测 Zone1 穿戴装备箭头...")
+    while (points.size < 2) {
+        val point = findMultiColors(schema = searchSchema, byteBuffer = byteBuffer, increment = 1)
+        if (point == null) break
+
+        val isDuplicate = points.any { (ex, _) -> abs(point.x - ex) < 20 }
+        if (!isDuplicate) {
+            points.add(Pair(point.x, point.y))
+            accountMessage("检测到 Zone1 箭头：位置(${point.x}, ${point.y})")
         }
 
-        // Dedup: skip gears already upgraded in the equipped phase
-        if (gearSchema in skipSchemas) {
-            accountMessage("装备 ${Schema.getDisplayName(gearKey)} 已通过穿戴升级处理，跳过")
-            continue
+        val nextX1 = point.x + 30
+        if (nextX1 >= searchSchema.x2) break
+        searchSchema = ColorSchema.rescope(searchSchema, nextX1, searchSchema.y1, searchSchema.x2, searchSchema.y2)
+    }
+    accountMessage("Zone1 箭头检测完成，共找到 ${points.size} 个")
+
+    return points
+}
+
+private suspend fun detectZone2(
+    byteBuffer: ScreenCaptureManager.CaptureResult,
+    enabledCustomGears: List<Pair<String, ColorSchema>>
+): List<Zone2Slot> {
+    val detections = mutableListOf<RawDetection>()
+
+    accountMessage("开始检测 Zone2 装备箭头...")
+    var arrowCount = 0
+    var arrowSchema = MyColors.Zone2GearArrow
+    while (true) {
+        val point = findMultiColors(schema = arrowSchema, byteBuffer = byteBuffer, increment = 1)
+        if (point == null) break
+        val isDuplicate = detections.any { it.type == "gear_arrow" && abs(point.x - it.x) < 20 && abs(point.y - it.y) < 20 }
+        if (!isDuplicate) {
+            detections.add(RawDetection(point.x, point.y, "gear_arrow"))
+            arrowCount++
+            accountMessage("检测到 Zone2 装备箭头：位置(${point.x}, ${point.y})")
         }
+        val nextX1 = point.x + 30
+        if (nextX1 >= arrowSchema.x2) break
+        arrowSchema = ColorSchema.rescope(arrowSchema, nextX1, arrowSchema.y1, arrowSchema.x2, arrowSchema.y2)
+    }
+    accountMessage("Zone2 装备箭头检测完成，共找到 $arrowCount 个")
 
-        // Skip placeholder ColorSchema (zero-area search regions)
-        if (gearSchema.x1 == 0 && gearSchema.x2 == 0 && gearSchema.y1 == 0 && gearSchema.y2 == 0) {
-            accountMessage("装备 ${Schema.getDisplayName(gearKey)} 图色数据未设置，跳过")
-            continue
+    accountMessage("开始检测 Zone2 装备身份...")
+    var gearIdentityCount = 0
+    for ((gearKey, gearSchema) in enabledCustomGears) {
+        val gearName = Schema.getDisplayName(gearKey)
+        if (gearSchema.x1 == 0 && gearSchema.x2 == 0 && gearSchema.y1 == 0 && gearSchema.y2 == 0) continue
+        val point = findMultiColors(schema = gearSchema, byteBuffer = byteBuffer, increment = 1)
+        if (point != null) {
+            detections.add(RawDetection(point.x, point.y, "gear_identity:$gearKey"))
+            gearIdentityCount++
+            accountMessage("检测到 Zone2 装备：$gearName 位置(${point.x}, ${point.y})")
         }
+    }
+    accountMessage("Zone2 装备身份检测完成，共找到 $gearIdentityCount 个")
 
-        // Find the gear on screen using its ColorSchema
-        var gearPoint = findMultiColors(schema = gearSchema, increment = 1)
+    accountMessage("开始检测 Zone2 穿戴标记...")
+    var checkmarkCount = 0
+    var checkmarkSchema = MyColors.Zone2EquipCheckmark
+    while (true) {
+        val point = findMultiColors(schema = checkmarkSchema, byteBuffer = byteBuffer, increment = 1)
+        if (point == null) break
+        val isDuplicate = detections.any { it.type == "equip_checkmark" && abs(point.x - it.x) < 20 && abs(point.y - it.y) < 20 }
+        if (!isDuplicate) {
+            detections.add(RawDetection(point.x, point.y, "equip_checkmark"))
+            checkmarkCount++
+            accountMessage("检测到 Zone2 穿戴标记：位置(${point.x}, ${point.y})")
+        }
+        val nextX1 = point.x + 30
+        if (nextX1 >= checkmarkSchema.x2) break
+        checkmarkSchema = ColorSchema.rescope(checkmarkSchema, nextX1, checkmarkSchema.y1, checkmarkSchema.x2, checkmarkSchema.y2)
+    }
+    accountMessage("Zone2 穿戴标记检测完成，共找到 $checkmarkCount 个")
 
-        // Fallback: if not found by original ColorSchema, the gear may have a ✓ overlay
-        // Try arrow detection + coordinate matching to identify the gear
-        if (gearPoint == null) {
-            for (arrowSchema in listOf(
-                MyColors.UpgradeGearArrow, MyColors.UpgradeGearArrow2, MyColors.UpgradeGearArrow3, MyColors.UpgradeGearArrow4, MyColors.UpgradeGearArrow5, MyColors.UpgradeGearArrow6, MyColors.NewGear
-            )) {
-                val arrowPoint = findMultiColors(schema = arrowSchema, increment = 1)
-                if (arrowPoint != null) {
-                    val matchedGear = identifyGearByPosition(heroEntry, arrowPoint.x, arrowPoint.y)
-                    if (matchedGear != null && matchedGear.first == gearKey) {
-                        gearPoint = arrowPoint
-                        break
-                    }
-                }
+    return buildZone2Slots(detections, enabledCustomGears)
+}
+
+private fun buildZone2Slots(
+    detections: List<RawDetection>, 
+    enabledCustomGears: List<Pair<String, ColorSchema>>
+): List<Zone2Slot> {
+    if (detections.isEmpty()) {
+        accountMessage("Zone2 没有检测结果，返回空列表")
+        return emptyList()
+    }
+    accountMessage("开始构建 Zone2 槽位，共 ${detections.size} 个原始检测")
+
+    val tolerance = 20
+    val used = BooleanArray(detections.size) { false }
+    val slots = mutableListOf<Zone2Slot>()
+
+    for (i in detections.indices) {
+        if (used[i]) continue
+        val (cx, cy, _) = detections[i]
+
+        val clusterDets = mutableListOf<RawDetection>()
+        var sumX = 0
+        var sumY = 0
+        for (j in detections.indices) {
+            if (used[j]) continue
+            val (dx, dy, _) = detections[j]
+            if (abs(dx - cx) <= tolerance && abs(dy - cy) <= tolerance) {
+                used[j] = true
+                clusterDets.add(detections[j])
+                sumX += dx
+                sumY += dy
             }
         }
 
-        if (gearPoint == null) {
-            accountMessage("未找到装备 ${Schema.getDisplayName(gearKey)}，可能已满级或不可升级")
-            continue
-        }
+        val centerX = sumX / clusterDets.size
+        val centerY = sumY / clusterDets.size
+        val hasArrow = clusterDets.any { it.type == "gear_arrow" }
+        val hasCheckmark = clusterDets.any { it.type == "equip_checkmark" }
 
-        // Check if the gear has an upgrade arrow (✓) in its top-right corner
-        // Only proceed if the gear is currently equipped/upgradable
-        val arrowX1 = gearSchema.x2 - 14
-        val arrowY1 = gearSchema.y1 - 6
-        val arrowX2 = gearSchema.x2 + 4
-        val arrowY2 = gearSchema.y1 + 15
-        val equippedArrowCheck = ColorSchema.rescope(
-            MyColors.UpgradeGearArrow7, arrowX1, arrowY1, arrowX2, arrowY2
+        val identityDet = clusterDets.firstOrNull { it.type.startsWith("gear_identity:") }
+        val gearKey = identityDet?.type?.removePrefix("gear_identity:")
+        val gearName = if (gearKey != null) Schema.getDisplayName(gearKey) else "未知装备"
+        val gearSchema = if (gearKey != null) {
+            enabledCustomGears.firstOrNull { (k, _) -> k == gearKey }?.second
+        } else null
+
+        val slotInfo = buildString {
+            append("构建 Zone2 槽位：位置($centerX, $centerY)")
+            append(" 有箭头=${if (hasArrow) "是" else "否"}")
+            append(" 有穿戴标记=${if (hasCheckmark) "是" else "否"}")
+            if (gearKey != null) append(" 装备=$gearName")
+        }
+        accountMessage(slotInfo)
+
+        slots.add(
+            Zone2Slot(
+                x = centerX,
+                y = centerY,
+                hasCheckmark = hasCheckmark,
+                hasArrow = hasArrow,
+                gearKey = gearKey,
+                gearSchema = gearSchema
+            )
         )
-        findMultiColors(schema = equippedArrowCheck, increment = 1) ?: continue
-
-        accountMessage("${heroEntry.displayName} 升级装备: ${Schema.getDisplayName(gearKey)}")
-
-        // Tap the gear to open upgrade dialogue
-        TouchActions.tap(gearPoint.x, gearPoint.y, delayTime = STEP_DELAY)
-
-        // Confirm upgrade and exit gear detail using fixed coordinates
-        val result = confirmAndExitGearDetail()
-        if (result == UPGRADE_ALREADY_UPGRADING) {
-            // AlreadyBeingUpgraded detected — stop all upgrades
-            backToHeroHall()
-            return upgraded
-        }
-        if (result == UPGRADE_MAX_LEVEL) {
-            // Gear is at max level — skip to next gear
-            accountMessage("${Schema.getDisplayName(gearKey)} 该装备已升到最高等级，跳过")
-            continue
-        }
-
-        upgraded++
-        @Suppress("UNUSED_VARIABLE")
-        val currentProgress = heroUpgradedCount + upgraded
-        accountMessage("成功升级 ${Schema.getDisplayName(gearKey)}")
     }
+    accountMessage("Zone2 槽位构建完成，共 ${slots.size} 个槽位")
 
-    return upgraded
+    return slots
 }

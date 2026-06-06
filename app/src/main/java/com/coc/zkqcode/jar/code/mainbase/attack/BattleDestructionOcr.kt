@@ -65,6 +65,7 @@ suspend fun readBattleDestructionPercent(maxPercent: Int = 100): Int? {
     val combined = results.joinToString("") { it.text }
     val cleanValue = extractValue(combined)
     showDebugInfo("BattleDestructionOcr: parsed destruction %=$cleanValue from '$combined'")
+    // Only return null if we got 0 and there were no digits in the original text
     val hasDigits = combined.any { it.isDigit() }
     return if (cleanValue == 0 && !hasDigits) {
         null
@@ -116,7 +117,7 @@ suspend fun checkBattleDestructionOcrExit(
 
     val percent = readBattleDestructionPercent(maxPercent)
     val now = System.currentTimeMillis()
-
+    
     if (percent == null) {
         val failStart = state.ocrFailStartMs
         if (failStart == null) {

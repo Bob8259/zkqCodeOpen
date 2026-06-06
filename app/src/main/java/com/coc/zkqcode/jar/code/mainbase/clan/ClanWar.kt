@@ -24,6 +24,10 @@ private const val STRATEGY_POSITION = "position"
 private const val STRATEGY_RECOMMENDATION = "recommendation"
 
 suspend fun clanWar(): Boolean {
+    if (isInClanLeaguePeriod()) {
+        accountMessage("当前处于部落联赛期间，跳过部落战")
+        return true
+    }
     if (!getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.PLAY_CLAN_WAR.key) || InGameVars.townHallLevel < 3) return true
     findMultiColors(MyColors.ClanWarSwordIcon) ?: return true // No clan war attack times, return
     TouchActions.tap(50, 440) // Enter clan war
