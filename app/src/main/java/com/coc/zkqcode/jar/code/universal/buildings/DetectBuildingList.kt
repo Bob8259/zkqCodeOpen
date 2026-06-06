@@ -7,7 +7,9 @@ import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.recognizer.TextRecognizer
+import com.coc.zkqcode.jar.code.universal.smalltools.data.getBooleanConfigRuntime
 import com.coc.zkqcode.jar.code.universal.smalltools.input.TouchActions
+import com.coc.zkqcode.jar.ui.schema.Schema
 
 /**
  * Detects building names from the screen.
@@ -49,8 +51,9 @@ suspend fun detectBuildingList(baseType: BaseType, excludeNewBuildings: Boolean 
     // Post-process: Check for green indicator (new building marker) and gear-up icon
     // If green pixels > 20 in area (x-15, y-3, x, y+20), add "新" prefix
     // If gear-up icon detected in area (x-55, y-10, x+55, y+25), add "改装" prefix
-    val processedResults = results.map { item ->
-        val pos = item.position ?: return@map item
+    val shouldPurchaseBotoShack = baseType != BaseType.Builder || getBooleanConfigRuntime(Schema.BUILDER_BASE_SETTINGS.BUILDER_BASE_PURCHASE_BOTO_SHACK.key)
+    val processedResults = results.mapNotNull { item ->
+        val pos = item.position ?: return@mapNotNull item
         val x = pos.left + startX
         val y = pos.top + startY
 
@@ -60,6 +63,12 @@ suspend fun detectBuildingList(baseType: BaseType, excludeNewBuildings: Boolean 
         val greenCount = countGreenPixelsInArea(screenBuffer, x - 15, y - 3, x, y + 20)
         if (greenCount > 20 && !text.startsWith("新")) {
             text = "新$text"
+        }
+
+        if (!shouldPurchaseBotoShack) {
+            val gemSchema = ColorSchema.rescope(MyColors.GemInBuildingList, x + 155, y - 3, x + 250, y + 30)
+            val gemDetected = findMultiColors(schema = gemSchema, byteBuffer = screenBuffer, increment = 1) != null
+            if (gemDetected) return@mapNotNull null
         }
 
         // Check for gear-up icon

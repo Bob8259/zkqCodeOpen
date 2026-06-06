@@ -86,4 +86,8 @@ object MyColors : IUIColors by UIColors, IFeatureColors by FeatureColors, IClanG
         1194, 25, 1222, 60, "90EDFD", "0|1|8BEDFD,0|2|86EBFD,0|3|82E9FD,0|4|7CE8FD,0|5|77E7FD,0|6|70E5FD,0|7|69E3FD,0|8|17D5FF,0|9|0DD2FF", 0, 0.9, "都城币足够"
     )
 
+    //Build Colors
+    val GemInBuildingList = ColorSchema.parse(
+        0, 0, 0, 0, "8DFDE7", "-2|0|86FAE0,-4|0|7EF7DC,-4|-3|4DD8A1,-2|-5|45D097,2|-4|80FCE9,3|0|9DFFF1,3|3|75FBD9,2|4|76FAD5,-2|4|7BF8CE", 0, 0.95, "建筑列表宝石"
+    )
 }
