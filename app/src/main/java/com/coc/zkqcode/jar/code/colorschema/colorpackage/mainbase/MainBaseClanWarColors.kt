@@ -36,6 +36,7 @@ interface IMainBaseClanWarColors {
     val LeagueReinforceRequest: ColorSchema
     val LeagueDonatableTroop: ColorSchema
     val ArcherDonatableTroop: ColorSchema
+    val FlameFlingerDonatableTroop: ColorSchema
     val LeagueFirstMemberIndicator: ColorSchema
 }
 
@@ -157,6 +158,10 @@ object MainBaseClanWarColors : IMainBaseClanWarColors {
         261, 166, 1020, 414, "626DAB", "1|-13|7039CA,-28|-23|DB72FC,5|-35|AC5DFC,3|11|3E1D80,11|23|39BA9C,0|25|A1FFFF,-8|32|2BB999,17|33|A6C2FF,-7|-7|1A2022", 0, 0.9, "联赛可捐赠弓箭手"
     )
 
+    override val FlameFlingerDonatableTroop = ColorSchema.parse(
+        261, 166, 1020, 414, "27C1F1", "13|1|71859B,2|21|777A7D,-4|13|384ACA,-26|-4|399CE1,16|-27|F5FFFF,16|-38|4F4F53,-3|-41|457CD7,-12|-22|2669DB,3|-5|2124B5", 0, 0.9, "联赛可捐赠烈焰锅炉"
+    )
+
     override val LeagueFirstMemberIndicator = ColorSchema.parse(
         925, 543, 958, 597, "5FA7FF", "7|0|57C2FF,14|0|57C1FF,20|0|57C1FF,27|0|57C1FF,0|27|468CFF,7|27|4793FF,14|27|4991FF,20|27|4990FF,27|27|4792FF", 0, 0.9, "联赛第一个成员指示器"
     )
@@ -167,6 +172,7 @@ object MainBaseClanWarColors : IMainBaseClanWarColors {
     val leagueDonatableTroopList: List<Pair<String, ColorSchema>> = listOf(
         "戈仑冰人" to LeagueDonatableTroop,
         "弓箭手" to ArcherDonatableTroop,
+        "烈焰锅炉" to FlameFlingerDonatableTroop,
     )
 
     // Convenience: extract just the display names for UI dropdowns.

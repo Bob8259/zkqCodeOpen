@@ -159,7 +159,11 @@ private suspend fun donateToLeagueMember() {
     var anyDonated = false
     var remainingDonations = activeDonations.toMutableList()
 
-    // Try up to 2 screens: current screen + 1 swipe
+    // Swipe left first to ensure we start from the leftmost position
+    showDebugInfo("联赛捐兵: 先向左滑动")
+    TouchActions.swipe(998, 290, -500, 290, delayAfter = 400)
+
+    // Try up to 2 screens: left screen + right swipe
     repeat(2) { screenAttempt ->
         if (remainingDonations.isEmpty()) return@repeat
 
@@ -190,10 +194,10 @@ private suspend fun donateToLeagueMember() {
 
         remainingDonations = stillRemaining
 
-        // If some troops still not found and this is the first attempt, swipe and try again
+        // If some troops still not found and this is the first attempt, swipe right and try again
         if (remainingDonations.isNotEmpty() && screenAttempt == 0) {
-            showDebugInfo("联赛捐兵: 滑动后重试剩余 ${remainingDonations.size} 个兵种")
-            TouchActions.swipe(998, 290, -500, 290, delayAfter = 400)
+            showDebugInfo("联赛捐兵: 向右滑动后重试剩余 ${remainingDonations.size} 个兵种")
+            TouchActions.swipe(287, 290, 3000, 290, delayAfter = 400)
         }
     }
 
