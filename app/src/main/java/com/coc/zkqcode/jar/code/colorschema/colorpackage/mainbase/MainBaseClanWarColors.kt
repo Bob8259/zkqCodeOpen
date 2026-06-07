@@ -24,6 +24,10 @@ interface IMainBaseClanWarColors {
     val InnerStartClanWar: ColorSchema
     val GrayInnerButton: ColorSchema
     val JoinedClanWar: ColorSchema
+
+    // Clan war league registration buttons
+    val StartClanLeagueButton: ColorSchema
+    val ConfirmClanLeagueRegistration: ColorSchema
 }
 
 object MainBaseClanWarColors : IMainBaseClanWarColors {
@@ -100,5 +104,15 @@ object MainBaseClanWarColors : IMainBaseClanWarColors {
     )
     override val JoinedClanWar = ColorSchema.parse(
         959, 97, 1134, 540, "8CEABD", "28|0|8CEABD,56|0|8CEABD,83|0|8CEABD,111|0|8CEABD,0|19|3AD48B,28|19|3AD48B,56|19|3AD48B,83|19|3AD48B,111|19|3AD48B", 1, 0.95, "参战按钮"
+    )
+
+    // Clan war league registration button
+    override val StartClanLeagueButton = ColorSchema.parse(
+        528, 428, 751, 504, "3BBCFC", "45|0|3BBCFC,90|0|3BBCFC,134|0|3BBCFC,179|0|3BBDFC,0|38|343C4B,45|38|1052E4,90|38|1052E4,134|38|1052E4,179|38|1052E4", 0, 0.9, "开联赛"
+    )
+
+    // Confirm clan league registration button
+    override val ConfirmClanLeagueRegistration = ColorSchema.parse(
+        884, 606, 1137, 676, "3E74DB", "51|0|3BBBFB,102|0|3BBBFB,152|0|3BBBFB,203|0|3BBBFB,0|35|CBE2FF,51|35|1057E5,102|35|1057E5,152|35|1057E5,203|35|1057E5", 0, 0.9, "联赛报名确认"
     )
 }

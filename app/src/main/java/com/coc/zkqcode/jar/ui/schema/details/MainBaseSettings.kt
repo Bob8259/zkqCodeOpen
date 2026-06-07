@@ -64,7 +64,7 @@ object MainBaseSettings {
     val UPGRADE_PETS = SettingDef("upgrade_pets", "升级战宠", "Upgrade Pets", 1, "MAIN_BASE_SETTINGS")
     val STOP_BATTLE_WHEN_NO_STAR = SettingDef("stop_battle_when_no_star", "无胜利之星后停止对战", "Stop if no stars", 0, "MAIN_BASE_SETTINGS")
     val EXIT_ON_ONE_STAR_MAIN = SettingDef("exit_on_one_star_main", "一星退出", "Exit on 1-star", 0, "MAIN_BASE_SETTINGS")
-    val OCR_EXIT_ENABLED = SettingDef("ocr_exit_enabled", "OCR破坏%退出", "OCR Destruction % Exit", 0, "MAIN_BASE_SETTINGS")
+    val OCR_EXIT_ENABLED = SettingDef("ocr_exit_enabled", "破坏%退出", "Destruction % Exit", 0, "MAIN_BASE_SETTINGS")
     val OCR_EXIT_TARGET_PERCENT = SettingDef("ocr_exit_target_percent", "目标破坏", "Target Destruction", "0", "MAIN_BASE_SETTINGS")
     val OCR_EXIT_STALE_SECONDS = SettingDef("ocr_exit_stale_seconds", "百分比不变", "Unchanged for", "20", "MAIN_BASE_SETTINGS")
     val RESTART_GAME = SettingDef("restart_game", "部署后重启游戏", "Restart after deploy", 1, "MAIN_BASE_SETTINGS")
@@ -87,6 +87,8 @@ object MainBaseSettings {
     val PLAY_LEAGUE = SettingDef("play_league", "打部落联赛", "Play League", 0, "MAIN_BASE_SETTINGS")
     val PLAY_RAID = SettingDef("play_raid", "打都城突袭", "Play Raid", 1, "MAIN_BASE_SETTINGS")
     val START_LEAGUE_SETTINGS = SettingDef("start_league_settings", "发起联赛", "Start League", 0, "MAIN_BASE_SETTINGS")
+    val START_CLAN_LEAGUE = SettingDef("start_clan_league", "开部落联赛", "Start Clan League", 0, "MAIN_BASE_SETTINGS")
+    val START_CLAN_LEAGUE_SIZE = SettingDef("start_clan_league_size", "对战人数", "League War Size", "15", "MAIN_BASE_SETTINGS")
     val START_CLAN_WAR_SETTINGS = SettingDef("start_clan_war_settings", "发起部落战", "Start Clan War", 0, "MAIN_BASE_SETTINGS")
     val START_CLAN_WAR = SettingDef("start_clan_war", "开部落战", "Open Clan War", 0, "MAIN_BASE_SETTINGS")
     val START_CLAN_WAR_METHOD = SettingDef("start_clan_war_method", "开启方式", "Start Method", "0", "MAIN_BASE_SETTINGS")
@@ -133,6 +135,7 @@ object MainBaseSettings {
     val SELL_RING_OF_WALL = SettingDef("sell_ring_of_wall", "卖壁垒之戒", "Sell Wall Ring", 0, "MAIN_BASE_SETTINGS")
 
     //////////////
+    val UPGRADE_GEAR_MASTER = SettingDef("upgrade_gear_master", "升级装备总开关", "Upgrade Gear Master", 1, "MAIN_BASE_SETTINGS")
     val UPGRADE_WERA_GEAR = SettingDef("upgrade_wear_gear", "升级穿戴装备", "Upgrade Equipped Gear", 0, "MAIN_BASE_SETTINGS")
     val UPGRADE_ALL_GEAR = SettingDef("upgrade_all_gear", "升所有装备", "Upgrade All Gear", 0, "MAIN_BASE_SETTINGS")
     val UPGRADE_CUSTOM_GEAR = SettingDef("upgrade_gear", "升级指定装备", "Upgrade Custom Gear", 0, "MAIN_BASE_SETTINGS")
@@ -224,6 +227,8 @@ object MainBaseSettings {
         PLAY_LEAGUE,
         PLAY_RAID,
         START_LEAGUE_SETTINGS,
+        START_CLAN_LEAGUE,
+        START_CLAN_LEAGUE_SIZE,
         START_CLAN_WAR_SETTINGS,
         START_CLAN_WAR,
         START_CLAN_WAR_METHOD,
@@ -247,6 +252,7 @@ object MainBaseSettings {
         SELL_CLOCK_TOWER_POTION,
         USE_BUILDER_POTION,
         SELL_RING_OF_WALL,
+        UPGRADE_GEAR_MASTER,
         UPGRADE_WERA_GEAR,
         UPGRADE_ALL_GEAR,
         UPGRADE_CUSTOM_GEAR,
