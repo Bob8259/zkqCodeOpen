@@ -200,7 +200,7 @@ tasks.register<Exec>("buildJar") {
 
             // Encrypt the JAR using conda base Python
             val pythonExe = "C:/Users/Azikaban/anaconda3/python.exe"
-            val scriptPath = file("encrypt_jar.py").absolutePath
+            val scriptPath = rootProject.file("script/encrypt_jar.py").absolutePath
             val proc = ProcessBuilder(pythonExe, scriptPath, outFile.absolutePath)
                 .inheritIO().start()
             val exitCode = proc.waitFor()
@@ -257,7 +257,7 @@ tasks.register("uploadJar") {
             ?: throw GradleException("No encrypted jar found in assets directory")
 
         val pythonExe = "C:/Users/Azikaban/anaconda3/python.exe"
-        val scriptPath = file("upload_jar.py").absolutePath
+        val scriptPath = rootProject.file("script/upload_jar.py").absolutePath
 
         println("Uploading ${encryptedJar.name} to hot update server...")
         val proc = ProcessBuilder(pythonExe, scriptPath, encryptedJar.absolutePath)
