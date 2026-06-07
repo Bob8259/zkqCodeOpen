@@ -13,6 +13,7 @@ import com.coc.zkqcode.jar.ui.components.SettingDropdown
 import com.coc.zkqcode.jar.ui.components.SettingInputRow
 import com.coc.zkqcode.jar.ui.components.SettingSection
 import com.coc.zkqcode.jar.ui.components.SettingSwitchIcon
+import com.coc.zkqcode.jar.code.colorschema.colorpackage.mainbase.MainBaseClanWarColors
 import com.coc.zkqcode.jar.ui.schema.Schema.BUILDER_BASE_SETTINGS
 import com.coc.zkqcode.jar.ui.schema.Schema.MAIN_BASE_SETTINGS
 import com.coc.zkqcode.jar.ui.theme.AppColors
@@ -231,9 +232,81 @@ fun LazyListScope.mainBaseConfig(
                 SettingSwitchIcon(
                     key = "${MAIN_BASE_SETTINGS.PLAY_LEAGUE.key}_c$index", explain = Strings.leagueExplain
                 )
+                SettingSwitchIcon(
+                    key = "${MAIN_BASE_SETTINGS.PLAY_LEAGUE_DONATION.key}_c$index"
+                )
                 SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.PLAY_RAID.key}_c$index")
                 SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.CONTRIBUTE_CAPITAL_COINS.key}_c$index", explain = "只支持捐到本部落，不支持偷币，不支持捐到其他部落。都城币需攒够一定数量后才会捐，币太少的话不会捐。")
                 SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.COLLECT_CAPITAL_COINS.key}_c$index")
+            }
+
+            // League donation troop config (3 groups: dropdown + count)
+            AnimatedVisibility(
+                visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.PLAY_LEAGUE_DONATION.key}_c$index"]?.value == "1"
+            ) {
+                Column {
+                    val leagueTroopOptions = MainBaseClanWarColors.leagueDonatableTroopNames
+                    val troopKey1 = "${MAIN_BASE_SETTINGS.LEAGUE_DONATION_TROOP_1.key}_c$index"
+                    val troopKey2 = "${MAIN_BASE_SETTINGS.LEAGUE_DONATION_TROOP_2.key}_c$index"
+                    val troopKey3 = "${MAIN_BASE_SETTINGS.LEAGUE_DONATION_TROOP_3.key}_c$index"
+                    // Group 1
+                    FlowRow {
+                        SettingDropdown(
+                            key = troopKey1,
+                            options = leagueTroopOptions,
+                            afterChange = { selectedIdx ->
+                                if (selectedIdx != 0) {
+                                    val idx2 = GlobalVars.configStates[troopKey2]?.value?.toIntOrNull() ?: 0
+                                    val idx3 = GlobalVars.configStates[troopKey3]?.value?.toIntOrNull() ?: 0
+                                    if (idx2 == selectedIdx) GlobalVars.configStates[troopKey2]?.value = "0"
+                                    if (idx3 == selectedIdx) GlobalVars.configStates[troopKey3]?.value = "0"
+                                }
+                            }
+                        )
+                        SettingInputRow(
+                            key = "${MAIN_BASE_SETTINGS.LEAGUE_DONATION_COUNT_1.key}_c$index",
+                            suffix = Strings.countSuffix
+                        )
+                    }
+                    // Group 2
+                    FlowRow {
+                        SettingDropdown(
+                            key = troopKey2,
+                            options = leagueTroopOptions,
+                            afterChange = { selectedIdx ->
+                                if (selectedIdx != 0) {
+                                    val idx1 = GlobalVars.configStates[troopKey1]?.value?.toIntOrNull() ?: 0
+                                    val idx3 = GlobalVars.configStates[troopKey3]?.value?.toIntOrNull() ?: 0
+                                    if (idx1 == selectedIdx) GlobalVars.configStates[troopKey1]?.value = "0"
+                                    if (idx3 == selectedIdx) GlobalVars.configStates[troopKey3]?.value = "0"
+                                }
+                            }
+                        )
+                        SettingInputRow(
+                            key = "${MAIN_BASE_SETTINGS.LEAGUE_DONATION_COUNT_2.key}_c$index",
+                            suffix = Strings.countSuffix
+                        )
+                    }
+                    // Group 3
+                    FlowRow {
+                        SettingDropdown(
+                            key = troopKey3,
+                            options = leagueTroopOptions,
+                            afterChange = { selectedIdx ->
+                                if (selectedIdx != 0) {
+                                    val idx1 = GlobalVars.configStates[troopKey1]?.value?.toIntOrNull() ?: 0
+                                    val idx2 = GlobalVars.configStates[troopKey2]?.value?.toIntOrNull() ?: 0
+                                    if (idx1 == selectedIdx) GlobalVars.configStates[troopKey1]?.value = "0"
+                                    if (idx2 == selectedIdx) GlobalVars.configStates[troopKey2]?.value = "0"
+                                }
+                            }
+                        )
+                        SettingInputRow(
+                            key = "${MAIN_BASE_SETTINGS.LEAGUE_DONATION_COUNT_3.key}_c$index",
+                            suffix = Strings.countSuffix
+                        )
+                    }
+                }
             }
 
             FlowRow {

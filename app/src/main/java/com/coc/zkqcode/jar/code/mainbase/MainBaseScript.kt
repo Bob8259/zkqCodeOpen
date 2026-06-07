@@ -1,4 +1,4 @@
-﻿package com.coc.zkqcode.jar.code.mainbase
+package com.coc.zkqcode.jar.code.mainbase
 
 
 import com.coc.zkqcode.jar.code.clancapital.playClanCapital
@@ -12,6 +12,7 @@ import com.coc.zkqcode.jar.code.universal.clangame.clanGame
 import com.coc.zkqcode.jar.code.mainbase.clan.startClanLeague
 import com.coc.zkqcode.jar.code.mainbase.clan.clanWar
 import com.coc.zkqcode.jar.code.mainbase.clan.donateToClan
+import com.coc.zkqcode.jar.code.mainbase.clan.leagueDonation
 import com.coc.zkqcode.jar.code.mainbase.clan.joinClan
 import com.coc.zkqcode.jar.code.mainbase.clan.requestReinforcement
 import com.coc.zkqcode.jar.code.mainbase.clan.startClanWar
@@ -52,6 +53,7 @@ suspend fun playMainBase(): Boolean {
     if (!checkLeagueShop()) return false
     if (!clanWar()) return false
     if (!clanLeague()) return false
+    if (!leagueDonation()) return false
     if (!mainBaseRemoveObstacles()) return false
     if (!joinClan()) return false
     if (!requestReinforcement()) return false

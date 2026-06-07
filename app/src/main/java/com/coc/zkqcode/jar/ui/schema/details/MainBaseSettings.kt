@@ -85,6 +85,13 @@ object MainBaseSettings {
     val CLAIM_CLAN_GAME_REWARDS = SettingDef("claim_clan_game_rewards", "领竞赛奖励", "Claim Clan Game Rewards", 0, "MAIN_BASE_SETTINGS")
     val PLAY_CLAN_WAR = SettingDef("play_clan_war", "打部落战", "Play Clan War", 0, "MAIN_BASE_SETTINGS")
     val PLAY_LEAGUE = SettingDef("play_league", "打部落联赛", "Play League", 0, "MAIN_BASE_SETTINGS")
+    val PLAY_LEAGUE_DONATION = SettingDef("play_league_donation", "联赛捐兵", "Donate Troops in League", 0, "MAIN_BASE_SETTINGS")
+    val LEAGUE_DONATION_TROOP_1 = SettingDef("league_donation_troop_1", "兵种1", "Troop 1", "0", "MAIN_BASE_SETTINGS")
+    val LEAGUE_DONATION_COUNT_1 = SettingDef("league_donation_count_1", "数量", "Count", "5", "MAIN_BASE_SETTINGS")
+    val LEAGUE_DONATION_TROOP_2 = SettingDef("league_donation_troop_2", "兵种2", "Troop 2", "0", "MAIN_BASE_SETTINGS")
+    val LEAGUE_DONATION_COUNT_2 = SettingDef("league_donation_count_2", "数量", "Count", "0", "MAIN_BASE_SETTINGS")
+    val LEAGUE_DONATION_TROOP_3 = SettingDef("league_donation_troop_3", "兵种3", "Troop 3", "0", "MAIN_BASE_SETTINGS")
+    val LEAGUE_DONATION_COUNT_3 = SettingDef("league_donation_count_3", "数量", "Count", "0", "MAIN_BASE_SETTINGS")
     val PLAY_RAID = SettingDef("play_raid", "打都城突袭", "Play Raid", 1, "MAIN_BASE_SETTINGS")
     val START_LEAGUE_SETTINGS = SettingDef("start_league_settings", "发起联赛", "Start League", 0, "MAIN_BASE_SETTINGS")
     val START_CLAN_LEAGUE = SettingDef("start_clan_league", "开部落联赛", "Start Clan League", 0, "MAIN_BASE_SETTINGS")
@@ -225,6 +232,13 @@ object MainBaseSettings {
         CLAIM_CLAN_GAME_REWARDS,
         PLAY_CLAN_WAR,
         PLAY_LEAGUE,
+        PLAY_LEAGUE_DONATION,
+        LEAGUE_DONATION_TROOP_1,
+        LEAGUE_DONATION_COUNT_1,
+        LEAGUE_DONATION_TROOP_2,
+        LEAGUE_DONATION_COUNT_2,
+        LEAGUE_DONATION_TROOP_3,
+        LEAGUE_DONATION_COUNT_3,
         PLAY_RAID,
         START_LEAGUE_SETTINGS,
         START_CLAN_LEAGUE,

@@ -187,6 +187,7 @@ object Strings {
     val petAndOther get() = if (LanguageManager.isChinese) "战宠&其他设置" else "Pets & Other"
     val adjustMainBasePriority get() = if (LanguageManager.isChinese) "点击调整主世界建筑升级" else "Adjust Main Base Upgrade Priority"
     val secondsSuffix get() = if (LanguageManager.isChinese) "秒钟" else "seconds"
+    val countSuffix get() = if (LanguageManager.isChinese) "数量" else "Count"
     val percentStartBattle get() = if (LanguageManager.isChinese) "％时开始对战" else "% start battle"
     val percentStop get() = if (LanguageManager.isChinese) "％为止" else "% stop"
     val levelAccountsSuffix get() = if (LanguageManager.isChinese) "级的账号" else "level accounts"
