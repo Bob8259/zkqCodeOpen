@@ -65,6 +65,7 @@ interface IMainBaseAttackColors {
 
     // Star detection for stop/exit conditions
     val MainBaseStarsAvailable: ColorSchema
+    val MainBaseStarsAvailable2: ColorSchema
     val MainBaseOneStar1: ColorSchema
     val MainBaseOneStar2: ColorSchema
 
@@ -268,6 +269,9 @@ object MainBaseAttackColors : IMainBaseAttackColors {
     // Star detection for stop/exit conditions (no-star state)
     override val MainBaseStarsAvailable = ColorSchema.parse(
         32, 576, 140, 602, "81F6FE", "20|3|3895DF,40|1|3998E1,60|2|3A9AE5,77|2|7EF0FE,76|-3|5098FF,63|-2|285DBB,75|-5|71EAFE,64|-3|4FB2FE,-5|2|6DEEFE", 0, 0.9, "主世界胜利之星"
+    )
+    override val MainBaseStarsAvailable2 = ColorSchema.parse(
+        113, 577, 132, 599, "399DE4", "0|-7|235AB5,-6|-2|245CBA,0|0|399DE4,5|5|2868BF,-3|4|3397DF,0|2|3798DF,2|4|3499EA,3|-1|389CE3,-3|-1|3A9FE8", 0, 0.9, "主世界胜利之星2"
     )
     override val MainBaseOneStar1 = ColorSchema.parse(
         547, 266, 743, 455, "D3D8D3", "41|-2|D1D6D2,-10|37|C3C8C6,20|57|CBD2CE,58|39|C5CDCC,9|26|C0C6C3,33|23|C3CAC3,22|46|C7CECB,42|46|CBCECB,99|71|452E34", 0, 0.9, "主世界一星1"

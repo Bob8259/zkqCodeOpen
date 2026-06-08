@@ -225,6 +225,10 @@ fun LazyListScope.mainBaseConfig(
             }
 
             SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.CLAIM_CLAN_GAME_REWARDS.key}_c$index", explain = Strings.claimRewardsExplain)
+            SettingSwitchIcon(
+                key = "${MAIN_BASE_SETTINGS.CLAIM_BADGE_EVENT_REWARDS.key}_c$index",
+                explain = Strings.claimBadgeEventRewardsExplain
+            )
             FlowRow {
                 SettingSwitchIcon(
                     key = "${MAIN_BASE_SETTINGS.PLAY_CLAN_WAR.key}_c$index", explain = Strings.clanWarExplain

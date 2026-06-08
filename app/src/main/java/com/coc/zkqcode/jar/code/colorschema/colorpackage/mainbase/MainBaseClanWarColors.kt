@@ -30,6 +30,7 @@ interface IMainBaseClanWarColors {
     val ConfirmClanLeagueRegistration: ColorSchema
     val LeagueWhiteCloud: ColorSchema
     val LeaguePreparePhase: ColorSchema
+    val LeaguePreparePhase2: ColorSchema
     val LeagueGrayArrow: ColorSchema
     val LeaguePercentIndicator: ColorSchema
     val LeagueOcrSkipRegion: ColorSchema
@@ -132,6 +133,9 @@ object MainBaseClanWarColors : IMainBaseClanWarColors {
 
     override val LeaguePreparePhase = ColorSchema.parse(
         309, 619, 981, 647, "3B6ED0", "0|-10|D3E4F6,-9|-4|C2D8EB,-8|5|BAD4EB,0|11|BAD4EB,8|4|C2D9EF,9|-5|D3E6F4,14|0|3E79EA,-14|0|3B6ED0,-1|18|4B82E3", 0, 0.9, "联赛准备阶段图色"
+    )
+    override val LeaguePreparePhase2 = ColorSchema.parse(
+        309, 619, 981, 647, "3B6ED0", "0|-7|CDDFF0,8|-4|D0E3F6,9|5|C2D9EF,-1|10|BAD4EB,-9|4|B9D4EB,-9|-7|C1E4EC,-9|0|BAD4EB,16|0|4982E9,-15|0|3E79E1", 0, 0.9, "联赛准备阶段图色2"
     )
 
     override val LeagueGrayArrow = ColorSchema.parse(

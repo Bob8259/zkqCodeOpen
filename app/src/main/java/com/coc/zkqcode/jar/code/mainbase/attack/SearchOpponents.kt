@@ -114,6 +114,7 @@ suspend fun searchOpponentsAndDeployTroops(): Boolean {
     var shouldStopNoStars = false
     if (stopNoStarEnabled) {
         val starsAvailable = findMultiColors(schema = MyColors.MainBaseStarsAvailable)
+            ?: findMultiColors(schema = MyColors.MainBaseStarsAvailable2)
         shouldStopNoStars = starsAvailable == null
     }
     // Combined decision: when both are enabled, both must be satisfied; when only one is enabled, that one decides

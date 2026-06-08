@@ -52,18 +52,24 @@ suspend fun leagueDonation(): Boolean {
     }
 
     while (true) {
-        if (isAllMembersTraversed()) {
-            accountMessage("已遍历完全部成员")
-            break
-        }
-
         if (shouldSkipMember()) {
             accountMessage("跳过当前成员")
+            // Check grey arrow after skip — stop if last member
+            if (isAllMembersTraversed()) {
+                accountMessage("已遍历完全部成员")
+                break
+            }
             switchToNextMember()
             continue
         }
 
         donateToLeagueMember()
+
+        // Check grey arrow after donation — stop if last member
+        if (isAllMembersTraversed()) {
+            accountMessage("已遍历完全部成员")
+            break
+        }
 
         switchToNextMember()
 
@@ -80,11 +86,11 @@ private suspend fun enterLeagueInterface(): Boolean {
 }
 
 private suspend fun enterLeaguePrepInterface(): Boolean {
-    val preparePhase = findMultiColorsUntil(schemas = listOf(MyColors.LeaguePreparePhase), duration = 5000)
+    val preparePhase = findMultiColorsUntil(schemas = listOf(MyColors.LeaguePreparePhase, MyColors.LeaguePreparePhase2), duration = 5000)
     if (preparePhase != null) {
         accountMessage("检测到联赛准备阶段，点击进入")
         TouchActions.tap(preparePhase.x, preparePhase.y)
-        
+
         val whiteCloud = findMultiColorsUntil(schemas = listOf(MyColors.LeagueWhiteCloud), duration = 5000)
         if (whiteCloud != null) {
             accountMessage("已成功进入联赛准备界面")

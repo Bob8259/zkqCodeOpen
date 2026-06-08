@@ -152,6 +152,7 @@ object MainBaseSettings {
 
     val CLAIM_TIMED_REWARDS = SettingDef("claim_timed_rewards", "领限时活动奖励", "Claim Timed Rewards", 0, "MAIN_BASE_SETTINGS")
     val CLAIM_TOKEN_REWARDS = SettingDef("claim_token_rewards", "领令牌奖励", "Claim Token Rewards", 0, "MAIN_BASE_SETTINGS")
+    val CLAIM_BADGE_EVENT_REWARDS = SettingDef("claim_badge_event_rewards", "领奖章活动奖励", "Claim Badge Event Rewards", 0, "MAIN_BASE_SETTINGS")
     val COLLECT_CAPITAL_COINS = SettingDef("collect_capital_coins", "领都城币", "Collect Capital Coins", 0, "MAIN_BASE_SETTINGS")
     val CONTRIBUTE_CAPITAL_COINS = SettingDef("contribute_capital_coins", "捐都城币", "Contribute Capital Coins", 0, "MAIN_BASE_SETTINGS")
     val CLAIM_FREE_SHOP_REWARDS = SettingDef("claim_free_shop_rewards", "领每周精选免费奖励", "Claim Weekly Free Rewards", 1, "MAIN_BASE_SETTINGS")
@@ -275,6 +276,7 @@ object MainBaseSettings {
         REMOVE_OBSTACLES_ENHANCEMENT,
         CLAIM_TIMED_REWARDS,
         CLAIM_TOKEN_REWARDS,
+        CLAIM_BADGE_EVENT_REWARDS,
         COLLECT_CAPITAL_COINS,
         CONTRIBUTE_CAPITAL_COINS,
         CLAIM_FREE_SHOP_REWARDS,

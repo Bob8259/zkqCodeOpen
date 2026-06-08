@@ -49,6 +49,7 @@ suspend fun playMainBase(): Boolean {
     if (!startClanLeague()) return false
     if (!startClanWar()) return false
     if (!collectClanGameReward()) return false
+    if (!collectBadgeEventRewards()) return false
     if (!checkNormalShop()) return false
     if (!checkLeagueShop()) return false
     if (!clanWar()) return false
