@@ -22,7 +22,7 @@ import com.coc.zkqcode.jar.ui.schema.Schema
 
 suspend fun gearUpBuildings(): Boolean {
     if (!getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.GEAR_UP_SETTINGS.key)) return true
-    
+
     val storageKey = StorageKeys.withAccountNumber(
         StorageKeys.UPGRADE_GEARS, InGameVars.currentAccountNumber
     )
