@@ -11,6 +11,7 @@ import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.smalltools.input.TouchActions
 import com.coc.zkqcode.jar.code.universal.smalltools.data.getBooleanConfigRuntime
+import com.coc.zkqcode.jar.code.universal.smalltools.data.getConfigRuntime
 import com.coc.zkqcode.jar.ui.schema.Schema
 import com.coc.zkqcode.jar.ui.schema.details.BuilderBaseTroops
 
@@ -33,9 +34,16 @@ suspend fun builderBaseResearch(): Boolean {
 }
 
 suspend fun builderBaseCheckAllResearch() {
-    for (i in BuilderBaseTroops.all.indices) {
-        val troop = BuilderBaseTroops.all[i]
+    // Sort troops by user-defined research priority
+    val orderedTroops = BuilderBaseTroops.all.sortedBy { troop ->
+        val priorityKey = "${troop.key}_research_priority"
+        getConfigRuntime(priorityKey).toIntOrNull() ?: Int.MAX_VALUE
+    }
+    for (troop in orderedTroops) {
         if (getBooleanConfigRuntime(troop.key)) {
+            // Get original index for grid position calculation
+            val i = BuilderBaseTroops.all.indexOf(troop)
+            if (i < 0) continue
             val row = i / 6
             val col = i % 6
 

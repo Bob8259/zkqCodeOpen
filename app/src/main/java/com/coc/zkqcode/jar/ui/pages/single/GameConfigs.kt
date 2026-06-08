@@ -22,6 +22,8 @@ fun LazyListScope.gameConfig(
     onToggleBuilderBaseExpanded: () -> Unit,
     onNavigatePriority: (Int) -> Unit = {},
     onNavigateBuilderBasePriority: (Int) -> Unit = {},
+    onNavigateResearchPriority: (Int) -> Unit = {},
+    onNavigateBuilderBaseResearchPriority: (Int) -> Unit = {},
     onScrollToBottom: () -> Unit = {}
 ) {
     mainBaseConfig(
@@ -38,13 +40,15 @@ fun LazyListScope.gameConfig(
         onToggleBuild = onToggleBuild,
         isPetExpanded = isPetExpanded,
         onTogglePet = onTogglePet,
-        onNavigatePriority = onNavigatePriority
+        onNavigatePriority = onNavigatePriority,
+        onNavigateResearchPriority = onNavigateResearchPriority
     )
     builderBaseConfig(
         index = index,
         isExpanded = isBuilderBaseExpanded,
         onToggleExpanded = onToggleBuilderBaseExpanded,
         onNavigateBuilderBasePriority = onNavigateBuilderBasePriority,
+        onNavigateBuilderBaseResearchPriority = onNavigateBuilderBaseResearchPriority,
         onScrollToBottom = onScrollToBottom
     )
 }

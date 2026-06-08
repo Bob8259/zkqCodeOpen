@@ -32,7 +32,8 @@ fun LazyListScope.mainBaseConfig(
     onToggleBuild: () -> Unit,
     isPetExpanded: Boolean,
     onTogglePet: () -> Unit,
-    onNavigatePriority: (Int) -> Unit = {}
+    onNavigatePriority: (Int) -> Unit = {},
+    onNavigateResearchPriority: (Int) -> Unit = {}
 ) {
     // Banner — 通用设置
     item {
@@ -360,7 +361,17 @@ fun LazyListScope.mainBaseConfig(
             Column {
                 SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.RESEARCH_SETTING.key}_c$index")
                 AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.RESEARCH_SETTING.key}_c$index"]?.value == "1") {
-                    MainBaseResearchConfigs(index)
+                    Column {
+                        CustomButton(
+                            onClick = { onNavigateResearchPriority(index) },
+                            text = Strings.adjustMainBaseResearchPriority,
+                            containerColor = AppColors.Teal
+                        )
+                        SettingDropdown(
+                            key = "${MAIN_BASE_SETTINGS.RESEARCH_LEVEL.key}_c${index}",
+                            options = listOf(Strings.maxLevel, Strings.maxLevelMinus1, Strings.maxLevelMinus2)
+                        )
+                    }
                 }
             }
         }
