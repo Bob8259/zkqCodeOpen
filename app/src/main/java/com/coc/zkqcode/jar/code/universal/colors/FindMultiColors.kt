@@ -12,9 +12,31 @@ import com.coc.zkqcode.jar.code.colorschema.ColorSchema
 import com.coc.zkqcode.nativehelper.RustTools
 import kotlinx.coroutines.delay
 import java.util.concurrent.atomic.AtomicInteger
+import kotlin.random.Random
 
-// Counter to track the total number of findMultiColors invocations
-private val findMultiColorsCallCount = AtomicInteger(0)
+private const val MIN_USER_AUTH_INTERVAL_MINUTES = 60
+private const val MAX_USER_AUTH_INTERVAL_MINUTES = 120
+private const val MILLIS_PER_MINUTE = 60_000L
+
+private fun currentEpochMinute(): Int = (System.currentTimeMillis() / MILLIS_PER_MINUTE).toInt()
+
+private fun calculateNextUserAuthEpochMinute(fromMinute: Int = currentEpochMinute()): Int {
+    return fromMinute + Random.nextInt(MIN_USER_AUTH_INTERVAL_MINUTES, MAX_USER_AUTH_INTERVAL_MINUTES + 1)
+}
+
+private val nextUserAuthEpochMinute = AtomicInteger(calculateNextUserAuthEpochMinute())
+
+private suspend fun runScheduledUserAuthIfNeeded() {
+    val currentMinute = currentEpochMinute()
+    val scheduledMinute = nextUserAuthEpochMinute.get()
+
+    if (currentMinute < scheduledMinute) return
+
+    val nextMinute = calculateNextUserAuthEpochMinute(currentMinute)
+    if (nextUserAuthEpochMinute.compareAndSet(scheduledMinute, nextMinute)) {
+        userAuth()
+    }
+}
 
 
 /**
@@ -30,13 +52,9 @@ suspend fun findMultiColors(
 ): Point? {
     waitForPlay()
 
-    // Add increment to the call counter 
-    val count = findMultiColorsCallCount.addAndGet(increment)
-    if (count > 40 * 3000) {
-        userAuth()
-        // Reset the call counter after triggering verification
-        findMultiColorsCallCount.set(0)
-    }
+    // Add increment to the call counter.
+
+    runScheduledUserAuthIfNeeded()
 
     val resultAny = when {
         bitmap != null -> null

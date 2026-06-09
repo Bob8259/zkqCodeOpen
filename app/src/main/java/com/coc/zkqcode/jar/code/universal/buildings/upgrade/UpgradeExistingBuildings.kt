@@ -325,48 +325,8 @@ private suspend fun upgradeWalls(currentBase: BaseType, wallType: WallType): Loo
 
 // Handles the hero upgrade flow; returns LoopAction to control the caller's loop
 private suspend fun upgradeHero(building: String): LoopAction {
-    if (InGameVars.currentGameVersion == GameVersion.GLOBAL) {
-        TouchActions.tap(900, 625)
-        clickRightBottom(times = 3, delayTime = 200)
-        return LoopAction.Proceed
-    }
-    if (building != "飞龙公爵") {
-        // Calculate the search area based on hero position
-        // Base area for 野蛮人之王: x1=55, y1=500, x2=240, y2=530
-        // Each subsequent hero shifts by 228 on x-axis
-        val heroIndex = listOf("野蛮人之王", "弓箭女皇", "亡灵王子", "大守护者", "飞盾战神").indexOf(building)
-        accountMessage("升级英雄：$building，序号$heroIndex")
-        val x1 = 55 + heroIndex * 228
-        val x2 = 240 + heroIndex * 228
-
-        // Create a ColorSchema with the same colour pattern but different search area
-        val heroInsufficientResources = ColorSchema.parse(
-            x1, 500, x2, 530, "7F88FF", "1|0|7F88FF,2|0|7F88FF,3|0|7F88FF,3|1|7F88FF,2|1|7F88FF,0|1|7F88FF,0|1|7F88FF,0|2|7F88FF,1|2|7F88FF", 0, 0.97, "${building}资源不足"
-        )
-
-        if (findMultiColors(schema = heroInsufficientResources) != null) {
-            accountMessage("${building}资源不足，跳过")
-            return LoopAction.Break
-        }
-        TouchActions.tap(x1 + 100, 500)//Upgrade Hero
-        accountMessage("等待结束")
-        TouchActions.tap(900, 625)
-        clickRightBottom(times = 3, delayTime = 200)
-    } else {
-        // The unique logic for Dragon Duke
-        accountMessage("升级英雄：飞龙公爵")
-        TouchActions.swipe(1189, 354, 120, 345, delayTime = 300, delayAfter = 200)
-        val heroInsufficientResources = ColorSchema.parse(
-            1020, 480, 1230, 530, "7F88FF", "1|0|7F88FF,2|0|7F88FF,3|0|7F88FF,3|1|7F88FF,2|1|7F88FF,0|1|7F88FF,0|1|7F88FF,0|2|7F88FF,1|2|7F88FF", 0, 0.97, "${building}资源不足"
-        )
-        if (findMultiColors(schema = heroInsufficientResources) != null) {
-            accountMessage("${building}资源不足，跳过")
-            return LoopAction.Break
-        }
-        TouchActions.tap(1020 + 100, 480)//Upgrade Hero
-        TouchActions.tap(900, 625)
-        clickRightBottom(times = 3, delayTime = 200)
-    }
+    TouchActions.tap(900, 625)
+    clickRightBottom(times = 3, delayTime = 200)
     return LoopAction.Proceed
 }
 

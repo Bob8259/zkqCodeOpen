@@ -36,12 +36,12 @@ import com.coc.zkqcode.jar.code.universal.smalltools.lifecycle.enterMainBase
 
 suspend fun playMainBase(): Boolean {
     if (!enterMainBase()) return false
+    if (!mainBaseCollectResources()) return false
     if (!checkItemsToBePlaced()) return false
     if (!mainBaseCheckTutorials()) return false
     if (!checkRandomSchedule()) return false
     if (!playClanCapital()) return false
     if (!clanGame(BaseType.Main)) return false
-    if (!mainBaseCollectResources()) return false
     if (!mainBaseTrainTroops()) return false
     if (!mainBaseAttack()) return false
     if (!adjustBaseAndReinforcements()) return false
