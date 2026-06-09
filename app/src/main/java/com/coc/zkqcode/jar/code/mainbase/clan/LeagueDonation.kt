@@ -11,12 +11,17 @@ import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.smalltools.input.TouchActions
+import com.coc.zkqcode.jar.code.universal.smalltools.data.StorageKeys
+import com.coc.zkqcode.jar.code.universal.smalltools.data.checkMemoryFile
 import com.coc.zkqcode.jar.code.universal.smalltools.data.getBooleanConfigRuntime
 import com.coc.zkqcode.jar.code.universal.smalltools.data.getConfigRuntime
+import com.coc.zkqcode.jar.code.universal.smalltools.data.writeMemory
 import com.coc.zkqcode.jar.ui.schema.Schema
 import com.coc.zkqcode.jar.code.mainbase.clan.isInClanLeaguePeriod
 import com.coc.zkqcode.core.util.fileactions.LogHelper.showDebugInfo
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
+
+private const val LEAGUE_DONATION_INTERVAL_MINUTES = 720  // 12 hours
 
 suspend fun leagueDonation(): Boolean {
     if (!getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.PLAY_LEAGUE_DONATION.key) || InGameVars.townHallLevel < 3) {
@@ -24,6 +29,15 @@ suspend fun leagueDonation(): Boolean {
     }
 
     if (!isInClanLeaguePeriod()) {
+        return true
+    }
+
+    val storageKey = StorageKeys.withAccountNumber(
+        StorageKeys.LEAGUE_DONATION,
+        InGameVars.currentAccountNumber
+    )
+    if (!checkMemoryFile(storageKey, LEAGUE_DONATION_INTERVAL_MINUTES)) {
+        accountMessage("12小时内已执行过联赛捐兵，跳过本次")
         return true
     }
 
@@ -76,6 +90,7 @@ suspend fun leagueDonation(): Boolean {
         delayWithMultiplier(200)
     }
 
+    writeMemory(storageKey, (System.currentTimeMillis() / 60_000).toString())
     return enterMainScreen()
 }
 

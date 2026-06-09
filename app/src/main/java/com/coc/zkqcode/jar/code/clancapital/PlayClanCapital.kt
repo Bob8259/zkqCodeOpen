@@ -9,6 +9,7 @@ import com.coc.zkqcode.jar.code.universal.smalltools.input.TouchActions
 
 suspend fun playClanCapital(): Boolean {
     if (!collectCapitalCoins()) return false
+    if (!contributeCapitalCoins()) return false
     if (!startRaid()) return false
     if (!performClanCapitalRaid()) return false
     return true
