@@ -96,6 +96,17 @@ object MyColors : IUIColors by UIColors, IFeatureColors by FeatureColors, IClanG
         146, 590, 1139, 654, "9BF5C7", "-50|-2|9BF8CC,-55|31|48E198,-2|33|43E195,55|37|43D68F,59|3|95F8C7,35|2|95F8C7,35|27|48E198,-16|2|98F8CA,-26|25|48E198", 0, 0.9, "奖章活动领取奖励"
     )
 
+    // Event Shop colors
+    val EventShopPageMarker = ColorSchema.parse(
+        150, 54, 397, 105, "7E838C", "49|0|7E838C,99|0|7E838C,148|0|7E838C,197|0|7E838C,0|25|636973,49|25|636973,99|25|636973,148|25|636973,197|25|636973", 0, 0.9, "活动商店页面标记"
+    )
+    val EventShopAlreadyPurchased = ColorSchema.parse(
+        394, 264, 596, 317, "0D52A7", "41|0|0D52A7,81|0|0D5CAE,121|0|0D59AA,162|0|0D5AAC,0|27|0D5AAF,41|27|0D56A9,89|32|0D57A8,121|27|0D57A9,162|27|0D5AA9", 0, 0.9, "活动商店新装备已购买标记"
+    )
+    val EventShopConfirmBuy = ColorSchema.parse(
+        524, 405, 662, 503, "84E5BA", "27|0|84E5BA,55|0|84E5BA,83|0|84E5BA,110|0|84E5BA,0|49|2BCE86,27|49|2BCE86,55|49|2BCE86,83|49|2BCE86,110|49|2BCE86", 0, 0.9, "活动商店确认购买按钮"
+    )
+
     //Build Colors
     val GemInBuildingList = ColorSchema.parse(
         0, 0, 0, 0, "8DFDE7", "-2|0|86FAE0,-4|0|7EF7DC,-4|-3|4DD8A1,-2|-5|45D097,2|-4|80FCE9,3|0|9DFFF1,3|3|75FBD9,2|4|76FAD5,-2|4|7BF8CE", 0, 0.95, "建筑列表宝石"
