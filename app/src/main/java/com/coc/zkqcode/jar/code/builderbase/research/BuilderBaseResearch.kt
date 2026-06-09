@@ -13,6 +13,7 @@ import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.smalltools.input.TouchActions
 import com.coc.zkqcode.jar.code.universal.smalltools.data.getBooleanConfigRuntime
 import com.coc.zkqcode.jar.code.universal.smalltools.data.getConfigRuntime
+import com.coc.zkqcode.jar.code.universal.InGameVars
 import com.coc.zkqcode.jar.ui.schema.Schema
 import com.coc.zkqcode.jar.ui.schema.details.BuilderBaseTroops
 
@@ -41,6 +42,9 @@ private data class BuilderUpgradableItem(
     val x: Int,
     val y: Int,
 )
+
+/** Target level for Speed 6 Builder troop requirement. */
+private const val SPEED_SIX_TROOP_TARGET_LEVEL = 18
 
 suspend fun builderBaseCheckAllResearch() {
     // Sort troops by user-defined research priority
@@ -104,6 +108,17 @@ suspend fun builderBaseCheckAllResearch() {
         }
         accountMessage(msg)
         return
+    }
+
+    // Speed 6 Builder: boost target troop priority if below level 18
+    if (InGameVars.speedSixBuilderEnabled && InGameVars.speedSixTroopLevel < SPEED_SIX_TROOP_TARGET_LEVEL) {
+        val targetTroopIndex = upgradeableItems.indexOfFirst { it.troopName == InGameVars.speedSixTroopChoice }
+        if (targetTroopIndex >= 0) {
+            val minPriority = upgradeableItems.minOf { it.priority }
+            upgradeableItems[targetTroopIndex] = upgradeableItems[targetTroopIndex].copy(
+                priority = minPriority - 1
+            )
+        }
     }
 
     // Sort by priority ascending (lower number = higher priority)

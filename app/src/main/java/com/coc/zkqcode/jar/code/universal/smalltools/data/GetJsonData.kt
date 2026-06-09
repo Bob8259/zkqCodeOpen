@@ -12,13 +12,33 @@ import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.smalltools.input.TouchActions
 import com.coc.zkqcode.jar.code.universal.smalltools.input.setZKQInputMethod
+import com.coc.zkqcode.jar.code.universal.smalltools.data.getConfigRuntime
+import com.coc.zkqcode.jar.code.universal.buildings.upgrade.SpeedSixBuilderPriority
 import com.coc.zkqcode.jar.ui.schema.Schema
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.google.gson.JsonSyntaxException
 
+// ── Speed 6 Builder: building data IDs in the game JSON ──
+// Main base buildings (in "buildings" array)
+private const val MAIN_ARCHER_TOWER_DATA_ID = 1000009  // 箭塔
+private const val MAIN_CANNON_DATA_ID = 1000008        // 加农炮
+private const val MAIN_MORTAR_DATA_ID = 1000013         // 迫击炮
+// Builder base buildings (in "buildings2" array)
+private const val BB_ARCHER_TOWER_DATA_ID = 1000048    // 箭塔(夜)
+private const val BB_CANNON_DATA_ID = 1000041          // 双管加农炮(夜) - for gear-up
+private const val BB_MULTI_MORTAR_DATA_ID = 1000045    // 多管迫击炮(夜)
+// Builder base heroes (in "heroes2" array, NOT "heroes")
+private const val BB_BATTLE_MACHINE_DATA_ID = 28000003 // 战争机器
+private const val BB_BATTLE_COPTER_DATA_ID = 28000005  // 战斗直升机
+// Builder base troops (in "units2" array) — for Speed 6 Builder level 18 target
+private const val BB_NIGHT_WITCH_DATA_ID = 4000042       // 暗夜女巫
+private const val BB_RAGED_BARBARIAN_DATA_ID = 4000031   // 狂暴野蛮人
+
 suspend fun getJsonData(): Boolean {
-    if (!getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.SMART_DECISION.key)) return true
+    // Check Speed 6 Builder toggle
+    InGameVars.speedSixBuilderEnabled = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.SPEED_SIX_BUILDER.key)
+    if (!getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.SMART_DECISION.key) && !InGameVars.speedSixBuilderEnabled) return true
     accountMessage("准备读取账号数据，请稍后")
     if (InGameVars.currentGameVersion != GameVersion.CN) {
         TouchActions.tap(1230, 520)//settings
@@ -101,6 +121,12 @@ suspend fun getJsonData(): Boolean {
     }
     InGameVars.townHallLevel = firstBuildingLvl
 
+    // ── Speed 6 Builder: parse target building levels ──
+    if (InGameVars.speedSixBuilderEnabled) {
+        parseSpeedSixBuilderLevels(jsonObject)
+        accountMessage(SpeedSixBuilderPriority.buildUnmetSummaryMessage())
+    }
+
     // Parse clock tower cooldown from boosts (may not exist)
     InGameVars.clockTowerCooldown = try {
         val boosts = jsonObject.getAsJsonObject("boosts")
@@ -173,6 +199,126 @@ private fun wallRequirementForTownHall(townHallLevel: Int): Pair<Int, Int> = whe
     17 -> 325 to 18
     18 -> 325 to 19
     else -> 0 to 0
+}
+
+/**
+ * Parse building levels needed for Speed 6 Builder priority calculation.
+ * Reads from the "buildings" and "buildings2" (and optionally "heroes") arrays.
+ */
+private fun parseSpeedSixBuilderLevels(jsonObject: JsonObject) {
+    // Parse main base buildings
+    try {
+        val buildings = jsonObject.getAsJsonArray("buildings")
+        if (buildings != null) {
+            if (MAIN_ARCHER_TOWER_DATA_ID != 0) {
+                val entry = buildings
+                    .firstOrNull { it.asJsonObject.get("data").asInt == MAIN_ARCHER_TOWER_DATA_ID }
+                    ?.asJsonObject
+                if (entry != null) {
+                    InGameVars.mainArcherTowerUnlocked = true
+                    InGameVars.mainArcherTowerLevel = entry.get("lvl")?.asInt ?: 0
+                }
+            }
+            if (MAIN_CANNON_DATA_ID != 0) {
+                val entry = buildings
+                    .firstOrNull { it.asJsonObject.get("data").asInt == MAIN_CANNON_DATA_ID }
+                    ?.asJsonObject
+                if (entry != null) {
+                    InGameVars.mainCannonUnlocked = true
+                    InGameVars.mainCannonLevel = entry.get("lvl")?.asInt ?: 0
+                }
+            }
+            if (MAIN_MORTAR_DATA_ID != 0) {
+                val entry = buildings
+                    .firstOrNull { it.asJsonObject.get("data").asInt == MAIN_MORTAR_DATA_ID }
+                    ?.asJsonObject
+                if (entry != null) {
+                    InGameVars.mainMortarUnlocked = true
+                    InGameVars.mainMortarLevel = entry.get("lvl")?.asInt ?: 0
+                }
+            }
+        }
+    } catch (_: Exception) { /* ignore */ }
+
+    // Parse builder base buildings
+    try {
+        val buildings2 = jsonObject.getAsJsonArray("buildings2")
+        if (buildings2 != null) {
+            if (BB_ARCHER_TOWER_DATA_ID != 0) {
+                val entry = buildings2
+                    .firstOrNull { it.asJsonObject.get("data").asInt == BB_ARCHER_TOWER_DATA_ID }
+                    ?.asJsonObject
+                if (entry != null) {
+                    InGameVars.builderArcherTowerUnlocked = true
+                    InGameVars.builderArcherTowerLevel = entry.get("lvl")?.asInt ?: 0
+                }
+            }
+            if (BB_CANNON_DATA_ID != 0) {
+                val entry = buildings2
+                    .firstOrNull { it.asJsonObject.get("data").asInt == BB_CANNON_DATA_ID }
+                    ?.asJsonObject
+                if (entry != null) {
+                    InGameVars.builderCannonUnlocked = true
+                    InGameVars.builderCannonLevel = entry.get("lvl")?.asInt ?: 0
+                }
+            }
+            if (BB_MULTI_MORTAR_DATA_ID != 0) {
+                val entry = buildings2
+                    .firstOrNull { it.asJsonObject.get("data").asInt == BB_MULTI_MORTAR_DATA_ID }
+                    ?.asJsonObject
+                if (entry != null) {
+                    InGameVars.builderMultiMortarUnlocked = true
+                    InGameVars.builderMultiMortarLevel = entry.get("lvl")?.asInt ?: 0
+                }
+            }
+        }
+    } catch (_: Exception) { /* ignore */ }
+
+    // Parse builder base heroes (Battle Machine, Battle Copter) — they are in "heroes2", NOT "heroes"
+    try {
+        val heroes2 = jsonObject.getAsJsonArray("heroes2")
+        if (heroes2 != null) {
+            if (BB_BATTLE_MACHINE_DATA_ID != 0) {
+                val entry = heroes2
+                    .firstOrNull { it.asJsonObject.get("data").asInt == BB_BATTLE_MACHINE_DATA_ID }
+                    ?.asJsonObject
+                if (entry != null) {
+                    InGameVars.battleMachineUnlocked = true
+                    InGameVars.battleMachineLevel = entry.get("lvl")?.asInt ?: 0
+                }
+            }
+            if (BB_BATTLE_COPTER_DATA_ID != 0) {
+                val entry = heroes2
+                    .firstOrNull { it.asJsonObject.get("data").asInt == BB_BATTLE_COPTER_DATA_ID }
+                    ?.asJsonObject
+                if (entry != null) {
+                    InGameVars.battleCopterUnlocked = true
+                    InGameVars.battleCopterLevel = entry.get("lvl")?.asInt ?: 0
+                }
+            }
+        }
+    } catch (_: Exception) { /* ignore */ }
+
+    // Parse builder base troop levels for Speed 6 Builder level-18 target
+    // Use Night Witch (暗夜女巫) if unlocked, otherwise fall back to Raged Barbarian (狂暴野蛮人)
+    try {
+        val units2 = jsonObject.getAsJsonArray("units2")
+        if (units2 != null) {
+            val nightWitch = units2.firstOrNull {
+                it.asJsonObject.get("data").asInt == BB_NIGHT_WITCH_DATA_ID
+            }
+            if (nightWitch != null) {
+                InGameVars.speedSixTroopChoice = "暗夜女巫"
+                InGameVars.speedSixTroopLevel = nightWitch.asJsonObject.get("lvl")?.asInt ?: 0
+            } else {
+                InGameVars.speedSixTroopChoice = "狂暴野蛮人"
+                val barbarian = units2.firstOrNull {
+                    it.asJsonObject.get("data").asInt == BB_RAGED_BARBARIAN_DATA_ID
+                }
+                InGameVars.speedSixTroopLevel = barbarian?.asJsonObject?.get("lvl")?.asInt ?: 0
+            }
+        }
+    } catch (_: Exception) { /* ignore */ }
 }
 
 /**

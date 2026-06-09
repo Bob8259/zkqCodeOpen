@@ -62,6 +62,53 @@ object InGameVars {
 
     // Compose-reactive auto-run timer (observed by UI for recomposition)
     var autoRunTimer by mutableIntStateOf(30)
+
+    // ── Speed 6 Builder: target building levels parsed from JSON ──
+    @Volatile
+    var speedSixBuilderEnabled: Boolean = false
+
+    // Main base target levels (gear-up buildings need level 8)
+    // unlocked = false means the building does not exist in the JSON (not yet built/unlocked)
+    @Volatile
+    var mainArcherTowerLevel: Int = 0
+    @Volatile
+    var mainArcherTowerUnlocked: Boolean = false
+    @Volatile
+    var mainCannonLevel: Int = 0
+    @Volatile
+    var mainCannonUnlocked: Boolean = false
+    @Volatile
+    var mainMortarLevel: Int = 0
+    @Volatile
+    var mainMortarUnlocked: Boolean = false
+
+    // Builder base target levels
+    @Volatile
+    var builderArcherTowerLevel: Int = 0
+    @Volatile
+    var builderArcherTowerUnlocked: Boolean = false
+    @Volatile
+    var builderCannonLevel: Int = 0
+    @Volatile
+    var builderCannonUnlocked: Boolean = false
+    @Volatile
+    var builderMultiMortarLevel: Int = 0
+    @Volatile
+    var builderMultiMortarUnlocked: Boolean = false
+    @Volatile
+    var battleMachineLevel: Int = 0
+    @Volatile
+    var battleMachineUnlocked: Boolean = false
+    @Volatile
+    var battleCopterLevel: Int = 0
+    @Volatile
+    var battleCopterUnlocked: Boolean = false
+
+    // Speed 6 Builder: troop choice for level 18 target (暗夜女巫 or 狂暴野蛮人)
+    @Volatile
+    var speedSixTroopChoice: String = "狂暴野蛮人"
+    @Volatile
+    var speedSixTroopLevel: Int = 0
 }
 
 fun accountMessage(text: String, isChecking: Boolean = true) {

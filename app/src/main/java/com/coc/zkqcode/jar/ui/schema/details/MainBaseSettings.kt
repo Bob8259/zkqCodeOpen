@@ -57,6 +57,7 @@ object MainBaseSettings {
     val SAVE_WORKER = SettingDef("save_worker", "留1工人", "Save 1 Builder", 0, "MAIN_BASE_SETTINGS")
     val SAVE_WORKER_BUILD_AFTER_WALL_FULL = SettingDef("save_worker_build_after_wall_full", "城墙全满后，将保留的工人用于建造", "Use saved builder after walls full", 0, "MAIN_BASE_SETTINGS")
     val GEAR_UP_SETTINGS = SettingDef("gear_up_settings", "改装建筑", "Gear Up", 0, "MAIN_BASE_SETTINGS")
+    val SPEED_SIX_BUILDER = SettingDef("speed_six_builder", "速6农模式", "Speed 6 Builder", 0, "MAIN_BASE_SETTINGS")
     val UPGRADE_AFTER_FAIL_WALL_UPGRADE = SettingDef("upgrade_after_fail_wall_upgrade", "升级城墙失败后建造", "Build if wall upgrade fails", 0, "MAIN_BASE_SETTINGS")
     val UPGRADE_WALL_THRESHOLD = SettingDef(
         "upgrade_wall_threshold", "金水高于以下百分比后升级城墙", "Upgrade walls if resources >", "85", "MAIN_BASE_SETTINGS"
@@ -214,6 +215,7 @@ object MainBaseSettings {
         SAVE_WORKER,
         SAVE_WORKER_BUILD_AFTER_WALL_FULL,
         GEAR_UP_SETTINGS,
+        SPEED_SIX_BUILDER,
         UPGRADE_AFTER_FAIL_WALL_UPGRADE,
         UPGRADE_WALL_THRESHOLD,
         UPGRADE_PETS,
