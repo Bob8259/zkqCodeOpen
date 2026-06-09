@@ -1,6 +1,7 @@
 package com.coc.zkqcode.jar.code.universal.buildings.upgrade
 
 import com.coc.zkqcode.jar.code.universal.InGameVars
+import com.coc.zkqcode.jar.code.universal.buildings.BaseType
 
 /**
  * Speed 6 Builder priority override logic.
@@ -72,6 +73,11 @@ object SpeedSixBuilderPriority {
      * for gear-up buildings that have been unlocked but haven't reached their
      * per-building target level. Un-built (unlocked = false) entries are NOT
      * boosted here — they only appear in the summary message.
+     *
+     * Algorithm: shift the entire priority table up by [sortedUnmet.size] so no
+     * collision is possible, then assign sorted-unmet targets 1, 2, 3, ...
+     * (always lower = higher priority than any user-defined entry, and never
+     * producing duplicate values).
      */
     fun applyMainBaseOverride(
         originalPriorities: Map<String, Int>
@@ -94,11 +100,26 @@ object SpeedSixBuilderPriority {
             mainBasePriorityOrder.indexOf(it).let { idx -> if (idx == -1) Int.MAX_VALUE else idx }
         }
 
-        // Assign boosted priorities (lower = higher priority)
-        val minExisting = originalPriorities.values.minOrNull() ?: 1
+        // Shift every user-defined priority up by the number of un-met targets, so that
+        // assigning 1..N to the un-met entries can never collide with the user's values.
+        // (The user's priorities are still read in their original order; we just renumber.)
+        val shift = sortedUnmet.size
         val result = originalPriorities.toMutableMap()
+        val snapshot = InGameVars.speedSixOriginalPriorities
+            .getOrPut(BaseType.Main) { mutableMapOf() }
+        // Only snapshot keys we are about to override (so restore only touches what we changed).
+        sortedUnmet.forEach { name ->
+            val original = originalPriorities[name]
+            if (original != null && name !in snapshot) {
+                snapshot[name] = original
+            }
+        }
+        // Renumber user priorities to avoid colliding with the boosted 1..N range.
+        result.replaceAll { _, v -> v + shift }
+        // Assign 1, 2, 3, ... to the sorted un-met targets. The lowest (most urgent) target
+        // gets priority 1 so it is selected first.
         sortedUnmet.forEachIndexed { index, name ->
-            result[name] = minExisting - (sortedUnmet.size - index)
+            result[name] = index + 1
         }
         return result
     }
@@ -109,6 +130,11 @@ object SpeedSixBuilderPriority {
      * for buildings/heroes that have been unlocked but haven't reached their
      * per-building target level. Un-built (unlocked = false) entries are NOT
      * boosted here — they only appear in the summary message.
+     *
+     * Algorithm: shift the entire priority table up by [sortedUnmet.size] so no
+     * collision is possible, then assign sorted-unmet targets 1, 2, 3, ...
+     * (always lower = higher priority than any user-defined entry, and never
+     * producing duplicate values).
      */
     fun applyBuilderBaseOverride(
         originalPriorities: Map<String, Int>
@@ -147,11 +173,23 @@ object SpeedSixBuilderPriority {
             }
         }
 
-        // Assign boosted priorities (lower = higher priority)
-        val minExisting = originalPriorities.values.minOrNull() ?: 1
+        // Shift user priorities up by the number of un-met targets so the boosted 1..N
+        // range can never collide with them. Then assign 1, 2, 3, ... to sorted un-met
+        // targets (lowest = most urgent wins).
+        val shift = sortedUnmet.size
         val result = originalPriorities.toMutableMap()
+        val snapshot = InGameVars.speedSixOriginalPriorities
+            .getOrPut(BaseType.Builder) { mutableMapOf() }
+        // Only snapshot keys we are about to override.
+        sortedUnmet.forEach { name ->
+            val original = originalPriorities[name]
+            if (original != null && name !in snapshot) {
+                snapshot[name] = original
+            }
+        }
+        result.replaceAll { _, v -> v + shift }
         sortedUnmet.forEachIndexed { index, name ->
-            result[name] = minExisting - (sortedUnmet.size - index)
+            result[name] = index + 1
         }
         return result
     }
@@ -258,4 +296,44 @@ object SpeedSixBuilderPriority {
         } else {
             "${entry.name} 未解锁"
         }
+
+    /**
+     * Returns true when [name] was originally bumped (i.e. boosted) by
+     * Speed 6 Builder mode for the given [baseType], AND removes the snapshot
+     * entry so subsequent calls return false (one-shot).
+     *
+     * Spec: "after successfully upgrading one of the boosted targets, the
+     * priority must be restored to the original priority." This is the hook
+     * called by the upgrade flow right after a successful upgrade of [name].
+     *
+     * IMPORTANT: only the keys that Speed 6 Builder actually rewrote are
+     * snapshotted. If a key already had a low priority before the boost (e.g.
+     * the user configured it themselves), the snapshot is not taken and this
+     * method returns false — so we never restore a priority the user did not
+     * expect to be changed by us.
+     */
+    fun consumeSnapshotForKey(baseType: BaseType, name: String): Boolean {
+        val snapshot = InGameVars.speedSixOriginalPriorities[baseType] ?: return false
+        return snapshot.remove(name) != null
+    }
+
+    /**
+     * Returns the originally snapshotted priority for [name] in [baseType],
+     * or null if it was not boosted by Speed 6 Builder. Does NOT remove the
+     * entry — use [consumeSnapshotForKey] for the one-shot behaviour.
+     */
+    fun peekSnapshotForKey(baseType: BaseType, name: String): Int? {
+        return InGameVars.speedSixOriginalPriorities[baseType]?.get(name)
+    }
+
+    /**
+     * Clears all snapshotted priorities for both base types. Should be called
+     * at the start of each PreCheck cycle (i.e. before [getJsonData] reads the
+     * next account) to make sure a previous account's data never bleeds into
+     * the current account.
+     */
+    fun clearAllSnapshots() {
+        InGameVars.speedSixOriginalPriorities[BaseType.Main]?.clear()
+        InGameVars.speedSixOriginalPriorities[BaseType.Builder]?.clear()
+    }
 }

@@ -35,9 +35,14 @@ private const val BB_BATTLE_COPTER_DATA_ID = 28000005  // 战斗直升机
 private const val BB_NIGHT_WITCH_DATA_ID = 4000042       // 暗夜女巫
 private const val BB_RAGED_BARBARIAN_DATA_ID = 4000031   // 狂暴野蛮人
 
-suspend fun getJsonData(): Boolean {
-    // Check Speed 6 Builder toggle
-    InGameVars.speedSixBuilderEnabled = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.SPEED_SIX_BUILDER.key)
+    suspend fun getJsonData(): Boolean {
+        // Check Speed 6 Builder toggle
+        InGameVars.speedSixBuilderEnabled = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.SPEED_SIX_BUILDER.key)
+        // Clear any leftover snapshots from a previous account so a stale "original"
+        // priority never bleeds into the current account's priority boost.
+        if (InGameVars.speedSixBuilderEnabled) {
+            SpeedSixBuilderPriority.clearAllSnapshots()
+        }
     if (!getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.SMART_DECISION.key) && !InGameVars.speedSixBuilderEnabled) return true
     accountMessage("准备读取账号数据，请稍后")
     if (InGameVars.currentGameVersion != GameVersion.CN) {

@@ -109,6 +109,17 @@ object InGameVars {
     var speedSixTroopChoice: String = "狂暴野蛮人"
     @Volatile
     var speedSixTroopLevel: Int = 0
+
+    // Speed 6 Builder: snapshot of the user's ORIGINAL priorities (key -> original value)
+    // for the keys that Speed 6 Builder mode has boosted this PreCheck cycle.
+    // Keys appear here only when SpeedSixBuilderPriority.applyXxxOverride actually rewrote them.
+    // They are removed when the corresponding building is successfully upgraded
+    // (per spec: "restore the priority after each successful upgrade").
+    // Map is keyed by base type (Main / Builder) so the two bases don't collide.
+    val speedSixOriginalPriorities: MutableMap<BaseType, MutableMap<String, Int>> = mutableMapOf(
+        BaseType.Main to mutableMapOf(),
+        BaseType.Builder to mutableMapOf()
+    )
 }
 
 fun accountMessage(text: String, isChecking: Boolean = true) {

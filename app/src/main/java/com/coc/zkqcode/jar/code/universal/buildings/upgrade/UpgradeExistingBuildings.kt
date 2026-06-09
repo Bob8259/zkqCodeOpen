@@ -186,7 +186,19 @@ suspend fun upgradeAllExistingBuildings(buildings: List<String>, currentBase: Ba
             when (action) {
                 LoopAction.Break -> break
                 LoopAction.Continue -> continue
-                LoopAction.Proceed -> {}
+                LoopAction.Proceed -> {
+                    // Speed 6 Builder: a successful upgrade just finished. If this building
+                    // was boosted by Speed 6 Builder mode, consume the snapshot entry so
+                    // the priority override for this key is cleared (the next call to
+                    // applyXxxOverride in the same cycle, if any, will re-snapshot a fresh
+                    // original value — the freshly-read rawPriorityMap at that point, not
+                    // the stale value from earlier in the cycle).
+                    if (InGameVars.speedSixBuilderEnabled) {
+                        if (SpeedSixBuilderPriority.consumeSnapshotForKey(currentBase, selectedBuilding)) {
+                            accountMessage("速6农：${selectedBuilding}升级成功，临时优先级已回收")
+                        }
+                    }
+                }
                 LoopAction.ReturnStop -> {
                     // Propagate stop signal to caller (e.g., elixir icon not found for wall upgrade)
                     clickRightBottom(1)
@@ -419,7 +431,7 @@ private fun getOrderedList(buildings: List<String>, baseType: BaseType): List<St
         }.map { it.displayName }.toSet()
     }
 
-    val priorityMap = when (baseType) {
+    val rawPriorityMap = when (baseType) {
         BaseType.Main -> MainBaseBuildingPriorities.all.associate { settingDef ->
             val priorityStr = getConfigRuntime(settingDef.key)
             val priority = priorityStr.toIntOrNull() ?: logAndRestart("${settingDef.displayName} 必须是数字，请检查配置")
@@ -431,6 +443,19 @@ private fun getOrderedList(buildings: List<String>, baseType: BaseType): List<St
             val priority = priorityStr.toIntOrNull() ?: logAndRestart("${settingDef.displayName} 必须是数字，请检查配置")
             settingDef.displayName to priority
         }
+    }
+
+    // Speed 6 Builder mode: when enabled, boost the priority of un-met gear-up /
+    // 6th-builder buildings so they are scheduled before other user-defined work.
+    // The override function also records the original user priority for any key it
+    // touches (one-shot snapshot), so we can restore it after a successful upgrade.
+    val priorityMap = if (InGameVars.speedSixBuilderEnabled) {
+        when (baseType) {
+            BaseType.Main -> SpeedSixBuilderPriority.applyMainBaseOverride(rawPriorityMap)
+            BaseType.Builder -> SpeedSixBuilderPriority.applyBuilderBaseOverride(rawPriorityMap)
+        }
+    } else {
+        rawPriorityMap
     }
 
     return buildings.filter { it in priorityMap && it in enabledBuildingNames }.sortedBy {
