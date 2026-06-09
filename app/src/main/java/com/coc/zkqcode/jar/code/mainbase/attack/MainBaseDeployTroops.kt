@@ -71,9 +71,11 @@ private suspend fun deployOthers() {
         val spells = findMultiColorsUntil(schemas = listOf(MyColors.SpellColorAtDeploymentBar), duration = 20)
         if (spells != null) {
             TouchActions.tap(spells.x, spells.y, delayTime = 300)
-            TouchActions.tap(520, 240, delayTime = 300)
-            TouchActions.tap(465, 320, delayTime = 300)
-            TouchActions.tap(370, 355, delayTime = 300)
+            repeat(4) {
+                TouchActions.tap(520, 240, delayTime = 300)
+                TouchActions.tap(465, 320, delayTime = 300)
+                TouchActions.tap(370, 355, delayTime = 300)
+            }
         }
     }
 }
