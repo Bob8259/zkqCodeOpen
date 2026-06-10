@@ -107,26 +107,26 @@ object MainBaseSettings {
     val START_RAID = SettingDef("start_raid", "发起都城突袭", "Start Raid", 0, "MAIN_BASE_SETTINGS")
 
     ////////////
-    val BUY_GOLD_ORE_WITH_RAID_MEDAL = SettingDef("buy_gold_ore_with_raid_medal", "突袭币买黄矿", "Buy Gold Ore (Raid)", 0, "MAIN_BASE_SETTINGS")
-    val BUY_PURPLE_ORE_WITH_RAID_MEDAL = SettingDef("buy_purple_ore_with_raid_medal", "突袭币买紫矿", "Buy Purple Ore (Raid)", 0, "MAIN_BASE_SETTINGS")
+    val BUY_GOLD_ORE_WITH_RAID_MEDAL = SettingDef("buy_gold_ore_with_raid_medal", "黄矿", "Gold Ore (Raid)", 0, "MAIN_BASE_SETTINGS")
+    val BUY_PURPLE_ORE_WITH_RAID_MEDAL = SettingDef("buy_purple_ore_with_raid_medal", "紫矿", "Purple Ore (Raid)", 0, "MAIN_BASE_SETTINGS")
 
     val BUY_CLOCK_TOWER_POTION_WITH_RAID_MEDAL = SettingDef(
-        "buy_clock_tower_potion_with_raid_medal", "突袭币买钟楼药水", "Buy Clock Potion (Raid)", 0, "MAIN_BASE_SETTINGS"
+        "buy_clock_tower_potion_with_raid_medal", "钟楼药水", "Clock Potion (Raid)", 0, "MAIN_BASE_SETTINGS"
     )
     val BUY_RING_OF_WALL_WITH_RAID_MEDAL = SettingDef(
-        "buy_ring_of_wall_with_raid_medal", "突袭币买壁垒之戒", "Buy Wall Ring (Raid)", 0, "MAIN_BASE_SETTINGS"
+        "buy_ring_of_wall_with_raid_medal", "壁垒之戒", "Wall Ring (Raid)", 0, "MAIN_BASE_SETTINGS"
     )
     val BUY_RESEARCH_POTION_WITH_RAID_MEDAL = SettingDef(
-        "buy_research_potion_with_raid_medal", "突袭币买研究药水", "Buy Research Potion (Raid)", 0, "MAIN_BASE_SETTINGS"
+        "buy_research_potion_with_raid_medal", "研究药水", "Research Potion (Raid)", 0, "MAIN_BASE_SETTINGS"
     )
     val BUY_RESOURCE_POTION_WITH_RAID_MEDAL = SettingDef(
-        "buy_resource_potion_with_raid_medal", "突袭币买资源药水", "Buy Resource Potion (Raid)", 0, "MAIN_BASE_SETTINGS"
+        "buy_resource_potion_with_raid_medal", "资源药水", "Resource Potion (Raid)", 0, "MAIN_BASE_SETTINGS"
     )
     val BUY_RESEARCH_POTION_WITH_LEAGUE_MEDAL = SettingDef(
-        "buy_research_potion_with_league_medal", "联赛币买研究药水", "Buy Research Potion (League)", 0, "MAIN_BASE_SETTINGS"
+        "buy_research_potion_with_league_medal", "研究药水", "Research Potion (League)", 0, "MAIN_BASE_SETTINGS"
     )
     val BUY_BUILDER_POTION_WITH_LEAGUE_MEDAL = SettingDef(
-        "buy_builder_potion_with_league_medal", "联赛币买工人药水", "Buy Builder Potion (League)", 0, "MAIN_BASE_SETTINGS"
+        "buy_builder_potion_with_league_medal", "工人药水", "Builder Potion (League)", 0, "MAIN_BASE_SETTINGS"
     )
     val BUY_GOLD_ORE_WITH_EVENT_MEDAL = SettingDef("buy_gold_ore_with_event_medal", "活动币买星辉矿石", "Buy Gold Ore (Event)", 0, "MAIN_BASE_SETTINGS")
     val BUY_BUILDER_POTION_WITH_EVENT_MEDAL = SettingDef(
@@ -168,6 +168,8 @@ object MainBaseSettings {
     val CLAN_JOIN_MESSAGE = SettingDef("clan_join_message", "加部落暗号:", "Join Message:", "", "MAIN_BASE_SETTINGS")
     val CREATE_CONSECUTIVE_CLANS = SettingDef("create_consecutive_clans", "创建连号部落", "Create Consecutive Clans", 0, "MAIN_BASE_SETTINGS")
     val INVITE_PLAYERS = SettingDef("invite_players", "邀请玩家", "Invite Players", 0, "MAIN_BASE_SETTINGS")
+    val INVITE_PLAYERS_ROUNDS = SettingDef("invite_players_rounds", "拉人轮次", "Invite Rounds", "1", "MAIN_BASE_SETTINGS")
+    val INVITE_PLAYERS_ROUND_DURATION = SettingDef("invite_players_round_duration", "每轮时长(分钟)", "Per Round (min)", "5", "MAIN_BASE_SETTINGS")
     val CLAN_NAME = SettingDef("clan_name", "部落名称:", "Clan Name:", "", "MAIN_BASE_SETTINGS")
     val CONSECUTIVE_COUNT = SettingDef("consecutive_count", "连号数量:", "Consecutive Count:", 3, "MAIN_BASE_SETTINGS")
 
@@ -297,6 +299,8 @@ object MainBaseSettings {
         CLAN_JOIN_MESSAGE,
         CREATE_CONSECUTIVE_CLANS,
         INVITE_PLAYERS,
+        INVITE_PLAYERS_ROUNDS,
+        INVITE_PLAYERS_ROUND_DURATION,
         CLAN_NAME,
         CONSECUTIVE_COUNT,
         ACCEPT_MAIN_WORLD_NORMAL_TASK,
