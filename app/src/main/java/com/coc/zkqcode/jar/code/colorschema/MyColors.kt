@@ -112,29 +112,56 @@ object MyColors : IUIColors by UIColors, IFeatureColors by FeatureColors, IClanG
         0, 0, 0, 0, "8DFDE7", "-2|0|86FAE0,-4|0|7EF7DC,-4|-3|4DD8A1,-2|-4|45D097,2|-4|80FCE9,3|0|9DFFF1,3|3|75FBD9,2|4|76FAD5,-2|4|7BF8CE", 0, 0.95, "建筑列表宝石"
     )
 
-    // 部落拉人相关颜色模式（占位符，需后续补充真实颜色数据）
+    // 部落拉人-语言确认按钮
     val ClanInviteLanguageButton = ColorSchema.parse(
-        100, 100, 1200, 700, "FFFFFF", "5|0|FFFFFF,0|5|FFFFFF,5|5|FFFFFF", 0, 0.9, "部落拉人-语言切换按钮"
+        549, 509, 771, 587, "7AE3B5",
+        "45|0|7AE3B5,89|0|7AE3B5,133|0|7AE3B5,178|0|7AE3B5,0|39|2BCE86,45|39|2BCE86,89|39|2BCE86,133|39|2BCE86,178|39|2BCE86",
+        0, 0.9, "部落拉人-语言确认按钮"
     )
     val ClanInviteLanguageButtonAlt = ColorSchema.parse(
-        100, 100, 1200, 700, "808080", "5|0|808080,0|5|808080,5|5|808080", 0, 0.9, "部落拉人-语言切换按钮(备选)"
+        549, 509, 771, 587, "2BCE86",
+        "45|0|2BCE86,89|0|2BCE86,133|0|2BCE86,178|0|2BCE86,0|39|7AE3B5,45|39|7AE3B5,89|39|7AE3B5,133|39|7AE3B5,178|39|7AE3B5",
+        0, 0.9, "部落拉人-语言确认按钮(备选)"
     )
     val ClanInvitePageEntryIndicator = ColorSchema.parse(
-        200, 100, 1000, 400, "00A0E9", "5|0|00A0E9,0|5|00A0E9,5|5|00A0E9", 0, 0.9, "部落拉人-进入页面标志"
+        852, 197, 948, 236, "7DF3D8", "19|0|7DF3D8,38|0|7DF3D8,57|0|7DF3D8,76|0|7DF3D8,0|19|2ECA80,19|19|2ECA80,38|19|2ECA80,57|19|2ECA80,76|19|2ECA80", 0, 0.9, "部落拉人-进入页面标志"
     )
     val ClanInvitePageEntryIndicatorAlt = ColorSchema.parse(
-        200, 100, 1000, 400, "1AAD19", "5|0|1AAD19,0|5|1AAD19,5|5|1AAD19", 0, 0.9, "部落拉人-进入页面标志(备选)"
+        852, 197, 948, 236, "2ECA80", "19|0|2ECA80,38|0|2ECA80,57|0|2ECA80,76|0|2ECA80,0|19|7DF3D8,19|19|7DF3D8,38|19|7DF3D8,57|19|7DF3D8,76|19|7DF3D8", 0, 0.9, "部落拉人-进入页面标志(备选)"
     )
     val ClanInviteActionButton = ColorSchema.parse(
-        800, 200, 1200, 650, "4CAF50", "5|0|4CAF50,0|5|4CAF50,5|5|4CAF50", 0, 0.9, "部落拉人-邀请按钮"
+        696, 558, 860, 615, "7EF4D9", "33|0|7EF4D9,66|0|7EF4D9,99|0|7EF4D9,132|0|7EF4D9,0|29|2EC57B,33|29|2EC57B,66|29|2EC57B,99|29|2EC57B,132|29|2EC57B", 0, 0.9, "部落拉人-更多信息按钮"
     )
     val ClanInviteActionButtonAlt = ColorSchema.parse(
-        800, 200, 1200, 650, "2196F3", "5|0|2196F3,0|5|2196F3,5|5|2196F3", 0, 0.9, "部落拉人-邀请按钮(备选)"
+        696, 558, 860, 615, "2EC57B", "33|0|2EC57B,66|0|2EC57B,99|0|2EC57B,132|0|2EC57B,0|29|7EF4D9,33|29|7EF4D9,66|29|7EF4D9,99|29|7EF4D9,132|29|7EF4D9", 0, 0.9, "部落拉人-更多信息按钮(备选)"
+    )
+    val ClanInviteConfirmButton = ColorSchema.parse(
+        394, 355, 532, 400, "83F6DB", "27|0|83F6DB,55|0|83F6DB,83|0|83F6DB,110|0|83F6DB,0|23|2EC67C,27|23|2EC67C,55|23|2EC67C,83|23|2EC67C,110|23|2EC67C", 0, 0.9, "部落拉人-邀请确认按钮"
+    )
+    val ClanInviteConfirmButtonAlt = ColorSchema.parse(
+        394, 355, 532, 400, "2EC67C", "27|0|2EC67C,55|0|2EC67C,83|0|2EC67C,110|0|2EC67C,0|23|83F6DB,27|23|83F6DB,55|23|83F6DB,83|23|83F6DB,110|23|83F6DB", 0, 0.9, "部落拉人-邀请确认按钮(备选)"
+    )
+    val ClanInviteBackToListIndicator = ColorSchema.parse(
+        143, 42, 209, 71, "84E5BA", "13|0|84E5BA,26|0|FFFFFF,39|0|FFFFFF,52|0|84E5BA,0|15|26C779,13|15|26C779,26|15|C2B7B1,39|15|9D9394,52|15|26C779", 0, 0.9, "部落拉人-返回成员列表标志"
     )
     val ClanInviteCloseButton = ColorSchema.parse(
         600, 300, 700, 400, "FF5722", "5|0|FF5722,0|5|FF5722,5|5|FF5722", 0, 0.9, "部落拉人-关闭弹窗按钮"
     )
     val ClanInviteCloseButtonAlt = ColorSchema.parse(
         600, 300, 700, 400, "9E9E9E", "5|0|9E9E9E,0|5|9E9E9E,5|5|9E9E9E", 0, 0.9, "部落拉人-关闭弹窗按钮(备选)"
+    )
+
+    // 部落拉人-玩家项检测（替代OCR，检测到即表示列表中有可操作的玩家项）
+    val ClanInvitePlayerItemIndicator = ColorSchema.parse(
+        1068, 517, 1138, 685, "3DBDE6",
+        "0|-6|6EE5EF,0|-16|7EE6EF,-6|2|29C4E7,7|-1|31C7E7,-3|10|21BEE7,-4|21|40D7EC,3|22|62D6EF,0|24|52B6D8,-2|5|2182B5",
+        0, 0.9, "部落拉人-玩家项标志"
+    )
+
+    // 未加入部落检测（在主页面检测，检测到说明当前账号未加入部落，不执行拉人任务）
+    val ClanInviteNotInClanFlag = ColorSchema.parse(
+        17, 404, 83, 473, "B6B5B7",
+        "13|0|FEFEFE,26|0|878787,39|0|FFFFFF,52|0|606464,0|35|565F66,13|35|8C8C8C,26|35|4F4F4F,39|35|9B9B9B,52|35|272727",
+        0, 0.9, "未加入部落标志"
     )
 }

@@ -53,16 +53,16 @@ fun LazyListScope.mainBaseConfig(
                         GlobalVars.configStates["${MAIN_BASE_SETTINGS.SPEED_SIX_BUILDER.key}_c$index"]?.value = "0"
                     }
                 })
-            SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.SPEED_SIX_BUILDER.key}_c$index", afterChange = { checked ->
-                if (checked) {
-                    GlobalVars.configStates["${MAIN_BASE_SETTINGS.SMART_DECISION.key}_c$index"]?.value = "1"
-                }
-            })
             AnimatedVisibility(
                 visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.SMART_DECISION.key}_c$index"]?.value == "1"
             ) {
                 SettingInputRow(key = "${MAIN_BASE_SETTINGS.SKIP_TH_LEVEL.key}_c$index", suffix = Strings.levelAccountsSuffix)
             }
+            SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.SPEED_SIX_BUILDER.key}_c$index", afterChange = { checked ->
+                if (checked) {
+                    GlobalVars.configStates["${MAIN_BASE_SETTINGS.SMART_DECISION.key}_c$index"]?.value = "1"
+                }
+            })
         }
     }
 
@@ -376,6 +376,24 @@ fun LazyListScope.mainBaseConfig(
                 }
             }
 
+            // 部落拉人 / 邀请玩家
+            FlowRow {
+                SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.INVITE_PLAYERS.key}_c$index")
+                SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.CREATE_CONSECUTIVE_CLANS.key}_c$index")
+            }
+            AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.INVITE_PLAYERS.key}_c$index"]?.value == "1") {
+                Column {
+                    SettingInputRow(key = "${MAIN_BASE_SETTINGS.INVITE_PLAYERS_ROUNDS.key}_c$index")
+                    SettingInputRow(key = "${MAIN_BASE_SETTINGS.INVITE_PLAYERS_ROUND_DURATION.key}_c$index")
+                }
+            }
+            AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.CREATE_CONSECUTIVE_CLANS.key}_c$index"]?.value == "1") {
+                Column {
+                    SettingInputRow(key = "${MAIN_BASE_SETTINGS.CLAN_NAME.key}_c$index")
+                    SettingInputRow(key = "${MAIN_BASE_SETTINGS.CONSECUTIVE_COUNT.key}_c$index")
+                }
+            }
+
         }
     }
 
@@ -563,19 +581,12 @@ fun LazyListScope.mainBaseConfig(
                     MAIN_BASE_SETTINGS.USE_CLOCK_TOWER_POTION,
                     MAIN_BASE_SETTINGS.SELL_RESOURCE_POTION,
                     MAIN_BASE_SETTINGS.SELL_CLOCK_TOWER_POTION,
-                    MAIN_BASE_SETTINGS.SELL_RING_OF_WALL,
-                    MAIN_BASE_SETTINGS.BUY_GOLD_ORE_WITH_RAID_MEDAL,
-                    MAIN_BASE_SETTINGS.BUY_PURPLE_ORE_WITH_RAID_MEDAL,
-                    MAIN_BASE_SETTINGS.BUY_CLOCK_TOWER_POTION_WITH_RAID_MEDAL,
-                    MAIN_BASE_SETTINGS.BUY_RING_OF_WALL_WITH_RAID_MEDAL,
-                    MAIN_BASE_SETTINGS.BUY_RESEARCH_POTION_WITH_RAID_MEDAL,
-                    MAIN_BASE_SETTINGS.BUY_RESOURCE_POTION_WITH_RAID_MEDAL,
-                    MAIN_BASE_SETTINGS.BUY_RESEARCH_POTION_WITH_LEAGUE_MEDAL,
-                    MAIN_BASE_SETTINGS.BUY_BUILDER_POTION_WITH_LEAGUE_MEDAL
+                    MAIN_BASE_SETTINGS.SELL_RING_OF_WALL
                 ).forEach { setting ->
                     SettingSwitchIcon(key = "${setting.key}_c$index")
                 }
             }
+            MainBaseShopConfigs(index)
         }
     }
 
