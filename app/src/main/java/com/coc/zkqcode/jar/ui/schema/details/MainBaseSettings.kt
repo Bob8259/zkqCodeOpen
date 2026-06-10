@@ -38,6 +38,9 @@ object MainBaseSettings {
     val LIGHTING_ON_WIZARD_TOWER = SettingDef("lighting_on_wizard_tower", "闪法师塔次数", "Lightning on Wizard Tower", "4", "MAIN_BASE_SETTINGS")
     val AI_DEPLOY_TROOPS = SettingDef("ai_deploy_troops", "AI下兵", "AI Deploy", 0, "MAIN_BASE_SETTINGS")
     val CHANGE_HEROES = SettingDef("change_heroes", "随机换英雄", "Randomize Heroes", 0, "MAIN_BASE_SETTINGS")
+    val DEPLOY_HEROES_ENABLED = SettingDef("deploy_heroes_enabled", "下英雄", "Deploy Heroes", 1, "MAIN_BASE_SETTINGS")
+    val DEPLOY_SPELLS_ENABLED = SettingDef("deploy_spells_enabled", "下法术", "Deploy Spells", 1, "MAIN_BASE_SETTINGS")
+    val DEPLOY_REINFORCEMENTS_ENABLED = SettingDef("deploy_reinforcements_enabled", "下援兵", "Deploy Reinforcements", 1, "MAIN_BASE_SETTINGS")
 
     ///////
     val BUILD_SETTING = SettingDef("build_setting", "自动建造", "Auto Build", 1, "MAIN_BASE_SETTINGS")
@@ -205,6 +208,9 @@ object MainBaseSettings {
         LIGHTING_ON_WIZARD_TOWER,
         AI_DEPLOY_TROOPS,
         CHANGE_HEROES,
+        DEPLOY_HEROES_ENABLED,
+        DEPLOY_SPELLS_ENABLED,
+        DEPLOY_REINFORCEMENTS_ENABLED,
         BUILD_SETTING,
         WALL_UPGRADE_SETTINGS,
         INSTANT_UPGRADE,

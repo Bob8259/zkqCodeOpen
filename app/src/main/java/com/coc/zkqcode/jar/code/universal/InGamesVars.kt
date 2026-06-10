@@ -20,7 +20,7 @@ enum class GameVersion(
         1, "com.supercell.clashofclans", "com.supercell.clashofclans/com.supercell.titan.GameApp", "zkqGlobalGameSave", listOf("shared_prefs")
     ),
     PRIVATE(
-        2, "com.atrasis.original", "com.atrasis.original/com.atrasis.main.AtrasisGameApp", "", emptyList()
+        2, "com.atrasis.live", "com.atrasis.live/com.atrasis.main.AtrasisGameApp", "", emptyList()
     );
 
     companion object {
@@ -69,40 +69,60 @@ object InGameVars {
 
     // Main base target levels (gear-up buildings need level 8)
     // unlocked = false means the building does not exist in the JSON (not yet built/unlocked)
+    // upgrading = true means at least one instance of this building is currently upgrading (timer > 0)
+    // When upgrading is true, the building is NOT boosted by Speed 6 Builder priority (no need to queue
+    // another upgrade of the same type when one is already in progress).
     @Volatile
     var mainArcherTowerLevel: Int = 0
     @Volatile
     var mainArcherTowerUnlocked: Boolean = false
     @Volatile
+    var mainArcherTowerUpgrading: Boolean = false
+    @Volatile
     var mainCannonLevel: Int = 0
     @Volatile
     var mainCannonUnlocked: Boolean = false
     @Volatile
+    var mainCannonUpgrading: Boolean = false
+    @Volatile
     var mainMortarLevel: Int = 0
     @Volatile
     var mainMortarUnlocked: Boolean = false
+    @Volatile
+    var mainMortarUpgrading: Boolean = false
 
-    // Builder base target levels
+    // Builder base target levels.
+    // upgrading = true means this building/hero has a timer > 0 (already upgrading), so skip priority boost.
     @Volatile
     var builderArcherTowerLevel: Int = 0
     @Volatile
     var builderArcherTowerUnlocked: Boolean = false
     @Volatile
+    var builderArcherTowerUpgrading: Boolean = false
+    @Volatile
     var builderCannonLevel: Int = 0
     @Volatile
     var builderCannonUnlocked: Boolean = false
+    @Volatile
+    var builderCannonUpgrading: Boolean = false
     @Volatile
     var builderMultiMortarLevel: Int = 0
     @Volatile
     var builderMultiMortarUnlocked: Boolean = false
     @Volatile
+    var builderMultiMortarUpgrading: Boolean = false
+    @Volatile
     var battleMachineLevel: Int = 0
     @Volatile
     var battleMachineUnlocked: Boolean = false
     @Volatile
+    var battleMachineUpgrading: Boolean = false
+    @Volatile
     var battleCopterLevel: Int = 0
     @Volatile
     var battleCopterUnlocked: Boolean = false
+    @Volatile
+    var battleCopterUpgrading: Boolean = false
 
     // Speed 6 Builder: troop choice for level 18 target (暗夜女巫 or 狂暴野蛮人)
     @Volatile

@@ -120,16 +120,29 @@ private const val BB_RAGED_BARBARIAN_DATA_ID = 4000031   // 狂暴野蛮人
         return enterMainScreen()
     }
     val targetLevel = getConfigRuntime(Schema.MAIN_BASE_SETTINGS.SKIP_TH_LEVEL.key).toIntOrNull() ?: logAndRestart("${Schema.MAIN_BASE_SETTINGS.SKIP_TH_LEVEL.displayName} 必须是数字，请检查配置")
-    accountMessage("大本营等级: $firstBuildingLvl\n设定目标等级：$targetLevel")
+    val thLevelInfo = "大本营等级: $firstBuildingLvl\n设定目标等级：$targetLevel"
     if (firstBuildingLvl >= targetLevel) {
+        accountMessage(thLevelInfo)
         return false//force switch account
     }
     InGameVars.townHallLevel = firstBuildingLvl
 
-    // ── Speed 6 Builder: parse target building levels ──
+    // Build account message based on enabled features, separated by blank line
+    val smartDecisionEnabled = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.SMART_DECISION.key)
+    val messageParts = mutableListOf<String>()
+
+    if (smartDecisionEnabled) {
+        messageParts.add(thLevelInfo)
+    }
+
     if (InGameVars.speedSixBuilderEnabled) {
         parseSpeedSixBuilderLevels(jsonObject)
-        accountMessage(SpeedSixBuilderPriority.buildUnmetSummaryMessage())
+        val summary = SpeedSixBuilderPriority.buildUnmetSummaryMessage()
+        messageParts.add(summary)
+    }
+
+    if (messageParts.isNotEmpty()) {
+        accountMessage(messageParts.joinToString("\n\n"))
     }
 
     // Parse clock tower cooldown from boosts (may not exist)
@@ -211,35 +224,42 @@ private fun wallRequirementForTownHall(townHallLevel: Int): Pair<Int, Int> = whe
  * Reads from the "buildings" and "buildings2" (and optionally "heroes") arrays.
  */
 private fun parseSpeedSixBuilderLevels(jsonObject: JsonObject) {
-    // Parse main base buildings
+    // Parse main base buildings. Detect timer > 0 to know if an instance is already upgrading.
+    // When a building already has an instance upgrading, we skip the priority boost for that
+    // building type so the upgrade list won't try to queue another one of the same type.
     try {
         val buildings = jsonObject.getAsJsonArray("buildings")
         if (buildings != null) {
+            fun extractLevelsAndTimer(dataId: Int): Pair<List<Int>, Boolean> {
+                val entries = buildings.filter { it.asJsonObject.get("data").asInt == dataId }
+                val levels = entries.mapNotNull { it.asJsonObject.get("lvl")?.asInt }
+                val hasUpgrading = entries.any {
+                    try { it.asJsonObject.get("timer")?.asInt ?: 0 > 0 } catch (_: Exception) { false }
+                }
+                return levels to hasUpgrading
+            }
             if (MAIN_ARCHER_TOWER_DATA_ID != 0) {
-                val entry = buildings
-                    .firstOrNull { it.asJsonObject.get("data").asInt == MAIN_ARCHER_TOWER_DATA_ID }
-                    ?.asJsonObject
-                if (entry != null) {
+                val (levels, hasUpgrading) = extractLevelsAndTimer(MAIN_ARCHER_TOWER_DATA_ID)
+                if (levels.isNotEmpty()) {
                     InGameVars.mainArcherTowerUnlocked = true
-                    InGameVars.mainArcherTowerLevel = entry.get("lvl")?.asInt ?: 0
+                    InGameVars.mainArcherTowerLevel = levels.max()
+                    InGameVars.mainArcherTowerUpgrading = hasUpgrading
                 }
             }
             if (MAIN_CANNON_DATA_ID != 0) {
-                val entry = buildings
-                    .firstOrNull { it.asJsonObject.get("data").asInt == MAIN_CANNON_DATA_ID }
-                    ?.asJsonObject
-                if (entry != null) {
+                val (levels, hasUpgrading) = extractLevelsAndTimer(MAIN_CANNON_DATA_ID)
+                if (levels.isNotEmpty()) {
                     InGameVars.mainCannonUnlocked = true
-                    InGameVars.mainCannonLevel = entry.get("lvl")?.asInt ?: 0
+                    InGameVars.mainCannonLevel = levels.max()
+                    InGameVars.mainCannonUpgrading = hasUpgrading
                 }
             }
             if (MAIN_MORTAR_DATA_ID != 0) {
-                val entry = buildings
-                    .firstOrNull { it.asJsonObject.get("data").asInt == MAIN_MORTAR_DATA_ID }
-                    ?.asJsonObject
-                if (entry != null) {
+                val (levels, hasUpgrading) = extractLevelsAndTimer(MAIN_MORTAR_DATA_ID)
+                if (levels.isNotEmpty()) {
                     InGameVars.mainMortarUnlocked = true
-                    InGameVars.mainMortarLevel = entry.get("lvl")?.asInt ?: 0
+                    InGameVars.mainMortarLevel = levels.max()
+                    InGameVars.mainMortarUpgrading = hasUpgrading
                 }
             }
         }
@@ -249,31 +269,36 @@ private fun parseSpeedSixBuilderLevels(jsonObject: JsonObject) {
     try {
         val buildings2 = jsonObject.getAsJsonArray("buildings2")
         if (buildings2 != null) {
+            fun extractLevelsAndTimer2(dataId: Int): Pair<List<Int>, Boolean> {
+                val entries = buildings2.filter { it.asJsonObject.get("data").asInt == dataId }
+                val levels = entries.mapNotNull { it.asJsonObject.get("lvl")?.asInt }
+                val hasUpgrading = entries.any {
+                    try { it.asJsonObject.get("timer")?.asInt ?: 0 > 0 } catch (_: Exception) { false }
+                }
+                return levels to hasUpgrading
+            }
             if (BB_ARCHER_TOWER_DATA_ID != 0) {
-                val entry = buildings2
-                    .firstOrNull { it.asJsonObject.get("data").asInt == BB_ARCHER_TOWER_DATA_ID }
-                    ?.asJsonObject
-                if (entry != null) {
+                val (levels, hasUpgrading) = extractLevelsAndTimer2(BB_ARCHER_TOWER_DATA_ID)
+                if (levels.isNotEmpty()) {
                     InGameVars.builderArcherTowerUnlocked = true
-                    InGameVars.builderArcherTowerLevel = entry.get("lvl")?.asInt ?: 0
+                    InGameVars.builderArcherTowerLevel = levels.max()
+                    InGameVars.builderArcherTowerUpgrading = hasUpgrading
                 }
             }
             if (BB_CANNON_DATA_ID != 0) {
-                val entry = buildings2
-                    .firstOrNull { it.asJsonObject.get("data").asInt == BB_CANNON_DATA_ID }
-                    ?.asJsonObject
-                if (entry != null) {
+                val (levels, hasUpgrading) = extractLevelsAndTimer2(BB_CANNON_DATA_ID)
+                if (levels.isNotEmpty()) {
                     InGameVars.builderCannonUnlocked = true
-                    InGameVars.builderCannonLevel = entry.get("lvl")?.asInt ?: 0
+                    InGameVars.builderCannonLevel = levels.max()
+                    InGameVars.builderCannonUpgrading = hasUpgrading
                 }
             }
             if (BB_MULTI_MORTAR_DATA_ID != 0) {
-                val entry = buildings2
-                    .firstOrNull { it.asJsonObject.get("data").asInt == BB_MULTI_MORTAR_DATA_ID }
-                    ?.asJsonObject
-                if (entry != null) {
+                val (levels, hasUpgrading) = extractLevelsAndTimer2(BB_MULTI_MORTAR_DATA_ID)
+                if (levels.isNotEmpty()) {
                     InGameVars.builderMultiMortarUnlocked = true
-                    InGameVars.builderMultiMortarLevel = entry.get("lvl")?.asInt ?: 0
+                    InGameVars.builderMultiMortarLevel = levels.max()
+                    InGameVars.builderMultiMortarUpgrading = hasUpgrading
                 }
             }
         }
@@ -290,6 +315,7 @@ private fun parseSpeedSixBuilderLevels(jsonObject: JsonObject) {
                 if (entry != null) {
                     InGameVars.battleMachineUnlocked = true
                     InGameVars.battleMachineLevel = entry.get("lvl")?.asInt ?: 0
+                    InGameVars.battleMachineUpgrading = try { entry.get("timer")?.asInt ?: 0 > 0 } catch (_: Exception) { false }
                 }
             }
             if (BB_BATTLE_COPTER_DATA_ID != 0) {
@@ -299,6 +325,7 @@ private fun parseSpeedSixBuilderLevels(jsonObject: JsonObject) {
                 if (entry != null) {
                     InGameVars.battleCopterUnlocked = true
                     InGameVars.battleCopterLevel = entry.get("lvl")?.asInt ?: 0
+                    InGameVars.battleCopterUpgrading = try { entry.get("timer")?.asInt ?: 0 > 0 } catch (_: Exception) { false }
                 }
             }
         }

@@ -193,9 +193,13 @@ suspend fun upgradeAllExistingBuildings(buildings: List<String>, currentBase: Ba
                     // applyXxxOverride in the same cycle, if any, will re-snapshot a fresh
                     // original value — the freshly-read rawPriorityMap at that point, not
                     // the stale value from earlier in the cycle).
+                    // After consuming the snapshot, break out of the inner attempt loop
+                    // to switch to the next building type, because Speed 6 Builder only
+                    // needs one instance per building type to start upgrading.
                     if (InGameVars.speedSixBuilderEnabled) {
                         if (SpeedSixBuilderPriority.consumeSnapshotForKey(currentBase, selectedBuilding)) {
-                            accountMessage("速6农：${selectedBuilding}升级成功，临时优先级已回收")
+                            accountMessage("速6农：${selectedBuilding}已派出工人，切换下一个目标")
+                            break
                         }
                     }
                 }
