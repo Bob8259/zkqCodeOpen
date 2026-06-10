@@ -1,4 +1,4 @@
-﻿package com.coc.zkqcode.jar.code.mainbase.attack
+package com.coc.zkqcode.jar.code.mainbase.attack
 
 import android.graphics.Bitmap
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager

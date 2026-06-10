@@ -52,6 +52,7 @@ fun LazyListScope.mainBaseConfig(
                         GlobalVars.configStates["${BUILDER_BASE_SETTINGS.BUILDER_BASE_SAVE_WORKER_BUILD_AFTER_WALL_FULL.key}_c$index"]?.value = "0"
                     }
                 })
+            SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.SPEED_SIX_BUILDER.key}_c$index")
             AnimatedVisibility(
                 visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.SMART_DECISION.key}_c$index"]?.value == "1"
             ) {
@@ -95,6 +96,11 @@ fun LazyListScope.mainBaseConfig(
             SettingInputRow(key = "${MAIN_BASE_SETTINGS.GOLD_REQUIREMENT.key}_c$index")
             SettingInputRow(key = "${MAIN_BASE_SETTINGS.ELIXIR_REQUIREMENT.key}_c$index")
             SettingInputRow(key = "${MAIN_BASE_SETTINGS.DARK_ELIXIR_REQUIREMENT.key}_c$index")
+            FlowRow {
+                SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.DEPLOY_HEROES_ENABLED.key}_c$index")
+                SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.DEPLOY_SPELLS_ENABLED.key}_c$index")
+                SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.DEPLOY_REINFORCEMENTS_ENABLED.key}_c$index")
+            }
 
         }
     }

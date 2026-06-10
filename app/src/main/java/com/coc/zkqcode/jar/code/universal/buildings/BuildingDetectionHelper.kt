@@ -1,4 +1,4 @@
-﻿package com.coc.zkqcode.jar.code.universal.buildings
+package com.coc.zkqcode.jar.code.universal.buildings
 
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.jar.code.universal.smalltools.input.TouchActions
@@ -181,6 +181,7 @@ fun cleanBuildingName(raw: String, candidateBuildings: List<String> = ALL_BUILDI
         "建议升级及:" to "建议升级",
         "乒营" to "兵营",
         "箭增" to "箭塔",
+        "節塔" to "箭塔",
         "據地" to "撼地",
         "英雄剧穀堂" to "英雄殿堂",
         "暗黑油檯" to "暗黑重油罐",

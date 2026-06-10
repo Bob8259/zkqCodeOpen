@@ -1,9 +1,11 @@
-﻿package com.coc.zkqcode.jar.code.mainbase.attack
+package com.coc.zkqcode.jar.code.mainbase.attack
 
 
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
+import com.coc.zkqcode.jar.code.universal.smalltools.data.getBooleanConfigRuntime
+import com.coc.zkqcode.jar.ui.schema.Schema
 import com.coc.zkqcode.jar.code.universal.smalltools.input.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.ColorSchema
 import com.coc.zkqcode.jar.code.colorschema.MyColors
@@ -32,30 +34,40 @@ private const val DRAG_SWEEP_SLOW_MS = 3000
 suspend fun mainBaseDeployTroops() {
     // Record the start time of the battle
     zoomSmallMainBase(isForAttack = true)
+
+    // Read user-configurable deployment switches so that heroes, spells and
+    // clan-castle reinforcements can be toggled independently.
+    val deployHeroes = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.DEPLOY_HEROES_ENABLED.key)
+    val deploySpells = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.DEPLOY_SPELLS_ENABLED.key)
+    val deployReinforcements = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.DEPLOY_REINFORCEMENTS_ENABLED.key)
+
     // Upload a screenshot every 3 hours for monitoring
 //    uploadSearchScreenshot()
-    deploySiegeMachine()
+    deploySiegeMachine(useReinforcements = deployReinforcements)
     repeat(3) {
         // Deploy each troop type if detected in the deployment bar
         deployIfPresent(DRAG_SWEEP_MS, MyColors.DragonAtDeploymentBar, MyColors.DragonAtDeploymentBar2)
         deployIfPresent(DRAG_SWEEP_MS, MyColors.GiantAtDeploymentBar, MyColors.GiantAtDeploymentBar2)
         deployIfPresent(DRAG_SWEEP_SLOW_MS, MyColors.BarbarianAtDeploymentBar, MyColors.BarbarianAtDeploymentBar2)
         deployIfPresent(DRAG_SWEEP_SLOW_MS, MyColors.ArcherAtDeploymentBar, MyColors.ArcherAtDeploymentBar2, MyColors.ArcherAtDeploymentBar3, MyColors.ArcherAtDeploymentBar4)
-        deployHeroes()
-        deployOthers()
+        if (deployHeroes) deployHeroes()
+        deployOthers(useSpells = deploySpells)
     }
 }
 
-private suspend fun deploySiegeMachine() {
+private suspend fun deploySiegeMachine(useReinforcements: Boolean = true) {
     val siegeMachine = findMultiColors(MyColors.SiegeMachineAtDeploymentBar)
     if (siegeMachine != null) {
         TouchActions.tap(siegeMachine.x + 10, siegeMachine.y + 20, delayTime = 100)
-        TouchActions.tap(350, 250, delayTime = 100)
+        if (useReinforcements) {
+            // Tap the clan-castle reinforcements icon to release the donated troops
+            TouchActions.tap(350, 250, delayTime = 100)
+        }
         TouchActions.tap(DRAG_START_X.toInt(), DRAG_START_Y.toInt(), delayTime = 100)
     }
 }
 
-private suspend fun deployOthers() {
+private suspend fun deployOthers(useSpells: Boolean = true) {
     //Deploy other troops and spells
     repeat(3) {
         val troops = findMultiColorsUntil(
@@ -68,12 +80,16 @@ private suspend fun deployOthers() {
                 TouchActions.tap(386, 222, delayTime = 100)
             }
         }
-        val spells = findMultiColorsUntil(schemas = listOf(MyColors.SpellColorAtDeploymentBar), duration = 20)
-        if (spells != null) {
-            TouchActions.tap(spells.x, spells.y, delayTime = 300)
-            TouchActions.tap(520, 240, delayTime = 300)
-            TouchActions.tap(465, 320, delayTime = 300)
-            TouchActions.tap(370, 355, delayTime = 300)
+        if (useSpells) {
+            val spells = findMultiColorsUntil(schemas = listOf(MyColors.SpellColorAtDeploymentBar), duration = 20)
+            if (spells != null) {
+                TouchActions.tap(spells.x, spells.y, delayTime = 300)
+                repeat(4) {
+                    TouchActions.tap(520, 240, delayTime = 300)
+                    TouchActions.tap(465, 320, delayTime = 300)
+                    TouchActions.tap(370, 355, delayTime = 300)
+                }
+            }
         }
     }
 }
