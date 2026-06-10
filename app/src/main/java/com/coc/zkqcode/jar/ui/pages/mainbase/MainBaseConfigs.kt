@@ -50,9 +50,14 @@ fun LazyListScope.mainBaseConfig(
                     if (!checked) {
                         GlobalVars.configStates["${MAIN_BASE_SETTINGS.SAVE_WORKER_BUILD_AFTER_WALL_FULL.key}_c$index"]?.value = "0"
                         GlobalVars.configStates["${BUILDER_BASE_SETTINGS.BUILDER_BASE_SAVE_WORKER_BUILD_AFTER_WALL_FULL.key}_c$index"]?.value = "0"
+                        GlobalVars.configStates["${MAIN_BASE_SETTINGS.SPEED_SIX_BUILDER.key}_c$index"]?.value = "0"
                     }
                 })
-            SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.SPEED_SIX_BUILDER.key}_c$index")
+            SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.SPEED_SIX_BUILDER.key}_c$index", afterChange = { checked ->
+                if (checked) {
+                    GlobalVars.configStates["${MAIN_BASE_SETTINGS.SMART_DECISION.key}_c$index"]?.value = "1"
+                }
+            })
             AnimatedVisibility(
                 visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.SMART_DECISION.key}_c$index"]?.value == "1"
             ) {
