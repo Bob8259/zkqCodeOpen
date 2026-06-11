@@ -204,7 +204,7 @@ object MainBaseAttackColors : IMainBaseAttackColors {
 
     // Fifth grand warden deploy bar color variant
     override val GrandWarden5 = ColorSchema.parse(
-        515, 645, 570, 669, "7F1A6B", "11|0|AD30A5,22|0|9A2492,33|0|C43FBB,44|0|5A105A,0|12|92287F,11|12|983D98,22|12|9C2894,33|12|BD31AF,44|12|CE4CC6", 0, 0.9, "大守护者5"
+        0, 590, 1200, 720, "7F1A6B", "11|0|AD30A5,22|0|9A2492,33|0|C43FBB,44|0|5A105A,0|12|92287F,11|12|983D98,22|12|9C2894,33|12|BD31AF,44|12|CE4CC6", 0, 0.9, "大守护者5"
     )
     override val RoyalChampion = ColorSchema.parse(
         0, 590, 1200, 720, "467BDC", "7|0|133070,15|0|0F2D62,22|0|23280B,29|0|4B5D71,0|14|3871D3,7|14|112A5B,15|14|386BCB,22|14|3D63C2,29|14|2D3C74", 0, 0.9, "飞盾战神"
