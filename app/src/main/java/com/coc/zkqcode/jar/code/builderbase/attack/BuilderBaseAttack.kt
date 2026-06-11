@@ -1,4 +1,4 @@
-﻿package com.coc.zkqcode.jar.code.builderbase.attack
+package com.coc.zkqcode.jar.code.builderbase.attack
 
 import android.graphics.Point
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
@@ -99,7 +99,13 @@ suspend fun builderBaseAttack(): Boolean {
         }
 
         // ---- Determine attack strategy based on current resource state ----
+        // Auto-detect Victory Star: if stars are available, force trophy-pushing mode to claim them fast
+        val hasVictoryStar = findMultiColors(schema = MyColors.BuilderBaseStarsAvailable) != null
         val attackType = when {
+            hasVictoryStar -> {
+                accountMessage("检测到胜利之星，自动切换上分模式快速完成")
+                "gold"
+            }
             getBooleanConfigRuntime(Schema.BUILDER_BASE_SETTINGS.TROPHY_PUSHING_MODE.key) -> {
                 accountMessage("已勾选上分模式")
                 "gold"
