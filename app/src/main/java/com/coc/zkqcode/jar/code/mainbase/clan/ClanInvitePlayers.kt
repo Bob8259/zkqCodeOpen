@@ -1,7 +1,10 @@
 package com.coc.zkqcode.jar.code.mainbase.clan
 
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
+import com.coc.zkqcode.jar.code.colorschema.ColorSchema
 import com.coc.zkqcode.jar.code.colorschema.MyColors
+import com.coc.zkqcode.jar.code.universal.GameVersion
+import com.coc.zkqcode.jar.code.universal.InGameVars
 import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
@@ -98,9 +101,14 @@ suspend fun clanInvitePlayers(): Boolean {
                 accountMessage("${roundTag}本轮剩余 ${remainingSec / 60} 分 ${remainingSec % 60} 秒")
             }
 
-            // 图色检测玩家项
+            // 图色检测玩家项（根据版本自动选择检测区域）
+            val playerItemSchema = if (InGameVars.currentGameVersion == GameVersion.CN) {
+                ColorSchema.rescope(MyColors.ClanInvitePlayerItemIndicator, 932, 513, 1000, 688)
+            } else {
+                MyColors.ClanInvitePlayerItemIndicator
+            }
             val playerItem = findMultiColorsUntil(
-                schemas = listOf(MyColors.ClanInvitePlayerItemIndicator),
+                schemas = listOf(playerItemSchema),
                 duration = 1000
             )
 
