@@ -48,5 +48,10 @@ object SchemaRegistry {
             Scope.PROFILE,
             Schema.BUILDER_BASE_RESEARCH_PRIORITIES.all
         ),
+        ConfigModule(
+            "MAIN_BASE_PET_PRIORITIES",
+            Scope.PROFILE,
+            Schema.MAIN_BASE_PET_PRIORITIES.all
+        ),
     )
 }

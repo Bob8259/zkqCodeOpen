@@ -33,7 +33,8 @@ fun LazyListScope.mainBaseConfig(
     isPetExpanded: Boolean,
     onTogglePet: () -> Unit,
     onNavigatePriority: (Int) -> Unit = {},
-    onNavigateResearchPriority: (Int) -> Unit = {}
+    onNavigateResearchPriority: (Int) -> Unit = {},
+    onNavigatePetPriority: (Int) -> Unit = {}
 ) {
     // Banner — 通用设置
     item {
@@ -196,6 +197,15 @@ fun LazyListScope.mainBaseConfig(
                         SettingInputRow(
                             key = "${MAIN_BASE_SETTINGS.DONATION_FARMING_STOP_THRESHOLD.key}_c$index", suffix = Strings.percentStop
                         )
+                    }
+                    FlowRow {
+                        SettingSwitchIcon(
+                            key = "${MAIN_BASE_SETTINGS.APPROVE_MEMBER_SETTING.key}_c$index",
+                            explain = Strings.approveCodeExplain
+                        )
+                    }
+                    AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.APPROVE_MEMBER_SETTING.key}_c$index"]?.value == "1") {
+                        SettingInputRow(key = "${MAIN_BASE_SETTINGS.APPROVE_MEMBER_CODE.key}_c$index")
                     }
                 }
             }
@@ -379,7 +389,8 @@ fun LazyListScope.mainBaseConfig(
             // 部落拉人 / 邀请玩家
             FlowRow {
                 SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.INVITE_PLAYERS.key}_c$index")
-                SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.CREATE_CONSECUTIVE_CLANS.key}_c$index")
+                // Commented out: create_consecutive_clans has no functional implementation
+                // SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.CREATE_CONSECUTIVE_CLANS.key}_c$index")
             }
             AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.INVITE_PLAYERS.key}_c$index"]?.value == "1") {
                 Column {
@@ -387,12 +398,13 @@ fun LazyListScope.mainBaseConfig(
                     SettingInputRow(key = "${MAIN_BASE_SETTINGS.INVITE_PLAYERS_ROUND_DURATION.key}_c$index")
                 }
             }
-            AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.CREATE_CONSECUTIVE_CLANS.key}_c$index"]?.value == "1") {
-                Column {
-                    SettingInputRow(key = "${MAIN_BASE_SETTINGS.CLAN_NAME.key}_c$index")
-                    SettingInputRow(key = "${MAIN_BASE_SETTINGS.CONSECUTIVE_COUNT.key}_c$index")
-                }
-            }
+            // Commented out: create_consecutive_clans has no functional implementation
+            // AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.CREATE_CONSECUTIVE_CLANS.key}_c$index"]?.value == "1") {
+            //     Column {
+            //         SettingInputRow(key = "${MAIN_BASE_SETTINGS.CLAN_NAME.key}_c$index")
+            //         SettingInputRow(key = "${MAIN_BASE_SETTINGS.CONSECUTIVE_COUNT.key}_c$index")
+            //     }
+            // }
 
         }
     }
@@ -489,7 +501,11 @@ fun LazyListScope.mainBaseConfig(
             SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.UPGRADE_PETS.key}_c$index")
 
             AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.UPGRADE_PETS.key}_c$index"]?.value == "1") {
-                MainBasePetConfigs(index)
+                CustomButton(
+                    onClick = { onNavigatePetPriority(index) },
+                    text = Strings.adjustMainBasePetPriority,
+                    containerColor = AppColors.Teal
+                )
             }
             // Gear upgrade master switch
             SettingSwitchIcon(

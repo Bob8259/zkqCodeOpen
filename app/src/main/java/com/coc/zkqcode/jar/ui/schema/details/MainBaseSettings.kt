@@ -166,12 +166,16 @@ object MainBaseSettings {
     val CLAN_TAG = SettingDef("clan_tag", "加指定部落标签(不填就随机加):", "Clan Tag:", "", "MAIN_BASE_SETTINGS")
     val USE_TEMP_ITEMS = SettingDef("use_temp_items", "使用临时物品", "Use Temp Items", 0, "MAIN_BASE_SETTINGS")
     val CLAN_JOIN_MESSAGE = SettingDef("clan_join_message", "加部落暗号:", "Join Message:", "", "MAIN_BASE_SETTINGS")
-    val CREATE_CONSECUTIVE_CLANS = SettingDef("create_consecutive_clans", "创建连号部落", "Create Consecutive Clans", 0, "MAIN_BASE_SETTINGS")
+    val APPROVE_MEMBER_SETTING = SettingDef("approve_member_setting", "批准成员加入", "Approve Members", 0, "MAIN_BASE_SETTINGS")
+    val APPROVE_MEMBER_CODE = SettingDef("approve_member_code", "批准暗号:", "Approval Code:", "", "MAIN_BASE_SETTINGS")
+    // Commented out: no functional implementation
+    // val CREATE_CONSECUTIVE_CLANS = SettingDef("create_consecutive_clans", "创建连号部落", "Create Consecutive Clans", 0, "MAIN_BASE_SETTINGS")
     val INVITE_PLAYERS = SettingDef("invite_players", "邀请玩家", "Invite Players", 0, "MAIN_BASE_SETTINGS")
     val INVITE_PLAYERS_ROUNDS = SettingDef("invite_players_rounds", "拉人轮次", "Invite Rounds", "1", "MAIN_BASE_SETTINGS")
     val INVITE_PLAYERS_ROUND_DURATION = SettingDef("invite_players_round_duration", "每轮时长(分钟)", "Per Round (min)", "5", "MAIN_BASE_SETTINGS")
-    val CLAN_NAME = SettingDef("clan_name", "部落名称:", "Clan Name:", "", "MAIN_BASE_SETTINGS")
-    val CONSECUTIVE_COUNT = SettingDef("consecutive_count", "连号数量:", "Consecutive Count:", 3, "MAIN_BASE_SETTINGS")
+    // Commented out: part of create_consecutive_clans which has no functional implementation
+    // val CLAN_NAME = SettingDef("clan_name", "部落名称:", "Clan Name:", "", "MAIN_BASE_SETTINGS")
+    // val CONSECUTIVE_COUNT = SettingDef("consecutive_count", "连号数量:", "Consecutive Count:", 3, "MAIN_BASE_SETTINGS")
 
     val ACCEPT_MAIN_WORLD_NORMAL_TASK = SettingDef("accept_main_world_normal_task", "接取主世界普通任务", "Accept Main Base Normal Task", 1, "MAIN_BASE_SETTINGS")
     val ACCEPT_MAIN_WORLD_ADVANCED_TASK = SettingDef("accept_main_world_advanced_task", "接取主世界高级任务", "Accept Main Base Advanced Task", 0, "MAIN_BASE_SETTINGS")
@@ -297,12 +301,14 @@ object MainBaseSettings {
         CLAN_TAG,
         USE_TEMP_ITEMS,
         CLAN_JOIN_MESSAGE,
-        CREATE_CONSECUTIVE_CLANS,
+        APPROVE_MEMBER_SETTING,
+        APPROVE_MEMBER_CODE,
+        // CREATE_CONSECUTIVE_CLANS, // commented out: no functional implementation
         INVITE_PLAYERS,
         INVITE_PLAYERS_ROUNDS,
         INVITE_PLAYERS_ROUND_DURATION,
-        CLAN_NAME,
-        CONSECUTIVE_COUNT,
+        // CLAN_NAME,       // commented out: part of create_consecutive_clans (no functional implementation)
+        // CONSECUTIVE_COUNT, // commented out: part of create_consecutive_clans (no functional implementation)
         ACCEPT_MAIN_WORLD_NORMAL_TASK,
         ACCEPT_MAIN_WORLD_ADVANCED_TASK,
         ACCEPT_BUILDER_BASE_NORMAL_TASK,

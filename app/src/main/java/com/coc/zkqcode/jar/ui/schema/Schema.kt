@@ -69,6 +69,7 @@ object Schema {
     val MAIN_BASE_BUILDING_PRIORITIES = MainBaseBuildingPriorities
 
     val MAIN_BASE_RESEARCH_PRIORITIES = MainBaseResearchPriorities
+    val MAIN_BASE_PET_PRIORITIES = MainBasePetPriorities
     val BUILDER_BASE_RESEARCH_PRIORITIES = BuilderBaseResearchPriorities
 
     val BUILDER_BASE_SETTINGS = BuilderBaseSettings
