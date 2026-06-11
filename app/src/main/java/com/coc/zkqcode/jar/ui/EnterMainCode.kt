@@ -44,6 +44,7 @@ import com.coc.zkqcode.jar.ui.pages.homescreen.BackgroundImage
 import com.coc.zkqcode.jar.ui.components.CustomButton
 import com.coc.zkqcode.jar.ui.pages.builderbase.BuilderBaseResearchPriority
 import com.coc.zkqcode.jar.ui.pages.builderbase.BuilderBaseUpgradePriority
+import com.coc.zkqcode.jar.ui.pages.mainbase.MainBasePetPriority
 import com.coc.zkqcode.jar.ui.pages.mainbase.MainBaseResearchPriority
 import com.coc.zkqcode.jar.ui.pages.mainbase.MainBaseUpgradePriority
 import com.coc.zkqcode.jar.ui.pages.single.BugReport
@@ -117,6 +118,8 @@ class EnterMainCode : MainCode {
                             navController.navigate("builder_base_priority/$index")
                         }, onNavigateResearchPriority = { index ->
                             navController.navigate("research_priority/$index")
+                        }, onNavigatePetPriority = { index ->
+                            navController.navigate("pet_priority/$index")
                         }, onNavigateBuilderBaseResearchPriority = { index ->
                             navController.navigate("builder_base_research_priority/$index")
                         })
@@ -138,6 +141,13 @@ class EnterMainCode : MainCode {
                     composable("research_priority/{index}") { backStackEntry ->
                         val index = backStackEntry.arguments?.getString("index")?.toIntOrNull() ?: 1
                         MainBaseResearchPriority(
+                            index = index, onSaveSuccess = {
+                                navController.popBackStack()
+                            })
+                    }
+                    composable("pet_priority/{index}") { backStackEntry ->
+                        val index = backStackEntry.arguments?.getString("index")?.toIntOrNull() ?: 1
+                        MainBasePetPriority(
                             index = index, onSaveSuccess = {
                                 navController.popBackStack()
                             })

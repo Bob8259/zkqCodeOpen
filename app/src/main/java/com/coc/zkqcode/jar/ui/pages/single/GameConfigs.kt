@@ -23,6 +23,7 @@ fun LazyListScope.gameConfig(
     onNavigatePriority: (Int) -> Unit = {},
     onNavigateBuilderBasePriority: (Int) -> Unit = {},
     onNavigateResearchPriority: (Int) -> Unit = {},
+    onNavigatePetPriority: (Int) -> Unit = {},
     onNavigateBuilderBaseResearchPriority: (Int) -> Unit = {},
     onScrollToBottom: () -> Unit = {}
 ) {
@@ -41,7 +42,8 @@ fun LazyListScope.gameConfig(
         isPetExpanded = isPetExpanded,
         onTogglePet = onTogglePet,
         onNavigatePriority = onNavigatePriority,
-        onNavigateResearchPriority = onNavigateResearchPriority
+        onNavigateResearchPriority = onNavigateResearchPriority,
+        onNavigatePetPriority = onNavigatePetPriority
     )
     builderBaseConfig(
         index = index,

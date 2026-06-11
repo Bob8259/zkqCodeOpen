@@ -198,6 +198,7 @@ object Strings {
     val builderBaseSettings get() = if (LanguageManager.isChinese) "夜世界专属设置" else "Builder Base Settings"
     val adjustBuilderBasePriority get() = if (LanguageManager.isChinese) "点击调整夜世界建筑升级" else "Adjust Builder Base Upgrade Priority"
     val adjustMainBaseResearchPriority get() = if (LanguageManager.isChinese) "点击调整主世界研究优先级" else "Adjust Main Base Research Priority"
+    val adjustMainBasePetPriority get() = if (LanguageManager.isChinese) "点击调整战宠升级优先级" else "Adjust Pet Upgrade Priority"
     val adjustBuilderBaseResearchPriority get() = if (LanguageManager.isChinese) "点击调整夜世界研究优先级" else "Adjust Builder Base Research Priority"
 
     // Components
