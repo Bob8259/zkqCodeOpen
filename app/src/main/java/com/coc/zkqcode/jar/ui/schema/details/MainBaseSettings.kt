@@ -166,6 +166,8 @@ object MainBaseSettings {
     val CLAN_TAG = SettingDef("clan_tag", "加指定部落标签(不填就随机加):", "Clan Tag:", "", "MAIN_BASE_SETTINGS")
     val USE_TEMP_ITEMS = SettingDef("use_temp_items", "使用临时物品", "Use Temp Items", 0, "MAIN_BASE_SETTINGS")
     val CLAN_JOIN_MESSAGE = SettingDef("clan_join_message", "加部落暗号:", "Join Message:", "", "MAIN_BASE_SETTINGS")
+    val APPROVE_MEMBER_SETTING = SettingDef("approve_member_setting", "批准成员加入", "Approve Members", 0, "MAIN_BASE_SETTINGS")
+    val APPROVE_MEMBER_CODE = SettingDef("approve_member_code", "批准暗号:", "Approval Code:", "", "MAIN_BASE_SETTINGS")
     // Commented out: no functional implementation
     // val CREATE_CONSECUTIVE_CLANS = SettingDef("create_consecutive_clans", "创建连号部落", "Create Consecutive Clans", 0, "MAIN_BASE_SETTINGS")
     val INVITE_PLAYERS = SettingDef("invite_players", "邀请玩家", "Invite Players", 0, "MAIN_BASE_SETTINGS")
@@ -299,6 +301,8 @@ object MainBaseSettings {
         CLAN_TAG,
         USE_TEMP_ITEMS,
         CLAN_JOIN_MESSAGE,
+        APPROVE_MEMBER_SETTING,
+        APPROVE_MEMBER_CODE,
         // CREATE_CONSECUTIVE_CLANS, // commented out: no functional implementation
         INVITE_PLAYERS,
         INVITE_PLAYERS_ROUNDS,

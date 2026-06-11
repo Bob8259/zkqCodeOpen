@@ -198,6 +198,15 @@ fun LazyListScope.mainBaseConfig(
                             key = "${MAIN_BASE_SETTINGS.DONATION_FARMING_STOP_THRESHOLD.key}_c$index", suffix = Strings.percentStop
                         )
                     }
+                    FlowRow {
+                        SettingSwitchIcon(
+                            key = "${MAIN_BASE_SETTINGS.APPROVE_MEMBER_SETTING.key}_c$index",
+                            explain = Strings.approveCodeExplain
+                        )
+                    }
+                    AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.APPROVE_MEMBER_SETTING.key}_c$index"]?.value == "1") {
+                        SettingInputRow(key = "${MAIN_BASE_SETTINGS.APPROVE_MEMBER_CODE.key}_c$index")
+                    }
                 }
             }
             FlowRow {
