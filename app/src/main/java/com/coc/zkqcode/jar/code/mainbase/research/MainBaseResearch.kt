@@ -204,9 +204,9 @@ private suspend fun findAllResearchItems() {
 
     // Print priority summary of all upgradeable items
     val summaryLines = upgradeableItems.mapIndexed { index, item ->
-        "${index + 1}. ${item.troopName} (优先级${item.priority}, Lv${item.detectedLevel}→${item.targetLevel}, 第${item.screenIndex}页)"
+        "${index + 1}. ${item.troopName}"
     }
-    accountMessage("研究升级优先级列表 (共${upgradeableItems.size}项):\n${summaryLines.joinToString("\n")}")
+    accountMessage("研究升级\n优先级列表 :\n${summaryLines.joinToString("\n")}")
 
     // Keep the summary visible on screen before proceeding
     Thread.sleep(3000)
