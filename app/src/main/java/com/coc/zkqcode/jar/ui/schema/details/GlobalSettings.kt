@@ -14,8 +14,8 @@ object GlobalSettings {
     val EXTRACT_DATA_NUMBER = SettingDef("extract_data_number", "保存到此序号", "Save to Slot", "1", "GLOBAL_SETTINGS")
     val EXTRACT_DATA_CONTENT = SettingDef("extract_data_content", "内容", "Content", "", "GLOBAL_SETTINGS")
 
-    val EMAIL = SettingDef("email", "邮箱", "Email", "free@zkq", "GLOBAL_SETTINGS")
-    val PASSWORD = SettingDef("password", "密码", "Password", "free_for_testing", "GLOBAL_SETTINGS")
+    val EMAIL = SettingDef("email", "邮箱", "Email", "", "GLOBAL_SETTINGS")
+    val PASSWORD = SettingDef("password", "密码", "Password", "", "GLOBAL_SETTINGS")
     val ENTER_GAME_TIMER = SettingDef("enter_game_timer", "进入游戏计时", "Login Timer", "80", "GLOBAL_SETTINGS")
     val DELAY_MULTIPLIER = SettingDef(
         "delay_multiplier", "延时倍率(低性能设备建议设置1.5-2.5)", "Delay Multiplier", "1", "GLOBAL_SETTINGS"
