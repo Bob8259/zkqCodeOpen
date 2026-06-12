@@ -124,15 +124,21 @@ suspend fun builderBaseCheckAllResearch() {
     // Sort by priority ascending (lower number = higher priority)
     upgradeableItems.sortBy { it.priority }
 
-    // Build consolidated message: insufficient list + summary + selected target
+    // Build consolidated message matching the reference format:
+    // 账号N，
+    // 可升级:
+    // 1. TroopName
+    //
+    // → 升级:
+    // TroopName
     val insufficientBlock = if (insufficientItems.isNotEmpty()) {
-        "资源不足 (${insufficientItems.size}项):\n${insufficientItems.joinToString("\n") { "  - $it" }}\n"
+        "资源不足 (${insufficientItems.size}项):\n${insufficientItems.joinToString("、")}\n"
     } else ""
     val summaryLines = upgradeableItems.mapIndexed { index, item ->
-        "${index + 1}. ${item.troopName} (优先级${item.priority})"
+        "${index + 1}. ${item.troopName}"
     }
     val target = upgradeableItems.first()
-    accountMessage("${insufficientBlock}夜世界研究可升级 (共${upgradeableItems.size}项):\n${summaryLines.joinToString("\n")}\n\n→ 升级: ${target.troopName}")
+    accountMessage("\n${insufficientBlock}可升级:\n${summaryLines.joinToString("\n")}\n\n→ 升级: \n${target.troopName}")
 
     // Phase 2: Upgrade the highest priority item using coordinates from Phase 1
     TouchActions.tap(target.x, target.y)
