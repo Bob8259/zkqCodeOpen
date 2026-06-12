@@ -31,6 +31,16 @@ private const val BB_MULTI_MORTAR_DATA_ID = 1000045    // 多管迫击炮(夜)
 // Builder base heroes (in "heroes2" array, NOT "heroes")
 private const val BB_BATTLE_MACHINE_DATA_ID = 28000003 // 战争机器
 private const val BB_BATTLE_COPTER_DATA_ID = 28000005  // 战斗直升机
+// Pet house building for level detection
+private const val PET_HOUSE_DATA_ID = 1000068   // 战宠小屋
+
+// Pet data IDs for level detection (the 5 basic pets)
+private const val LASSI_DATA_ID = 73000000       // 莱希
+private const val MIGHTY_YAK_DATA_ID = 73000001  // 大牦
+private const val ELECTRO_OWL_DATA_ID = 73000002 // 闪枭
+private const val UNICORN_DATA_ID = 73000003     // 独角
+private const val FROSTY_DATA_ID = 73000009      // 冰牙
+
 // Builder base troops (in "units2" array) — for Speed 6 Builder level 18 target
 private const val BB_NIGHT_WITCH_DATA_ID = 4000042       // 暗夜女巫
 private const val BB_RAGED_BARBARIAN_DATA_ID = 4000031   // 狂暴野蛮人
@@ -127,6 +137,9 @@ private const val BB_RAGED_BARBARIAN_DATA_ID = 4000031   // 狂暴野蛮人
     }
     InGameVars.townHallLevel = firstBuildingLvl
 
+    // Parse pet house and pet levels from the same JSON data (available even without Smart Decision)
+    parsePetLevels(jsonObject)
+
     // Build account message based on enabled features, separated by blank line
     val smartDecisionEnabled = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.SMART_DECISION.key)
     val messageParts = mutableListOf<String>()
@@ -217,6 +230,47 @@ private fun wallRequirementForTownHall(townHallLevel: Int): Pair<Int, Int> = whe
     17 -> 325 to 18
     18 -> 325 to 19
     else -> 0 to 0
+}
+
+/**
+ * Parse pet house level and the 5 basic pet levels from the game JSON.
+ * This data is used by [checkPets] to decide whether a pet at level 10+
+ * should be excluded from the upgrade queue when the pet house is ≤ level 5.
+ *
+ * Pet house (战宠小屋) has data ID 1000068 in the "buildings" array.
+ * Pets have data IDs 73000000-73000009 in the "pets" array.
+ */
+private fun parsePetLevels(jsonObject: JsonObject) {
+    // Parse pet house level from "buildings" array
+    try {
+        val buildings = jsonObject.getAsJsonArray("buildings")
+        if (buildings != null) {
+            val petHouse = buildings.firstOrNull {
+                it.asJsonObject.get("data").asInt == PET_HOUSE_DATA_ID
+            }?.asJsonObject
+            if (petHouse != null) {
+                InGameVars.petHouseLevel = petHouse.get("lvl")?.asInt ?: 0
+            }
+        }
+    } catch (_: Exception) { /* ignore */ }
+
+    // Parse pet levels from "pets" array
+    try {
+        val pets = jsonObject.getAsJsonArray("pets")
+        if (pets != null) {
+            // Helper: extract level for a given pet data ID
+            fun extractPetLevel(dataId: Int): Int {
+                return pets.firstOrNull {
+                    it.asJsonObject.get("data").asInt == dataId
+                }?.asJsonObject?.get("lvl")?.asInt ?: 0
+            }
+            InGameVars.lassiLevel = extractPetLevel(LASSI_DATA_ID)
+            InGameVars.mightyYakLevel = extractPetLevel(MIGHTY_YAK_DATA_ID)
+            InGameVars.electroOwlLevel = extractPetLevel(ELECTRO_OWL_DATA_ID)
+            InGameVars.unicornLevel = extractPetLevel(UNICORN_DATA_ID)
+            InGameVars.frostyLevel = extractPetLevel(FROSTY_DATA_ID)
+        }
+    } catch (_: Exception) { /* ignore */ }
 }
 
 /**

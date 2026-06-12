@@ -56,6 +56,21 @@ object InGameVars {
     @Volatile
     var mainBaseWallsNeedUpgrade: Boolean = false
 
+    // ── Pet upgrade level detection ──
+    @Volatile
+    var petHouseLevel: Int = 0   // 战宠小屋 (data ID 1000068) level, 0 = unknown
+
+    @Volatile
+    var lassiLevel: Int = 0      // 莱希 level (data ID 73000000)
+    @Volatile
+    var electroOwlLevel: Int = 0 // 闪枭 level (data ID 73000002)
+    @Volatile
+    var mightyYakLevel: Int = 0  // 大牦 level (data ID 73000001)
+    @Volatile
+    var unicornLevel: Int = 0    // 独角 level (data ID 73000003)
+    @Volatile
+    var frostyLevel: Int = 0     // 冰牙 level (data ID 73000009)
+
     // True means there are upgradable or unbuilt builder base walls; false means builder base walls are complete.
     @Volatile
     var builderBaseWallsNeedUpgrade: Boolean = false
