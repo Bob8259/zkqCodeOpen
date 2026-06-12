@@ -12,7 +12,27 @@ import kotlin.system.exitProcess
 
 object AppExitHelper {
 
+    fun setNormalExit(context: Context, normal: Boolean) {
+        try {
+            val prefs = context.getSharedPreferences("exit_prefs", Context.MODE_PRIVATE)
+            prefs.edit().putBoolean("is_normal_exit", normal).commit()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    fun isNormalExit(context: Context): Boolean {
+        return try {
+            val prefs = context.getSharedPreferences("exit_prefs", Context.MODE_PRIVATE)
+            prefs.getBoolean("is_normal_exit", false)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
+        }
+    }
+
     fun exitApplication(context: Context) {
+        setNormalExit(context, true)
         restoreDefaultInputMethod(context)
         stopDaemonProcess()
         stopAllServices(context)

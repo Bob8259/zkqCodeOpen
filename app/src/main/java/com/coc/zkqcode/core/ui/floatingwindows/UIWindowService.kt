@@ -242,6 +242,11 @@ class UIWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner, View
     override fun onBind(intent: Intent?): IBinder? = null
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        if (AppExitHelper.isNormalExit(this)) {
+            AppExitHelper.setNormalExit(this, false)
+            stopSelf()
+            return START_NOT_STICKY
+        }
         updateForegroundRecord()
         lifecycleRegistry.currentState = Lifecycle.State.STARTED
         showFloatingWindow()

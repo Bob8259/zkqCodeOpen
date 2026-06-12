@@ -309,6 +309,14 @@ class ControlWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner 
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        // Check if this is a normal exit restart
+        if (AppExitHelper.isNormalExit(this)) {
+            LogHelper.showDebugInfo("ControlWindowService: detected normal exit, stopping service")
+            AppExitHelper.setNormalExit(this, false)
+            stopSelf()
+            return START_NOT_STICKY
+        }
+
         // Detect START_STICKY restart: system delivers null intent after LMKD kill
         if (intent == null) {
             LogHelper.showDebugInfo("ControlWindowService: received null intent, relaunching MainActivity with detached shell")

@@ -9,11 +9,13 @@ import com.coc.zkqcode.core.system.screencapture.ProjectionPermissionHelper
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.fileactions.LogHelper
+import com.coc.zkqcode.core.util.exit.AppExitHelper
 
 class MainActivity : ComponentActivity() {
     private lateinit var projectionPermissionHelper: ProjectionPermissionHelper
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        AppExitHelper.setNormalExit(this, false)
         setTheme(R.style.Theme_ZKQcode)
         super.onCreate(savedInstanceState)
         // Unlock orientation after splash theme is replaced
