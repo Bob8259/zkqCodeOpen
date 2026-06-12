@@ -193,7 +193,7 @@ private suspend fun checkPets() {
         "${index + 1}. ${item.displayName}"
     }
     accountMessage("战宠升级\n优先级列表 :\n${summaryLines.joinToString("\n")}")
-    Thread.sleep(2000)
+    delayWithMultiplier(2000)
 
     val target = upgradeableItems.first()
 
