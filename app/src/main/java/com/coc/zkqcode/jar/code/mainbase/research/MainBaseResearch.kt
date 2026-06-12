@@ -163,7 +163,7 @@ private suspend fun findAllResearchItems() {
             }
 
             val maxLevel = MainBaseResearchMaxLevel.getMaxLevel(troopName)
-                ?: logAndRestart("未找到 ${troopName} 的最大等级")
+                ?: logAndRestart("未找到 $troopName 的最大等级")
             val targetLevel = maxLevel - researchLevelOffset
 
             if (detectedLevel >= targetLevel) {
@@ -207,9 +207,6 @@ private suspend fun findAllResearchItems() {
         "${index + 1}. ${item.troopName}"
     }
     accountMessage("研究升级\n优先级列表 :\n${summaryLines.joinToString("\n")}")
-
-    // Keep the summary visible on screen before proceeding
-    Thread.sleep(3000)
 
     val target = upgradeableItems.first()
 

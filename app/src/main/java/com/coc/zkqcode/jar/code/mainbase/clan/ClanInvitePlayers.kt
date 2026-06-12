@@ -184,7 +184,7 @@ private suspend fun swipeList() {
         delayTime = 500,
         delayAfter = 800
     )
-    delay(300)
+    delayWithMultiplier(300)
 }
 
 // ============================================================

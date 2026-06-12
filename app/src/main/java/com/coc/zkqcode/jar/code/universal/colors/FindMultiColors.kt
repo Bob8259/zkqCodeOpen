@@ -131,7 +131,7 @@ suspend fun findMultiColorsUntil(
             if (result != null) return result
         }
         if (System.currentTimeMillis() - startTime >= duration * multiplier) break
-        delay(100)
+        delay(50)
     }
     return null
 }

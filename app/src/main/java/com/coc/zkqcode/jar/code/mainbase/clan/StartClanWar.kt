@@ -56,7 +56,7 @@ suspend fun startClanWar(): Boolean {
             selectClanWarParticipant()
             break
         }
-        delay(200)
+        delayWithMultiplier(200)
     }
     writeMemory(storageKey, (System.currentTimeMillis() / 60_000).toString())
 
