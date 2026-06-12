@@ -190,10 +190,10 @@ private suspend fun checkPets() {
 
     // Print priority summary
     val summaryLines = upgradeableItems.mapIndexed { index, item ->
-        "${index + 1}. ${item.displayName} (优先级${item.priority}, 第${item.screenIndex}页)"
+        "${index + 1}. ${item.displayName}"
     }
-    accountMessage("战宠升级优先级列表 (共${upgradeableItems.size}项):\n${summaryLines.joinToString("\n")}")
-    Thread.sleep(2000)
+    accountMessage("战宠升级\n优先级列表 :\n${summaryLines.joinToString("\n")}")
+    delayWithMultiplier(2000)
 
     val target = upgradeableItems.first()
 
