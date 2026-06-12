@@ -157,6 +157,28 @@ private suspend fun checkPets() {
                     val priorityKey = "${petDef.key}_pet_priority"
                     val priority = getConfigRuntime(priorityKey).toIntOrNull() ?: Int.MAX_VALUE
 
+                    // ── Pet level restriction check ──
+                    // When pet house level ≤ 5, skip any of the 5 basic pets (莱希, 闪枭, 大牦, 独角, 冰牙)
+                    // that has already reached level 10, so lower-level pets get upgraded first.
+                    // When pet house level > 5, no restriction applies.
+                    // When levels are unknown (0 from default), restriction is effectively inactive.
+                    if (InGameVars.petHouseLevel in 1..5) {
+                        val petLevel = when (petDef.key) {
+                            MainBasePets.LASSI.key -> InGameVars.lassiLevel
+                            MainBasePets.ELECTRO_OWL.key -> InGameVars.electroOwlLevel
+                            MainBasePets.MIGHTY_YAK.key -> InGameVars.mightyYakLevel
+                            MainBasePets.UNICORN.key -> InGameVars.unicornLevel
+                            MainBasePets.FROSTY.key -> InGameVars.frostyLevel
+                            else -> 0
+                        }
+                        if (petLevel >= 10) {
+                            accountMessage("跳过 ${petDef.displayName}")
+                            completedPets.add(petDef.key)
+                            found = true
+                            break
+                        }
+                    }
+
                     completedPets.add(petDef.key)
                     upgradeableItems.add(PetUpgradableItem(
                         pet = petDef,
