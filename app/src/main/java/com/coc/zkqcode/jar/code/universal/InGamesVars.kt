@@ -140,6 +140,13 @@ object InGameVars {
         BaseType.Main to mutableMapOf(),
         BaseType.Builder to mutableMapOf()
     )
+
+    // ── Research item levels parsed from game JSON data ──
+    // Map from Chinese research name (e.g. "野蛮人") to its current level.
+    // Populated by GetJsonData.getJsonData() from the exported game JSON arrays (units, spells, siege_machines).
+    // Used by MainBaseResearch to avoid color-based badge level detection.
+    @Volatile
+    var researchItemLevels: Map<String, Int> = emptyMap()
 }
 
 fun accountMessage(text: String, isChecking: Boolean = true) {

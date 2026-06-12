@@ -5,6 +5,7 @@ import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
 import com.coc.zkqcode.jar.code.colorschema.ColorSchema
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.mainbase.MainBaseResearchColors
+import com.coc.zkqcode.jar.code.universal.InGameVars
 import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.jar.code.universal.buildings.BaseType
 import com.coc.zkqcode.jar.code.universal.buildings.WorkerAndResearch
@@ -18,32 +19,6 @@ import com.coc.zkqcode.jar.code.universal.smalltools.data.getConfigRuntime
 import com.coc.zkqcode.jar.ui.schema.Schema
 import com.coc.zkqcode.jar.ui.schema.details.MainBaseSettings
 import com.coc.zkqcode.jar.ui.schema.details.MainBaseTroopsAndSpells
-
-/**
- * Maps research level numbers to their corresponding color schemas via MyColors.
- * Each entry is a Pair of (levelNumber, list of colorSchemas).
- * A level is considered detected if ANY of its schemas matches.
- * Level 8 is placed before level 3 because level 8's color is a subset of level 3's,
- * so level 8 must be checked first to avoid a false level-3 match.
- * Add new entries here, and add matching properties in MainBaseResearchLevelColors.
- */
-val ResearchLevelColors: List<Pair<Int, List<ColorSchema>>> = listOf(
-    8 to listOf(MyColors.RESEARCH_LEVEL_8),
-    // Levels 10 and 11 are placed before level 9 and 1 because their base colour is also white (FFFFFF),
-    // so they must be checked first to avoid false matches against the other white-base levels.
-    10 to listOf(MyColors.RESEARCH_LEVEL_10),
-    11 to listOf(MyColors.RESEARCH_LEVEL_11),
-    12 to listOf(MyColors.RESEARCH_LEVEL_12),
-    13 to listOf(MyColors.RESEARCH_LEVEL_13),
-    9 to listOf(MyColors.RESEARCH_LEVEL_9),
-    3 to listOf(MyColors.RESEARCH_LEVEL_3),
-    4 to listOf(MyColors.RESEARCH_LEVEL_4),
-    2 to listOf(MyColors.RESEARCH_LEVEL_2),
-    5 to listOf(MyColors.RESEARCH_LEVEL_5),
-    6 to listOf(MyColors.RESEARCH_LEVEL_6),
-    7 to listOf(MyColors.RESEARCH_LEVEL_7),
-    1 to listOf(MyColors.RESEARCH_LEVEL_1),
-)
 
 suspend fun mainBaseResearch(): Boolean {
     if (getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.RESEARCH_SETTING.key) && WorkerAndResearch.detectResearch(BaseType.Main)) {
@@ -135,29 +110,11 @@ private suspend fun findAllResearchItems() {
                 continue
             }
 
-            // Detect level via crop region
-            val cropLeft = (result.x - 25).coerceAtLeast(0)
-            val cropTop = (result.y + 20).coerceAtLeast(0)
-            val cropWidth = minOf(40, screenBuffer.width - cropLeft)
-            val cropHeight = minOf(40, screenBuffer.height - cropTop)
-            if (cropWidth <= 0 || cropHeight <= 0) continue
-
-            var detectedLevel: Int? = null
-            outer@ for ((level, levelSchemas) in ResearchLevelColors) {
-                for (levelColorSchema in levelSchemas) {
-                    val levelSchema = ColorSchema.rescope(
-                        levelColorSchema,
-                        cropLeft, cropTop, cropLeft + cropWidth - 1, cropTop + cropHeight - 1
-                    )
-                    if (findMultiColors(byteBuffer = screenBuffer, schema = levelSchema, increment = 1) != null) {
-                        detectedLevel = level
-                        break@outer
-                    }
-                }
-            }
+            // Detect level from pre-parsed game JSON data (more reliable than color badge matching)
+            val detectedLevel = InGameVars.researchItemLevels[troopName]
 
             if (detectedLevel == null) {
-                accountMessage("跳过 ${troopName}: 未知等级")
+                accountMessage("跳过 ${troopName}: 数据中无等级信息")
                 seenNames.add(troopName)
                 continue
             }
@@ -238,34 +195,16 @@ private suspend fun findAllResearchItems() {
                 continue
             }
 
-            // Re-verify level is still below target
-            val cropLeft = (result.x - 25).coerceAtLeast(0)
-            val cropTop = (result.y + 20).coerceAtLeast(0)
-            val cropWidth = minOf(40, buffer.width - cropLeft)
-            val cropHeight = minOf(40, buffer.height - cropTop)
-            if (cropWidth > 0 && cropHeight > 0) {
-                var reDetectedLevel: Int? = null
-                outerRecheck@ for ((level, levelSchemas) in ResearchLevelColors) {
-                    for (levelColorSchema in levelSchemas) {
-                        val levelSchema = ColorSchema.rescope(
-                            levelColorSchema,
-                            cropLeft, cropTop, cropLeft + cropWidth - 1, cropTop + cropHeight - 1
-                        )
-                        if (findMultiColors(byteBuffer = buffer, schema = levelSchema, increment = 1) != null) {
-                            reDetectedLevel = level
-                            break@outerRecheck
-                        }
-                    }
-                }
-                if (reDetectedLevel != null && reDetectedLevel < target.targetLevel) {
-                    // Still upgradeable — perform the upgrade
-                    TouchActions.tap(result.x, result.y)
-                    TouchActions.tap(894, 617)
-                    clickRightBottom(3)
-                    foundAndUpgraded = true
-                    accountMessage("升级: ${target.troopName}, 等级$reDetectedLevel")
-                    break
-                }
+            // Re-verify level is still below target (using pre-parsed game data)
+            val reDetectedLevel = InGameVars.researchItemLevels[target.troopName]
+            if (reDetectedLevel != null && reDetectedLevel < target.targetLevel) {
+                // Still upgradeable — perform the upgrade
+                TouchActions.tap(result.x, result.y)
+                TouchActions.tap(894, 617)
+                clickRightBottom(3)
+                foundAndUpgraded = true
+                accountMessage("升级: ${target.troopName}, 等级$reDetectedLevel")
+                break
             }
         }
 

@@ -14,8 +14,10 @@ import com.coc.zkqcode.jar.code.universal.smalltools.input.TouchActions
 import com.coc.zkqcode.jar.code.universal.smalltools.input.setZKQInputMethod
 import com.coc.zkqcode.jar.code.universal.smalltools.data.getConfigRuntime
 import com.coc.zkqcode.jar.code.universal.buildings.upgrade.SpeedSixBuilderPriority
+import com.coc.zkqcode.jar.code.mainbase.research.MainBaseResearchMaxLevel
 import com.coc.zkqcode.jar.ui.schema.Schema
 import com.google.gson.Gson
+import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.google.gson.JsonSyntaxException
 
@@ -141,6 +143,9 @@ private const val BB_RAGED_BARBARIAN_DATA_ID = 4000031   // 狂暴野蛮人
         messageParts.add(summary)
     }
 
+    // Parse research item levels from JSON data (if smart decision is enabled, we already have the JSON)
+    parseResearchItemLevels(jsonObject)
+
     if (messageParts.isNotEmpty()) {
         accountMessage(messageParts.joinToString("\n\n"))
     }
@@ -191,6 +196,36 @@ private const val BB_RAGED_BARBARIAN_DATA_ID = 4000031   // 狂暴野蛮人
 
     clickRightBottom(1, delayTime = 200)
     return enterMainScreen()
+}
+
+/**
+ * Parse research item levels from the exported game JSON arrays (units, spells, siege_machines).
+ * Populates InGameVars.researchItemLevels so MainBaseResearch can read levels from data
+ * instead of performing color-based badge level detection.
+ */
+private fun parseResearchItemLevels(jsonObject: JsonObject) {
+    val nameToLevel = mutableMapOf<String, Int>()
+    try {
+        fun extractLevels(arrayName: String) {
+            val array = jsonObject.getAsJsonArray(arrayName) ?: return
+            for (element in array) {
+                val obj = element.asJsonObject
+                val dataId = try { obj.get("data").asInt } catch (_: Exception) { continue }
+                val lvl = try { obj.get("lvl").asInt } catch (_: Exception) { continue }
+                // Look up the research name from the data ID
+                val researchName = MainBaseResearchMaxLevel.allResearchDataIds.entries
+                    .firstOrNull { it.value == dataId }?.key
+                if (researchName != null) {
+                    // Use the max level if there are multiple entries with the same data ID
+                    nameToLevel[researchName] = maxOf(nameToLevel[researchName] ?: 0, lvl)
+                }
+            }
+        }
+        extractLevels("units")
+        extractLevels("spells")
+        extractLevels("siege_machines")
+    } catch (_: Exception) { /* ignore parse errors */ }
+    InGameVars.researchItemLevels = nameToLevel
 }
 
 /**
