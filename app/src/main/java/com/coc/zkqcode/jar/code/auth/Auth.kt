@@ -104,6 +104,25 @@ suspend fun getNetworkTimestamp(): Long {
     return System.currentTimeMillis()
 }
 
+/**
+ * If the zkq_international flag in auth_prefs SharedPreferences is true,
+ * block forever showing a login prompt every 2 seconds.
+ * If the flag is false or absent, return immediately so the caller keeps its current logic.
+ */
+private suspend fun blockIfInternational() {
+    val authPrefs = ZKQApplication.appContext.getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
+    val isInternational = try {
+        authPrefs.getBoolean("zkq_international", false)
+    } catch (_: Exception) {
+        false
+    }
+    if (!isInternational) return
+    while (true) {
+        ShowMessage("Please login to use.")
+        delay(2000)
+    }
+}
+
 private fun parseUrlEncoded(raw: String): Map<String, String> {
     if (raw.isBlank()) return emptyMap()
     val result = mutableMapOf<String, String>()
@@ -123,6 +142,7 @@ suspend fun userAuth() {
         val gemCount = GlobalVars.configStates["gem_count"]?.value?.toDoubleOrNull() ?: 0.0
         if (gemCount <= 0.00001) {
             GlobalVars.isShowAd = true
+            blockIfInternational()
             return
         }
         ShowMessage("准备连接服务器")
@@ -131,6 +151,7 @@ suspend fun userAuth() {
         if (email.isBlank() || password.isBlank()) {
             // Flag ad display on missing credentials
             GlobalVars.isShowAd = true
+            blockIfInternational()
             return
         }
 
@@ -150,6 +171,7 @@ suspend fun userAuth() {
             } catch (_: Exception) {
                 ShowMessage("Session login failed / 会话登录失败")
                 GlobalVars.isShowAd = true
+                blockIfInternational()
                 return
             }
         }
@@ -158,6 +180,7 @@ suspend fun userAuth() {
         val sessionKey = authPrefs.getString("session_key", null)
         if (sessionKey.isNullOrBlank()) {
             GlobalVars.isShowAd = true
+            blockIfInternational()
             return
         }
 
@@ -172,11 +195,13 @@ suspend fun userAuth() {
         } catch (_: Exception) {
             // Flag ad display on encryption failure
             GlobalVars.isShowAd = true
+            blockIfInternational()
             return
         }
         if (encryptionParts.size != 3) {
             // Flag ad display on abnormal encryption result
             GlobalVars.isShowAd = true
+            blockIfInternational()
             return
         }
 
@@ -216,6 +241,7 @@ suspend fun userAuth() {
             }
             // Flag ad display on PoW challenge or deduct request failure
             GlobalVars.isShowAd = true
+            blockIfInternational()
             return
         }
 
@@ -224,6 +250,7 @@ suspend fun userAuth() {
             ShowMessage("登录失败，错误信息：$responseBody")
             delayWithMultiplier(2000)
             GlobalVars.isShowAd = true
+            blockIfInternational()
             return
         }
 
@@ -232,6 +259,7 @@ suspend fun userAuth() {
         } catch (_: Exception) {
             // Flag ad display on response decryption failure
             GlobalVars.isShowAd = true
+            blockIfInternational()
             return
         }
         if (decrypted.startsWith("Error")) {
@@ -243,6 +271,7 @@ suspend fun userAuth() {
             }
             // Flag ad display on decrypted error response
             GlobalVars.isShowAd = true
+            blockIfInternational()
             return
         }
 
@@ -267,11 +296,13 @@ suspend fun userAuth() {
                 GlobalVars.configStates["gem_count"]?.value = "0"
                 // Flag ad display on insufficient gems or wrong credentials
                 GlobalVars.isShowAd = true
+                blockIfInternational()
             }
 
             else -> {
                 // Flag ad display on unparseable deduct response
                 GlobalVars.isShowAd = true
+                blockIfInternational()
             }
         }
     }
