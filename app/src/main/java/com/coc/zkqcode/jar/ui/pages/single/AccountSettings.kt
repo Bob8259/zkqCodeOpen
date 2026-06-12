@@ -267,7 +267,16 @@ fun LazyListScope.accountSettings() {
     // Display account configurations based on account_count
     val accountCountStr = GlobalVars.configStates[GLOBAL_SETTINGS.ACCOUNT_COUNT.key]!!.value
     val currentAccountCount = accountCountStr.toIntOrNull() ?: 3
-    items(count = currentAccountCount, key = { it + 1 }) { i ->
-        AccountConfig(index = i + 1)
+
+    // Sort accounts: enabled (isopen=1) first by index ascending, then disabled (isopen=0) by index ascending.
+    // When the user toggles an account on/off, recomposition re-sorts automatically.
+    val sortedAccountIndices = (1..currentAccountCount).sortedWith(
+        compareBy<Int> { index ->
+            GlobalVars.configStates["${ACCOUNT_SETTINGS.ISOPEN.key}${index}"]?.value != "1"
+        }.thenBy { it }
+    )
+
+    items(count = sortedAccountIndices.size, key = { sortedAccountIndices[it] }) { i ->
+        AccountConfig(index = sortedAccountIndices[i])
     }
 }
