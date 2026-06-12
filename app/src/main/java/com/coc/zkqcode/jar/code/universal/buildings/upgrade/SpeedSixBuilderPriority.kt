@@ -2,6 +2,7 @@ package com.coc.zkqcode.jar.code.universal.buildings.upgrade
 
 import com.coc.zkqcode.jar.code.universal.InGameVars
 import com.coc.zkqcode.jar.code.universal.buildings.BaseType
+import com.coc.zkqcode.jar.code.universal.BuildingStatus
 
 /**
  * Speed 6 Builder priority override logic.
@@ -91,14 +92,15 @@ object SpeedSixBuilderPriority {
         originalPriorities: Map<String, Int>
     ): Map<String, Int> {
         val unmetTargets = mutableListOf<String>()
-        if (needsPriorityBoost(InGameVars.mainMortarUnlocked, InGameVars.mainMortarLevel, MAIN_MORTAR_TARGET_LEVEL, InGameVars.mainMortarUpgrading)) {
-            unmetTargets.add("迫击炮")
-        }
-        if (needsPriorityBoost(InGameVars.mainArcherTowerUnlocked, InGameVars.mainArcherTowerLevel, MAIN_ARCHER_TOWER_TARGET_LEVEL, InGameVars.mainArcherTowerUpgrading)) {
-            unmetTargets.add("箭塔")
-        }
-        if (needsPriorityBoost(InGameVars.mainCannonUnlocked, InGameVars.mainCannonLevel, MAIN_CANNON_TARGET_LEVEL, InGameVars.mainCannonUpgrading)) {
-            unmetTargets.add("加农炮")
+        val targets = listOf(
+            Triple("迫击炮", MAIN_MORTAR_TARGET_LEVEL, InGameVars.mainBaseSpeedSixStatus["迫击炮"]),
+            Triple("箭塔", MAIN_ARCHER_TOWER_TARGET_LEVEL, InGameVars.mainBaseSpeedSixStatus["箭塔"]),
+            Triple("加农炮", MAIN_CANNON_TARGET_LEVEL, InGameVars.mainBaseSpeedSixStatus["加农炮"])
+        )
+        for ((name, targetLvl, status) in targets) {
+            if (status != null && needsPriorityBoost(status.unlocked, status.level, targetLvl, status.upgrading)) {
+                unmetTargets.add(name)
+            }
         }
 
         if (unmetTargets.isEmpty()) return originalPriorities
@@ -149,23 +151,17 @@ object SpeedSixBuilderPriority {
     ): Map<String, Int> {
         val unmetTargets = mutableListOf<String>()
 
-        // Heroes get inspected first since they have the highest priority
-        if (needsPriorityBoost(InGameVars.battleMachineUnlocked, InGameVars.battleMachineLevel, BATTLE_MACHINE_TARGET_LEVEL, InGameVars.battleMachineUpgrading)) {
-            unmetTargets.add("战争机器")
-        }
-        if (needsPriorityBoost(InGameVars.battleCopterUnlocked, InGameVars.battleCopterLevel, BATTLE_COPTER_TARGET_LEVEL, InGameVars.battleCopterUpgrading)) {
-            unmetTargets.add("战斗直升机")
-        }
-
-        // Per-building targets. Multi Mortar level 9 is the 6th builder unlock requirement.
-        if (needsPriorityBoost(InGameVars.builderMultiMortarUnlocked, InGameVars.builderMultiMortarLevel, BB_MULTI_MORTAR_TARGET_LEVEL, InGameVars.builderMultiMortarUpgrading)) {
-            unmetTargets.add("多管迫击炮")
-        }
-        if (needsPriorityBoost(InGameVars.builderArcherTowerUnlocked, InGameVars.builderArcherTowerLevel, BB_ARCHER_TOWER_TARGET_LEVEL, InGameVars.builderArcherTowerUpgrading)) {
-            unmetTargets.add("箭塔")
-        }
-        if (needsPriorityBoost(InGameVars.builderCannonUnlocked, InGameVars.builderCannonLevel, BB_DOUBLE_CANNON_TARGET_LEVEL, InGameVars.builderCannonUpgrading)) {
-            unmetTargets.add("双管加农炮")
+        val targets = listOf(
+            Triple("战争机器", BATTLE_MACHINE_TARGET_LEVEL, InGameVars.builderBaseSpeedSixStatus["战争机器"]),
+            Triple("战斗直升机", BATTLE_COPTER_TARGET_LEVEL, InGameVars.builderBaseSpeedSixStatus["战斗直升机"]),
+            Triple("多管迫击炮", BB_MULTI_MORTAR_TARGET_LEVEL, InGameVars.builderBaseSpeedSixStatus["多管迫击炮"]),
+            Triple("箭塔", BB_ARCHER_TOWER_TARGET_LEVEL, InGameVars.builderBaseSpeedSixStatus["箭塔"]),
+            Triple("双管加农炮", BB_DOUBLE_CANNON_TARGET_LEVEL, InGameVars.builderBaseSpeedSixStatus["双管加农炮"])
+        )
+        for ((name, targetLvl, status) in targets) {
+            if (status != null && needsPriorityBoost(status.unlocked, status.level, targetLvl, status.upgrading)) {
+                unmetTargets.add(name)
+            }
         }
 
         if (unmetTargets.isEmpty()) return originalPriorities
@@ -204,14 +200,18 @@ object SpeedSixBuilderPriority {
      */
     fun collectMainBaseUnmet(): List<UnmetEntry> {
         val list = mutableListOf<UnmetEntry>()
-        if (isUnmetForReport(InGameVars.mainMortarUnlocked, InGameVars.mainMortarLevel, MAIN_MORTAR_TARGET_LEVEL)) {
-            list.add(UnmetEntry("迫击炮", InGameVars.mainMortarLevel, MAIN_MORTAR_TARGET_LEVEL, InGameVars.mainMortarUnlocked, InGameVars.mainMortarUpgrading))
-        }
-        if (isUnmetForReport(InGameVars.mainArcherTowerUnlocked, InGameVars.mainArcherTowerLevel, MAIN_ARCHER_TOWER_TARGET_LEVEL)) {
-            list.add(UnmetEntry("箭塔", InGameVars.mainArcherTowerLevel, MAIN_ARCHER_TOWER_TARGET_LEVEL, InGameVars.mainArcherTowerUnlocked, InGameVars.mainArcherTowerUpgrading))
-        }
-        if (isUnmetForReport(InGameVars.mainCannonUnlocked, InGameVars.mainCannonLevel, MAIN_CANNON_TARGET_LEVEL)) {
-            list.add(UnmetEntry("加农炮", InGameVars.mainCannonLevel, MAIN_CANNON_TARGET_LEVEL, InGameVars.mainCannonUnlocked, InGameVars.mainCannonUpgrading))
+        val targets = listOf(
+            Triple("迫击炮", MAIN_MORTAR_TARGET_LEVEL, InGameVars.mainBaseSpeedSixStatus["迫击炮"]),
+            Triple("箭塔", MAIN_ARCHER_TOWER_TARGET_LEVEL, InGameVars.mainBaseSpeedSixStatus["箭塔"]),
+            Triple("加农炮", MAIN_CANNON_TARGET_LEVEL, InGameVars.mainBaseSpeedSixStatus["加农炮"])
+        )
+        for ((name, targetLvl, status) in targets) {
+            val unlocked = status?.unlocked ?: false
+            val level = status?.level ?: 0
+            val upgrading = status?.upgrading ?: false
+            if (isUnmetForReport(unlocked, level, targetLvl)) {
+                list.add(UnmetEntry(name, level, targetLvl, unlocked, upgrading))
+            }
         }
         return list.sortedBy {
             mainBasePriorityOrder.indexOf(it.name).let { idx -> if (idx == -1) Int.MAX_VALUE else idx }
@@ -226,20 +226,20 @@ object SpeedSixBuilderPriority {
      */
     fun collectBuilderBaseUnmet(): List<UnmetEntry> {
         val list = mutableListOf<UnmetEntry>()
-        if (isUnmetForReport(InGameVars.battleMachineUnlocked, InGameVars.battleMachineLevel, BATTLE_MACHINE_TARGET_LEVEL)) {
-            list.add(UnmetEntry("战争机器", InGameVars.battleMachineLevel, BATTLE_MACHINE_TARGET_LEVEL, InGameVars.battleMachineUnlocked, InGameVars.battleMachineUpgrading))
-        }
-        if (isUnmetForReport(InGameVars.battleCopterUnlocked, InGameVars.battleCopterLevel, BATTLE_COPTER_TARGET_LEVEL)) {
-            list.add(UnmetEntry("战斗直升机", InGameVars.battleCopterLevel, BATTLE_COPTER_TARGET_LEVEL, InGameVars.battleCopterUnlocked, InGameVars.battleCopterUpgrading))
-        }
-        if (isUnmetForReport(InGameVars.builderMultiMortarUnlocked, InGameVars.builderMultiMortarLevel, BB_MULTI_MORTAR_TARGET_LEVEL)) {
-            list.add(UnmetEntry("多管迫击炮", InGameVars.builderMultiMortarLevel, BB_MULTI_MORTAR_TARGET_LEVEL, InGameVars.builderMultiMortarUnlocked, InGameVars.builderMultiMortarUpgrading))
-        }
-        if (isUnmetForReport(InGameVars.builderArcherTowerUnlocked, InGameVars.builderArcherTowerLevel, BB_ARCHER_TOWER_TARGET_LEVEL)) {
-            list.add(UnmetEntry("箭塔", InGameVars.builderArcherTowerLevel, BB_ARCHER_TOWER_TARGET_LEVEL, InGameVars.builderArcherTowerUnlocked, InGameVars.builderArcherTowerUpgrading))
-        }
-        if (isUnmetForReport(InGameVars.builderCannonUnlocked, InGameVars.builderCannonLevel, BB_DOUBLE_CANNON_TARGET_LEVEL)) {
-            list.add(UnmetEntry("双管加农炮", InGameVars.builderCannonLevel, BB_DOUBLE_CANNON_TARGET_LEVEL, InGameVars.builderCannonUnlocked, InGameVars.builderCannonUpgrading))
+        val targets = listOf(
+            Triple("战争机器", BATTLE_MACHINE_TARGET_LEVEL, InGameVars.builderBaseSpeedSixStatus["战争机器"]),
+            Triple("战斗直升机", BATTLE_COPTER_TARGET_LEVEL, InGameVars.builderBaseSpeedSixStatus["战斗直升机"]),
+            Triple("多管迫击炮", BB_MULTI_MORTAR_TARGET_LEVEL, InGameVars.builderBaseSpeedSixStatus["多管迫击炮"]),
+            Triple("箭塔", BB_ARCHER_TOWER_TARGET_LEVEL, InGameVars.builderBaseSpeedSixStatus["箭塔"]),
+            Triple("双管加农炮", BB_DOUBLE_CANNON_TARGET_LEVEL, InGameVars.builderBaseSpeedSixStatus["双管加农炮"])
+        )
+        for ((name, targetLvl, status) in targets) {
+            val unlocked = status?.unlocked ?: false
+            val level = status?.level ?: 0
+            val upgrading = status?.upgrading ?: false
+            if (isUnmetForReport(unlocked, level, targetLvl)) {
+                list.add(UnmetEntry(name, level, targetLvl, unlocked, upgrading))
+            }
         }
         return list.sortedBy {
             builderBasePriorityOrder.indexOf(it.name).let { idx -> if (idx == -1) Int.MAX_VALUE else idx }

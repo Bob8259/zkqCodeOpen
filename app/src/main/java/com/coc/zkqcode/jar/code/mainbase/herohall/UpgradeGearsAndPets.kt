@@ -163,14 +163,7 @@ private suspend fun checkPets() {
                     // When pet house level > 5, no restriction applies.
                     // When levels are unknown (0 from default), restriction is effectively inactive.
                     if (InGameVars.petHouseLevel in 1..5) {
-                        val petLevel = when (petDef.key) {
-                            MainBasePets.LASSI.key -> InGameVars.lassiLevel
-                            MainBasePets.ELECTRO_OWL.key -> InGameVars.electroOwlLevel
-                            MainBasePets.MIGHTY_YAK.key -> InGameVars.mightyYakLevel
-                            MainBasePets.UNICORN.key -> InGameVars.unicornLevel
-                            MainBasePets.FROSTY.key -> InGameVars.frostyLevel
-                            else -> 0
-                        }
+                        val petLevel = InGameVars.petLevels[petDef.key] ?: 0
                         if (petLevel >= 10) {
                             accountMessage("跳过 ${petDef.displayName}")
                             completedPets.add(petDef.key)

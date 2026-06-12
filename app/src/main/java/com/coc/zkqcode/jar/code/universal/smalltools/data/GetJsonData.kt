@@ -16,6 +16,8 @@ import com.coc.zkqcode.jar.code.universal.smalltools.data.getConfigRuntime
 import com.coc.zkqcode.jar.code.universal.buildings.upgrade.SpeedSixBuilderPriority
 import com.coc.zkqcode.jar.code.mainbase.research.MainBaseResearchMaxLevel
 import com.coc.zkqcode.jar.ui.schema.Schema
+import com.coc.zkqcode.jar.code.universal.BuildingStatus
+import com.coc.zkqcode.jar.ui.schema.details.MainBasePets
 import com.google.gson.Gson
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
@@ -293,17 +295,21 @@ private fun parsePetLevels(jsonObject: JsonObject) {
     try {
         val pets = jsonObject.getAsJsonArray("pets")
         if (pets != null) {
-            // Helper: extract level for a given pet data ID
-            fun extractPetLevel(dataId: Int): Int {
-                return pets.firstOrNull {
-                    it.asJsonObject.get("data").asInt == dataId
-                }?.asJsonObject?.get("lvl")?.asInt ?: 0
+            val petIdMap = mapOf(
+                LASSI_DATA_ID to MainBasePets.LASSI.key,
+                MIGHTY_YAK_DATA_ID to MainBasePets.MIGHTY_YAK.key,
+                ELECTRO_OWL_DATA_ID to MainBasePets.ELECTRO_OWL.key,
+                UNICORN_DATA_ID to MainBasePets.UNICORN.key,
+                FROSTY_DATA_ID to MainBasePets.FROSTY.key
+            )
+            val levels = mutableMapOf<String, Int>()
+            for ((dataId, key) in petIdMap) {
+                val petObj = pets.firstOrNull { it.asJsonObject.get("data").asInt == dataId }?.asJsonObject
+                if (petObj != null) {
+                    levels[key] = petObj.get("lvl")?.asInt ?: 0
+                }
             }
-            InGameVars.lassiLevel = extractPetLevel(LASSI_DATA_ID)
-            InGameVars.mightyYakLevel = extractPetLevel(MIGHTY_YAK_DATA_ID)
-            InGameVars.electroOwlLevel = extractPetLevel(ELECTRO_OWL_DATA_ID)
-            InGameVars.unicornLevel = extractPetLevel(UNICORN_DATA_ID)
-            InGameVars.frostyLevel = extractPetLevel(FROSTY_DATA_ID)
+            InGameVars.petLevels = levels
         }
     } catch (_: Exception) { /* ignore */ }
 }
@@ -313,44 +319,27 @@ private fun parsePetLevels(jsonObject: JsonObject) {
  * Reads from the "buildings" and "buildings2" (and optionally "heroes") arrays.
  */
 private fun parseSpeedSixBuilderLevels(jsonObject: JsonObject) {
+    val mainStatus = mutableMapOf<String, BuildingStatus>()
+    val builderStatus = mutableMapOf<String, BuildingStatus>()
+
     // Parse main base buildings. Detect timer > 0 to know if an instance is already upgrading.
     // When a building already has an instance upgrading, we skip the priority boost for that
     // building type so the upgrade list won't try to queue another one of the same type.
     try {
         val buildings = jsonObject.getAsJsonArray("buildings")
         if (buildings != null) {
-            fun extractLevelsAndTimer(dataId: Int): Pair<List<Int>, Boolean> {
+            fun extractStatus(dataId: Int): BuildingStatus? {
                 val entries = buildings.filter { it.asJsonObject.get("data").asInt == dataId }
-                val levels = entries.mapNotNull { it.asJsonObject.get("lvl")?.asInt }
-                val hasUpgrading = entries.any {
+                if (entries.isEmpty()) return null
+                val level = entries.maxOfOrNull { it.asJsonObject.get("lvl")?.asInt ?: 0 } ?: 0
+                val upgrading = entries.any {
                     try { it.asJsonObject.get("timer")?.asInt ?: 0 > 0 } catch (_: Exception) { false }
                 }
-                return levels to hasUpgrading
+                return BuildingStatus(level = level, unlocked = true, upgrading = upgrading)
             }
-            if (MAIN_ARCHER_TOWER_DATA_ID != 0) {
-                val (levels, hasUpgrading) = extractLevelsAndTimer(MAIN_ARCHER_TOWER_DATA_ID)
-                if (levels.isNotEmpty()) {
-                    InGameVars.mainArcherTowerUnlocked = true
-                    InGameVars.mainArcherTowerLevel = levels.max()
-                    InGameVars.mainArcherTowerUpgrading = hasUpgrading
-                }
-            }
-            if (MAIN_CANNON_DATA_ID != 0) {
-                val (levels, hasUpgrading) = extractLevelsAndTimer(MAIN_CANNON_DATA_ID)
-                if (levels.isNotEmpty()) {
-                    InGameVars.mainCannonUnlocked = true
-                    InGameVars.mainCannonLevel = levels.max()
-                    InGameVars.mainCannonUpgrading = hasUpgrading
-                }
-            }
-            if (MAIN_MORTAR_DATA_ID != 0) {
-                val (levels, hasUpgrading) = extractLevelsAndTimer(MAIN_MORTAR_DATA_ID)
-                if (levels.isNotEmpty()) {
-                    InGameVars.mainMortarUnlocked = true
-                    InGameVars.mainMortarLevel = levels.max()
-                    InGameVars.mainMortarUpgrading = hasUpgrading
-                }
-            }
+            extractStatus(MAIN_ARCHER_TOWER_DATA_ID)?.let { mainStatus["箭塔"] = it }
+            extractStatus(MAIN_CANNON_DATA_ID)?.let { mainStatus["加农炮"] = it }
+            extractStatus(MAIN_MORTAR_DATA_ID)?.let { mainStatus["迫击炮"] = it }
         }
     } catch (_: Exception) { /* ignore */ }
 
@@ -358,38 +347,18 @@ private fun parseSpeedSixBuilderLevels(jsonObject: JsonObject) {
     try {
         val buildings2 = jsonObject.getAsJsonArray("buildings2")
         if (buildings2 != null) {
-            fun extractLevelsAndTimer2(dataId: Int): Pair<List<Int>, Boolean> {
+            fun extractStatus2(dataId: Int): BuildingStatus? {
                 val entries = buildings2.filter { it.asJsonObject.get("data").asInt == dataId }
-                val levels = entries.mapNotNull { it.asJsonObject.get("lvl")?.asInt }
-                val hasUpgrading = entries.any {
+                if (entries.isEmpty()) return null
+                val level = entries.maxOfOrNull { it.asJsonObject.get("lvl")?.asInt ?: 0 } ?: 0
+                val upgrading = entries.any {
                     try { it.asJsonObject.get("timer")?.asInt ?: 0 > 0 } catch (_: Exception) { false }
                 }
-                return levels to hasUpgrading
+                return BuildingStatus(level = level, unlocked = true, upgrading = upgrading)
             }
-            if (BB_ARCHER_TOWER_DATA_ID != 0) {
-                val (levels, hasUpgrading) = extractLevelsAndTimer2(BB_ARCHER_TOWER_DATA_ID)
-                if (levels.isNotEmpty()) {
-                    InGameVars.builderArcherTowerUnlocked = true
-                    InGameVars.builderArcherTowerLevel = levels.max()
-                    InGameVars.builderArcherTowerUpgrading = hasUpgrading
-                }
-            }
-            if (BB_CANNON_DATA_ID != 0) {
-                val (levels, hasUpgrading) = extractLevelsAndTimer2(BB_CANNON_DATA_ID)
-                if (levels.isNotEmpty()) {
-                    InGameVars.builderCannonUnlocked = true
-                    InGameVars.builderCannonLevel = levels.max()
-                    InGameVars.builderCannonUpgrading = hasUpgrading
-                }
-            }
-            if (BB_MULTI_MORTAR_DATA_ID != 0) {
-                val (levels, hasUpgrading) = extractLevelsAndTimer2(BB_MULTI_MORTAR_DATA_ID)
-                if (levels.isNotEmpty()) {
-                    InGameVars.builderMultiMortarUnlocked = true
-                    InGameVars.builderMultiMortarLevel = levels.max()
-                    InGameVars.builderMultiMortarUpgrading = hasUpgrading
-                }
-            }
+            extractStatus2(BB_ARCHER_TOWER_DATA_ID)?.let { builderStatus["箭塔"] = it }
+            extractStatus2(BB_CANNON_DATA_ID)?.let { builderStatus["双管加农炮"] = it }
+            extractStatus2(BB_MULTI_MORTAR_DATA_ID)?.let { builderStatus["多管迫击炮"] = it }
         }
     } catch (_: Exception) { /* ignore */ }
 
@@ -397,28 +366,19 @@ private fun parseSpeedSixBuilderLevels(jsonObject: JsonObject) {
     try {
         val heroes2 = jsonObject.getAsJsonArray("heroes2")
         if (heroes2 != null) {
-            if (BB_BATTLE_MACHINE_DATA_ID != 0) {
-                val entry = heroes2
-                    .firstOrNull { it.asJsonObject.get("data").asInt == BB_BATTLE_MACHINE_DATA_ID }
-                    ?.asJsonObject
-                if (entry != null) {
-                    InGameVars.battleMachineUnlocked = true
-                    InGameVars.battleMachineLevel = entry.get("lvl")?.asInt ?: 0
-                    InGameVars.battleMachineUpgrading = try { entry.get("timer")?.asInt ?: 0 > 0 } catch (_: Exception) { false }
-                }
+            fun extractHeroStatus(dataId: Int): BuildingStatus? {
+                val entry = heroes2.firstOrNull { it.asJsonObject.get("data").asInt == dataId }?.asJsonObject ?: return null
+                val level = entry.get("lvl")?.asInt ?: 0
+                val upgrading = try { entry.get("timer")?.asInt ?: 0 > 0 } catch (_: Exception) { false }
+                return BuildingStatus(level = level, unlocked = true, upgrading = upgrading)
             }
-            if (BB_BATTLE_COPTER_DATA_ID != 0) {
-                val entry = heroes2
-                    .firstOrNull { it.asJsonObject.get("data").asInt == BB_BATTLE_COPTER_DATA_ID }
-                    ?.asJsonObject
-                if (entry != null) {
-                    InGameVars.battleCopterUnlocked = true
-                    InGameVars.battleCopterLevel = entry.get("lvl")?.asInt ?: 0
-                    InGameVars.battleCopterUpgrading = try { entry.get("timer")?.asInt ?: 0 > 0 } catch (_: Exception) { false }
-                }
-            }
+            extractHeroStatus(BB_BATTLE_MACHINE_DATA_ID)?.let { builderStatus["战争机器"] = it }
+            extractHeroStatus(BB_BATTLE_COPTER_DATA_ID)?.let { builderStatus["战斗直升机"] = it }
         }
     } catch (_: Exception) { /* ignore */ }
+
+    InGameVars.mainBaseSpeedSixStatus = mainStatus
+    InGameVars.builderBaseSpeedSixStatus = builderStatus
 
     // Parse builder base troop levels for Speed 6 Builder level-18 target
     // Use Night Witch (暗夜女巫) if unlocked, otherwise fall back to Raged Barbarian (狂暴野蛮人)

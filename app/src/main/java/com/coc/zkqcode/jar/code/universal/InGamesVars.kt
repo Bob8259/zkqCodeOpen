@@ -29,6 +29,12 @@ enum class GameVersion(
     }
 }
 
+data class BuildingStatus(
+    val level: Int = 0,
+    val unlocked: Boolean = false,
+    val upgrading: Boolean = false
+)
+
 object InGameVars {
     @Volatile
     var currentAccountNumber: Int = 1
@@ -60,16 +66,9 @@ object InGameVars {
     @Volatile
     var petHouseLevel: Int = 0   // 战宠小屋 (data ID 1000068) level, 0 = unknown
 
+    // Map from pet key/ID (e.g. MainBasePets.LASSI.key) to its current level.
     @Volatile
-    var lassiLevel: Int = 0      // 莱希 level (data ID 73000000)
-    @Volatile
-    var electroOwlLevel: Int = 0 // 闪枭 level (data ID 73000002)
-    @Volatile
-    var mightyYakLevel: Int = 0  // 大牦 level (data ID 73000001)
-    @Volatile
-    var unicornLevel: Int = 0    // 独角 level (data ID 73000003)
-    @Volatile
-    var frostyLevel: Int = 0     // 冰牙 level (data ID 73000009)
+    var petLevels: Map<String, Int> = emptyMap()
 
     // True means there are upgradable or unbuilt builder base walls; false means builder base walls are complete.
     @Volatile
@@ -82,62 +81,12 @@ object InGameVars {
     @Volatile
     var speedSixBuilderEnabled: Boolean = false
 
-    // Main base target levels (gear-up buildings need level 8)
-    // unlocked = false means the building does not exist in the JSON (not yet built/unlocked)
-    // upgrading = true means at least one instance of this building is currently upgrading (timer > 0)
-    // When upgrading is true, the building is NOT boosted by Speed 6 Builder priority (no need to queue
-    // another upgrade of the same type when one is already in progress).
+    // Speed 6 Builder structures status (level, unlocked, upgrading) keyed by building name/key.
     @Volatile
-    var mainArcherTowerLevel: Int = 0
-    @Volatile
-    var mainArcherTowerUnlocked: Boolean = false
-    @Volatile
-    var mainArcherTowerUpgrading: Boolean = false
-    @Volatile
-    var mainCannonLevel: Int = 0
-    @Volatile
-    var mainCannonUnlocked: Boolean = false
-    @Volatile
-    var mainCannonUpgrading: Boolean = false
-    @Volatile
-    var mainMortarLevel: Int = 0
-    @Volatile
-    var mainMortarUnlocked: Boolean = false
-    @Volatile
-    var mainMortarUpgrading: Boolean = false
+    var mainBaseSpeedSixStatus: Map<String, BuildingStatus> = emptyMap()
 
-    // Builder base target levels.
-    // upgrading = true means this building/hero has a timer > 0 (already upgrading), so skip priority boost.
     @Volatile
-    var builderArcherTowerLevel: Int = 0
-    @Volatile
-    var builderArcherTowerUnlocked: Boolean = false
-    @Volatile
-    var builderArcherTowerUpgrading: Boolean = false
-    @Volatile
-    var builderCannonLevel: Int = 0
-    @Volatile
-    var builderCannonUnlocked: Boolean = false
-    @Volatile
-    var builderCannonUpgrading: Boolean = false
-    @Volatile
-    var builderMultiMortarLevel: Int = 0
-    @Volatile
-    var builderMultiMortarUnlocked: Boolean = false
-    @Volatile
-    var builderMultiMortarUpgrading: Boolean = false
-    @Volatile
-    var battleMachineLevel: Int = 0
-    @Volatile
-    var battleMachineUnlocked: Boolean = false
-    @Volatile
-    var battleMachineUpgrading: Boolean = false
-    @Volatile
-    var battleCopterLevel: Int = 0
-    @Volatile
-    var battleCopterUnlocked: Boolean = false
-    @Volatile
-    var battleCopterUpgrading: Boolean = false
+    var builderBaseSpeedSixStatus: Map<String, BuildingStatus> = emptyMap()
 
     // Speed 6 Builder: troop choice for level 18 target (暗夜女巫 or 狂暴野蛮人)
     @Volatile
