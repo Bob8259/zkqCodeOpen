@@ -93,6 +93,8 @@ internal fun SmallTextField(
 }
 
 fun LazyListScope.accountSettings() {
+    val pinnedState = GlobalVars.configStates.getOrPut("_account_pinned") { mutableStateOf("0") }
+    val isPinned = pinnedState.value == "1"
     item {
         SettingSection {
             SettingInputRow(
@@ -119,6 +121,11 @@ fun LazyListScope.accountSettings() {
                     text = Strings.invertSelection,
                     marginTop = 6.dp,
                     onClick = { batchUpdateAllAccounts(ACCOUNT_SETTINGS.ISOPEN.key) { if (it == "1") "0" else "1" } }
+                )
+                CustomButton(
+                    text = if (isPinned) Strings.unpinEnabledAccounts else Strings.pinEnabledAccounts,
+                    marginTop = 6.dp,
+                    onClick = { pinnedState.value = if (isPinned) "0" else "1" }
                 )
             }
             var configValue by remember { mutableStateOf("") }
@@ -268,13 +275,17 @@ fun LazyListScope.accountSettings() {
     val accountCountStr = GlobalVars.configStates[GLOBAL_SETTINGS.ACCOUNT_COUNT.key]!!.value
     val currentAccountCount = accountCountStr.toIntOrNull() ?: 3
 
-    // Sort accounts: enabled (isopen=1) first by index ascending, then disabled (isopen=0) by index ascending.
-    // When the user toggles an account on/off, recomposition re-sorts automatically.
-    val sortedAccountIndices = (1..currentAccountCount).sortedWith(
-        compareBy<Int> { index ->
-            GlobalVars.configStates["${ACCOUNT_SETTINGS.ISOPEN.key}${index}"]?.value != "1"
-        }.thenBy { it }
-    )
+    // Sort accounts: when isPinned is true, enabled (isopen=1) accounts come first by index ascending,
+    // then disabled (isopen=0) accounts by index ascending. When isPinned is false, keep natural order by index.
+    val sortedAccountIndices = if (isPinned) {
+        (1..currentAccountCount).sortedWith(
+            compareBy<Int> { index ->
+                GlobalVars.configStates["${ACCOUNT_SETTINGS.ISOPEN.key}${index}"]?.value != "1"
+            }.thenBy { it }
+        )
+    } else {
+        (1..currentAccountCount).toList()
+    }
 
     items(count = sortedAccountIndices.size, key = { sortedAccountIndices[it] }) { i ->
         AccountConfig(index = sortedAccountIndices[i])

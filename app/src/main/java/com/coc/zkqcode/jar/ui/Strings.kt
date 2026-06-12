@@ -76,6 +76,8 @@ object Strings {
     // AccountSettings
     val selectAll get() = if (LanguageManager.isChinese) "一键全选" else "Select All"
     val invertSelection get() = if (LanguageManager.isChinese) "一键反选" else "Invert All"
+    val pinEnabledAccounts get() = if (LanguageManager.isChinese) "置顶开启的账号" else "Pin Enabled"
+    val unpinEnabledAccounts get() = if (LanguageManager.isChinese) "取消置顶" else "Unpin"
     val applyConfigLabel get() = if (LanguageManager.isChinese) "将配置" else "Apply profile"
     val applyAccountLabel get() = if (LanguageManager.isChinese) "将账号" else "Apply account"
     val toAccounts get() = if (LanguageManager.isChinese) "应用到账号" else "to accounts"
