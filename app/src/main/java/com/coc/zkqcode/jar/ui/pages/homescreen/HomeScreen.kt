@@ -206,13 +206,16 @@ fun HomeScreen(
     }
 
     // Auto-Run Timer Logic
+    var autoRunCountdown by remember { mutableIntStateOf(InGameVars.autoRunTimer) }
+
     LaunchedEffect(GlobalVars.isAutoRunEnabled, InGameVars.autoRunTimer) {
         if (GlobalVars.isAutoRunEnabled) {
-            delay(1000L)
-            InGameVars.autoRunTimer--
-            if (InGameVars.autoRunTimer <= 0) {
-                saveAndSetPlaying(true)
+            autoRunCountdown = InGameVars.autoRunTimer
+            while (autoRunCountdown > 0) {
+                delay(1000L)
+                autoRunCountdown--
             }
+            saveAndSetPlaying(true)
         }
     }
 
@@ -235,6 +238,7 @@ fun HomeScreen(
                     0 -> {
                         homeSettings(
                             context = context,
+                            autoRunCountdown = autoRunCountdown,
                             saveAndSetPlaying = saveAndSetPlaying,
                             showMsg = showMsg,
                             cleanMemory = { cleanMemory() },

@@ -14,6 +14,7 @@ import com.coc.zkqcode.jar.code.universal.smalltools.data.getBooleanConfigRuntim
 import com.coc.zkqcode.jar.code.universal.smalltools.data.getConfigRuntime
 import com.coc.zkqcode.jar.ui.schema.Schema
 import kotlinx.coroutines.delay
+import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 
 /**
  * 部落拉人功能（多轮次）

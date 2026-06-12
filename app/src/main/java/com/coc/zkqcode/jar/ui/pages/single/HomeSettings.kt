@@ -42,6 +42,7 @@ import com.coc.zkqcode.statehelper.AppStateManager
 
 fun LazyListScope.homeSettings(
     context: Context,
+    autoRunCountdown: Int,
     saveAndSetPlaying: (Boolean) -> Unit,
     showMsg: (String) -> Unit,
     cleanMemory: () -> Unit,
@@ -58,7 +59,7 @@ fun LazyListScope.homeSettings(
                     .padding(vertical = 4.dp), horizontalArrangement = Arrangement.Start
             ) {
                 Text(
-                    text = if (GlobalVars.isAutoRunEnabled) Strings.timerRunning(InGameVars.autoRunTimer) else Strings.timerStopped,
+                    text = if (GlobalVars.isAutoRunEnabled) Strings.timerRunning(autoRunCountdown) else Strings.timerStopped,
                     style = MaterialTheme.typography.labelMedium,
                     color = Color.Red,
                     modifier = Modifier.padding(top = 16.dp, end = 6.dp)
