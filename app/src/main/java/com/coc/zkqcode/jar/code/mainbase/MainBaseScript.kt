@@ -23,6 +23,7 @@ import com.coc.zkqcode.jar.code.mainbase.herohall.upgradeGearsAndPets
 import com.coc.zkqcode.jar.code.mainbase.daily.checkLeagueShop
 import com.coc.zkqcode.jar.code.mainbase.others.checkRandomSchedule
 import com.coc.zkqcode.jar.code.mainbase.daily.checkNormalShop
+import com.coc.zkqcode.jar.code.mainbase.daily.collectBadgeEventRewards
 import com.coc.zkqcode.jar.code.mainbase.daily.collectClanCastleResources
 import com.coc.zkqcode.jar.code.mainbase.daily.mainBaseCheckTutorials
 import com.coc.zkqcode.jar.code.mainbase.daily.mainBaseCollectResources

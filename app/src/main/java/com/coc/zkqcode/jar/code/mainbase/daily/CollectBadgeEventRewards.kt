@@ -1,4 +1,4 @@
-package com.coc.zkqcode.jar.code.mainbase
+package com.coc.zkqcode.jar.code.mainbase.daily
 
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.mainbase.others.zoomSmallMainBase

@@ -40,9 +40,6 @@ suspend fun checkItemsToBePlaced(): Boolean {
         }
 
         return enterMainScreen()
-    } else {
-        accountMessage("未检测到放置物品")
-        delayWithMultiplier(2000)
     }
     return true
 }
