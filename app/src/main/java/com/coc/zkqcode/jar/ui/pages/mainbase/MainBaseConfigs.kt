@@ -106,6 +106,7 @@ fun LazyListScope.mainBaseConfig(
                 SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.DEPLOY_HEROES_ENABLED.key}_c$index")
                 SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.DEPLOY_SPELLS_ENABLED.key}_c$index")
                 SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.DEPLOY_REINFORCEMENTS_ENABLED.key}_c$index")
+                SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.DEPLOY_SIEGE_MACHINES_ENABLED.key}_c$index")
             }
 
         }

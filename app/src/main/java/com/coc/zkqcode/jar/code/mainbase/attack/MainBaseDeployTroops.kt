@@ -35,15 +35,16 @@ suspend fun mainBaseDeployTroops() {
     // Record the start time of the battle
     zoomSmallMainBase(isForAttack = true)
 
-    // Read user-configurable deployment switches so that heroes, spells and
-    // clan-castle reinforcements can be toggled independently.
+    // Read user-configurable deployment switches so that heroes, spells, siege machines
+    // and clan-castle reinforcements can be toggled independently.
     val deployHeroes = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.DEPLOY_HEROES_ENABLED.key)
     val deploySpells = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.DEPLOY_SPELLS_ENABLED.key)
+    val deploySiegeMachines = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.DEPLOY_SIEGE_MACHINES_ENABLED.key)
     val deployReinforcements = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.DEPLOY_REINFORCEMENTS_ENABLED.key)
 
     // Upload a screenshot every 3 hours for monitoring
 //    uploadSearchScreenshot()
-    deploySiegeMachine(useReinforcements = deployReinforcements)
+    if (deploySiegeMachines) deploySiegeMachine(useReinforcements = deployReinforcements)
     repeat(3) {
         // Deploy each troop type if detected in the deployment bar
         deployIfPresent(DRAG_SWEEP_MS, MyColors.DragonAtDeploymentBar, MyColors.DragonAtDeploymentBar2)

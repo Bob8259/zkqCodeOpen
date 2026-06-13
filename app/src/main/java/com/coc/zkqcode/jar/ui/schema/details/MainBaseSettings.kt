@@ -41,6 +41,7 @@ object MainBaseSettings {
     val DEPLOY_HEROES_ENABLED = SettingDef("deploy_heroes_enabled", "下英雄", "Deploy Heroes", 1, "MAIN_BASE_SETTINGS")
     val DEPLOY_SPELLS_ENABLED = SettingDef("deploy_spells_enabled", "下法术", "Deploy Spells", 1, "MAIN_BASE_SETTINGS")
     val DEPLOY_REINFORCEMENTS_ENABLED = SettingDef("deploy_reinforcements_enabled", "下援兵", "Deploy Reinforcements", 1, "MAIN_BASE_SETTINGS")
+    val DEPLOY_SIEGE_MACHINES_ENABLED = SettingDef("deploy_siege_machines_enabled", "下攻城机器", "Deploy Siege Machines", 1, "MAIN_BASE_SETTINGS")
 
     ///////
     val BUILD_SETTING = SettingDef("build_setting", "自动建造", "Auto Build", 1, "MAIN_BASE_SETTINGS")
@@ -216,6 +217,7 @@ object MainBaseSettings {
         DEPLOY_HEROES_ENABLED,
         DEPLOY_SPELLS_ENABLED,
         DEPLOY_REINFORCEMENTS_ENABLED,
+        DEPLOY_SIEGE_MACHINES_ENABLED,
         BUILD_SETTING,
         WALL_UPGRADE_SETTINGS,
         INSTANT_UPGRADE,
