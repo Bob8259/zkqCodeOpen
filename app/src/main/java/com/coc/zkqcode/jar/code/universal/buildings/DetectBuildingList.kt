@@ -1,15 +1,21 @@
 ﻿package com.coc.zkqcode.jar.code.universal.buildings
 
+import android.graphics.Bitmap
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
+import com.coc.zkqcode.core.util.basic.waitForPlay
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
+import com.coc.zkqcode.core.util.fileactions.LogHelper.showDebugInfo
 import com.coc.zkqcode.jar.code.colorschema.ColorSchema
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
+import com.coc.zkqcode.jar.code.universal.recognizer.RecognizedText
 import com.coc.zkqcode.jar.code.universal.recognizer.TextRecognizer
 import com.coc.zkqcode.jar.code.universal.smalltools.data.getBooleanConfigRuntime
 import com.coc.zkqcode.jar.code.universal.smalltools.input.TouchActions
 import com.coc.zkqcode.jar.ui.schema.Schema
+import java.io.File
+import java.io.FileOutputStream
 
 /**
  * Detects building names from the screen.
@@ -27,8 +33,8 @@ suspend fun detectBuildingList(baseType: BaseType, excludeNewBuildings: Boolean 
     val endX = 900
     val endY = 560
 
-    // Recognize text in the specified area
-    val results = TextRecognizer.recognize(startX, startY, endX, endY, useChinese = true, threshold = 160)
+    // Recognize text in the specified area after removing the bright green marker noise.
+    val results = recognizeBuildingListWithGreenMask(startX, startY, endX, endY, threshold = 130)
 
     if (results.isEmpty()) return BuildingDetectionResult(emptyList())
 
@@ -90,7 +96,7 @@ suspend fun detectBuildingList(baseType: BaseType, excludeNewBuildings: Boolean 
     }.minOrNull()
 
     // Filter, clean, and return building names with positions
-    // Exclude buildings with insufficient resources: if more than 10 pixels of FF887F (RGB, the red color
+    // Exclude buildings with insufficient resources: if more than 10 pixels of FF887F (RGB, the red colour
     // used by the game for unaffordable upgrade costs) are found to the right of the building name, skip it.
     // Map results to DetectedBuilding with flags indicating if it was marked as "New" or "GearUp"
     data class BuildingWithFlags(val building: DetectedBuilding, val isNew: Boolean, val isGearUp: Boolean)
@@ -152,15 +158,99 @@ suspend fun detectBuildingList(baseType: BaseType, excludeNewBuildings: Boolean 
 }
 
 /**
+ * Crops the building list area, turns bright green pixels into white, then sends it to TextRecognizer.
+ */
+private suspend fun recognizeBuildingListWithGreenMask(
+    startX: Int,
+    startY: Int,
+    endX: Int,
+    endY: Int,
+    threshold: Int,
+    saveImage: Boolean = false,
+): List<RecognizedText> {
+    val screenBuffer = ScreenCaptureManager.capture(asBitmap = true) as? Bitmap
+        ?: logAndRestart("in building list recognition, screen capture failed.")
+    val width = endX - startX
+    val height = endY - startY
+
+    if (width <= 0 || height <= 0) {
+        logAndRestart("Invalid building list crop area: width=$width, height=$height")
+    }
+
+    waitForPlay()
+
+    if (startX + width > screenBuffer.width || startY + height > screenBuffer.height) {
+        return emptyList()
+    }
+
+    val cropped = Bitmap.createBitmap(screenBuffer, startX, startY, width, height)
+    val masked = maskBrightGreenPixelsToBlack(cropped)
+    if (masked !== cropped) {
+        cropped.recycle()
+    }
+
+    if (saveImage) {
+        ScreenCaptureManager.getContext()?.let { context ->
+            runCatching {
+                val file = File(context.filesDir, "test_masked.png")
+                FileOutputStream(file).use { out ->
+                    masked.compress(Bitmap.CompressFormat.PNG, 100, out)
+                }
+                showDebugInfo("Masked image saved to: ${file.absolutePath}")
+            }.onFailure { exception ->
+                showDebugInfo("Failed to save masked image: ${exception.message}")
+            }
+        }
+    }
+
+    return try {
+        TextRecognizer.recognize(
+            0,
+            0,
+            width,
+            height,
+            useChinese = true,
+            threshold = threshold,
+            saveImage = saveImage,
+            screenBuffer = masked,
+        )
+    } finally {
+        masked.recycle()
+    }
+}
+
+/**
+ * Replaces pixels matching R < 30, G > 250, B < 30 with white pixels.
+ */
+private fun maskBrightGreenPixelsToBlack(src: Bitmap): Bitmap {
+    val width = src.width
+    val height = src.height
+    val out = src.copy(Bitmap.Config.ARGB_8888, true) ?: return src
+    val pixels = IntArray(width * height)
+    out.getPixels(pixels, 0, width, 0, 0, width, height)
+    val black = 0xFF000000.toInt()
+
+    for (i in pixels.indices) {
+        val color = pixels[i]
+        val r = (color shr 16) and 0xFF
+        val g = (color shr 8) and 0xFF
+        val b = color and 0xFF
+        if (r < 30 && g > 170 && b < 30) {
+            pixels[i] = black
+        }
+    }
+
+    out.setPixels(pixels, 0, width, 0, 0, width, height)
+    return out
+}
+
+/**
  * Iterates through the building upgrade list in Builder Base.
  * Performs swipes and calls [onDetect] for each detection result.
  * If [onDetect] returns true, the iteration stops immediately.
  */
 suspend fun iterateBuilderBaseBuildingUpgradeList(
-    baseType: BaseType,
-    excludeNewBuildings: Boolean = false,
-    excludeGearUpBuildings: Boolean = true,
-    onDetect: suspend (BuildingDetectionResult) -> Boolean
+    baseType: BaseType, excludeNewBuildings: Boolean = false, excludeGearUpBuildings: Boolean = true, onDetect: suspend (BuildingDetectionResult) -> Boolean
 ) {
     var previousBuildingNames: List<String>? = null
     loop@ for (i in 1..12) {
