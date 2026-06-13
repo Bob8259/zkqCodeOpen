@@ -255,9 +255,11 @@ object Strings {
     val gearUpExplain get() = if (LanguageManager.isChinese) "改装建筑属于主世界功能，即使关闭夜世界，也依然会生效。" else "Gear-up is a main base feature and works even if Builder Base is disabled."
     val saveWorkerBuildExplain get() = if (LanguageManager.isChinese) "本功能依赖智能决策，启用本功能后会自动开启智能决策。" else "Requires Smart Decision to be enabled."
     val batchWallExplain get() = if (LanguageManager.isChinese) "此功能对已开启月卡（黄金令牌）的账号不生效。" else "Does not apply to Gold Pass accounts."
-    val upgradeAllGearExplain get() = if (LanguageManager.isChinese) "启用后，辅助将同时自动升级已穿戴的装备。" else "Auto-upgrade equipped gear simultaneously."
-    val upgradeGearExplain get() = if (LanguageManager.isChinese) "开启后，辅助将自动升级选中的装备" else "Auto-upgrade selected gear"
-    val upgradeWearGearExplain get() = if (LanguageManager.isChinese) "仅升级当前英雄穿戴的装备" else "Only upgrade currently equipped gear"
+    // Gear scope options
+    val upgradeScopeWear get() = if (LanguageManager.isChinese) "仅穿戴装备" else "Equipped Only"
+    val upgradeScopeCustom get() = if (LanguageManager.isChinese) "仅指定装备" else "Custom Only"
+    val upgradeScopeAll get() = if (LanguageManager.isChinese) "全部装备\n(穿戴优先升级)" else "All Gear\n(Equipped Priority)"
+    val upgradeScopeExplain get() = if (LanguageManager.isChinese) "仅穿戴装备：只升级当前英雄穿戴的装备\n仅指定装备：只升级下方勾选的特定装备\n全部装备：同时升级穿戴和指定的装备" else "Equipped Only: upgrade currently equipped gear\nCustom Only: upgrade only selected gear below\nAll Gear: upgrade both equipped and custom gear"
 
     // Hero names for gear grouping
     val barbarianKing get() = if (LanguageManager.isChinese) "野蛮人之王" else "Barbarian King"
