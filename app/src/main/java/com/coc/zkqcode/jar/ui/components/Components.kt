@@ -544,8 +544,8 @@ fun SettingDropdown(
                     expanded = true
                 },
                 shape = RoundedCornerShape(8.dp),
-                modifier = Modifier.height(30.dp),
-                contentPadding = PaddingValues(horizontal = 12.dp, vertical = 0.dp),
+                modifier = Modifier.heightIn(min = 30.dp),
+                contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = AppColors.Primary)
             ) {
                 Text(selectedOption, style = MaterialTheme.typography.labelMedium)

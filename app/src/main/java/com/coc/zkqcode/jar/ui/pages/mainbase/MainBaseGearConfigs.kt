@@ -18,42 +18,14 @@ import androidx.compose.runtime.remember
 import com.coc.zkqcode.jar.ui.Strings
 import com.coc.zkqcode.jar.ui.components.CustomButton
 import com.coc.zkqcode.jar.ui.components.SettingToggleButton
-import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.jar.ui.theme.AppColors
 import com.coc.zkqcode.jar.ui.schema.Schema.MAIN_BASE_GEARS
 
 @Composable
 fun MainBaseGearConfigs(index: Int) {
     // Render gear toggles grouped by hero so new gears appear automatically.
-    val items = MAIN_BASE_GEARS.all
     val heroGroups = MAIN_BASE_GEARS.heroGroups
     val isExpanded = remember { mutableStateOf(false) }
-
-    // Select all gears
-    val selectAll = {
-        items.forEach { item ->
-            val key = "${item.key}_c${index}"
-            if (!GlobalVars.configStates.containsKey(key)) {
-                GlobalVars.configStates[key] = mutableStateOf("1")
-            } else {
-                GlobalVars.configStates[key]!!.value = "1"
-            }
-        }
-    }
-
-    // Invert all gear selections
-    val invertSelection = {
-        items.forEach { item ->
-            val key = "${item.key}_c${index}"
-            val currentState = GlobalVars.configStates[key]?.value ?: "1"
-            val newValue = if (currentState == "1") "0" else "1"
-            if (!GlobalVars.configStates.containsKey(key)) {
-                GlobalVars.configStates[key] = mutableStateOf(newValue)
-            } else {
-                GlobalVars.configStates[key]!!.value = newValue
-            }
-        }
-    }
 
     Column {
         Row {
@@ -62,12 +34,6 @@ fun MainBaseGearConfigs(index: Int) {
                 onClick = { isExpanded.value = !isExpanded.value },
                 containerColor = AppColors.Teal
             )
-            AnimatedVisibility(visible = isExpanded.value) {
-                Row {
-                    CustomButton(text = Strings.selectAll, onClick = selectAll)
-                    CustomButton(text = Strings.invertSelection, onClick = invertSelection)
-                }
-            }
         }
 
         AnimatedVisibility(visible = isExpanded.value) {

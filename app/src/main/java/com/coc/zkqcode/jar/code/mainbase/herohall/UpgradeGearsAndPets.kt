@@ -23,11 +23,8 @@ import com.coc.zkqcode.jar.ui.schema.Schema
 
 suspend fun upgradeGearsAndPets(): Boolean {
     val gearMasterOn = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.UPGRADE_GEAR_MASTER.key)
-    var shouldUpgradeGears = if (gearMasterOn) {
-        getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.UPGRADE_ALL_GEAR.key) || getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.UPGRADE_WERA_GEAR.key) || getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.UPGRADE_CUSTOM_GEAR.key)
-    } else {
-        false
-    }
+    // Gear upgrade is active when master is on; scope (0=wear, 1=custom, 2=all) is read inside upgradeGearsAndPetsAction
+    var shouldUpgradeGears = gearMasterOn
     var shouldUpgradePets = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.UPGRADE_PETS.key)
 
     // Gears require TH8+, pets require TH14+
@@ -266,48 +263,11 @@ private suspend fun checkPets() {
 
 private suspend fun upgradeGearsAndPetsAction(shouldUpgradeGears: Boolean, shouldUpgradePets: Boolean) {
     if (shouldUpgradeGears) {
-        val shouldUpgradeAllGear = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.UPGRADE_ALL_GEAR.key)
-        val shouldUpgradeWear = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.UPGRADE_WERA_GEAR.key)
-        val shouldUpgradeCustom = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.UPGRADE_CUSTOM_GEAR.key)
+        // Read scope: 0=wear only, 1=custom only, 2=all
+        val scope = getConfigRuntime(Schema.MAIN_BASE_SETTINGS.UPGRADE_GEAR_SCOPE.key).toIntOrNull() ?: 0
+        val shouldUpgradeWear = scope == 0 || scope == 2
+        val shouldUpgradeCustom = scope == 1 || scope == 2
 
-        if (shouldUpgradeAllGear) {
-            // Old workflow: open smith, scan rows for arrows, upgrade, swipe, repeat
-            TouchActions.tap(685, 590) // Open Smith
-            val upgradeGear = findMultiColorsUntil(schemas = listOf(MyColors.UpgradeGearArrow, MyColors.NewGear), duration = 800)
-            if (upgradeGear != null) {
-                TouchActions.tap(upgradeGear.x, upgradeGear.y)
-                repeat(2) { TouchActions.tap(1130, 640, delayTime = 300) }
-                TouchActions.tap(1220, 635, delayTime = 300)
-            }
-            run upgradeGears@{
-                suspend fun tryUpgradeInVisibleRows(): Boolean {
-                    val firstRowArrow = ColorSchema.rescope(MyColors.UpgradeGearArrow, 80, 425, 1210, 460)
-                    val firstRowNewGear = ColorSchema.rescope(MyColors.NewGear, 80, 425, 1210, 460)
-                    val secondRowArrow = ColorSchema.rescope(MyColors.UpgradeGearArrow, 90, 510, 1220, 540)
-                    val secondRowNewGear = ColorSchema.rescope(MyColors.NewGear, 90, 510, 1220, 540)
-                    val gear = findMultiColorsUntil(
-                        schemas = listOf(firstRowArrow, firstRowNewGear, secondRowArrow, secondRowNewGear), duration = 800
-                    )
-                    if (gear != null) {
-                        TouchActions.tap(gear.x, gear.y)
-                        repeat(2) { TouchActions.tap(1130, 640, delayTime = 300) }
-                        TouchActions.tap(1220, 635, delayTime = 300)
-                        return true
-                    }
-                    return false
-                }
-
-                // Scan both visible rows in one pass using four rescoped schemas.
-                if (tryUpgradeInVisibleRows()) return@upgradeGears
-
-                // Swipe once, then run the same one-pass scan again.
-                TouchActions.swipe(1220, 510, 0, 510, delayTime = 300)
-                if (tryUpgradeInVisibleRows()) return@upgradeGears
-            }
-            backToHeroHall()
-        }
-
-        // New workflow: per-hero iteration with equipped and/or custom gear modes
         if (shouldUpgradeWear || shouldUpgradeCustom) {
             upgradeGearsAction(shouldUpgradeWear, shouldUpgradeCustom)
         }

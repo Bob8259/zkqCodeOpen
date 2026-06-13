@@ -513,10 +513,8 @@ fun LazyListScope.mainBaseConfig(
                 key = "${MAIN_BASE_SETTINGS.UPGRADE_GEAR_MASTER.key}_c$index",
                 afterChange = { checked ->
                     if (!checked) {
-                        // When master is off, turn off all sub-switches
-                        GlobalVars.configStates["${MAIN_BASE_SETTINGS.UPGRADE_WERA_GEAR.key}_c$index"]?.value = "0"
-                        GlobalVars.configStates["${MAIN_BASE_SETTINGS.UPGRADE_ALL_GEAR.key}_c$index"]?.value = "0"
-                        GlobalVars.configStates["${MAIN_BASE_SETTINGS.UPGRADE_CUSTOM_GEAR.key}_c$index"]?.value = "0"
+                        // When master is off, reset scope to default (0 = wear only)
+                        GlobalVars.configStates["${MAIN_BASE_SETTINGS.UPGRADE_GEAR_SCOPE.key}_c$index"]?.value = "0"
                     }
                 }
             )
@@ -524,38 +522,15 @@ fun LazyListScope.mainBaseConfig(
             // Sub-switches visible only when master is on
             AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.UPGRADE_GEAR_MASTER.key}_c$index"]?.value == "1") {
                 Column {
-                    FlowRow {
-                        // Gear upgrade: upgrade equipped gear (independent)
-                        SettingSwitchIcon(
-                            key = "${MAIN_BASE_SETTINGS.UPGRADE_WERA_GEAR.key}_c$index",
-                            explain = Strings.upgradeWearGearExplain
-                        )
-
-                        // Gear upgrade: upgrade all gear (old mode, mutually exclusive with custom)
-                        SettingSwitchIcon(
-                            key = "${MAIN_BASE_SETTINGS.UPGRADE_ALL_GEAR.key}_c$index",
-                            explain = Strings.upgradeAllGearExplain,
-                            afterChange = { checked ->
-                                if (checked) {
-                                    GlobalVars.configStates["${MAIN_BASE_SETTINGS.UPGRADE_CUSTOM_GEAR.key}_c$index"]?.value = "0"
-                                }
-                            }
-                        )
-                    }
-
-                    // Gear upgrade: custom gear selection (new mode, mutually exclusive with all)
-                    SettingSwitchIcon(
-                        key = "${MAIN_BASE_SETTINGS.UPGRADE_CUSTOM_GEAR.key}_c$index",
-                        explain = Strings.upgradeGearExplain,
-                        afterChange = { checked ->
-                            if (checked) {
-                                GlobalVars.configStates["${MAIN_BASE_SETTINGS.UPGRADE_ALL_GEAR.key}_c$index"]?.value = "0"
-                            }
-                        }
+                    // Gear upgrade scope selector: 0=wear only, 1=custom only, 2=all
+                    SettingDropdown(
+                        key = "${MAIN_BASE_SETTINGS.UPGRADE_GEAR_SCOPE.key}_c$index",
+                        options = listOf(Strings.upgradeScopeWear, Strings.upgradeScopeCustom, Strings.upgradeScopeAll)
                     )
 
-                    // Custom gear selection list visible when UPGRADE_CUSTOM_GEAR is on
-                    AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.UPGRADE_CUSTOM_GEAR.key}_c$index"]?.value == "1") {
+                    // Custom gear selection list visible when scope is custom (1) or all (2)
+                    val scopeValue = GlobalVars.configStates["${MAIN_BASE_SETTINGS.UPGRADE_GEAR_SCOPE.key}_c$index"]?.value ?: "0"
+                    AnimatedVisibility(visible = scopeValue == "1") {
                         MainBaseGearConfigs(index)
                     }
                 }
