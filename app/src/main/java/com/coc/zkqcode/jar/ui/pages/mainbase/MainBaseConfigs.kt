@@ -529,7 +529,7 @@ fun LazyListScope.mainBaseConfig(
 
                     // Custom gear selection list visible when scope is custom (1) or all (2)
                     val scopeValue = GlobalVars.configStates["${MAIN_BASE_SETTINGS.UPGRADE_GEAR_SCOPE.key}_c$index"]?.value ?: "0"
-                    AnimatedVisibility(visible = scopeValue == "1" || scopeValue == "2") {
+                    AnimatedVisibility(visible = scopeValue == "1") {
                         MainBaseGearConfigs(index)
                     }
                 }

@@ -71,6 +71,9 @@ object InGameVars {
     @Volatile
     var frostyLevel: Int = 0     // 冰牙 level (data ID 73000009)
 
+    // Pet levels by key (populated by pet upgrade scan), fallback for the individual fields above.
+    val petLevels: MutableMap<String, Int> = mutableMapOf()
+
     // True means there are upgradable or unbuilt builder base walls; false means builder base walls are complete.
     @Volatile
     var builderBaseWallsNeedUpgrade: Boolean = false
