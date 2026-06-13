@@ -258,7 +258,7 @@ object Strings {
     // Gear scope options
     val upgradeScopeWear get() = if (LanguageManager.isChinese) "仅穿戴装备" else "Equipped Only"
     val upgradeScopeCustom get() = if (LanguageManager.isChinese) "仅指定装备" else "Custom Only"
-    val upgradeScopeAll get() = if (LanguageManager.isChinese) "全部装备\n(穿戴优先升级)" else "All Gear\n(Equipped Priority)"
+    val upgradeScopeAll get() = if (LanguageManager.isChinese) "全部装备" else "All Gear"
     val upgradeScopeExplain get() = if (LanguageManager.isChinese) "仅穿戴装备：只升级当前英雄穿戴的装备\n仅指定装备：只升级下方勾选的特定装备\n全部装备：同时升级穿戴和指定的装备" else "Equipped Only: upgrade currently equipped gear\nCustom Only: upgrade only selected gear below\nAll Gear: upgrade both equipped and custom gear"
 
     // Hero names for gear grouping
