@@ -1,4 +1,4 @@
-﻿package com.coc.zkqcode.jar.code
+package com.coc.zkqcode.jar.code
 
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.util.basic.RunShell
@@ -28,7 +28,6 @@ import com.coc.zkqcode.jar.code.universal.smalltools.data.getConfigOrStop
 import com.coc.zkqcode.jar.code.universal.smalltools.data.readMemory
 import com.coc.zkqcode.jar.code.universal.smalltools.data.writeGameFiles
 import com.coc.zkqcode.jar.code.universal.smalltools.data.writeMemory
-import com.coc.zkqcode.jar.code.universal.smalltools.input.setZKQInputMethod
 import com.coc.zkqcode.jar.code.universal.smalltools.lifecycle.tapDataNumberEntryButtons
 import com.coc.zkqcode.jar.code.universal.smalltools.scheduling.checkAndCoolDown
 import com.coc.zkqcode.jar.code.universal.smalltools.scheduling.runRandomSchedulingScript
@@ -49,7 +48,7 @@ suspend fun runMainScript() {
         return
     }
     waitForPlay()
-    setZKQInputMethod()
+    // setZKQInputMethod()
     accountMessage("检测到设置已更新\n即将重新运行")
     delay(200)
     userAuth()
@@ -72,7 +71,7 @@ suspend fun runMainScript() {
     var lastUpdateCheckTime = System.currentTimeMillis()
     var nextUpdateInterval = (3600_000L) + (Math.random() * 7200_000L).toLong()
     while (currentCoroutineContext().isActive) {
-//        runTestCode()
+        // runTestCode()
         runAccountStepBlock()
         // Circularly search for the next enabled account, wrapping back to currentAccountNumber (inclusive)
         // Emit hot update signal at safe point, throttled to once every 2-3 hours randomly

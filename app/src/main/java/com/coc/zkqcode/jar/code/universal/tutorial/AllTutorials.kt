@@ -1,4 +1,4 @@
-﻿package com.coc.zkqcode.jar.code.universal.tutorial
+package com.coc.zkqcode.jar.code.universal.tutorial
 
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
@@ -11,7 +11,6 @@ import com.coc.zkqcode.jar.code.universal.InGameVars
 import com.coc.zkqcode.jar.code.universal.smalltools.lifecycle.checkReconnections
 import com.coc.zkqcode.jar.code.universal.smalltools.lifecycle.isGameAtFront
 import com.coc.zkqcode.jar.code.universal.smalltools.lifecycle.runGame
-import com.coc.zkqcode.jar.code.universal.smalltools.input.setZKQInputMethod
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.isActive
 
@@ -19,21 +18,13 @@ object AllTutorials {
 
     suspend fun allBaseTutorial(): Boolean {
         val durationMillis = 500_000L
-        val inputMethodIntervalMillis = 15_000L
         val startTime = System.currentTimeMillis()
-        var lastInputMethodTime = 0L
 
         while (currentCoroutineContext().isActive) {
             val currentTime = System.currentTimeMillis()
             val elapsed = currentTime - startTime
 
             if (elapsed >= durationMillis) return false
-
-            // Run setZKQInputMethod() every 15 seconds
-            if (currentTime - lastInputMethodTime >= inputMethodIntervalMillis) {
-                setZKQInputMethod()
-                lastInputMethodTime = currentTime
-            }
 
             val remainingSeconds = ((durationMillis - elapsed) / 1000).toInt()
             accountMessage("教程中，还剩${remainingSeconds}秒")

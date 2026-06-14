@@ -15,7 +15,6 @@ import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.smalltools.data.getBooleanConfigRuntime
 import com.coc.zkqcode.jar.code.universal.smalltools.data.getStaticConfig
 import com.coc.zkqcode.jar.code.universal.smalltools.input.TouchActions
-import com.coc.zkqcode.jar.code.universal.smalltools.input.setZKQInputMethod
 import com.coc.zkqcode.jar.code.universal.smalltools.lifecycle.checkReconnections
 import com.coc.zkqcode.jar.code.universal.smalltools.lifecycle.isGameAtFront
 import com.coc.zkqcode.jar.code.universal.smalltools.lifecycle.killGame
@@ -257,7 +256,6 @@ private suspend fun closeAdvertisements() {
         TouchActions.tap(1232, 65, delayTime = 300)//close training page
     }
     findMultiColors(byteBuffer = screenBuffer, schema = MyColors.MyVillageIsCalled, increment = 1)?.let {
-        setZKQInputMethod()
         TouchActions.tap(625, 300, delayTime = 200)
 
         var gameName = getStaticConfig(Schema.GLOBAL_SETTINGS.CREATE_PREFIX.key)

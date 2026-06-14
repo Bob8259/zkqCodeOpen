@@ -1,4 +1,4 @@
-﻿package com.coc.zkqcode.jar.code.universal.tutorial
+package com.coc.zkqcode.jar.code.universal.tutorial
 
 import com.coc.zkqcode.core.system.inputmethod.inputTextReliable
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
@@ -13,7 +13,6 @@ import com.coc.zkqcode.jar.code.universal.clickRightBottom
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.smalltools.data.getStaticConfig
 import com.coc.zkqcode.jar.code.universal.smalltools.lifecycle.reExtractGameSavings
-import com.coc.zkqcode.jar.code.universal.smalltools.input.setZKQInputMethod
 import com.coc.zkqcode.jar.ui.schema.Schema
 
 
@@ -148,7 +147,6 @@ suspend fun mainBaseTutorial(): Boolean {
 
     // Village Naming Logic
     findMultiColors(schema = MyColors.MyVillageIsCalled, increment = 1)?.let {
-        setZKQInputMethod()
         TouchActions.tap(625, 300, delayTime = 200)
 
         var gameName = getStaticConfig(Schema.GLOBAL_SETTINGS.CREATE_PREFIX.key)

@@ -1,6 +1,6 @@
 package com.coc.zkqcode.jar.code.universal.smalltools.data
 
-import com.coc.zkqcode.core.system.inputmethod.ZKQInputMethodService
+import com.coc.zkqcode.core.util.basic.ClipboardHelper
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
 import com.coc.zkqcode.jar.code.colorschema.MyColors
@@ -11,7 +11,6 @@ import com.coc.zkqcode.jar.code.universal.clickRightBottom
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.smalltools.input.TouchActions
-import com.coc.zkqcode.jar.code.universal.smalltools.input.setZKQInputMethod
 import com.coc.zkqcode.jar.code.universal.smalltools.data.getConfigRuntime
 import com.coc.zkqcode.jar.code.universal.buildings.upgrade.SpeedSixBuilderPriority
 import com.coc.zkqcode.jar.code.mainbase.research.MainBaseResearchMaxLevel
@@ -78,13 +77,8 @@ private const val BB_RAGED_BARBARIAN_DATA_ID = 4000031   // 狂暴野蛮人
     // Wait for clipboard to be populated after copy action
     delayWithMultiplier(500)
 
-    // Read clipboard content via IME service (only IME has clipboard access from background)
-    val imeService = ZKQInputMethodService.instance
-    if (imeService == null) {
-        // IME not bound — try to rebind and retry
-        setZKQInputMethod()
-    }
-    val clipboardText = (ZKQInputMethodService.instance ?: logAndRestart("ZKQInputMethodService instance is null after rebind attempt")).readClipboard()
+    // Read clipboard content via transparent ClipboardActivity
+    val clipboardText = ClipboardHelper.readClipboard()
     if (clipboardText.isNullOrBlank()) {
         // Clipboard is empty — skip updating townHallLevel
         accountMessage("剪贴板为空，跳过大本营等级检测")

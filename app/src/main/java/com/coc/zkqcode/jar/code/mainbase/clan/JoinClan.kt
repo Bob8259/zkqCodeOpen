@@ -1,4 +1,4 @@
-﻿package com.coc.zkqcode.jar.code.mainbase.clan
+package com.coc.zkqcode.jar.code.mainbase.clan
 
 import com.coc.zkqcode.core.system.inputmethod.inputTextReliable
 import com.coc.zkqcode.core.util.basic.RunShell
@@ -15,7 +15,6 @@ import com.coc.zkqcode.jar.code.universal.smalltools.input.TouchActions
 import com.coc.zkqcode.jar.code.universal.smalltools.data.checkMemoryFile
 import com.coc.zkqcode.jar.code.universal.smalltools.data.getBooleanConfigRuntime
 import com.coc.zkqcode.jar.code.universal.smalltools.data.getConfigRuntime
-import com.coc.zkqcode.jar.code.universal.smalltools.input.setZKQInputMethod
 import com.coc.zkqcode.jar.code.universal.smalltools.data.writeMemory
 import com.coc.zkqcode.jar.ui.schema.Schema
 
@@ -54,7 +53,6 @@ suspend fun joinClan(): Boolean {
         if (joinOrExitButton != null) {
             val joinClanButton = findMultiColors(schema = MyColors.JoinClanButton)
             if (joinClanButton != null) {
-                setZKQInputMethod()
                 TouchActions.tap(joinClanButton.x, joinClanButton.y)
                 TouchActions.tap(640, 165, delayTime = 300)//input message
                 if (!clanCode.isBlank())
