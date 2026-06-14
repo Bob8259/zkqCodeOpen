@@ -7,6 +7,7 @@ import android.content.Intent
 import com.coc.zkqcode.core.app.ZKQApplication
 import com.coc.zkqcode.core.ui.floatingwindows.ClipboardActivity
 import com.coc.zkqcode.core.util.fileactions.LogHelper.showDebugInfo
+import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.withTimeoutOrNull
 
@@ -22,7 +23,6 @@ object ClipboardHelper {
      * Called by ClipboardActivity to post the clipboard text result.
      */
     fun postResult(text: String?) {
-        showDebugInfo("ClipboardHelper: postResult() called, text: $text, pendingResult is null? = ${pendingResult == null}")
         pendingResult?.complete(text)
     }
 
@@ -30,7 +30,6 @@ object ClipboardHelper {
      * Reads the clipboard content from a background context by temporarily launching a transparent Activity.
      */
     suspend fun readClipboard(): String? {
-        showDebugInfo("ClipboardHelper: readClipboard() initiated")
         val context = ZKQApplication.appContext
         val deferred = CompletableDeferred<String?>()
         pendingResult = deferred
@@ -39,14 +38,11 @@ object ClipboardHelper {
             val intent = Intent(context, ClipboardActivity::class.java).apply {
                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             }
-            showDebugInfo("ClipboardHelper: Launching ClipboardActivity...")
             context.startActivity(intent)
 
-            showDebugInfo("ClipboardHelper: Awaiting ClipboardActivity result (timeout 2000ms)...")
-            val result = withTimeoutOrNull(2000L) {
+            val result = withTimeoutOrNull(2.seconds) {
                 deferred.await()
             }
-            showDebugInfo("ClipboardHelper: Await finished, result: $result")
             result
         } catch (e: Exception) {
             showDebugInfo("ClipboardHelper: Exception during readClipboard: ${e.message}")
@@ -63,8 +59,7 @@ object ClipboardHelper {
      */
     fun setClipboard(text: String) {
         try {
-            val clipboard = ZKQApplication.appContext
-                .getSystemService(Context.CLIPBOARD_SERVICE) as? ClipboardManager
+            val clipboard = ZKQApplication.appContext.getSystemService(Context.CLIPBOARD_SERVICE) as? ClipboardManager
             clipboard?.setPrimaryClip(ClipData.newPlainText("input", text))
         } catch (_: Exception) {
             // Silently fail — caller will handle via shell fallback

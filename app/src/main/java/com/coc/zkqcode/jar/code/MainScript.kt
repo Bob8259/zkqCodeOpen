@@ -1,6 +1,7 @@
 package com.coc.zkqcode.jar.code
 
 import com.coc.zkqcode.core.data.database.GlobalVars
+import com.coc.zkqcode.core.util.basic.ClipboardHelper
 import com.coc.zkqcode.core.util.basic.RunShell
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
@@ -38,6 +39,7 @@ import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
+import kotlin.time.Duration.Companion.milliseconds
 
 
 suspend fun runMainScript() {
@@ -50,7 +52,7 @@ suspend fun runMainScript() {
     waitForPlay()
     // setZKQInputMethod()
     accountMessage("检测到设置已更新\n即将重新运行")
-    delay(200)
+    delay(200.milliseconds)
     userAuth()
     val updateOption = checkHotUpdateAndScheduling() ?: return
     val (isBatchCreate, accountStart, accountTotal) = resolveAccountRange()
@@ -71,7 +73,7 @@ suspend fun runMainScript() {
     var lastUpdateCheckTime = System.currentTimeMillis()
     var nextUpdateInterval = (3600_000L) + (Math.random() * 7200_000L).toLong()
     while (currentCoroutineContext().isActive) {
-        // runTestCode()
+//        runTestCode()
         runAccountStepBlock()
         // Circularly search for the next enabled account, wrapping back to currentAccountNumber (inclusive)
         // Emit hot update signal at safe point, throttled to once every 2-3 hours randomly
@@ -100,11 +102,12 @@ private fun finishDataNumberEntryOnlyRun() {
 
 private suspend fun runTestCode() {
     while (true) {
-        detectBuildingList(BaseType.Main)
-        ShowMessage("测试代码结束")
-        delay(500000)
+        val result = ClipboardHelper.readClipboard()
+        ShowMessage("剪贴板内容: $result")
+        delayWithMultiplier(5000)
     }
 }
+
 
 private suspend fun cleanUp() {
     RunShell.runNoOutput("input keyevent 3") // Press home
@@ -217,7 +220,7 @@ private suspend fun findAndActivateAccount(
     if (found == null) {
         while (currentCoroutineContext().isActive) {
             accountMessage("当前未开启任何账号\n请勾选要开启的账号。")
-            delay(2500)
+            delay(2500.milliseconds)
         }
     }
     return found
@@ -230,7 +233,7 @@ private suspend fun checkScheduledReboot(scriptStartTime: Int) {
         val currentTimeSeconds = (System.currentTimeMillis() / 1000).toInt()
         if (currentTimeSeconds - scriptStartTime >= intervalMinutes * 60) {
             accountMessage("定时重启时间已到，即将重启设备...")
-            delay(2000)
+            delay(2000.milliseconds)
             RunShell.runNoOutput("reboot", false)
         }
     }

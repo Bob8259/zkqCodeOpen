@@ -15,36 +15,50 @@ class ClipboardActivity : Activity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        showDebugInfo("ClipboardActivity: onCreate() called")
+        
+        val layout = android.widget.FrameLayout(this).apply {
+            layoutParams = android.view.ViewGroup.LayoutParams(
+                android.view.ViewGroup.LayoutParams.MATCH_PARENT,
+                android.view.ViewGroup.LayoutParams.MATCH_PARENT
+            )
+            setBackgroundColor(android.graphics.Color.parseColor("#80000000")) // 50% opacity black
+        }
+        
+        val message = "正在读取剪贴板，请稍候...\nReading Clipboard, Please wait..."
+        
+        val textView = android.widget.TextView(this).apply {
+            text = message
+            gravity = android.view.Gravity.CENTER
+            setTextColor(android.graphics.Color.WHITE)
+            textSize = 18f
+            layoutParams = android.widget.FrameLayout.LayoutParams(
+                android.widget.FrameLayout.LayoutParams.WRAP_CONTENT,
+                android.widget.FrameLayout.LayoutParams.WRAP_CONTENT,
+                android.view.Gravity.CENTER
+            )
+        }
+        
+        layout.addView(textView)
+        setContentView(layout)
     }
 
     override fun onResume() {
         super.onResume()
-        showDebugInfo("ClipboardActivity: onResume() called")
     }
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {
         super.onWindowFocusChanged(hasFocus)
-        showDebugInfo("ClipboardActivity: onWindowFocusChanged() called, hasFocus = $hasFocus")
         if (hasFocus && !hasRead) {
             hasRead = true
             var text: String? = null
             try {
                 val cm = getSystemService(CLIPBOARD_SERVICE) as? ClipboardManager
-                showDebugInfo("ClipboardActivity: ClipboardManager retrieved (null? = ${cm == null})")
-                if (cm != null) {
-                    val hasClip = cm.hasPrimaryClip()
-                    showDebugInfo("ClipboardActivity: hasPrimaryClip? = $hasClip")
-                    if (hasClip) {
-                        val clip = cm.primaryClip
-                        showDebugInfo("ClipboardActivity: primaryClip retrieved (null? = ${clip == null}, items = ${clip?.itemCount ?: 0})")
-                        if (clip != null && clip.itemCount > 0) {
-                            val charSeq = clip.getItemAt(0).text
-                            showDebugInfo("ClipboardActivity: item text retrieved (null? = ${charSeq == null})")
-                            if (charSeq != null) {
-                                text = charSeq.toString()
-                                showDebugInfo("ClipboardActivity: successfully read clipboard text of length: ${text.length}")
-                            }
+                if (cm != null && cm.hasPrimaryClip()) {
+                    val clip = cm.primaryClip
+                    if (clip != null && clip.itemCount > 0) {
+                        val charSeq = clip.getItemAt(0).text
+                        if (charSeq != null) {
+                            text = charSeq.toString()
                         }
                     }
                 }
@@ -52,7 +66,6 @@ class ClipboardActivity : Activity() {
                 showDebugInfo("ClipboardActivity: Exception while reading clipboard: ${e.message}")
                 e.printStackTrace()
             } finally {
-                showDebugInfo("ClipboardActivity: Posting result ($text) back to ClipboardHelper and finishing activity")
                 ClipboardHelper.postResult(text)
                 finish()
             }
