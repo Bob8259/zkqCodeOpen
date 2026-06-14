@@ -64,9 +64,7 @@ object Strings {
     fun fetchFailed(error: String?) = if (LanguageManager.isChinese) "获取更新记录失败: $error" else "Failed to fetch updates: $error"
     val checkingVersion get() = if (LanguageManager.isChinese) "正在检查版本信息..." else "Checking version..."
     fun checkFailed(error: String?) = if (LanguageManager.isChinese) "检查版本失败: $error" else "Version check failed: $error"
-    val newVersion get() = if (LanguageManager.isChinese) "检测到新版本!" else "New version detected!"
     fun newVersionDetected(local: Long, server: Long) = if (LanguageManager.isChinese) "检测到新版本!\n当前版本: $local，服务器版本: $server" else "New version detected!\nCurrent: $local, Server: $server"
-    val currentLatest get() = if (LanguageManager.isChinese) "当前已是最新版本" else "Already up to date"
     fun alreadyLatest(local: Long, server: Long) = if (LanguageManager.isChinese) "当前已是最新版本\n当前版本: $local，服务器版本: $server" else "Already up to date\nCurrent: $local, Server: $server"
     val versionInfoUnavailable get() = if (LanguageManager.isChinese) "无法获取版本信息" else "Version info unavailable"
     val updateLogHeader get() = if (LanguageManager.isChinese) "更新记录:\n" else "Update Log:\n"
@@ -128,18 +126,14 @@ object Strings {
     fun remark(text: String) = if (LanguageManager.isChinese) "备注: $text" else "Remark: $text"
 
     // Login
-    val adFreeMessage get() = if (LanguageManager.isChinese) "登录后免广告，运行更高效！不登陆也可以运行。免广告每天花费0.15卡班积分，用多久扣多久。" else "Login for ad-free experience! Works without login too. Ad-free costs 0.15 Caban points per day, pay as you go."
+    val adFreeMessage get() = if (LanguageManager.isChinese) "登录后免广告，运行更高效！不登陆也可以运行。免广告每天花费0.15卡班积分，用多久扣多久。" else "Login to use. It costs 0.15 points per day, pay as you go."
     val sponsorMessage get() = if (LanguageManager.isChinese) "免费辅助制作不易，希望大家多多赞助。你的赞助是紫孔雀继续发展的唯一动力！" else "Free tool development is hard. Your sponsorship keeps this project going!"
     val welcomeBack get() = if (LanguageManager.isChinese) "欢迎回来，感谢赞助！紫孔雀因你而变得更好！" else "Welcome back! Thank you for sponsoring!"
     fun currentGems(value: Double) = if (LanguageManager.isChinese) "当前积分：%.5f".format(value) else "Current Points: %.5f".format(value)
     val invalidEmail get() = if (LanguageManager.isChinese) "请输入正确的邮箱！" else "Please enter a valid email!"
     val loggingIn get() = if (LanguageManager.isChinese) "登录中，请稍后..." else "Logging in..."
-    fun powFailed(error: String?) = if (LanguageManager.isChinese) "验证获取失败: $error" else "Verification failed: $error"
-    fun prepFailed(error: String?) = if (LanguageManager.isChinese) "准备信息失败: $error" else "Preparation failed: $error"
-    val transmitFailed get() = if (LanguageManager.isChinese) "传输信息失败，请重试" else "Transmission failed, please retry"
     fun loginFailed(error: String?) = if (LanguageManager.isChinese) "登录失败: $error" else "Login failed: $error"
     fun loginSuccess(value: String) = if (LanguageManager.isChinese) "登录成功！卡班积分数量 $value" else "Login successful! Points: $value"
-    fun loginSuccessParseFail(data: String) = if (LanguageManager.isChinese) "登录成功，但无法解析数据: $data" else "Login successful but failed to parse data: $data"
     val emailPasswordError get() = if (LanguageManager.isChinese) "邮箱或密码错误，请检查后重试" else "Incorrect email or password"
     val password get() = if (LanguageManager.isChinese) "密码" else "Password"
     val login get() = if (LanguageManager.isChinese) "登录" else "Login"
@@ -241,8 +235,6 @@ object Strings {
     val claimRewardsExplain get() = if (LanguageManager.isChinese) "优先领取魔法书和宝石，其他随机领取。" else "Prioritize books and gems, others random."
     val claimBadgeEventRewardsExplain get() = if (LanguageManager.isChinese) "启用后，辅助会点击活动入口与进入坐标；若检测到奖章活动继续按钮则先点击继续，再进行页面确认并进入领取循环。领取时按左侧→右侧顺序循环操作；当左右两侧都检测不到“领取奖励”图色时，辅助将返回主页面。" else "When enabled, the bot taps the event entry and enter coordinates. If a medal event continue button is detected, it taps continue first, then confirms the page before entering the reward loop. Rewards are processed from left to right, and the bot returns to the main screen when neither side has a claimable reward color."
     val claimEventShopRewardsExplain get() = if (LanguageManager.isChinese) "启用后，领取奖章活动奖励后自动进入活动商店。检测活动币≥3100时，自动购买新装备。" else "After claiming badge event rewards, enter event shop. When event medals ≥ 3100, auto-buy new equipment."
-    val approveMember get() = if (LanguageManager.isChinese) "批准成员加入" else "Approve Members"
-    val approveCode get() = if (LanguageManager.isChinese) "批准暗号:" else "Approval Code:"
     val approveCodeExplain get() = if (LanguageManager.isChinese) "启用后，捐兵时会同时检测申请加入的成员。如果暗号匹配则自动批准加入，不匹配则跳过。" else "When enabled, detects join requests during donation. Auto-approves if the code matches, skips otherwise."
     val clanWarExplain get() = if (LanguageManager.isChinese) "部落战其中一次打对位，另一次打推荐对手。\n不保证胜率，请谨慎使用。" else "One attack on mirror, one on recommended. No win rate guarantee."
     val leagueExplain get() = if (LanguageManager.isChinese) "默认打对位，如果对位已被打则随机进攻，不保证胜率。" else "Default attack on mirror. If already hit, attack random. No win rate guarantee."
@@ -259,7 +251,6 @@ object Strings {
     val upgradeScopeWear get() = if (LanguageManager.isChinese) "仅穿戴装备" else "Equipped Only"
     val upgradeScopeCustom get() = if (LanguageManager.isChinese) "仅指定装备" else "Custom Only"
     val upgradeScopeAll get() = if (LanguageManager.isChinese) "全部装备" else "All Gear"
-    val upgradeScopeExplain get() = if (LanguageManager.isChinese) "仅穿戴装备：只升级当前英雄穿戴的装备\n仅指定装备：只升级下方勾选的特定装备\n全部装备：同时升级穿戴和指定的装备" else "Equipped Only: upgrade currently equipped gear\nCustom Only: upgrade only selected gear below\nAll Gear: upgrade both equipped and custom gear"
 
     // Hero names for gear grouping
     val barbarianKing get() = if (LanguageManager.isChinese) "野蛮人之王" else "Barbarian King"
