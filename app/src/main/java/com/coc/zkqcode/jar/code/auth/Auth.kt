@@ -263,7 +263,7 @@ suspend fun userAuth() {
             return
         }
         if (decrypted.startsWith("Error")) {
-            if (decrypted.contains("会话") || decrypted.contains("过期") || decrypted.contains("401")) {
+            if (decrypted.contains("会话") || decrypted.contains("过期") || decrypted.contains("401") || decrypted.contains("Session key not active", ignoreCase = true)) {
                 try {
                     authPrefs.edit { remove("session_key") }
                 } catch (_: Exception) {
