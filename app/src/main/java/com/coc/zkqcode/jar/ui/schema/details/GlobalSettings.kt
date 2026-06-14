@@ -140,9 +140,9 @@ object GlobalSettings {
 object AccountSettings {
     val ISOPEN = SettingDef("isopen", "开启状态", "Enabled", 0, "ACCOUNT_SETTINGS")
     val REMARK = SettingDef("remark", "备注", "Remark", "", "ACCOUNT_SETTINGS")
-    val GAME_VERSION = SettingDef("game_version", "游戏版本", "Game Version", "0", "ACCOUNT_SETTINGS")
+    val GAME_VERSION = SettingDef("game_version", "游戏版本", "Game Version", "1", "ACCOUNT_SETTINGS")
     val ACCOUNT_CONFIG = SettingDef("account_config", "配置文件序号", "Profile Slot", "1", "ACCOUNT_SETTINGS")
-    val START_METHOD = SettingDef("start_method", "启动方式", "Start Method", "0", "ACCOUNT_SETTINGS")
+    val START_METHOD = SettingDef("start_method", "启动方式", "Start Method", "1", "ACCOUNT_SETTINGS")
     val CN_PATH = SettingDef("cn_path", "国服存档序号", "CN Save Slot", "", "ACCOUNT_SETTINGS")
     val GLOBAL_PATH = SettingDef("global_path", "国际服存档序号", "Global Save Slot", "", "ACCOUNT_SETTINGS")
     val DATA_CONTENT = SettingDef("data_content", "测试数据序号", "Test Data Slot", "", "ACCOUNT_SETTINGS")

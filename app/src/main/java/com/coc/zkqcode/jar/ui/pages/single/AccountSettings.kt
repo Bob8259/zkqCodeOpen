@@ -138,6 +138,10 @@ fun LazyListScope.accountSettings() {
             var expandedVer by remember { mutableStateOf(false) }
             val verOptions = listOf(Strings.cnVersion, Strings.globalVersion, Strings.atrasis)
 
+            var selectedStartMethodIndex by remember { mutableIntStateOf(0) }
+            var expandedStartMethod by remember { mutableStateOf(false) }
+            val startMethodOptions = listOf(Strings.gameSave, Strings.directLaunch, Strings.testMode)
+
             FlowRow(
                 modifier = Modifier.padding(top = 6.dp)
             ) {
@@ -221,6 +225,7 @@ fun LazyListScope.accountSettings() {
                         .align(Alignment.CenterVertically)
                 )
 
+                // Version Dropdown
                 Box(
                     modifier = Modifier
                         .wrapContentSize(Alignment.TopStart)
@@ -260,10 +265,51 @@ fun LazyListScope.accountSettings() {
                     }
                 }
 
+                // Start Method Dropdown
+                Box(
+                    modifier = Modifier
+                        .wrapContentSize(Alignment.TopStart)
+                        .align(Alignment.CenterVertically).padding(end = 4.dp)
+                ) {
+                    Button(
+                        onClick = {
+                            GlobalVars.isAutoRunEnabled = false
+                            expandedStartMethod = true
+                        },
+                        shape = RoundedCornerShape(8.dp),
+                        modifier = Modifier.height(30.dp),
+                        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 0.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = AppColors.Primary)
+                    ) {
+                        Text(startMethodOptions[selectedStartMethodIndex], style = MaterialTheme.typography.labelMedium)
+                        Icon(Icons.Default.ArrowDropDown, contentDescription = null)
+                    }
+
+                    DropdownMenu(
+                        expanded = expandedStartMethod,
+                        onDismissRequest = { expandedStartMethod = false }
+                    ) {
+                        startMethodOptions.forEachIndexed { idx, option ->
+                            DropdownMenuItem(
+                                text = {
+                                    Text(option, style = MaterialTheme.typography.labelMedium)
+                                },
+                                onClick = {
+                                    GlobalVars.isAutoRunEnabled = false
+                                    selectedStartMethodIndex = idx
+                                    expandedStartMethod = false
+                                },
+                                modifier = Modifier.height(35.dp)
+                            )
+                        }
+                    }
+                }
+
                 CustomButton(
                     text = Strings.confirm,
                     onClick = {
                         batchUpdateByRange(batchVerStartAccount, batchVerEndAccount, ACCOUNT_SETTINGS.GAME_VERSION.key, selectedVerIndex.toString())
+                        batchUpdateByRange(batchVerStartAccount, batchVerEndAccount, ACCOUNT_SETTINGS.START_METHOD.key, selectedStartMethodIndex.toString())
                     },
                     marginTop = 0.dp
                 )
