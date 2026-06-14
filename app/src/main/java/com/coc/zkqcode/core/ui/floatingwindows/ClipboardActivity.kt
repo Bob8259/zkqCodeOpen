@@ -5,6 +5,7 @@ import android.content.ClipboardManager
 import android.os.Bundle
 import com.coc.zkqcode.core.util.basic.ClipboardHelper
 import com.coc.zkqcode.core.util.fileactions.LogHelper.showDebugInfo
+import androidx.core.graphics.toColorInt
 
 /**
  * Transient transparent activity to read clipboard on Android 10+ background service contexts.
@@ -21,7 +22,7 @@ class ClipboardActivity : Activity() {
                 android.view.ViewGroup.LayoutParams.MATCH_PARENT,
                 android.view.ViewGroup.LayoutParams.MATCH_PARENT
             )
-            setBackgroundColor(android.graphics.Color.parseColor("#80000000")) // 50% opacity black
+            setBackgroundColor("#80000000".toColorInt()) // 50% opacity black
         }
         
         val message = "正在读取剪贴板，请稍候...\nReading Clipboard, Please wait..."

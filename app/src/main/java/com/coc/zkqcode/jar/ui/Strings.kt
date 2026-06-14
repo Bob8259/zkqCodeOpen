@@ -175,6 +175,10 @@ object Strings {
     val switchComplete get() = if (LanguageManager.isChinese) "切号完成" else "Switch complete"
 
     // MainBaseConfigs
+    val raidMedalShop get() = if (LanguageManager.isChinese) "突袭币购买" else "Raid Medal Shop"
+    val leagueMedalShop get() = if (LanguageManager.isChinese) "联赛币购买" else "League Medal Shop"
+    fun collapse(title: String) = if (LanguageManager.isChinese) "收起$title" else "Collapse $title"
+    fun expand(title: String) = if (LanguageManager.isChinese) "展开$title" else "Expand $title"
     val generalSettings get() = if (LanguageManager.isChinese) "通用设置" else "General"
     val battleSettingsMain get() = if (LanguageManager.isChinese) "对战设置（主世界）" else "Battle Settings - Main Base"
     val clanSettings get() = if (LanguageManager.isChinese) "部落设置" else "Clan Settings"

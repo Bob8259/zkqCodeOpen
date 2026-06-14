@@ -25,8 +25,8 @@ import com.coc.zkqcode.jar.ui.schema.SettingDef
 import com.coc.zkqcode.jar.ui.theme.AppColors
 
 /**
- * 突袭币 & 联赛币购买物品列表
- * 各自独立收放
+ * Raid & League Medal purchase item list.
+ * Each expands/collapses independently.
  */
 @Composable
 fun MainBaseShopConfigs(index: Int) {
@@ -44,16 +44,16 @@ fun MainBaseShopConfigs(index: Int) {
     )
 
     Column {
-        // ==== 突袭币购买 ====
+        // ==== Raid Medal Purchases ====
         ShopSection(
-            title = "突袭币购买",
+            title = Strings.raidMedalShop,
             items = raidItems,
             index = index
         )
 
-        // ==== 联赛币购买 ====
+        // ==== League Medal Purchases ====
         ShopSection(
-            title = "联赛币购买",
+            title = Strings.leagueMedalShop,
             items = leagueItems,
             index = index
         )
@@ -102,7 +102,7 @@ private fun ShopSection(
         )
         Row {
             CustomButton(
-                text = if (isExpanded.value) "收起$title" else "展开$title",
+                text = if (isExpanded.value) Strings.collapse(title) else Strings.expand(title),
                 onClick = { isExpanded.value = !isExpanded.value },
                 containerColor = AppColors.Teal
             )
