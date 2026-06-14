@@ -263,7 +263,7 @@ object MainBaseAttackColors : IMainBaseAttackColors {
 
     // League entry indicator
     override val EnterLeague = ColorSchema.parse(
-        1210, 49, 1262, 98, "7B74FF", "0|-11|958DFF,7|-15|958DFF,14|0|FFFFFF,19|8|FAF6F6,30|12|1813E9,17|19|211BCE,28|1|7770FF,28|-8|918AFF,23|-14|958DFF", 0, 0.9, "您已进入联赛"
+        90, 35, 1265, 660, "FFFFFF", "4|7|FAF6F6,11|18|211BCE,16|-4|857DFF,-219|519|86E8BA,-186|518|87E9BB,-86|522|82E7B7,-31|533|FFFFFC,-1069|-1|C3CFD5,-909|1|C3CFD5", 0, 0.9, "您已进入联赛"
     )
 
     // Star detection for stop/exit conditions (no-star state)
