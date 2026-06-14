@@ -18,18 +18,12 @@ data class HeroGearEntry(
     val heroKey: String, val displayName: String, val tapX: Int, val tapY: Int, val gears: List<Pair<String, ColorSchema>>
 )
 
+// Zone2 custom-gear slot: position identified purely by image-color recognition
+// (no upgrade arrow, no wear checkmark, no region construction).
 data class Zone2Slot(
     val x: Int,
     val y: Int,
-    val hasCheckmark: Boolean,
-    val hasArrow: Boolean,
-    val gearKey: String?,
-    val gearSchema: ColorSchema?
-)
-
-data class DetectionResult(
-    val zone1Arrows: List<Pair<Int, Int>>,
-    val zone2Slots: List<Zone2Slot>
+    val gearKey: String
 )
 
 private const val UPGRADE_SUCCESS = 0
@@ -37,8 +31,6 @@ private const val UPGRADE_MAX_LEVEL = 1
 private const val UPGRADE_ALREADY_UPGRADING = 2
 
 private const val STEP_DELAY = 1000
-
-private data class RawDetection(val x: Int, val y: Int, val type: String)
 
 private val HERO_ENTRIES = listOf(
     HeroGearEntry(
@@ -58,6 +50,7 @@ private val HERO_ENTRIES = listOf(
             Pair(Schema.MAIN_BASE_GEARS.ARCHER_QUEEN_GIANT_ARROW.key, MyColors.ArcherQueenGiantArrow),
             Pair(Schema.MAIN_BASE_GEARS.ARCHER_QUEEN_FROST_ARROW.key, MyColors.ArcherQueenFrostArrow),
             Pair(Schema.MAIN_BASE_GEARS.ARCHER_QUEEN_HEALER_PUPPET.key, MyColors.ArcherQueenHealerPuppet),
+            Pair(Schema.MAIN_BASE_GEARS.ARCHER_QUEEN_CLONE_MIRROR.key, MyColors.ArcherQueenCloneMirror),
         )
     ),
     HeroGearEntry(
@@ -95,26 +88,6 @@ private val HERO_ENTRIES = listOf(
     ),
 )
 
-private fun getAllEnabledCustomGears(): List<Pair<String, ColorSchema>> {
-    val allGears = mutableListOf<Pair<String, ColorSchema>>()
-    for (heroEntry in HERO_ENTRIES) {
-        val enabledGears = heroEntry.gears.filter { (gearKey, _) -> getBooleanConfigRuntime(gearKey) }
-        allGears.addAll(enabledGears)
-    }
-    return allGears
-}
-
-private fun findHeroAndGearByKey(gearKey: String): Pair<HeroGearEntry, Pair<String, ColorSchema>>? {
-    for (heroEntry in HERO_ENTRIES) {
-        for (gear in heroEntry.gears) {
-            if (gear.first == gearKey) {
-                return Pair(heroEntry, gear)
-            }
-        }
-    }
-    return null
-}
-
 private fun findHeroAndGearByPosition(arrowX: Int, arrowY: Int): Pair<HeroGearEntry, Pair<String, ColorSchema>>? {
     val TOLERANCE = 15
     var bestMatch: Pair<HeroGearEntry, Pair<String, ColorSchema>>? = null
@@ -143,6 +116,26 @@ private fun findHeroAndGearByPosition(arrowX: Int, arrowY: Int): Pair<HeroGearEn
     return bestMatch
 }
 
+private fun getAllEnabledCustomGears(): List<Pair<String, ColorSchema>> {
+    val allGears = mutableListOf<Pair<String, ColorSchema>>()
+    for (heroEntry in HERO_ENTRIES) {
+        val enabledGears = heroEntry.gears.filter { (gearKey, _) -> getBooleanConfigRuntime(gearKey) }
+        allGears.addAll(enabledGears)
+    }
+    return allGears
+}
+
+private fun findHeroAndGearByKey(gearKey: String): Pair<HeroGearEntry, Pair<String, ColorSchema>>? {
+    for (heroEntry in HERO_ENTRIES) {
+        for (gear in heroEntry.gears) {
+            if (gear.first == gearKey) {
+                return Pair(heroEntry, gear)
+            }
+        }
+    }
+    return null
+}
+
 suspend fun upgradeGearsAction(shouldUpgradeWear: Boolean, shouldUpgradeCustom: Boolean) {
     accountMessage("开始升级装备流程")
     
@@ -159,63 +152,69 @@ suspend fun upgradeGearsAction(shouldUpgradeWear: Boolean, shouldUpgradeCustom: 
 
     var totalUpgraded = 0
 
-    accountMessage("===== 开始第一轮检测 =====")
-    val enabledCustomGears = getAllEnabledCustomGears()
-    val detectionResult = detectBothZones(enabledCustomGears)
-    if (detectionResult == null) {
-        accountMessage("截屏失败")
-        backToHeroHall()
-        return
+    // Zone1: worn gears (still uses arrow detection + region identification)
+    if (shouldUpgradeWear) {
+        accountMessage("===== 开始检测穿戴装备 =====")
+        val screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult
+        if (screenBuffer == null) {
+            accountMessage("截屏失败")
+            backToHeroHall()
+            return
+        }
+        val zone1Arrows = detectZone1Arrows(screenBuffer)
+        accountMessage("检测到 ${zone1Arrows.size} 个穿戴装备箭头")
+
+        if (zone1Arrows.isNotEmpty()) {
+            accountMessage("===== 开始升级穿戴装备 =====")
+            val zone1Upgraded = upgradeZone1(zone1Arrows)
+            totalUpgraded += zone1Upgraded
+            accountMessage("穿戴装备升级完成，共升级 $zone1Upgraded 件")
+        } else {
+            accountMessage("未检测到可升级的穿戴装备")
+        }
     }
 
-    accountMessage("第一轮检测完成：Zone1 检测到 ${detectionResult.zone1Arrows.size} 个箭头，Zone2 检测到 ${detectionResult.zone2Slots.size} 个槽位")
-
-    if (shouldUpgradeWear && detectionResult.zone1Arrows.isNotEmpty()) {
-        accountMessage("===== 开始升级 Zone1（穿戴装备） =====")
-        val zone1Upgraded = upgradeZone1(detectionResult.zone1Arrows)
-        totalUpgraded += zone1Upgraded
-        accountMessage("Zone1 升级完成，共升级 $zone1Upgraded 件")
-    } else if (shouldUpgradeWear) {
-        accountMessage("Zone1 未检测到可升级的穿戴装备")
-    }
-
-    if (shouldUpgradeCustom && detectionResult.zone2Slots.isNotEmpty()) {
-        accountMessage("===== 开始升级 Zone2 第一轮（自定义装备） =====")
-        val zone2UpgradedRound1 = upgradeZone2(
-            detectionResult.zone2Slots,
-            shouldUpgradeWear,
-            "Zone2第一轮"
-        )
-        totalUpgraded += zone2UpgradedRound1
-        accountMessage("Zone2 第一轮升级完成，共升级 $zone2UpgradedRound1 件")
-    } else if (shouldUpgradeCustom) {
-        accountMessage("Zone2 第一轮未检测到可升级的自定义装备")
-    }
-
-    accountMessage("===== 滑动到第二页 =====")
-    TouchActions.swipe(1236, 495, -200, 495, delayAfter = 100)
-    delayWithMultiplier(STEP_DELAY)
-
+    // Zone2: custom gears (image-color recognition only, 2 rounds with swipe)
     if (shouldUpgradeCustom) {
-        accountMessage("===== 开始第二轮检测（仅 Zone2） =====")
+        val enabledCustomGears = getAllEnabledCustomGears()
+        accountMessage("启用的自定义装备共 ${enabledCustomGears.size} 件")
+
+        // Round 1
+        accountMessage("===== 开始第一轮检测（截屏 1/2）=====")
+        val screenBufferRound1 = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult
+        if (screenBufferRound1 == null) {
+            accountMessage("第一轮截屏失败")
+        } else {
+            val zone2SlotsRound1 = detectZone2(screenBufferRound1, enabledCustomGears)
+            if (zone2SlotsRound1.isNotEmpty()) {
+                accountMessage("===== 开始第一轮升级 =====")
+                val upgraded = upgradeZone2(zone2SlotsRound1, "第一轮")
+                totalUpgraded += upgraded
+                accountMessage("第一轮升级完成，共升级 $upgraded 件")
+            } else {
+                accountMessage("第一轮未检测到自定义装备")
+            }
+        }
+
+        // Swipe to second page
+        accountMessage("===== 滑动到第二页 =====")
+        TouchActions.swipe(1236, 495, -200, 495, delayAfter = 100)
+        delayWithMultiplier(STEP_DELAY)
+
+        // Round 2
+        accountMessage("===== 开始第二轮检测（截屏 2/2）=====")
         val screenBufferRound2 = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult
         if (screenBufferRound2 == null) {
             accountMessage("第二轮截屏失败")
         } else {
             val zone2SlotsRound2 = detectZone2(screenBufferRound2, enabledCustomGears)
-            accountMessage("第二轮检测完成：Zone2 检测到 ${zone2SlotsRound2.size} 个槽位")
-
             if (zone2SlotsRound2.isNotEmpty()) {
-                accountMessage("===== 开始升级 Zone2 第二轮（自定义装备） =====")
-                val zone2UpgradedRound2 = upgradeZone2(
-                    zone2SlotsRound2,
-                    shouldUpgradeWear,
-                    "Zone2第二轮"
-                )
-                totalUpgraded += zone2UpgradedRound2
-                accountMessage("Zone2 第二轮升级完成，共升级 $zone2UpgradedRound2 件")
+                accountMessage("===== 开始第二轮升级 =====")
+                val upgraded = upgradeZone2(zone2SlotsRound2, "第二轮")
+                totalUpgraded += upgraded
+                accountMessage("第二轮升级完成，共升级 $upgraded 件")
             } else {
-                accountMessage("Zone2 第二轮未检测到可升级的自定义装备")
+                accountMessage("第二轮未检测到自定义装备")
             }
         }
     }
@@ -227,25 +226,6 @@ suspend fun upgradeGearsAction(shouldUpgradeWear: Boolean, shouldUpgradeCustom: 
     }
 
     backToHeroHall()
-}
-
-private suspend fun detectBothZones(
-    enabledCustomGears: List<Pair<String, ColorSchema>>
-): DetectionResult? {
-    accountMessage("开始截屏并检测两个区域")
-    val screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult
-    if (screenBuffer == null) {
-        accountMessage("截屏失败")
-        return null
-    }
-
-    val zone1Arrows = detectZone1Arrows(screenBuffer)
-    accountMessage("Zone1 检测到 ${zone1Arrows.size} 个穿戴装备箭头")
-
-    val zone2Slots = detectZone2(screenBuffer, enabledCustomGears)
-    accountMessage("Zone2 检测到 ${zone2Slots.size} 个装备槽位")
-
-    return DetectionResult(zone1Arrows, zone2Slots)
 }
 
 private suspend fun upgradeZone1(
@@ -260,7 +240,7 @@ private suspend fun upgradeZone1(
     val gearName = identifiedHeroAndGear?.let { Schema.getDisplayName(it.second.first) } ?: "未知装备"
     val heroName = identifiedHeroAndGear?.first?.displayName ?: "未知英雄"
     
-    accountMessage("准备升级 Zone1 装备：$heroName - $gearName")
+    accountMessage("准备升级穿戴装备：$heroName - $gearName")
     TouchActions.tap(tapX, tapY, delayTime = STEP_DELAY)
 
     val result = confirmAndExitGearDetail()
@@ -280,28 +260,20 @@ private suspend fun upgradeZone1(
 
 private suspend fun upgradeZone2(
     initialSlots: List<Zone2Slot>,
-    shouldUpgradeWear: Boolean,
     phaseName: String
 ): Int {
-    val slot = initialSlots.firstOrNull { slot ->
-        slot.hasArrow &&
-        !(shouldUpgradeWear && slot.hasCheckmark)
-    }
+    val slot = initialSlots.firstOrNull()
 
     if (slot == null) {
-        accountMessage("$phaseName 没有符合条件的装备可升级")
+        accountMessage("$phaseName 没有可升级的装备")
         return 0
     }
 
-    val identifiedHeroAndGear = if (slot.gearKey != null) {
-        findHeroAndGearByKey(slot.gearKey)
-    } else {
-        null
-    }
-    val gearName = slot.gearKey?.let { Schema.getDisplayName(it) } ?: "未知装备"
+    val identifiedHeroAndGear = findHeroAndGearByKey(slot.gearKey)
+    val gearName = Schema.getDisplayName(slot.gearKey)
     val heroName = identifiedHeroAndGear?.first?.displayName ?: "未知英雄"
 
-    accountMessage("准备升级 $phaseName 装备：$heroName - $gearName")
+    accountMessage("准备升级 $phaseName 装备：$heroName - $gearName (${slot.x}, ${slot.y})")
     TouchActions.tap(slot.x, slot.y, delayTime = STEP_DELAY)
 
     val result = confirmAndExitGearDetail()
@@ -317,6 +289,33 @@ private suspend fun upgradeZone2(
 
     accountMessage("$heroName - $gearName 升级成功")
     return 1
+}
+
+private suspend fun detectZone2(
+    byteBuffer: ScreenCaptureManager.CaptureResult,
+    enabledCustomGears: List<Pair<String, ColorSchema>>
+): List<Zone2Slot> {
+    val slots = mutableListOf<Zone2Slot>()
+
+    for ((gearKey, gearSchema) in enabledCustomGears) {
+        if (gearSchema.x1 == 0 && gearSchema.x2 == 0 && gearSchema.y1 == 0 && gearSchema.y2 == 0) continue
+        val point = findMultiColors(schema = gearSchema, byteBuffer = byteBuffer, increment = 1)
+        if (point != null) {
+            slots.add(Zone2Slot(x = point.x, y = point.y, gearKey = gearKey))
+        }
+    }
+
+    // Concise summary log (matches the "可升级建筑 / 优先级列表" style used elsewhere)
+    val summary = slots.mapIndexed { idx, slot ->
+        "${idx + 1}. ${Schema.getDisplayName(slot.gearKey)} (${slot.x}, ${slot.y})"
+    }
+    if (summary.isEmpty()) {
+        accountMessage("未识别到自定义装备")
+    } else {
+        accountMessage("识别到 ${slots.size} 件自定义装备：\n${summary.joinToString("\n")}")
+    }
+
+    return slots
 }
 
 private suspend fun confirmAndExitGearDetail(): Int {
@@ -355,149 +354,22 @@ private suspend fun detectZone1Arrows(byteBuffer: ScreenCaptureManager.CaptureRe
     val baseSchema = MyColors.Zone1EquippedArrow
     var searchSchema = baseSchema
 
-    accountMessage("开始检测 Zone1 穿戴装备箭头...")
-    while (points.size < 2) {
+    accountMessage("开始检测穿戴装备箭头...")
+    while (true) {
         val point = findMultiColors(schema = searchSchema, byteBuffer = byteBuffer, increment = 1)
         if (point == null) break
 
         val isDuplicate = points.any { (ex, _) -> abs(point.x - ex) < 20 }
         if (!isDuplicate) {
             points.add(Pair(point.x, point.y))
-            accountMessage("检测到 Zone1 箭头：位置(${point.x}, ${point.y})")
+            accountMessage("检测到穿戴装备箭头：位置(${point.x}, ${point.y})")
         }
 
         val nextX1 = point.x + 30
         if (nextX1 >= searchSchema.x2) break
         searchSchema = ColorSchema.rescope(searchSchema, nextX1, searchSchema.y1, searchSchema.x2, searchSchema.y2)
     }
-    accountMessage("Zone1 箭头检测完成，共找到 ${points.size} 个")
+    accountMessage("穿戴装备箭头检测完成，共找到 ${points.size} 个")
 
     return points
-}
-
-private suspend fun detectZone2(
-    byteBuffer: ScreenCaptureManager.CaptureResult,
-    enabledCustomGears: List<Pair<String, ColorSchema>>
-): List<Zone2Slot> {
-    val detections = mutableListOf<RawDetection>()
-
-    accountMessage("开始检测 Zone2 装备箭头...")
-    var arrowCount = 0
-    var arrowSchema = MyColors.Zone2GearArrow
-    while (true) {
-        val point = findMultiColors(schema = arrowSchema, byteBuffer = byteBuffer, increment = 1)
-        if (point == null) break
-        val isDuplicate = detections.any { it.type == "gear_arrow" && abs(point.x - it.x) < 20 && abs(point.y - it.y) < 20 }
-        if (!isDuplicate) {
-            detections.add(RawDetection(point.x, point.y, "gear_arrow"))
-            arrowCount++
-            accountMessage("检测到 Zone2 装备箭头：位置(${point.x}, ${point.y})")
-        }
-        val nextX1 = point.x + 30
-        if (nextX1 >= arrowSchema.x2) break
-        arrowSchema = ColorSchema.rescope(arrowSchema, nextX1, arrowSchema.y1, arrowSchema.x2, arrowSchema.y2)
-    }
-    accountMessage("Zone2 装备箭头检测完成，共找到 $arrowCount 个")
-
-    accountMessage("开始检测 Zone2 装备身份...")
-    var gearIdentityCount = 0
-    for ((gearKey, gearSchema) in enabledCustomGears) {
-        val gearName = Schema.getDisplayName(gearKey)
-        if (gearSchema.x1 == 0 && gearSchema.x2 == 0 && gearSchema.y1 == 0 && gearSchema.y2 == 0) continue
-        val point = findMultiColors(schema = gearSchema, byteBuffer = byteBuffer, increment = 1)
-        if (point != null) {
-            detections.add(RawDetection(point.x, point.y, "gear_identity:$gearKey"))
-            gearIdentityCount++
-            accountMessage("检测到 Zone2 装备：$gearName 位置(${point.x}, ${point.y})")
-        }
-    }
-    accountMessage("Zone2 装备身份检测完成，共找到 $gearIdentityCount 个")
-
-    accountMessage("开始检测 Zone2 穿戴标记...")
-    var checkmarkCount = 0
-    var checkmarkSchema = MyColors.Zone2EquipCheckmark
-    while (true) {
-        val point = findMultiColors(schema = checkmarkSchema, byteBuffer = byteBuffer, increment = 1)
-        if (point == null) break
-        val isDuplicate = detections.any { it.type == "equip_checkmark" && abs(point.x - it.x) < 20 && abs(point.y - it.y) < 20 }
-        if (!isDuplicate) {
-            detections.add(RawDetection(point.x, point.y, "equip_checkmark"))
-            checkmarkCount++
-            accountMessage("检测到 Zone2 穿戴标记：位置(${point.x}, ${point.y})")
-        }
-        val nextX1 = point.x + 30
-        if (nextX1 >= checkmarkSchema.x2) break
-        checkmarkSchema = ColorSchema.rescope(checkmarkSchema, nextX1, checkmarkSchema.y1, checkmarkSchema.x2, checkmarkSchema.y2)
-    }
-    accountMessage("Zone2 穿戴标记检测完成，共找到 $checkmarkCount 个")
-
-    return buildZone2Slots(detections, enabledCustomGears)
-}
-
-private fun buildZone2Slots(
-    detections: List<RawDetection>, 
-    enabledCustomGears: List<Pair<String, ColorSchema>>
-): List<Zone2Slot> {
-    if (detections.isEmpty()) {
-        accountMessage("Zone2 没有检测结果，返回空列表")
-        return emptyList()
-    }
-    accountMessage("开始构建 Zone2 槽位，共 ${detections.size} 个原始检测")
-
-    val tolerance = 20
-    val used = BooleanArray(detections.size) { false }
-    val slots = mutableListOf<Zone2Slot>()
-
-    for (i in detections.indices) {
-        if (used[i]) continue
-        val (cx, cy, _) = detections[i]
-
-        val clusterDets = mutableListOf<RawDetection>()
-        var sumX = 0
-        var sumY = 0
-        for (j in detections.indices) {
-            if (used[j]) continue
-            val (dx, dy, _) = detections[j]
-            if (abs(dx - cx) <= tolerance && abs(dy - cy) <= tolerance) {
-                used[j] = true
-                clusterDets.add(detections[j])
-                sumX += dx
-                sumY += dy
-            }
-        }
-
-        val centerX = sumX / clusterDets.size
-        val centerY = sumY / clusterDets.size
-        val hasArrow = clusterDets.any { it.type == "gear_arrow" }
-        val hasCheckmark = clusterDets.any { it.type == "equip_checkmark" }
-
-        val identityDet = clusterDets.firstOrNull { it.type.startsWith("gear_identity:") }
-        val gearKey = identityDet?.type?.removePrefix("gear_identity:")
-        val gearName = if (gearKey != null) Schema.getDisplayName(gearKey) else "未知装备"
-        val gearSchema = if (gearKey != null) {
-            enabledCustomGears.firstOrNull { (k, _) -> k == gearKey }?.second
-        } else null
-
-        val slotInfo = buildString {
-            append("构建 Zone2 槽位：位置($centerX, $centerY)")
-            append(" 有箭头=${if (hasArrow) "是" else "否"}")
-            append(" 有穿戴标记=${if (hasCheckmark) "是" else "否"}")
-            if (gearKey != null) append(" 装备=$gearName")
-        }
-        accountMessage(slotInfo)
-
-        slots.add(
-            Zone2Slot(
-                x = centerX,
-                y = centerY,
-                hasCheckmark = hasCheckmark,
-                hasArrow = hasArrow,
-                gearKey = gearKey,
-                gearSchema = gearSchema
-            )
-        )
-    }
-    accountMessage("Zone2 槽位构建完成，共 ${slots.size} 个槽位")
-
-    return slots
 }

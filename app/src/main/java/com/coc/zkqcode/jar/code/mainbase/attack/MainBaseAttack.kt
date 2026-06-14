@@ -1,4 +1,4 @@
-﻿package com.coc.zkqcode.jar.code.mainbase.attack
+package com.coc.zkqcode.jar.code.mainbase.attack
 
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
@@ -107,8 +107,7 @@ suspend fun mainBaseAttack(): Boolean {
                         break
                     }
 
-                    BattleDestructionOcrExitResult.Continue -> { /* keep polling */
-                    }
+                    BattleDestructionOcrExitResult.Continue -> { /* keep polling */ }
                 }
             }
 
