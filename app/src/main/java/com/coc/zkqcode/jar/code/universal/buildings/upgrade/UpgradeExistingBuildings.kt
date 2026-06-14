@@ -236,13 +236,19 @@ private suspend fun upgradeWalls(currentBase: BaseType, wallType: WallType): Loo
     )
     val hammer = findMultiColorsUntil(schemas = listOf(hammerSchema), duration = 1000) ?: return LoopAction.Continue
     if (wallType == WallType.Elixir) {
-        // Select elixir icon colour based on base type
-        val elixirIconBase = if (currentBase == BaseType.Builder) MyColors.builderBaseSmallElixirUpgradeIcon else MyColors.smallElixirUpgradeIcon
-        // Rescope search area for elixir upgrade icon relative to hammer position
-        val elixirIconSchema = ColorSchema.rescope(
-            elixirIconBase, hammer.x + 45, hammer.y - 60, hammer.x + 80, hammer.y - 10
-        )
-        val smallElixirUpgradeIcon = findMultiColorsUntil(schemas = listOf(elixirIconSchema), duration = 400)
+        // Select elixir icon colours based on base type
+        val elixirIconBases = if (currentBase == BaseType.Builder) {
+            listOf(MyColors.builderBaseSmallElixirUpgradeIcon)
+        } else {
+            listOf(MyColors.smallElixirUpgradeIcon, MyColors.smallElixirUpgradeIcon2)
+        }
+        // Rescope search area for elixir upgrade icons relative to hammer position
+        val elixirIconSchemas = elixirIconBases.map { elixirIconBase ->
+            ColorSchema.rescope(
+                elixirIconBase, hammer.x + 45, hammer.y - 60, hammer.x + 80, hammer.y - 10
+            )
+        }
+        val smallElixirUpgradeIcon = findMultiColorsUntil(schemas = elixirIconSchemas, duration = 400)
         if (smallElixirUpgradeIcon == null) {
             accountMessage("圣水刷墙失败，未找到圣水升级标志")
             delayWithMultiplier(500)
