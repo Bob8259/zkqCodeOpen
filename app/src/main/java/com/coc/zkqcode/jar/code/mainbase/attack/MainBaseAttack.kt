@@ -32,16 +32,16 @@ suspend fun mainBaseRemainingAttack(): Boolean {
     repeat(remainingTimes) { index ->
         val completedBattleTimes = index + 2
         if (shouldCheckClanGameTask && completedBattleTimes >= normalBattleTimes && !hasAcceptedClanGameTask(BaseType.Main)) return true
-        if (!mainBaseAttack()) return false
+        if (!mainBaseAttack(battleNumber = completedBattleTimes, battleTimes = totalBattleTimes)) return false
     }
     return true
 }
 
-suspend fun mainBaseAttack(): Boolean {
+suspend fun mainBaseAttack(battleNumber: Int = 1, battleTimes: Int = 1): Boolean {
     if (!getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.AUTO_ATTACK.key)) return true
     // Skip post-battle logic if no battle was started (e.g. cooldown, timeout, insufficient gold)
     if (!enterMainBase()) return false
-    val battleStarted = searchOpponentsAndDeployTroops()
+    val battleStarted = searchOpponentsAndDeployTroops(battleNumber, battleTimes)
     if (!battleStarted) return enterMainScreen()
     if (getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.SWITCH_ACCOUNT_AFTER_BATTLE.key)) return false
     val maxDurationMs = 3 * 60 * 1000L // Maximum battle wait time: 3 minutes

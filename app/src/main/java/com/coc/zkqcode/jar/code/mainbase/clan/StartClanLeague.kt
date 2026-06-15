@@ -58,7 +58,7 @@ fun isInLeagueRegistrationPeriod(): Boolean {
  *
  * @return true if the league entry indicator is found; false otherwise.
  */
-fun isClanLeagueEntryAvailable(): Boolean {
+suspend fun isClanLeagueEntryAvailable(): Boolean {
     return findMultiColors(MyColors.ClanLeagueEntryIndicator) != null
 }
 
