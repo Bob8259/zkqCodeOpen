@@ -26,6 +26,7 @@ interface IMainBaseClanWarColors {
     val JoinedClanWar: ColorSchema
 
     // Clan war league registration buttons
+    val ClanLeagueEntryIndicator: ColorSchema
     val StartClanLeagueButton: ColorSchema
     val ConfirmClanLeagueRegistration: ColorSchema
     val LeagueWhiteCloud: ColorSchema
@@ -115,6 +116,11 @@ object MainBaseClanWarColors : IMainBaseClanWarColors {
     )
     override val JoinedClanWar = ColorSchema.parse(
         959, 97, 1134, 540, "8CEABD", "28|0|8CEABD,56|0|8CEABD,83|0|8CEABD,111|0|8CEABD,0|19|3AD48B,28|19|3AD48B,56|19|3AD48B,83|19|3AD48B,111|19|3AD48B", 1, 0.95, "参战按钮"
+    )
+
+    // Clan war league entry indicator (shown on home page when league is available)
+    override val ClanLeagueEntryIndicator = ColorSchema.parse(
+        19, 406, 86, 472, "E0FAFF", "0|-31|DBFFFF,3|-22|3E6ED3,-15|-18|28ACE8,-4|-9|BDEAFF,-25|-2|0DBADE,-11|22|0DA2C2,30|-13|92EDFC,20|-17|28ABE5,1064|-109|E0E8E8", 0, 0.9, "联赛入口标志"
     )
 
     // Clan war league registration button

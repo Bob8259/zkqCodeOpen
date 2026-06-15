@@ -27,7 +27,8 @@ private const val LEAGUE_CONFIRM_X = 1010
 private const val LEAGUE_CONFIRM_Y = 641
 
 /**
- * Check if current time is within Clan War League period (1st 16:00 ~ 10th 08:00 Beijing time).
+ * Check if current time is within Clan War League period (1st 16:00 ~ 10th 08:00 Beijing time,
+ * or 17th 16:00 ~ 26th 08:00 Beijing time).
  * During this period, normal clan war should be disabled.
  */
 fun isInClanLeaguePeriod(): Boolean {
@@ -35,24 +36,36 @@ fun isInClanLeaguePeriod(): Boolean {
     val day = calendar.get(Calendar.DAY_OF_MONTH)
     val hour = calendar.get(Calendar.HOUR_OF_DAY)
     val dayHour = day * 100 + hour
-    return dayHour >= 116 && dayHour < 1008  // 1st 16:00 ~ 10th 08:00
+    return (dayHour >= 116 && dayHour < 1008) || (dayHour >= 1716 && dayHour < 2608)  // 1st 16:00 ~ 10th 08:00, 17th 16:00 ~ 26th 08:00
 }
 
 /**
- * Check if current time is within league registration period (1st 16:00 ~ 3rd 08:00 Beijing time).
+ * Check if current time is within league registration period (1st 16:00 ~ 3rd 08:00 Beijing time,
+ * or 17th 16:00 ~ 19th 08:00 Beijing time).
  */
 fun isInLeagueRegistrationPeriod(): Boolean {
     val calendar = Calendar.getInstance(TimeZone.getTimeZone("Asia/Shanghai"))
     val day = calendar.get(Calendar.DAY_OF_MONTH)
     val hour = calendar.get(Calendar.HOUR_OF_DAY)
     val dayHour = day * 100 + hour
-    return dayHour >= 116 && dayHour < 308  // 1st 16:00 ~ 3rd 08:00
+    return (dayHour >= 116 && dayHour < 308) || (dayHour >= 1716 && dayHour < 1908)  // 1st 16:00 ~ 3rd 08:00, 17th 16:00 ~ 19th 08:00
+}
+
+/**
+ * Check whether the clan league entry indicator is visible on the home page.
+ * Used to determine whether a league is actually open for registration / participation
+ * during the league time window.
+ *
+ * @return true if the league entry indicator is found; false otherwise.
+ */
+fun isClanLeagueEntryAvailable(): Boolean {
+    return findMultiColors(MyColors.ClanLeagueEntryIndicator) != null
 }
 
 /**
  * Auto-register for Clan War League during the registration period.
  * Steps:
- * ① Navigate to clan war entrance (same logic as StartClanWar, independently maintained)
+ * ① Navigate to clan war entrance by detecting ClanLeagueEntryIndicator (instead of blind tap)
  * ② Find and tap "开联赛" (Start League) button via ColorSchema
  * ③ Select 15v15 or 30v30 based on config (pure coordinate tap)
  * ④ Find and tap confirm registration button
@@ -71,10 +84,17 @@ suspend fun startClanLeague(): Boolean {
         return true
     }
 
-    // 4. Navigate to clan war entrance (copied from StartClanWar, independently maintained)
+    // 4. Detect league entry indicator on the home page — only enter clan war when available
     val trainTroopButton = findMultiColorsUntil(listOf(MyColors.TrainTroops, MyColors.TrainTroops2), 100)
     if (trainTroopButton != null) {
-        TouchActions.tap(60, 420)
+        val leagueIndicator = findMultiColorsUntil(listOf(MyColors.ClanLeagueEntryIndicator), 3000)
+        if (leagueIndicator != null) {
+            accountMessage("检测到联赛入口标志，点击进入部落战")
+            TouchActions.tap(leagueIndicator.x, leagueIndicator.y)
+        } else {
+            accountMessage("在报名期但未检测到联赛入口标志，当前部落无联赛可开启，跳过")
+            return enterMainScreen()
+        }
     } else return enterMainScreen()
 
     // 5. Find and tap "开联赛" (Start League) button via ColorSchema

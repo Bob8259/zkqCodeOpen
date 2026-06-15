@@ -1,4 +1,4 @@
-﻿package com.coc.zkqcode.jar.code.mainbase.clan
+package com.coc.zkqcode.jar.code.mainbase.clan
 
 import android.graphics.Bitmap
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
@@ -24,9 +24,17 @@ private const val STRATEGY_POSITION = "position"
 private const val STRATEGY_RECOMMENDATION = "recommendation"
 
 suspend fun clanWar(): Boolean {
-    if (isInClanLeaguePeriod()) {
-        accountMessage("当前处于部落联赛期间，跳过部落战")
-        return true
+    // Only perform league-vs-clan-war decision when BOTH the league AND clan war switches are enabled.
+    val leagueEnabled = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.START_CLAN_LEAGUE.key)
+        || getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.PLAY_LEAGUE.key)
+        || getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.PLAY_LEAGUE_DONATION.key)
+
+    if (leagueEnabled && isInClanLeaguePeriod()) {
+        if (findMultiColors(MyColors.ClanLeagueEntryIndicator) != null) {
+            accountMessage("当前处于部落联赛期间且检测到联赛入口，跳过部落战")
+            return true
+        }
+        accountMessage("当前处于部落联赛时间段但未检测到联赛入口标志，继续执行部落战")
     }
     if (!getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.PLAY_CLAN_WAR.key) || InGameVars.townHallLevel < 3) return true
     findMultiColors(MyColors.ClanWarSwordIcon) ?: return true // No clan war attack times, return
