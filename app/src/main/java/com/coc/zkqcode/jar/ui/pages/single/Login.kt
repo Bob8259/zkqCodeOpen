@@ -111,13 +111,14 @@ fun LoginScreen(onAdFreeClick: () -> Unit = {}) {
                 gemInfo = Strings.loginSuccess(formattedGem)
             } catch (e: Exception) {
                 val errorMsg = e.message ?: ""
-                gemInfo = if (errorMsg.contains("邮箱或密码错误")) {
+                val displayMsg = if (errorMsg.contains("邮箱或密码错误")) {
                     Strings.emailPasswordError
                 } else if (errorMsg.startsWith("Error")) {
                     Strings.loginFailed(errorMsg)
                 } else {
                     Strings.loginFailed(errorMsg)
                 }
+                gemInfo = displayMsg
                 showMessage = true
                 GlobalVars.configStates[GLOBAL_SETTINGS.GEM_COUNT.key]!!.value = ""
                 failTimesCount++

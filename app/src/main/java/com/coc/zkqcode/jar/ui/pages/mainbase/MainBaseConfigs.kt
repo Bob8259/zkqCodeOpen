@@ -62,6 +62,7 @@ fun LazyListScope.mainBaseConfig(
             SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.SPEED_SIX_BUILDER.key}_c$index", afterChange = { checked ->
                 if (checked) {
                     GlobalVars.configStates["${MAIN_BASE_SETTINGS.SMART_DECISION.key}_c$index"]?.value = "1"
+                    GlobalVars.configStates["${MAIN_BASE_SETTINGS.GEAR_UP_SETTINGS.key}_c$index"]?.value = "1"
                 }
             })
         }
@@ -420,7 +421,11 @@ fun LazyListScope.mainBaseConfig(
     item {
         SettingSection(visible = isResearchExpanded) {
             Column {
-                SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.RESEARCH_SETTING.key}_c$index")
+                SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.RESEARCH_SETTING.key}_c$index", afterChange = { checked ->
+                    if (checked) {
+                        GlobalVars.configStates["${MAIN_BASE_SETTINGS.SMART_DECISION.key}_c$index"]?.value = "1"
+                    }
+                })
                 AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.RESEARCH_SETTING.key}_c$index"]?.value == "1") {
                     Column {
                         CustomButton(
@@ -499,7 +504,11 @@ fun LazyListScope.mainBaseConfig(
     item {
         SettingSection(visible = isPetExpanded) {
 
-            SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.UPGRADE_PETS.key}_c$index")
+            SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.UPGRADE_PETS.key}_c$index", afterChange = { checked ->
+                if (checked) {
+                    GlobalVars.configStates["${MAIN_BASE_SETTINGS.SMART_DECISION.key}_c$index"]?.value = "1"
+                }
+            })
 
             AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.UPGRADE_PETS.key}_c$index"]?.value == "1") {
                 CustomButton(

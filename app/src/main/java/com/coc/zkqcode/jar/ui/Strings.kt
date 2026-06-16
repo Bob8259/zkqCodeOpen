@@ -311,5 +311,48 @@ object Strings {
     val memoryCleanFail get() = if (LanguageManager.isChinese) "清除失败，可能记忆文件不存在" else "Clear failed - cache may not exist"
     val clearMemoryExplain get() = if (LanguageManager.isChinese) "辅助会缓存账号的运行状态，例如当前账号是否已完成突袭、部落竞赛等任务。切换账号后若未清除缓存，辅助将沿用先前账号的状态信息，可能导致异常操作。" else "The app caches account status (e.g., Raid, Clan Games). If not cleared when switching accounts, it may use old data and cause issues."
     val copyLogs get() = if (LanguageManager.isChinese) "复制日志" else "Copy Logs"
+
+    // Server酱³
+    val serverchanSendKeyLabel get() = if (LanguageManager.isChinese) "Server酱³ SendKey" else "Server酱³ SendKey"
+    val serverchanLoginFailedTitle get() = if (LanguageManager.isChinese) "辅助账号登录失败" else "Login Failed - Assistant Account"
+    val serverchanLoginFailedMsg get() = if (LanguageManager.isChinese) "辅助账号登录失败，请检查邮箱密码或网络连接" else "Assistant account login failed. Please check email/password or network."
+    val serverchanSectionTitle get() = if (LanguageManager.isChinese) "推送通知" else "Push Notification"
+    val serverchanTestBtn get() = if (LanguageManager.isChinese) "发送测试" else "Send Test"
+    val serverchanTestSuccess get() = if (LanguageManager.isChinese) "Server酱³ 测试消息发送成功！" else "Server酱³ test message sent successfully!"
+    val serverchanTestFailed get() = if (LanguageManager.isChinese) "Server酱³ 测试发送失败：%s" else "Server酱³ test failed: %s"
+    val serverchanSendKeyEmpty get() = if (LanguageManager.isChinese) "请先填写 Server酱³ SendKey" else "Please enter your Server酱³ SendKey first"
+    val serverchanKickTitle get() = if (LanguageManager.isChinese) "进入游戏失败 - 紫孔雀" else "Game Enter Failed - ZKQ"
+    fun serverchanKickMsg(accountIndex: Int, remark: String, timeoutSec: Int) =
+        if (LanguageManager.isChinese) "账号${accountIndex}，备注：${remark.ifBlank { "无" }}。倒计时${timeoutSec}结束，进入游戏失败"
+        else "Account $accountIndex, Remark: ${remark.ifBlank { "N/A" }}. Countdown $timeoutSec ended, failed to enter game."
+    val serverchanLoginNotifyLabel get() = if (LanguageManager.isChinese) "辅助账号登录通知" else "Login Notification"
+    val serverchanKickNotifyLabel get() = if (LanguageManager.isChinese) "进入游戏失败通知" else "Kick Notification"
+    val serverchanWarTitle get() = if (LanguageManager.isChinese) "部落战已开战 - 紫孔雀" else "Clan War Started - ZKQ"
+    val serverchanWarNotifyLabel get() = if (LanguageManager.isChinese) "部落战通知" else "Clan War Notification"
+    fun serverchanWarMsg(accountIndex: Int, remark: String) =
+        if (LanguageManager.isChinese) "账号${accountIndex}，备注:${remark.ifBlank { "无" }}。部落战已开战"
+        else "Account $accountIndex, Remark: ${remark.ifBlank { "N/A" }}. Clan war has started."
+    val serverchanLeagueTitle get() = if (LanguageManager.isChinese) "联赛已开战 - 紫孔雀" else "League Started - ZKQ"
+    val serverchanLeagueNotifyLabel get() = if (LanguageManager.isChinese) "联赛通知" else "League Notification"
+    fun serverchanLeagueMsg(accountIndex: Int, remark: String) =
+        if (LanguageManager.isChinese) "账号${accountIndex}，备注:${remark.ifBlank { "无" }}。联赛已开战"
+        else "Account $accountIndex, Remark: ${remark.ifBlank { "N/A" }}. League has started."
+    val serverchanUpgradeNotifyLabel get() = if (LanguageManager.isChinese) "建筑升级通知" else "Upgrade Notification"
+    val serverchanUpgradeAdvanceLabel get() = if (LanguageManager.isChinese) "提前提醒(分钟)" else "Advance Minutes"
+    val serverchanUpgradeTitle get() = if (LanguageManager.isChinese) "升级即将完成 - 紫孔雀" else "Upgrade Complete Soon - ZKQ"
+    val serverchanUpgradingTitle get() = if (LanguageManager.isChinese) "正在升级 - 紫孔雀" else "Upgrading - ZKQ"
+    fun serverchanUpgradeMsg(accountIndex: Int, remark: String, summary: String) =
+        if (LanguageManager.isChinese) "账号${accountIndex}，备注:${remark.ifBlank { "无" }}\n$summary"
+        else "Account $accountIndex, Remark: ${remark.ifBlank { "N/A" }}\n$summary"
+    val pushProviderLabel get() = if (LanguageManager.isChinese) "推送平台" else "Push Provider"
+    val pushProviderServerChan get() = "Server酱³"
+    val pushProviderWxPusher get() = "WxPusher"
+    val pushProviderPushPlus get() = "PushPlus"
+    val pushProviderTelegram get() = "Telegram"
+    val wxpusherAppTokenLabel get() = if (LanguageManager.isChinese) "WxPusher AppToken" else "WxPusher AppToken"
+    val wxpusherUidLabel get() = if (LanguageManager.isChinese) "WxPusher UID" else "WxPusher UID"
+    val pushplusTokenLabel get() = if (LanguageManager.isChinese) "PushPlus Token" else "PushPlus Token"
+    val telegramBotTokenLabel get() = if (LanguageManager.isChinese) "Telegram BotToken" else "Telegram BotToken"
+    val telegramChatIdLabel get() = if (LanguageManager.isChinese) "Telegram ChatID" else "Telegram ChatID"
 }
 

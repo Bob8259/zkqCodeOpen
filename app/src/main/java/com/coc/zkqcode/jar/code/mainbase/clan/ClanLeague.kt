@@ -14,6 +14,8 @@ import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.isInHomePage
 import com.coc.zkqcode.jar.code.universal.smalltools.input.TouchActions
 import com.coc.zkqcode.jar.code.universal.smalltools.data.getBooleanConfigRuntime
+import com.coc.zkqcode.jar.code.universal.push.ServerChanHelper
+import com.coc.zkqcode.jar.ui.Strings
 import com.coc.zkqcode.jar.ui.schema.Schema
 
 suspend fun clanLeague(): Boolean {
@@ -37,6 +39,18 @@ suspend fun clanLeague(): Boolean {
     // Exit the loop once the green war icon appears
     if (findMultiColorsUntil(listOf(MyColors.ClanLeagueGreenWarIcon), 5000) != null) {
         accountMessage("已进入联赛")
+
+        // If league notification is enabled, skip the attack and send a push notification
+        if (GlobalVars.configStates[Schema.GLOBAL_SETTINGS.SERVERCHAN_LEAGUE_NOTIFY.key]?.value == "1") {
+            val remarkKey = "remark${InGameVars.currentAccountNumber}"
+            val remark = GlobalVars.configStates[remarkKey]?.value.orEmpty()
+            ServerChanHelper.sendNotification(
+                title = Strings.serverchanLeagueTitle,
+                desp = Strings.serverchanLeagueMsg(InGameVars.currentAccountNumber, remark)
+            )
+            return enterMainScreen()
+        }
+
         TouchActions.tap(1220, 490)
         TouchActions.tap(760, 60)
         val myPosition = detectMyClanWarPosition()

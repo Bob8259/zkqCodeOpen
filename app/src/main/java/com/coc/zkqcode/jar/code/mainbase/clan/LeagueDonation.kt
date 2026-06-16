@@ -95,9 +95,14 @@ suspend fun leagueDonation(): Boolean {
 }
 
 private suspend fun enterLeagueInterface(): Boolean {
-    TouchActions.tap(50, 440)
-    accountMessage("进入联赛界面")
-    return true
+    val leagueIndicator = findMultiColors(MyColors.ClanLeagueEntryIndicator)
+    if (leagueIndicator != null) {
+        accountMessage("检测到联赛入口标志，点击进入联赛界面")
+        TouchActions.tap(leagueIndicator.x, leagueIndicator.y)
+        return true
+    }
+    accountMessage("未检测到联赛入口标志，当前部落无联赛可参与，跳过捐兵")
+    return false
 }
 
 private suspend fun enterLeaguePrepInterface(): Boolean {

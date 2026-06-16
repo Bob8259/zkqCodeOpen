@@ -38,6 +38,21 @@ object GlobalSettings {
     val RUNTIME_SCREENSHOT = SettingDef("runtime_screenshot", "运行时截图", "Runtime Screenshot", 0, "GLOBAL_SETTINGS")
     val LANGUAGE = SettingDef("language", "语言", "Language", "zh", "GLOBAL_SETTINGS")
 
+    // ── Push Notification (Server酱³ / WxPusher / PushPlus / Telegram) ────
+    val PUSH_PROVIDER = SettingDef("push_provider", "推送平台", "Push Provider", "0", "GLOBAL_SETTINGS")
+    val SERVERCHAN_SENDKEY = SettingDef("serverchan_sendkey", "Server酱³ SendKey", "Server酱³ SendKey", "", "GLOBAL_SETTINGS")
+    val WXPUSHER_APP_TOKEN = SettingDef("wxpusher_app_token", "WxPusher AppToken", "WxPusher AppToken", "", "GLOBAL_SETTINGS")
+    val WXPUSHER_UID = SettingDef("wxpusher_uid", "WxPusher UID", "WxPusher UID", "", "GLOBAL_SETTINGS")
+    val PUSHPLUS_TOKEN = SettingDef("pushplus_token", "PushPlus Token", "PushPlus Token", "", "GLOBAL_SETTINGS")
+    val TELEGRAM_BOT_TOKEN = SettingDef("telegram_bot_token", "Telegram BotToken", "Telegram BotToken", "", "GLOBAL_SETTINGS")
+    val TELEGRAM_CHAT_ID = SettingDef("telegram_chat_id", "Telegram ChatID", "Telegram ChatID", "", "GLOBAL_SETTINGS")
+    val SERVERCHAN_LOGIN_NOTIFY = SettingDef("serverchan_login_notify", "辅助账号登录通知", "Login Notification", 1, "GLOBAL_SETTINGS")
+    val SERVERCHAN_KICK_NOTIFY = SettingDef("serverchan_kick_notify", "进入游戏失败通知", "Kick Notification", 1, "GLOBAL_SETTINGS")
+    val SERVERCHAN_WAR_NOTIFY = SettingDef("serverchan_war_notify", "部落战通知", "Clan War Notification", 0, "GLOBAL_SETTINGS")
+    val SERVERCHAN_LEAGUE_NOTIFY = SettingDef("serverchan_league_notify", "联赛通知", "League Notification", 0, "GLOBAL_SETTINGS")
+    val SERVERCHAN_UPGRADE_NOTIFY = SettingDef("serverchan_upgrade_notify", "建筑升级通知", "Upgrade Notification", 0, "GLOBAL_SETTINGS")
+    val SERVERCHAN_UPGRADE_ADVANCE = SettingDef("serverchan_upgrade_advance", "提前提醒(分钟)\n(退出游戏时检测)", "Advance Minutes\n(checked on exit)", "10", "GLOBAL_SETTINGS")
+
     // ── Temperature Protection (温度保护) ────────────────────────────────────
     val TEMP_PROTECTION = SettingDef("temp_protection", "温度保护", "Temp Protection", 0, "GLOBAL_SETTINGS")
     val TEMP_PAUSE_THRESHOLD = SettingDef("temp_pause_threshold", "暂停温度(°C)", "Pause Temp (°C)", "45", "GLOBAL_SETTINGS")
@@ -122,6 +137,19 @@ object GlobalSettings {
         DEVICE_REMARK,
         RUNTIME_SCREENSHOT,
         LANGUAGE,
+        PUSH_PROVIDER,
+        SERVERCHAN_SENDKEY,
+        WXPUSHER_APP_TOKEN,
+        WXPUSHER_UID,
+        PUSHPLUS_TOKEN,
+        TELEGRAM_BOT_TOKEN,
+        TELEGRAM_CHAT_ID,
+        SERVERCHAN_LOGIN_NOTIFY,
+        SERVERCHAN_KICK_NOTIFY,
+        SERVERCHAN_WAR_NOTIFY,
+        SERVERCHAN_LEAGUE_NOTIFY,
+        SERVERCHAN_UPGRADE_NOTIFY,
+        SERVERCHAN_UPGRADE_ADVANCE,
         TEMP_PROTECTION,
         TEMP_PAUSE_THRESHOLD,
         TEMP_RESUME_THRESHOLD,
