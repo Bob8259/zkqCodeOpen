@@ -10,14 +10,12 @@ import com.coc.zkqcode.jar.code.universal.smalltools.data.getStaticConfig
 suspend fun runGame() {
     // Launch component string is defined in GameVersion enum, keeping version-specific details centralized
     val command = "am start -n ${InGameVars.currentGameVersion.launchComponent}"
-    showDebugInfo("Run game command: $command")
     RunShell.runNoOutput(command)
     delayWithMultiplier(3000)
 }
 
 suspend fun killApp(packageName: String) {
     val command = "am force-stop $packageName"
-    showDebugInfo("Kill game command: $command")
     RunShell.runNoOutput(command)
 }
 

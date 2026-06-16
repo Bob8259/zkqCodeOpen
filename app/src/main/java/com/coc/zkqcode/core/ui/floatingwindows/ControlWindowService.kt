@@ -304,20 +304,19 @@ class ControlWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner 
 
     override fun onTaskRemoved(rootIntent: Intent?) {
         super.onTaskRemoved(rootIntent)
-        // The bot logic runs entirely inside this foreground service plus the
-        // dynamically loaded /jar module — it does NOT depend on MainActivity.
-        // A started foreground service survives task removal, so when the
-        // MainActivity task record is cleaned up (e.g. after the game is
-        // force-stopped and the screen rotates), the process is still healthy.
-        // Force-stopping and relaunching here would needlessly kill a working
-        // session, so we only diagnose and keep running.
+        // Keep running if the bot is active; otherwise relaunch to restore the UI.
         val rootComponent = rootIntent?.component?.className
         val botActive = botJob?.isActive == true
         val currentMode = AppStateManager.currentMode
+        if (botActive) {
+            return
+        }
+
         LogHelper.showDebugInfo(
-            "ControlWindowService: task removed but keeping service alive. " +
+            "ControlWindowService: task removed while bot is inactive, relaunching MainActivity with detached shell. " +
                     "rootComponent=$rootComponent, mode=$currentMode, botActive=$botActive"
         )
+        relaunchMainActivityDetached()
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
