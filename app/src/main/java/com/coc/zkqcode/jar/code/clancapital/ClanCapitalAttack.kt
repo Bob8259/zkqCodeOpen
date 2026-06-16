@@ -321,7 +321,7 @@ suspend fun performClanCapitalRaid(): Boolean {
  * Check if the current device time falls within the Clan Capital raid weekend:
  * Friday 16:00 (inclusive) ~ Monday 16:00 (exclusive).
  */
-private fun isWithinRaidWeekend(): Boolean {
+fun isWithinRaidWeekend(): Boolean {
     val cal = Calendar.getInstance()
     val dayOfWeek = cal.get(Calendar.DAY_OF_WEEK)
     val hour = cal.get(Calendar.HOUR_OF_DAY)

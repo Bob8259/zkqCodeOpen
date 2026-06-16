@@ -14,7 +14,9 @@ import com.coc.zkqcode.jar.ui.schema.Schema
 
 suspend fun startRaid(): Boolean {
     if (!getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.START_RAID.key)) return true
-
+    if (!isWithinRaidWeekend()) {
+        return true
+    }
     // Guard: only start raid once per 3 days (4320 minutes)
     val storageKey = StorageKeys.withAccountNumber(StorageKeys.START_RAID, InGameVars.currentAccountNumber)
     if (!checkMemoryFile(storageKey, 4320)) {
