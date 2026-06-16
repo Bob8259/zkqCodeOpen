@@ -1,7 +1,6 @@
 package com.coc.zkqcode.jar.code.mainbase.daily
 
 import com.coc.zkqcode.jar.code.colorschema.MyColors
-import com.coc.zkqcode.jar.code.mainbase.others.zoomSmallMainBase
 import com.coc.zkqcode.jar.code.universal.InGameVars
 import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
@@ -19,7 +18,6 @@ private data class BadgeEventTap(val x: Int, val y: Int)
 private const val BADGE_EVENT_REWARD_INTERVAL_MINUTES = 1440
 private const val MAX_BADGE_EVENT_ROUNDS = 20
 private const val BADGE_EVENT_CONTINUE_TIMEOUT = 1000
-private const val BADGE_EVENT_PAGE_TIMEOUT = 60000
 private const val BADGE_EVENT_CLAIM_TIMEOUT = 1000
 
 private val badgeEventEntryTap = BadgeEventTap(315, 663)
@@ -48,8 +46,7 @@ suspend fun collectBadgeEventRewards(): Boolean {
     }
 
     accountMessage("准备领取奖章活动奖励")
-    zoomSmallMainBase(isForAttack = true)
-    TouchActions.tap(badgeEventEntryTap.x, badgeEventEntryTap.y, delayTime = 500)
+    TouchActions.tap(badgeEventEntryTap.x, badgeEventEntryTap.y, delayTime = 1500)
     TouchActions.tap(badgeEventEnterTap.x, badgeEventEnterTap.y, delayTime = 1000)
 
     val continueButton = findMultiColorsUntil(listOf(MyColors.BadgeEventContinueButton), BADGE_EVENT_CONTINUE_TIMEOUT)
@@ -58,7 +55,7 @@ suspend fun collectBadgeEventRewards(): Boolean {
         TouchActions.tap(continueButton.x, continueButton.y, delayTime = 1000)
     }
 
-    val entered = findMultiColorsUntil(listOf(MyColors.BadgeEventPageMarker), BADGE_EVENT_PAGE_TIMEOUT)
+    val entered = findMultiColorsUntil(listOf(MyColors.BadgeEventPageMarker), 5000)
     if (entered == null) {
         accountMessage("未检测到奖章活动页面标记，返回主页面")
         return finishBadgeEventRewardCheck(storageKey)
@@ -99,8 +96,7 @@ private suspend fun finishBadgeEventRewardCheck(storageKey: String): Boolean {
 
 private suspend fun claimBadgeReward(tabTap: BadgeEventTap): Boolean {
     TouchActions.tap(tabTap.x, tabTap.y, delayTime = 500)
-    val claimButton = findMultiColorsUntil(listOf(MyColors.BadgeEventClaimReward), BADGE_EVENT_CLAIM_TIMEOUT)
-    if (claimButton == null) return false
+    val claimButton = findMultiColorsUntil(listOf(MyColors.BadgeEventClaimReward), BADGE_EVENT_CLAIM_TIMEOUT) ?: return false
     TouchActions.tap(claimButton.x, claimButton.y, delayTime = 1000)
     return true
 }
