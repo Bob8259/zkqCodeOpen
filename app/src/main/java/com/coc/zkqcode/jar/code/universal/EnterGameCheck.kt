@@ -19,7 +19,9 @@ import com.coc.zkqcode.jar.code.universal.smalltools.lifecycle.checkReconnection
 import com.coc.zkqcode.jar.code.universal.smalltools.lifecycle.isGameAtFront
 import com.coc.zkqcode.jar.code.universal.smalltools.lifecycle.killGame
 import com.coc.zkqcode.jar.code.universal.smalltools.lifecycle.runGame
+import com.coc.zkqcode.jar.code.auth.ServerChanHelper
 import com.coc.zkqcode.jar.code.universal.tutorial.AllTutorials
+import com.coc.zkqcode.jar.ui.Strings
 import com.coc.zkqcode.jar.ui.schema.Schema
 import java.util.Locale
 
@@ -73,6 +75,16 @@ suspend fun enterMainScreen(isDoubleCheck: Boolean = false): Boolean {
     }
 
     // Return false if the loop finishes without finding the main screen
+    // Send Server酱³ push notification on game enter timeout if enabled
+    val kickNotify = GlobalVars.configStates[Schema.GLOBAL_SETTINGS.SERVERCHAN_KICK_NOTIFY.key]?.value == "1"
+    if (kickNotify) {
+        val remarkKey = "remark${InGameVars.currentAccountNumber}"
+        val remark = GlobalVars.configStates[remarkKey]?.value.orEmpty()
+        ServerChanHelper.sendNotification(
+            title = Strings.serverchanKickTitle,
+            desp = Strings.serverchanKickMsg(InGameVars.currentAccountNumber, remark, timeoutSeconds)
+        )
+    }
     killGame()
     return false
 }

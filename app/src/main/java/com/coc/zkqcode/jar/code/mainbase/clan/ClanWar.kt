@@ -18,7 +18,10 @@ import com.coc.zkqcode.jar.code.universal.smalltools.data.getBooleanConfigRuntim
 import com.coc.zkqcode.jar.code.universal.smalltools.lifecycle.killGame
 import com.coc.zkqcode.jar.code.universal.smalltools.data.readMemory
 import com.coc.zkqcode.jar.code.universal.smalltools.data.writeMemory
+import com.coc.zkqcode.jar.code.auth.ServerChanHelper
+import com.coc.zkqcode.jar.ui.Strings
 import com.coc.zkqcode.jar.ui.schema.Schema
+import com.coc.zkqcode.core.data.database.GlobalVars
 
 private const val STRATEGY_POSITION = "position"
 private const val STRATEGY_RECOMMENDATION = "recommendation"
@@ -38,6 +41,18 @@ suspend fun clanWar(): Boolean {
     }
     if (!getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.PLAY_CLAN_WAR.key) || InGameVars.townHallLevel < 3) return true
     findMultiColors(MyColors.ClanWarSwordIcon) ?: return true // No clan war attack times, return
+
+    // If clan war notification is enabled, skip the attack and send a push notification
+    if (GlobalVars.configStates[Schema.GLOBAL_SETTINGS.SERVERCHAN_WAR_NOTIFY.key]?.value == "1") {
+        val remarkKey = "remark${InGameVars.currentAccountNumber}"
+        val remark = GlobalVars.configStates[remarkKey]?.value.orEmpty()
+        ServerChanHelper.sendNotification(
+            title = Strings.serverchanWarTitle,
+            desp = Strings.serverchanWarMsg(InGameVars.currentAccountNumber, remark)
+        )
+        return true
+    }
+
     TouchActions.tap(50, 440) // Enter clan war
 
     // Determine strategy order based on last used strategy

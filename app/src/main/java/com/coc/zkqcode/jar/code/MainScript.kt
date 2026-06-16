@@ -23,6 +23,8 @@ import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.jar.code.universal.create.batchCreateAccounts
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.preCheck
+import com.coc.zkqcode.jar.code.universal.checkUpgradeTimers
+import com.coc.zkqcode.jar.code.universal.checkScheduledUpgradeNotifications
 import com.coc.zkqcode.jar.code.universal.smalltools.data.StorageKeys
 import com.coc.zkqcode.jar.code.universal.smalltools.data.getConfigOrStop
 import com.coc.zkqcode.jar.code.universal.smalltools.data.readMemory
@@ -74,6 +76,8 @@ suspend fun runMainScript() {
     while (currentCoroutineContext().isActive) {
 //        runTestCode()
         runAccountStepBlock()
+        // Check scheduled upgrade notifications every cycle (runs in background)
+        checkScheduledUpgradeNotifications()
         // Circularly search for the next enabled account, wrapping back to currentAccountNumber (inclusive)
         // Emit hot update signal at safe point, throttled to once every 2-3 hours randomly
         if (updateOption == 2 && System.currentTimeMillis() - lastUpdateCheckTime >= nextUpdateInterval) {
@@ -196,6 +200,8 @@ suspend fun runAccountStepBlock() {
     if (!playMainBase()) {
         return
     }
+    // Check upgrade timers and send notification if needed (before exiting the game)
+    checkUpgradeTimers()
 }
 
 

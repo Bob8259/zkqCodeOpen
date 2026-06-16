@@ -8,6 +8,7 @@ import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.crypto.solvePoW
 import com.coc.zkqcode.jar.code.universal.network.UrlFallbackUtil
+import com.coc.zkqcode.jar.ui.Strings
 import com.coc.zkqcode.jar.ui.schema.Schema.GLOBAL_SETTINGS
 import com.coc.zkqcode.nativehelper.RustTools
 import kotlinx.coroutines.Dispatchers
@@ -181,7 +182,7 @@ suspend fun userAuth() {
                 }
                 GlobalVars.configStates["gem_count"]?.value = loginResult.gem
                 loginResult.sessionKey
-            } catch (_: Exception) {
+            } catch (e: Exception) {
                 if (showFailureMessage) {
                     ShowMessage("Session login failed / 会话登录失败")
                 }
@@ -192,6 +193,14 @@ suspend fun userAuth() {
         suspend fun failAuth() {
             GlobalVars.isShowAd = true
             blockIfInternational()
+            // Send Server酱³ push notification on login failure if enabled
+            val loginNotify = GlobalVars.configStates[GLOBAL_SETTINGS.SERVERCHAN_LOGIN_NOTIFY.key]?.value == "1"
+            if (loginNotify) {
+                ServerChanHelper.sendNotification(
+                    title = Strings.serverchanLoginFailedTitle,
+                    desp = Strings.serverchanLoginFailedMsg
+                )
+            }
         }
 
         suspend fun refreshSessionKeyAfterInvalidSession(): String? {
