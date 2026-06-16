@@ -32,8 +32,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.coc.zkqcode.MainActivity
 import com.coc.zkqcode.core.data.database.GlobalVars
+import com.coc.zkqcode.core.data.database.ServerConnectionMethod
 import com.coc.zkqcode.core.data.websocket.ServerActions
 import com.coc.zkqcode.core.util.exit.AppExitHelper
+import com.coc.zkqcode.core.util.fileactions.LogHelper
 import com.coc.zkqcode.core.ui.floatingwindows.ControlWindowService
 import com.coc.zkqcode.core.ui.floatingwindows.UIWindowService
 import com.coc.zkqcode.core.ui.localcomponents.LocalCustomButton
@@ -49,6 +51,27 @@ private val ColorBackground  = Color(0xFFE8F4FC)
 private val ColorCardBg      = Color(0xA6FFFFFF)
 private val ColorTextPrimary = Color(0xFF2D3748)
 
+/**
+ * Returns true if the process is already fully initialized with a live server
+ * connection. When MainActivity's task was removed (e.g. after a game-kill +
+ * rotation) the foreground services and bot keep running, so reopening the app
+ * creates a fresh MainActivity. In that case we must NOT re-run the startup
+ * sequence, because it would kill the app_process client and tear down the live
+ * WebSocket server the running bot depends on.
+ */
+private fun isAlreadyInitialized(): Boolean {
+    if (GlobalVars.serverActions == null) return false
+    return when (GlobalVars.serverConnectionMethod) {
+        // For the local WS path, only reuse if the client session is still alive.
+        ServerConnectionMethod.LOCAL_WS_SERVER ->
+            ServerHelper.localServer?.isClientConnected() == true
+        // Shell fallback methods are stateless, so an existing ServerActions is enough.
+        ServerConnectionMethod.LIBSU_CURL,
+        ServerConnectionMethod.LIBSU_WGET -> true
+        null -> false
+    }
+}
+
 @Composable
 fun CheckRootScreen() {
     val context = LocalContext.current
@@ -56,6 +79,24 @@ fun CheckRootScreen() {
 
     // Use LaunchedEffect to perform startup checks without blocking the main thread.
     LaunchedEffect(Unit) {
+        // Idempotent startup: if the process is already initialized and the
+        // server connection is still healthy, skip the destructive re-init and
+        // reuse the existing session.
+        if (isAlreadyInitialized()) {
+            LogHelper.showDebugInfo("CheckRootScreen: process already initialized, reusing existing session")
+            status = RootStatus.GRANTED
+            return@LaunchedEffect
+        }
+
+        // Full re-init is required. Clear any stale ServerActions so the GRANTED
+        // block recreates it against the freshly started server instead of
+        // reusing a reference to a torn-down session.
+        GlobalVars.serverActions?.let { stale ->
+            LogHelper.showDebugInfo("CheckRootScreen: clearing stale ServerActions before re-init")
+            stale.close()
+            GlobalVars.serverActions = null
+        }
+
         withContext(Dispatchers.IO) {
             CheckIntergrity.checkAppIntegrity(context)
         }

@@ -141,6 +141,9 @@ class LocalWebSocketServer {
         }
     }
 
+    /** Returns true if an app_process client is currently connected. */
+    fun isClientConnected(): Boolean = clientSession != null
+
     /** Gracefully shut down the Ktor server. */
     fun stopServer() {
         showDebugInfo("LocalWebSocketServer: stopping server")
