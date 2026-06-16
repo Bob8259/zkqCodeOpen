@@ -19,7 +19,7 @@ private data class BadgeEventTap(val x: Int, val y: Int)
 private const val BADGE_EVENT_REWARD_INTERVAL_MINUTES = 1440
 private const val MAX_BADGE_EVENT_ROUNDS = 20
 private const val BADGE_EVENT_CONTINUE_TIMEOUT = 1000
-private const val BADGE_EVENT_PAGE_TIMEOUT = 3000
+private const val BADGE_EVENT_PAGE_TIMEOUT = 60000
 private const val BADGE_EVENT_CLAIM_TIMEOUT = 1000
 
 private val badgeEventEntryTap = BadgeEventTap(315, 663)
