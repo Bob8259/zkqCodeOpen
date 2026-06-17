@@ -2,33 +2,30 @@ package com.coc.zkqcode.jar.ui.pages.single
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyListScope
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -37,18 +34,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Popup
-import androidx.compose.ui.window.PopupProperties
-import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.jar.ui.Strings
-import com.coc.zkqcode.jar.ui.components.BelowAnchorPositionProvider
 import com.coc.zkqcode.jar.ui.components.CustomButton
-import com.coc.zkqcode.jar.ui.components.SettingInputRow
 import com.coc.zkqcode.jar.ui.components.SettingSection
-import com.coc.zkqcode.jar.ui.schema.ConfigManager
+import com.coc.zkqcode.core.data.database.GlobalVars
+import com.coc.zkqcode.jar.ui.theme.AppColors
+import com.coc.zkqcode.jar.ui.components.SettingInputRow
 import com.coc.zkqcode.jar.ui.schema.Schema.ACCOUNT_SETTINGS
 import com.coc.zkqcode.jar.ui.schema.Schema.GLOBAL_SETTINGS
-import com.coc.zkqcode.jar.ui.theme.AppColors
+import com.coc.zkqcode.jar.ui.schema.ConfigManager
 
 private fun updateConfigValue(key: String, value: String) {
     GlobalVars.configStates[key]?.let {
@@ -98,92 +92,6 @@ internal fun SmallTextField(
     )
 }
 
-@Composable
-internal fun NumberDropdown(
-    modifier: Modifier = Modifier,
-    options: List<String>,
-    selectedValue: String,
-    onValueChange: (String) -> Unit,
-    label: String = "",
-    width: Dp = 80.dp,
-) {
-    var expanded by remember { mutableStateOf(false) }
-    val displayText = if (options.contains(selectedValue)) selectedValue else label
-
-    Box(
-        modifier = modifier
-            .wrapContentSize(Alignment.TopStart)
-    ) {
-        Button(
-            onClick = {
-                GlobalVars.isAutoRunEnabled = false
-                expanded = true
-            },
-            shape = RoundedCornerShape(8.dp),
-            modifier = Modifier.height(30.dp).width(width),
-            contentPadding = PaddingValues(horizontal = 8.dp, vertical = 0.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = AppColors.Primary)
-        ) {
-            Text(
-                text = displayText,
-                style = MaterialTheme.typography.labelMedium
-            )
-            Icon(Icons.Default.ArrowDropDown, contentDescription = null)
-        }
-
-        if (expanded) {
-            Popup(
-                popupPositionProvider = BelowAnchorPositionProvider(),
-                onDismissRequest = { expanded = false },
-                properties = PopupProperties(focusable = true)
-            ) {
-                Surface(
-                    shape = RoundedCornerShape(12.dp),
-                    color = AppColors.CardBg,
-                    shadowElevation = 8.dp,
-                    modifier = Modifier.padding(4.dp)
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .padding(8.dp)
-                            .heightIn(max = 320.dp)
-                            .verticalScroll(rememberScrollState()),
-                        verticalArrangement = Arrangement.spacedBy(6.dp)
-                    ) {
-                        options.forEach { option ->
-                            val isSelected = option == selectedValue
-                            val cardBg = if (isSelected) AppColors.Primary
-                            else AppColors.PrimaryLight.copy(alpha = 0.10f)
-                            val cardBorder = if (isSelected) AppColors.Primary
-                            else AppColors.PrimaryLight
-                            val textColor = if (isSelected) Color.White
-                            else AppColors.TextPrimary
-
-                            Box(
-                                modifier = Modifier
-                                    .background(cardBg, RoundedCornerShape(8.dp))
-                                    .border(1.dp, cardBorder, RoundedCornerShape(8.dp))
-                                    .clickable {
-                                        GlobalVars.isAutoRunEnabled = false
-                                        onValueChange(option)
-                                        expanded = false
-                                    }
-                                    .padding(horizontal = 16.dp, vertical = 8.dp)
-                            ) {
-                                Text(
-                                    text = option,
-                                    color = textColor,
-                                    style = MaterialTheme.typography.labelMedium
-                                )
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
 fun LazyListScope.accountSettings() {
     val pinnedState = GlobalVars.configStates.getOrPut("_account_pinned") { mutableStateOf("0") }
     val isPinned = pinnedState.value == "1"
@@ -224,21 +132,15 @@ fun LazyListScope.accountSettings() {
             var startAccount by remember { mutableStateOf("") }
             var endAccount by remember { mutableStateOf("") }
 
-            val accountCountForDropdown =
-                (GlobalVars.configStates[GLOBAL_SETTINGS.ACCOUNT_COUNT.key]?.value?.toIntOrNull() ?: 3).coerceAtLeast(1)
-            val accountNumberOptions = (1..accountCountForDropdown).map { it.toString() }
-
-            val configCountForDropdown =
-                (GlobalVars.configStates[GLOBAL_SETTINGS.CONFIG_COUNT.key]?.value?.toIntOrNull() ?: 2).coerceAtLeast(1)
-            val configNumberOptions = (1..configCountForDropdown).map { it.toString() }
-
             var batchVerStartAccount by remember { mutableStateOf("") }
             var batchVerEndAccount by remember { mutableStateOf("") }
+            var selectedVerIndex by remember { mutableIntStateOf(0) }
+            var expandedVer by remember { mutableStateOf(false) }
             val verOptions = listOf(Strings.cnVersion, Strings.globalVersion, Strings.atrasis)
-            var selectedVer by remember { mutableStateOf(verOptions[0]) }
 
+            var selectedStartMethodIndex by remember { mutableIntStateOf(0) }
+            var expandedStartMethod by remember { mutableStateOf(false) }
             val startMethodOptions = listOf(Strings.gameSave, Strings.directLaunch, Strings.testMode)
-            var selectedStartMethod by remember { mutableStateOf(startMethodOptions[0]) }
 
             FlowRow(
                 modifier = Modifier.padding(top = 6.dp)
@@ -250,13 +152,10 @@ fun LazyListScope.accountSettings() {
                         .padding(end = 4.dp)
                         .align(Alignment.CenterVertically)
                 )
-                NumberDropdown(
+                SmallTextField(
                     modifier = Modifier.align(Alignment.CenterVertically),
-                    options = configNumberOptions,
-                    selectedValue = configValue,
+                    value = configValue,
                     onValueChange = { configValue = it },
-                    label = Strings.configLabel,
-                    width = 70.dp,
                 )
                 Text(
                     text = Strings.toAccounts,
@@ -265,13 +164,10 @@ fun LazyListScope.accountSettings() {
                         .padding(horizontal = 4.dp)
                         .align(Alignment.CenterVertically)
                 )
-                NumberDropdown(
+                SmallTextField(
                     modifier = Modifier.align(Alignment.CenterVertically),
-                    options = accountNumberOptions,
-                    selectedValue = startAccount,
-                    onValueChange = { startAccount = it },
-                    label = Strings.startAccountLabel,
-                    width = 70.dp,
+                    value = startAccount,
+                    onValueChange = { startAccount = it }
                 )
                 Text(
                     text = "-",
@@ -280,13 +176,10 @@ fun LazyListScope.accountSettings() {
                         .padding(horizontal = 4.dp)
                         .align(Alignment.CenterVertically)
                 )
-                NumberDropdown(
+                SmallTextField(
                     modifier = Modifier.align(Alignment.CenterVertically).padding(end = 4.dp),
-                    options = accountNumberOptions,
-                    selectedValue = endAccount,
-                    onValueChange = { endAccount = it },
-                    label = Strings.endAccountLabel,
-                    width = 70.dp,
+                    value = endAccount,
+                    onValueChange = { endAccount = it }
                 )
                 CustomButton(
                     text = Strings.confirm,
@@ -307,13 +200,10 @@ fun LazyListScope.accountSettings() {
                         .padding(end = 4.dp)
                         .align(Alignment.CenterVertically)
                 )
-                NumberDropdown(
+                SmallTextField(
                     modifier = Modifier.align(Alignment.CenterVertically),
-                    options = accountNumberOptions,
-                    selectedValue = batchVerStartAccount,
-                    onValueChange = { batchVerStartAccount = it },
-                    label = Strings.startAccountLabel,
-                    width = 70.dp,
+                    value = batchVerStartAccount,
+                    onValueChange = { batchVerStartAccount = it }
                 )
                 Text(
                     text = "-",
@@ -322,13 +212,10 @@ fun LazyListScope.accountSettings() {
                         .padding(horizontal = 4.dp)
                         .align(Alignment.CenterVertically)
                 )
-                NumberDropdown(
+                SmallTextField(
                     modifier = Modifier.align(Alignment.CenterVertically),
-                    options = accountNumberOptions,
-                    selectedValue = batchVerEndAccount,
-                    onValueChange = { batchVerEndAccount = it },
-                    label = Strings.endAccountLabel,
-                    width = 70.dp,
+                    value = batchVerEndAccount,
+                    onValueChange = { batchVerEndAccount = it }
                 )
                 Text(
                     text = Strings.changeTo,
@@ -338,31 +225,91 @@ fun LazyListScope.accountSettings() {
                         .align(Alignment.CenterVertically)
                 )
 
-                NumberDropdown(
-                    modifier = Modifier.align(Alignment.CenterVertically).padding(end = 4.dp),
-                    options = verOptions,
-                    selectedValue = selectedVer,
-                    onValueChange = { selectedVer = it },
-                    label = verOptions[0],
-                    width = 110.dp,
-                )
+                // Version Dropdown
+                Box(
+                    modifier = Modifier
+                        .wrapContentSize(Alignment.TopStart)
+                        .align(Alignment.CenterVertically).padding(end = 4.dp)
+                ) {
+                    Button(
+                        onClick = {
+                            GlobalVars.isAutoRunEnabled = false
+                            expandedVer = true
+                        },
+                        shape = RoundedCornerShape(8.dp),
+                        modifier = Modifier.height(30.dp),
+                        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 0.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = AppColors.Primary)
+                    ) {
+                        Text(verOptions[selectedVerIndex], style = MaterialTheme.typography.labelMedium)
+                        Icon(Icons.Default.ArrowDropDown, contentDescription = null)
+                    }
 
-                NumberDropdown(
-                    modifier = Modifier.align(Alignment.CenterVertically).padding(end = 4.dp),
-                    options = startMethodOptions,
-                    selectedValue = selectedStartMethod,
-                    onValueChange = { selectedStartMethod = it },
-                    label = startMethodOptions[0],
-                    width = 110.dp,
-                )
+                    DropdownMenu(
+                        expanded = expandedVer,
+                        onDismissRequest = { expandedVer = false }
+                    ) {
+                        verOptions.forEachIndexed { idx, option ->
+                            DropdownMenuItem(
+                                text = {
+                                    Text(option, style = MaterialTheme.typography.labelMedium)
+                                },
+                                onClick = {
+                                    GlobalVars.isAutoRunEnabled = false
+                                    selectedVerIndex = idx
+                                    expandedVer = false
+                                },
+                                modifier = Modifier.height(35.dp)
+                            )
+                        }
+                    }
+                }
+
+                // Start Method Dropdown
+                Box(
+                    modifier = Modifier
+                        .wrapContentSize(Alignment.TopStart)
+                        .align(Alignment.CenterVertically).padding(end = 4.dp)
+                ) {
+                    Button(
+                        onClick = {
+                            GlobalVars.isAutoRunEnabled = false
+                            expandedStartMethod = true
+                        },
+                        shape = RoundedCornerShape(8.dp),
+                        modifier = Modifier.height(30.dp),
+                        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 0.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = AppColors.Primary)
+                    ) {
+                        Text(startMethodOptions[selectedStartMethodIndex], style = MaterialTheme.typography.labelMedium)
+                        Icon(Icons.Default.ArrowDropDown, contentDescription = null)
+                    }
+
+                    DropdownMenu(
+                        expanded = expandedStartMethod,
+                        onDismissRequest = { expandedStartMethod = false }
+                    ) {
+                        startMethodOptions.forEachIndexed { idx, option ->
+                            DropdownMenuItem(
+                                text = {
+                                    Text(option, style = MaterialTheme.typography.labelMedium)
+                                },
+                                onClick = {
+                                    GlobalVars.isAutoRunEnabled = false
+                                    selectedStartMethodIndex = idx
+                                    expandedStartMethod = false
+                                },
+                                modifier = Modifier.height(35.dp)
+                            )
+                        }
+                    }
+                }
 
                 CustomButton(
                     text = Strings.confirm,
                     onClick = {
-                        val verIdx = verOptions.indexOf(selectedVer).coerceAtLeast(0)
-                        val startIdx = startMethodOptions.indexOf(selectedStartMethod).coerceAtLeast(0)
-                        batchUpdateByRange(batchVerStartAccount, batchVerEndAccount, ACCOUNT_SETTINGS.GAME_VERSION.key, verIdx.toString())
-                        batchUpdateByRange(batchVerStartAccount, batchVerEndAccount, ACCOUNT_SETTINGS.START_METHOD.key, startIdx.toString())
+                        batchUpdateByRange(batchVerStartAccount, batchVerEndAccount, ACCOUNT_SETTINGS.GAME_VERSION.key, selectedVerIndex.toString())
+                        batchUpdateByRange(batchVerStartAccount, batchVerEndAccount, ACCOUNT_SETTINGS.START_METHOD.key, selectedStartMethodIndex.toString())
                     },
                     marginTop = 0.dp
                 )
