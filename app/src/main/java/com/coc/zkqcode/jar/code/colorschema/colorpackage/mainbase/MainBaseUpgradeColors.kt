@@ -18,6 +18,7 @@ interface IMainBaseUpgradeColors {
     val smallElixirUpgradeIcon: ColorSchema
     val smallElixirUpgradeIcon2: ColorSchema
     val builderBaseSmallElixirUpgradeIcon: ColorSchema
+    val GemInBuildingList: ColorSchema
 }
 
 object MainBaseUpgradeColors : IMainBaseUpgradeColors {
@@ -57,5 +58,8 @@ object MainBaseUpgradeColors : IMainBaseUpgradeColors {
     )
     override val builderBaseSmallElixirUpgradeIcon = ColorSchema.parse(
         1, 1, 1270, 710, "FF299A", "0|-2|FF4CC2,-2|-3|FF47BF,-3|0|FF338B,3|0|FF45BC,3|-3|FF81ED,3|-5|FF5FD9,1|3|FF2C83,-2|3|FA307B,-3|2|FB307B", 0, 0.9
+    )
+    override val GemInBuildingList = ColorSchema.parse(
+        0, 0, 0, 0, "8DFDE7", "-2|0|86FAE0,-4|0|7EF7DC,-4|-3|4DD8A1,-2|-4|45D097,2|-4|80FCE9,3|0|9DFFF1,3|3|75FBD9,2|4|76FAD5,-2|4|7BF8CE", 0, 0.95, "建筑列表宝石"
     )
 }

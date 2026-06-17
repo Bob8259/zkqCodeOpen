@@ -19,6 +19,10 @@ interface IClanCapitalColors {
     val TrainTroops2: ColorSchema
     val StartRaid: ColorSchema
     val CapitalDistrictLocked: ColorSchema
+    val CollectCapitalCoins: ColorSchema
+    val GemForCapital: ColorSchema
+    val MiniPurpleCoinIcon: ColorSchema
+    val SufficientCapitalCoin: ColorSchema
 }
 
 object ClanCapitalColors : IClanCapitalColors {
@@ -90,5 +94,21 @@ object ClanCapitalColors : IClanCapitalColors {
     // District locked indicator
     override val CapitalDistrictLocked = ColorSchema.parse(
         1232, 160, 1258, 188, "DBA34F", "5|0|D7A351,10|0|FFFFFF,15|0|A2783B,20|0|DCA24F,0|14|A96E25,5|14|A96E2A,10|14|F4F4F4,15|14|B5742A,20|14|A96F25", 0, 0.9, "区域未解锁"
+    )
+
+    override val CollectCapitalCoins = ColorSchema.parse(
+        145, 390, 320, 460, "8EE9BF", "14|6|86E8BA,0|27|3BD48B,-3|38|3BD48B,125|3|88EABA,127|34|E019B7,132|36|DD17B3,125|37|E019B4,-7|43|3BD48B,-2|11|7DE7B4", 0, 0.9, "领都城币"
+    )
+
+    override val GemForCapital = ColorSchema.parse(
+        1195, 20, 1270, 240, "5BDEB8", "5|0|6CEAD1,10|0|73EDD5,15|0|7BF0DB,20|0|82F3E1,0|11|7DEED3,5|11|84F0D6,10|11|8AF2DC,15|11|63EAC3,20|11|7CF2D8", 0, 0.9, "宝石，用于检测是否进入都城"
+    )
+
+    override val MiniPurpleCoinIcon = ColorSchema.parse(
+        590, 100, 910, 560, "E514C4", "1|0|E219B9,3|0|DF1AB5,3|1|E018B6,3|2|DF18B4,3|3|DF17B4,2|3|DF17B4,1|3|DF17B5,0|3|E111B8,0|4|CE279D", 0, 0.96, "紫色小都城币"
+    )
+
+    override val SufficientCapitalCoin = ColorSchema.parse(
+        1194, 25, 1222, 60, "90EDFD", "0|1|8BEDFD,0|2|86EBFD,0|3|82E9FD,0|4|7CE8FD,0|5|77E7FD,0|6|70E5FD,0|7|69E3FD,0|8|17D5FF,0|9|0DD2FF", 0, 0.9, "都城币足够"
     )
 }

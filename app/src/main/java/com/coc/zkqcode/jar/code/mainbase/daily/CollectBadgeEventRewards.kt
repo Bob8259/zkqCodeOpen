@@ -15,7 +15,6 @@ import com.coc.zkqcode.jar.ui.schema.Schema
 
 private data class BadgeEventTap(val x: Int, val y: Int)
 
-private const val BADGE_EVENT_REWARD_INTERVAL_MINUTES = 1440
 private const val MAX_BADGE_EVENT_ROUNDS = 20
 private const val BADGE_EVENT_CONTINUE_TIMEOUT = 1000
 private const val BADGE_EVENT_CLAIM_TIMEOUT = 1000
@@ -37,10 +36,9 @@ suspend fun collectBadgeEventRewards(): Boolean {
     if (!getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.CLAIM_BADGE_EVENT_REWARDS.key)) return true
 
     val storageKey = StorageKeys.withAccountNumber(
-        StorageKeys.CLAIM_BADGE_EVENT_REWARDS,
-        InGameVars.currentAccountNumber
+        StorageKeys.CLAIM_BADGE_EVENT_REWARDS, InGameVars.currentAccountNumber
     )
-    if (!checkMemoryFile(storageKey, BADGE_EVENT_REWARD_INTERVAL_MINUTES)) {
+    if (!checkMemoryFile(storageKey, 1440)) {
         accountMessage("24小时内已检查过奖章活动奖励，跳过本次领取")
         return true
     }
@@ -55,9 +53,10 @@ suspend fun collectBadgeEventRewards(): Boolean {
         TouchActions.tap(continueButton.x, continueButton.y, delayTime = 1000)
     }
 
-    val entered = findMultiColorsUntil(listOf(MyColors.BadgeEventPageMarker), 5000)
+    val entered = findMultiColorsUntil(listOf(MyColors.BadgeEventPageMarker), 4000)
     if (entered == null) {
-        accountMessage("未检测到奖章活动页面标记，返回主页面")
+        accountMessage("未检测到奖章活动页面标记，尝试捐赠临时活动")
+        contributeToActivity()
         return finishBadgeEventRewardCheck(storageKey)
     }
 
@@ -68,10 +67,21 @@ suspend fun collectBadgeEventRewards(): Boolean {
             accountMessage("未检测到可领取的奖章活动奖励")
             return finishBadgeEventRewardCheck(storageKey)
         }
+        val extraReward = findMultiColors(MyColors.ExtraReward)
+        if (extraReward != null) {
+            TouchActions.tap(extraReward.x, extraReward.y)
+        }
     }
 
     accountMessage("奖章活动奖励达到最大轮次保护，返回主页面")
     return finishBadgeEventRewardCheck(storageKey)
+}
+
+private suspend fun contributeToActivity() {
+    TouchActions.tap(650, 595)//Contribute
+    for (x in 60..600 step 45) {
+        TouchActions.tap(x, 600, delayTime = 50)
+    }
 }
 
 private suspend fun finishBadgeEventRewardCheck(storageKey: String): Boolean {
