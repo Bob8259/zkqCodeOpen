@@ -249,21 +249,6 @@ fun LazyListScope.mainBaseConfig(
             }
 
             SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.CLAIM_CLAN_GAME_REWARDS.key}_c$index", explain = Strings.claimRewardsExplain)
-            // Badge event reward parent switch.
-            SettingSwitchIcon(
-                key = "${MAIN_BASE_SETTINGS.CLAIM_BADGE_EVENT_REWARDS.key}_c$index",
-                explain = Strings.claimBadgeEventRewardsExplain
-            )
-            // Event Shop reward child switch, visible only when badge event rewards are enabled.
-            AnimatedVisibility(
-                visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.CLAIM_BADGE_EVENT_REWARDS.key}_c$index"]?.value == "1"
-            ) {
-                Column {
-                    FlowRow {
-                        SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.BUY_NEW_EQUIPMENT_WITH_EVENT_MEDAL.key}_c$index")
-                    }
-                }
-            }
             FlowRow {
                 SettingSwitchIcon(
                     key = "${MAIN_BASE_SETTINGS.PLAY_CLAN_WAR.key}_c$index", explain = Strings.clanWarExplain
@@ -577,6 +562,21 @@ fun LazyListScope.mainBaseConfig(
                     MAIN_BASE_SETTINGS.SELL_RING_OF_WALL
                 ).forEach { setting ->
                     SettingSwitchIcon(key = "${setting.key}_c$index")
+                }
+            }
+            // Badge event reward parent switch.
+            SettingSwitchIcon(
+                key = "${MAIN_BASE_SETTINGS.CLAIM_BADGE_EVENT_REWARDS.key}_c$index",
+                explain = Strings.claimBadgeEventRewardsExplain
+            )
+            // Event Shop reward child switch, visible only when badge event rewards are enabled.
+            AnimatedVisibility(
+                visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.CLAIM_BADGE_EVENT_REWARDS.key}_c$index"]?.value == "1"
+            ) {
+                Column {
+                    FlowRow {
+                        SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.BUY_NEW_EQUIPMENT_WITH_EVENT_MEDAL.key}_c$index")
+                    }
                 }
             }
             MainBaseShopConfigs(index)
