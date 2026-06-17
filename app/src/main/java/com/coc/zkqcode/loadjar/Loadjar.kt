@@ -24,6 +24,7 @@ import com.coc.zkqcode.statehelper.AppStateManager
 import android.os.Build
 import dalvik.system.DexClassLoader
 import com.coc.zkqcode.core.util.fileactions.LogHelper
+import com.coc.zkqcode.nativehelper.RustTools
 import timber.log.Timber
 import java.io.File
 
@@ -44,26 +45,19 @@ class Loadjar(private val context: Context) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(Color(0x66E8F4FC)),
-                contentAlignment = Alignment.Center
+                    .background(Color(0x66E8F4FC)), contentAlignment = Alignment.Center
             ) {
                 Column(
-                    modifier = Modifier.padding(16.dp),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
+                    modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text = loadStatus,
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = Color(0xFF2D3748)
+                        text = loadStatus, style = MaterialTheme.typography.bodyMedium, color = Color(0xFF2D3748)
                     )
                     LocalCustomButton(
-                        text = "关闭悬浮窗",
-                        onClick = {
+                        text = "关闭悬浮窗", onClick = {
                             AppStateManager.setMode(AppMode.Run)
                             onClose()
-                        }
-                    )
+                        })
                 }
             }
         }
@@ -81,24 +75,17 @@ class Loadjar(private val context: Context) {
         val assetList = assetsDir.list() ?: emptyArray()
 
         // Find the unencrypted jar with the highest timestamp number (latest build, dev/debug)
-        val timestampJar = assetList
-            .filter { it.endsWith(".jar") && it.removeSuffix(".jar").toLongOrNull() != null }
-            .maxByOrNull { it.removeSuffix(".jar").toLong() }
+        val timestampJar = assetList.filter { it.endsWith(".jar") && it.removeSuffix(".jar").toLongOrNull() != null }.maxByOrNull { it.removeSuffix(".jar").toLong() }
 
         // Find the encrypted jar with the highest timestamp number (encrypted_<timestamp>.jar)
-        val encryptedTimestampJar = assetList
-            .filter {
-                it.startsWith("encrypted_") && it.endsWith(".jar") &&
-                        it.removePrefix("encrypted_").removeSuffix(".jar").toLongOrNull() != null
-            }
-            .maxByOrNull { it.removePrefix("encrypted_").removeSuffix(".jar").toLong() }
+        val encryptedTimestampJar = assetList.filter {
+                it.startsWith("encrypted_") && it.endsWith(".jar") && it.removePrefix("encrypted_").removeSuffix(".jar").toLongOrNull() != null
+            }.maxByOrNull { it.removePrefix("encrypted_").removeSuffix(".jar").toLong() }
 
         val success = if (timestampJar != null) {
             loadPluginFromAssets(timestampJar)
         } else if (encryptedTimestampJar != null) {
             loadEncryptedPlugin(encryptedTimestampJar)
-        } else if (assetList.contains("encrypted_code.jar")) {
-            loadEncryptedPlugin("encrypted_code.jar")
         } else {
             // Fallback to whatever was passed or fail
             loadPluginFromAssets(assetFileName)
@@ -159,7 +146,7 @@ class Loadjar(private val context: Context) {
             val encryptedBytes = file.readBytes()
 
             // 2. Decrypt
-            val decryptedBytes = com.coc.zkqcode.nativehelper.RustTools.decryptJar(encryptedBytes)
+            val decryptedBytes = RustTools.decryptJar(encryptedBytes)
             if (decryptedBytes.isEmpty()) return false
 
             val classLoader: ClassLoader = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -189,7 +176,7 @@ class Loadjar(private val context: Context) {
                     "loadEncryptedPlugin: Using fallback for API ${Build.VERSION.SDK_INT}"
                 )
 
-                val fd = com.coc.zkqcode.nativehelper.RustTools.createInMemoryDex(decryptedBytes)
+                val fd = RustTools.createInMemoryDex(decryptedBytes)
 
                 if (fd < 0) {
                     Timber.e(
