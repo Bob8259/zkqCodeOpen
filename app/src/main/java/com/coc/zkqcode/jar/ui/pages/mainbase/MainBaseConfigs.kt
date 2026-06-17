@@ -259,16 +259,8 @@ fun LazyListScope.mainBaseConfig(
                 visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.CLAIM_BADGE_EVENT_REWARDS.key}_c$index"]?.value == "1"
             ) {
                 Column {
-                    SettingSwitchIcon(
-                        key = "${MAIN_BASE_SETTINGS.CLAIM_EVENT_SHOP_REWARDS.key}_c$index",
-                        explain = Strings.claimEventShopRewardsExplain
-                    )
-                    AnimatedVisibility(
-                        visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.CLAIM_EVENT_SHOP_REWARDS.key}_c$index"]?.value == "1"
-                    ) {
-                        FlowRow {
-                            SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.BUY_NEW_EQUIPMENT_WITH_EVENT_MEDAL.key}_c$index")
-                        }
+                    FlowRow {
+                        SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.BUY_NEW_EQUIPMENT_WITH_EVENT_MEDAL.key}_c$index")
                     }
                 }
             }

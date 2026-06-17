@@ -81,8 +81,7 @@ suspend fun enterMainScreen(isDoubleCheck: Boolean = false): Boolean {
         val remarkKey = "remark${InGameVars.currentAccountNumber}"
         val remark = GlobalVars.configStates[remarkKey]?.value.orEmpty()
         ServerChanHelper.sendNotification(
-            title = Strings.serverchanKickTitle,
-            desp = Strings.serverchanKickMsg(InGameVars.currentAccountNumber, remark, timeoutSeconds)
+            title = Strings.serverchanKickTitle, desp = Strings.serverchanKickMsg(InGameVars.currentAccountNumber, remark, timeoutSeconds)
         )
     }
     killGame()
@@ -202,7 +201,8 @@ private suspend fun closeAdvertisements() {
         MyColors.UpgradeNotification,
         MyColors.EnterLeague,
         MyColors.ClanWarTutorialArrow,
-        MyColors.TopRightClanWarInfo
+        MyColors.TopRightClanWarInfo,
+        MyColors.ContributionActivity
     )
 
     // 3. Iterate through schemas

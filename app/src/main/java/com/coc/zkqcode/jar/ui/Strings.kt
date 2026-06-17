@@ -177,8 +177,8 @@ object Strings {
     val switchComplete get() = if (LanguageManager.isChinese) "切号完成" else "Switch complete"
 
     // MainBaseConfigs
-    val raidMedalShop get() = if (LanguageManager.isChinese) "突袭币购买" else "Raid Medal Shop"
-    val leagueMedalShop get() = if (LanguageManager.isChinese) "联赛币购买" else "League Medal Shop"
+    val raidMedalShop get() = if (LanguageManager.isChinese) "突袭币购买设置" else "Raid Medal Shop Settings"
+    val leagueMedalShop get() = if (LanguageManager.isChinese) "联赛币购买设置" else "League Medal Shop Settings"
     fun collapse(title: String) = if (LanguageManager.isChinese) "收起$title" else "Collapse $title"
     fun expand(title: String) = if (LanguageManager.isChinese) "展开$title" else "Expand $title"
     val generalSettings get() = if (LanguageManager.isChinese) "通用设置" else "General"

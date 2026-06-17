@@ -1,7 +1,6 @@
 package com.coc.zkqcode.jar.code
 
 import com.coc.zkqcode.core.data.database.GlobalVars
-import com.coc.zkqcode.core.util.basic.ClipboardHelper
 import com.coc.zkqcode.core.util.basic.RunShell
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
@@ -10,18 +9,13 @@ import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
 import com.coc.zkqcode.jar.code.auth.displayAds
 import com.coc.zkqcode.jar.code.auth.userAuth
 import com.coc.zkqcode.jar.code.builderbase.playBuilderBase
-import com.coc.zkqcode.jar.code.clancapital.contributeCapitalCoins
-import com.coc.zkqcode.jar.code.clancapital.enterClanCapital
-import com.coc.zkqcode.jar.code.mainbase.clan.selectClanWarParticipant
-import com.coc.zkqcode.jar.code.mainbase.daily.checkNormalShop
-import com.coc.zkqcode.jar.code.mainbase.others.upgradeGearsAction
+import com.coc.zkqcode.jar.code.mainbase.daily.collectBadgeEventRewards
 import com.coc.zkqcode.jar.code.mainbase.playMainBase
 import com.coc.zkqcode.jar.code.universal.GameVersion
 import com.coc.zkqcode.jar.code.universal.InGameVars
 import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.jar.code.universal.checkScheduledUpgradeNotifications
 import com.coc.zkqcode.jar.code.universal.checkUpgradeTimers
-
 import com.coc.zkqcode.jar.code.universal.create.batchCreateAccounts
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.preCheck
@@ -105,9 +99,8 @@ private fun finishDataNumberEntryOnlyRun() {
 
 private suspend fun runTestCode() {
     while (true) {
-        val result = ClipboardHelper.readClipboard()
-        ShowMessage("剪贴板内容: $result")
-        delayWithMultiplier(5000)
+        collectBadgeEventRewards()
+        delayWithMultiplier(5000000)
     }
 }
 

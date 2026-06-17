@@ -70,5 +70,9 @@ object MyColors : IUIColors by UIColors, IFeatureColors by FeatureColors, IClanG
     IUniversalUpgradeColors by UniversalUpgradeColors, IMainBaseUpgradeColors by MainBaseUpgradeColors, IMainBaseResearchColors by MainBaseResearchColors, IMainBaseResourcesColors by MainBaseResourcesColors,
     IClanCapitalTutorialColors by ClanCapitalTutorialColors, IMainBaseAttackColors by MainBaseAttackColors, IMainBaseClanColors by MainBaseClanColors, IMainBaseClanWarColors by MainBaseClanWarColors,
     IMainBaseHelperColors by MainBaseHelperColors, IMainBaseHeroHallColors by MainBaseHeroHallColors, IMainBaseSmallTutorialColors by MainBaseSmallTutorialColors, IMainBaseMagicItemColors by MainBaseMagicItemColors,
-    IClanCapitalColors by ClanCapitalColors, IMainBaseShopColors by MainBaseShopColors, IMainBaseTournamentColors by MainBaseTournamentColors, IGameUpdateColors by GameUpdateColors,
-    IEventColors by EventColors {}
+    IClanCapitalColors by ClanCapitalColors, IMainBaseShopColors by MainBaseShopColors, IMainBaseTournamentColors by MainBaseTournamentColors, IGameUpdateColors by GameUpdateColors, IEventColors by EventColors {
+    //UI Colour
+    val ContributionActivity = ColorSchema.parse(
+        1198, 66, 1255, 121, "FFFFFF", "3|4|FFFFFF,-13|-9|8D8FF3,-7|-13|8D8FF3,16|-11|8D8FF3,19|9|2722F0,14|18|2520DE,-2|18|2520DE,-10|18|2520DE,-12|8|2722F0", 0, 0.9, "捐赠活动"
+    )
+}
