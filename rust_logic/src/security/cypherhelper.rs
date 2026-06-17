@@ -8,7 +8,7 @@ use jni::JNIEnv;
 use rand::RngCore;
 use x25519_dalek::{PublicKey, StaticSecret};
 
-use super::keys::key;
+use super::keys::{key, PUBLIC_KEY_BYTES};
 
 //You need to create a key.rs at the same level as this file and add the following code:
 
@@ -139,14 +139,6 @@ pub fn decryptJar(env: JNIEnv, _class: JClass, data: JByteArray) -> jbyteArray {
     let mut hasher = Sha256::new();
     hasher.update(nonce_and_ciphertext);
     let hash = hasher.finalize();
-
-    // Embedded Ed25519 Public Key
-    const PUBLIC_KEY_BYTES: [u8; 32] = [
-        0x36, 0x54, 0x09, 0xca, 0x45, 0x61, 0x8f, 0xe5,
-        0x21, 0x99, 0x06, 0x84, 0x85, 0x6c, 0xf4, 0x10,
-        0xe0, 0x58, 0x01, 0xed, 0x8a, 0x1d, 0x96, 0x1e,
-        0x71, 0x8b, 0x85, 0x83, 0xfe, 0xb2, 0x5c, 0x24
-    ];
 
     let public_key = match EdPublicKey::from_bytes(&PUBLIC_KEY_BYTES) {
         Ok(pk) => pk,
