@@ -2,7 +2,9 @@ package com.coc.zkqcode.jar.ui
 
 object Strings {
     // EnterMainCode
-    fun configLoadingMessage(countdown: Int) = if (LanguageManager.isChinese) "正在初始化配置文件...\n若长时间卡在此界面，将在 $countdown 秒后自动重启。" else "Initializing config files...\nIf this screen is stuck for too long, the app will automatically restart in $countdown seconds."
+    fun configLoadingMessage(countdown: Int) =
+        if (LanguageManager.isChinese) "正在初始化配置文件...\n若长时间卡在此界面，将在 $countdown 秒后自动重启。" else "Initializing config files...\nIf this screen is stuck for too long, the app will automatically restart in $countdown seconds."
+
     val manualCloseAssistant get() = if (LanguageManager.isChinese) "点击此处手动关闭辅助" else "Tap here to manually close the assistant"
 
     // HomeScreen tabs
@@ -82,7 +84,7 @@ object Strings {
     val changeTo get() = if (LanguageManager.isChinese) "改为" else "to"
     val cnVersion get() = if (LanguageManager.isChinese) "国服" else "CN Version"
     val globalVersion get() = if (LanguageManager.isChinese) "国际服" else "Global Version"
-    val atrasis get() = if (LanguageManager.isChinese) "Atrasis" else "Atrasis"
+    val atrasis get() = "Atrasis"
 
     // AccountConfig
     fun account(index: Int) = if (LanguageManager.isChinese) "账号$index" else "Account $index"
@@ -243,14 +245,16 @@ object Strings {
     val clanWarExplain get() = if (LanguageManager.isChinese) "部落战其中一次打对位，另一次打推荐对手。\n不保证胜率，请谨慎使用。" else "One attack on mirror, one on recommended. No win rate guarantee."
     val leagueExplain get() = if (LanguageManager.isChinese) "默认打对位，如果对位已被打则随机进攻，不保证胜率。" else "Default attack on mirror. If already hit, attack random. No win rate guarantee."
     val startClanWarExplain get() = if (LanguageManager.isChinese) "直接开启：人数凑够5的倍数就立刻开启\n最近上线：只选择挂绿牌，并且最近上线过的玩家。" else "Direct: start when number of participants is divisible by 5. Recent: only players who were online recently and perfer to join the Clan War."
-    val startClanLeagueExplain get() = if (LanguageManager.isChinese) 
-        "每月1号16:00~3号8:00自动报名部落联赛。\n联赛期间自动禁用部落战。" 
+    val startClanLeagueExplain
+        get() = if (LanguageManager.isChinese)
+            "每月1号16:00~3号8:00自动报名部落联赛。\n联赛期间自动禁用部落战。"
         else "Auto-register for Clan War League monthly 1st 16:00~3rd 08:00.\nClan War will be disabled during league period."
     val autoJoinClanExplain get() = if (LanguageManager.isChinese) "启用后，辅助将自动申请加入部落。若未指定部落标签，仅在当前无部落时执行加入操作；若已指定标签，则每日检测一次是否已加入目标部落。注意：使用此功能前需先建造部落城堡。" else "Auto-join clan. If no tag, joins only if clanless. If tag set, checks daily. Requires Clan Castle."
     val buildSettingExplain get() = if (LanguageManager.isChinese) "建造时会忽略可改装的建筑，并且会优先建造新建筑和新的建筑工人小屋。" else "Ignores gear-up buildings. Prioritizes new buildings and builder huts."
     val gearUpExplain get() = if (LanguageManager.isChinese) "改装建筑属于主世界功能，即使关闭夜世界，也依然会生效。" else "Gear-up is a main base feature and works even if Builder Base is disabled."
     val saveWorkerBuildExplain get() = if (LanguageManager.isChinese) "本功能依赖智能决策，启用本功能后会自动开启智能决策。" else "Requires Smart Decision to be enabled."
     val batchWallExplain get() = if (LanguageManager.isChinese) "此功能对已开启月卡（黄金令牌）的账号不生效。" else "Does not apply to Gold Pass accounts."
+
     // Gear scope options
     val upgradeScopeWear get() = if (LanguageManager.isChinese) "仅穿戴装备" else "Equipped Only"
     val upgradeScopeCustom get() = if (LanguageManager.isChinese) "仅指定装备" else "Custom Only"
@@ -274,6 +278,7 @@ object Strings {
         "minion_prince" -> minionPrince
         else -> heroKey
     }
+
     val helperExplain get() = if (LanguageManager.isChinese) "启用后，辅助将自动使用实验助手及建筑工人学徒。" else "Auto-use Research Helper and Builder Apprentice."
     val researchHelperExplain get() = if (LanguageManager.isChinese) "实验助手的升级优先级低于购买新建筑工人，但高于工人学徒的升级。" else "Research Helper upgrade priority is below new builders but above Builder Apprentice."
     val builderApprenticeExplain get() = if (LanguageManager.isChinese) "工人学徒的升级优先级低于购买新建筑工人及升级实验助手。" else "Builder Apprentice upgrade priority is below new builders and Research Helper."
@@ -289,22 +294,25 @@ object Strings {
     val builderBaseSaveWorkerBuildExplain get() = if (LanguageManager.isChinese) "本功能依赖智能决策，启用本功能后会自动开启智能决策。" else "Requires Smart Decision to be enabled."
 
     // Stop battle conditions & one-star exit
-    val stopBattleWhenNoStarExplain get() = if (LanguageManager.isChinese)
-        "启用后，检测到无胜利之星时将停止对战。可与「资源满后停止对战」同时开启，若同时开启，则只有同时满足2个条件时才停止对战。"
+    val stopBattleWhenNoStarExplain
+        get() = if (LanguageManager.isChinese)
+            "启用后，检测到无胜利之星时将停止对战。可与「资源满后停止对战」同时开启，若同时开启，则只有同时满足2个条件时才停止对战。"
         else "Stop battling when no victory stars are available. Can be used together with the resource-full condition."
 
-    val exitOnOneStarExplain get() = if (LanguageManager.isChinese)
-        "启用后，主世界对战获得一星后退出对战。"
+    val exitOnOneStarExplain
+        get() = if (LanguageManager.isChinese)
+            "启用后，主世界对战获得一星后退出对战。"
         else "Continuously checks for a 1-star result while polling after deployment, and exits the battle immediately when detected. Ignored if 'Restart after deploy' or builder base final round restart is active."
 
     // OCR destruction-% battle exit
     val percentTargetSuffix get() = if (LanguageManager.isChinese) "％时退出" else "% exit"
     val percentStaleSuffix get() = if (LanguageManager.isChinese) "秒内％未变则退出" else "s if % unchanged"
-    val ocrExitExplain get() = if (LanguageManager.isChinese)
-        "OCR 检测对战摧毁率百分比。设定目标%为 0 则不触发目标退出；\n" +
-        "默认 20 秒内百分比不变化则自动退出。"
+    val ocrExitExplain
+        get() = if (LanguageManager.isChinese)
+            "OCR 检测对战摧毁率百分比。设定目标%为 0 则不触发目标退出；\n" +
+                    "默认 20 秒内百分比不变化则自动退出。"
         else "OCR-based destruction % detection. Set target to 0 to disable target exit.\n" +
-        "Default: exit if % unchanged for 20s."
+                "Default: exit if % unchanged for 20s."
 
     // Memory cleaning
     val memoryCleanSuccess get() = if (LanguageManager.isChinese) "记忆文件清除成功" else "Memory cache cleared"
@@ -313,46 +321,31 @@ object Strings {
     val copyLogs get() = if (LanguageManager.isChinese) "复制日志" else "Copy Logs"
 
     // Server酱³
-    val serverchanSendKeyLabel get() = if (LanguageManager.isChinese) "Server酱³ SendKey" else "Server酱³ SendKey"
     val serverchanLoginFailedTitle get() = if (LanguageManager.isChinese) "辅助账号登录失败" else "Login Failed - Assistant Account"
     val serverchanLoginFailedMsg get() = if (LanguageManager.isChinese) "辅助账号登录失败，请检查邮箱密码或网络连接" else "Assistant account login failed. Please check email/password or network."
     val serverchanSectionTitle get() = if (LanguageManager.isChinese) "推送通知" else "Push Notification"
     val serverchanTestBtn get() = if (LanguageManager.isChinese) "发送测试" else "Send Test"
-    val serverchanTestSuccess get() = if (LanguageManager.isChinese) "Server酱³ 测试消息发送成功！" else "Server酱³ test message sent successfully!"
-    val serverchanTestFailed get() = if (LanguageManager.isChinese) "Server酱³ 测试发送失败：%s" else "Server酱³ test failed: %s"
     val serverchanSendKeyEmpty get() = if (LanguageManager.isChinese) "请先填写 Server酱³ SendKey" else "Please enter your Server酱³ SendKey first"
     val serverchanKickTitle get() = if (LanguageManager.isChinese) "进入游戏失败 - 紫孔雀" else "Game Enter Failed - ZKQ"
     fun serverchanKickMsg(accountIndex: Int, remark: String, timeoutSec: Int) =
         if (LanguageManager.isChinese) "账号${accountIndex}，备注：${remark.ifBlank { "无" }}。倒计时${timeoutSec}结束，进入游戏失败"
         else "Account $accountIndex, Remark: ${remark.ifBlank { "N/A" }}. Countdown $timeoutSec ended, failed to enter game."
-    val serverchanLoginNotifyLabel get() = if (LanguageManager.isChinese) "辅助账号登录通知" else "Login Notification"
-    val serverchanKickNotifyLabel get() = if (LanguageManager.isChinese) "进入游戏失败通知" else "Kick Notification"
+
     val serverchanWarTitle get() = if (LanguageManager.isChinese) "部落战已开战 - 紫孔雀" else "Clan War Started - ZKQ"
-    val serverchanWarNotifyLabel get() = if (LanguageManager.isChinese) "部落战通知" else "Clan War Notification"
     fun serverchanWarMsg(accountIndex: Int, remark: String) =
         if (LanguageManager.isChinese) "账号${accountIndex}，备注:${remark.ifBlank { "无" }}。部落战已开战"
         else "Account $accountIndex, Remark: ${remark.ifBlank { "N/A" }}. Clan war has started."
+
     val serverchanLeagueTitle get() = if (LanguageManager.isChinese) "联赛已开战 - 紫孔雀" else "League Started - ZKQ"
-    val serverchanLeagueNotifyLabel get() = if (LanguageManager.isChinese) "联赛通知" else "League Notification"
     fun serverchanLeagueMsg(accountIndex: Int, remark: String) =
         if (LanguageManager.isChinese) "账号${accountIndex}，备注:${remark.ifBlank { "无" }}。联赛已开战"
         else "Account $accountIndex, Remark: ${remark.ifBlank { "N/A" }}. League has started."
-    val serverchanUpgradeNotifyLabel get() = if (LanguageManager.isChinese) "建筑升级通知" else "Upgrade Notification"
-    val serverchanUpgradeAdvanceLabel get() = if (LanguageManager.isChinese) "提前提醒(分钟)" else "Advance Minutes"
+
     val serverchanUpgradeTitle get() = if (LanguageManager.isChinese) "升级即将完成 - 紫孔雀" else "Upgrade Complete Soon - ZKQ"
     val serverchanUpgradingTitle get() = if (LanguageManager.isChinese) "正在升级 - 紫孔雀" else "Upgrading - ZKQ"
-    fun serverchanUpgradeMsg(accountIndex: Int, remark: String, summary: String) =
-        if (LanguageManager.isChinese) "账号${accountIndex}，备注:${remark.ifBlank { "无" }}\n$summary"
-        else "Account $accountIndex, Remark: ${remark.ifBlank { "N/A" }}\n$summary"
-    val pushProviderLabel get() = if (LanguageManager.isChinese) "推送平台" else "Push Provider"
     val pushProviderServerChan get() = "Server酱³"
     val pushProviderWxPusher get() = "WxPusher"
     val pushProviderPushPlus get() = "PushPlus"
     val pushProviderTelegram get() = "Telegram"
-    val wxpusherAppTokenLabel get() = if (LanguageManager.isChinese) "WxPusher AppToken" else "WxPusher AppToken"
-    val wxpusherUidLabel get() = if (LanguageManager.isChinese) "WxPusher UID" else "WxPusher UID"
-    val pushplusTokenLabel get() = if (LanguageManager.isChinese) "PushPlus Token" else "PushPlus Token"
-    val telegramBotTokenLabel get() = if (LanguageManager.isChinese) "Telegram BotToken" else "Telegram BotToken"
-    val telegramChatIdLabel get() = if (LanguageManager.isChinese) "Telegram ChatID" else "Telegram ChatID"
 }
 
