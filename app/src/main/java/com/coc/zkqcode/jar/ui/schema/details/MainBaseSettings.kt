@@ -147,15 +147,15 @@ object MainBaseSettings {
 
     //////////////
     val UPGRADE_GEAR_MASTER = SettingDef("upgrade_gear_master", "升级装备总开关", "Upgrade Gear Master", 1, "MAIN_BASE_SETTINGS")
+
     // gear upgrade scope: 0=only equipped, 1=custom selection, 2=all
     val UPGRADE_GEAR_SCOPE = SettingDef("upgrade_gear_scope", "升级范围", "Upgrade Scope", "0", "MAIN_BASE_SETTINGS")
     val REMOVE_OBSTACLES = SettingDef("remove_obstacles", "移除障碍物", "Remove Obstacles", 0, "MAIN_BASE_SETTINGS")
     val CONTINUOUS_REMOVE_OBSTACLES = SettingDef("continuous_remove_obstacles", "连续移除障碍物", "Continuous Removal", 0, "MAIN_BASE_SETTINGS")
     val REMOVE_OBSTACLES_ENHANCEMENT = SettingDef("remove_obstacles_enhancement", "增强移除", "Enhanced Removal", 0, "MAIN_BASE_SETTINGS")
 
-    val CLAIM_TIMED_REWARDS = SettingDef("claim_timed_rewards", "领限时活动奖励", "Claim Timed Rewards", 0, "MAIN_BASE_SETTINGS")
     val CLAIM_TOKEN_REWARDS = SettingDef("claim_token_rewards", "领令牌奖励", "Claim Token Rewards", 0, "MAIN_BASE_SETTINGS")
-    val CLAIM_BADGE_EVENT_REWARDS = SettingDef("claim_badge_event_rewards", "领奖章活动奖励", "Claim Badge Event Rewards", 0, "MAIN_BASE_SETTINGS")
+    val CLAIM_BADGE_EVENT_REWARDS = SettingDef("claim_badge_event_rewards", "领取限时活动奖励", "Claim Badge Event Rewards", 0, "MAIN_BASE_SETTINGS")
     val CLAIM_EVENT_SHOP_REWARDS = SettingDef("claim_event_shop_rewards", "活动领取", "Claim Event Shop Rewards", 0, "MAIN_BASE_SETTINGS")
     val COLLECT_CAPITAL_COINS = SettingDef("collect_capital_coins", "领都城币", "Collect Capital Coins", 0, "MAIN_BASE_SETTINGS")
     val CONTRIBUTE_CAPITAL_COINS = SettingDef("contribute_capital_coins", "捐都城币", "Contribute Capital Coins", 0, "MAIN_BASE_SETTINGS")
@@ -167,6 +167,7 @@ object MainBaseSettings {
     val CLAN_JOIN_MESSAGE = SettingDef("clan_join_message", "加部落暗号:", "Join Message:", "", "MAIN_BASE_SETTINGS")
     val APPROVE_MEMBER_SETTING = SettingDef("approve_member_setting", "批准成员加入", "Approve Members", 0, "MAIN_BASE_SETTINGS")
     val APPROVE_MEMBER_CODE = SettingDef("approve_member_code", "批准暗号:", "Approval Code:", "", "MAIN_BASE_SETTINGS")
+
     // Commented out: no functional implementation
     // val CREATE_CONSECUTIVE_CLANS = SettingDef("create_consecutive_clans", "创建连号部落", "Create Consecutive Clans", 0, "MAIN_BASE_SETTINGS")
     val INVITE_PLAYERS = SettingDef("invite_players", "邀请玩家", "Invite Players", 0, "MAIN_BASE_SETTINGS")
@@ -286,7 +287,6 @@ object MainBaseSettings {
         REMOVE_OBSTACLES,
         CONTINUOUS_REMOVE_OBSTACLES,
         REMOVE_OBSTACLES_ENHANCEMENT,
-        CLAIM_TIMED_REWARDS,
         CLAIM_TOKEN_REWARDS,
         CLAIM_BADGE_EVENT_REWARDS,
         CLAIM_EVENT_SHOP_REWARDS,
