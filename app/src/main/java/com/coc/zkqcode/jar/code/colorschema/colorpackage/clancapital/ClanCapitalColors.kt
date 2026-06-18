@@ -22,6 +22,7 @@ interface IClanCapitalColors {
     val CollectCapitalCoins: ColorSchema
     val GemForCapital: ColorSchema
     val MiniPurpleCoinIcon: ColorSchema
+    val MiniPurpleCoinIcon2: ColorSchema
     val SufficientCapitalCoin: ColorSchema
 }
 
@@ -105,7 +106,11 @@ object ClanCapitalColors : IClanCapitalColors {
     )
 
     override val MiniPurpleCoinIcon = ColorSchema.parse(
-        590, 100, 910, 560, "E514C4", "1|0|E219B9,3|0|DF1AB5,3|1|E018B6,3|2|DF18B4,3|3|DF17B4,2|3|DF17B4,1|3|DF17B5,0|3|E111B8,0|4|CE279D", 0, 0.96, "紫色小都城币"
+        590, 100, 910, 560, "E514C4", "1|0|E219B9,3|0|DF1AB5,3|1|E018B6,3|2|DF18B4,3|3|DF17B4,2|3|DF17B4,1|3|DF17B5,0|3|E111B8,0|4|CE279D", 0, 0.9, "紫色小都城币"
+    )
+
+    override val MiniPurpleCoinIcon2 = ColorSchema.parse(
+        590, 100, 910, 560, "E219B8", "1|0|E119B7,2|0|E019B7,3|0|DE1CB4,3|1|DF19B5,3|2|DF18B3,3|3|DC13AD,2|3|DE18B3,1|3|DF17B4,0|2|E018B6", 0, 0.9, "紫色小都城币2"
     )
 
     override val SufficientCapitalCoin = ColorSchema.parse(

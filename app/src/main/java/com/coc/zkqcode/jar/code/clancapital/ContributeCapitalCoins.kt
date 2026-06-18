@@ -43,6 +43,9 @@ suspend fun contributeCapitalCoins(): Boolean {
     if (tryContributeAtBuildingList()) {
         writeMemory(storageKey, (System.currentTimeMillis() / 60_000).toString())
         return enterMainScreen()
+    } else {
+        clickRightBottom(1)
+        delayWithMultiplier(100)
     }
 
     // Iterate all districts
@@ -79,7 +82,7 @@ suspend fun contributeCapitalCoins(): Boolean {
  * @return true if a contribution was made (caller should exit), false otherwise.
  */
 private suspend fun tryContributeAtBuildingList(): Boolean {
-    val miniPurpleCoin = findMultiColorsUntil(listOf(MyColors.MiniPurpleCoinIcon), 1000) ?: return false
+    val miniPurpleCoin = findMultiColorsUntil(listOf(MyColors.MiniPurpleCoinIcon, MyColors.MiniPurpleCoinIcon2), 1000) ?: return false
     TouchActions.tap(miniPurpleCoin.x, miniPurpleCoin.y)
     // Check for upgrade button
     val upgradeButtonPoint = findMultiColorsUntil(
