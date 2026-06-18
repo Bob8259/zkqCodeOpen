@@ -61,7 +61,7 @@ fun isInLeagueRegistrationPeriod(): Boolean {
  * @return true if the league entry indicator is found; false otherwise.
  */
 suspend fun isClanLeagueEntryAvailable(): Boolean {
-    return findMultiColors(MyColors.ClanLeagueEntryIndicator) != null
+    return findMultiColors(MyColors.ClanLeagueEntryIndicator) != null || findMultiColors(MyColors.ClanLeagueEntryIndicator2) != null
 }
 
 /**
@@ -89,7 +89,7 @@ suspend fun startClanLeague(): Boolean {
     // 4. Detect league entry indicator on the home page — only enter clan war when available
     val trainTroopButton = findMultiColorsUntil(listOf(MyColors.TrainTroops, MyColors.TrainTroops2), 100)
     if (trainTroopButton != null) {
-        val leagueIndicator = findMultiColorsUntil(listOf(MyColors.ClanLeagueEntryIndicator), 3000)
+        val leagueIndicator = findMultiColorsUntil(listOf(MyColors.ClanLeagueEntryIndicator, MyColors.ClanLeagueEntryIndicator2), 3000)
         if (leagueIndicator != null) {
             accountMessage("检测到联赛入口标志，点击进入部落战")
             TouchActions.tap(leagueIndicator.x, leagueIndicator.y)
@@ -113,16 +113,22 @@ suspend fun startClanLeague(): Boolean {
     //    The dropdown stores the selected index ("0", "1", "2").
     //    For backward compatibility we also accept legacy string values ("11", "15", "30").
     val leagueSize = getConfigRuntime(Schema.MAIN_BASE_SETTINGS.START_CLAN_LEAGUE_SIZE.key)
-    when (leagueSize) {
-        "0", "11" -> {
+    val normalizedSize = when (leagueSize) {
+        "0", "11" -> "11"
+        "1", "15" -> "15"
+        "2", "30" -> "30"
+        else -> "15"
+    }
+    when (normalizedSize) {
+        "11" -> {
             accountMessage("选择 11v11 对战人数")
             TouchActions.tap(LEAGUE_11V11_X, LEAGUE_11V11_Y)
         }
-        "1", "15" -> {
+        "15" -> {
             accountMessage("选择 15v15 对战人数")
             TouchActions.tap(LEAGUE_15V15_X, LEAGUE_15V15_Y)
         }
-        "2", "30" -> {
+        "30" -> {
             accountMessage("选择 30v30 对战人数")
             TouchActions.tap(LEAGUE_30V30_X, LEAGUE_30V30_Y)
         }

@@ -2,6 +2,7 @@ package com.coc.zkqcode.jar.code.mainbase.others
 
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
+import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
 import com.coc.zkqcode.jar.code.colorschema.ColorSchema
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.mainbase.herohall.backToHeroHall
@@ -18,7 +19,7 @@ data class HeroGearEntry(
     val heroKey: String, val displayName: String, val tapX: Int, val tapY: Int, val gears: List<Pair<String, ColorSchema>>
 )
 
-// Zone2 custom-gear slot: position identified purely by image-color recognition
+// Zone2 custom-gear slot: position identified purely by image-colour recognition
 // (no upgrade arrow, no wear checkmark, no region construction).
 data class Zone2Slot(
     val x: Int,
@@ -89,7 +90,7 @@ private val HERO_ENTRIES = listOf(
 )
 
 private fun findHeroAndGearByPosition(arrowX: Int, arrowY: Int): Pair<HeroGearEntry, Pair<String, ColorSchema>>? {
-    val TOLERANCE = 15
+    val tolerance = 15
     var bestMatch: Pair<HeroGearEntry, Pair<String, ColorSchema>>? = null
     var bestDistance = Int.MAX_VALUE
 
@@ -97,8 +98,8 @@ private fun findHeroAndGearByPosition(arrowX: Int, arrowY: Int): Pair<HeroGearEn
         for ((gearKey, gearSchema) in heroEntry.gears) {
             if (gearSchema.x1 == 0 && gearSchema.x2 == 0 && gearSchema.y1 == 0 && gearSchema.y2 == 0) continue
 
-            val inX = arrowX >= gearSchema.x1 - TOLERANCE && arrowX <= gearSchema.x2 + TOLERANCE
-            val inY = arrowY >= gearSchema.y1 - TOLERANCE && arrowY <= gearSchema.y2 + TOLERANCE
+            val inX = arrowX >= gearSchema.x1 - tolerance && arrowX <= gearSchema.x2 + tolerance
+            val inY = arrowY >= gearSchema.y1 - tolerance && arrowY <= gearSchema.y2 + tolerance
 
             if (inX && inY) {
                 val centerX = (gearSchema.x1 + gearSchema.x2) / 2
@@ -156,11 +157,8 @@ suspend fun upgradeGearsAction(shouldUpgradeWear: Boolean, shouldUpgradeCustom: 
     if (shouldUpgradeWear) {
         accountMessage("===== 开始检测穿戴装备 =====")
         val screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult
-        if (screenBuffer == null) {
-            accountMessage("截屏失败")
-            backToHeroHall()
-            return
-        }
+            ?: logAndRestart("upgradeGearsAction: screen capture failed while detecting worn gears.", isShow = false)
+
         val zone1Arrows = detectZone1Arrows(screenBuffer)
         accountMessage("检测到 ${zone1Arrows.size} 个穿戴装备箭头")
 
@@ -174,7 +172,7 @@ suspend fun upgradeGearsAction(shouldUpgradeWear: Boolean, shouldUpgradeCustom: 
         }
     }
 
-    // Zone2: custom gears (image-color recognition only, 2 rounds with swipe)
+    // Zone2: custom gears (image-colour recognition only, 2 rounds with swipe)
     if (shouldUpgradeCustom) {
         val enabledCustomGears = getAllEnabledCustomGears()
         accountMessage("启用的自定义装备共 ${enabledCustomGears.size} 件")
@@ -334,7 +332,7 @@ private suspend fun confirmAndExitGearDetail(): Int {
     
     while (findMultiColors(schema = MyColors.GearListReturned, increment = 1) == null && returnAttempt < maxReturnAttempts) {
         returnAttempt++
-        accountMessage("第 ${returnAttempt} 次尝试返回装备列表")
+        accountMessage("第 $returnAttempt 次尝试返回装备列表")
         clickRightBottom(1)
         delayWithMultiplier(returnCheckIntervalMs)
     }
@@ -356,8 +354,7 @@ private suspend fun detectZone1Arrows(byteBuffer: ScreenCaptureManager.CaptureRe
 
     accountMessage("开始检测穿戴装备箭头...")
     while (true) {
-        val point = findMultiColors(schema = searchSchema, byteBuffer = byteBuffer, increment = 1)
-        if (point == null) break
+        val point = findMultiColors(schema = searchSchema, byteBuffer = byteBuffer, increment = 1) ?: break
 
         val isDuplicate = points.any { (ex, _) -> abs(point.x - ex) < 20 }
         if (!isDuplicate) {

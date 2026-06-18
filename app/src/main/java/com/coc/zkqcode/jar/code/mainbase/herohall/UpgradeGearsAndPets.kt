@@ -80,7 +80,7 @@ private data class PetUpgradableItem(
 )
 
 private suspend fun checkPets() {
-    // Build the color map once (lazy val at file level not used to keep changes minimal)
+    // Build the colour map once (lazy val at file level not used to keep changes minimal)
     val petColorMap = listOf(
         MainBasePets.LASSI to MyColors.Lassi,
         MainBasePets.LASSI to MyColors.Lassi2,
@@ -127,9 +127,8 @@ private suspend fun checkPets() {
         for (petDef in enabledPetDefs) {
             if (petDef.key in completedPets) continue
 
-            // Try all color schemas for this pet
+            // Try all colour schemas for this pet
             val petSchemas = petColorMap.filter { it.first.key == petDef.key }.map { it.second }
-            var found = false
             for (colorSchema in petSchemas) {
                 val result = findMultiColors(schema = colorSchema, byteBuffer = screenBuffer, increment = 1)
                 if (result != null) {
@@ -146,7 +145,6 @@ private suspend fun checkPets() {
                     if (findMultiColors(byteBuffer = screenBuffer, schema = insufficientSchema, increment = 1) != null) {
                         accountMessage("跳过 ${petDef.displayName}: 资源不足")
                         completedPets.add(petDef.key)
-                        found = true
                         break
                     }
 
@@ -163,7 +161,6 @@ private suspend fun checkPets() {
                         if (petLevel >= 10) {
                             accountMessage("跳过 ${petDef.displayName}")
                             completedPets.add(petDef.key)
-                            found = true
                             break
                         }
                     }
@@ -175,10 +172,9 @@ private suspend fun checkPets() {
                     val petMaxLevel = if (petDef.key in setOf(
                             "lassi", "electro_owl", "mighty_yak", "unicorn", "frosty"
                         )) 15 else 10
-                    if (petLevel >= petMaxLevel && petLevel > 0) {
+                    if (petLevel >= petMaxLevel) {
                         accountMessage("跳过 ${petDef.displayName}: 已满级($petLevel/$petMaxLevel)")
                         completedPets.add(petDef.key)
-                        found = true
                         break
                     }
 
@@ -192,7 +188,6 @@ private suspend fun checkPets() {
                         screenIndex = screenIdx
                     ))
                     accountMessage("发现可升级: ${petDef.displayName}, 第${screenIdx}页")
-                    found = true
                     break
                 }
             }

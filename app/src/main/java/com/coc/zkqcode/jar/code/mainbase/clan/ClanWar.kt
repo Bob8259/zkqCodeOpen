@@ -1,4 +1,4 @@
-﻿package com.coc.zkqcode.jar.code.mainbase.clan
+package com.coc.zkqcode.jar.code.mainbase.clan
 
 import android.graphics.Bitmap
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
@@ -33,7 +33,7 @@ suspend fun clanWar(): Boolean {
         || getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.PLAY_LEAGUE_DONATION.key)
 
     if (leagueEnabled && isInClanLeaguePeriod()) {
-        if (findMultiColors(MyColors.ClanLeagueEntryIndicator) != null) {
+        if (findMultiColors(MyColors.ClanLeagueEntryIndicator) != null || findMultiColors(MyColors.ClanLeagueEntryIndicator2) != null) {
             accountMessage("当前处于部落联赛期间且检测到联赛入口，跳过部落战")
             return true
         }
