@@ -100,7 +100,7 @@ object MainBaseSettings {
     val PLAY_RAID = SettingDef("play_raid", "打都城突袭", "Play Raid", 1, "MAIN_BASE_SETTINGS")
     val START_LEAGUE_SETTINGS = SettingDef("start_league_settings", "发起联赛", "Start League", 0, "MAIN_BASE_SETTINGS")
     val START_CLAN_LEAGUE = SettingDef("start_clan_league", "开部落联赛", "Start Clan League", 0, "MAIN_BASE_SETTINGS")
-    val START_CLAN_LEAGUE_SIZE = SettingDef("start_clan_league_size", "对战人数", "League War Size", "15", "MAIN_BASE_SETTINGS")
+    val START_CLAN_LEAGUE_SIZE = SettingDef("start_clan_league_size", "对战人数", "League War Size", "1", "MAIN_BASE_SETTINGS")
     val START_CLAN_WAR_SETTINGS = SettingDef("start_clan_war_settings", "发起部落战", "Start Clan War", 0, "MAIN_BASE_SETTINGS")
     val START_CLAN_WAR = SettingDef("start_clan_war", "开部落战", "Open Clan War", 0, "MAIN_BASE_SETTINGS")
     val START_CLAN_WAR_METHOD = SettingDef("start_clan_war_method", "开启方式", "Start Method", "0", "MAIN_BASE_SETTINGS")

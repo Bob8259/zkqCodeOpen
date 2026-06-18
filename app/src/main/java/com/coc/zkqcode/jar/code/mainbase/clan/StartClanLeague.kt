@@ -16,10 +16,12 @@ import com.coc.zkqcode.jar.ui.schema.Schema
 import java.util.Calendar
 import java.util.TimeZone
 
-// 15v15 and 30v30 button coordinates on the league registration screen
-private const val LEAGUE_15V15_X = 179
+// 11v11, 15v15, 30v30 button coordinates on the league registration screen
+private const val LEAGUE_11V11_X = 179
+private const val LEAGUE_11V11_Y = 558
+private const val LEAGUE_15V15_X = 504
 private const val LEAGUE_15V15_Y = 558
-private const val LEAGUE_30V30_X = 504
+private const val LEAGUE_30V30_X = 865
 private const val LEAGUE_30V30_Y = 558
 
 // Fallback coordinate for confirm registration button (when ColorSchema not matched)
@@ -67,7 +69,7 @@ suspend fun isClanLeagueEntryAvailable(): Boolean {
  * Steps:
  * ① Navigate to clan war entrance by detecting ClanLeagueEntryIndicator (instead of blind tap)
  * ② Find and tap "开联赛" (Start League) button via ColorSchema
- * ③ Select 15v15 or 30v30 based on config (pure coordinate tap)
+ * ③ Select 11v11, 15v15 or 30v30 based on config (pure coordinate tap)
  * ④ Find and tap confirm registration button
  */
 suspend fun startClanLeague(): Boolean {
@@ -107,14 +109,20 @@ suspend fun startClanLeague(): Boolean {
         return enterMainScreen()
     }
 
-    // 6. Select war size (15v15 or 30v30) based on config
+    // 6. Select war size (11v11, 15v15 or 30v30) based on config
+    //    The dropdown stores the selected index ("0", "1", "2").
+    //    For backward compatibility we also accept legacy string values ("11", "15", "30").
     val leagueSize = getConfigRuntime(Schema.MAIN_BASE_SETTINGS.START_CLAN_LEAGUE_SIZE.key)
     when (leagueSize) {
-        "15" -> {
+        "0", "11" -> {
+            accountMessage("选择 11v11 对战人数")
+            TouchActions.tap(LEAGUE_11V11_X, LEAGUE_11V11_Y)
+        }
+        "1", "15" -> {
             accountMessage("选择 15v15 对战人数")
             TouchActions.tap(LEAGUE_15V15_X, LEAGUE_15V15_Y)
         }
-        "30" -> {
+        "2", "30" -> {
             accountMessage("选择 30v30 对战人数")
             TouchActions.tap(LEAGUE_30V30_X, LEAGUE_30V30_Y)
         }
