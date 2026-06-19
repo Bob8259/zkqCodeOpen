@@ -247,8 +247,8 @@ object Strings {
     val startClanWarExplain get() = if (LanguageManager.isChinese) "直接开启：人数凑够5的倍数就立刻开启\n最近上线：只选择挂绿牌，并且最近上线过的玩家。" else "Direct: start when number of participants is divisible by 5. Recent: only players who were online recently and perfer to join the Clan War."
     val startClanLeagueExplain
         get() = if (LanguageManager.isChinese)
-            "每月1号16:00~3号8:00自动报名部落联赛。\n联赛期间自动禁用部落战。"
-        else "Auto-register for Clan War League monthly 1st 16:00~3rd 08:00.\nClan War will be disabled during league period."
+            "每月1号16:00~3号16:00自动报名部落联赛。\n联赛期间自动禁用部落战。"
+        else "Auto-register for Clan War League monthly 1st 16:00~3rd 16:00.\nClan War will be disabled during league period."
     val autoJoinClanExplain get() = if (LanguageManager.isChinese) "启用后，辅助将自动申请加入部落。若未指定部落标签，仅在当前无部落时执行加入操作；若已指定标签，则每日检测一次是否已加入目标部落。注意：使用此功能前需先建造部落城堡。" else "Auto-join clan. If no tag, joins only if clanless. If tag set, checks daily. Requires Clan Castle."
     val buildSettingExplain get() = if (LanguageManager.isChinese) "建造时会忽略可改装的建筑，并且会优先建造新建筑和新的建筑工人小屋。" else "Ignores gear-up buildings. Prioritizes new buildings and builder huts."
     val gearUpExplain get() = if (LanguageManager.isChinese) "改装建筑属于主世界功能，即使关闭夜世界，也依然会生效。" else "Gear-up is a main base feature and works even if Builder Base is disabled."

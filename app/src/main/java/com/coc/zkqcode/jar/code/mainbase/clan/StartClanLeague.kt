@@ -29,8 +29,8 @@ private const val LEAGUE_CONFIRM_X = 1010
 private const val LEAGUE_CONFIRM_Y = 641
 
 /**
- * Check if current time is within Clan War League period (1st 16:00 ~ 10th 08:00 Beijing time,
- * or 17th 16:00 ~ 26th 08:00 Beijing time).
+ * Check if current time is within Clan War League period (1st 16:00 ~ 10th 16:00 Beijing time,
+ * or 17th 16:00 ~ 26th 16:00 Beijing time).
  * During this period, normal clan war should be disabled.
  */
 fun isInClanLeaguePeriod(): Boolean {
@@ -38,19 +38,19 @@ fun isInClanLeaguePeriod(): Boolean {
     val day = calendar.get(Calendar.DAY_OF_MONTH)
     val hour = calendar.get(Calendar.HOUR_OF_DAY)
     val dayHour = day * 100 + hour
-    return (dayHour >= 116 && dayHour < 1008) || (dayHour >= 1716 && dayHour < 2608)  // 1st 16:00 ~ 10th 08:00, 17th 16:00 ~ 26th 08:00
+    return (dayHour >= 116 && dayHour < 1016) || (dayHour >= 1716 && dayHour < 2616)  // 1st 16:00 ~ 10th 16:00, 17th 16:00 ~ 26th 16:00
 }
 
 /**
- * Check if current time is within league registration period (1st 16:00 ~ 3rd 08:00 Beijing time,
- * or 17th 16:00 ~ 19th 08:00 Beijing time).
+ * Check if current time is within league registration period (1st 16:00 ~ 3rd 16:00 Beijing time,
+ * or 17th 16:00 ~ 19th 16:00 Beijing time).
  */
 fun isInLeagueRegistrationPeriod(): Boolean {
     val calendar = Calendar.getInstance(TimeZone.getTimeZone("Asia/Shanghai"))
     val day = calendar.get(Calendar.DAY_OF_MONTH)
     val hour = calendar.get(Calendar.HOUR_OF_DAY)
     val dayHour = day * 100 + hour
-    return (dayHour >= 116 && dayHour < 308) || (dayHour >= 1716 && dayHour < 1908)  // 1st 16:00 ~ 3rd 08:00, 17th 16:00 ~ 19th 08:00
+    return (dayHour >= 116 && dayHour < 316) || (dayHour >= 1716 && dayHour < 1916)  // 1st 16:00 ~ 3rd 16:00, 17th 16:00 ~ 19th 16:00
 }
 
 /**
@@ -74,10 +74,16 @@ suspend fun isClanLeagueEntryAvailable(): Boolean {
  */
 suspend fun startClanLeague(): Boolean {
     // 1. Check if START_CLAN_LEAGUE config is enabled
-    if (!getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.START_CLAN_LEAGUE.key)) return true
+    if (!getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.START_CLAN_LEAGUE.key)) {
+        accountMessage("开部落联赛开关未开启，跳过")
+        return true
+    }
 
     // 2. Check if within registration period
-    if (!isInLeagueRegistrationPeriod()) return true
+    if (!isInLeagueRegistrationPeriod()) {
+        accountMessage("当前不在联赛报名期（每月1-3日、17-19日16:00前），跳过开启联赛")
+        return true
+    }
 
     // 3. Cooldown check (once per day, 1440 minutes)
     val storageKey = StorageKeys.withAccountNumber(StorageKeys.START_CLAN_LEAGUE, InGameVars.currentAccountNumber)
@@ -98,6 +104,13 @@ suspend fun startClanLeague(): Boolean {
             return enterMainScreen()
         }
     } else return enterMainScreen()
+
+    // 4.5. Check for clan war end button (may appear after entering clan war page)
+    val clanWarEndButton = findMultiColorsUntil(listOf(MyColors.ClanWarEndButton), 2000)
+    if (clanWarEndButton != null) {
+        accountMessage("检测到部落战结束按钮，点击关闭")
+        TouchActions.tap(clanWarEndButton.x, clanWarEndButton.y)
+    }
 
     // 5. Find and tap "开联赛" (Start League) button via ColorSchema
     val startLeagueButton = findMultiColorsUntil(listOf(MyColors.StartClanLeagueButton), 3000)

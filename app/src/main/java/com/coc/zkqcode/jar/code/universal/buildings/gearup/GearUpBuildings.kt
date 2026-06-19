@@ -37,7 +37,7 @@ suspend fun gearUpBuildings(): Boolean {
 }
 
 private suspend fun performGearUpBuildings(): Boolean {
-    if (!enterBuilderBase(true)) return false
+    if (!enterBuilderBase(true)) return true
     if (!upgradeGearUpBuildings()) return false
     return enterBuilderBase(false)
 }
