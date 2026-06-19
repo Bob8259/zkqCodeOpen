@@ -130,7 +130,7 @@ suspend fun executeClanWarAttack(attackX: Int, attackY: Int) {
     TouchActions.tap(1080, 640) // Attack
     TouchActions.tap(755, 470)//Double confirm
     accountMessage("检测是否进入对战中")
-    if (findMultiColorsUntil(schemas = listOf(MyColors.EndBattle), duration = 5000) == null) {
+    if (findMultiColorsUntil(schemas = listOf(MyColors.EndBattle), duration = 50000) == null) {
         accountMessage("进入部落战失败")
         return
     }
