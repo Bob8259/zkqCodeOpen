@@ -85,6 +85,9 @@ suspend fun upgradeAllExistingBuildings(buildings: List<String>, currentBase: Ba
         "城墙"
     )
     val orderedList = if (skipOrdering) buildings else getOrderedList(buildings, currentBase)
+    // Wall upgrades force the iteration direction regardless of the Reverse Upgrade config:
+    // gold walls always iterate bottom-to-top (reverse), elixir walls always top-to-bottom (normal).
+    val forcedReverse = if (skipOrdering) (wallType == WallType.Gold) else null
     val isFallbackEnabled = currentBase == BaseType.Main && getBooleanConfigRuntime(
         Schema.MAIN_BASE_SETTINGS.UPGRADE_ANY_BUILDING_AFTER_CONSECUTIVE_FAILURES.key
     )
@@ -121,7 +124,7 @@ suspend fun upgradeAllExistingBuildings(buildings: List<String>, currentBase: Ba
             // Only count consecutive failures when the requested building cannot be found.
             var selectedBuilding = building
             if (skipOrdering) {
-                if (!findSpecificBuilding(building, currentBase, true)) {
+                if (!findSpecificBuilding(building, currentBase, true, forceReverse = forcedReverse)) {
                     // Wall not found; clean up UI and signal caller to stop its upgrade loop
                     clickRightBottom(1)
                     enterMainScreen()
@@ -395,10 +398,10 @@ private suspend fun upgradeBuilding(building: String, currentBase: BaseType, att
     return LoopAction.Proceed
 }
 
-private suspend fun findSpecificBuilding(buildingName: String, currentBase: BaseType, excludeNewBuildings: Boolean = false): Boolean {
+private suspend fun findSpecificBuilding(buildingName: String, currentBase: BaseType, excludeNewBuildings: Boolean = false, forceReverse: Boolean? = null): Boolean {
     var found = false
     accountMessage("准备寻找$buildingName")
-    iterateBuilderBaseBuildingUpgradeList(baseType = currentBase, excludeNewBuildings = excludeNewBuildings, onDetect = { result ->
+    iterateBuilderBaseBuildingUpgradeList(baseType = currentBase, excludeNewBuildings = excludeNewBuildings, forceReverse = forceReverse, onDetect = { result ->
         val building = result.buildings.find { it.name == buildingName }
         if (building != null) {
             accountMessage("已找到$buildingName")

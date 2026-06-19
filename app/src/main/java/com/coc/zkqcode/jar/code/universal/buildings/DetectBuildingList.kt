@@ -249,10 +249,12 @@ private fun maskBrightGreenPixelsToBlack(src: Bitmap): Bitmap {
  * If [onDetect] returns true, the iteration stops immediately.
  */
 suspend fun iterateBuilderBaseBuildingUpgradeList(
-    baseType: BaseType, excludeNewBuildings: Boolean = false, excludeGearUpBuildings: Boolean = true, onDetect: suspend (BuildingDetectionResult) -> Boolean
+    baseType: BaseType, excludeNewBuildings: Boolean = false, excludeGearUpBuildings: Boolean = true, forceReverse: Boolean? = null, onDetect: suspend (BuildingDetectionResult) -> Boolean
 ) {
     var previousBuildingNames: List<String>? = null
-    val isReverseUpgrade = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.REVERSE_UPGRADE.key)
+    // forceReverse overrides the config-based decision (used by wall upgrades:
+    // gold walls always reverse, elixir walls never reverse).
+    val isReverseUpgrade = forceReverse ?: getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.REVERSE_UPGRADE.key)
     if (isReverseUpgrade) {
         TouchActions.swipe(666, 500, 666, -2000, delayTime = 200, delayAfter = 300)
     }
