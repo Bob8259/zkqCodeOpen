@@ -175,14 +175,17 @@ private const val BB_RAGED_BARBARIAN_DATA_ID = 4000031   // 狂暴野蛮人
     }
 
     // Determine whether the main base still has upgradable or unbuilt walls (data == 1000010 in "buildings").
-    // Walls are considered complete (false) only when the built wall count equals the town hall's wall quantity
-    // and every wall is already at the town hall's max wall level.
+    // Walls are considered complete (false) only when the count of walls already at the town hall's
+    // max wall level meets or exceeds the town hall's wall quantity.
+    // e.g. TH 18/19 require 200 walls at level 19 — if fewer than 200 level-19 walls exist, upgrade is needed.
     InGameVars.mainBaseWallsNeedUpgrade = try {
         val (wallQuantity, maxWallLevel) = wallRequirementForTownHall(firstBuildingLvl)
         val wallEntries = buildings.filter { it.asJsonObject.get("data").asInt == 1000010 }
-        val builtWallCount = wallEntries.sumOf { it.asJsonObject.get("cnt")?.asInt ?: 1 }
-        val allAtMaxLevel = wallEntries.all { it.asJsonObject.get("lvl").asInt >= maxWallLevel }
-        val isComplete = builtWallCount >= wallQuantity && allAtMaxLevel
+        // Count only the walls that have already reached the max wall level for this TH.
+        val wallsAtMaxLevel = wallEntries
+            .filter { it.asJsonObject.get("lvl").asInt >= maxWallLevel }
+            .sumOf { it.asJsonObject.get("cnt")?.asInt ?: 1 }
+        val isComplete = wallsAtMaxLevel >= wallQuantity
         // Town halls with no walls (quantity 0) are always complete.
         wallQuantity > 0 && !isComplete
     } catch (_: Exception) {
@@ -266,7 +269,8 @@ private fun wallRequirementForTownHall(townHallLevel: Int): Pair<Int, Int> = whe
     15 -> 325 to 16
     16 -> 325 to 17
     17 -> 325 to 18
-    18 -> 325 to 19
+    18 -> 200 to 19
+    19 -> 200 to 19
     else -> 0 to 0
 }
 
