@@ -36,7 +36,7 @@ suspend fun collectBadgeEventRewards(): Boolean {
     )
     if (!checkMemoryFile(storageKey, 1440)) {
         accountMessage("24小时内已检查过奖章活动奖励，跳过本次领取")
-//        return true
+        return true
     }
 
     accountMessage("准备领取奖章活动奖励")
@@ -76,8 +76,8 @@ suspend fun collectBadgeEventRewards(): Boolean {
 
 private suspend fun contributeToActivity() {
     TouchActions.tap(650, 595)//Contribute
-    for (x in 60..600 step 45) {
-        TouchActions.tap(x, 600, delayTime = 50)
+    for (y in 60..600 step 45) {
+        TouchActions.tap(60, y, delayTime = 50)
     }
 }
 
