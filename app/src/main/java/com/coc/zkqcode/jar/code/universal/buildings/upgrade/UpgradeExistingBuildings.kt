@@ -205,6 +205,7 @@ suspend fun upgradeAllExistingBuildings(buildings: List<String>, currentBase: Ba
                         }
                     }
                 }
+
                 LoopAction.ReturnStop -> {
                     // Propagate stop signal to caller (e.g., elixir icon not found for wall upgrade)
                     clickRightBottom(1)
@@ -271,7 +272,7 @@ private suspend fun upgradeWalls(currentBase: BaseType, wallType: WallType): Loo
         if ((wallType == WallType.Gold && resources.gold < 10000) || (wallType == WallType.Elixir && resources.elixir < 10000)) {
             // Insufficient resources for batch upgrade, show detected values and fall back to normal upgrade
             accountMessage("批量刷墙资源不足（金币: ${resources.gold}, 圣水: ${resources.elixir}），回退到普通刷墙")
-            TouchActions.tap(980, 635)
+            TouchActions.tap(830, 605)
             return LoopAction.Proceed
         } else {
             val wallCost = recognizeUpgradeResources(currentBase)
@@ -328,11 +329,10 @@ private suspend fun upgradeWalls(currentBase: BaseType, wallType: WallType): Loo
                 val doubleHammer = findMultiColorsUntil(schemas = listOf(doubleHammerSchema, upgradeHammerSchema), duration = 300)
 
                 if (doubleHammer != null) {
-
                     TouchActions.tap(doubleHammer.x, doubleHammer.y)
                     TouchActions.tap(882, 440, delayTime = 300)
                     //Just in case there is only one wall can be upgraded, we need to click the normal upgrade button again
-                    if (currentBase == BaseType.Main) TouchActions.tap(980, 635)
+                    if (currentBase == BaseType.Main) TouchActions.tap(830, 605)
                     else if (currentBase == BaseType.Builder) TouchActions.tap(640, 640)
                     clickRightBottom(1)
                     return LoopAction.Proceed
@@ -340,7 +340,7 @@ private suspend fun upgradeWalls(currentBase: BaseType, wallType: WallType): Loo
             }
         }
     } else {
-        if (currentBase == BaseType.Main) TouchActions.tap(980, 635)
+        if (currentBase == BaseType.Main) TouchActions.tap(830, 605)
         else if (currentBase == BaseType.Builder) TouchActions.tap(640, 640)
         return LoopAction.Proceed
     }
