@@ -60,7 +60,7 @@ suspend fun donateToClan(): Boolean {
                 TouchActions.tap(523, 239, delayTime = 200)
                 TouchActions.tap(152, 88, delayTime = 200)
             } else {
-                TouchActions.tap(523, 98, delayTime = 300)//Global version chat area
+                TouchActions.tap(750, 200, delayTime = 300)//Global version chat area
             }
             TouchActions.tap(40, 608)//Goto bottom
             continue

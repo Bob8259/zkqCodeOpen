@@ -168,8 +168,7 @@ private suspend fun recognizeBuildingListWithGreenMask(
     threshold: Int,
     saveImage: Boolean = false,
 ): List<RecognizedText> {
-    val screenBuffer = ScreenCaptureManager.capture(asBitmap = true) as? Bitmap
-        ?: logAndRestart("in building list recognition, screen capture failed.")
+    val screenBuffer = ScreenCaptureManager.capture(asBitmap = true) as? Bitmap ?: logAndRestart("in building list recognition, screen capture failed.")
     val width = endX - startX
     val height = endY - startY
 
@@ -253,20 +252,33 @@ suspend fun iterateBuilderBaseBuildingUpgradeList(
     baseType: BaseType, excludeNewBuildings: Boolean = false, excludeGearUpBuildings: Boolean = true, onDetect: suspend (BuildingDetectionResult) -> Boolean
 ) {
     var previousBuildingNames: List<String>? = null
-    loop@ for (i in 1..12) {
+    val isReverseUpgrade = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.REVERSE_UPGRADE.key)
+    if (isReverseUpgrade) {
+        TouchActions.swipe(666, 500, 666, -2000, delayTime = 200, delayAfter = 300)
+    }
+    loop@ for (i in 1..14) {
         val result = detectBuildingList(baseType, excludeNewBuildings, excludeGearUpBuildings)
         if (onDetect(result)) return
 
         val currentBuildingNames = result.buildings.map { it.name }.sorted()
         if (previousBuildingNames != null && currentBuildingNames == previousBuildingNames) {
             repeat(2) {
-                TouchActions.swipe(666, 170, 666, 300, delayTime = 200, delayAfter = 100)
+                if (isReverseUpgrade) {
+                    TouchActions.swipe(666, 500, 666, 370, delayTime = 200, delayAfter = 200)
+                } else {
+                    TouchActions.swipe(666, 170, 666, 300, delayTime = 200, delayAfter = 200)
+                }
                 val extraResult = detectBuildingList(baseType, excludeNewBuildings, excludeGearUpBuildings)
                 if (onDetect(extraResult)) return
             }
             break@loop
         }
         previousBuildingNames = currentBuildingNames
-        TouchActions.swipe(666, 500, 666, 120, delayTime = 200, delayAfter = 300)
+        if (isReverseUpgrade) {
+            TouchActions.swipe(666, 170, 666, 550, delayTime = 200, delayAfter = 200)
+        } else {
+            TouchActions.swipe(666, 500, 666, 120, delayTime = 200, delayAfter = 200)
+        }
+
     }
 }

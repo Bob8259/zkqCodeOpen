@@ -458,6 +458,9 @@ fun LazyListScope.mainBaseConfig(
                     CustomButton(
                         onClick = { onNavigatePriority(index) }, text = Strings.adjustMainBasePriority, containerColor = AppColors.Teal
                     )
+                    SettingSwitchIcon(
+                        key = "${MAIN_BASE_SETTINGS.REVERSE_UPGRADE.key}_c$index", explain = Strings.reverseUpgradeExplain
+                    )
                     InputRowWithCheckBox(
                         checkBoxKey = "${MAIN_BASE_SETTINGS.INSTANT_UPGRADE.key}_c$index", inputKey = "${MAIN_BASE_SETTINGS.INSTANT_UPGRADE_THRESHOLD.key}_c$index"
                     )

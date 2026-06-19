@@ -254,6 +254,7 @@ object Strings {
     val gearUpExplain get() = if (LanguageManager.isChinese) "改装建筑属于主世界功能，即使关闭夜世界，也依然会生效。" else "Gear-up is a main base feature and works even if Builder Base is disabled."
     val saveWorkerBuildExplain get() = if (LanguageManager.isChinese) "本功能依赖智能决策，启用本功能后会自动开启智能决策。" else "Requires Smart Decision to be enabled."
     val batchWallExplain get() = if (LanguageManager.isChinese) "此功能对已开启月卡（黄金令牌）的账号不生效。" else "Does not apply to Gold Pass accounts."
+    val reverseUpgradeExplain get() = if (LanguageManager.isChinese) "启用后，脚本将从下到上升级建筑。" else "When enabled, the script will upgrade buildings from the bottom to the top."
 
     // Gear scope options
     val upgradeScopeWear get() = if (LanguageManager.isChinese) "仅穿戴装备" else "Equipped Only"

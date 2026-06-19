@@ -57,6 +57,7 @@ object MainBaseSettings {
         "upgrade_any_building_after_consecutive_failures_threshold", "次后，改为快速升级", "times, use fast upgrade", "3", "MAIN_BASE_SETTINGS"
     )
 
+    val REVERSE_UPGRADE = SettingDef("reverse_upgrade", "反向升级", "Reverse Upgrade", 0, "MAIN_BASE_SETTINGS")
     val BATCH_WALL_UPGRADE_SETTINGS = SettingDef("batch_wall_upgrade_settings", "批量升级城墙", "Batch Upgrade Walls", 1, "MAIN_BASE_SETTINGS")
     val SAVE_WORKER = SettingDef("save_worker", "留1工人", "Save 1 Builder", 0, "MAIN_BASE_SETTINGS")
     val SAVE_WORKER_BUILD_AFTER_WALL_FULL = SettingDef("save_worker_build_after_wall_full", "城墙全满后，将保留的工人用于建造", "Use saved builder after walls full", 0, "MAIN_BASE_SETTINGS")

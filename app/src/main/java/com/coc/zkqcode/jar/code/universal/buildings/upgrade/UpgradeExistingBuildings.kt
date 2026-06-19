@@ -467,8 +467,15 @@ private fun getOrderedList(buildings: List<String>, baseType: BaseType): List<St
         rawPriorityMap
     }
 
-    return buildings.filter { it in priorityMap && it in enabledBuildingNames }.sortedBy {
+    val ordered = buildings.filter { it in priorityMap && it in enabledBuildingNames }.sortedBy {
         priorityMap[it]!!
+    }
+    // Reverse Upgrade (Main Base only): upgrade buildings from the bottom of the
+    // priority list to the top instead of the default top-to-bottom order.
+    return if (baseType == BaseType.Main && getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.REVERSE_UPGRADE.key)) {
+        ordered.reversed()
+    } else {
+        ordered
     }
 }
 
