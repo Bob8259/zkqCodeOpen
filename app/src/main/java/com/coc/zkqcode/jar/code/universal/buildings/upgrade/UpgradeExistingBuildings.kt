@@ -1,4 +1,4 @@
-﻿package com.coc.zkqcode.jar.code.universal.buildings.upgrade
+package com.coc.zkqcode.jar.code.universal.buildings.upgrade
 
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart

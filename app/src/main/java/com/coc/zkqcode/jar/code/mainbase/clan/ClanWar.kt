@@ -27,28 +27,24 @@ private const val STRATEGY_POSITION = "position"
 private const val STRATEGY_RECOMMENDATION = "recommendation"
 
 suspend fun clanWar(): Boolean {
-    // Only perform league-vs-clan-war decision when BOTH the league AND clan war switches are enabled.
-    val leagueEnabled = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.START_CLAN_LEAGUE.key)
-        || getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.PLAY_LEAGUE.key)
-        || getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.PLAY_LEAGUE_DONATION.key)
-
-    if (leagueEnabled && isInClanLeaguePeriod()) {
-        if (findMultiColors(MyColors.ClanLeagueEntryIndicator) != null || findMultiColors(MyColors.ClanLeagueEntryIndicator2) != null) {
-            accountMessage("当前处于部落联赛期间且检测到联赛入口，跳过部落战")
-            return true
-        }
-        accountMessage("当前处于部落联赛时间段但未检测到联赛入口标志，继续执行部落战")
-    }
     if (!getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.PLAY_CLAN_WAR.key) || InGameVars.townHallLevel < 3) return true
     findMultiColors(MyColors.ClanWarSwordIcon) ?: return true // No clan war attack times, return
 
+    // After finding the sword icon, check if this is actually league (has league entry indicator).
+    // If so, skip war handling and let clanLeague() deal with it.
+    if (findMultiColors(MyColors.ClanLeagueEntryIndicator) != null || findMultiColors(MyColors.ClanLeagueEntryIndicator2) != null) {
+        accountMessage("检测到联赛入口，当前为联赛而非部落战")
+        return true
+    }
+
     // If clan war notification is enabled, skip the attack and send a push notification
     if (GlobalVars.configStates[Schema.GLOBAL_SETTINGS.SERVERCHAN_WAR_NOTIFY.key]?.value == "1") {
+        val deviceRemark = GlobalVars.configStates[Schema.GLOBAL_SETTINGS.DEVICE_REMARK.key]?.value.orEmpty()
         val remarkKey = "remark${InGameVars.currentAccountNumber}"
         val remark = GlobalVars.configStates[remarkKey]?.value.orEmpty()
         ServerChanHelper.sendNotification(
             title = Strings.serverchanWarTitle,
-            desp = Strings.serverchanWarMsg(InGameVars.currentAccountNumber, remark)
+            desp = Strings.serverchanWarMsg(deviceRemark, InGameVars.currentAccountNumber, remark)
         )
         return true
     }

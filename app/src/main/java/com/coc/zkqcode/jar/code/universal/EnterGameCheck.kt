@@ -78,10 +78,11 @@ suspend fun enterMainScreen(isDoubleCheck: Boolean = false): Boolean {
     // Send Server酱³ push notification on game enter timeout if enabled
     val kickNotify = GlobalVars.configStates[Schema.GLOBAL_SETTINGS.SERVERCHAN_KICK_NOTIFY.key]?.value == "1"
     if (kickNotify) {
+        val deviceRemark = GlobalVars.configStates[Schema.GLOBAL_SETTINGS.DEVICE_REMARK.key]?.value.orEmpty()
         val remarkKey = "remark${InGameVars.currentAccountNumber}"
         val remark = GlobalVars.configStates[remarkKey]?.value.orEmpty()
         ServerChanHelper.sendNotification(
-            title = Strings.serverchanKickTitle, desp = Strings.serverchanKickMsg(InGameVars.currentAccountNumber, remark, timeoutSeconds)
+            title = Strings.serverchanKickTitle, desp = Strings.serverchanKickMsg(deviceRemark, InGameVars.currentAccountNumber, remark, timeoutSeconds)
         )
     }
     killGame()

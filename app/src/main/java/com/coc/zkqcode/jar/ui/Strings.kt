@@ -328,19 +328,19 @@ object Strings {
     val serverchanTestBtn get() = if (LanguageManager.isChinese) "发送测试" else "Send Test"
     val serverchanSendKeyEmpty get() = if (LanguageManager.isChinese) "请先填写 Server酱³ SendKey" else "Please enter your Server酱³ SendKey first"
     val serverchanKickTitle get() = if (LanguageManager.isChinese) "进入游戏失败 - 紫孔雀" else "Game Enter Failed - ZKQ"
-    fun serverchanKickMsg(accountIndex: Int, remark: String, timeoutSec: Int) =
-        if (LanguageManager.isChinese) "账号${accountIndex}，备注：${remark.ifBlank { "无" }}。倒计时${timeoutSec}结束，进入游戏失败"
-        else "Account $accountIndex, Remark: ${remark.ifBlank { "N/A" }}. Countdown $timeoutSec ended, failed to enter game."
+    fun serverchanKickMsg(deviceRemark: String, accountIndex: Int, remark: String, timeoutSec: Int) =
+        if (LanguageManager.isChinese) "设备：${deviceRemark.ifBlank { "无" }}，账号${accountIndex}，备注：${remark.ifBlank { "无" }}。倒计时${timeoutSec}结束，进入游戏失败"
+        else "Device: ${deviceRemark.ifBlank { "N/A" }}, Account $accountIndex, Remark: ${remark.ifBlank { "N/A" }}. Countdown $timeoutSec ended, failed to enter game."
 
     val serverchanWarTitle get() = if (LanguageManager.isChinese) "部落战已开战 - 紫孔雀" else "Clan War Started - ZKQ"
-    fun serverchanWarMsg(accountIndex: Int, remark: String) =
-        if (LanguageManager.isChinese) "账号${accountIndex}，备注:${remark.ifBlank { "无" }}。部落战已开战"
-        else "Account $accountIndex, Remark: ${remark.ifBlank { "N/A" }}. Clan war has started."
+    fun serverchanWarMsg(deviceRemark: String, accountIndex: Int, remark: String) =
+        if (LanguageManager.isChinese) "设备：${deviceRemark.ifBlank { "无" }}，账号${accountIndex}，备注:${remark.ifBlank { "无" }}。部落战已开战"
+        else "Device: ${deviceRemark.ifBlank { "N/A" }}, Account $accountIndex, Remark: ${remark.ifBlank { "N/A" }}. Clan war has started."
 
     val serverchanLeagueTitle get() = if (LanguageManager.isChinese) "联赛已开战 - 紫孔雀" else "League Started - ZKQ"
-    fun serverchanLeagueMsg(accountIndex: Int, remark: String) =
-        if (LanguageManager.isChinese) "账号${accountIndex}，备注:${remark.ifBlank { "无" }}。联赛已开战"
-        else "Account $accountIndex, Remark: ${remark.ifBlank { "N/A" }}. League has started."
+    fun serverchanLeagueMsg(deviceRemark: String, accountIndex: Int, remark: String) =
+        if (LanguageManager.isChinese) "设备：${deviceRemark.ifBlank { "无" }}，账号${accountIndex}，备注:${remark.ifBlank { "无" }}。联赛已开战"
+        else "Device: ${deviceRemark.ifBlank { "N/A" }}, Account $accountIndex, Remark: ${remark.ifBlank { "N/A" }}. League has started."
 
     val serverchanUpgradeTitle get() = if (LanguageManager.isChinese) "升级即将完成 - 紫孔雀" else "Upgrade Complete Soon - ZKQ"
     val serverchanUpgradingTitle get() = if (LanguageManager.isChinese) "正在升级 - 紫孔雀" else "Upgrading - ZKQ"
@@ -348,5 +348,21 @@ object Strings {
     val pushProviderWxPusher get() = "WxPusher"
     val pushProviderPushPlus get() = "PushPlus"
     val pushProviderTelegram get() = "Telegram"
+
+    // WebDAV Sync
+    val webdavSectionTitle get() = if (LanguageManager.isChinese) "WebDAV 同步" else "WebDAV Sync"
+    val webdavUploadConfig get() = if (LanguageManager.isChinese) "上传配置" else "Upload Config"
+    val webdavDownloadConfig get() = if (LanguageManager.isChinese) "下载配置" else "Download Config"
+    val webdavUploadGlobalSave get() = if (LanguageManager.isChinese) "上传国际服存档" else "Upload Global Save"
+    val webdavDownloadGlobalSave get() = if (LanguageManager.isChinese) "下载国际服存档" else "Download Global Save"
+    val webdavUploading get() = if (LanguageManager.isChinese) "正在上传..." else "Uploading..."
+    val webdavDownloading get() = if (LanguageManager.isChinese) "正在下载..." else "Downloading..."
+    val webdavUploadSuccess get() = if (LanguageManager.isChinese) "上传成功！" else "Upload successful!"
+    val webdavDownloadSuccess get() = if (LanguageManager.isChinese) "下载成功！" else "Download successful!"
+    val webdavConfigPath get() = if (LanguageManager.isChinese) "配置文件" else "Config file"
+    val webdavGlobalSavePath get() = if (LanguageManager.isChinese) "国际服存档" else "Global save"
+    val webdavUrlEmpty get() = if (LanguageManager.isChinese) "请先填写 WebDAV 服务器地址" else "Please enter the WebDAV server URL"
+    val webdavCredentialEmpty get() = if (LanguageManager.isChinese) "请先填写 WebDAV 用户名和密码" else "Please enter WebDAV username and password"
+    val webdavRemarkEmpty get() = if (LanguageManager.isChinese) "请先在「通用设置」中填写设备备注" else "Please set your device remark in General Settings first"
 }
 

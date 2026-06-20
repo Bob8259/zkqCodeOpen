@@ -1,4 +1,4 @@
-﻿package com.coc.zkqcode.jar.code.universal.buildings.gearup
+package com.coc.zkqcode.jar.code.universal.buildings.gearup
 
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.jar.code.colorschema.MyColors

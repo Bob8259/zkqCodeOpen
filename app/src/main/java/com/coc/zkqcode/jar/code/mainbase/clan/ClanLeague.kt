@@ -42,11 +42,12 @@ suspend fun clanLeague(): Boolean {
 
         // If league notification is enabled, skip the attack and send a push notification
         if (GlobalVars.configStates[Schema.GLOBAL_SETTINGS.SERVERCHAN_LEAGUE_NOTIFY.key]?.value == "1") {
+            val deviceRemark = GlobalVars.configStates[Schema.GLOBAL_SETTINGS.DEVICE_REMARK.key]?.value.orEmpty()
             val remarkKey = "remark${InGameVars.currentAccountNumber}"
             val remark = GlobalVars.configStates[remarkKey]?.value.orEmpty()
             ServerChanHelper.sendNotification(
                 title = Strings.serverchanLeagueTitle,
-                desp = Strings.serverchanLeagueMsg(InGameVars.currentAccountNumber, remark)
+                desp = Strings.serverchanLeagueMsg(deviceRemark, InGameVars.currentAccountNumber, remark)
             )
             return enterMainScreen()
         }
