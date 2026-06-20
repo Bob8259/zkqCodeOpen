@@ -24,8 +24,6 @@ import com.coc.zkqcode.jar.ui.components.CustomButton
 import com.coc.zkqcode.jar.ui.components.CustomNotificationWindow
 import com.coc.zkqcode.jar.ui.components.SettingSection
 import com.coc.zkqcode.jar.ui.schema.ConfigManager
-import com.coc.zkqcode.statehelper.AppMode
-import com.coc.zkqcode.statehelper.AppStateManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -72,7 +70,6 @@ fun HomeScreenBottomBar(
                 }
                 TextButton(onClick = {
                     showExitConfirmation = false
-                    AppStateManager.setMode(AppMode.Run)
                     scope.launch {
                         ConfigManager.saveAndRun {
                             AppExitHelper.exitApplication(context)

@@ -216,11 +216,13 @@ fun SwitchAccount(onClose: () -> Unit) {
                     })
                 CustomButton(
                     text = Strings.closeWindow, onClick = {
-                        AppStateManager.setMode(AppMode.Run) //just to close the ui
                         GlobalVars.isPlaying.value = false
                         GlobalVars.updateWindowPosition = true
                         scope.launch {
                             onClose()
+                            // Switch mode after onClose() so the composition (and its
+                            // coroutine scope) stays alive until the close work finishes.
+                            AppStateManager.setMode(AppMode.Run)
                         }
                     })
             }
