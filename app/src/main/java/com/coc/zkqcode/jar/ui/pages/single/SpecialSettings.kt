@@ -119,12 +119,39 @@ fun LazyListScope.specialSettings() {
             SettingInputRow(key = GLOBAL_SETTINGS.WEBDAV_PASSWORD.key)
 
             fun getConfig(k: String) = GlobalVars.configStates[k]?.value.orEmpty()
-            fun readSdFile(p: String): ByteArray? {
-                val l = ShellHelper.runBlockingOutput("base64 \"$p\""); if (l.isEmpty()) return null
-                return try { java.util.Base64.getDecoder().decode(l.joinToString("")) } catch (_: Exception) { null }
+
+            /**
+             * Read bytes from a file path. Tries direct Java I/O first (works for app-private
+             * directories), falls back to shell base64 for paths that require root access.
+             */
+            fun readBytesFromFile(p: String): ByteArray? {
+                val direct = try { java.io.File(p).readBytes() } catch (_: Exception) { null }
+                if (direct != null) return direct
+                return try {
+                    val lines = ShellHelper.runBlockingOutput("base64 -w0 \"$p\" 2>/dev/null")
+                    if (lines.isEmpty()) return null
+                    java.util.Base64.getDecoder().decode(lines.joinToString(""))
+                } catch (_: Exception) { null }
             }
-            fun writeSdFile(d: ByteArray, p: String): Boolean {
-                return ShellHelper.runBlocking("echo \"${java.util.Base64.getEncoder().encodeToString(d)}\" | base64 -d > \"$p\"").isSuccess
+
+            /**
+             * Write bytes to a file path. Tries direct Java I/O first, falls back
+             * to shell cp via temp file for paths that require root access.
+             * Avoids ARG_MAX limits of shell echo + base64 -d pipe.
+             */
+            fun writeBytesToFile(d: ByteArray, p: String): Boolean {
+                try {
+                    java.io.File(p).parentFile?.mkdirs()
+                    java.io.File(p).writeBytes(d)
+                    return true
+                } catch (_: Exception) {}
+                // Write to app-private temp dir first (no root needed), then cp via root shell
+                val tmpFile = java.io.File(context.filesDir, "webdav_write_tmp")
+                return try {
+                    tmpFile.writeBytes(d)
+                    ShellHelper.runBlocking("cp \"${tmpFile.absolutePath}\" \"$p\"").isSuccess
+                } catch (_: Exception) { false }
+                finally { tmpFile.delete() }
             }
 
             val deviceList = remember { mutableStateOf(listOf<String>()) }
@@ -137,25 +164,39 @@ fun LazyListScope.specialSettings() {
             val syncMode = remember { mutableStateOf(0) }
             val overwriteSync = remember { mutableStateOf(false) }
             val incrementalSync = remember { mutableStateOf(false) }
+            val cancelled = remember { mutableStateOf(false) }
+
+            fun cancelCurrentOp() {
+                cancelled.value = true
+                com.coc.zkqcode.jar.code.universal.network.WebDAVHelper.cancelCurrentOperation()
+            }
 
             fun refreshDeviceList() {
                 val url = getConfig(GLOBAL_SETTINGS.WEBDAV_URL.key); val username = getConfig(GLOBAL_SETTINGS.WEBDAV_USERNAME.key); val password = getConfig(GLOBAL_SETTINGS.WEBDAV_PASSWORD.key)
                 if (url.isBlank()) { ShowMessage("请先填写 WebDAV 服务器信息", isChecking = false); return }
+                cancelled.value = false
                 scope.launch {
                     isProcessing.value = true; ShowMessage("正在扫描远程文件夹...", isChecking = false)
                     val r = withContext(Dispatchers.IO) { com.coc.zkqcode.jar.code.universal.network.WebDAVHelper.listDirectories(url, username, password, "zkqFiles") }
-                    if (r is String) { ShowMessage(r, isChecking = false); isProcessing.value = false; return@launch }
-                    @Suppress("UNCHECKED_CAST") val devices = (r as List<String>).sorted(); deviceList.value = devices
+                    val devices = r.fold(
+                        onSuccess = { it.sorted() },
+                        onFailure = { ShowMessage("连接失败: ${it.message}", isChecking = false); isProcessing.value = false; return@launch }
+                    )
+                    deviceList.value = devices
                     val am = mutableMapOf<String, List<String>>(); val cm = mutableMapOf<String, Boolean>()
-                    for (d in devices) {
+                    val total = devices.size
+                    for ((idx, d) in devices.withIndex()) {
+                        if (cancelled.value) break
+                        ShowMessage("扫描中: $d (${idx + 1}/$total)...", isChecking = false)
                         val fr = withContext(Dispatchers.IO) { com.coc.zkqcode.jar.code.universal.network.WebDAVHelper.listFiles(url, username, password, "zkqFiles/$d/zkqGlobalGameSave") }
-                        @Suppress("UNCHECKED_CAST")
-                        am[d] = if (fr is List<*>) { val frl = fr as List<String>; frl.filter { it.endsWith(".tar.gz") }.sorted() } else emptyList()
+                        am[d] = fr.getOrDefault(emptyList()).filter { it.endsWith(".tar.gz") }.sorted()
                         val cr = withContext(Dispatchers.IO) { com.coc.zkqcode.jar.code.universal.network.WebDAVHelper.listFiles(url, username, password, "zkqFiles/$d/config") }
-                        cm[d] = cr is List<*> && cr.any { it.toString().endsWith("zkq_config.json") }
+                        cm[d] = cr.getOrDefault(emptyList()).any { it.endsWith("zkq_config.json") }
                     }
                     deviceArchiveMap.value = am; deviceConfigMap.value = cm
-                    isProcessing.value = false; ShowMessage("找到 ${devices.size} 个文件夹", isChecking = false)
+                    if (cancelled.value) { ShowMessage("扫描已取消", isChecking = false) }
+                    else { ShowMessage("找到 ${devices.size} 个文件夹", isChecking = false) }
+                    isProcessing.value = false; cancelled.value = false
                 }
             }
 
@@ -163,36 +204,57 @@ fun LazyListScope.specialSettings() {
                 val url = getConfig(GLOBAL_SETTINGS.WEBDAV_URL.key); val username = getConfig(GLOBAL_SETTINGS.WEBDAV_USERNAME.key); val password = getConfig(GLOBAL_SETTINGS.WEBDAV_PASSWORD.key)
                 val localSaveDir = "$sdPath/zkqFiles/zkqGlobalGameSave"; val localConfigPath = "$sdPath/zkqFiles/zkq_config.json"; val tempDir = "${context.filesDir.absolutePath}/webdav_tar"; val mode = syncMode.value
                 val targets = checkedItems.value.keys.toList()
-                checkedItems.value = emptyMap()
                 scope.launch {
-                    isProcessing.value = true; var suc = 0; var fail = 0
+                    isProcessing.value = true; cancelled.value = false; var suc = 0; var fail = 0
+                    var totalOps = 0; var opsDone = 0
+                    // Count total operations for progress
                     for (device in targets) {
+                        if (mode != 2) totalOps++
+                        if (mode != 1) {
+                            val dirs = withContext(Dispatchers.IO) { ShellHelper.runBlockingOutput("ls -d \"$localSaveDir\"/*/ 2>/dev/null").map { it.trimEnd('/').substringAfterLast("/") }.filter { it.isNotBlank() } }
+                            totalOps += dirs.size
+                        }
+                    }
+                    for (device in targets) {
+                        if (cancelled.value) break
                         if (mode != 2) {
-                            ShowMessage("上传配置到 $device...", isChecking = false)
-                            val cfg = withContext(Dispatchers.IO) { readSdFile(localConfigPath) }
+                            opsDone++
+                            ShowMessage("上传配置到 $device ($opsDone/$totalOps)...", isChecking = false)
+                            val cfg = withContext(Dispatchers.IO) { readBytesFromFile(localConfigPath) }
                             if (cfg != null) { val e = withContext(Dispatchers.IO) { com.coc.zkqcode.jar.code.universal.network.WebDAVHelper.upload(url, username, password, "zkqFiles/$device/config/zkq_config.json", cfg) }; if (e == null) suc++ else fail++ } else fail++
                         }
                         if (mode != 1) {
                             val dirs = withContext(Dispatchers.IO) { ShellHelper.runBlockingOutput("ls -d \"$localSaveDir\"/*/ 2>/dev/null").map { it.trimEnd('/').substringAfterLast("/") }.filter { it.isNotBlank() } }
                             val inc = incrementalSync.value && mode != 1
-                            val startIdx = if (inc) {
+                            // In incremental mode, find highest existing archive number on server
+                            val maxExisting = if (inc) {
                                 val rf = withContext(Dispatchers.IO) { com.coc.zkqcode.jar.code.universal.network.WebDAVHelper.listFiles(url, username, password, "zkqFiles/$device/zkqGlobalGameSave") }
-                                @Suppress("UNCHECKED_CAST")
-                            if (rf is List<*>) { val rfl = rf as List<String>; val nums = rfl.mapNotNull { it.removeSuffix(".tar.gz").trim().toIntOrNull() }; (nums.maxOrNull() ?: 0) + 1 } else 1
-                            } else 1
-                            val upl = dirs.mapNotNull { it.trim().toIntOrNull() }.sorted(); var seq = startIdx
-                            for (n in upl) {
-                                val sn = if (inc) { val s = seq; seq++; s } else n; val ss = sn.toString()
-                                ShowMessage("上传 $device / $ss...", isChecking = false)
-                                val tf = "$tempDir/$ss.tar.gz"; val tok = withContext(Dispatchers.IO) { ShellHelper.runBlocking("mkdir -p \"$tempDir\" && tar -czf \"$tf\" -C \"$localSaveDir\" \"$n\"") }
-                                if (!tok.isSuccess) { fail++; continue }; val d = withContext(Dispatchers.IO) { readSdFile(tf) }
+                                rf.getOrDefault(emptyList()).mapNotNull { it.removeSuffix(".tar.gz").trim().toIntOrNull() }.maxOrNull() ?: 0
+                            } else 0
+                            var seq = maxExisting + 1
+                            for (name in dirs.sorted()) {
+                                if (cancelled.value) break
+                                opsDone++
+                                val num = name.toIntOrNull()
+                                // Incremental mode: skip numeric dirs already on server
+                                if (inc && num != null && num <= maxExisting) continue
+                                // Determine upload name: numeric → auto-increment for inc, else keep original
+                                val ss = if (inc && num != null) { val s = seq; seq++; s.toString() } else name
+                                ShowMessage("上传 $device / $ss ($opsDone/$totalOps)...", isChecking = false)
+                                val tf = "$tempDir/$ss.tar.gz"
+                                val tdir = java.io.File(tempDir); tdir.mkdirs()
+                                val tok = withContext(Dispatchers.IO) { ShellHelper.runBlocking("tar -czf \"$tf\" -C \"$localSaveDir\" \"$name\"") }
+                                if (!tok.isSuccess) { fail++; continue }; val d = withContext(Dispatchers.IO) { readBytesFromFile(tf) }
                                 if (d == null) { fail++; continue }; val e = withContext(Dispatchers.IO) { com.coc.zkqcode.jar.code.universal.network.WebDAVHelper.upload(url, username, password, "zkqFiles/$device/zkqGlobalGameSave/$ss.tar.gz", d) }
-                                if (e == null) suc++ else fail++; withContext(Dispatchers.IO) { ShellHelper.runBlockingNoOutput("rm -f \"$tf\"") }
+                                if (e == null) suc++ else fail++
+                                withContext(Dispatchers.IO) { java.io.File(tf).delete() }
                             }
                         }
                     }
-                    ShowMessage(if (fail == 0) "一键上传完成！" else "一键上传完成 ($suc 成功, $fail 失败)", isChecking = false)
-                    refreshDeviceList(); isProcessing.value = false
+                    checkedItems.value = emptyMap()
+                    if (cancelled.value) { ShowMessage("上传已取消 ($suc 成功, $fail 失败)", isChecking = false) }
+                    else { ShowMessage(if (fail == 0) "一键上传完成！" else "一键上传完成 ($suc 成功, $fail 失败)", isChecking = false) }
+                    refreshDeviceList(); isProcessing.value = false; cancelled.value = false
                 }
             }
 
@@ -201,37 +263,54 @@ fun LazyListScope.specialSettings() {
                 val localSaveDir = "$sdPath/zkqFiles/zkqGlobalGameSave"; val localConfigPath = "$sdPath/zkqFiles/zkq_config.json"; val tempDir = "${context.filesDir.absolutePath}/webdav_tar"; val mode = syncMode.value
                 val inc = incrementalSync.value && mode != 1
                 val targets = checkedItems.value.toList()
-                checkedItems.value = emptyMap()
                 scope.launch {
-                    isProcessing.value = true; var suc = 0; var fail = 0
+                    isProcessing.value = true; cancelled.value = false; var suc = 0; var fail = 0
+                    // Count only items that will actually be processed (after mode filter)
+                    val totalItems = targets.sumOf { (_, items) ->
+                        items.count { itemId ->
+                            val isCfg = itemId == "config"
+                            !(mode == 1 && !isCfg) && !(mode == 2 && isCfg)
+                        }
+                    }
+                    var opsDone = 0
                     for ((device, items) in targets) {
+                        if (cancelled.value) break
                         for (itemId in items) {
+                            if (cancelled.value) break
                             val isCfg = itemId == "config"; if (mode == 1 && !isCfg) continue; if (mode == 2 && isCfg) continue
+                            opsDone++
                             if (isCfg) {
-                                ShowMessage("下载配置从 $device...", isChecking = false)
+                                ShowMessage("下载配置从 $device ($opsDone/$totalItems)...", isChecking = false)
                                 val cr = withContext(Dispatchers.IO) { com.coc.zkqcode.jar.code.universal.network.WebDAVHelper.download(url, username, password, "zkqFiles/$device/config/zkq_config.json") }
-                                if (cr is ByteArray) { if (withContext(Dispatchers.IO) { writeSdFile(cr, localConfigPath) }) suc++ else fail++ } else fail++
+                                cr.fold(
+                                    onSuccess = { data -> if (withContext(Dispatchers.IO) { writeBytesToFile(data, localConfigPath) }) suc++ else fail++ },
+                                    onFailure = { fail++ }
+                                )
                             } else {
                                 val rn = itemId.removeSuffix(".tar.gz"); val rNum = rn.toIntOrNull()
                                 val ldn = if (inc && rNum != null) {
                                     val ld = withContext(Dispatchers.IO) { ShellHelper.runBlockingOutput("ls -d \"$localSaveDir\"/*/ 2>/dev/null").mapNotNull { it.trimEnd('/').substringAfterLast("/").toIntOrNull() } }
                                     ((ld.maxOrNull() ?: 0) + 1).toString()
                                 } else rn
-                                ShowMessage("下载 $device / $ldn...", isChecking = false)
+                                ShowMessage("下载 $device / $ldn ($opsDone/$totalItems)...", isChecking = false)
                                 val dr = withContext(Dispatchers.IO) { com.coc.zkqcode.jar.code.universal.network.WebDAVHelper.download(url, username, password, "zkqFiles/$device/zkqGlobalGameSave/$itemId") }
-                                if (dr !is ByteArray) { fail++; continue }; val tf = "$tempDir/$itemId"
-                                val wok = withContext(Dispatchers.IO) { ShellHelper.runBlocking("mkdir -p \"$tempDir\" && echo \"${java.util.Base64.getEncoder().encodeToString(dr)}\" | base64 -d > \"$tf\"") }
-                                if (!wok.isSuccess) { fail++; continue }
+                                if (dr.isFailure) { fail++; continue }
+                                val drData = dr.getOrThrow()
+                                val tf = "$tempDir/$itemId"
+                                val tdir = java.io.File(tempDir); tdir.mkdirs()
+                                try { java.io.File(tf).writeBytes(drData) } catch (_: Exception) { fail++; continue }
                                 if (withContext(Dispatchers.IO) { ShellHelper.runBlocking("mkdir -p \"$localSaveDir\" && tar -xzf \"$tf\" -C \"$localSaveDir\"").isSuccess }) {
                                     if (ldn != rn) { withContext(Dispatchers.IO) { ShellHelper.runBlocking("mv \"$localSaveDir/$rn\" \"$localSaveDir/$ldn\"") } }
                                     suc++
                                 } else fail++
-                                withContext(Dispatchers.IO) { ShellHelper.runBlockingNoOutput("rm -f \"$tf\"") }
+                                withContext(Dispatchers.IO) { java.io.File(tf).delete() }
                             }
                         }
                     }
-                    ShowMessage(if (fail == 0) "一键下载完成！" else "一键下载完成 ($suc 成功, $fail 失败)", isChecking = false)
-                    refreshDeviceList(); isProcessing.value = false
+                    checkedItems.value = emptyMap()
+                    if (cancelled.value) { ShowMessage("下载已取消 ($suc 成功, $fail 失败)", isChecking = false) }
+                    else { ShowMessage(if (fail == 0) "一键下载完成！" else "一键下载完成 ($suc 成功, $fail 失败)", isChecking = false) }
+                    refreshDeviceList(); isProcessing.value = false; cancelled.value = false
                 }
             }
 
@@ -243,9 +322,17 @@ fun LazyListScope.specialSettings() {
                 scope.launch {
                     isProcessing.value = true; ShowMessage("正在连接 WebDAV 服务器...", isChecking = false)
                     val r = withContext(Dispatchers.IO) { com.coc.zkqcode.jar.code.universal.network.WebDAVHelper.listDirectories(url, username, password, "zkqFiles") }
-                    if (r is String) { ShowMessage("连接失败: $r", isChecking = false) }
-                    else { ShowMessage("WebDAV 登录成功！", isChecking = false); refreshDeviceList() }
-                    isProcessing.value = false
+                    r.fold(
+                        onSuccess = {
+                            ShowMessage("WebDAV 登录成功！", isChecking = false)
+                            // refreshDeviceList() manages its own isProcessing internally
+                            refreshDeviceList()
+                        },
+                        onFailure = {
+                            ShowMessage("连接失败: ${it.message}", isChecking = false)
+                            isProcessing.value = false
+                        }
+                    )
                 }
             })
 
@@ -268,7 +355,8 @@ fun LazyListScope.specialSettings() {
                         if (e != null) { ok = false; err = e }
                     }
                     if (ok) { ShowMessage("文件夹创建成功: $name", isChecking = false); folderName.value = "" } else { ShowMessage("创建失败: $err", isChecking = false) }
-                    refreshDeviceList(); isProcessing.value = false
+                    // refreshDeviceList() manages its own isProcessing internally
+                    refreshDeviceList()
                 }
             })
 
@@ -362,8 +450,12 @@ fun LazyListScope.specialSettings() {
                     val sel = if (syncMode.value == 1) overwriteSync.value else (overwriteSync.value || incrementalSync.value)
                     val ue = checkedItems.value.isNotEmpty() && !isProcessing.value && sel
                     val de = checkedItems.value.any { it.value.isNotEmpty() } && !isProcessing.value && sel
-                    CustomButton(text = if (isProcessing.value) "处理中..." else "一键上传", marginEnd = 4.dp, enable = ue, onClick = { performUpload() })
-                    CustomButton(text = if (isProcessing.value) "处理中..." else "一键下载", marginEnd = 4.dp, enable = de, onClick = { performDownload() })
+                    if (isProcessing.value) {
+                        CustomButton(text = "取消", marginEnd = 4.dp, enable = true, onClick = { cancelCurrentOp() })
+                    } else {
+                        CustomButton(text = "一键上传", marginEnd = 4.dp, enable = ue, onClick = { performUpload() })
+                        CustomButton(text = "一键下载", marginEnd = 4.dp, enable = de, onClick = { performDownload() })
+                    }
                 }
             }
         }

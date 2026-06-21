@@ -363,6 +363,5 @@ object Strings {
     val webdavGlobalSavePath get() = if (LanguageManager.isChinese) "国际服存档" else "Global save"
     val webdavUrlEmpty get() = if (LanguageManager.isChinese) "请先填写 WebDAV 服务器地址" else "Please enter the WebDAV server URL"
     val webdavCredentialEmpty get() = if (LanguageManager.isChinese) "请先填写 WebDAV 用户名和密码" else "Please enter WebDAV username and password"
-    val webdavRemarkEmpty get() = if (LanguageManager.isChinese) "请先在「通用设置」中填写设备备注" else "Please set your device remark in General Settings first"
 }
 
