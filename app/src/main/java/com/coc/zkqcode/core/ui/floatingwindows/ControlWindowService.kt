@@ -305,7 +305,7 @@ class ControlWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner 
 
     override fun onTaskRemoved(rootIntent: Intent?) {
         super.onTaskRemoved(rootIntent)
-        // Keep running if the bot is active; otherwise relaunch to restore the UI.
+        // Keep running if the bot is active; otherwise relaunch only when recovery is safe.
         val rootComponent = rootIntent?.component?.className
         val botActive = botJob?.isActive == true
         val currentMode = AppStateManager.currentMode
@@ -313,9 +313,17 @@ class ControlWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner 
             return
         }
 
+        if (shouldSkipDetachedRelaunch(currentMode)) {
+            LogHelper.showDebugInfo(
+                "ControlWindowService: task removed in interactive mode, skipping detached shell relaunch. " +
+                        "rootComponent=$rootComponent, mode=$currentMode, botActive=${false}"
+            )
+            return
+        }
+
         LogHelper.showDebugInfo(
             "ControlWindowService: task removed while bot is inactive, relaunching MainActivity with detached shell. " +
-                    "rootComponent=$rootComponent, mode=$currentMode, botActive=$botActive"
+                    "rootComponent=$rootComponent, mode=$currentMode, botActive=${false}"
         )
         relaunchMainActivityDetached()
     }
@@ -329,14 +337,29 @@ class ControlWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner 
             return START_NOT_STICKY
         }
 
-        // Detect START_STICKY restart: system delivers null intent after LMKD kill
+        // Detect START_STICKY restart: system delivers null intent after LMKD kill.
         if (intent == null) {
-            LogHelper.showDebugInfo("ControlWindowService: received null intent, relaunching MainActivity with detached shell")
-            relaunchMainActivityDetached()
+            val currentMode = AppStateManager.currentMode
+            if (shouldSkipDetachedRelaunch(currentMode)) {
+                LogHelper.showDebugInfo(
+                    "ControlWindowService: received null intent in interactive mode, skipping detached shell relaunch. " +
+                            "mode=$currentMode"
+                )
+            } else {
+                LogHelper.showDebugInfo(
+                    "ControlWindowService: received null intent, relaunching MainActivity with detached shell. " +
+                            "mode=$currentMode"
+                )
+                relaunchMainActivityDetached()
+            }
         }
         updateForegroundRecord()
         lifecycleRegistry.currentState = Lifecycle.State.STARTED
         return START_STICKY
+    }
+
+    private fun shouldSkipDetachedRelaunch(mode: AppMode): Boolean {
+        return mode == AppMode.SwitchAccount || mode == AppMode.Main || mode == AppMode.BugReport
     }
 
     private fun relaunchMainActivityDetached() {
