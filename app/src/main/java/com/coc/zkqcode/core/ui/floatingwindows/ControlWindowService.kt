@@ -51,6 +51,7 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
+import kotlin.time.Duration.Companion.milliseconds
 
 class ControlWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner {
 
@@ -127,7 +128,7 @@ class ControlWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner 
                         )
                     }
                 } catch (_: Exception) { }
-                delay(5000)
+                delay(5000.milliseconds)
             }
         }
     }
@@ -220,7 +221,7 @@ class ControlWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner 
 
         LaunchedEffect(Unit) {
             while (true) {
-                delay(500)
+                delay(500.milliseconds)
                 if (GlobalVars.updateWindowPosition && !isDragging) {
                     val absorbEdge = GlobalVars.absorbEdge
                     val absorbYPercentage = GlobalVars.absorbYPercentage
