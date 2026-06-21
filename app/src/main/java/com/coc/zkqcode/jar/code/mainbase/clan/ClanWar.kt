@@ -16,6 +16,7 @@ import com.coc.zkqcode.jar.code.universal.smalltools.data.StorageKeys
 import com.coc.zkqcode.jar.code.universal.smalltools.input.TouchActions
 import com.coc.zkqcode.jar.code.universal.smalltools.data.getBooleanConfigRuntime
 import com.coc.zkqcode.jar.code.universal.smalltools.lifecycle.killGame
+import com.coc.zkqcode.jar.code.universal.smalltools.data.checkMemoryFile
 import com.coc.zkqcode.jar.code.universal.smalltools.data.readMemory
 import com.coc.zkqcode.jar.code.universal.smalltools.data.writeMemory
 import com.coc.zkqcode.jar.code.universal.push.ServerChanHelper
@@ -28,26 +29,15 @@ private const val STRATEGY_RECOMMENDATION = "recommendation"
 
 suspend fun clanWar(): Boolean {
     if (!getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.PLAY_CLAN_WAR.key) || InGameVars.townHallLevel < 3) return true
+    // Time guard: skip the entire war/league task if within 12h cooldown
+    // War and league share the same cooldown — one cooling covers both.
+    val battleCooldownKey = StorageKeys.withAccountNumber(StorageKeys.CLAN_WAR_ATTACK, InGameVars.currentAccountNumber)
+    if (!checkMemoryFile(battleCooldownKey, 720)) {
+        accountMessage("冷却中(12h)，跳过部落战")
+        return true
+    }
+
     findMultiColors(MyColors.ClanWarSwordIcon) ?: return true // No clan war attack times, return
-
-    // After finding the sword icon, check if this is actually league (has league entry indicator).
-    // If so, skip war handling and let clanLeague() deal with it.
-    if (findMultiColors(MyColors.ClanLeagueEntryIndicator) != null || findMultiColors(MyColors.ClanLeagueEntryIndicator2) != null) {
-        accountMessage("检测到联赛入口，当前为联赛而非部落战")
-        return true
-    }
-
-    // If clan war notification is enabled, skip the attack and send a push notification
-    if (GlobalVars.configStates[Schema.GLOBAL_SETTINGS.SERVERCHAN_WAR_NOTIFY.key]?.value == "1") {
-        val deviceRemark = GlobalVars.configStates[Schema.GLOBAL_SETTINGS.DEVICE_REMARK.key]?.value.orEmpty()
-        val remarkKey = "remark${InGameVars.currentAccountNumber}"
-        val remark = GlobalVars.configStates[remarkKey]?.value.orEmpty()
-        ServerChanHelper.sendNotification(
-            title = Strings.serverchanWarTitle,
-            desp = Strings.serverchanWarMsg(deviceRemark, InGameVars.currentAccountNumber, remark)
-        )
-        return true
-    }
 
     TouchActions.tap(50, 440) // Enter clan war
 
@@ -61,22 +51,33 @@ suspend fun clanWar(): Boolean {
     } else {
         STRATEGY_POSITION
     }
+    // Check what's inside the war page - if no ClanWarInfo found, it's probably league
     if (findMultiColorsUntil(schemas = listOf(MyColors.ClanWarInfo), duration = 1000) == null) {
-        accountMessage("未检测到部落竞赛，当前可能是联赛")
-        return if (getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.PLAY_LEAGUE.key)) {
-            true
-        } else {
-            enterMainScreen()
-        }
-    } else {
-        when (currentStrategy) {
-            STRATEGY_POSITION -> attackByPosition()
-            STRATEGY_RECOMMENDATION -> attackByRecommendation()
-        }
-        writeMemory(storageKey, currentStrategy)
+        accountMessage("未检测到部落战信息，当前可能是联赛")
+        return true
+    }
+
+    // Confirmed: this is a regular clan war
+    // If clan war notification is enabled, skip the attack and send a push notification
+    if (GlobalVars.configStates[Schema.GLOBAL_SETTINGS.SERVERCHAN_WAR_NOTIFY.key]?.value == "1") {
+        val deviceRemark = GlobalVars.configStates[Schema.GLOBAL_SETTINGS.DEVICE_REMARK.key]?.value.orEmpty()
+        val remarkKey = "remark${InGameVars.currentAccountNumber}"
+        val remark = GlobalVars.configStates[remarkKey]?.value.orEmpty()
+        ServerChanHelper.sendNotification(
+            title = Strings.serverchanWarTitle,
+            desp = Strings.serverchanWarMsg(deviceRemark, InGameVars.currentAccountNumber, remark)
+        )
+        writeMemory(battleCooldownKey, (System.currentTimeMillis() / 60_000).toString())
         return enterMainScreen()
     }
 
+    when (currentStrategy) {
+        STRATEGY_POSITION -> attackByPosition()
+        STRATEGY_RECOMMENDATION -> attackByRecommendation()
+    }
+    writeMemory(storageKey, currentStrategy)
+    writeMemory(battleCooldownKey, (System.currentTimeMillis() / 60_000).toString())
+    return enterMainScreen()
 }
 
 /**
