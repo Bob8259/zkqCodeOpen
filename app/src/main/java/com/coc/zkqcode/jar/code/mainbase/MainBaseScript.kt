@@ -6,6 +6,7 @@ import com.coc.zkqcode.jar.code.mainbase.attack.adjustBaseAndReinforcements
 import com.coc.zkqcode.jar.code.mainbase.attack.mainBaseAttack
 import com.coc.zkqcode.jar.code.mainbase.attack.mainBaseRemainingAttack
 import com.coc.zkqcode.jar.code.mainbase.attack.mainBaseTrainTroops
+import com.coc.zkqcode.jar.code.mainbase.attack.stopAllBattles
 import com.coc.zkqcode.jar.code.mainbase.attack.playTournament
 import com.coc.zkqcode.jar.code.mainbase.clan.clanLeague
 import com.coc.zkqcode.jar.code.universal.clangame.clanGame
@@ -34,6 +35,7 @@ import com.coc.zkqcode.jar.code.universal.clangame.collectClanGameReward
 import com.coc.zkqcode.jar.code.universal.smalltools.lifecycle.enterMainBase
 
 suspend fun playMainBase(): Boolean {
+    stopAllBattles = false
     if (!enterMainBase()) return false
     if (!checkItemsToBePlaced()) return false
     if (!mainBaseCheckTutorials()) return false

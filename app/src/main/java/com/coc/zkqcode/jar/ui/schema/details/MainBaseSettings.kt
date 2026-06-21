@@ -20,6 +20,15 @@ object MainBaseSettings {
     val STOP_BATTLE_AFTER_FULL_RESOURCES = SettingDef(
         "stop_battle_after_full_resources", "资源满后停止对战", "Stop if resources full", 1, "MAIN_BASE_SETTINGS"
     )
+    val STOP_BATTLE_WHEN_GOLD_FULL = SettingDef(
+        "stop_battle_when_gold_full", "金币满", "Gold Full", 1, "MAIN_BASE_SETTINGS"
+    )
+    val STOP_BATTLE_WHEN_ELIXIR_FULL = SettingDef(
+        "stop_battle_when_elixir_full", "圣水满", "Elixir Full", 1, "MAIN_BASE_SETTINGS"
+    )
+    val STOP_BATTLE_WHEN_DARK_ELIXIR_FULL = SettingDef(
+        "stop_battle_when_dark_elixir_full", "黑油满", "Dark Elixir Full", 1, "MAIN_BASE_SETTINGS"
+    )
     val MANUAL_TRAINING = SettingDef("manual_training", "手动配兵", "Manual Training", 0, "MAIN_BASE_SETTINGS")
     val TACTICS_MODE = SettingDef("tactics_mode", "战术设置", "Tactics Mode", "0", "MAIN_BASE_SETTINGS")
     val DONATION_SETTING = SettingDef("donation_setting", "自动捐兵", "Auto Donation", 1, "MAIN_BASE_SETTINGS")
@@ -179,6 +188,9 @@ object MainBaseSettings {
         DARK_ELIXIR_REQUIREMENT,
         DYNAMIC_ADJUSTMENT,
         STOP_BATTLE_AFTER_FULL_RESOURCES,
+        STOP_BATTLE_WHEN_GOLD_FULL,
+        STOP_BATTLE_WHEN_ELIXIR_FULL,
+        STOP_BATTLE_WHEN_DARK_ELIXIR_FULL,
         MANUAL_TRAINING,
         TACTICS_MODE,
         DONATION_SETTING,

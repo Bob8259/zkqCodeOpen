@@ -34,6 +34,11 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.ByteArrayOutputStream
 import java.util.concurrent.TimeUnit
 
+// Flag set when a permanent stop condition (resources full / no stars) is met.
+// Consumed by mainBaseRemainingAttack() to break the remaining battles loop.
+@Volatile
+var stopAllBattles = false
+
 // Timeout constants
 private const val SEARCH_TIMEOUT_MS = 8 * 60 * 1000L
 private const val TUTORIAL_TIMEOUT_MS = 3 * 60 * 1000L
@@ -85,32 +90,42 @@ suspend fun searchOpponentsAndDeployTroops(): Boolean {
             }
         }
     }
-    val goldPercentage = findMultiColors(schema = MyColors.GoldColor)
-    if (goldPercentage != null && goldPercentage.x < GOLD_FULL_X_THRESHOLD) {
-        targetGold = 0
-    }
-    val elixirPercentage = findMultiColors(schema = MyColors.ElixirColor)
-    if (elixirPercentage != null && elixirPercentage.x < ELIXIR_FULL_X_THRESHOLD) {
-        targetElixir = 0
-    }
-    val darkElixirPercentage = findMultiColors(schema = MyColors.DarkElixirColor)
-    if (darkElixirPercentage != null && darkElixirPercentage.x < DARK_ELIXIR_FULL_X_THRESHOLD) {
-        targetDarkElixir = 0
-    }
-    // Combine resource-full status into a single message
+    val acceptedTaskBase = readClanGameAcceptedTaskBase()
+    val hasMainWorldTask = acceptedTaskBase == CLAN_GAME_TASK_BASE_MAIN_WORLD
+    val stopResourcesEnabled = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.STOP_BATTLE_AFTER_FULL_RESOURCES.key) && !hasMainWorldTask
+    // Read per-resource stop condition configs; only detect resources the user has selected
+    val checkGoldFull = stopResourcesEnabled && getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.STOP_BATTLE_WHEN_GOLD_FULL.key)
+    val checkElixirFull = stopResourcesEnabled && getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.STOP_BATTLE_WHEN_ELIXIR_FULL.key)
+    val checkDarkElixirFull = stopResourcesEnabled && getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.STOP_BATTLE_WHEN_DARK_ELIXIR_FULL.key)
+    val anyResourceChecked = checkGoldFull || checkElixirFull || checkDarkElixirFull
+    // Only detect fullness for resources the user configured to check
     val fullResources = mutableListOf<String>()
-    if (targetGold == 0) fullResources.add("金币")
-    if (targetElixir == 0) fullResources.add("圣水")
-    if (targetDarkElixir == 0) fullResources.add("黑油")
+    if (checkGoldFull) {
+        val goldPercentage = findMultiColors(schema = MyColors.GoldColor)
+        if (goldPercentage != null && goldPercentage.x < GOLD_FULL_X_THRESHOLD) {
+            targetGold = 0; fullResources.add("金币")
+        }
+    }
+    if (checkElixirFull) {
+        val elixirPercentage = findMultiColors(schema = MyColors.ElixirColor)
+        if (elixirPercentage != null && elixirPercentage.x < ELIXIR_FULL_X_THRESHOLD) {
+            targetElixir = 0; fullResources.add("圣水")
+        }
+    }
+    if (checkDarkElixirFull) {
+        val darkElixirPercentage = findMultiColors(schema = MyColors.DarkElixirColor)
+        if (darkElixirPercentage != null && darkElixirPercentage.x < DARK_ELIXIR_FULL_X_THRESHOLD) {
+            targetDarkElixir = 0; fullResources.add("黑油")
+        }
+    }
     if (fullResources.isNotEmpty()) {
         accountMessage("${fullResources.joinToString("、")}已满")
     }
-    val acceptedTaskBase = readClanGameAcceptedTaskBase()
-    val hasMainWorldTask = acceptedTaskBase == CLAN_GAME_TASK_BASE_MAIN_WORLD
-    // Evaluate each stop condition independently
-    val stopResourcesEnabled = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.STOP_BATTLE_AFTER_FULL_RESOURCES.key) && !hasMainWorldTask
     val stopNoStarEnabled = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.STOP_BATTLE_WHEN_NO_STAR.key) && !hasMainWorldTask
-    val shouldStopResources = stopResourcesEnabled && targetGold == 0 && targetElixir == 0 && targetDarkElixir == 0
+    val shouldStopResources = stopResourcesEnabled && anyResourceChecked &&
+        (!checkGoldFull || targetGold == 0) &&
+        (!checkElixirFull || targetElixir == 0) &&
+        (!checkDarkElixirFull || targetDarkElixir == 0)
     var shouldStopNoStars = false
     if (stopNoStarEnabled) {
         val starsAvailable = findMultiColors(schema = MyColors.MainBaseStarsAvailable)
@@ -125,9 +140,16 @@ suspend fun searchOpponentsAndDeployTroops(): Boolean {
     }
     if (finalStop) {
         val reasons = mutableListOf<String>()
-        if (shouldStopResources) reasons.add("资源已满")
+        if (shouldStopResources) {
+            if (fullResources.isNotEmpty()) {
+                reasons.add("${fullResources.joinToString("、")}已满")
+            } else {
+                reasons.add("资源已满")
+            }
+        }
         if (shouldStopNoStars) reasons.add("无胜利之星")
         accountMessage("${reasons.joinToString("，")}，停止对战")
+        stopAllBattles = true
         return false
     }
     var searchTimes = 0

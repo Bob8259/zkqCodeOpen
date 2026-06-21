@@ -29,6 +29,10 @@ suspend fun mainBaseRemainingAttack(): Boolean {
     val shouldCheckClanGameTask = battleTimesSetting == Schema.MAIN_BASE_SETTINGS.BATTLE_TIMES_WITH_TASKS && totalBattleTimes > normalBattleTimes
     val remainingTimes = (totalBattleTimes - 1).coerceAtLeast(0)
     repeat(remainingTimes) { index ->
+        if (stopAllBattles) {
+            stopAllBattles = false
+            return true
+        }
         val completedBattleTimes = index + 2
         if (shouldCheckClanGameTask && completedBattleTimes >= normalBattleTimes && !hasAcceptedClanGameTask(BaseType.Main)) return true
         if (!mainBaseAttack()) return false

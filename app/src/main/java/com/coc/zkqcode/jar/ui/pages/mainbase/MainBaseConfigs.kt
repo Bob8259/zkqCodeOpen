@@ -105,6 +105,17 @@ fun LazyListScope.mainBaseConfig(
                     key = "${MAIN_BASE_SETTINGS.DYNAMIC_ADJUSTMENT.key}_c$index", explain = Strings.dynamicAdjustExplain
                 )
                 SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.STOP_BATTLE_AFTER_FULL_RESOURCES.key}_c$index")
+            }
+            AnimatedVisibility(
+                visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.STOP_BATTLE_AFTER_FULL_RESOURCES.key}_c$index"]?.value == "1"
+            ) {
+                FlowRow {
+                    SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.STOP_BATTLE_WHEN_GOLD_FULL.key}_c$index")
+                    SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.STOP_BATTLE_WHEN_ELIXIR_FULL.key}_c$index")
+                    SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.STOP_BATTLE_WHEN_DARK_ELIXIR_FULL.key}_c$index")
+                }
+            }
+            FlowRow {
                 SettingSwitchIcon(
                     key = "${MAIN_BASE_SETTINGS.STOP_BATTLE_WHEN_NO_STAR.key}_c$index",
                     explain = Strings.stopBattleWhenNoStarExplain

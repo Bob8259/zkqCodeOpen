@@ -68,17 +68,30 @@ suspend fun builderBaseAttack(): Boolean {
 
     // 4. Per-battle loop: recalculate resources and re-evaluate stop conditions before each battle
     repeat(battleTimes) { index ->
+        // ---- Read per-resource stop condition configs first ----
+        val stopResourcesEnabled = stopIfFull && !hasBuilderBaseTask
+        val checkGoldFull = stopResourcesEnabled && getBooleanConfigRuntime(Schema.BUILDER_BASE_SETTINGS.BUILDER_BASE_STOP_WHEN_GOLD_FULL.key)
+        val checkElixirFull = stopResourcesEnabled && getBooleanConfigRuntime(Schema.BUILDER_BASE_SETTINGS.BUILDER_BASE_STOP_WHEN_ELIXIR_FULL.key)
+        val anyResourceChecked = checkGoldFull || checkElixirFull
+
         // ---- Recalculate resource percentages every battle ----
         val resourcePercentage = calculateResourcesPercentage(BaseType.Builder)
-        accountMessage("金币百分比: ${resourcePercentage.gold}%, 圣水百分比: ${resourcePercentage.elixir}%")
+        // Only log percentages for resources the user has selected
+        val percentageParts = mutableListOf<String>()
+        if (checkGoldFull) percentageParts.add("金币: ${resourcePercentage.gold}%")
+        if (checkElixirFull) percentageParts.add("圣水: ${resourcePercentage.elixir}%")
+        if (percentageParts.isNotEmpty()) {
+            accountMessage(percentageParts.joinToString("，"))
+        }
         val isGoldFull = resourcePercentage.gold >= 96
         val isExileFull = resourcePercentage.elixir >= 96
 
         // ---- Evaluate stop conditions every battle ----
-        val stopResourcesEnabled = stopIfFull && !hasBuilderBaseTask
         val stopNoStarEnabled = stopNoStarConfig && !hasBuilderBaseTask
 
-        val shouldStopResources = stopResourcesEnabled && isGoldFull && isExileFull
+        val shouldStopResources = stopResourcesEnabled && anyResourceChecked &&
+            (!checkGoldFull || isGoldFull) &&
+            (!checkElixirFull || isExileFull)
         val shouldStopNoStars = if (stopNoStarEnabled) {
             findMultiColors(schema = MyColors.BuilderBaseStarsAvailable) == null
         } else false
@@ -92,10 +105,19 @@ suspend fun builderBaseAttack(): Boolean {
         }
         if (finalStop) {
             val reasons = mutableListOf<String>()
-            if (shouldStopResources) reasons.add("资源已满")
+            if (shouldStopResources) {
+                val fullResParts = mutableListOf<String>()
+                if (checkGoldFull && isGoldFull) fullResParts.add("金币")
+                if (checkElixirFull && isExileFull) fullResParts.add("圣水")
+                if (fullResParts.isNotEmpty()) {
+                    reasons.add("${fullResParts.joinToString("、")}已满")
+                } else {
+                    reasons.add("资源已满")
+                }
+            }
             if (shouldStopNoStars) reasons.add("无胜利之星")
             accountMessage("${reasons.joinToString("，")}，停止对战")
-            return@repeat // break out of repeat loop
+            return enterMainScreen()
         }
 
         // ---- Determine attack strategy based on current resource state ----
