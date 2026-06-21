@@ -95,13 +95,14 @@ suspend fun detectBuildingList(baseType: BaseType, excludeNewBuildings: Boolean 
         } else null
     }.minOrNull()
 
-    // Filter, clean, and return building names with positions
-    // Exclude buildings with insufficient resources: if more than 10 pixels of FF887F (RGB, the red colour
-    // used by the game for unaffordable upgrade costs) are found to the right of the building name, skip it.
+    // Filter, clean, and return building names with positions.
+    // Resource affordability is tracked as a flag instead of dropping buildings immediately,
+    // so that two lists can be produced: a pre-resource-filter list (for scroll-exit checking)
+    // and a resource-filtered list (for upgrade decisions).
     // Map results to DetectedBuilding with flags indicating if it was marked as "New" or "GearUp"
-    data class BuildingWithFlags(val building: DetectedBuilding, val isNew: Boolean, val isGearUp: Boolean)
+    data class BuildingWithFlags(val building: DetectedBuilding, val isNew: Boolean, val isGearUp: Boolean, val affordable: Boolean)
 
-    val allBuildings = processedResults.mapNotNull { item ->
+    val allBuildingsWithFlags = processedResults.mapNotNull { item ->
         val pos = item.position ?: return@mapNotNull null
         if (!chineseRegex.containsMatchIn(item.text)) return@mapNotNull null
 
@@ -110,26 +111,37 @@ suspend fun detectBuildingList(baseType: BaseType, excludeNewBuildings: Boolean 
         val y = pos.top + startY
         if (upgradeY != null && y <= upgradeY) return@mapNotNull null
 
+        // Check for insufficient resources: if more than 10 pixels of FF887F (RGB, the red colour
+        // used by the game for unaffordable upgrade costs) are found to the right of the building name,
+        // the building is marked as unaffordable but still kept in the pre-resource-filter list.
         val count = countPixelsInArea(screenBuffer, x + 200, y - 20, x + 430, y + 10, 0xFF887F)
-        if (count > 10) return@mapNotNull null
+        val affordable = count <= 10
 
         val cleanedName = cleanBuildingName(item.text, candidateBuildings)
         val isNew = cleanedName.startsWith("新")
         val isGearUp = cleanedName.startsWith("改装")
 
         if (isNew || isGearUp || cleanedName in candidateBuildings) {
-            BuildingWithFlags(DetectedBuilding(name = cleanedName, x = x, y = y), isNew, isGearUp)
+            BuildingWithFlags(DetectedBuilding(name = cleanedName, x = x, y = y), isNew, isGearUp, affordable)
         } else {
             null
         }
     }
+
+    // Pre-resource-filter list: all detected buildings regardless of affordability.
+    // Used by iterateBuilderBaseBuildingUpgradeList for scroll-exit checking so that
+    // unaffordable-only screens are not treated as an empty (stopped) list.
+    val allDetectedBuildings = allBuildingsWithFlags.map { it.building }
+
+    // Resource-filtered list: only affordable buildings, used for upgrade decisions.
+    val allBuildings = allBuildingsWithFlags.filter { it.affordable }
 
     // Filter based on excludeGearUpBuildings parameter
     // If excludeGearUpBuildings is false, return only the first gear-up building
     if (!excludeGearUpBuildings) {
         val gearUpBuilding = allBuildings.firstOrNull { it.isGearUp }
         if (gearUpBuilding != null) {
-            return BuildingDetectionResult(listOf(gearUpBuilding.building))
+            return BuildingDetectionResult(listOf(gearUpBuilding.building), allDetectedBuildings)
         }
     }
 
@@ -143,7 +155,7 @@ suspend fun detectBuildingList(baseType: BaseType, excludeNewBuildings: Boolean 
     // When excludeNewBuildings is true, filter out new buildings and return only existing ones
     if (excludeNewBuildings) {
         val existingBuildings = filteredBuildings.filter { !it.isNew }.map { it.building }
-        return BuildingDetectionResult(existingBuildings)
+        return BuildingDetectionResult(existingBuildings, allDetectedBuildings)
     }
 
     // Filter to get only the buildings marked as "New"
@@ -151,10 +163,10 @@ suspend fun detectBuildingList(baseType: BaseType, excludeNewBuildings: Boolean 
 
     // If any "New" building is detected, return only those
     if (newBuildings.isNotEmpty()) {
-        return BuildingDetectionResult(newBuildings)
+        return BuildingDetectionResult(newBuildings, allDetectedBuildings)
     }
 
-    return BuildingDetectionResult(filteredBuildings.map { it.building })
+    return BuildingDetectionResult(filteredBuildings.map { it.building }, allDetectedBuildings)
 }
 
 /**
@@ -251,7 +263,7 @@ private fun maskBrightGreenPixelsToBlack(src: Bitmap): Bitmap {
 suspend fun iterateBuilderBaseBuildingUpgradeList(
     baseType: BaseType, excludeNewBuildings: Boolean = false, excludeGearUpBuildings: Boolean = true, forceReverse: Boolean? = null, onDetect: suspend (BuildingDetectionResult) -> Boolean
 ) {
-    var previousBuildingNames: List<String>? = null
+    var previousExitCheckBuildingNames: List<String>? = null
     // forceReverse overrides the config-based decision (used by wall upgrades:
     // gold walls always reverse, elixir walls never reverse).
     val isReverseUpgrade = forceReverse ?: getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.REVERSE_UPGRADE.key)
@@ -262,8 +274,13 @@ suspend fun iterateBuilderBaseBuildingUpgradeList(
         val result = detectBuildingList(baseType, excludeNewBuildings, excludeGearUpBuildings)
         if (onDetect(result)) return
 
-        val currentBuildingNames = result.buildings.map { it.name }.sorted()
-        if (previousBuildingNames != null && currentBuildingNames == previousBuildingNames) {
+        // Use the pre-resource-filter building list for scroll-exit checking.
+        // result.buildings (resource-filtered) can be empty when all visible buildings are
+        // unaffordable, which would falsely signal that the list stopped scrolling.
+        // result.allDetectedBuildings reflects what is actually on screen regardless of affordability.
+        val currentExitCheckBuildingNames = result.allDetectedBuildings.map { it.name }.sorted()
+        showDebugInfo("Exit check: affordable=${result.buildings.map { it.name }.sorted()}, all=$currentExitCheckBuildingNames")
+        if (previousExitCheckBuildingNames != null && currentExitCheckBuildingNames == previousExitCheckBuildingNames) {
             repeat(2) {
                 if (isReverseUpgrade) {
                     TouchActions.swipe(666, 500, 666, 370, delayTime = 200, delayAfter = 400)
@@ -275,7 +292,7 @@ suspend fun iterateBuilderBaseBuildingUpgradeList(
             }
             break@loop
         }
-        previousBuildingNames = currentBuildingNames
+        previousExitCheckBuildingNames = currentExitCheckBuildingNames
         if (isReverseUpgrade) {
             TouchActions.swipe(666, 170, 666, 550, delayTime = 200, delayAfter = 400)
         } else {
