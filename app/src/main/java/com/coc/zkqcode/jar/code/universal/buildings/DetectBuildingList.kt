@@ -266,9 +266,9 @@ suspend fun iterateBuilderBaseBuildingUpgradeList(
         if (previousBuildingNames != null && currentBuildingNames == previousBuildingNames) {
             repeat(2) {
                 if (isReverseUpgrade) {
-                    TouchActions.swipe(666, 500, 666, 370, delayTime = 200, delayAfter = 200)
+                    TouchActions.swipe(666, 500, 666, 370, delayTime = 200, delayAfter = 400)
                 } else {
-                    TouchActions.swipe(666, 170, 666, 300, delayTime = 200, delayAfter = 200)
+                    TouchActions.swipe(666, 170, 666, 300, delayTime = 200, delayAfter = 400)
                 }
                 val extraResult = detectBuildingList(baseType, excludeNewBuildings, excludeGearUpBuildings)
                 if (onDetect(extraResult)) return
@@ -277,9 +277,9 @@ suspend fun iterateBuilderBaseBuildingUpgradeList(
         }
         previousBuildingNames = currentBuildingNames
         if (isReverseUpgrade) {
-            TouchActions.swipe(666, 170, 666, 550, delayTime = 200, delayAfter = 200)
+            TouchActions.swipe(666, 170, 666, 550, delayTime = 200, delayAfter = 400)
         } else {
-            TouchActions.swipe(666, 500, 666, 120, delayTime = 200, delayAfter = 200)
+            TouchActions.swipe(666, 500, 666, 120, delayTime = 200, delayAfter = 400)
         }
 
     }
