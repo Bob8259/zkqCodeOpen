@@ -113,34 +113,53 @@ private suspend fun findAllResearchItems() {
             // Detect level from pre-parsed game JSON data (more reliable than color badge matching)
             val detectedLevel = InGameVars.researchItemLevels[troopName]
 
-            if (detectedLevel == null) {
-                accountMessage("跳过 ${troopName}: 数据中无等级信息")
+            if (researchLevelOffset > 0) {
+                // When targeting a specific level offset, we need the current level to decide
+                if (detectedLevel == null) {
+                    accountMessage("跳过 ${troopName}: 数据中无等级信息")
+                    seenNames.add(troopName)
+                    continue
+                }
+
+                val maxLevel = MainBaseResearchMaxLevel.getMaxLevel(troopName)
+                    ?: logAndRestart("未找到 $troopName 的最大等级")
+                val targetLevel = maxLevel - researchLevelOffset
+
+                if (detectedLevel >= targetLevel) {
+                    accountMessage("跳过 ${troopName}: 当前等级$detectedLevel >= 目标等级$targetLevel")
+                    seenNames.add(troopName)
+                    continue
+                }
+
                 seenNames.add(troopName)
-                continue
-            }
-
-            val maxLevel = MainBaseResearchMaxLevel.getMaxLevel(troopName)
-                ?: logAndRestart("未找到 $troopName 的最大等级")
-            val targetLevel = maxLevel - researchLevelOffset
-
-            if (detectedLevel >= targetLevel) {
-                accountMessage("跳过 ${troopName}: 当前等级$detectedLevel >= 目标等级$targetLevel")
+                upgradeableItems.add(UpgradableItem(
+                    schema = schema,
+                    troopName = troopName,
+                    priority = schemaPriorityMap[schema] ?: Int.MAX_VALUE,
+                    x = result.x,
+                    y = result.y,
+                    detectedLevel = detectedLevel,
+                    targetLevel = targetLevel,
+                    screenIndex = screenIdx
+                ))
+                accountMessage("发现可升级: ${troopName}, 等级$detectedLevel, 页$screenIdx")
+            } else {
+                // Max level target: no level detection needed, always upgradeable
+                val maxLevel = MainBaseResearchMaxLevel.getMaxLevel(troopName)
+                    ?: logAndRestart("未找到 $troopName 的最大等级")
                 seenNames.add(troopName)
-                continue
+                upgradeableItems.add(UpgradableItem(
+                    schema = schema,
+                    troopName = troopName,
+                    priority = schemaPriorityMap[schema] ?: Int.MAX_VALUE,
+                    x = result.x,
+                    y = result.y,
+                    detectedLevel = 0,
+                    targetLevel = maxLevel,
+                    screenIndex = screenIdx
+                ))
+                accountMessage("发现可升级: ${troopName}, 页$screenIdx")
             }
-
-            seenNames.add(troopName)
-            upgradeableItems.add(UpgradableItem(
-                schema = schema,
-                troopName = troopName,
-                priority = schemaPriorityMap[schema] ?: Int.MAX_VALUE,
-                x = result.x,
-                y = result.y,
-                detectedLevel = detectedLevel,
-                targetLevel = targetLevel,
-                screenIndex = screenIdx
-            ))
-            accountMessage("发现可升级: ${troopName}, 等级$detectedLevel, 页$screenIdx")
         }
 
         // Swipe to next page (except after the last page)

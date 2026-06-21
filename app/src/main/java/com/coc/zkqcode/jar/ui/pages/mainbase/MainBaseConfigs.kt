@@ -52,6 +52,7 @@ fun LazyListScope.mainBaseConfig(
                         GlobalVars.configStates["${MAIN_BASE_SETTINGS.SAVE_WORKER_BUILD_AFTER_WALL_FULL.key}_c$index"]?.value = "0"
                         GlobalVars.configStates["${BUILDER_BASE_SETTINGS.BUILDER_BASE_SAVE_WORKER_BUILD_AFTER_WALL_FULL.key}_c$index"]?.value = "0"
                         GlobalVars.configStates["${MAIN_BASE_SETTINGS.SPEED_SIX_BUILDER.key}_c$index"]?.value = "0"
+                        GlobalVars.configStates["${MAIN_BASE_SETTINGS.RESEARCH_LEVEL.key}_c$index"]?.value = "0"
                     }
                 })
             AnimatedVisibility(
@@ -412,7 +413,12 @@ fun LazyListScope.mainBaseConfig(
                         )
                         SettingDropdown(
                             key = "${MAIN_BASE_SETTINGS.RESEARCH_LEVEL.key}_c${index}",
-                            options = listOf(Strings.maxLevel, Strings.maxLevelMinus1, Strings.maxLevelMinus2)
+                            options = listOf(Strings.maxLevel, Strings.maxLevelMinus1, Strings.maxLevelMinus2),
+                            afterChange = { selectedIdx ->
+                                if (selectedIdx > 0) {
+                                    GlobalVars.configStates["${MAIN_BASE_SETTINGS.SMART_DECISION.key}_c$index"]?.value = "1"
+                                }
+                            }
                         )
                     }
                 }
