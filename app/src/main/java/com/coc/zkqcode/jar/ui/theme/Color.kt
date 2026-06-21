@@ -33,4 +33,7 @@ object AppColors {
 
     // Inactive nav tab text colour (matches HTML --nav-inactive)
     val NavInactive = Color(0xFF718096)
+
+    // Epic equipment toggle button colour (pink)
+    val Epic = Color(0xFFB133CC)
 }

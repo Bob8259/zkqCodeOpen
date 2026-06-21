@@ -420,10 +420,11 @@ private val DisabledSettingToggleTextColor = AppColors.TextPrimary
 
 // Single toggle text button for research/building item lists
 @Composable
-fun SettingToggleButton(key: String) {
+fun SettingToggleButton(key: String, isEpic: Boolean = false) {
     val state = rememberConfigState(key)
     val label = Schema.getDisplayName(key)
     val isEnabled = state.value == "1"
+    val buttonColor = if (isEpic) AppColors.Epic else ToggleButtonBlue
 
     if (isEnabled) {
         Button(
@@ -433,7 +434,7 @@ fun SettingToggleButton(key: String) {
             }, modifier = Modifier
                 .padding(2.dp)
                 .height(32.dp), shape = RoundedCornerShape(8.dp), contentPadding = PaddingValues(horizontal = 10.dp, vertical = 0.dp), colors = ButtonDefaults.buttonColors(
-                containerColor = ToggleButtonBlue, contentColor = EnabledSettingToggleTextColor, disabledContentColor = EnabledSettingToggleTextColor
+                containerColor = buttonColor, contentColor = EnabledSettingToggleTextColor, disabledContentColor = EnabledSettingToggleTextColor
             )
         ) {
             Text(label, color = EnabledSettingToggleTextColor, style = MaterialTheme.typography.labelMedium)

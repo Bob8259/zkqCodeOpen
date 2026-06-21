@@ -19,6 +19,10 @@ import com.coc.zkqcode.jar.code.universal.smalltools.lifecycle.killGame
 import com.coc.zkqcode.jar.code.universal.smalltools.lifecycle.runGame
 import com.coc.zkqcode.jar.ui.schema.Schema
 
+/** Tracks whether the most recent mainBaseAttack call actually started a battle.
+ *  Used by mainBaseRemainingAttack to stop the battle loop when stop conditions have been met. */
+private var lastBattleStarted = true
+
 suspend fun mainBaseRemainingAttack(): Boolean {
     val battleTimesSetting = if (readClanGameAcceptedTaskBase() == CLAN_GAME_TASK_BASE_MAIN_WORLD) {
         Schema.MAIN_BASE_SETTINGS.BATTLE_TIMES_WITH_TASKS
@@ -30,6 +34,8 @@ suspend fun mainBaseRemainingAttack(): Boolean {
     val shouldCheckClanGameTask = battleTimesSetting == Schema.MAIN_BASE_SETTINGS.BATTLE_TIMES_WITH_TASKS && totalBattleTimes > normalBattleTimes
     val remainingTimes = (totalBattleTimes - 1).coerceAtLeast(0)
     repeat(remainingTimes) { index ->
+        // Stop immediately if a previous battle was skipped due to stop conditions
+        if (!lastBattleStarted) return true
         val completedBattleTimes = index + 2
         if (shouldCheckClanGameTask && completedBattleTimes >= normalBattleTimes && !hasAcceptedClanGameTask(BaseType.Main)) return true
         if (!mainBaseAttack(battleNumber = completedBattleTimes, battleTimes = totalBattleTimes)) return false
@@ -43,6 +49,7 @@ suspend fun mainBaseAttack(battleNumber: Int = 1, battleTimes: Int? = null): Boo
     // Skip post-battle logic if no battle was started (e.g. cooldown, timeout, insufficient gold)
     if (!enterMainBase()) return false
     val battleStarted = searchOpponentsAndDeployTroops(battleNumber, resolvedBattleTimes)
+    lastBattleStarted = battleStarted
     if (!battleStarted) return enterMainScreen()
     if (getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.SWITCH_ACCOUNT_AFTER_BATTLE.key)) return false
     val maxDurationMs = 3 * 60 * 1000L // Maximum battle wait time: 3 minutes
