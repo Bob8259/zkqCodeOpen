@@ -287,6 +287,7 @@ object Strings {
     val continuousRemoveExplain get() = if (LanguageManager.isChinese) "启用后，辅助将不再记录移除时间，每次运行都会尝试移除障碍物，实现连续移除。" else "Remove obstacles every run without tracking time."
     val removeObstaclesEnhanceExplain get() = if (LanguageManager.isChinese) "启用后，移除障碍物时将增加随机点击操作，以提高移除稀有障碍物的概率。\n建议在批量挂机时开启，可有效防止地图建造空间不足。" else "Add random clicks to increase rare obstacle chance. Recommended for batch AFK to prevent space issues."
     val noBuilderBaseExplain get() = if (LanguageManager.isChinese) "启用后，辅助将不再进入夜世界，夜世界的所有相关设置均会失效。" else "Disables Builder Base entirely. All related settings will be ignored."
+    val noMainBaseExplain get() = if (LanguageManager.isChinese) "启用后，辅助将不再进入主世界，主世界的所有相关设置均会失效。" else "Disables Main Base entirely. All related settings will be ignored."
     val builderBaseFarmingExplain get() = if (LanguageManager.isChinese) "辅助将自动完成兵种配置，暂不支持手动配兵。若未启用“上分模式”或“刷圣水车”，辅助将根据当前账号的资源状况智能选择对战模式。" else "Auto-configure troops (manual not supported). If no specific mode set, chooses based on resources."
     val trophyPushingExplain get() = if (LanguageManager.isChinese) "启用后，辅助将使用暗夜女巫进行上分，圣水获取效率会显著下降，请谨慎启用。此选项不可与“刷圣水车”同时开启。" else "Uses Night Witch for trophy pushing. Elixir efficiency will drop. Cannot be used with Elixir Cart mode."
     val elixirCartExplain get() = if (LanguageManager.isChinese) "启用后，夜世界对战中部署兵种后将立即投降，因此几乎无法获取金币，请谨慎启用。此选项不可与“上分模式”同时开启。" else "Deploy then surrender for elixir. Gold gain will be near zero. Cannot be used with Trophy Pushing."
@@ -351,6 +352,7 @@ object Strings {
 
     // WebDAV Sync
     val webdavSectionTitle get() = if (LanguageManager.isChinese) "WebDAV 同步" else "WebDAV Sync"
+    val webdavSectionDesc get() = if (LanguageManager.isChinese) "此功能可以将辅助配置与国际服存档上传到自己的网盘进行备份与恢复" else "Upload auxiliary configs and global saves to your own cloud drive for backup and restore"
     val webdavUploadConfig get() = if (LanguageManager.isChinese) "上传配置" else "Upload Config"
     val webdavDownloadConfig get() = if (LanguageManager.isChinese) "下载配置" else "Download Config"
     val webdavUploadGlobalSave get() = if (LanguageManager.isChinese) "上传国际服存档" else "Upload Global Save"

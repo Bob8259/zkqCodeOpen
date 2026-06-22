@@ -34,9 +34,13 @@ import com.coc.zkqcode.jar.code.mainbase.research.mainBaseResearch
 import com.coc.zkqcode.jar.code.universal.buildings.BaseType
 import com.coc.zkqcode.jar.code.universal.buildings.upgradeWallsThenBuildings
 import com.coc.zkqcode.jar.code.universal.clangame.collectClanGameReward
+import com.coc.zkqcode.jar.code.universal.smalltools.data.getBooleanConfigRuntime
 import com.coc.zkqcode.jar.code.universal.smalltools.lifecycle.enterMainBase
+import com.coc.zkqcode.jar.ui.schema.Schema
 
 suspend fun playMainBase(): Boolean {
+    val noMainBase = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.NO_MAIN_BASE.key)
+    if (noMainBase) return true
     if (!enterMainBase()) return false
     if (!mainBaseCollectResources()) return false
     if (!checkItemsToBePlaced()) return false

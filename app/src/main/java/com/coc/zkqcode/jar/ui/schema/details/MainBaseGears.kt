@@ -49,7 +49,7 @@ object MainBaseGears {
     val DRAGON_DUKE_FIRE_RING = SettingDef("dragon_duke_fire_ring", "烈焰之心", "Fire Heart", 1, "MAIN_BASE_GEARS")
     val DRAGON_DUKE_SCALE_ARMOR = SettingDef("dragon_duke_scale_armor", "爆震器", "Stun Blaster", 1, "MAIN_BASE_GEARS")
     val DRAGON_DUKE_COMBUSTOR = SettingDef("dragon_duke_combustor", "助燃器", "Flame Blower", 1, "MAIN_BASE_GEARS")
-    val DRAGON_DUKE_LIGHTNING_FANG = SettingDef("dragon_duke_lightning_fang", "雷电獠牙", "Electro Fangs", 1, "MAIN_BASE_GEARS", isEpic = true)
+    val DRAGON_DUKE_LIGHTNING_FANG = SettingDef("dragon_duke_lightning_fang", "雷电獠牙", "Electro Fangs", 1, "MAIN_BASE_GEARS")
     val DRAGON_DUKE_ROCKET_PACK = SettingDef("dragon_duke_rocket_pack", "火箭背包", "Rocket Backpack", 1, "MAIN_BASE_GEARS", isEpic = true)
 
     // Minion Prince gears

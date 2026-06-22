@@ -111,6 +111,12 @@ fun LazyListScope.specialSettings() {
             Row(modifier = Modifier.padding(bottom = 4.dp)) {
                 Text(text = Strings.webdavSectionTitle, style = MaterialTheme.typography.labelMedium, color = AppColors.TextPrimary)
             }
+            Text(
+                text = Strings.webdavSectionDesc,
+                style = MaterialTheme.typography.bodySmall,
+                color = AppColors.TextPrimary.copy(alpha = 0.7f),
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
             val scope = rememberCoroutineScope()
             val context = LocalContext.current
             val sdPath = Environment.getExternalStorageDirectory().path

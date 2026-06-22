@@ -36,15 +36,34 @@ fun LazyListScope.mainBaseConfig(
     onNavigateResearchPriority: (Int) -> Unit = {},
     onNavigatePetPriority: (Int) -> Unit = {}
 ) {
+    // NO_MAIN_BASE toggle — shown before all sections
+    item {
+        SettingSection(visible = true) {
+            SettingSwitchIcon(
+                key = "${MAIN_BASE_SETTINGS.NO_MAIN_BASE.key}_c${index}",
+                explain = Strings.noMainBaseExplain,
+                afterChange = { checked ->
+                    if (checked) {
+                        GlobalVars.configStates["${BUILDER_BASE_SETTINGS.NO_BUILDER_BASE.key}_c$index"]?.value = "0"
+                    }
+                }
+            )
+        }
+    }
+
     // Banner — 通用设置
     item {
-        SectionBanner(
-            title = Strings.generalSettings, isExpanded = isGeneralExpanded, onClick = onToggleGeneralExpanded
-        )
+        val noMainBase = GlobalVars.configStates["${MAIN_BASE_SETTINGS.NO_MAIN_BASE.key}_c${index}"]?.value == "0"
+        if (noMainBase) {
+            SectionBanner(
+                title = Strings.generalSettings, isExpanded = isGeneralExpanded, onClick = onToggleGeneralExpanded
+            )
+        }
     }
 
     item {
-        SettingSection(visible = isGeneralExpanded) {
+        val noMainBase = GlobalVars.configStates["${MAIN_BASE_SETTINGS.NO_MAIN_BASE.key}_c${index}"]?.value == "0"
+        SettingSection(visible = isGeneralExpanded && noMainBase) {
             SettingInputRow(key = "${MAIN_BASE_SETTINGS.CONFIG_REMARK.key}_c$index")
             SettingSwitchIcon(
                 key = "${MAIN_BASE_SETTINGS.SMART_DECISION.key}_c$index", explain = Strings.smartDecisionExplain, afterChange = { checked ->
@@ -71,14 +90,18 @@ fun LazyListScope.mainBaseConfig(
 
     // Banner — 对战设置
     item {
-        SectionBanner(
-            title = Strings.battleSettingsMain, isExpanded = isExpanded, onClick = onToggleExpanded
-        )
+        val noMainBase = GlobalVars.configStates["${MAIN_BASE_SETTINGS.NO_MAIN_BASE.key}_c${index}"]?.value == "0"
+        if (noMainBase) {
+            SectionBanner(
+                title = Strings.battleSettingsMain, isExpanded = isExpanded, onClick = onToggleExpanded
+            )
+        }
     }
 
     // Attack & Resource requirements
     item {
-        SettingSection(visible = isExpanded) {
+        val noMainBase = GlobalVars.configStates["${MAIN_BASE_SETTINGS.NO_MAIN_BASE.key}_c${index}"]?.value == "0"
+        SettingSection(visible = isExpanded && noMainBase) {
             FlowRow {
                 SettingSwitchIcon(
                     key = "${MAIN_BASE_SETTINGS.AUTO_ATTACK.key}_c$index",
@@ -116,7 +139,8 @@ fun LazyListScope.mainBaseConfig(
 
     // Battle adjustments
     item {
-        SettingSection(visible = isExpanded) {
+        val noMainBase = GlobalVars.configStates["${MAIN_BASE_SETTINGS.NO_MAIN_BASE.key}_c${index}"]?.value == "0"
+        SettingSection(visible = isExpanded && noMainBase) {
             FlowRow {
                 SettingSwitchIcon(
                     key = "${MAIN_BASE_SETTINGS.DYNAMIC_ADJUSTMENT.key}_c$index", explain = Strings.dynamicAdjustExplain
@@ -132,7 +156,8 @@ fun LazyListScope.mainBaseConfig(
 
     // Battle behaviour options
     item {
-        SettingSection(visible = isExpanded) {
+        val noMainBase = GlobalVars.configStates["${MAIN_BASE_SETTINGS.NO_MAIN_BASE.key}_c${index}"]?.value == "0"
+        SettingSection(visible = isExpanded && noMainBase) {
             FlowRow {
                 SettingSwitchIcon(
                     key = "${MAIN_BASE_SETTINGS.WAIT_FOR_BATTLE.key}_c$index", explain = Strings.waitForBattleExplain
@@ -174,14 +199,18 @@ fun LazyListScope.mainBaseConfig(
 
     // Banner — 部落设置
     item {
-        SectionBanner(
-            title = Strings.clanSettings, isExpanded = isClanExpanded, onClick = onToggleClan
-        )
+        val noMainBase = GlobalVars.configStates["${MAIN_BASE_SETTINGS.NO_MAIN_BASE.key}_c${index}"]?.value == "0"
+        if (noMainBase) {
+            SectionBanner(
+                title = Strings.clanSettings, isExpanded = isClanExpanded, onClick = onToggleClan
+            )
+        }
     }
 
     // Clan settings content
     item {
-        SettingSection(visible = isClanExpanded) {
+        val noMainBase = GlobalVars.configStates["${MAIN_BASE_SETTINGS.NO_MAIN_BASE.key}_c${index}"]?.value == "0"
+        SettingSection(visible = isClanExpanded && noMainBase) {
             FlowRow {
                 SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.DONATION_SETTING.key}_c$index")
                 SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.REQUEST_REINFORCEMENT_SETTING.key}_c$index")
@@ -391,13 +420,17 @@ fun LazyListScope.mainBaseConfig(
 
     // Banner — 研究设置
     item {
-        SectionBanner(
-            title = Strings.researchSettings, isExpanded = isResearchExpanded, onClick = onToggleResearch
-        )
+        val noMainBase = GlobalVars.configStates["${MAIN_BASE_SETTINGS.NO_MAIN_BASE.key}_c${index}"]?.value == "0"
+        if (noMainBase) {
+            SectionBanner(
+                title = Strings.researchSettings, isExpanded = isResearchExpanded, onClick = onToggleResearch
+            )
+        }
     }
 
     item {
-        SettingSection(visible = isResearchExpanded) {
+        val noMainBase = GlobalVars.configStates["${MAIN_BASE_SETTINGS.NO_MAIN_BASE.key}_c${index}"]?.value == "0"
+        SettingSection(visible = isResearchExpanded && noMainBase) {
             Column {
                 SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.RESEARCH_SETTING.key}_c$index", afterChange = { checked ->
                     if (checked) {
@@ -428,13 +461,17 @@ fun LazyListScope.mainBaseConfig(
 
     // Banner — 建造设置（主世界）
     item {
-        SectionBanner(
-            title = Strings.buildSettingsMain, isExpanded = isBuildExpanded, onClick = onToggleBuild
-        )
+        val noMainBase = GlobalVars.configStates["${MAIN_BASE_SETTINGS.NO_MAIN_BASE.key}_c${index}"]?.value == "0"
+        if (noMainBase) {
+            SectionBanner(
+                title = Strings.buildSettingsMain, isExpanded = isBuildExpanded, onClick = onToggleBuild
+            )
+        }
     }
 
     item {
-        SettingSection(visible = isBuildExpanded) {
+        val noMainBase = GlobalVars.configStates["${MAIN_BASE_SETTINGS.NO_MAIN_BASE.key}_c${index}"]?.value == "0"
+        SettingSection(visible = isBuildExpanded && noMainBase) {
             FlowRow {
                 SettingSwitchIcon(
                     key = "${MAIN_BASE_SETTINGS.BUILD_SETTING.key}_c$index", explain = Strings.buildSettingExplain
@@ -481,14 +518,18 @@ fun LazyListScope.mainBaseConfig(
 
     // Banner — 战宠&其他设置
     item {
-        SectionBanner(
-            title = Strings.petAndOther, isExpanded = isPetExpanded, onClick = onTogglePet
-        )
+        val noMainBase = GlobalVars.configStates["${MAIN_BASE_SETTINGS.NO_MAIN_BASE.key}_c${index}"]?.value == "0"
+        if (noMainBase) {
+            SectionBanner(
+                title = Strings.petAndOther, isExpanded = isPetExpanded, onClick = onTogglePet
+            )
+        }
     }
 
     // Pet upgrades
     item {
-        SettingSection(visible = isPetExpanded) {
+        val noMainBase = GlobalVars.configStates["${MAIN_BASE_SETTINGS.NO_MAIN_BASE.key}_c${index}"]?.value == "0"
+        SettingSection(visible = isPetExpanded && noMainBase) {
 
             SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.UPGRADE_PETS.key}_c$index", afterChange = { checked ->
                 if (checked) {
@@ -535,7 +576,8 @@ fun LazyListScope.mainBaseConfig(
 
     // Helper settings
     item {
-        SettingSection(visible = isPetExpanded) {
+        val noMainBase = GlobalVars.configStates["${MAIN_BASE_SETTINGS.NO_MAIN_BASE.key}_c${index}"]?.value == "0"
+        SettingSection(visible = isPetExpanded && noMainBase) {
             FlowRow {
                 SettingSwitchIcon(
                     key = "${MAIN_BASE_SETTINGS.HELPER_SETTINGS.key}_c$index", explain = Strings.helperExplain, afterChange = { checked ->
@@ -560,7 +602,8 @@ fun LazyListScope.mainBaseConfig(
 
     // Shop purchases
     item {
-        SettingSection(visible = isPetExpanded) {
+        val noMainBase = GlobalVars.configStates["${MAIN_BASE_SETTINGS.NO_MAIN_BASE.key}_c${index}"]?.value == "0"
+        SettingSection(visible = isPetExpanded && noMainBase) {
             FlowRow {
                 listOf(
                     MAIN_BASE_SETTINGS.USE_RESEARCH_POTION,
@@ -594,7 +637,8 @@ fun LazyListScope.mainBaseConfig(
 
     // Gear & Rewards
     item {
-        SettingSection(visible = isPetExpanded) {
+        val noMainBase = GlobalVars.configStates["${MAIN_BASE_SETTINGS.NO_MAIN_BASE.key}_c${index}"]?.value == "0"
+        SettingSection(visible = isPetExpanded && noMainBase) {
             FlowRow {
                 SettingSwitchIcon(
                     key = "${MAIN_BASE_SETTINGS.REMOVE_OBSTACLES.key}_c$index", explain = Strings.removeObstaclesExplain
