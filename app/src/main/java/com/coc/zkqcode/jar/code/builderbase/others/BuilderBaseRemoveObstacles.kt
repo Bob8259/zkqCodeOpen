@@ -56,7 +56,7 @@ suspend fun builderBaseRemoveObstacles(): Boolean {
     removeObstacles()
 
     // Second Area Operations (conditional on worker count)
-    if (worker.total == 2) {
+    if (worker.total >= 2) {
         accountMessage("当前已解锁第二区域")
         swipe(470, 160, 1405, 430, 700)
         TouchActions.tap(1228, 316)
