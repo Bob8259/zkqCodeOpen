@@ -14,7 +14,8 @@ data class SettingDef(
     val displayName: String,
     val englishDisplayName: String = "",
     val defaultValue: Any,
-    val category: String
+    val category: String,
+    val isEpic: Boolean = false
 )
 
 object Schema {

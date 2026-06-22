@@ -3,7 +3,7 @@ package com.coc.zkqcode.jar.code.universal
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.util.basic.ClipboardHelper
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
-import com.coc.zkqcode.jar.code.auth.ServerChanHelper
+import com.coc.zkqcode.jar.code.universal.push.ServerChanHelper
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.smalltools.data.readMemory
@@ -13,10 +13,8 @@ import com.coc.zkqcode.jar.ui.LanguageManager
 import com.coc.zkqcode.jar.ui.Strings
 import com.coc.zkqcode.jar.ui.schema.Schema
 import com.google.gson.Gson
-import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.google.gson.reflect.TypeToken
-import java.io.File
 
 // ── Persistent schedule storage ─────────────────────────────────────────
 private data class ScheduledUpgrade(
@@ -86,10 +84,11 @@ suspend fun checkUpgradeTimers() {
     if (readMemory(sigKey) == fingerprint) return // overview unchanged
 
     // Build grouped display
+    val deviceRemark = GlobalVars.configStates[Schema.GLOBAL_SETTINGS.DEVICE_REMARK.key]?.value.orEmpty()
     val remark = GlobalVars.configStates["remark${acc}"]?.value.orEmpty()
     val remarkText = remark.ifBlank { if (LanguageManager.isChinese) "无" else "N/A" }
     val lines = mutableListOf<String>()
-    lines.add(if (LanguageManager.isChinese) "账号${acc}，备注:${remarkText}" else "Account $acc, Remark: $remarkText")
+    lines.add(if (LanguageManager.isChinese) "设备：${deviceRemark.ifBlank { "无" }}，账号${acc}，备注:${remarkText}" else "Device: ${deviceRemark.ifBlank { "N/A" }}, Account $acc, Remark: $remarkText")
 
     val shortest = allEntries.minByOrNull { it.remainSec }!!
     val advanceSec = advanceMin * 60
@@ -122,7 +121,7 @@ suspend fun checkUpgradeTimers() {
 // ── Background check: run periodically in main loop ─────────────────────
 
 suspend fun checkScheduledUpgradeNotifications() {
-    if (GlobalVars.configStates[Schema.GLOBAL_SETTINGS.SERVERCHAN_UPGRADE_NOTIFY.key]?.value != "1") return
+    if (GlobalVars.configStates[Schema.GLOBAL_SETTINGS.SERVERCHAN_UPGRADE_SCHEDULE_NOTIFY.key]?.value != "1") return
     val advanceMin = GlobalVars.configStates[Schema.GLOBAL_SETTINGS.SERVERCHAN_UPGRADE_ADVANCE.key]?.value?.toIntOrNull() ?: return
     if (advanceMin <= 0) return
     val advanceSec = advanceMin * 60L
@@ -150,15 +149,16 @@ suspend fun checkScheduledUpgradeNotifications() {
         // Send one notification per account summarizing what's about to complete
         val byAccount = toNotify.groupBy { it.account }
         for ((acc, items) in byAccount) {
+            val deviceRemark = GlobalVars.configStates[Schema.GLOBAL_SETTINGS.DEVICE_REMARK.key]?.value.orEmpty()
             val remark = GlobalVars.configStates["remark${acc}"]?.value.orEmpty()
             val remarkText = remark.ifBlank { if (LanguageManager.isChinese) "无" else "N/A" }
             val summary = items.joinToString("\n") {
                 " · ${it.name} (等级 ${it.lvl}) ${formatDuration(((it.completionTs - nowSec).toInt()))}"
             }
             val msg = if (LanguageManager.isChinese)
-                "账号${acc}，备注:${remarkText}\n即将在${advanceMin}分钟内完成的升级:\n$summary"
+                "设备：${deviceRemark.ifBlank { "无" }}，账号${acc}，备注:${remarkText}\n即将在${advanceMin}分钟内完成的升级:\n$summary"
             else
-                "Account $acc, Remark: $remarkText\nUpgrades completing in $advanceMin minutes:\n$summary"
+                "Device: ${deviceRemark.ifBlank { "N/A" }}, Account $acc, Remark: $remarkText\nUpgrades completing in $advanceMin minutes:\n$summary"
             ServerChanHelper.sendNotification(title = Strings.serverchanUpgradeTitle, desp = msg)
         }
     }

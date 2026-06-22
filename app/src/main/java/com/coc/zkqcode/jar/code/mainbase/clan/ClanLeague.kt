@@ -9,17 +9,28 @@ import com.coc.zkqcode.jar.code.universal.InGameVars
 import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.jar.code.universal.clickRightBottom
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
+import com.coc.zkqcode.jar.code.universal.smalltools.data.StorageKeys
+import com.coc.zkqcode.jar.code.universal.smalltools.data.checkMemoryFile
+import com.coc.zkqcode.jar.code.universal.smalltools.data.writeMemory
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.isInHomePage
 import com.coc.zkqcode.jar.code.universal.smalltools.input.TouchActions
 import com.coc.zkqcode.jar.code.universal.smalltools.data.getBooleanConfigRuntime
-import com.coc.zkqcode.jar.code.auth.ServerChanHelper
+import com.coc.zkqcode.jar.code.universal.push.ServerChanHelper
 import com.coc.zkqcode.jar.ui.Strings
 import com.coc.zkqcode.jar.ui.schema.Schema
 
 suspend fun clanLeague(): Boolean {
     if (!getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.PLAY_LEAGUE.key) || InGameVars.townHallLevel < 3) return true
+
+    // Time guard: skip the entire war/league task if within 12h cooldown
+    // War and league share the same cooldown — one cooling covers both.
+    val battleCooldownKey = StorageKeys.withAccountNumber(StorageKeys.CLAN_WAR_ATTACK, InGameVars.currentAccountNumber)
+    if (!checkMemoryFile(battleCooldownKey, 720)) {
+        accountMessage("冷却中(12h)，跳过联赛")
+        return true
+    }
 
     if (findMultiColors(MyColors.ClanWarSwordIcon) != null) {
         TouchActions.tap(50, 440) // Enter clan war
@@ -42,12 +53,14 @@ suspend fun clanLeague(): Boolean {
 
         // If league notification is enabled, skip the attack and send a push notification
         if (GlobalVars.configStates[Schema.GLOBAL_SETTINGS.SERVERCHAN_LEAGUE_NOTIFY.key]?.value == "1") {
+            val deviceRemark = GlobalVars.configStates[Schema.GLOBAL_SETTINGS.DEVICE_REMARK.key]?.value.orEmpty()
             val remarkKey = "remark${InGameVars.currentAccountNumber}"
             val remark = GlobalVars.configStates[remarkKey]?.value.orEmpty()
             ServerChanHelper.sendNotification(
                 title = Strings.serverchanLeagueTitle,
-                desp = Strings.serverchanLeagueMsg(InGameVars.currentAccountNumber, remark)
+                desp = Strings.serverchanLeagueMsg(deviceRemark, InGameVars.currentAccountNumber, remark)
             )
+            writeMemory(battleCooldownKey, (System.currentTimeMillis() / 60_000).toString())
             return enterMainScreen()
         }
 
@@ -74,6 +87,8 @@ suspend fun clanLeague(): Boolean {
                 }
             }
         }
+        // Record last attack time for the 12h cooldown
+        writeMemory(battleCooldownKey, (System.currentTimeMillis() / 60_000).toString())
 
     } else {
         val startTime = System.currentTimeMillis()

@@ -1,7 +1,6 @@
 package com.coc.zkqcode.jar.code.mainbase.daily
 
 import com.coc.zkqcode.jar.code.colorschema.MyColors
-import com.coc.zkqcode.jar.code.mainbase.others.zoomSmallMainBase
 import com.coc.zkqcode.jar.code.universal.InGameVars
 import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
@@ -15,12 +14,6 @@ import com.coc.zkqcode.jar.code.universal.smalltools.input.TouchActions
 import com.coc.zkqcode.jar.ui.schema.Schema
 
 private data class BadgeEventTap(val x: Int, val y: Int)
-
-private const val BADGE_EVENT_REWARD_INTERVAL_MINUTES = 1440
-private const val MAX_BADGE_EVENT_ROUNDS = 20
-private const val BADGE_EVENT_CONTINUE_TIMEOUT = 1000
-private const val BADGE_EVENT_PAGE_TIMEOUT = 3000
-private const val BADGE_EVENT_CLAIM_TIMEOUT = 1000
 
 private val badgeEventEntryTap = BadgeEventTap(315, 663)
 private val badgeEventEnterTap = BadgeEventTap(948, 370)
@@ -39,56 +32,62 @@ suspend fun collectBadgeEventRewards(): Boolean {
     if (!getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.CLAIM_BADGE_EVENT_REWARDS.key)) return true
 
     val storageKey = StorageKeys.withAccountNumber(
-        StorageKeys.CLAIM_BADGE_EVENT_REWARDS,
-        InGameVars.currentAccountNumber
+        StorageKeys.CLAIM_BADGE_EVENT_REWARDS, InGameVars.currentAccountNumber
     )
-    if (!checkMemoryFile(storageKey, BADGE_EVENT_REWARD_INTERVAL_MINUTES)) {
+    if (!checkMemoryFile(storageKey, 1440)) {
         accountMessage("24小时内已检查过奖章活动奖励，跳过本次领取")
         return true
     }
 
     accountMessage("准备领取奖章活动奖励")
-    zoomSmallMainBase(isForAttack = true)
-    TouchActions.tap(badgeEventEntryTap.x, badgeEventEntryTap.y, delayTime = 500)
+    TouchActions.tap(badgeEventEntryTap.x, badgeEventEntryTap.y, delayTime = 1500)
     TouchActions.tap(badgeEventEnterTap.x, badgeEventEnterTap.y, delayTime = 1000)
 
-    val continueButton = findMultiColorsUntil(listOf(MyColors.BadgeEventContinueButton), BADGE_EVENT_CONTINUE_TIMEOUT)
+    val continueButton = findMultiColorsUntil(listOf(MyColors.BadgeEventContinueButton), 1000)
     if (continueButton != null) {
         accountMessage("检测到奖章活动继续按钮，点击继续")
         TouchActions.tap(continueButton.x, continueButton.y, delayTime = 1000)
     }
 
-    val entered = findMultiColorsUntil(listOf(MyColors.BadgeEventPageMarker), BADGE_EVENT_PAGE_TIMEOUT)
+    val entered = findMultiColorsUntil(listOf(MyColors.BadgeEventPageMarker), 2000)
     if (entered == null) {
-        accountMessage("未检测到奖章活动页面标记，返回主页面")
+        accountMessage("未检测到奖章活动页面标记，尝试捐赠临时活动")
+        contributeToActivity()
         return finishBadgeEventRewardCheck(storageKey)
     }
 
-    repeat(MAX_BADGE_EVENT_ROUNDS) {
+    repeat(20) {
         val leftClaimed = claimBadgeReward(badgeEventLeftTabTap)
         val rightClaimed = claimBadgeReward(badgeEventRightTabTap)
-        if (!leftClaimed && !rightClaimed) {
+        val extraReward = findMultiColors(MyColors.ExtraReward)
+        if (extraReward != null) {
+            TouchActions.tap(extraReward.x, extraReward.y)
+        }
+        if (!leftClaimed && !rightClaimed && extraReward == null) {
             accountMessage("未检测到可领取的奖章活动奖励")
             return finishBadgeEventRewardCheck(storageKey)
         }
+
     }
 
     accountMessage("奖章活动奖励达到最大轮次保护，返回主页面")
     return finishBadgeEventRewardCheck(storageKey)
 }
 
+private suspend fun contributeToActivity() {
+    TouchActions.tap(650, 595)//Contribute
+    for (y in 60..600 step 45) {
+        TouchActions.tap(60, y, delayTime = 50)
+    }
+}
+
 private suspend fun finishBadgeEventRewardCheck(storageKey: String): Boolean {
     writeMemory(storageKey, (System.currentTimeMillis() / 60_000).toString())
 
-    if (getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.CLAIM_EVENT_SHOP_REWARDS.key)) {
+    if (getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.BUY_NEW_EQUIPMENT_WITH_EVENT_MEDAL.key)) {
         accountMessage("活动领取开关已开启，尝试进入活动商店")
         if (enterEventShop()) {
-            val alreadyPurchased = findMultiColors(MyColors.EventShopAlreadyPurchased)
-            if (alreadyPurchased != null) {
-                accountMessage("新装备已购买过，跳过")
-            } else {
-                buyEventShopItems()
-            }
+            buyNewEquipment()
         } else {
             accountMessage("进入活动商店失败")
         }
@@ -99,8 +98,7 @@ private suspend fun finishBadgeEventRewardCheck(storageKey: String): Boolean {
 
 private suspend fun claimBadgeReward(tabTap: BadgeEventTap): Boolean {
     TouchActions.tap(tabTap.x, tabTap.y, delayTime = 500)
-    val claimButton = findMultiColorsUntil(listOf(MyColors.BadgeEventClaimReward), BADGE_EVENT_CLAIM_TIMEOUT)
-    if (claimButton == null) return false
+    val claimButton = findMultiColorsUntil(listOf(MyColors.BadgeEventClaimReward), 1000) ?: return false
     TouchActions.tap(claimButton.x, claimButton.y, delayTime = 1000)
     return true
 }
@@ -117,11 +115,6 @@ private suspend fun enterEventShop(): Boolean {
     return false
 }
 
-private suspend fun buyEventShopItems() {
-    if (getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.BUY_NEW_EQUIPMENT_WITH_EVENT_MEDAL.key)) {
-        buyNewEquipment()
-    }
-}
 
 private suspend fun buyNewEquipment() {
     val alreadyPurchased = findMultiColors(MyColors.EventShopAlreadyPurchased)

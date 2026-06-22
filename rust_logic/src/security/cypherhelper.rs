@@ -8,7 +8,7 @@ use jni::JNIEnv;
 use rand::RngCore;
 use x25519_dalek::{PublicKey, StaticSecret};
 
-use super::keys::key;
+use super::keys::{key, PUBLIC_KEY_BYTES};
 
 //You need to create a key.rs at the same level as this file and add the following code:
 
@@ -26,6 +26,9 @@ use super::keys::key;
 //     obfstr!("aacxxxx Your Own Server Public Key").to_string()
 // }
 
+
+use sha2::Sha256;
+use ed25519_dalek::{PublicKey as EdPublicKey, Signature, Verifier};
 
 // Decode the hex-encoded ChaCha20 key at runtime
 #[inline(always)]
@@ -119,12 +122,51 @@ pub fn decryptJar(env: JNIEnv, _class: JClass, data: JByteArray) -> jbyteArray {
     let data_bytes = env
         .convert_byte_array(&data)
         .expect("Couldn't convert byte array");
-    if data_bytes.len() <= 12 {
+
+    // Expected format: [12-byte nonce][ciphertext][64-byte signature]
+    // Minimum length must be at least 12 + 64 = 76 bytes.
+    if data_bytes.len() < 76 {
+        log::error!("decryptJar: Data too short ({} bytes)", data_bytes.len());
         return std::ptr::null_mut();
     }
 
-    let nonce = &data_bytes[0..12];
-    let ciphertext = &data_bytes[12..];
+    // Split data into nonce_and_ciphertext and the signature
+    let payload_len = data_bytes.len() - 64;
+    let nonce_and_ciphertext = &data_bytes[0..payload_len];
+    let signature_bytes = &data_bytes[payload_len..];
+
+    // Compute SHA-256 of the encrypted data (nonce + ciphertext)
+    let mut hasher = Sha256::new();
+    hasher.update(nonce_and_ciphertext);
+    let hash = hasher.finalize();
+
+    let public_key = match EdPublicKey::from_bytes(&PUBLIC_KEY_BYTES) {
+        Ok(pk) => pk,
+        Err(e) => {
+            log::error!("decryptJar: Failed to parse public key: {:?}", e);
+            return std::ptr::null_mut();
+        }
+    };
+
+    let signature = match Signature::from_bytes(signature_bytes) {
+        Ok(sig) => sig,
+        Err(e) => {
+            log::error!("decryptJar: Failed to parse signature: {:?}", e);
+            return std::ptr::null_mut();
+        }
+    };
+
+    // Verify signature against the SHA-256 of the payload
+    if let Err(e) = public_key.verify(&hash, &signature) {
+        log::error!("decryptJar: Signature verification failed: {:?}", e);
+        return std::ptr::null_mut();
+    }
+
+    log::info!("decryptJar: Signature verification successful!");
+
+    // Extract nonce and ciphertext from payload
+    let nonce = &nonce_and_ciphertext[0..12];
+    let ciphertext = &nonce_and_ciphertext[12..];
 
     let key = get_runtime_key();
     let mut cipher = ChaCha20::new(&key.into(), nonce.into());

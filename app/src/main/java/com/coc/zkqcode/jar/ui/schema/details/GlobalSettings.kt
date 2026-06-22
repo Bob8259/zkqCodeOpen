@@ -46,12 +46,13 @@ object GlobalSettings {
     val PUSHPLUS_TOKEN = SettingDef("pushplus_token", "PushPlus Token", "PushPlus Token", "", "GLOBAL_SETTINGS")
     val TELEGRAM_BOT_TOKEN = SettingDef("telegram_bot_token", "Telegram BotToken", "Telegram BotToken", "", "GLOBAL_SETTINGS")
     val TELEGRAM_CHAT_ID = SettingDef("telegram_chat_id", "Telegram ChatID", "Telegram ChatID", "", "GLOBAL_SETTINGS")
-    val SERVERCHAN_LOGIN_NOTIFY = SettingDef("serverchan_login_notify", "辅助账号登录通知", "Login Notification", 1, "GLOBAL_SETTINGS")
-    val SERVERCHAN_KICK_NOTIFY = SettingDef("serverchan_kick_notify", "进入游戏失败通知", "Kick Notification", 1, "GLOBAL_SETTINGS")
-    val SERVERCHAN_WAR_NOTIFY = SettingDef("serverchan_war_notify", "部落战通知", "Clan War Notification", 0, "GLOBAL_SETTINGS")
-    val SERVERCHAN_LEAGUE_NOTIFY = SettingDef("serverchan_league_notify", "联赛通知", "League Notification", 0, "GLOBAL_SETTINGS")
-    val SERVERCHAN_UPGRADE_NOTIFY = SettingDef("serverchan_upgrade_notify", "建筑升级通知", "Upgrade Notification", 0, "GLOBAL_SETTINGS")
-    val SERVERCHAN_UPGRADE_ADVANCE = SettingDef("serverchan_upgrade_advance", "提前提醒(分钟)\n(退出游戏时检测)", "Advance Minutes\n(checked on exit)", "10", "GLOBAL_SETTINGS")
+    val SERVERCHAN_LOGIN_NOTIFY = SettingDef("serverchan_login_notify", "辅助账号掉线通知", "Kicked-out Notification", 0, "GLOBAL_SETTINGS")
+    val SERVERCHAN_KICK_NOTIFY = SettingDef("serverchan_kick_notify", "进入游戏失败通知", "Kick Notification", 0, "GLOBAL_SETTINGS")
+    val SERVERCHAN_WAR_NOTIFY = SettingDef("serverchan_war_notify", "部落战通知(手动打推荐开启，开启后不会自动打)", "Clan War (manual only, auto-attack disabled)", 0, "GLOBAL_SETTINGS")
+    val SERVERCHAN_LEAGUE_NOTIFY = SettingDef("serverchan_league_notify", "联赛通知(手动打推荐开启，开启后不会自动打)", "League (manual only, auto-attack disabled)", 0, "GLOBAL_SETTINGS")
+    val SERVERCHAN_UPGRADE_NOTIFY = SettingDef("serverchan_upgrade_notify", "退出时推送升级概览", "Upgrade Overview on Exit", 0, "GLOBAL_SETTINGS")
+    val SERVERCHAN_UPGRADE_SCHEDULE_NOTIFY = SettingDef("serverchan_upgrade_schedule_notify", "即将完成推送提醒", "Advance Completion Alert", 0, "GLOBAL_SETTINGS")
+    val SERVERCHAN_UPGRADE_ADVANCE = SettingDef("serverchan_upgrade_advance", "提前提醒(分钟)", "Advance Minutes", "10", "GLOBAL_SETTINGS")
 
     // ── Temperature Protection (温度保护) ────────────────────────────────────
     val TEMP_PROTECTION = SettingDef("temp_protection", "温度保护", "Temp Protection", 0, "GLOBAL_SETTINGS")
@@ -64,6 +65,11 @@ object GlobalSettings {
     // ── Scheduled Restart (定时重启) ───────────────────────────────────────────
     val SCHEDULED_RESTART = SettingDef("scheduled_restart", "定时重启设备", "Scheduled Restart", 0, "GLOBAL_SETTINGS")
     val RESTART_INTERVAL = SettingDef("restart_interval", "重启间隔(分钟)", "Restart Interval (min)", "60", "GLOBAL_SETTINGS")
+
+    // ── WebDAV Sync (WebDAV同步) ──────────────────────────────────────────────────
+    val WEBDAV_URL = SettingDef("webdav_url", "WebDAV 服务器地址", "WebDAV Server URL", "", "GLOBAL_SETTINGS")
+    val WEBDAV_USERNAME = SettingDef("webdav_username", "WebDAV 用户名", "WebDAV Username", "", "GLOBAL_SETTINGS")
+    val WEBDAV_PASSWORD = SettingDef("webdav_password", "WebDAV 密码", "WebDAV Password", "", "GLOBAL_SETTINGS")
 
     // Battle time ratio per group
     val RS_BATTLE_RATIO_DAWN = SettingDef("rs_battle_ratio_dawn", "对战时间比例", "Battle Ratio", "80", "GLOBAL_SETTINGS")
@@ -149,6 +155,7 @@ object GlobalSettings {
         SERVERCHAN_WAR_NOTIFY,
         SERVERCHAN_LEAGUE_NOTIFY,
         SERVERCHAN_UPGRADE_NOTIFY,
+        SERVERCHAN_UPGRADE_SCHEDULE_NOTIFY,
         SERVERCHAN_UPGRADE_ADVANCE,
         TEMP_PROTECTION,
         TEMP_PAUSE_THRESHOLD,
@@ -161,7 +168,8 @@ object GlobalSettings {
         RS_NO_WORKER_DAWN, RS_NO_WORKER_MORNING, RS_NO_WORKER_AFTERNOON, RS_NO_WORKER_NIGHT,
         RS_FULL_RES_DAWN, RS_FULL_RES_MORNING, RS_FULL_RES_AFTERNOON, RS_FULL_RES_NIGHT,
         RS_ACCOUNTS_DAWN, RS_ACCOUNTS_MORNING, RS_ACCOUNTS_AFTERNOON, RS_ACCOUNTS_NIGHT,
-        SCHEDULED_RESTART, RESTART_INTERVAL
+        SCHEDULED_RESTART, RESTART_INTERVAL,
+        WEBDAV_URL, WEBDAV_USERNAME, WEBDAV_PASSWORD
     )
 }
 

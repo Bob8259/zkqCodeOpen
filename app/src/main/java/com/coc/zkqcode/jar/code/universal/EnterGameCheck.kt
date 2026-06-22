@@ -19,7 +19,7 @@ import com.coc.zkqcode.jar.code.universal.smalltools.lifecycle.checkReconnection
 import com.coc.zkqcode.jar.code.universal.smalltools.lifecycle.isGameAtFront
 import com.coc.zkqcode.jar.code.universal.smalltools.lifecycle.killGame
 import com.coc.zkqcode.jar.code.universal.smalltools.lifecycle.runGame
-import com.coc.zkqcode.jar.code.auth.ServerChanHelper
+import com.coc.zkqcode.jar.code.universal.push.ServerChanHelper
 import com.coc.zkqcode.jar.code.universal.tutorial.AllTutorials
 import com.coc.zkqcode.jar.ui.Strings
 import com.coc.zkqcode.jar.ui.schema.Schema
@@ -39,25 +39,25 @@ suspend fun enterMainScreen(isDoubleCheck: Boolean = false): Boolean {
     val timeoutMillis = timeoutSeconds * 1000L
     var mainBaseTutorialElements = 0
     var lastClickRightBottomTime = startTime - 5000L
+    fun countdownMessage(): String = "倒计时${((timeoutMillis - System.currentTimeMillis() + startTime) / 1000).toInt()}秒"
     GlobalVars.absorbEdge = 0
     while (System.currentTimeMillis() - startTime < timeoutMillis) {
         // 3. Insert your logic to check if the main screen is actually visible
         if (!isGameAtFront()) {
             runGame()
         } else {
-            if (isInHomePage()) {
+            if (isInHomePage(countdownMessage())) {
                 if (!isDoubleCheck) {
                     accountMessage("已进入主界面")
                     return true
                 }
                 if (InGameVars.currentGameVersion == GameVersion.CN) delayWithMultiplier(1200)
                 else delayWithMultiplier(500)
-                if (isInHomePage()) {
+                if (isInHomePage(countdownMessage())) {
                     return true
                 }
             }
 
-            accountMessage("倒计时${((timeoutMillis - System.currentTimeMillis() + startTime) / 1000).toInt()}秒")
             closeAdvertisements()
             // After 15s, also dismiss clan league popups
             if (System.currentTimeMillis() - startTime > 15_000L) closeClanLeaguePopups()
@@ -78,11 +78,11 @@ suspend fun enterMainScreen(isDoubleCheck: Boolean = false): Boolean {
     // Send Server酱³ push notification on game enter timeout if enabled
     val kickNotify = GlobalVars.configStates[Schema.GLOBAL_SETTINGS.SERVERCHAN_KICK_NOTIFY.key]?.value == "1"
     if (kickNotify) {
+        val deviceRemark = GlobalVars.configStates[Schema.GLOBAL_SETTINGS.DEVICE_REMARK.key]?.value.orEmpty()
         val remarkKey = "remark${InGameVars.currentAccountNumber}"
         val remark = GlobalVars.configStates[remarkKey]?.value.orEmpty()
         ServerChanHelper.sendNotification(
-            title = Strings.serverchanKickTitle,
-            desp = Strings.serverchanKickMsg(InGameVars.currentAccountNumber, remark, timeoutSeconds)
+            title = Strings.serverchanKickTitle, desp = Strings.serverchanKickMsg(deviceRemark, InGameVars.currentAccountNumber, remark, timeoutSeconds)
         )
     }
     killGame()
@@ -202,7 +202,8 @@ private suspend fun closeAdvertisements() {
         MyColors.UpgradeNotification,
         MyColors.EnterLeague,
         MyColors.ClanWarTutorialArrow,
-        MyColors.TopRightClanWarInfo
+        MyColors.TopRightClanWarInfo,
+        MyColors.ContributionActivity
     )
 
     // 3. Iterate through schemas
@@ -282,18 +283,22 @@ private suspend fun closeAdvertisements() {
     }
 }
 
-suspend fun isInHomePage(): Boolean {
+suspend fun isInHomePage(countdownMessage: String? = null): Boolean {
     // 1. Capture the screen and cast safely
     val screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult ?: logAndRestart("in isInHomePage, screen capture failed.")
 
-    // 2. Check for the training button presence
-    if (findMultiColors(byteBuffer = screenBuffer, schema = MyColors.TrainTroops, increment = 1) == null) {
-        accountMessage("未找到练兵按钮")
+    suspend fun homePageCheckFailed(message: String): Boolean {
+        accountMessage(if (countdownMessage == null) message else "$countdownMessage，$message")
+        delayWithMultiplier(500)
         return false
     }
+
+    // 2. Check for the training button presence
+    if (findMultiColors(byteBuffer = screenBuffer, schema = MyColors.TrainTroops, increment = 1) == null) {
+        return homePageCheckFailed("未找到练兵按钮")
+    }
     if (findMultiColors(byteBuffer = screenBuffer, schema = MyColors.ShopButton, increment = 1) == null) {
-        accountMessage("未找到商店按钮")
-        return false
+        return homePageCheckFailed("未找到商店按钮")
     }
 
     // 3. Check for any of the worker icons (Main base, Goblin workers, or Builder base)
@@ -302,9 +307,7 @@ suspend fun isInHomePage(): Boolean {
 
     val hasWorker = workerSchemas.any { findMultiColors(byteBuffer = screenBuffer, schema = it, increment = 1) != null }
     if (!hasWorker) {
-        accountMessage("未找到工人")
-        return false
+        return homePageCheckFailed("未找到工人")
     }
-    delayWithMultiplier(500)
     return true
 }

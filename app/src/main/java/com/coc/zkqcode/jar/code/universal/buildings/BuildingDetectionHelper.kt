@@ -24,10 +24,17 @@ internal val ocrMisreadPrefixes = listOf("斬", "靳", "斩", "鼾")
 data class DetectedBuilding(val name: String, val x: Int, val y: Int)
 
 /**
- * Result of building detection containing the list of buildings.
+ * Result of building detection.
+ *
+ * @param buildings Resource-filtered list of detected buildings (only affordable ones),
+ *                  used for upgrade decisions.
+ * @param allDetectedBuildings Pre-resource-filter list of all detected buildings regardless
+ *                             of affordability, used for scroll-exit checking so that
+ *                             unaffordable-only screens are not treated as an empty (stopped) list.
  */
 data class BuildingDetectionResult(
-    val buildings: List<DetectedBuilding>
+    val buildings: List<DetectedBuilding>,
+    val allDetectedBuildings: List<DetectedBuilding> = emptyList()
 )
 
 /**

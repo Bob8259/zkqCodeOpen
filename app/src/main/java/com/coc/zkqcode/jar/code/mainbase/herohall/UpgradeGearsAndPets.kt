@@ -80,7 +80,7 @@ private data class PetUpgradableItem(
 )
 
 private suspend fun checkPets() {
-    // Build the color map once (lazy val at file level not used to keep changes minimal)
+    // Build the colour map once (lazy val at file level not used to keep changes minimal)
     val petColorMap = listOf(
         MainBasePets.LASSI to MyColors.Lassi,
         MainBasePets.LASSI to MyColors.Lassi2,
@@ -127,9 +127,8 @@ private suspend fun checkPets() {
         for (petDef in enabledPetDefs) {
             if (petDef.key in completedPets) continue
 
-            // Try all color schemas for this pet
+            // Try all colour schemas for this pet
             val petSchemas = petColorMap.filter { it.first.key == petDef.key }.map { it.second }
-            var found = false
             for (colorSchema in petSchemas) {
                 val result = findMultiColors(schema = colorSchema, byteBuffer = screenBuffer, increment = 1)
                 if (result != null) {
@@ -146,7 +145,6 @@ private suspend fun checkPets() {
                     if (findMultiColors(byteBuffer = screenBuffer, schema = insufficientSchema, increment = 1) != null) {
                         accountMessage("跳过 ${petDef.displayName}: 资源不足")
                         completedPets.add(petDef.key)
-                        found = true
                         break
                     }
 
@@ -154,19 +152,30 @@ private suspend fun checkPets() {
                     val priorityKey = "${petDef.key}_pet_priority"
                     val priority = getConfigRuntime(priorityKey).toIntOrNull() ?: Int.MAX_VALUE
 
-                    // ── Pet level restriction check ──
-                    // When pet house level ≤ 5, skip any of the 5 basic pets (莱希, 闪枭, 大牦, 独角, 冰牙)
-                    // that has already reached level 10, so lower-level pets get upgraded first.
-                    // When pet house level > 5, no restriction applies.
-                    // When levels are unknown (0 from default), restriction is effectively inactive.
+                    // ── Pet level checks ──
+                    val petLevel = InGameVars.petLevels[petDef.key] ?: 0
+
+                    // Old logic: when pet house level ≤ 5, skip any basic pet that has reached level 10,
+                    // so lower-level pets get upgraded first.
                     if (InGameVars.petHouseLevel in 1..5) {
-                        val petLevel = InGameVars.petLevels[petDef.key] ?: 0
                         if (petLevel >= 10) {
                             accountMessage("跳过 ${petDef.displayName}")
                             completedPets.add(petDef.key)
-                            found = true
                             break
                         }
+                    }
+
+                    // New: skip pets that have already reached their max level.
+                    // Basic 5 pets (Lassi, Electro Owl, Mighty Yak, Unicorn, Frosty): max 15
+                    // Other pets (Phoenix, Poison Lizard, Diggy, Spirit Fox, Angry Jelly, Sneezy, Greedy Raven): max 10
+                    // When level is unknown (0 from default), the check is effectively inactive.
+                    val petMaxLevel = if (petDef.key in setOf(
+                            "lassi", "electro_owl", "mighty_yak", "unicorn", "frosty"
+                        )) 15 else 10
+                    if (petLevel >= petMaxLevel) {
+                        accountMessage("跳过 ${petDef.displayName}: 已满级($petLevel/$petMaxLevel)")
+                        completedPets.add(petDef.key)
+                        break
                     }
 
                     completedPets.add(petDef.key)
@@ -179,7 +188,6 @@ private suspend fun checkPets() {
                         screenIndex = screenIdx
                     ))
                     accountMessage("发现可升级: ${petDef.displayName}, 第${screenIdx}页")
-                    found = true
                     break
                 }
             }
@@ -191,7 +199,7 @@ private suspend fun checkPets() {
         }
     }
 
-    // ========== Phase 2: Select highest priority item and upgrade ==========
+    // ========== Phase 2: Sort by priority and try each until one succeeds ==========
     if (upgradeableItems.isEmpty()) {
         accountMessage("未找到任何可升级的战宠")
         return
@@ -207,57 +215,73 @@ private suspend fun checkPets() {
     accountMessage("战宠升级\n优先级列表 :\n${summaryLines.joinToString("\n")}")
     delayWithMultiplier(2000)
 
-    val target = upgradeableItems.first()
+    val remainingTargets = upgradeableItems.toMutableList()
+    var anyUpgraded = false
 
-    // ========== Phase 3: Navigate back page by page, re-scan and upgrade ==========
-    // After Phase 1 we are at screen 3 (the last page).
-    // Swipe backwards one page at a time, re-capturing and re-verifying at each page.
-    val targetSchemas = petColorMap.filter { it.first.key == target.pet.key }.map { it.second }
-    var foundAndUpgraded = false
-    for (currentPage in 3 downTo 0) {
-        val buffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult
-            ?: logAndRestart("checkPets Phase 3: Screen capture failed at page $currentPage")
+    while (remainingTargets.isNotEmpty()) {
+        val target = remainingTargets.removeAt(0)
 
-        for (targetSchema in targetSchemas) {
-            val result = findMultiColors(schema = targetSchema, byteBuffer = buffer, increment = 1) ?: continue
+        // ========== Phase 3: Navigate back page by page, re-scan and upgrade ==========
+        // After Phase 1 we are at screen 3 (the last page).
+        // Swipe backwards one page at a time, re-capturing and re-verifying at each page.
+        val targetSchemas = petColorMap.filter { it.first.key == target.pet.key }.map { it.second }
+        var foundAndUpgraded = false
+        for (currentPage in 3 downTo 0) {
+            val buffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult
+                ?: logAndRestart("checkPets Phase 3: Screen capture failed at page $currentPage")
 
-            // Re-verify resource sufficiency
-            val insLeft = result.x
-            val insTop = result.y
-            val insRight = minOf(result.x + 100, buffer.width - 1)
-            val insBottom = minOf(result.y + 40, buffer.height - 1)
-            val insSchema = ColorSchema.rescope(
-                MainBaseResearchColors.MainBaseResearchInsufficientColors, insLeft, insTop, insRight, insBottom
-            )
-            if (findMultiColors(byteBuffer = buffer, schema = insSchema, increment = 1) != null) {
-                accountMessage("跳过 ${target.displayName}: 资源不足（阶段三重检）")
-                continue
+            for (targetSchema in targetSchemas) {
+                val result = findMultiColors(schema = targetSchema, byteBuffer = buffer, increment = 1) ?: continue
+
+                // Re-verify resource sufficiency
+                val insLeft = result.x
+                val insTop = result.y
+                val insRight = minOf(result.x + 100, buffer.width - 1)
+                val insBottom = minOf(result.y + 40, buffer.height - 1)
+                val insSchema = ColorSchema.rescope(
+                    MainBaseResearchColors.MainBaseResearchInsufficientColors, insLeft, insTop, insRight, insBottom
+                )
+                if (findMultiColors(byteBuffer = buffer, schema = insSchema, increment = 1) != null) {
+                    accountMessage("跳过 ${target.displayName}: 资源不足（阶段三重检）")
+                    continue
+                }
+
+                // Perform the upgrade
+                TouchActions.tap(result.x, result.y)
+                val confirmUpgrade = findMultiColorsUntil(schemas = listOf(MyColors.ConfirmUpgradePet), duration = 400)
+                if (confirmUpgrade != null) {
+                    accountMessage("升级 ${target.displayName}")
+                    TouchActions.tap(confirmUpgrade.x, confirmUpgrade.y)
+                    clickRightBottom(1)
+                    foundAndUpgraded = true
+                    break
+                } else {
+                    accountMessage("跳过 ${target.displayName}: 无法升级（阶段三重检）")
+                }
             }
 
-            // Perform the upgrade
-            TouchActions.tap(result.x, result.y)
-            val confirmUpgrade = findMultiColorsUntil(schemas = listOf(MyColors.ConfirmUpgradePet), duration = 400)
-            if (confirmUpgrade != null) {
-                accountMessage("升级 ${target.displayName}")
-                TouchActions.tap(confirmUpgrade.x, confirmUpgrade.y)
-                clickRightBottom(1)
-                foundAndUpgraded = true
-                break
-            } else {
-                accountMessage("跳过 ${target.displayName}: 无法升级（阶段三重检）")
+            if (foundAndUpgraded) break
+
+            // Target not found on this page — swipe back one more page
+            if (currentPage > 0) {
+                TouchActions.swipe(180, 600, 800, 600, delayAfter = 100)
             }
         }
 
-        if (foundAndUpgraded) break
-
-        // Target not found on this page — swipe back one more page
-        if (currentPage > 0) {
-            TouchActions.swipe(180, 600, 800, 600, delayAfter = 100)
+        if (foundAndUpgraded) {
+            anyUpgraded = true
+            break
+        } else {
+            accountMessage("${target.displayName} 无法升级，尝试下一个优先级战宠")
+            // Navigate back to the last page (page 3) for the next attempt
+            for (i in 0 until 3) {
+                TouchActions.swipe(800, 600, 180, 600, delayAfter = 100)
+            }
         }
     }
 
-    if (!foundAndUpgraded) {
-        accountMessage("阶段三未能定位到 ${target.displayName}，跳过")
+    if (!anyUpgraded) {
+        accountMessage("所有可升级战宠均无法升级")
     }
 }
 

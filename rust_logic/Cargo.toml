@@ -12,6 +12,7 @@ jni = "0.21.1" # 用于和 Java/Kotlin 交互
 log = "0.4"
 android_logger = "0.13"
 x25519-dalek = "1.2.0"
+ed25519-dalek = "1.0.1"
 chacha20 = "0.9"
 blake2 = "0.10"
 hex = "0.4"

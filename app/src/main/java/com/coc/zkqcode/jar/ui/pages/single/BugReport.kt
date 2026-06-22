@@ -183,11 +183,13 @@ fun BugReport(onClose: () -> Unit) {
                     text = Strings.closeWindow,
                     marginTop = 0.dp,
                     onClick = {
-                        AppStateManager.setMode(AppMode.Run)
                         GlobalVars.isPlaying.value = false
                         GlobalVars.updateWindowPosition = true
                         scope.launch {
                             onClose()
+                            // Switch mode after onClose() so the composition (and its
+                            // coroutine scope) stays alive until the close work finishes.
+                            AppStateManager.setMode(AppMode.Run)
                         }
                     }
                 )

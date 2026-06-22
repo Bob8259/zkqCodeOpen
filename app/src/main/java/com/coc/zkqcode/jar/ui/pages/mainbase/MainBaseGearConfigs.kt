@@ -51,7 +51,7 @@ fun MainBaseGearConfigs(index: Int) {
                             .padding(8.dp)
                     ) {
                         gears.forEach { gear ->
-                            SettingToggleButton(key = "${gear.key}_c${index}")
+                            SettingToggleButton(key = "${gear.key}_c${index}", isEpic = gear.isEpic)
                         }
                     }
                 }

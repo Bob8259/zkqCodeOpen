@@ -16,9 +16,10 @@ import com.coc.zkqcode.jar.code.universal.smalltools.data.StorageKeys
 import com.coc.zkqcode.jar.code.universal.smalltools.input.TouchActions
 import com.coc.zkqcode.jar.code.universal.smalltools.data.getBooleanConfigRuntime
 import com.coc.zkqcode.jar.code.universal.smalltools.lifecycle.killGame
+import com.coc.zkqcode.jar.code.universal.smalltools.data.checkMemoryFile
 import com.coc.zkqcode.jar.code.universal.smalltools.data.readMemory
 import com.coc.zkqcode.jar.code.universal.smalltools.data.writeMemory
-import com.coc.zkqcode.jar.code.auth.ServerChanHelper
+import com.coc.zkqcode.jar.code.universal.push.ServerChanHelper
 import com.coc.zkqcode.jar.ui.Strings
 import com.coc.zkqcode.jar.ui.schema.Schema
 import com.coc.zkqcode.core.data.database.GlobalVars
@@ -27,31 +28,16 @@ private const val STRATEGY_POSITION = "position"
 private const val STRATEGY_RECOMMENDATION = "recommendation"
 
 suspend fun clanWar(): Boolean {
-    // Only perform league-vs-clan-war decision when BOTH the league AND clan war switches are enabled.
-    val leagueEnabled = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.START_CLAN_LEAGUE.key)
-        || getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.PLAY_LEAGUE.key)
-        || getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.PLAY_LEAGUE_DONATION.key)
-
-    if (leagueEnabled && isInClanLeaguePeriod()) {
-        if (findMultiColors(MyColors.ClanLeagueEntryIndicator) != null) {
-            accountMessage("当前处于部落联赛期间且检测到联赛入口，跳过部落战")
-            return true
-        }
-        accountMessage("当前处于部落联赛时间段但未检测到联赛入口标志，继续执行部落战")
-    }
     if (!getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.PLAY_CLAN_WAR.key) || InGameVars.townHallLevel < 3) return true
-    findMultiColors(MyColors.ClanWarSwordIcon) ?: return true // No clan war attack times, return
-
-    // If clan war notification is enabled, skip the attack and send a push notification
-    if (GlobalVars.configStates[Schema.GLOBAL_SETTINGS.SERVERCHAN_WAR_NOTIFY.key]?.value == "1") {
-        val remarkKey = "remark${InGameVars.currentAccountNumber}"
-        val remark = GlobalVars.configStates[remarkKey]?.value.orEmpty()
-        ServerChanHelper.sendNotification(
-            title = Strings.serverchanWarTitle,
-            desp = Strings.serverchanWarMsg(InGameVars.currentAccountNumber, remark)
-        )
+    // Time guard: skip the entire war/league task if within 12h cooldown
+    // War and league share the same cooldown — one cooling covers both.
+    val battleCooldownKey = StorageKeys.withAccountNumber(StorageKeys.CLAN_WAR_ATTACK, InGameVars.currentAccountNumber)
+    if (!checkMemoryFile(battleCooldownKey, 720)) {
+        accountMessage("冷却中(12h)，跳过部落战")
         return true
     }
+
+    findMultiColors(MyColors.ClanWarSwordIcon) ?: return true // No clan war attack times, return
 
     TouchActions.tap(50, 440) // Enter clan war
 
@@ -65,22 +51,33 @@ suspend fun clanWar(): Boolean {
     } else {
         STRATEGY_POSITION
     }
+    // Check what's inside the war page - if no ClanWarInfo found, it's probably league
     if (findMultiColorsUntil(schemas = listOf(MyColors.ClanWarInfo), duration = 1000) == null) {
-        accountMessage("未检测到部落竞赛，当前可能是联赛")
-        return if (getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.PLAY_LEAGUE.key)) {
-            true
-        } else {
-            enterMainScreen()
-        }
-    } else {
-        when (currentStrategy) {
-            STRATEGY_POSITION -> attackByPosition()
-            STRATEGY_RECOMMENDATION -> attackByRecommendation()
-        }
-        writeMemory(storageKey, currentStrategy)
+        accountMessage("未检测到部落战信息，当前可能是联赛")
+        return true
+    }
+
+    // Confirmed: this is a regular clan war
+    // If clan war notification is enabled, skip the attack and send a push notification
+    if (GlobalVars.configStates[Schema.GLOBAL_SETTINGS.SERVERCHAN_WAR_NOTIFY.key]?.value == "1") {
+        val deviceRemark = GlobalVars.configStates[Schema.GLOBAL_SETTINGS.DEVICE_REMARK.key]?.value.orEmpty()
+        val remarkKey = "remark${InGameVars.currentAccountNumber}"
+        val remark = GlobalVars.configStates[remarkKey]?.value.orEmpty()
+        ServerChanHelper.sendNotification(
+            title = Strings.serverchanWarTitle,
+            desp = Strings.serverchanWarMsg(deviceRemark, InGameVars.currentAccountNumber, remark)
+        )
+        writeMemory(battleCooldownKey, (System.currentTimeMillis() / 60_000).toString())
         return enterMainScreen()
     }
 
+    when (currentStrategy) {
+        STRATEGY_POSITION -> attackByPosition()
+        STRATEGY_RECOMMENDATION -> attackByRecommendation()
+    }
+    writeMemory(storageKey, currentStrategy)
+    writeMemory(battleCooldownKey, (System.currentTimeMillis() / 60_000).toString())
+    return enterMainScreen()
 }
 
 /**
@@ -130,7 +127,7 @@ suspend fun executeClanWarAttack(attackX: Int, attackY: Int) {
     TouchActions.tap(1080, 640) // Attack
     TouchActions.tap(755, 470)//Double confirm
     accountMessage("检测是否进入对战中")
-    if (findMultiColorsUntil(schemas = listOf(MyColors.EndBattle), duration = 5000) == null) {
+    if (findMultiColorsUntil(schemas = listOf(MyColors.EndBattle), duration = 50000) == null) {
         accountMessage("进入部落战失败")
         return
     }

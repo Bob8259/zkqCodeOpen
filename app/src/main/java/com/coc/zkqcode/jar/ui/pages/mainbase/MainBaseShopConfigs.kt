@@ -97,7 +97,7 @@ private fun ShopSection(
     Column(modifier = Modifier.padding(top = 4.dp)) {
         Text(
             text = title,
-            style = MaterialTheme.typography.labelLarge,
+            style = MaterialTheme.typography.labelMedium,
             modifier = Modifier.padding(bottom = 4.dp)
         )
         Row {

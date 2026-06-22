@@ -1,4 +1,4 @@
-﻿package com.coc.zkqcode.jar.code.universal.buildings.upgrade
+package com.coc.zkqcode.jar.code.universal.buildings.upgrade
 
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
@@ -85,6 +85,9 @@ suspend fun upgradeAllExistingBuildings(buildings: List<String>, currentBase: Ba
         "城墙"
     )
     val orderedList = if (skipOrdering) buildings else getOrderedList(buildings, currentBase)
+    // Wall upgrades force the iteration direction regardless of the Reverse Upgrade config:
+    // gold walls always iterate bottom-to-top (reverse), elixir walls always top-to-bottom (normal).
+    val forcedReverse = if (skipOrdering) (wallType == WallType.Gold) else null
     val isFallbackEnabled = currentBase == BaseType.Main && getBooleanConfigRuntime(
         Schema.MAIN_BASE_SETTINGS.UPGRADE_ANY_BUILDING_AFTER_CONSECUTIVE_FAILURES.key
     )
@@ -121,7 +124,7 @@ suspend fun upgradeAllExistingBuildings(buildings: List<String>, currentBase: Ba
             // Only count consecutive failures when the requested building cannot be found.
             var selectedBuilding = building
             if (skipOrdering) {
-                if (!findSpecificBuilding(building, currentBase, true)) {
+                if (!findSpecificBuilding(building, currentBase, true, forceReverse = forcedReverse)) {
                     // Wall not found; clean up UI and signal caller to stop its upgrade loop
                     clickRightBottom(1)
                     enterMainScreen()
@@ -202,6 +205,7 @@ suspend fun upgradeAllExistingBuildings(buildings: List<String>, currentBase: Ba
                         }
                     }
                 }
+
                 LoopAction.ReturnStop -> {
                     // Propagate stop signal to caller (e.g., elixir icon not found for wall upgrade)
                     clickRightBottom(1)
@@ -268,7 +272,7 @@ private suspend fun upgradeWalls(currentBase: BaseType, wallType: WallType): Loo
         if ((wallType == WallType.Gold && resources.gold < 10000) || (wallType == WallType.Elixir && resources.elixir < 10000)) {
             // Insufficient resources for batch upgrade, show detected values and fall back to normal upgrade
             accountMessage("批量刷墙资源不足（金币: ${resources.gold}, 圣水: ${resources.elixir}），回退到普通刷墙")
-            TouchActions.tap(980, 635)
+            TouchActions.tap(830, 605)
             return LoopAction.Proceed
         } else {
             val wallCost = recognizeUpgradeResources(currentBase)
@@ -325,11 +329,10 @@ private suspend fun upgradeWalls(currentBase: BaseType, wallType: WallType): Loo
                 val doubleHammer = findMultiColorsUntil(schemas = listOf(doubleHammerSchema, upgradeHammerSchema), duration = 300)
 
                 if (doubleHammer != null) {
-
                     TouchActions.tap(doubleHammer.x, doubleHammer.y)
                     TouchActions.tap(882, 440, delayTime = 300)
                     //Just in case there is only one wall can be upgraded, we need to click the normal upgrade button again
-                    if (currentBase == BaseType.Main) TouchActions.tap(980, 635)
+                    if (currentBase == BaseType.Main) TouchActions.tap(830, 605)
                     else if (currentBase == BaseType.Builder) TouchActions.tap(640, 640)
                     clickRightBottom(1)
                     return LoopAction.Proceed
@@ -337,7 +340,7 @@ private suspend fun upgradeWalls(currentBase: BaseType, wallType: WallType): Loo
             }
         }
     } else {
-        if (currentBase == BaseType.Main) TouchActions.tap(980, 635)
+        if (currentBase == BaseType.Main) TouchActions.tap(830, 605)
         else if (currentBase == BaseType.Builder) TouchActions.tap(640, 640)
         return LoopAction.Proceed
     }
@@ -395,10 +398,10 @@ private suspend fun upgradeBuilding(building: String, currentBase: BaseType, att
     return LoopAction.Proceed
 }
 
-private suspend fun findSpecificBuilding(buildingName: String, currentBase: BaseType, excludeNewBuildings: Boolean = false): Boolean {
+private suspend fun findSpecificBuilding(buildingName: String, currentBase: BaseType, excludeNewBuildings: Boolean = false, forceReverse: Boolean? = null): Boolean {
     var found = false
     accountMessage("准备寻找$buildingName")
-    iterateBuilderBaseBuildingUpgradeList(baseType = currentBase, excludeNewBuildings = excludeNewBuildings, onDetect = { result ->
+    iterateBuilderBaseBuildingUpgradeList(baseType = currentBase, excludeNewBuildings = excludeNewBuildings, forceReverse = forceReverse, onDetect = { result ->
         val building = result.buildings.find { it.name == buildingName }
         if (building != null) {
             accountMessage("已找到$buildingName")
@@ -467,8 +470,15 @@ private fun getOrderedList(buildings: List<String>, baseType: BaseType): List<St
         rawPriorityMap
     }
 
-    return buildings.filter { it in priorityMap && it in enabledBuildingNames }.sortedBy {
+    val ordered = buildings.filter { it in priorityMap && it in enabledBuildingNames }.sortedBy {
         priorityMap[it]!!
+    }
+    // Reverse Upgrade (Main Base only): upgrade buildings from the bottom of the
+    // priority list to the top instead of the default top-to-bottom order.
+    return if (baseType == BaseType.Main && getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.REVERSE_UPGRADE.key)) {
+        ordered.reversed()
+    } else {
+        ordered
     }
 }
 

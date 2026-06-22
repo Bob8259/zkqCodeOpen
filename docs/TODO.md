@@ -13,11 +13,8 @@
 ）
 
 ### 升级战宠及之后的所有主世界UI
-- 领限时活动奖励（CLAIM_TIMED_REWARDS）
-- 领令牌奖励（CLAIM_TOKEN_REWARDS）
 - 使用临时物品（USE_TEMP_ITEMS）
 - 创建连号部落（CREATE_CONSECUTIVE_CLANS）及部落名称、连号数量
-- 邀请玩家（INVITE_PLAYERS）
 - 刷经验
 
 ## 其他

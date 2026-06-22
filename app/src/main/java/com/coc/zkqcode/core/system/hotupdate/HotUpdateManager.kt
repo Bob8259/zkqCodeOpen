@@ -28,6 +28,7 @@ import java.io.IOException
 import java.net.SocketTimeoutException
 import java.security.MessageDigest
 import java.util.concurrent.TimeUnit
+import kotlin.time.Duration.Companion.milliseconds
 
 object HotUpdateManager {
 
@@ -72,7 +73,7 @@ object HotUpdateManager {
                 throw e // Respect coroutine cancellation
             } catch (e: Exception) {
                 LogHelper.showDebugInfo("HotUpdateManager: Signal listener error, restarting in ${SIGNAL_LISTENER_RESTART_DELAY_MS}ms: ${e.message}")
-                delay(SIGNAL_LISTENER_RESTART_DELAY_MS)
+                delay(SIGNAL_LISTENER_RESTART_DELAY_MS.milliseconds)
             }
         }
     }
@@ -86,7 +87,7 @@ object HotUpdateManager {
      */
     suspend fun startWatchdog(context: Context) {
         while (true) {
-            delay(WATCHDOG_CHECK_INTERVAL_MS)
+            delay(WATCHDOG_CHECK_INTERVAL_MS.milliseconds)
             try {
                 if (!GlobalVars.isConfigLoaded) continue
                 val updateOption = GlobalVars.configStates["auto_update"]?.value?.toIntOrNull() ?: 0
@@ -105,10 +106,10 @@ object HotUpdateManager {
         }
     }
 
-    private suspend fun checkAndUpdate(context: Context) = withTimeout(UPDATE_TIMEOUT_MS) {
+    private suspend fun checkAndUpdate(context: Context) = withTimeout(UPDATE_TIMEOUT_MS.milliseconds) {
         ShowMessage("准备检查新版本")
         val assetsDir = File(context.filesDir, "assets")
-        // Ensure assets directory exists (e.g. on fresh install)
+        // Ensure assets directory exists (e.g. on fresh installation)
         if (!assetsDir.exists()) assetsDir.mkdirs()
 
         // --- Step A: Determine the local JAR version ---
@@ -145,7 +146,7 @@ object HotUpdateManager {
         if (email.isBlank() || password.isBlank()) {
             repeat(5) {
                 ShowMessage("请登录账号后，再使用自动更新\n(自动更新可免费使用，仅需登录即可)")
-                delay(2000)
+                delay(2000.milliseconds)
             }
             return@withTimeout
         }
@@ -230,7 +231,7 @@ object HotUpdateManager {
                     break
                 } else {
                     ShowMessage("下载失败，可能是网络问题，导致下载中断。若反复出现此问题，则建议去官网手动下载新版。")
-                    delay(2000)
+                    delay(2000.milliseconds)
                     tempFile.setWritable(true)
                     tempFile.delete()
                 }
@@ -240,7 +241,7 @@ object HotUpdateManager {
                 throw e
             } catch (e: Exception) {
                 ShowMessage("下载更新失败: 尝试次数 $attempt\n错误信息: ${e.message}\n请确保登录了紫孔雀账号\n(自动更新可免费使用，仅需登录即可)")
-                delay(2000)
+                delay(2000.milliseconds)
                 if (tempFile.exists()) {
                     tempFile.setWritable(true)
                     tempFile.delete()

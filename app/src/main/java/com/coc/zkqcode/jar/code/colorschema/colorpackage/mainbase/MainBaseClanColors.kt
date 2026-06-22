@@ -22,6 +22,19 @@ interface IMainBaseClanColors {
     val CanNotRequestReinforcement: ColorSchema
     val TroopConfigCastleIcon: ColorSchema
     val ApproveJoinButton: ColorSchema
+    val ClanInviteLanguageButton: ColorSchema
+    val ClanInviteLanguageButtonAlt: ColorSchema
+    val ClanInvitePageEntryIndicator: ColorSchema
+    val ClanInvitePageEntryIndicatorAlt: ColorSchema
+    val ClanInviteActionButton: ColorSchema
+    val ClanInviteActionButtonAlt: ColorSchema
+    val ClanInviteConfirmButton: ColorSchema
+    val ClanInviteConfirmButtonAlt: ColorSchema
+    val ClanInviteBackToListIndicator: ColorSchema
+    val ClanInviteCloseButton: ColorSchema
+    val ClanInviteCloseButtonAlt: ColorSchema
+    val ClanInvitePlayerItemIndicator: ColorSchema
+    val ClanInviteNotInClanFlag: ColorSchema
 }
 
 object MainBaseClanColors : IMainBaseClanColors {
@@ -108,5 +121,45 @@ object MainBaseClanColors : IMainBaseClanColors {
         5, 72, 482, 652, "2EBD76",
         "-1|-23|7DF3D8,-41|-21|78F0D3,-76|-23|7DF3D8,-76|2|30B66D,-211|2|1511DB,-203|-19|7571FF,-162|-23|807AFF,-130|-20|7573FF,-130|2|1511DB",
         0, 0.9, "批准加入按钮"
+    )
+
+    override val ClanInviteLanguageButton = ColorSchema.parse(
+        549, 509, 771, 587, "7AE3B5", "45|0|7AE3B5,89|0|7AE3B5,133|0|7AE3B5,178|0|7AE3B5,0|39|2BCE86,45|39|2BCE86,89|39|2BCE86,133|39|2BCE86,178|39|2BCE86", 0, 0.9, "部落拉人-语言确认按钮"
+    )
+    override val ClanInviteLanguageButtonAlt = ColorSchema.parse(
+        549, 509, 771, 587, "2BCE86", "45|0|2BCE86,89|0|2BCE86,133|0|2BCE86,178|0|2BCE86,0|39|7AE3B5,45|39|7AE3B5,89|39|7AE3B5,133|39|7AE3B5,178|39|7AE3B5", 0, 0.9, "部落拉人-语言确认按钮(备选)"
+    )
+    override val ClanInvitePageEntryIndicator = ColorSchema.parse(
+        852, 197, 948, 236, "7DF3D8", "19|0|7DF3D8,38|0|7DF3D8,57|0|7DF3D8,76|0|7DF3D8,0|19|2ECA80,19|19|2ECA80,38|19|2ECA80,57|19|2ECA80,76|19|2ECA80", 0, 0.9, "部落拉人-进入页面标志"
+    )
+    override val ClanInvitePageEntryIndicatorAlt = ColorSchema.parse(
+        852, 197, 948, 236, "2ECA80", "19|0|2ECA80,38|0|2ECA80,57|0|2ECA80,76|0|2ECA80,0|19|7DF3D8,19|19|7DF3D8,38|19|7DF3D8,57|19|7DF3D8,76|19|7DF3D8", 0, 0.9, "部落拉人-进入页面标志(备选)"
+    )
+    override val ClanInviteActionButton = ColorSchema.parse(
+        696, 558, 860, 615, "7EF4D9", "33|0|7EF4D9,66|0|7EF4D9,99|0|7EF4D9,132|0|7EF4D9,0|29|2EC57B,33|29|2EC57B,66|29|2EC57B,99|29|2EC57B,132|29|2EC57B", 0, 0.9, "部落拉人-更多信息按钮"
+    )
+    override val ClanInviteActionButtonAlt = ColorSchema.parse(
+        696, 558, 860, 615, "2EC57B", "33|0|2EC57B,66|0|2EC57B,99|0|2EC57B,132|0|2EC57B,0|29|7EF4D9,33|29|7EF4D9,66|29|7EF4D9,99|29|7EF4D9,132|29|7EF4D9", 0, 0.9, "部落拉人-更多信息按钮(备选)"
+    )
+    override val ClanInviteConfirmButton = ColorSchema.parse(
+        394, 355, 532, 400, "83F6DB", "27|0|83F6DB,55|0|83F6DB,83|0|83F6DB,110|0|83F6DB,0|23|2EC67C,27|23|2EC67C,55|23|2EC67C,83|23|2EC67C,110|23|2EC67C", 0, 0.9, "部落拉人-邀请确认按钮"
+    )
+    override val ClanInviteConfirmButtonAlt = ColorSchema.parse(
+        394, 355, 532, 400, "2EC67C", "27|0|2EC67C,55|0|2EC67C,83|0|2EC67C,110|0|2EC67C,0|23|83F6DB,27|23|83F6DB,55|23|83F6DB,83|23|83F6DB,110|23|83F6DB", 0, 0.9, "部落拉人-邀请确认按钮(备选)"
+    )
+    override val ClanInviteBackToListIndicator = ColorSchema.parse(
+        143, 42, 209, 71, "84E5BA", "13|0|84E5BA,26|0|FFFFFF,39|0|FFFFFF,52|0|84E5BA,0|15|26C779,13|15|26C779,26|15|C2B7B1,39|15|9D9394,52|15|26C779", 0, 0.9, "部落拉人-返回成员列表标志"
+    )
+    override val ClanInviteCloseButton = ColorSchema.parse(
+        600, 300, 700, 400, "FF5722", "5|0|FF5722,0|5|FF5722,5|5|FF5722", 0, 0.9, "部落拉人-关闭弹窗按钮"
+    )
+    override val ClanInviteCloseButtonAlt = ColorSchema.parse(
+        600, 300, 700, 400, "9E9E9E", "5|0|9E9E9E,0|5|9E9E9E,5|5|9E9E9E", 0, 0.9, "部落拉人-关闭弹窗按钮(备选)"
+    )
+    override val ClanInvitePlayerItemIndicator = ColorSchema.parse(
+        1068, 517, 1138, 685, "3DBDE6", "0|-6|6EE5EF,0|-16|7EE6EF,-6|2|29C4E7,7|-1|31C7E7,-3|10|21BEE7,-4|21|40D7EC,3|22|62D6EF,0|24|52B6D8,-2|5|2182B5", 0, 0.9, "部落拉人-玩家项标志"
+    )
+    override val ClanInviteNotInClanFlag = ColorSchema.parse(
+        17, 404, 83, 473, "B6B5B7", "13|0|FEFEFE,26|0|878787,39|0|FFFFFF,52|0|606464,0|35|565F66,13|35|8C8C8C,26|35|4F4F4F,39|35|9B9B9B,52|35|272727", 0, 0.9, "未加入部落标志"
     )
 }

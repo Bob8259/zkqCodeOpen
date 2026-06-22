@@ -1,4 +1,4 @@
-﻿package com.coc.zkqcode.jar.code.universal.buildings.gearup
+package com.coc.zkqcode.jar.code.universal.buildings.gearup
 
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.jar.code.colorschema.MyColors
@@ -37,7 +37,7 @@ suspend fun gearUpBuildings(): Boolean {
 }
 
 private suspend fun performGearUpBuildings(): Boolean {
-    if (!enterBuilderBase(true)) return false
+    if (!enterBuilderBase(true)) return true
     if (!upgradeGearUpBuildings()) return false
     return enterBuilderBase(false)
 }

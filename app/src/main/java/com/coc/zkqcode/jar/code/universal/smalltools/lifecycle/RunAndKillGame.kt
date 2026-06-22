@@ -1,6 +1,7 @@
 package com.coc.zkqcode.jar.code.universal.smalltools.lifecycle
 
 import com.coc.zkqcode.core.util.basic.RunShell
+import com.coc.zkqcode.core.util.fileactions.LogHelper.showDebugInfo
 import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.jar.code.universal.InGameVars
@@ -8,8 +9,14 @@ import com.coc.zkqcode.jar.code.universal.smalltools.data.getStaticConfig
 
 suspend fun runGame() {
     // Launch component string is defined in GameVersion enum, keeping version-specific details centralized
-    RunShell.runNoOutput("am start -n ${InGameVars.currentGameVersion.launchComponent}")
+    val command = "am start -n ${InGameVars.currentGameVersion.launchComponent}"
+    RunShell.runNoOutput(command)
     delayWithMultiplier(3000)
+}
+
+suspend fun killApp(packageName: String) {
+    val command = "am force-stop $packageName"
+    RunShell.runNoOutput(command)
 }
 
 suspend fun killGame() {

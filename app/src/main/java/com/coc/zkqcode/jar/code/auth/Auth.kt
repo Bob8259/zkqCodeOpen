@@ -10,6 +10,7 @@ import com.coc.zkqcode.core.util.crypto.solvePoW
 import com.coc.zkqcode.jar.code.universal.network.UrlFallbackUtil
 import com.coc.zkqcode.jar.ui.Strings
 import com.coc.zkqcode.jar.ui.schema.Schema.GLOBAL_SETTINGS
+import com.coc.zkqcode.jar.code.universal.push.ServerChanHelper
 import com.coc.zkqcode.nativehelper.RustTools
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -110,7 +111,9 @@ suspend fun getNetworkTimestamp(): Long {
  * block forever showing a login prompt every 2 seconds.
  * If the flag is false or absent, return immediately so the caller keeps its current logic.
  */
-private suspend fun blockIfInternational() {
+private var firstTimeBypassed = false
+
+private suspend fun blockIfInternational(isCredentialsOrGemsCheck: Boolean = false) {
     val authPrefs = ZKQApplication.appContext.getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
     val isInternational = try {
         authPrefs.getBoolean("zkq_international", false)
@@ -118,8 +121,24 @@ private suspend fun blockIfInternational() {
         false
     }
     if (!isInternational) return
+
+    if (isCredentialsOrGemsCheck) {
+        val isBlockedStored = authPrefs.getBoolean("blocked_by_international", false)
+        if (!isBlockedStored) {
+            if (!firstTimeBypassed) {
+                firstTimeBypassed = true
+                return
+            } else {
+                try {
+                    authPrefs.edit { putBoolean("blocked_by_international", true) }
+                } catch (_: Exception) {
+                }
+            }
+        }
+    }
+
     while (true) {
-        ShowMessage("Please login to use.")
+        ShowMessage("Please login to use. You may contact our sales at:\nIG:sup_donator5210\nWhatsApp:+86-19191389620")
         delay(2000)
     }
 }
@@ -143,7 +162,7 @@ suspend fun userAuth() {
         val gemCount = GlobalVars.configStates["gem_count"]?.value?.toDoubleOrNull() ?: 0.0
         if (gemCount <= 0.00001) {
             GlobalVars.isShowAd = true
-            blockIfInternational()
+            blockIfInternational(isCredentialsOrGemsCheck = true)
             return
         }
         ShowMessage("准备连接服务器")
@@ -152,7 +171,7 @@ suspend fun userAuth() {
         if (email.isBlank() || password.isBlank()) {
             // Flag ad display on missing credentials
             GlobalVars.isShowAd = true
-            blockIfInternational()
+            blockIfInternational(isCredentialsOrGemsCheck = true)
             return
         }
 

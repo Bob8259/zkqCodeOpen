@@ -81,6 +81,7 @@ fun LazyListScope.mainBaseConfig(
                         GlobalVars.configStates["${MAIN_BASE_SETTINGS.SAVE_WORKER_BUILD_AFTER_WALL_FULL.key}_c$index"]?.value = "0"
                         GlobalVars.configStates["${BUILDER_BASE_SETTINGS.BUILDER_BASE_SAVE_WORKER_BUILD_AFTER_WALL_FULL.key}_c$index"]?.value = "0"
                         GlobalVars.configStates["${MAIN_BASE_SETTINGS.SPEED_SIX_BUILDER.key}_c$index"]?.value = "0"
+                        GlobalVars.configStates["${MAIN_BASE_SETTINGS.RESEARCH_LEVEL.key}_c$index"]?.value = "0"
                     }
                 })
             AnimatedVisibility(
@@ -299,29 +300,6 @@ fun LazyListScope.mainBaseConfig(
             }
 
             SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.CLAIM_CLAN_GAME_REWARDS.key}_c$index", explain = Strings.claimRewardsExplain)
-            // Badge event reward parent switch.
-            SettingSwitchIcon(
-                key = "${MAIN_BASE_SETTINGS.CLAIM_BADGE_EVENT_REWARDS.key}_c$index",
-                explain = Strings.claimBadgeEventRewardsExplain
-            )
-            // Event Shop reward child switch, visible only when badge event rewards are enabled.
-            AnimatedVisibility(
-                visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.CLAIM_BADGE_EVENT_REWARDS.key}_c$index"]?.value == "1"
-            ) {
-                Column {
-                    SettingSwitchIcon(
-                        key = "${MAIN_BASE_SETTINGS.CLAIM_EVENT_SHOP_REWARDS.key}_c$index",
-                        explain = Strings.claimEventShopRewardsExplain
-                    )
-                    AnimatedVisibility(
-                        visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.CLAIM_EVENT_SHOP_REWARDS.key}_c$index"]?.value == "1"
-                    ) {
-                        FlowRow {
-                            SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.BUY_NEW_EQUIPMENT_WITH_EVENT_MEDAL.key}_c$index")
-                        }
-                    }
-                }
-            }
             FlowRow {
                 SettingSwitchIcon(
                     key = "${MAIN_BASE_SETTINGS.PLAY_CLAN_WAR.key}_c$index", explain = Strings.clanWarExplain
@@ -424,7 +402,7 @@ fun LazyListScope.mainBaseConfig(
             )
             AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.START_CLAN_LEAGUE.key}_c$index"]?.value == "1") {
                 SettingDropdown(
-                    key = "${MAIN_BASE_SETTINGS.START_CLAN_LEAGUE_SIZE.key}_c$index", options = listOf("15v15", "30v30")
+                    key = "${MAIN_BASE_SETTINGS.START_CLAN_LEAGUE_SIZE.key}_c$index", options = listOf("11v11", "15v15", "30v30")
                 )
             }
 
@@ -489,7 +467,12 @@ fun LazyListScope.mainBaseConfig(
                         )
                         SettingDropdown(
                             key = "${MAIN_BASE_SETTINGS.RESEARCH_LEVEL.key}_c${index}",
-                            options = listOf(Strings.maxLevel, Strings.maxLevelMinus1, Strings.maxLevelMinus2)
+                            options = listOf(Strings.maxLevel, Strings.maxLevelMinus1, Strings.maxLevelMinus2),
+                            afterChange = { selectedIdx ->
+                                if (selectedIdx > 0) {
+                                    GlobalVars.configStates["${MAIN_BASE_SETTINGS.SMART_DECISION.key}_c$index"]?.value = "1"
+                                }
+                            }
                         )
                     }
                 }
@@ -538,6 +521,9 @@ fun LazyListScope.mainBaseConfig(
                 Column {
                     CustomButton(
                         onClick = { onNavigatePriority(index) }, text = Strings.adjustMainBasePriority, containerColor = AppColors.Teal
+                    )
+                    SettingSwitchIcon(
+                        key = "${MAIN_BASE_SETTINGS.REVERSE_UPGRADE.key}_c$index", explain = Strings.reverseUpgradeExplain
                     )
                     InputRowWithCheckBox(
                         checkBoxKey = "${MAIN_BASE_SETTINGS.INSTANT_UPGRADE.key}_c$index", inputKey = "${MAIN_BASE_SETTINGS.INSTANT_UPGRADE_THRESHOLD.key}_c$index"
@@ -649,6 +635,21 @@ fun LazyListScope.mainBaseConfig(
                     MAIN_BASE_SETTINGS.SELL_RING_OF_WALL
                 ).forEach { setting ->
                     SettingSwitchIcon(key = "${setting.key}_c$index")
+                }
+            }
+            // Badge event reward parent switch.
+            SettingSwitchIcon(
+                key = "${MAIN_BASE_SETTINGS.CLAIM_BADGE_EVENT_REWARDS.key}_c$index",
+                explain = Strings.claimBadgeEventRewardsExplain
+            )
+            // Event Shop reward child switch, visible only when badge event rewards are enabled.
+            AnimatedVisibility(
+                visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.CLAIM_BADGE_EVENT_REWARDS.key}_c$index"]?.value == "1"
+            ) {
+                Column {
+                    FlowRow {
+                        SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.BUY_NEW_EQUIPMENT_WITH_EVENT_MEDAL.key}_c$index")
+                    }
                 }
             }
             MainBaseShopConfigs(index)

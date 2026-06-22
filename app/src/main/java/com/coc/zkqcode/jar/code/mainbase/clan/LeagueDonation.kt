@@ -95,7 +95,7 @@ suspend fun leagueDonation(): Boolean {
 }
 
 private suspend fun enterLeagueInterface(): Boolean {
-    val leagueIndicator = findMultiColors(MyColors.ClanLeagueEntryIndicator)
+    val leagueIndicator = findMultiColors(MyColors.ClanLeagueEntryIndicator) ?: findMultiColors(MyColors.ClanLeagueEntryIndicator2)
     if (leagueIndicator != null) {
         accountMessage("检测到联赛入口标志，点击进入联赛界面")
         TouchActions.tap(leagueIndicator.x, leagueIndicator.y)

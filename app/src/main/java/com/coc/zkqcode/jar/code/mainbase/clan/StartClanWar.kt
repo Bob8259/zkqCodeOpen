@@ -39,7 +39,7 @@ suspend fun startClanWar(): Boolean {
         || getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.PLAY_LEAGUE_DONATION.key)
 
     if (leagueEnabled && isInClanLeaguePeriod()) {
-        if (findMultiColors(MyColors.ClanLeagueEntryIndicator) != null) {
+        if (findMultiColors(MyColors.ClanLeagueEntryIndicator) != null || findMultiColors(MyColors.ClanLeagueEntryIndicator2) != null) {
             accountMessage("当前处于部落联赛期间且检测到联赛入口，跳过开启部落战")
             return true
         }

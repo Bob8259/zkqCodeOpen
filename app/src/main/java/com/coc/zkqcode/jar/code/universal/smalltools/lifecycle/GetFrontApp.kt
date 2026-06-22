@@ -23,10 +23,4 @@ suspend fun isGameAtFront(): Boolean {
     }
 }
 
-suspend fun runApp(packageName: String) {
-    RunShell.runNoOutput("monkey -p $packageName -c android.intent.category.LAUNCHER 1")
-}
 
-suspend fun killApp(packageName: String) {
-    RunShell.runNoOutput("am force-stop $packageName")
-}

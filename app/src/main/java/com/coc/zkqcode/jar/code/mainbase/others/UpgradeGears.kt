@@ -2,6 +2,7 @@ package com.coc.zkqcode.jar.code.mainbase.others
 
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
+import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
 import com.coc.zkqcode.jar.code.colorschema.ColorSchema
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.mainbase.herohall.backToHeroHall
@@ -18,7 +19,7 @@ data class HeroGearEntry(
     val heroKey: String, val displayName: String, val tapX: Int, val tapY: Int, val gears: List<Pair<String, ColorSchema>>
 )
 
-// Zone2 custom-gear slot: position identified purely by image-color recognition
+// Zone2 custom-gear slot: position identified purely by image-colour recognition
 // (no upgrade arrow, no wear checkmark, no region construction).
 data class Zone2Slot(
     val x: Int,
@@ -35,12 +36,14 @@ private const val STEP_DELAY = 1000
 private val HERO_ENTRIES = listOf(
     HeroGearEntry(
         heroKey = "barbarian_king", displayName = "野蛮人之王", tapX = 129, tapY = 395, gears = listOf(
-            Pair(Schema.MAIN_BASE_GEARS.BARBARIAN_KING_IRON_FIST.key, MyColors.BarbarianKingIronFist),
             Pair(Schema.MAIN_BASE_GEARS.BARBARIAN_KING_PUPPET.key, MyColors.BarbarianKingPuppet),
             Pair(Schema.MAIN_BASE_GEARS.BARBARIAN_KING_RAGE_VIAL.key, MyColors.BarbarianKingRageVial),
             Pair(Schema.MAIN_BASE_GEARS.BARBARIAN_KING_EARTHQUAKE_BOOTS.key, MyColors.BarbarianKingEarthquakeBoots),
             Pair(Schema.MAIN_BASE_GEARS.BARBARIAN_KING_HEALING_BEARD.key, MyColors.BarbarianKingHealingBeard),
             Pair(Schema.MAIN_BASE_GEARS.BARBARIAN_KING_SPIKED_SOCCER.key, MyColors.BarbarianKingSpikedSoccer),
+            Pair(Schema.MAIN_BASE_GEARS.BARBARIAN_KING_GIANT_GAUNTLET.key, MyColors.BarbarianKingGiantGauntlet),
+            Pair(Schema.MAIN_BASE_GEARS.BARBARIAN_KING_SNAKE_BRACELET.key, MyColors.BarbarianKingSnakeBracelet),
+            Pair(Schema.MAIN_BASE_GEARS.BARBARIAN_KING_STICK_HORSE.key, MyColors.BarbarianKingStickHorse),
         )
     ),
     HeroGearEntry(
@@ -51,6 +54,8 @@ private val HERO_ENTRIES = listOf(
             Pair(Schema.MAIN_BASE_GEARS.ARCHER_QUEEN_FROST_ARROW.key, MyColors.ArcherQueenFrostArrow),
             Pair(Schema.MAIN_BASE_GEARS.ARCHER_QUEEN_HEALER_PUPPET.key, MyColors.ArcherQueenHealerPuppet),
             Pair(Schema.MAIN_BASE_GEARS.ARCHER_QUEEN_CLONE_MIRROR.key, MyColors.ArcherQueenCloneMirror),
+            Pair(Schema.MAIN_BASE_GEARS.ARCHER_QUEEN_ACTION_FIGURE.key, MyColors.ArcherQueenActionFigure),
+            Pair(Schema.MAIN_BASE_GEARS.ARCHER_QUEEN_MONOLITH_ARROW.key, MyColors.ArcherQueenMonolithArrow),
         )
     ),
     HeroGearEntry(
@@ -60,6 +65,8 @@ private val HERO_ENTRIES = listOf(
             Pair(Schema.MAIN_BASE_GEARS.GRAND_WARDEN_HEALING_TOME.key, MyColors.GrandWardenHealingTome),
             Pair(Schema.MAIN_BASE_GEARS.GRAND_WARDEN_GIANT_FIREBALL.key, MyColors.GrandWardenGiantFireball),
             Pair(Schema.MAIN_BASE_GEARS.GRAND_WARDEN_RAGE_GEM.key, MyColors.GrandWardenRageGem),
+            Pair(Schema.MAIN_BASE_GEARS.GRAND_WARDEN_LAVA_BALLOON_PUPPET.key, MyColors.GrandWardenLavaBalloonPuppet),
+            Pair(Schema.MAIN_BASE_GEARS.GRAND_WARDEN_HEROIC_TORCH.key, MyColors.GrandWardenHeroicTorch),
         )
     ),
     HeroGearEntry(
@@ -68,6 +75,9 @@ private val HERO_ENTRIES = listOf(
             Pair(Schema.MAIN_BASE_GEARS.ROYAL_CHAMPION_HOG_PUPPET.key, MyColors.RoyalChampionHogPuppet),
             Pair(Schema.MAIN_BASE_GEARS.ROYAL_CHAMPION_ROYAL_GEM.key, MyColors.RoyalChampionRoyalGem),
             Pair(Schema.MAIN_BASE_GEARS.ROYAL_CHAMPION_SPEED_VIAL.key, MyColors.RoyalChampionSpeedVial),
+            Pair(Schema.MAIN_BASE_GEARS.ROYAL_CHAMPION_FROZEN_CRYSTAL.key, MyColors.RoyalChampionFrozenCrystal),
+            Pair(Schema.MAIN_BASE_GEARS.ROYAL_CHAMPION_ROCKET_SPEAR.key, MyColors.RoyalChampionRocketSpear),
+            Pair(Schema.MAIN_BASE_GEARS.ROYAL_CHAMPION_ELECTRO_BOOTS.key, MyColors.RoyalChampionElectroBoots),
         )
     ),
     HeroGearEntry(
@@ -76,6 +86,7 @@ private val HERO_ENTRIES = listOf(
             Pair(Schema.MAIN_BASE_GEARS.DRAGON_DUKE_SCALE_ARMOR.key, MyColors.DragonDukeScaleArmor),
             Pair(Schema.MAIN_BASE_GEARS.DRAGON_DUKE_COMBUSTOR.key, MyColors.DragonDukeCombustor),
             Pair(Schema.MAIN_BASE_GEARS.DRAGON_DUKE_LIGHTNING_FANG.key, MyColors.DragonDukeLightningFang),
+            Pair(Schema.MAIN_BASE_GEARS.DRAGON_DUKE_ROCKET_PACK.key, MyColors.DragonDukeRocketPack),
         )
     ),
     HeroGearEntry(
@@ -84,12 +95,14 @@ private val HERO_ENTRIES = listOf(
             Pair(Schema.MAIN_BASE_GEARS.MINION_PRINCE_IRON_PANTS.key, MyColors.MinionPrinceIronPants),
             Pair(Schema.MAIN_BASE_GEARS.MINION_PRINCE_NOBLE_DUMBBELL.key, MyColors.MinionPrinceNobleDumbbell),
             Pair(Schema.MAIN_BASE_GEARS.MINION_PRINCE_DARK_ORB.key, MyColors.MinionPrinceDarkOrb),
+            Pair(Schema.MAIN_BASE_GEARS.MINION_PRINCE_DARK_CROWN.key, MyColors.MinionPrinceDarkCrown),
+            Pair(Schema.MAIN_BASE_GEARS.MINION_PRINCE_METEOR_STAFF.key, MyColors.MinionPrinceMeteorStaff),
         )
     ),
 )
 
 private fun findHeroAndGearByPosition(arrowX: Int, arrowY: Int): Pair<HeroGearEntry, Pair<String, ColorSchema>>? {
-    val TOLERANCE = 15
+    val tolerance = 15
     var bestMatch: Pair<HeroGearEntry, Pair<String, ColorSchema>>? = null
     var bestDistance = Int.MAX_VALUE
 
@@ -97,8 +110,8 @@ private fun findHeroAndGearByPosition(arrowX: Int, arrowY: Int): Pair<HeroGearEn
         for ((gearKey, gearSchema) in heroEntry.gears) {
             if (gearSchema.x1 == 0 && gearSchema.x2 == 0 && gearSchema.y1 == 0 && gearSchema.y2 == 0) continue
 
-            val inX = arrowX >= gearSchema.x1 - TOLERANCE && arrowX <= gearSchema.x2 + TOLERANCE
-            val inY = arrowY >= gearSchema.y1 - TOLERANCE && arrowY <= gearSchema.y2 + TOLERANCE
+            val inX = arrowX >= gearSchema.x1 - tolerance && arrowX <= gearSchema.x2 + tolerance
+            val inY = arrowY >= gearSchema.y1 - tolerance && arrowY <= gearSchema.y2 + tolerance
 
             if (inX && inY) {
                 val centerX = (gearSchema.x1 + gearSchema.x2) / 2
@@ -156,11 +169,8 @@ suspend fun upgradeGearsAction(shouldUpgradeWear: Boolean, shouldUpgradeCustom: 
     if (shouldUpgradeWear) {
         accountMessage("===== 开始检测穿戴装备 =====")
         val screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult
-        if (screenBuffer == null) {
-            accountMessage("截屏失败")
-            backToHeroHall()
-            return
-        }
+            ?: logAndRestart("upgradeGearsAction: screen capture failed while detecting worn gears.", isShow = false)
+
         val zone1Arrows = detectZone1Arrows(screenBuffer)
         accountMessage("检测到 ${zone1Arrows.size} 个穿戴装备箭头")
 
@@ -174,7 +184,7 @@ suspend fun upgradeGearsAction(shouldUpgradeWear: Boolean, shouldUpgradeCustom: 
         }
     }
 
-    // Zone2: custom gears (image-color recognition only, 2 rounds with swipe)
+    // Zone2: custom gears (image-colour recognition only, 2 rounds with swipe)
     if (shouldUpgradeCustom) {
         val enabledCustomGears = getAllEnabledCustomGears()
         accountMessage("启用的自定义装备共 ${enabledCustomGears.size} 件")
@@ -334,7 +344,7 @@ private suspend fun confirmAndExitGearDetail(): Int {
     
     while (findMultiColors(schema = MyColors.GearListReturned, increment = 1) == null && returnAttempt < maxReturnAttempts) {
         returnAttempt++
-        accountMessage("第 ${returnAttempt} 次尝试返回装备列表")
+        accountMessage("第 $returnAttempt 次尝试返回装备列表")
         clickRightBottom(1)
         delayWithMultiplier(returnCheckIntervalMs)
     }
@@ -356,8 +366,7 @@ private suspend fun detectZone1Arrows(byteBuffer: ScreenCaptureManager.CaptureRe
 
     accountMessage("开始检测穿戴装备箭头...")
     while (true) {
-        val point = findMultiColors(schema = searchSchema, byteBuffer = byteBuffer, increment = 1)
-        if (point == null) break
+        val point = findMultiColors(schema = searchSchema, byteBuffer = byteBuffer, increment = 1) ?: break
 
         val isDuplicate = points.any { (ex, _) -> abs(point.x - ex) < 20 }
         if (!isDuplicate) {

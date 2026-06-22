@@ -37,12 +37,19 @@ private const val BB_BATTLE_COPTER_DATA_ID = 28000005  // 战斗直升机
 // Pet house building for level detection
 private const val PET_HOUSE_DATA_ID = 1000068   // 战宠小屋
 
-// Pet data IDs for level detection (the 5 basic pets)
+// Pet data IDs for level detection (from V5.5.html reference)
 private const val LASSI_DATA_ID = 73000000       // 莱希
 private const val MIGHTY_YAK_DATA_ID = 73000001  // 大牦
 private const val ELECTRO_OWL_DATA_ID = 73000002 // 闪枭
 private const val UNICORN_DATA_ID = 73000003     // 独角
+private const val PHOENIX_DATA_ID = 73000004     // 凤凰
+private const val POISON_LIZARD_DATA_ID = 73000007 // 猛蜥
+private const val DIGGY_DATA_ID = 73000008       // 地兽
 private const val FROSTY_DATA_ID = 73000009      // 冰牙
+private const val SPIRIT_FOX_DATA_ID = 73000010  // 灵狐
+private const val ANGRY_JELLY_DATA_ID = 73000011 // 愤怒水母
+private const val SNEEZY_DATA_ID = 73000016      // 阿啾
+private const val GREEDY_RAVEN_DATA_ID = 73000017 // 贪婪渡鸦
 
 // Builder base troops (in "units2" array) — for Speed 6 Builder level 18 target
 private const val BB_NIGHT_WITCH_DATA_ID = 4000042       // 暗夜女巫
@@ -168,14 +175,17 @@ private const val BB_RAGED_BARBARIAN_DATA_ID = 4000031   // 狂暴野蛮人
     }
 
     // Determine whether the main base still has upgradable or unbuilt walls (data == 1000010 in "buildings").
-    // Walls are considered complete (false) only when the built wall count equals the town hall's wall quantity
-    // and every wall is already at the town hall's max wall level.
+    // Walls are considered complete (false) only when the count of walls already at the town hall's
+    // max wall level meets or exceeds the town hall's wall quantity.
+    // e.g. TH 18/19 require 200 walls at level 19 — if fewer than 200 level-19 walls exist, upgrade is needed.
     InGameVars.mainBaseWallsNeedUpgrade = try {
         val (wallQuantity, maxWallLevel) = wallRequirementForTownHall(firstBuildingLvl)
         val wallEntries = buildings.filter { it.asJsonObject.get("data").asInt == 1000010 }
-        val builtWallCount = wallEntries.sumOf { it.asJsonObject.get("cnt")?.asInt ?: 1 }
-        val allAtMaxLevel = wallEntries.all { it.asJsonObject.get("lvl").asInt >= maxWallLevel }
-        val isComplete = builtWallCount >= wallQuantity && allAtMaxLevel
+        // Count only the walls that have already reached the max wall level for this TH.
+        val wallsAtMaxLevel = wallEntries
+            .filter { it.asJsonObject.get("lvl").asInt >= maxWallLevel }
+            .sumOf { it.asJsonObject.get("cnt")?.asInt ?: 1 }
+        val isComplete = wallsAtMaxLevel >= wallQuantity
         // Town halls with no walls (quantity 0) are always complete.
         wallQuantity > 0 && !isComplete
     } catch (_: Exception) {
@@ -259,7 +269,8 @@ private fun wallRequirementForTownHall(townHallLevel: Int): Pair<Int, Int> = whe
     15 -> 325 to 16
     16 -> 325 to 17
     17 -> 325 to 18
-    18 -> 325 to 19
+    18 -> 200 to 19
+    19 -> 200 to 19
     else -> 0 to 0
 }
 
@@ -294,7 +305,14 @@ private fun parsePetLevels(jsonObject: JsonObject) {
                 MIGHTY_YAK_DATA_ID to MainBasePets.MIGHTY_YAK.key,
                 ELECTRO_OWL_DATA_ID to MainBasePets.ELECTRO_OWL.key,
                 UNICORN_DATA_ID to MainBasePets.UNICORN.key,
-                FROSTY_DATA_ID to MainBasePets.FROSTY.key
+                PHOENIX_DATA_ID to MainBasePets.PHOENIX.key,
+                POISON_LIZARD_DATA_ID to MainBasePets.POISON_LIZARD.key,
+                DIGGY_DATA_ID to MainBasePets.DIGGY.key,
+                FROSTY_DATA_ID to MainBasePets.FROSTY.key,
+                SPIRIT_FOX_DATA_ID to MainBasePets.SPIRIT_FOX.key,
+                ANGRY_JELLY_DATA_ID to MainBasePets.ANGRY_JELLY.key,
+                SNEEZY_DATA_ID to MainBasePets.SNEEZY.key,
+                GREEDY_RAVEN_DATA_ID to MainBasePets.GREEDY_RAVEN.key
             )
             val levels = mutableMapOf<String, Int>()
             for ((dataId, key) in petIdMap) {

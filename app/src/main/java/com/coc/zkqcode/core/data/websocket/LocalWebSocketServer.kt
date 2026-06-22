@@ -14,6 +14,7 @@ import io.ktor.websocket.Frame
 import io.ktor.websocket.WebSocketSession
 import io.ktor.websocket.readText
 import java.net.BindException
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -54,6 +55,9 @@ class LocalWebSocketServer {
                             handleFrame(frame.readText())
                         }
                     }
+                } catch (e: CancellationException) {
+                    // Cooperative cancellation must propagate, never be swallowed as an error.
+                    throw e
                 } catch (e: Exception) {
                     logAndRestart("LocalWebSocketServer: session error: ${e.message}")
                 } finally {
@@ -132,6 +136,9 @@ class LocalWebSocketServer {
                 withTimeout(timeout) {
                     deferred.await()
                 }
+            } catch (e: CancellationException) {
+                // Cooperative cancellation must propagate, never be swallowed as an error.
+                throw e
             } catch (e: Exception) {
                 logAndRestart("LocalWebSocketServer: action timeout or error: ${e.message}")
                 null
@@ -140,6 +147,9 @@ class LocalWebSocketServer {
             }
         }
     }
+
+    /** Returns true if an app_process client is currently connected. */
+    fun isClientConnected(): Boolean = clientSession != null
 
     /** Gracefully shut down the Ktor server. */
     fun stopServer() {

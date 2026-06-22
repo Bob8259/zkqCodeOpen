@@ -70,13 +70,13 @@ private suspend fun deploySiegeMachine(useReinforcements: Boolean = true) {
 
 private suspend fun deployOthers(useSpells: Boolean = true) {
     //Deploy other troops and spells
-    repeat(3) {
+    repeat(15) {
         val troops = findMultiColorsUntil(
             schemas = listOf(MyColors.TroopColorAtDeploymentBar, MyColors.TroopColorAtDeploymentBar2, MyColors.SuperTroopColorAtDeploymentBar, MyColors.SpecialTroopColorAtDeploymentBar), duration = 20
         )
         if (troops != null) {
             TouchActions.tap(troops.x, troops.y, delayTime = 300)
-            repeat(9) {
+            repeat(3) {
                 TouchActions.tap(310, 247, delayTime = 100)
                 TouchActions.tap(386, 222, delayTime = 100)
             }
@@ -85,11 +85,10 @@ private suspend fun deployOthers(useSpells: Boolean = true) {
             val spells = findMultiColorsUntil(schemas = listOf(MyColors.SpellColorAtDeploymentBar), duration = 20)
             if (spells != null) {
                 TouchActions.tap(spells.x, spells.y, delayTime = 300)
-                repeat(4) {
-                    TouchActions.tap(520, 240, delayTime = 300)
-                    TouchActions.tap(465, 320, delayTime = 300)
-                    TouchActions.tap(370, 355, delayTime = 300)
-                }
+                TouchActions.tap(520, 240, delayTime = 300)
+                TouchActions.tap(465, 320, delayTime = 300)
+                TouchActions.tap(370, 355, delayTime = 300)
+
             }
         }
     }

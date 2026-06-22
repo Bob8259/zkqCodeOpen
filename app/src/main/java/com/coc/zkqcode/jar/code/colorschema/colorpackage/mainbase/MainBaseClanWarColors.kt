@@ -27,8 +27,10 @@ interface IMainBaseClanWarColors {
 
     // Clan war league registration buttons
     val ClanLeagueEntryIndicator: ColorSchema
+    val ClanLeagueEntryIndicator2: ColorSchema
     val StartClanLeagueButton: ColorSchema
     val ConfirmClanLeagueRegistration: ColorSchema
+    val ClanWarEndButton: ColorSchema
     val LeagueWhiteCloud: ColorSchema
     val LeaguePreparePhase: ColorSchema
     val LeaguePreparePhase2: ColorSchema
@@ -122,6 +124,9 @@ object MainBaseClanWarColors : IMainBaseClanWarColors {
     override val ClanLeagueEntryIndicator = ColorSchema.parse(
         19, 406, 86, 472, "E0FAFF", "0|-31|DBFFFF,3|-22|3E6ED3,-15|-18|28ACE8,-4|-9|BDEAFF,-25|-2|0DBADE,-11|22|0DA2C2,30|-13|92EDFC,20|-17|28ABE5,1064|-109|E0E8E8", 0, 0.9, "联赛入口标志"
     )
+    override val ClanLeagueEntryIndicator2 = ColorSchema.parse(
+        25, 410, 64, 466, "6ACCF6", "8|0|16566E,16|0|0E0F10,23|0|3B6DCE,31|0|3A72D6,0|28|10B5D5,8|28|FFFFFF,16|28|C6E0FF,23|28|C7E0FA,31|28|DFF9FF", 0, 0.9, "联赛入口标志2"
+    )
 
     // Clan war league registration button
     override val StartClanLeagueButton = ColorSchema.parse(
@@ -131,6 +136,11 @@ object MainBaseClanWarColors : IMainBaseClanWarColors {
     // Confirm clan league registration button
     override val ConfirmClanLeagueRegistration = ColorSchema.parse(
         884, 606, 1137, 676, "3E74DB", "51|0|3BBBFB,102|0|3BBBFB,152|0|3BBBFB,203|0|3BBBFB,0|35|CBE2FF,51|35|1057E5,102|35|1057E5,152|35|1057E5,203|35|1057E5", 0, 0.9, "联赛报名确认"
+    )
+
+    // Clan war end button (may appear after entering clan war page during league registration)
+    override val ClanWarEndButton = ColorSchema.parse(
+        762, 589, 981, 656, "396DD2", "44|0|37BCFC,88|0|37BCFC,131|0|37BCFC,175|0|37BCFC,0|33|203B6B,44|33|0D55E6,88|33|0D55E6,131|33|0D55E6,175|33|0D55E6", 0, 0.9, "部落战结束按钮"
     )
 
     override val LeagueWhiteCloud = ColorSchema.parse(
