@@ -48,6 +48,7 @@ fun LazyListScope.builderBaseConfig(
                     if (checked) {
                         GlobalVars.configStates["${MAIN_BASE_SETTINGS.ACCEPT_BUILDER_BASE_NORMAL_TASK.key}_c$index"]?.value = "0"
                         GlobalVars.configStates["${MAIN_BASE_SETTINGS.ACCEPT_BUILDER_BASE_ADVANCED_TASK.key}_c$index"]?.value = "0"
+                        GlobalVars.configStates["${MAIN_BASE_SETTINGS.NO_MAIN_BASE.key}_c$index"]?.value = "0"
                     }
                 }
             )

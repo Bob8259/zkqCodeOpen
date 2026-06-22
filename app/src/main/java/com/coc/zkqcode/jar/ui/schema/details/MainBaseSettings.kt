@@ -5,6 +5,9 @@ package com.coc.zkqcode.jar.ui.schema.details
 import com.coc.zkqcode.jar.ui.schema.SettingDef
 
 object MainBaseSettings {
+    // Master switch
+    val NO_MAIN_BASE = SettingDef("no_main_base", "关闭主世界", "Disable Main Base", 0, "MAIN_BASE_SETTINGS")
+
     // Common settings
     val CLAIM_DAILY_REWARD = SettingDef("claim_daily_reward", "领取国服签到奖励", "Claim CN Daily Reward", 1, "MAIN_BASE_SETTINGS")
     val CONFIG_REMARK = SettingDef("config_remark", "备注:", "Remark:", "", "MAIN_BASE_SETTINGS")
@@ -176,6 +179,7 @@ object MainBaseSettings {
     )
 
     val all = listOf(
+        NO_MAIN_BASE,
         CLAIM_DAILY_REWARD,
         CONFIG_REMARK,
         SMART_DECISION,
