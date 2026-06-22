@@ -42,7 +42,10 @@ import com.coc.zkqcode.interfaces.MainCode
 import com.coc.zkqcode.jar.code.runMainScript
 import com.coc.zkqcode.jar.ui.pages.homescreen.BackgroundImage
 import com.coc.zkqcode.jar.ui.components.CustomButton
+import com.coc.zkqcode.jar.ui.pages.builderbase.BuilderBaseResearchPriority
 import com.coc.zkqcode.jar.ui.pages.builderbase.BuilderBaseUpgradePriority
+import com.coc.zkqcode.jar.ui.pages.mainbase.MainBasePetPriority
+import com.coc.zkqcode.jar.ui.pages.mainbase.MainBaseResearchPriority
 import com.coc.zkqcode.jar.ui.pages.mainbase.MainBaseUpgradePriority
 import com.coc.zkqcode.jar.ui.pages.single.BugReport
 import com.coc.zkqcode.jar.ui.pages.homescreen.HomeScreen
@@ -113,6 +116,12 @@ class EnterMainCode : MainCode {
                             navController.navigate("priority/$index")
                         }, onNavigateBuilderBasePriority = { index ->
                             navController.navigate("builder_base_priority/$index")
+                        }, onNavigateResearchPriority = { index ->
+                            navController.navigate("research_priority/$index")
+                        }, onNavigatePetPriority = { index ->
+                            navController.navigate("pet_priority/$index")
+                        }, onNavigateBuilderBaseResearchPriority = { index ->
+                            navController.navigate("builder_base_research_priority/$index")
                         })
                     }
                     composable("priority/{index}") { backStackEntry ->
@@ -125,6 +134,27 @@ class EnterMainCode : MainCode {
                     composable("builder_base_priority/{index}") { backStackEntry ->
                         val index = backStackEntry.arguments?.getString("index")?.toIntOrNull() ?: 1
                         BuilderBaseUpgradePriority(
+                            index = index, onSaveSuccess = {
+                                navController.popBackStack()
+                            })
+                    }
+                    composable("research_priority/{index}") { backStackEntry ->
+                        val index = backStackEntry.arguments?.getString("index")?.toIntOrNull() ?: 1
+                        MainBaseResearchPriority(
+                            index = index, onSaveSuccess = {
+                                navController.popBackStack()
+                            })
+                    }
+                    composable("pet_priority/{index}") { backStackEntry ->
+                        val index = backStackEntry.arguments?.getString("index")?.toIntOrNull() ?: 1
+                        MainBasePetPriority(
+                            index = index, onSaveSuccess = {
+                                navController.popBackStack()
+                            })
+                    }
+                    composable("builder_base_research_priority/{index}") { backStackEntry ->
+                        val index = backStackEntry.arguments?.getString("index")?.toIntOrNull() ?: 1
+                        BuilderBaseResearchPriority(
                             index = index, onSaveSuccess = {
                                 navController.popBackStack()
                             })

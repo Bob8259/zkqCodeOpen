@@ -3,7 +3,9 @@ package com.coc.zkqcode.jar.code.mainbase.clan
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
+import com.coc.zkqcode.core.util.fileactions.LogHelper.showDebugInfo
 import com.coc.zkqcode.jar.code.universal.smalltools.input.TouchActions
+import com.coc.zkqcode.jar.code.universal.recognizer.TextRecognizer
 import com.coc.zkqcode.jar.code.colorschema.ColorSchema
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.GameVersion
@@ -68,6 +70,59 @@ suspend fun donateToClan(): Boolean {
             TouchActions.tap(iUnderstandButton.x, iUnderstandButton.y)
             continue
         }
+        // Approve member detection: check for join requests with matching secret code
+        val approveEnabled = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.APPROVE_MEMBER_SETTING.key)
+        if (approveEnabled) {
+            val approveCode = getConfigRuntime(Schema.MAIN_BASE_SETTINGS.APPROVE_MEMBER_CODE.key)
+            if (approveCode.isNotBlank()) {
+                val approveBaseSchema = MyColors.ApproveJoinButton
+                val approveSearchStartY = 70
+                val approveSearchEndY = 630
+                val approveSliceHeight = 60
+                val approveBtn = run {
+                    var found: android.graphics.Point? = null
+                    outer@ for (sliceStartY in approveSearchStartY..approveSearchEndY step approveSliceHeight) {
+                        val sliceEndY = (sliceStartY + approveSliceHeight).coerceAtMost(approveSearchEndY)
+                        var currentY1 = sliceStartY
+                        while (currentY1 < sliceEndY) {
+                            val sliceSchema = ColorSchema.rescope(
+                                approveBaseSchema, approveBaseSchema.x1, currentY1, approveBaseSchema.x2, sliceEndY
+                            )
+                            val candidate = findMultiColors(schema = sliceSchema, byteBuffer = screenBuffer, increment = 1) ?: break
+                            found = candidate
+                            break@outer
+                        }
+                    }
+                    found
+                }
+                if (approveBtn != null) {
+                    var ocrY = approveBtn.y
+                    if (approveBtn.x in 15..475 && approveBtn.y in 7..138) {
+                        TouchActions.swipe(approveBtn.x, approveBtn.y, approveBtn.x, approveBtn.y + 273, delayTime = 200)
+                        ocrY = approveBtn.y + 273
+                    }
+                    val ocrResult = TextRecognizer.recognize(
+                        startX = (approveBtn.x - 320).coerceAtLeast(20),
+                        startY = (ocrY - 108).coerceAtLeast(10),
+                        endX = (approveBtn.x + 100).coerceAtMost(480),
+                        endY = (ocrY - 48).coerceAtMost(620),
+                        useChinese = true,
+                        threshold = 140,
+                        applyPreprocess = true,
+                        invertBinarization = true
+                    )
+                    val ocrText = ocrResult.joinToString(" ") { it.text }
+                    showDebugInfo("批准检测 OCR结果: $ocrText")
+                    if (ocrText.contains(approveCode, ignoreCase = true)) {
+                        accountMessage("批准成员加入: 暗号匹配($approveCode), 点击批准")
+                        TouchActions.tap(approveBtn.x, approveBtn.y)
+                        continue
+                    } else {
+                        accountMessage("批准成员加入: 暗号不匹配, 跳过")
+                    }
+                }
+            }
+        }
         // Grid-search donation buttons by scanning vertical slices.
         // This avoids missing real donation requests when the first detected button belongs to a troop-config row
         // (which is identified by a castle icon to the left of the button).
@@ -97,8 +152,19 @@ suspend fun donateToClan(): Boolean {
                     )
                     val castleIcon = findMultiColors(schema = castleIconSchema, byteBuffer = screenBuffer, increment = 1)
                     if (castleIcon == null) {
-                        found = candidate
-                        break@outer
+                        // Check if this green button is actually an approve button (not a donation button)
+                        val approveCheckSchema = ColorSchema.rescope(
+                            MyColors.ApproveJoinButton,
+                            x1 = candidate.x - 220,
+                            y1 = candidate.y - 30,
+                            x2 = candidate.x + 10,
+                            y2 = candidate.y + 10
+                        )
+                        val isApproveBtn = findMultiColors(schema = approveCheckSchema, byteBuffer = screenBuffer, increment = 1)
+                        if (isApproveBtn == null) {
+                            found = candidate
+                            break@outer
+                        }
                     }
 
                     // Continue searching within the current slice after this candidate.

@@ -20,7 +20,7 @@ enum class GameVersion(
         1, "com.supercell.clashofclans", "com.supercell.clashofclans/com.supercell.titan.GameApp", "zkqGlobalGameSave", listOf("shared_prefs")
     ),
     PRIVATE(
-        2, "com.atrasis.original", "com.atrasis.original/com.atrasis.main.AtrasisGameApp", "", emptyList()
+        2, "com.atrasis.live", "com.atrasis.live/com.atrasis.main.AtrasisGameApp", "", emptyList()
     );
 
     companion object {
@@ -28,6 +28,12 @@ enum class GameVersion(
         fun fromId(id: Int): GameVersion = entries.first { it.id == id }
     }
 }
+
+data class BuildingStatus(
+    val level: Int = 0,
+    val unlocked: Boolean = false,
+    val upgrading: Boolean = false
+)
 
 object InGameVars {
     @Volatile
@@ -56,12 +62,57 @@ object InGameVars {
     @Volatile
     var mainBaseWallsNeedUpgrade: Boolean = false
 
+    // ── Pet upgrade level detection ──
+    @Volatile
+    var petHouseLevel: Int = 0   // 战宠小屋 (data ID 1000068) level, 0 = unknown
+
+    // Map from pet key/ID (e.g. MainBasePets.LASSI.key) to its current level.
+    @Volatile
+    var petLevels: Map<String, Int> = emptyMap()
+
+
+
     // True means there are upgradable or unbuilt builder base walls; false means builder base walls are complete.
     @Volatile
     var builderBaseWallsNeedUpgrade: Boolean = false
 
     // Compose-reactive auto-run timer (observed by UI for recomposition)
     var autoRunTimer by mutableIntStateOf(30)
+
+    // ── Speed 6 Builder: target building levels parsed from JSON ──
+    @Volatile
+    var speedSixBuilderEnabled: Boolean = false
+
+    // Speed 6 Builder structures status (level, unlocked, upgrading) keyed by building name/key.
+    @Volatile
+    var mainBaseSpeedSixStatus: Map<String, BuildingStatus> = emptyMap()
+
+    @Volatile
+    var builderBaseSpeedSixStatus: Map<String, BuildingStatus> = emptyMap()
+
+    // Speed 6 Builder: troop choice for level 18 target (暗夜女巫 or 狂暴野蛮人)
+    @Volatile
+    var speedSixTroopChoice: String = "狂暴野蛮人"
+    @Volatile
+    var speedSixTroopLevel: Int = 0
+
+    // Speed 6 Builder: snapshot of the user's ORIGINAL priorities (key -> original value)
+    // for the keys that Speed 6 Builder mode has boosted this PreCheck cycle.
+    // Keys appear here only when SpeedSixBuilderPriority.applyXxxOverride actually rewrote them.
+    // They are removed when the corresponding building is successfully upgraded
+    // (per spec: "restore the priority after each successful upgrade").
+    // Map is keyed by base type (Main / Builder) so the two bases don't collide.
+    val speedSixOriginalPriorities: MutableMap<BaseType, MutableMap<String, Int>> = mutableMapOf(
+        BaseType.Main to mutableMapOf(),
+        BaseType.Builder to mutableMapOf()
+    )
+
+    // ── Research item levels parsed from game JSON data ──
+    // Map from Chinese research name (e.g. "野蛮人") to its current level.
+    // Populated by GetJsonData.getJsonData() from the exported game JSON arrays (units, spells, siege_machines).
+    // Used by MainBaseResearch to avoid color-based badge level detection.
+    @Volatile
+    var researchItemLevels: Map<String, Int> = emptyMap()
 }
 
 fun accountMessage(text: String, isChecking: Boolean = true) {

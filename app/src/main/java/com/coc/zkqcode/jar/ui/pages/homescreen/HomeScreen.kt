@@ -71,7 +71,9 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun HomeScreen(
-    onSaveSuccess: () -> Unit = {}, onNavigatePriority: (Int) -> Unit = {}, onNavigateBuilderBasePriority: (Int) -> Unit = {}
+    onSaveSuccess: () -> Unit = {}, onNavigatePriority: (Int) -> Unit = {}, onNavigateBuilderBasePriority: (Int) -> Unit = {},
+    onNavigateResearchPriority: (Int) -> Unit = {}, onNavigatePetPriority: (Int) -> Unit = {},
+    onNavigateBuilderBaseResearchPriority: (Int) -> Unit = {}
 ) {
 
     // Ensure all keys are initialized if not already (safeguard)
@@ -204,13 +206,16 @@ fun HomeScreen(
     }
 
     // Auto-Run Timer Logic
+    var autoRunCountdown by remember { mutableIntStateOf(InGameVars.autoRunTimer) }
+
     LaunchedEffect(GlobalVars.isAutoRunEnabled, InGameVars.autoRunTimer) {
         if (GlobalVars.isAutoRunEnabled) {
-            delay(1000L)
-            InGameVars.autoRunTimer--
-            if (InGameVars.autoRunTimer <= 0) {
-                saveAndSetPlaying(true)
+            autoRunCountdown = InGameVars.autoRunTimer
+            while (autoRunCountdown > 0) {
+                delay(1000L)
+                autoRunCountdown--
             }
+            saveAndSetPlaying(true)
         }
     }
 
@@ -233,6 +238,7 @@ fun HomeScreen(
                     0 -> {
                         homeSettings(
                             context = context,
+                            autoRunCountdown = autoRunCountdown,
                             saveAndSetPlaying = saveAndSetPlaying,
                             showMsg = showMsg,
                             cleanMemory = { cleanMemory() },
@@ -303,6 +309,9 @@ fun HomeScreen(
                                     },
                                     onNavigatePriority = onNavigatePriority,
                                     onNavigateBuilderBasePriority = onNavigateBuilderBasePriority,
+                                    onNavigateResearchPriority = onNavigateResearchPriority,
+                                    onNavigatePetPriority = onNavigatePetPriority,
+                                    onNavigateBuilderBaseResearchPriority = onNavigateBuilderBaseResearchPriority,
                                     onScrollToBottom = scrollToBottom
                                 )
                             }

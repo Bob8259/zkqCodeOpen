@@ -1,4 +1,4 @@
-﻿package com.coc.zkqcode.jar.code.universal
+package com.coc.zkqcode.jar.code.universal
 
 import android.os.Environment
 import com.coc.zkqcode.core.data.database.GlobalVars
@@ -15,12 +15,13 @@ import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.smalltools.data.getBooleanConfigRuntime
 import com.coc.zkqcode.jar.code.universal.smalltools.data.getStaticConfig
 import com.coc.zkqcode.jar.code.universal.smalltools.input.TouchActions
-import com.coc.zkqcode.jar.code.universal.smalltools.input.setZKQInputMethod
 import com.coc.zkqcode.jar.code.universal.smalltools.lifecycle.checkReconnections
 import com.coc.zkqcode.jar.code.universal.smalltools.lifecycle.isGameAtFront
 import com.coc.zkqcode.jar.code.universal.smalltools.lifecycle.killGame
 import com.coc.zkqcode.jar.code.universal.smalltools.lifecycle.runGame
+import com.coc.zkqcode.jar.code.auth.ServerChanHelper
 import com.coc.zkqcode.jar.code.universal.tutorial.AllTutorials
+import com.coc.zkqcode.jar.ui.Strings
 import com.coc.zkqcode.jar.ui.schema.Schema
 import java.util.Locale
 
@@ -70,11 +71,20 @@ suspend fun enterMainScreen(isDoubleCheck: Boolean = false): Boolean {
 
             if (AllTutorials.checkIsInTutorial(mainBaseTutorialElements)) mainBaseTutorialElements++
         }
-        // 4. Wait before checking again to save CPU cycles
-        delayWithMultiplier(500)
+
     }
 
     // Return false if the loop finishes without finding the main screen
+    // Send Server酱³ push notification on game enter timeout if enabled
+    val kickNotify = GlobalVars.configStates[Schema.GLOBAL_SETTINGS.SERVERCHAN_KICK_NOTIFY.key]?.value == "1"
+    if (kickNotify) {
+        val remarkKey = "remark${InGameVars.currentAccountNumber}"
+        val remark = GlobalVars.configStates[remarkKey]?.value.orEmpty()
+        ServerChanHelper.sendNotification(
+            title = Strings.serverchanKickTitle,
+            desp = Strings.serverchanKickMsg(InGameVars.currentAccountNumber, remark, timeoutSeconds)
+        )
+    }
     killGame()
     return false
 }
@@ -105,8 +115,7 @@ private suspend fun closeClanLeaguePopups() {
 }
 
 private fun getCNGameUpdateMaxWaitMillis(): Int {
-    val maxWaitMinutes =
-        getStaticConfig(Schema.GLOBAL_SETTINGS.MAX_DOWNLOAD_WAITING_TIME.key).toDoubleOrNull() ?: logAndRestart("${Schema.GLOBAL_SETTINGS.MAX_DOWNLOAD_WAITING_TIME.displayName} 必须是数字，请检查配置")
+    val maxWaitMinutes = getStaticConfig(Schema.GLOBAL_SETTINGS.MAX_DOWNLOAD_WAITING_TIME.key).toDoubleOrNull() ?: logAndRestart("${Schema.GLOBAL_SETTINGS.MAX_DOWNLOAD_WAITING_TIME.displayName} 必须是数字，请检查配置")
     if (maxWaitMinutes <= 0.0) {
         logAndRestart("${Schema.GLOBAL_SETTINGS.MAX_DOWNLOAD_WAITING_TIME.displayName} 必须大于0，请检查配置")
     }
@@ -259,7 +268,6 @@ private suspend fun closeAdvertisements() {
         TouchActions.tap(1232, 65, delayTime = 300)//close training page
     }
     findMultiColors(byteBuffer = screenBuffer, schema = MyColors.MyVillageIsCalled, increment = 1)?.let {
-        setZKQInputMethod()
         TouchActions.tap(625, 300, delayTime = 200)
 
         var gameName = getStaticConfig(Schema.GLOBAL_SETTINGS.CREATE_PREFIX.key)
@@ -279,12 +287,24 @@ suspend fun isInHomePage(): Boolean {
     val screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult ?: logAndRestart("in isInHomePage, screen capture failed.")
 
     // 2. Check for the training button presence
-    if (findMultiColors(byteBuffer = screenBuffer, schema = MyColors.TrainTroops, increment = 1) == null) return false
-    if (findMultiColors(schema = MyColors.ShopButton, increment = 1) == null) return false
+    if (findMultiColors(byteBuffer = screenBuffer, schema = MyColors.TrainTroops, increment = 1) == null) {
+        accountMessage("未找到练兵按钮")
+        return false
+    }
+    if (findMultiColors(byteBuffer = screenBuffer, schema = MyColors.ShopButton, increment = 1) == null) {
+        accountMessage("未找到商店按钮")
+        return false
+    }
 
     // 3. Check for any of the worker icons (Main base, Goblin workers, or Builder base)
     val workerSchemas =
         MyColors.MainBaseWorkerSchemas + listOf(MyColors.GoblinWorker, MyColors.GoblinWorker2, MyColors.GoblinResearcher, MyColors.BuilderBaseWorker, MyColors.BuilderBaseWorker2, MyColors.BuilderBaseWorker3)
 
-    return workerSchemas.any { findMultiColors(byteBuffer = screenBuffer, schema = it, increment = 1) != null }
+    val hasWorker = workerSchemas.any { findMultiColors(byteBuffer = screenBuffer, schema = it, increment = 1) != null }
+    if (!hasWorker) {
+        accountMessage("未找到工人")
+        return false
+    }
+    delayWithMultiplier(500)
+    return true
 }

@@ -14,8 +14,8 @@ object GlobalSettings {
     val EXTRACT_DATA_NUMBER = SettingDef("extract_data_number", "保存到此序号", "Save to Slot", "1", "GLOBAL_SETTINGS")
     val EXTRACT_DATA_CONTENT = SettingDef("extract_data_content", "内容", "Content", "", "GLOBAL_SETTINGS")
 
-    val EMAIL = SettingDef("email", "邮箱", "Email", "free@zkq", "GLOBAL_SETTINGS")
-    val PASSWORD = SettingDef("password", "密码", "Password", "free_for_testing", "GLOBAL_SETTINGS")
+    val EMAIL = SettingDef("email", "邮箱", "Email", "", "GLOBAL_SETTINGS")
+    val PASSWORD = SettingDef("password", "密码", "Password", "", "GLOBAL_SETTINGS")
     val ENTER_GAME_TIMER = SettingDef("enter_game_timer", "进入游戏计时", "Login Timer", "80", "GLOBAL_SETTINGS")
     val DELAY_MULTIPLIER = SettingDef(
         "delay_multiplier", "延时倍率(低性能设备建议设置1.5-2.5)", "Delay Multiplier", "1", "GLOBAL_SETTINGS"
@@ -37,6 +37,21 @@ object GlobalSettings {
     val DEVICE_REMARK = SettingDef("device_remark", "设备备注", "Device Remark", "", "GLOBAL_SETTINGS")
     val RUNTIME_SCREENSHOT = SettingDef("runtime_screenshot", "运行时截图", "Runtime Screenshot", 0, "GLOBAL_SETTINGS")
     val LANGUAGE = SettingDef("language", "语言", "Language", "zh", "GLOBAL_SETTINGS")
+
+    // ── Push Notification (Server酱³ / WxPusher / PushPlus / Telegram) ────
+    val PUSH_PROVIDER = SettingDef("push_provider", "推送平台", "Push Provider", "0", "GLOBAL_SETTINGS")
+    val SERVERCHAN_SENDKEY = SettingDef("serverchan_sendkey", "Server酱³ SendKey", "Server酱³ SendKey", "", "GLOBAL_SETTINGS")
+    val WXPUSHER_APP_TOKEN = SettingDef("wxpusher_app_token", "WxPusher AppToken", "WxPusher AppToken", "", "GLOBAL_SETTINGS")
+    val WXPUSHER_UID = SettingDef("wxpusher_uid", "WxPusher UID", "WxPusher UID", "", "GLOBAL_SETTINGS")
+    val PUSHPLUS_TOKEN = SettingDef("pushplus_token", "PushPlus Token", "PushPlus Token", "", "GLOBAL_SETTINGS")
+    val TELEGRAM_BOT_TOKEN = SettingDef("telegram_bot_token", "Telegram BotToken", "Telegram BotToken", "", "GLOBAL_SETTINGS")
+    val TELEGRAM_CHAT_ID = SettingDef("telegram_chat_id", "Telegram ChatID", "Telegram ChatID", "", "GLOBAL_SETTINGS")
+    val SERVERCHAN_LOGIN_NOTIFY = SettingDef("serverchan_login_notify", "辅助账号登录通知", "Login Notification", 1, "GLOBAL_SETTINGS")
+    val SERVERCHAN_KICK_NOTIFY = SettingDef("serverchan_kick_notify", "进入游戏失败通知", "Kick Notification", 1, "GLOBAL_SETTINGS")
+    val SERVERCHAN_WAR_NOTIFY = SettingDef("serverchan_war_notify", "部落战通知", "Clan War Notification", 0, "GLOBAL_SETTINGS")
+    val SERVERCHAN_LEAGUE_NOTIFY = SettingDef("serverchan_league_notify", "联赛通知", "League Notification", 0, "GLOBAL_SETTINGS")
+    val SERVERCHAN_UPGRADE_NOTIFY = SettingDef("serverchan_upgrade_notify", "建筑升级通知", "Upgrade Notification", 0, "GLOBAL_SETTINGS")
+    val SERVERCHAN_UPGRADE_ADVANCE = SettingDef("serverchan_upgrade_advance", "提前提醒(分钟)\n(退出游戏时检测)", "Advance Minutes\n(checked on exit)", "10", "GLOBAL_SETTINGS")
 
     // ── Temperature Protection (温度保护) ────────────────────────────────────
     val TEMP_PROTECTION = SettingDef("temp_protection", "温度保护", "Temp Protection", 0, "GLOBAL_SETTINGS")
@@ -122,6 +137,19 @@ object GlobalSettings {
         DEVICE_REMARK,
         RUNTIME_SCREENSHOT,
         LANGUAGE,
+        PUSH_PROVIDER,
+        SERVERCHAN_SENDKEY,
+        WXPUSHER_APP_TOKEN,
+        WXPUSHER_UID,
+        PUSHPLUS_TOKEN,
+        TELEGRAM_BOT_TOKEN,
+        TELEGRAM_CHAT_ID,
+        SERVERCHAN_LOGIN_NOTIFY,
+        SERVERCHAN_KICK_NOTIFY,
+        SERVERCHAN_WAR_NOTIFY,
+        SERVERCHAN_LEAGUE_NOTIFY,
+        SERVERCHAN_UPGRADE_NOTIFY,
+        SERVERCHAN_UPGRADE_ADVANCE,
         TEMP_PROTECTION,
         TEMP_PAUSE_THRESHOLD,
         TEMP_RESUME_THRESHOLD,
@@ -140,9 +168,9 @@ object GlobalSettings {
 object AccountSettings {
     val ISOPEN = SettingDef("isopen", "开启状态", "Enabled", 0, "ACCOUNT_SETTINGS")
     val REMARK = SettingDef("remark", "备注", "Remark", "", "ACCOUNT_SETTINGS")
-    val GAME_VERSION = SettingDef("game_version", "游戏版本", "Game Version", "0", "ACCOUNT_SETTINGS")
+    val GAME_VERSION = SettingDef("game_version", "游戏版本", "Game Version", "1", "ACCOUNT_SETTINGS")
     val ACCOUNT_CONFIG = SettingDef("account_config", "配置文件序号", "Profile Slot", "1", "ACCOUNT_SETTINGS")
-    val START_METHOD = SettingDef("start_method", "启动方式", "Start Method", "0", "ACCOUNT_SETTINGS")
+    val START_METHOD = SettingDef("start_method", "启动方式", "Start Method", "1", "ACCOUNT_SETTINGS")
     val CN_PATH = SettingDef("cn_path", "国服存档序号", "CN Save Slot", "", "ACCOUNT_SETTINGS")
     val GLOBAL_PATH = SettingDef("global_path", "国际服存档序号", "Global Save Slot", "", "ACCOUNT_SETTINGS")
     val DATA_CONTENT = SettingDef("data_content", "测试数据序号", "Test Data Slot", "", "ACCOUNT_SETTINGS")

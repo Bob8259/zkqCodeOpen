@@ -27,8 +27,8 @@ suspend fun startRaid(): Boolean {
     if (startRaidButton != null) {
         TouchActions.tap(startRaidButton.x, startRaidButton.y)
         TouchActions.tap(620, 600)
+        // Record the timestamp so the guard activates for the next 3 days
+        writeMemory(storageKey, (System.currentTimeMillis() / 60_000).toString())
     }
-    // Record the timestamp so the guard activates for the next 3 days
-    writeMemory(storageKey, (System.currentTimeMillis() / 60_000).toString())
     return enterMainScreen()
 }

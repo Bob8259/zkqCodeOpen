@@ -1,4 +1,4 @@
-﻿package com.coc.zkqcode.jar.code.mainbase
+package com.coc.zkqcode.jar.code.mainbase
 
 
 import com.coc.zkqcode.jar.code.clancapital.playClanCapital
@@ -7,12 +7,18 @@ import com.coc.zkqcode.jar.code.mainbase.attack.mainBaseAttack
 import com.coc.zkqcode.jar.code.mainbase.attack.mainBaseRemainingAttack
 import com.coc.zkqcode.jar.code.mainbase.attack.mainBaseTrainTroops
 import com.coc.zkqcode.jar.code.mainbase.attack.stopAllBattles
+import com.coc.zkqcode.jar.code.universal.smalltools.data.getConfigRuntime
+import com.coc.zkqcode.jar.code.universal.smalltools.data.readClanGameAcceptedTaskBase
+import com.coc.zkqcode.jar.code.universal.smalltools.data.CLAN_GAME_TASK_BASE_MAIN_WORLD
+import com.coc.zkqcode.jar.ui.schema.Schema
 import com.coc.zkqcode.jar.code.mainbase.attack.playTournament
 import com.coc.zkqcode.jar.code.mainbase.clan.clanLeague
 import com.coc.zkqcode.jar.code.universal.clangame.clanGame
 import com.coc.zkqcode.jar.code.mainbase.clan.startClanLeague
 import com.coc.zkqcode.jar.code.mainbase.clan.clanWar
 import com.coc.zkqcode.jar.code.mainbase.clan.donateToClan
+import com.coc.zkqcode.jar.code.mainbase.clan.leagueDonation
+import com.coc.zkqcode.jar.code.mainbase.clan.clanInvitePlayers
 import com.coc.zkqcode.jar.code.mainbase.clan.joinClan
 import com.coc.zkqcode.jar.code.mainbase.clan.requestReinforcement
 import com.coc.zkqcode.jar.code.mainbase.clan.startClanWar
@@ -22,6 +28,7 @@ import com.coc.zkqcode.jar.code.mainbase.herohall.upgradeGearsAndPets
 import com.coc.zkqcode.jar.code.mainbase.daily.checkLeagueShop
 import com.coc.zkqcode.jar.code.mainbase.others.checkRandomSchedule
 import com.coc.zkqcode.jar.code.mainbase.daily.checkNormalShop
+import com.coc.zkqcode.jar.code.mainbase.daily.collectBadgeEventRewards
 import com.coc.zkqcode.jar.code.mainbase.daily.collectClanCastleResources
 import com.coc.zkqcode.jar.code.mainbase.daily.mainBaseCheckTutorials
 import com.coc.zkqcode.jar.code.mainbase.daily.mainBaseCollectResources
@@ -41,25 +48,30 @@ suspend fun playMainBase(): Boolean {
     if (noMainBase) return true
     stopAllBattles = false
     if (!enterMainBase()) return false
+    if (!mainBaseCollectResources()) return false
     if (!checkItemsToBePlaced()) return false
     if (!mainBaseCheckTutorials()) return false
     if (!checkRandomSchedule()) return false
     if (!playClanCapital()) return false
     if (!clanGame(BaseType.Main)) return false
-    if (!mainBaseCollectResources()) return false
     if (!mainBaseTrainTroops()) return false
-    if (!mainBaseAttack()) return false
+    val battleTimesSetting = if (readClanGameAcceptedTaskBase() == CLAN_GAME_TASK_BASE_MAIN_WORLD) Schema.MAIN_BASE_SETTINGS.BATTLE_TIMES_WITH_TASKS else Schema.MAIN_BASE_SETTINGS.BATTLE_TIMES
+    val totalBattleTimes = getConfigRuntime(battleTimesSetting.key).toIntOrNull() ?: 1
+    if (!mainBaseAttack(battleNumber = 1, battleTimes = totalBattleTimes)) return false
     if (!adjustBaseAndReinforcements()) return false
     if (!playTournament()) return false
     if (!startClanLeague()) return false
     if (!startClanWar()) return false
     if (!collectClanGameReward()) return false
+    if (!collectBadgeEventRewards()) return false
     if (!checkNormalShop()) return false
     if (!checkLeagueShop()) return false
     if (!clanWar()) return false
     if (!clanLeague()) return false
+    if (!leagueDonation()) return false
     if (!mainBaseRemoveObstacles()) return false
     if (!joinClan()) return false
+    if (!clanInvitePlayers()) return false
     if (!requestReinforcement()) return false
     if (!donateToClan()) return false
     if (!upgradeWallsThenBuildings(BaseType.Main)) return false

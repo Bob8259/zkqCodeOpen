@@ -1,6 +1,7 @@
-﻿package com.coc.zkqcode.jar.code
+package com.coc.zkqcode.jar.code
 
 import com.coc.zkqcode.core.data.database.GlobalVars
+import com.coc.zkqcode.core.util.basic.ClipboardHelper
 import com.coc.zkqcode.core.util.basic.RunShell
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
@@ -18,15 +19,17 @@ import com.coc.zkqcode.jar.code.mainbase.playMainBase
 import com.coc.zkqcode.jar.code.universal.GameVersion
 import com.coc.zkqcode.jar.code.universal.InGameVars
 import com.coc.zkqcode.jar.code.universal.accountMessage
+
 import com.coc.zkqcode.jar.code.universal.create.batchCreateAccounts
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.preCheck
+import com.coc.zkqcode.jar.code.universal.checkUpgradeTimers
+import com.coc.zkqcode.jar.code.universal.checkScheduledUpgradeNotifications
 import com.coc.zkqcode.jar.code.universal.smalltools.data.StorageKeys
 import com.coc.zkqcode.jar.code.universal.smalltools.data.getConfigOrStop
 import com.coc.zkqcode.jar.code.universal.smalltools.data.readMemory
 import com.coc.zkqcode.jar.code.universal.smalltools.data.writeGameFiles
 import com.coc.zkqcode.jar.code.universal.smalltools.data.writeMemory
-import com.coc.zkqcode.jar.code.universal.smalltools.input.setZKQInputMethod
 import com.coc.zkqcode.jar.code.universal.smalltools.lifecycle.tapDataNumberEntryButtons
 import com.coc.zkqcode.jar.code.universal.smalltools.scheduling.checkAndCoolDown
 import com.coc.zkqcode.jar.code.universal.smalltools.scheduling.runRandomSchedulingScript
@@ -37,6 +40,7 @@ import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
+import kotlin.time.Duration.Companion.milliseconds
 
 
 suspend fun runMainScript() {
@@ -47,9 +51,9 @@ suspend fun runMainScript() {
         return
     }
     waitForPlay()
-    setZKQInputMethod()
+    // setZKQInputMethod()
     accountMessage("检测到设置已更新\n即将重新运行")
-    delay(200)
+    delay(200.milliseconds)
     userAuth()
     val updateOption = checkHotUpdateAndScheduling() ?: return
     val (isBatchCreate, accountStart, accountTotal) = resolveAccountRange()
@@ -72,6 +76,8 @@ suspend fun runMainScript() {
     while (currentCoroutineContext().isActive) {
 //        runTestCode()
         runAccountStepBlock()
+        // Check scheduled upgrade notifications every cycle (runs in background)
+        checkScheduledUpgradeNotifications()
         // Circularly search for the next enabled account, wrapping back to currentAccountNumber (inclusive)
         // Emit hot update signal at safe point, throttled to once every 2-3 hours randomly
         if (updateOption == 2 && System.currentTimeMillis() - lastUpdateCheckTime >= nextUpdateInterval) {
@@ -99,11 +105,12 @@ private fun finishDataNumberEntryOnlyRun() {
 
 private suspend fun runTestCode() {
     while (true) {
-        upgradeGearsAction(false, true)
-        ShowMessage("测试代码结束")
-        delay(500000)
+        val result = ClipboardHelper.readClipboard()
+        ShowMessage("剪贴板内容: $result")
+        delayWithMultiplier(5000)
     }
 }
+
 
 private suspend fun cleanUp() {
     RunShell.runNoOutput("input keyevent 3") // Press home
@@ -193,6 +200,8 @@ suspend fun runAccountStepBlock() {
     if (!playMainBase()) {
         return
     }
+    // Check upgrade timers and send notification if needed (before exiting the game)
+    checkUpgradeTimers()
 }
 
 
@@ -216,7 +225,7 @@ private suspend fun findAndActivateAccount(
     if (found == null) {
         while (currentCoroutineContext().isActive) {
             accountMessage("当前未开启任何账号\n请勾选要开启的账号。")
-            delay(2500)
+            delay(2500.milliseconds)
         }
     }
     return found
@@ -229,7 +238,7 @@ private suspend fun checkScheduledReboot(scriptStartTime: Int) {
         val currentTimeSeconds = (System.currentTimeMillis() / 1000).toInt()
         if (currentTimeSeconds - scriptStartTime >= intervalMinutes * 60) {
             accountMessage("定时重启时间已到，即将重启设备...")
-            delay(2000)
+            delay(2000.milliseconds)
             RunShell.runNoOutput("reboot", false)
         }
     }

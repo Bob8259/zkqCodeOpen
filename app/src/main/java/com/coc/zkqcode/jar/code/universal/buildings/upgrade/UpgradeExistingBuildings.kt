@@ -1,14 +1,16 @@
 ﻿package com.coc.zkqcode.jar.code.universal.buildings.upgrade
 
-import com.coc.zkqcode.jar.code.universal.accountMessage
-import com.coc.zkqcode.jar.code.universal.buildings.BaseType
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
-import com.coc.zkqcode.jar.code.universal.smalltools.input.TouchActions
+import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
 import com.coc.zkqcode.jar.code.colorschema.ColorSchema
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.mainbase.others.zoomSmallMainBase
 import com.coc.zkqcode.jar.code.mainbase.upgrade.mainBaseFindBuildButton
+import com.coc.zkqcode.jar.code.universal.InGameVars
+import com.coc.zkqcode.jar.code.universal.accountMessage
+import com.coc.zkqcode.jar.code.universal.buildings.BaseType
 import com.coc.zkqcode.jar.code.universal.buildings.iterateBuilderBaseBuildingUpgradeList
+import com.coc.zkqcode.jar.code.universal.buildings.tapGoldBar
 import com.coc.zkqcode.jar.code.universal.buildings.walls.calculateResourcesPercentage
 import com.coc.zkqcode.jar.code.universal.clickRightBottom
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
@@ -17,11 +19,8 @@ import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.recognizer.recognizeResources
 import com.coc.zkqcode.jar.code.universal.recognizer.recognizeUpgradeResources
 import com.coc.zkqcode.jar.code.universal.smalltools.data.getBooleanConfigRuntime
-import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
-import com.coc.zkqcode.jar.code.universal.GameVersion
-import com.coc.zkqcode.jar.code.universal.InGameVars
-import com.coc.zkqcode.jar.code.universal.buildings.tapGoldBar
 import com.coc.zkqcode.jar.code.universal.smalltools.data.getConfigRuntime
+import com.coc.zkqcode.jar.code.universal.smalltools.input.TouchActions
 import com.coc.zkqcode.jar.ui.schema.Schema
 import com.coc.zkqcode.jar.ui.schema.details.BuilderBaseBuildings
 import com.coc.zkqcode.jar.ui.schema.details.BuilderBaseBuildingsPriority
@@ -172,7 +171,7 @@ suspend fun upgradeAllExistingBuildings(buildings: List<String>, currentBase: Ba
             )
             val action = when (selectedBuilding) {
                 in heroes -> {
-                    upgradeHero(selectedBuilding)
+                    upgradeHero()
                 }
 
                 "城墙" -> {
@@ -186,7 +185,23 @@ suspend fun upgradeAllExistingBuildings(buildings: List<String>, currentBase: Ba
             when (action) {
                 LoopAction.Break -> break
                 LoopAction.Continue -> continue
-                LoopAction.Proceed -> {}
+                LoopAction.Proceed -> {
+                    // Speed 6 Builder: a successful upgrade just finished. If this building
+                    // was boosted by Speed 6 Builder mode, consume the snapshot entry so
+                    // the priority override for this key is cleared (the next call to
+                    // applyXxxOverride in the same cycle, if any, will re-snapshot a fresh
+                    // original value — the freshly-read rawPriorityMap at that point, not
+                    // the stale value from earlier in the cycle).
+                    // After consuming the snapshot, break out of the inner attempt loop
+                    // to switch to the next building type, because Speed 6 Builder only
+                    // needs one instance per building type to start upgrading.
+                    if (InGameVars.speedSixBuilderEnabled) {
+                        if (SpeedSixBuilderPriority.consumeSnapshotForKey(currentBase, selectedBuilding)) {
+                            accountMessage("速6农：${selectedBuilding}已派出工人，切换下一个目标")
+                            break
+                        }
+                    }
+                }
                 LoopAction.ReturnStop -> {
                     // Propagate stop signal to caller (e.g., elixir icon not found for wall upgrade)
                     clickRightBottom(1)
@@ -221,13 +236,19 @@ private suspend fun upgradeWalls(currentBase: BaseType, wallType: WallType): Loo
     )
     val hammer = findMultiColorsUntil(schemas = listOf(hammerSchema), duration = 1000) ?: return LoopAction.Continue
     if (wallType == WallType.Elixir) {
-        // Select elixir icon colour based on base type
-        val elixirIconBase = if (currentBase == BaseType.Builder) MyColors.builderBaseSmallElixirUpgradeIcon else MyColors.smallElixirUpgradeIcon
-        // Rescope search area for elixir upgrade icon relative to hammer position
-        val elixirIconSchema = ColorSchema.rescope(
-            elixirIconBase, hammer.x + 45, hammer.y - 60, hammer.x + 80, hammer.y - 10
-        )
-        val smallElixirUpgradeIcon = findMultiColorsUntil(schemas = listOf(elixirIconSchema), duration = 400)
+        // Select elixir icon colours based on base type
+        val elixirIconBases = if (currentBase == BaseType.Builder) {
+            listOf(MyColors.builderBaseSmallElixirUpgradeIcon)
+        } else {
+            listOf(MyColors.smallElixirUpgradeIcon, MyColors.smallElixirUpgradeIcon2)
+        }
+        // Rescope search area for elixir upgrade icons relative to hammer position
+        val elixirIconSchemas = elixirIconBases.map { elixirIconBase ->
+            ColorSchema.rescope(
+                elixirIconBase, hammer.x + 45, hammer.y - 60, hammer.x + 80, hammer.y - 10
+            )
+        }
+        val smallElixirUpgradeIcon = findMultiColorsUntil(schemas = elixirIconSchemas, duration = 400)
         if (smallElixirUpgradeIcon == null) {
             accountMessage("圣水刷墙失败，未找到圣水升级标志")
             delayWithMultiplier(500)
@@ -324,49 +345,9 @@ private suspend fun upgradeWalls(currentBase: BaseType, wallType: WallType): Loo
 }
 
 // Handles the hero upgrade flow; returns LoopAction to control the caller's loop
-private suspend fun upgradeHero(building: String): LoopAction {
-    if (InGameVars.currentGameVersion == GameVersion.GLOBAL) {
-        TouchActions.tap(900, 625)
-        clickRightBottom(times = 3, delayTime = 200)
-        return LoopAction.Proceed
-    }
-    if (building != "飞龙公爵") {
-        // Calculate the search area based on hero position
-        // Base area for 野蛮人之王: x1=55, y1=500, x2=240, y2=530
-        // Each subsequent hero shifts by 228 on x-axis
-        val heroIndex = listOf("野蛮人之王", "弓箭女皇", "亡灵王子", "大守护者", "飞盾战神").indexOf(building)
-        accountMessage("升级英雄：$building，序号$heroIndex")
-        val x1 = 55 + heroIndex * 228
-        val x2 = 240 + heroIndex * 228
-
-        // Create a ColorSchema with the same colour pattern but different search area
-        val heroInsufficientResources = ColorSchema.parse(
-            x1, 500, x2, 530, "7F88FF", "1|0|7F88FF,2|0|7F88FF,3|0|7F88FF,3|1|7F88FF,2|1|7F88FF,0|1|7F88FF,0|1|7F88FF,0|2|7F88FF,1|2|7F88FF", 0, 0.97, "${building}资源不足"
-        )
-
-        if (findMultiColors(schema = heroInsufficientResources) != null) {
-            accountMessage("${building}资源不足，跳过")
-            return LoopAction.Break
-        }
-        TouchActions.tap(x1 + 100, 500)//Upgrade Hero
-        accountMessage("等待结束")
-        TouchActions.tap(900, 625)
-        clickRightBottom(times = 3, delayTime = 200)
-    } else {
-        // The unique logic for Dragon Duke
-        accountMessage("升级英雄：飞龙公爵")
-        TouchActions.swipe(1189, 354, 120, 345, delayTime = 300, delayAfter = 200)
-        val heroInsufficientResources = ColorSchema.parse(
-            1020, 480, 1230, 530, "7F88FF", "1|0|7F88FF,2|0|7F88FF,3|0|7F88FF,3|1|7F88FF,2|1|7F88FF,0|1|7F88FF,0|1|7F88FF,0|2|7F88FF,1|2|7F88FF", 0, 0.97, "${building}资源不足"
-        )
-        if (findMultiColors(schema = heroInsufficientResources) != null) {
-            accountMessage("${building}资源不足，跳过")
-            return LoopAction.Break
-        }
-        TouchActions.tap(1020 + 100, 480)//Upgrade Hero
-        TouchActions.tap(900, 625)
-        clickRightBottom(times = 3, delayTime = 200)
-    }
+private suspend fun upgradeHero(): LoopAction {
+    TouchActions.tap(900, 625)
+    clickRightBottom(times = 3, delayTime = 200)
     return LoopAction.Proceed
 }
 
@@ -459,7 +440,7 @@ private fun getOrderedList(buildings: List<String>, baseType: BaseType): List<St
         }.map { it.displayName }.toSet()
     }
 
-    val priorityMap = when (baseType) {
+    val rawPriorityMap = when (baseType) {
         BaseType.Main -> MainBaseBuildingPriorities.all.associate { settingDef ->
             val priorityStr = getConfigRuntime(settingDef.key)
             val priority = priorityStr.toIntOrNull() ?: logAndRestart("${settingDef.displayName} 必须是数字，请检查配置")
@@ -471,6 +452,19 @@ private fun getOrderedList(buildings: List<String>, baseType: BaseType): List<St
             val priority = priorityStr.toIntOrNull() ?: logAndRestart("${settingDef.displayName} 必须是数字，请检查配置")
             settingDef.displayName to priority
         }
+    }
+
+    // Speed 6 Builder mode: when enabled, boost the priority of un-met gear-up /
+    // 6th-builder buildings so they are scheduled before other user-defined work.
+    // The override function also records the original user priority for any key it
+    // touches (one-shot snapshot), so we can restore it after a successful upgrade.
+    val priorityMap = if (InGameVars.speedSixBuilderEnabled) {
+        when (baseType) {
+            BaseType.Main -> SpeedSixBuilderPriority.applyMainBaseOverride(rawPriorityMap)
+            BaseType.Builder -> SpeedSixBuilderPriority.applyBuilderBaseOverride(rawPriorityMap)
+        }
+    } else {
+        rawPriorityMap
     }
 
     return buildings.filter { it in priorityMap && it in enabledBuildingNames }.sortedBy {

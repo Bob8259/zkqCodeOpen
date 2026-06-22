@@ -17,6 +17,7 @@ import com.coc.zkqcode.jar.ui.components.SettingDropdown
 import com.coc.zkqcode.jar.ui.components.SettingInputRow
 import com.coc.zkqcode.jar.ui.components.SettingSection
 import com.coc.zkqcode.jar.ui.components.SettingSwitchIcon
+import com.coc.zkqcode.jar.code.colorschema.colorpackage.mainbase.MainBaseClanWarColors
 import com.coc.zkqcode.jar.ui.schema.Schema.BUILDER_BASE_SETTINGS
 import com.coc.zkqcode.jar.ui.schema.Schema.MAIN_BASE_SETTINGS
 import com.coc.zkqcode.jar.ui.theme.AppColors
@@ -35,7 +36,9 @@ fun LazyListScope.mainBaseConfig(
     onToggleBuild: () -> Unit,
     isPetExpanded: Boolean,
     onTogglePet: () -> Unit,
-    onNavigatePriority: (Int) -> Unit = {}
+    onNavigatePriority: (Int) -> Unit = {},
+    onNavigateResearchPriority: (Int) -> Unit = {},
+    onNavigatePetPriority: (Int) -> Unit = {}
 ) {
     // NO_MAIN_BASE toggle — shown before all sections
     item {
@@ -77,6 +80,7 @@ fun LazyListScope.mainBaseConfig(
                     if (!checked) {
                         GlobalVars.configStates["${MAIN_BASE_SETTINGS.SAVE_WORKER_BUILD_AFTER_WALL_FULL.key}_c$index"]?.value = "0"
                         GlobalVars.configStates["${BUILDER_BASE_SETTINGS.BUILDER_BASE_SAVE_WORKER_BUILD_AFTER_WALL_FULL.key}_c$index"]?.value = "0"
+                        GlobalVars.configStates["${MAIN_BASE_SETTINGS.SPEED_SIX_BUILDER.key}_c$index"]?.value = "0"
                     }
                 })
             AnimatedVisibility(
@@ -84,6 +88,12 @@ fun LazyListScope.mainBaseConfig(
             ) {
                 SettingInputRow(key = "${MAIN_BASE_SETTINGS.SKIP_TH_LEVEL.key}_c$index", suffix = Strings.levelAccountsSuffix)
             }
+            SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.SPEED_SIX_BUILDER.key}_c$index", afterChange = { checked ->
+                if (checked) {
+                    GlobalVars.configStates["${MAIN_BASE_SETTINGS.SMART_DECISION.key}_c$index"]?.value = "1"
+                    GlobalVars.configStates["${MAIN_BASE_SETTINGS.GEAR_UP_SETTINGS.key}_c$index"]?.value = "1"
+                }
+            })
         }
     }
 
@@ -126,6 +136,12 @@ fun LazyListScope.mainBaseConfig(
             SettingInputRow(key = "${MAIN_BASE_SETTINGS.GOLD_REQUIREMENT.key}_c$index")
             SettingInputRow(key = "${MAIN_BASE_SETTINGS.ELIXIR_REQUIREMENT.key}_c$index")
             SettingInputRow(key = "${MAIN_BASE_SETTINGS.DARK_ELIXIR_REQUIREMENT.key}_c$index")
+            FlowRow {
+                SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.DEPLOY_HEROES_ENABLED.key}_c$index")
+                SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.DEPLOY_SPELLS_ENABLED.key}_c$index")
+                SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.DEPLOY_REINFORCEMENTS_ENABLED.key}_c$index")
+                SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.DEPLOY_SIEGE_MACHINES_ENABLED.key}_c$index")
+            }
 
         }
     }
@@ -234,6 +250,15 @@ fun LazyListScope.mainBaseConfig(
                             key = "${MAIN_BASE_SETTINGS.DONATION_FARMING_STOP_THRESHOLD.key}_c$index", suffix = Strings.percentStop
                         )
                     }
+                    FlowRow {
+                        SettingSwitchIcon(
+                            key = "${MAIN_BASE_SETTINGS.APPROVE_MEMBER_SETTING.key}_c$index",
+                            explain = Strings.approveCodeExplain
+                        )
+                    }
+                    AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.APPROVE_MEMBER_SETTING.key}_c$index"]?.value == "1") {
+                        SettingInputRow(key = "${MAIN_BASE_SETTINGS.APPROVE_MEMBER_CODE.key}_c$index")
+                    }
                 }
             }
             FlowRow {
@@ -274,6 +299,29 @@ fun LazyListScope.mainBaseConfig(
             }
 
             SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.CLAIM_CLAN_GAME_REWARDS.key}_c$index", explain = Strings.claimRewardsExplain)
+            // Badge event reward parent switch.
+            SettingSwitchIcon(
+                key = "${MAIN_BASE_SETTINGS.CLAIM_BADGE_EVENT_REWARDS.key}_c$index",
+                explain = Strings.claimBadgeEventRewardsExplain
+            )
+            // Event Shop reward child switch, visible only when badge event rewards are enabled.
+            AnimatedVisibility(
+                visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.CLAIM_BADGE_EVENT_REWARDS.key}_c$index"]?.value == "1"
+            ) {
+                Column {
+                    SettingSwitchIcon(
+                        key = "${MAIN_BASE_SETTINGS.CLAIM_EVENT_SHOP_REWARDS.key}_c$index",
+                        explain = Strings.claimEventShopRewardsExplain
+                    )
+                    AnimatedVisibility(
+                        visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.CLAIM_EVENT_SHOP_REWARDS.key}_c$index"]?.value == "1"
+                    ) {
+                        FlowRow {
+                            SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.BUY_NEW_EQUIPMENT_WITH_EVENT_MEDAL.key}_c$index")
+                        }
+                    }
+                }
+            }
             FlowRow {
                 SettingSwitchIcon(
                     key = "${MAIN_BASE_SETTINGS.PLAY_CLAN_WAR.key}_c$index", explain = Strings.clanWarExplain
@@ -281,16 +329,88 @@ fun LazyListScope.mainBaseConfig(
                 SettingSwitchIcon(
                     key = "${MAIN_BASE_SETTINGS.PLAY_LEAGUE.key}_c$index", explain = Strings.leagueExplain
                 )
+                SettingSwitchIcon(
+                    key = "${MAIN_BASE_SETTINGS.PLAY_LEAGUE_DONATION.key}_c$index"
+                )
                 SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.PLAY_RAID.key}_c$index")
                 SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.CONTRIBUTE_CAPITAL_COINS.key}_c$index", explain = "只支持捐到本部落，不支持偷币，不支持捐到其他部落。都城币需攒够一定数量后才会捐，币太少的话不会捐。")
                 SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.COLLECT_CAPITAL_COINS.key}_c$index")
+            }
+
+            // League donation troop config (3 groups: dropdown + count)
+            AnimatedVisibility(
+                visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.PLAY_LEAGUE_DONATION.key}_c$index"]?.value == "1"
+            ) {
+                Column {
+                    val leagueTroopOptions = MainBaseClanWarColors.leagueDonatableTroopNames
+                    val troopKey1 = "${MAIN_BASE_SETTINGS.LEAGUE_DONATION_TROOP_1.key}_c$index"
+                    val troopKey2 = "${MAIN_BASE_SETTINGS.LEAGUE_DONATION_TROOP_2.key}_c$index"
+                    val troopKey3 = "${MAIN_BASE_SETTINGS.LEAGUE_DONATION_TROOP_3.key}_c$index"
+                    // Group 1
+                    FlowRow {
+                        SettingDropdown(
+                            key = troopKey1,
+                            options = leagueTroopOptions,
+                            afterChange = { selectedIdx ->
+                                if (selectedIdx != 0) {
+                                    val idx2 = GlobalVars.configStates[troopKey2]?.value?.toIntOrNull() ?: 0
+                                    val idx3 = GlobalVars.configStates[troopKey3]?.value?.toIntOrNull() ?: 0
+                                    if (idx2 == selectedIdx) GlobalVars.configStates[troopKey2]?.value = "0"
+                                    if (idx3 == selectedIdx) GlobalVars.configStates[troopKey3]?.value = "0"
+                                }
+                            }
+                        )
+                        SettingInputRow(
+                            key = "${MAIN_BASE_SETTINGS.LEAGUE_DONATION_COUNT_1.key}_c$index",
+                            suffix = Strings.countSuffix
+                        )
+                    }
+                    // Group 2
+                    FlowRow {
+                        SettingDropdown(
+                            key = troopKey2,
+                            options = leagueTroopOptions,
+                            afterChange = { selectedIdx ->
+                                if (selectedIdx != 0) {
+                                    val idx1 = GlobalVars.configStates[troopKey1]?.value?.toIntOrNull() ?: 0
+                                    val idx3 = GlobalVars.configStates[troopKey3]?.value?.toIntOrNull() ?: 0
+                                    if (idx1 == selectedIdx) GlobalVars.configStates[troopKey1]?.value = "0"
+                                    if (idx3 == selectedIdx) GlobalVars.configStates[troopKey3]?.value = "0"
+                                }
+                            }
+                        )
+                        SettingInputRow(
+                            key = "${MAIN_BASE_SETTINGS.LEAGUE_DONATION_COUNT_2.key}_c$index",
+                            suffix = Strings.countSuffix
+                        )
+                    }
+                    // Group 3
+                    FlowRow {
+                        SettingDropdown(
+                            key = troopKey3,
+                            options = leagueTroopOptions,
+                            afterChange = { selectedIdx ->
+                                if (selectedIdx != 0) {
+                                    val idx1 = GlobalVars.configStates[troopKey1]?.value?.toIntOrNull() ?: 0
+                                    val idx2 = GlobalVars.configStates[troopKey2]?.value?.toIntOrNull() ?: 0
+                                    if (idx1 == selectedIdx) GlobalVars.configStates[troopKey1]?.value = "0"
+                                    if (idx2 == selectedIdx) GlobalVars.configStates[troopKey2]?.value = "0"
+                                }
+                            }
+                        )
+                        SettingInputRow(
+                            key = "${MAIN_BASE_SETTINGS.LEAGUE_DONATION_COUNT_3.key}_c$index",
+                            suffix = Strings.countSuffix
+                        )
+                    }
+                }
             }
 
             FlowRow {
                 SettingSwitchIcon(
                     key = "${MAIN_BASE_SETTINGS.START_CLAN_WAR.key}_c$index", explain = Strings.startClanWarExplain
                 )
-                SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.OPEN_RAID.key}_c$index")
+                SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.START_RAID.key}_c$index")
             }
             AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.START_CLAN_WAR.key}_c$index"]?.value == "1") {
                 SettingDropdown(
@@ -318,6 +438,26 @@ fun LazyListScope.mainBaseConfig(
                 }
             }
 
+            // 部落拉人 / 邀请玩家
+            FlowRow {
+                SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.INVITE_PLAYERS.key}_c$index")
+                // Commented out: create_consecutive_clans has no functional implementation
+                // SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.CREATE_CONSECUTIVE_CLANS.key}_c$index")
+            }
+            AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.INVITE_PLAYERS.key}_c$index"]?.value == "1") {
+                Column {
+                    SettingInputRow(key = "${MAIN_BASE_SETTINGS.INVITE_PLAYERS_ROUNDS.key}_c$index")
+                    SettingInputRow(key = "${MAIN_BASE_SETTINGS.INVITE_PLAYERS_ROUND_DURATION.key}_c$index")
+                }
+            }
+            // Commented out: create_consecutive_clans has no functional implementation
+            // AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.CREATE_CONSECUTIVE_CLANS.key}_c$index"]?.value == "1") {
+            //     Column {
+            //         SettingInputRow(key = "${MAIN_BASE_SETTINGS.CLAN_NAME.key}_c$index")
+            //         SettingInputRow(key = "${MAIN_BASE_SETTINGS.CONSECUTIVE_COUNT.key}_c$index")
+            //     }
+            // }
+
         }
     }
 
@@ -335,9 +475,23 @@ fun LazyListScope.mainBaseConfig(
         val noMainBase = GlobalVars.configStates["${MAIN_BASE_SETTINGS.NO_MAIN_BASE.key}_c${index}"]?.value == "0"
         SettingSection(visible = isResearchExpanded && noMainBase) {
             Column {
-                SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.RESEARCH_SETTING.key}_c$index")
+                SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.RESEARCH_SETTING.key}_c$index", afterChange = { checked ->
+                    if (checked) {
+                        GlobalVars.configStates["${MAIN_BASE_SETTINGS.SMART_DECISION.key}_c$index"]?.value = "1"
+                    }
+                })
                 AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.RESEARCH_SETTING.key}_c$index"]?.value == "1") {
-                    MainBaseResearchConfigs(index)
+                    Column {
+                        CustomButton(
+                            onClick = { onNavigateResearchPriority(index) },
+                            text = Strings.adjustMainBaseResearchPriority,
+                            containerColor = AppColors.Teal
+                        )
+                        SettingDropdown(
+                            key = "${MAIN_BASE_SETTINGS.RESEARCH_LEVEL.key}_c${index}",
+                            options = listOf(Strings.maxLevel, Strings.maxLevelMinus1, Strings.maxLevelMinus2)
+                        )
+                    }
                 }
             }
         }
@@ -412,20 +566,26 @@ fun LazyListScope.mainBaseConfig(
         val noMainBase = GlobalVars.configStates["${MAIN_BASE_SETTINGS.NO_MAIN_BASE.key}_c${index}"]?.value == "0"
         SettingSection(visible = isPetExpanded && noMainBase) {
 
-            SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.UPGRADE_PETS.key}_c$index")
+            SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.UPGRADE_PETS.key}_c$index", afterChange = { checked ->
+                if (checked) {
+                    GlobalVars.configStates["${MAIN_BASE_SETTINGS.SMART_DECISION.key}_c$index"]?.value = "1"
+                }
+            })
 
             AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.UPGRADE_PETS.key}_c$index"]?.value == "1") {
-                MainBasePetConfigs(index)
+                CustomButton(
+                    onClick = { onNavigatePetPriority(index) },
+                    text = Strings.adjustMainBasePetPriority,
+                    containerColor = AppColors.Teal
+                )
             }
             // Gear upgrade master switch
             SettingSwitchIcon(
                 key = "${MAIN_BASE_SETTINGS.UPGRADE_GEAR_MASTER.key}_c$index",
                 afterChange = { checked ->
                     if (!checked) {
-                        // When master is off, turn off all sub-switches
-                        GlobalVars.configStates["${MAIN_BASE_SETTINGS.UPGRADE_WERA_GEAR.key}_c$index"]?.value = "0"
-                        GlobalVars.configStates["${MAIN_BASE_SETTINGS.UPGRADE_ALL_GEAR.key}_c$index"]?.value = "0"
-                        GlobalVars.configStates["${MAIN_BASE_SETTINGS.UPGRADE_CUSTOM_GEAR.key}_c$index"]?.value = "0"
+                        // When master is off, reset scope to default (0 = wear only)
+                        GlobalVars.configStates["${MAIN_BASE_SETTINGS.UPGRADE_GEAR_SCOPE.key}_c$index"]?.value = "0"
                     }
                 }
             )
@@ -433,38 +593,15 @@ fun LazyListScope.mainBaseConfig(
             // Sub-switches visible only when master is on
             AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.UPGRADE_GEAR_MASTER.key}_c$index"]?.value == "1") {
                 Column {
-                    FlowRow {
-                        // Gear upgrade: upgrade equipped gear (independent)
-                        SettingSwitchIcon(
-                            key = "${MAIN_BASE_SETTINGS.UPGRADE_WERA_GEAR.key}_c$index",
-                            explain = Strings.upgradeWearGearExplain
-                        )
-
-                        // Gear upgrade: upgrade all gear (old mode, mutually exclusive with custom)
-                        SettingSwitchIcon(
-                            key = "${MAIN_BASE_SETTINGS.UPGRADE_ALL_GEAR.key}_c$index",
-                            explain = Strings.upgradeAllGearExplain,
-                            afterChange = { checked ->
-                                if (checked) {
-                                    GlobalVars.configStates["${MAIN_BASE_SETTINGS.UPGRADE_CUSTOM_GEAR.key}_c$index"]?.value = "0"
-                                }
-                            }
-                        )
-                    }
-
-                    // Gear upgrade: custom gear selection (new mode, mutually exclusive with all)
-                    SettingSwitchIcon(
-                        key = "${MAIN_BASE_SETTINGS.UPGRADE_CUSTOM_GEAR.key}_c$index",
-                        explain = Strings.upgradeGearExplain,
-                        afterChange = { checked ->
-                            if (checked) {
-                                GlobalVars.configStates["${MAIN_BASE_SETTINGS.UPGRADE_ALL_GEAR.key}_c$index"]?.value = "0"
-                            }
-                        }
+                    // Gear upgrade scope selector: 0=wear only, 1=custom only, 2=all
+                    SettingDropdown(
+                        key = "${MAIN_BASE_SETTINGS.UPGRADE_GEAR_SCOPE.key}_c$index",
+                        options = listOf(Strings.upgradeScopeWear, Strings.upgradeScopeCustom, Strings.upgradeScopeAll)
                     )
 
-                    // Custom gear selection list visible when UPGRADE_CUSTOM_GEAR is on
-                    AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.UPGRADE_CUSTOM_GEAR.key}_c$index"]?.value == "1") {
+                    // Custom gear selection list visible when scope is custom (1) or all (2)
+                    val scopeValue = GlobalVars.configStates["${MAIN_BASE_SETTINGS.UPGRADE_GEAR_SCOPE.key}_c$index"]?.value ?: "0"
+                    AnimatedVisibility(visible = scopeValue == "1") {
                         MainBaseGearConfigs(index)
                     }
                 }
@@ -509,19 +646,12 @@ fun LazyListScope.mainBaseConfig(
                     MAIN_BASE_SETTINGS.USE_CLOCK_TOWER_POTION,
                     MAIN_BASE_SETTINGS.SELL_RESOURCE_POTION,
                     MAIN_BASE_SETTINGS.SELL_CLOCK_TOWER_POTION,
-                    MAIN_BASE_SETTINGS.SELL_RING_OF_WALL,
-                    MAIN_BASE_SETTINGS.BUY_GOLD_ORE_WITH_RAID_MEDAL,
-                    MAIN_BASE_SETTINGS.BUY_PURPLE_ORE_WITH_RAID_MEDAL,
-                    MAIN_BASE_SETTINGS.BUY_CLOCK_TOWER_POTION_WITH_RAID_MEDAL,
-                    MAIN_BASE_SETTINGS.BUY_RING_OF_WALL_WITH_RAID_MEDAL,
-                    MAIN_BASE_SETTINGS.BUY_RESEARCH_POTION_WITH_RAID_MEDAL,
-                    MAIN_BASE_SETTINGS.BUY_RESOURCE_POTION_WITH_RAID_MEDAL,
-                    MAIN_BASE_SETTINGS.BUY_RESEARCH_POTION_WITH_LEAGUE_MEDAL,
-                    MAIN_BASE_SETTINGS.BUY_BUILDER_POTION_WITH_LEAGUE_MEDAL
+                    MAIN_BASE_SETTINGS.SELL_RING_OF_WALL
                 ).forEach { setting ->
                     SettingSwitchIcon(key = "${setting.key}_c$index")
                 }
             }
+            MainBaseShopConfigs(index)
         }
     }
 

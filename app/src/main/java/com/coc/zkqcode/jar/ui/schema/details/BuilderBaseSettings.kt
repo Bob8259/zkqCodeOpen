@@ -24,6 +24,7 @@ object BuilderBaseSettings {
     val ELIXIR_CART_FARMING = SettingDef("elixir_cart_farming", "刷圣水车", "Elixir Cart Farming", 0, "BUILDER_BASE_SETTINGS")
     val BUILDER_BASE_RESEARCH = SettingDef("builder_base_research", "夜世界研究", "Builder Base Research", 1, "BUILDER_BASE_SETTINGS")
     val BUILDER_BASE_BUILD_SETTING = SettingDef("builder_base_build_setting", "自动建造", "Auto Build", 1, "BUILDER_BASE_SETTINGS")
+    val BUILDER_BASE_PURCHASE_BOTO_SHACK = SettingDef("builder_base_purchase_boto_shack", "购买博仔棚屋", "Purchase B.O.T.O's Shack", 1, "BUILDER_BASE_SETTINGS")
     val BUILDER_BASE_WALL_UPGRADE_SETTINGS = SettingDef("builder_base_wall_upgrade_settings", "升级城墙", "Upgrade Walls", 1, "BUILDER_BASE_SETTINGS")
     val BUILDER_BASE_BATCH_WALL_UPGRADE_SETTINGS = SettingDef("builder_base_batch_wall_upgrade_settings", "批量升级城墙", "Batch Upgrade Walls", 1, "BUILDER_BASE_SETTINGS")
     val BUILDER_BASE_UPGRADE_WALL_THRESHOLD = SettingDef(
@@ -48,6 +49,7 @@ object BuilderBaseSettings {
         ELIXIR_CART_FARMING,
         BUILDER_BASE_RESEARCH,
         BUILDER_BASE_BUILD_SETTING,
+        BUILDER_BASE_PURCHASE_BOTO_SHACK,
         BUILDER_BASE_WALL_UPGRADE_SETTINGS,
         BUILDER_BASE_BATCH_WALL_UPGRADE_SETTINGS,
         BUILDER_BASE_UPGRADE_WALL_THRESHOLD,

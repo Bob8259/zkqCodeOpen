@@ -8,6 +8,7 @@ import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.crypto.solvePoW
 import com.coc.zkqcode.jar.code.universal.network.UrlFallbackUtil
+import com.coc.zkqcode.jar.ui.Strings
 import com.coc.zkqcode.jar.ui.schema.Schema.GLOBAL_SETTINGS
 import com.coc.zkqcode.nativehelper.RustTools
 import kotlinx.coroutines.Dispatchers
@@ -104,6 +105,25 @@ suspend fun getNetworkTimestamp(): Long {
     return System.currentTimeMillis()
 }
 
+/**
+ * If the zkq_international flag in auth_prefs SharedPreferences is true,
+ * block forever showing a login prompt every 2 seconds.
+ * If the flag is false or absent, return immediately so the caller keeps its current logic.
+ */
+private suspend fun blockIfInternational() {
+    val authPrefs = ZKQApplication.appContext.getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
+    val isInternational = try {
+        authPrefs.getBoolean("zkq_international", false)
+    } catch (_: Exception) {
+        false
+    }
+    if (!isInternational) return
+    while (true) {
+        ShowMessage("Please login to use.")
+        delay(2000)
+    }
+}
+
 private fun parseUrlEncoded(raw: String): Map<String, String> {
     if (raw.isBlank()) return emptyMap()
     val result = mutableMapOf<String, String>()
@@ -123,6 +143,7 @@ suspend fun userAuth() {
         val gemCount = GlobalVars.configStates["gem_count"]?.value?.toDoubleOrNull() ?: 0.0
         if (gemCount <= 0.00001) {
             GlobalVars.isShowAd = true
+            blockIfInternational()
             return
         }
         ShowMessage("准备连接服务器")
@@ -131,147 +152,231 @@ suspend fun userAuth() {
         if (email.isBlank() || password.isBlank()) {
             // Flag ad display on missing credentials
             GlobalVars.isShowAd = true
+            blockIfInternational()
             return
         }
 
-        // --- Session token check: skip login if session_key exists in SharedPreferences ---
+        // --- Session token check and refresh workflow ---
         val authPrefs = ZKQApplication.appContext.getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
-        if (!authPrefs.contains("session_key")) {
-            // Perform session login via shared service
+
+        fun clearStoredSessionKey() {
             try {
+                authPrefs.edit { remove("session_key") }
+            } catch (_: Exception) {
+            }
+        }
+
+        fun isInvalidSessionMessage(message: String): Boolean {
+            return message.contains("会话") ||
+                message.contains("过期") ||
+                message.contains("401") ||
+                message.contains("Session key not active", ignoreCase = true)
+        }
+
+        suspend fun loginAndStoreSessionKey(showFailureMessage: Boolean): String? {
+            return try {
                 val loginResult = performSessionLogin(email, password)
-                // Store session key in SharedPreferences
                 try {
                     authPrefs.edit { putString("session_key", loginResult.sessionKey) }
                 } catch (_: Exception) {
                 }
-                // Update gem count
                 GlobalVars.configStates["gem_count"]?.value = loginResult.gem
-            } catch (_: Exception) {
-                ShowMessage("Session login failed / 会话登录失败")
-                GlobalVars.isShowAd = true
+                loginResult.sessionKey
+            } catch (e: Exception) {
+                if (showFailureMessage) {
+                    ShowMessage("Session login failed / 会话登录失败")
+                }
+                null
+            }
+        }
+
+        suspend fun failAuth() {
+            GlobalVars.isShowAd = true
+            blockIfInternational()
+            // Send Server酱³ push notification on login failure if enabled
+            val loginNotify = GlobalVars.configStates[GLOBAL_SETTINGS.SERVERCHAN_LOGIN_NOTIFY.key]?.value == "1"
+            if (loginNotify) {
+                ServerChanHelper.sendNotification(
+                    title = Strings.serverchanLoginFailedTitle,
+                    desp = Strings.serverchanLoginFailedMsg
+                )
+            }
+        }
+
+        suspend fun refreshSessionKeyAfterInvalidSession(): String? {
+            clearStoredSessionKey()
+            return loginAndStoreSessionKey(showFailureMessage = false)
+        }
+
+        var sessionKey = authPrefs.getString("session_key", null)
+        if (sessionKey.isNullOrBlank()) {
+            sessionKey = loginAndStoreSessionKey(showFailureMessage = true)
+            if (sessionKey.isNullOrBlank()) {
+                failAuth()
                 return
             }
         }
 
-        // --- Session deduct flow ---
-        val sessionKey = authPrefs.getString("session_key", null)
-        if (sessionKey.isNullOrBlank()) {
-            GlobalVars.isShowAd = true
-            return
-        }
+        var hasRetriedWithNewSession = false
+        while (true) {
+            val activeSessionKey = sessionKey
+            if (activeSessionKey.isNullOrBlank()) {
+                failAuth()
+                return
+            }
 
-        val timestamp = getNetworkTimestamp()
-        // Retrieve last_time from native Rust storage (auto-initializes on first call)
-        val lastTime = RustTools.getLastTime()
+            val timestamp = getNetworkTimestamp()
+            // Retrieve last_time from native Rust storage (auto-initializes on first call)
+            val lastTime = RustTools.getLastTime()
 
-        val payload = "session_key=${urlEncode(sessionKey)}" + "&timestamp=$timestamp" + "&last_time=$lastTime"
+            val payload = "session_key=${urlEncode(activeSessionKey)}" + "&timestamp=$timestamp" + "&last_time=$lastTime"
 
-        val encryptionParts = try {
-            RustTools.encryptLoginPayload(payload).split(",", limit = 3)
-        } catch (_: Exception) {
-            // Flag ad display on encryption failure
-            GlobalVars.isShowAd = true
-            return
-        }
-        if (encryptionParts.size != 3) {
-            // Flag ad display on abnormal encryption result
-            GlobalVars.isShowAd = true
-            return
-        }
+            val encryptionParts = try {
+                RustTools.encryptLoginPayload(payload).split(",", limit = 3)
+            } catch (_: Exception) {
+                // Flag ad display on encryption failure
+                failAuth()
+                return
+            }
+            if (encryptionParts.size != 3) {
+                // Flag ad display on abnormal encryption result
+                failAuth()
+                return
+            }
 
-        // A PoW challenge is only valid for 30 s, so fetch a fresh one for every deduct attempt.
-        // The entire challenge→solve→deduct sequence is retried together on connection timeout.
-        val (responseCode, responseBody) = try {
-            retryOnTimeout {
-                // Fetch a fresh PoW challenge and parse the nonce in one step with fallback
-                val powNonce = withContext(Dispatchers.IO) {
-                    UrlFallbackUtil.executeGetWithFallbackAndReadBody("api/pow/challenge").let { responseBody ->
-                        JSONObject(responseBody).getString("nonce")
+            // A PoW challenge is only valid for 30 s, so fetch a fresh one for every deduct attempt.
+            // The entire challenge→solve→deduct sequence is retried together on connection timeout.
+            val (responseCode, responseBody) = try {
+                retryOnTimeout {
+                    // Fetch a fresh PoW challenge and parse the nonce in one step with fallback
+                    val powNonce = withContext(Dispatchers.IO) {
+                        UrlFallbackUtil.executeGetWithFallbackAndReadBody("api/pow/challenge").let { responseBody ->
+                            JSONObject(responseBody).getString("nonce")
+                        }
+                    }
+
+                    // Solve the PoW locally
+                    val powSalt = solvePoW(powNonce)
+
+                    // Build and send the deduct request with the fresh PoW
+                    val postData = "public_key=${encryptionParts[0]}" + "&nonce=${encryptionParts[1]}" + "&data=${encryptionParts[2]}" + "&pow_nonce=$powNonce" + "&pow_salt=$powSalt"
+                    withContext(Dispatchers.IO) {
+                        UrlFallbackUtil.executeWithFallbackAndReadBody(
+                            endpoint = "api/mobile-session-deduct", requestBuilder = { baseUrl ->
+                                Request.Builder().url("${baseUrl}api/mobile-session-deduct").post(postData.toRequestBody("application/x-www-form-urlencoded".toMediaTypeOrNull())).build()
+                            }).let { responseBody ->
+                            Pair(200, responseBody)
+                        }
                     }
                 }
-
-                // Solve the PoW locally
-                val powSalt = solvePoW(powNonce)
-
-                // Build and send the deduct request with the fresh PoW
-                val postData = "public_key=${encryptionParts[0]}" + "&nonce=${encryptionParts[1]}" + "&data=${encryptionParts[2]}" + "&pow_nonce=$powNonce" + "&pow_salt=$powSalt"
-                withContext(Dispatchers.IO) {
-                    UrlFallbackUtil.executeWithFallbackAndReadBody(
-                        endpoint = "api/mobile-session-deduct", requestBuilder = { baseUrl ->
-                            Request.Builder().url("${baseUrl}api/mobile-session-deduct").post(postData.toRequestBody("application/x-www-form-urlencoded".toMediaTypeOrNull())).build()
-                        }).let { responseBody ->
-                        Pair(200, responseBody)
+            } catch (e: Exception) {
+                val errorMsg = e.message ?: ""
+                if (isInvalidSessionMessage(errorMsg) && !hasRetriedWithNewSession) {
+                    hasRetriedWithNewSession = true
+                    sessionKey = refreshSessionKeyAfterInvalidSession()
+                    if (!sessionKey.isNullOrBlank()) {
+                        continue
                     }
                 }
-            }
-        } catch (e: Exception) {
-            val errorMsg = e.message ?: ""
-            if (errorMsg.contains("会话") || errorMsg.contains("过期") || errorMsg.contains("401")) {
-                ShowMessage("会话无效或已过期，请重新登录")
-                try {
-                    authPrefs.edit { remove("session_key") }
-                } catch (_: Exception) {
+                if (isInvalidSessionMessage(errorMsg)) {
+                    ShowMessage("会话无效或已过期，请重新登录")
+                    clearStoredSessionKey()
                 }
-            }
-            // Flag ad display on PoW challenge or deduct request failure
-            GlobalVars.isShowAd = true
-            return
-        }
-
-        if (responseCode != 200) {
-            // Flag ad display on non-200 deduct response
-            ShowMessage("登录失败，错误信息：$responseBody")
-            delayWithMultiplier(2000)
-            GlobalVars.isShowAd = true
-            return
-        }
-
-        val decrypted = try {
-            RustTools.decryptLoginResponse(responseBody)
-        } catch (_: Exception) {
-            // Flag ad display on response decryption failure
-            GlobalVars.isShowAd = true
-            return
-        }
-        if (decrypted.startsWith("Error")) {
-            if (decrypted.contains("会话") || decrypted.contains("过期") || decrypted.contains("401")) {
-                try {
-                    authPrefs.edit { remove("session_key") }
-                } catch (_: Exception) {
-                }
-            }
-            // Flag ad display on decrypted error response
-            GlobalVars.isShowAd = true
-            return
-        }
-
-        val result = parseUrlEncoded(decrypted)
-        val newTimestamp = result["timestamp"]?.toLongOrNull()
-        when {
-            newTimestamp != null -> {
-                // Persist updated timestamp back into native Rust storage
-                RustTools.updateLastTime(newTimestamp)
-                GlobalVars.isShowAd = false
+                // Flag ad display on PoW challenge or deduct request failure
+                failAuth()
+                return
             }
 
-            result["msg"] == "gem_not_enough" || decrypted.contains("邮箱或密码错误") || decrypted.contains("会话无效") -> {
-                if (decrypted.contains("会话") || decrypted.contains("过期")) {
-                    try {
-                        authPrefs.edit { remove("session_key") }
-                    } catch (_: Exception) {
+            if (responseCode != 200) {
+                if (isInvalidSessionMessage(responseBody) && !hasRetriedWithNewSession) {
+                    hasRetriedWithNewSession = true
+                    sessionKey = refreshSessionKeyAfterInvalidSession()
+                    if (!sessionKey.isNullOrBlank()) {
+                        continue
                     }
                 }
-                // Reset gem_count to zero in config file and UI state
-                GlobalVars.serverActions?.writeToConfigFile("gem_count", "0")
-                GlobalVars.configStates["gem_count"]?.value = "0"
-                // Flag ad display on insufficient gems or wrong credentials
-                GlobalVars.isShowAd = true
+                if (isInvalidSessionMessage(responseBody)) {
+                    ShowMessage("会话无效或已过期，请重新登录")
+                    clearStoredSessionKey()
+                } else {
+                    ShowMessage("登录失败，错误信息：$responseBody")
+                    delayWithMultiplier(2000)
+                }
+                // Flag ad display on non-200 deduct response
+                failAuth()
+                return
             }
 
-            else -> {
-                // Flag ad display on unparseable deduct response
-                GlobalVars.isShowAd = true
+            val decrypted = try {
+                RustTools.decryptLoginResponse(responseBody)
+            } catch (e: Exception) {
+                val errorMsg = e.message ?: ""
+                if (isInvalidSessionMessage(errorMsg) && !hasRetriedWithNewSession) {
+                    hasRetriedWithNewSession = true
+                    sessionKey = refreshSessionKeyAfterInvalidSession()
+                    if (!sessionKey.isNullOrBlank()) {
+                        continue
+                    }
+                }
+                // Flag ad display on response decryption failure
+                failAuth()
+                return
+            }
+            if (decrypted.startsWith("Error")) {
+                if (isInvalidSessionMessage(decrypted) && !hasRetriedWithNewSession) {
+                    hasRetriedWithNewSession = true
+                    sessionKey = refreshSessionKeyAfterInvalidSession()
+                    if (!sessionKey.isNullOrBlank()) {
+                        continue
+                    }
+                }
+                if (isInvalidSessionMessage(decrypted)) {
+                    ShowMessage("会话无效或已过期，请重新登录")
+                    clearStoredSessionKey()
+                }
+                // Flag ad display on decrypted error response
+                failAuth()
+                return
+            }
+
+            val result = parseUrlEncoded(decrypted)
+            val newTimestamp = result["timestamp"]?.toLongOrNull()
+            when {
+                newTimestamp != null -> {
+                    // Persist updated timestamp back into native Rust storage
+                    RustTools.updateLastTime(newTimestamp)
+                    GlobalVars.isShowAd = false
+                    return
+                }
+
+                isInvalidSessionMessage(decrypted) -> {
+                    if (!hasRetriedWithNewSession) {
+                        hasRetriedWithNewSession = true
+                        sessionKey = refreshSessionKeyAfterInvalidSession()
+                        if (!sessionKey.isNullOrBlank()) {
+                            continue
+                        }
+                    }
+                    ShowMessage("会话无效或已过期，请重新登录")
+                    clearStoredSessionKey()
+                    failAuth()
+                    return
+                }
+
+                result["msg"] == "gem_not_enough" || decrypted.contains("邮箱或密码错误") -> {
+                    // Reset gem_count to zero in config file and UI state
+                    GlobalVars.serverActions?.writeToConfigFile("gem_count", "0")
+                    GlobalVars.configStates["gem_count"]?.value = "0"
+                    // Flag ad display on insufficient gems or wrong credentials
+                    failAuth()
+                    return
+                }
+
+                else -> {
+                    // Flag ad display on unparseable deduct response
+                    failAuth()
+                    return
+                }
             }
         }
     }

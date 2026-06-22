@@ -21,6 +21,7 @@ interface IMainBaseClanColors {
     val RequestReinforcement: ColorSchema
     val CanNotRequestReinforcement: ColorSchema
     val TroopConfigCastleIcon: ColorSchema
+    val ApproveJoinButton: ColorSchema
 }
 
 object MainBaseClanColors : IMainBaseClanColors {
@@ -100,5 +101,12 @@ object MainBaseClanColors : IMainBaseClanColors {
     // Troop config castle icon for donation identification
     override val TroopConfigCastleIcon = ColorSchema.parse(
         0, 0, 0, 0, "4B596D", "3|0|6D7C8E,7|0|495568,11|0|485465,14|0|495565,0|11|282F40,3|11|1D2026,7|11|1F2023,11|11|232326,14|11|8E9BA6", 0, 0.9
+    )
+
+    // Green approve button on join request cards in clan chat
+    override val ApproveJoinButton = ColorSchema.parse(
+        5, 72, 482, 652, "2EBD76",
+        "-1|-23|7DF3D8,-41|-21|78F0D3,-76|-23|7DF3D8,-76|2|30B66D,-211|2|1511DB,-203|-19|7571FF,-162|-23|807AFF,-130|-20|7573FF,-130|2|1511DB",
+        0, 0.9, "批准加入按钮"
     )
 }

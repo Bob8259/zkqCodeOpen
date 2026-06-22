@@ -50,6 +50,10 @@ object MainBaseSettings {
     val LIGHTING_ON_WIZARD_TOWER = SettingDef("lighting_on_wizard_tower", "闪法师塔次数", "Lightning on Wizard Tower", "4", "MAIN_BASE_SETTINGS")
     val AI_DEPLOY_TROOPS = SettingDef("ai_deploy_troops", "AI下兵", "AI Deploy", 0, "MAIN_BASE_SETTINGS")
     val CHANGE_HEROES = SettingDef("change_heroes", "随机换英雄", "Randomize Heroes", 0, "MAIN_BASE_SETTINGS")
+    val DEPLOY_HEROES_ENABLED = SettingDef("deploy_heroes_enabled", "下英雄", "Deploy Heroes", 1, "MAIN_BASE_SETTINGS")
+    val DEPLOY_SPELLS_ENABLED = SettingDef("deploy_spells_enabled", "下法术", "Deploy Spells", 1, "MAIN_BASE_SETTINGS")
+    val DEPLOY_REINFORCEMENTS_ENABLED = SettingDef("deploy_reinforcements_enabled", "下援兵", "Deploy Reinforcements", 1, "MAIN_BASE_SETTINGS")
+    val DEPLOY_SIEGE_MACHINES_ENABLED = SettingDef("deploy_siege_machines_enabled", "下攻城机器", "Deploy Siege Machines", 1, "MAIN_BASE_SETTINGS")
 
     ///////
     val BUILD_SETTING = SettingDef("build_setting", "自动建造", "Auto Build", 1, "MAIN_BASE_SETTINGS")
@@ -69,6 +73,7 @@ object MainBaseSettings {
     val SAVE_WORKER = SettingDef("save_worker", "留1工人", "Save 1 Builder", 0, "MAIN_BASE_SETTINGS")
     val SAVE_WORKER_BUILD_AFTER_WALL_FULL = SettingDef("save_worker_build_after_wall_full", "城墙全满后，将保留的工人用于建造", "Use saved builder after walls full", 0, "MAIN_BASE_SETTINGS")
     val GEAR_UP_SETTINGS = SettingDef("gear_up_settings", "改装建筑", "Gear Up", 0, "MAIN_BASE_SETTINGS")
+    val SPEED_SIX_BUILDER = SettingDef("speed_six_builder", "快速解锁第6工人", "Speed 6 Builder", 0, "MAIN_BASE_SETTINGS")
     val UPGRADE_AFTER_FAIL_WALL_UPGRADE = SettingDef("upgrade_after_fail_wall_upgrade", "升级城墙失败后建造", "Build if wall upgrade fails", 0, "MAIN_BASE_SETTINGS")
     val UPGRADE_WALL_THRESHOLD = SettingDef(
         "upgrade_wall_threshold", "金水高于以下百分比后升级城墙", "Upgrade walls if resources >", "85", "MAIN_BASE_SETTINGS"
@@ -97,6 +102,13 @@ object MainBaseSettings {
     val CLAIM_CLAN_GAME_REWARDS = SettingDef("claim_clan_game_rewards", "领竞赛奖励", "Claim Clan Game Rewards", 0, "MAIN_BASE_SETTINGS")
     val PLAY_CLAN_WAR = SettingDef("play_clan_war", "打部落战", "Play Clan War", 0, "MAIN_BASE_SETTINGS")
     val PLAY_LEAGUE = SettingDef("play_league", "打部落联赛", "Play League", 0, "MAIN_BASE_SETTINGS")
+    val PLAY_LEAGUE_DONATION = SettingDef("play_league_donation", "联赛捐兵", "Donate Troops in League", 0, "MAIN_BASE_SETTINGS")
+    val LEAGUE_DONATION_TROOP_1 = SettingDef("league_donation_troop_1", "兵种1", "Troop 1", "1", "MAIN_BASE_SETTINGS")
+    val LEAGUE_DONATION_COUNT_1 = SettingDef("league_donation_count_1", "", "", "5", "MAIN_BASE_SETTINGS")
+    val LEAGUE_DONATION_TROOP_2 = SettingDef("league_donation_troop_2", "兵种2", "Troop 2", "3", "MAIN_BASE_SETTINGS")
+    val LEAGUE_DONATION_COUNT_2 = SettingDef("league_donation_count_2", "", "", "5", "MAIN_BASE_SETTINGS")
+    val LEAGUE_DONATION_TROOP_3 = SettingDef("league_donation_troop_3", "兵种3", "Troop 3", "2", "MAIN_BASE_SETTINGS")
+    val LEAGUE_DONATION_COUNT_3 = SettingDef("league_donation_count_3", "", "", "10", "MAIN_BASE_SETTINGS")
     val PLAY_RAID = SettingDef("play_raid", "打都城突袭", "Play Raid", 1, "MAIN_BASE_SETTINGS")
     val START_LEAGUE_SETTINGS = SettingDef("start_league_settings", "发起联赛", "Start League", 0, "MAIN_BASE_SETTINGS")
     val START_CLAN_LEAGUE = SettingDef("start_clan_league", "开部落联赛", "Start Clan League", 0, "MAIN_BASE_SETTINGS")
@@ -104,30 +116,29 @@ object MainBaseSettings {
     val START_CLAN_WAR_SETTINGS = SettingDef("start_clan_war_settings", "发起部落战", "Start Clan War", 0, "MAIN_BASE_SETTINGS")
     val START_CLAN_WAR = SettingDef("start_clan_war", "开部落战", "Open Clan War", 0, "MAIN_BASE_SETTINGS")
     val START_CLAN_WAR_METHOD = SettingDef("start_clan_war_method", "开启方式", "Start Method", "0", "MAIN_BASE_SETTINGS")
-    val OPEN_RAID = SettingDef("open_raid", "开突袭", "Start Raid", 0, "MAIN_BASE_SETTINGS")
     val START_RAID = SettingDef("start_raid", "发起都城突袭", "Start Raid", 0, "MAIN_BASE_SETTINGS")
 
     ////////////
-    val BUY_GOLD_ORE_WITH_RAID_MEDAL = SettingDef("buy_gold_ore_with_raid_medal", "突袭币买黄矿", "Buy Gold Ore (Raid)", 0, "MAIN_BASE_SETTINGS")
-    val BUY_PURPLE_ORE_WITH_RAID_MEDAL = SettingDef("buy_purple_ore_with_raid_medal", "突袭币买紫矿", "Buy Purple Ore (Raid)", 0, "MAIN_BASE_SETTINGS")
+    val BUY_GOLD_ORE_WITH_RAID_MEDAL = SettingDef("buy_gold_ore_with_raid_medal", "黄矿", "Gold Ore (Raid)", 0, "MAIN_BASE_SETTINGS")
+    val BUY_PURPLE_ORE_WITH_RAID_MEDAL = SettingDef("buy_purple_ore_with_raid_medal", "紫矿", "Purple Ore (Raid)", 0, "MAIN_BASE_SETTINGS")
 
     val BUY_CLOCK_TOWER_POTION_WITH_RAID_MEDAL = SettingDef(
-        "buy_clock_tower_potion_with_raid_medal", "突袭币买钟楼药水", "Buy Clock Potion (Raid)", 0, "MAIN_BASE_SETTINGS"
+        "buy_clock_tower_potion_with_raid_medal", "钟楼药水", "Clock Potion (Raid)", 0, "MAIN_BASE_SETTINGS"
     )
     val BUY_RING_OF_WALL_WITH_RAID_MEDAL = SettingDef(
-        "buy_ring_of_wall_with_raid_medal", "突袭币买壁垒之戒", "Buy Wall Ring (Raid)", 0, "MAIN_BASE_SETTINGS"
+        "buy_ring_of_wall_with_raid_medal", "壁垒之戒", "Wall Ring (Raid)", 0, "MAIN_BASE_SETTINGS"
     )
     val BUY_RESEARCH_POTION_WITH_RAID_MEDAL = SettingDef(
-        "buy_research_potion_with_raid_medal", "突袭币买研究药水", "Buy Research Potion (Raid)", 0, "MAIN_BASE_SETTINGS"
+        "buy_research_potion_with_raid_medal", "研究药水", "Research Potion (Raid)", 0, "MAIN_BASE_SETTINGS"
     )
     val BUY_RESOURCE_POTION_WITH_RAID_MEDAL = SettingDef(
-        "buy_resource_potion_with_raid_medal", "突袭币买资源药水", "Buy Resource Potion (Raid)", 0, "MAIN_BASE_SETTINGS"
+        "buy_resource_potion_with_raid_medal", "资源药水", "Resource Potion (Raid)", 0, "MAIN_BASE_SETTINGS"
     )
     val BUY_RESEARCH_POTION_WITH_LEAGUE_MEDAL = SettingDef(
-        "buy_research_potion_with_league_medal", "联赛币买研究药水", "Buy Research Potion (League)", 0, "MAIN_BASE_SETTINGS"
+        "buy_research_potion_with_league_medal", "研究药水", "Research Potion (League)", 0, "MAIN_BASE_SETTINGS"
     )
     val BUY_BUILDER_POTION_WITH_LEAGUE_MEDAL = SettingDef(
-        "buy_builder_potion_with_league_medal", "联赛币买工人药水", "Buy Builder Potion (League)", 0, "MAIN_BASE_SETTINGS"
+        "buy_builder_potion_with_league_medal", "工人药水", "Builder Potion (League)", 0, "MAIN_BASE_SETTINGS"
     )
     val BUY_GOLD_ORE_WITH_EVENT_MEDAL = SettingDef("buy_gold_ore_with_event_medal", "活动币买星辉矿石", "Buy Gold Ore (Event)", 0, "MAIN_BASE_SETTINGS")
     val BUY_BUILDER_POTION_WITH_EVENT_MEDAL = SettingDef(
@@ -148,15 +159,16 @@ object MainBaseSettings {
 
     //////////////
     val UPGRADE_GEAR_MASTER = SettingDef("upgrade_gear_master", "升级装备总开关", "Upgrade Gear Master", 1, "MAIN_BASE_SETTINGS")
-    val UPGRADE_WERA_GEAR = SettingDef("upgrade_wear_gear", "升级穿戴装备", "Upgrade Equipped Gear", 0, "MAIN_BASE_SETTINGS")
-    val UPGRADE_ALL_GEAR = SettingDef("upgrade_all_gear", "升所有装备", "Upgrade All Gear", 0, "MAIN_BASE_SETTINGS")
-    val UPGRADE_CUSTOM_GEAR = SettingDef("upgrade_gear", "升级指定装备", "Upgrade Custom Gear", 0, "MAIN_BASE_SETTINGS")
+    // gear upgrade scope: 0=only equipped, 1=custom selection, 2=all
+    val UPGRADE_GEAR_SCOPE = SettingDef("upgrade_gear_scope", "升级范围", "Upgrade Scope", "0", "MAIN_BASE_SETTINGS")
     val REMOVE_OBSTACLES = SettingDef("remove_obstacles", "移除障碍物", "Remove Obstacles", 0, "MAIN_BASE_SETTINGS")
     val CONTINUOUS_REMOVE_OBSTACLES = SettingDef("continuous_remove_obstacles", "连续移除障碍物", "Continuous Removal", 0, "MAIN_BASE_SETTINGS")
     val REMOVE_OBSTACLES_ENHANCEMENT = SettingDef("remove_obstacles_enhancement", "增强移除", "Enhanced Removal", 0, "MAIN_BASE_SETTINGS")
 
     val CLAIM_TIMED_REWARDS = SettingDef("claim_timed_rewards", "领限时活动奖励", "Claim Timed Rewards", 0, "MAIN_BASE_SETTINGS")
     val CLAIM_TOKEN_REWARDS = SettingDef("claim_token_rewards", "领令牌奖励", "Claim Token Rewards", 0, "MAIN_BASE_SETTINGS")
+    val CLAIM_BADGE_EVENT_REWARDS = SettingDef("claim_badge_event_rewards", "领奖章活动奖励", "Claim Badge Event Rewards", 0, "MAIN_BASE_SETTINGS")
+    val CLAIM_EVENT_SHOP_REWARDS = SettingDef("claim_event_shop_rewards", "活动领取", "Claim Event Shop Rewards", 0, "MAIN_BASE_SETTINGS")
     val COLLECT_CAPITAL_COINS = SettingDef("collect_capital_coins", "领都城币", "Collect Capital Coins", 0, "MAIN_BASE_SETTINGS")
     val CONTRIBUTE_CAPITAL_COINS = SettingDef("contribute_capital_coins", "捐都城币", "Contribute Capital Coins", 0, "MAIN_BASE_SETTINGS")
     val CLAIM_FREE_SHOP_REWARDS = SettingDef("claim_free_shop_rewards", "领每周精选免费奖励", "Claim Weekly Free Rewards", 1, "MAIN_BASE_SETTINGS")
@@ -165,10 +177,16 @@ object MainBaseSettings {
     val CLAN_TAG = SettingDef("clan_tag", "加指定部落标签(不填就随机加):", "Clan Tag:", "", "MAIN_BASE_SETTINGS")
     val USE_TEMP_ITEMS = SettingDef("use_temp_items", "使用临时物品", "Use Temp Items", 0, "MAIN_BASE_SETTINGS")
     val CLAN_JOIN_MESSAGE = SettingDef("clan_join_message", "加部落暗号:", "Join Message:", "", "MAIN_BASE_SETTINGS")
-    val CREATE_CONSECUTIVE_CLANS = SettingDef("create_consecutive_clans", "创建连号部落", "Create Consecutive Clans", 0, "MAIN_BASE_SETTINGS")
+    val APPROVE_MEMBER_SETTING = SettingDef("approve_member_setting", "批准成员加入", "Approve Members", 0, "MAIN_BASE_SETTINGS")
+    val APPROVE_MEMBER_CODE = SettingDef("approve_member_code", "批准暗号:", "Approval Code:", "", "MAIN_BASE_SETTINGS")
+    // Commented out: no functional implementation
+    // val CREATE_CONSECUTIVE_CLANS = SettingDef("create_consecutive_clans", "创建连号部落", "Create Consecutive Clans", 0, "MAIN_BASE_SETTINGS")
     val INVITE_PLAYERS = SettingDef("invite_players", "邀请玩家", "Invite Players", 0, "MAIN_BASE_SETTINGS")
-    val CLAN_NAME = SettingDef("clan_name", "部落名称:", "Clan Name:", "", "MAIN_BASE_SETTINGS")
-    val CONSECUTIVE_COUNT = SettingDef("consecutive_count", "连号数量:", "Consecutive Count:", 3, "MAIN_BASE_SETTINGS")
+    val INVITE_PLAYERS_ROUNDS = SettingDef("invite_players_rounds", "拉人轮次", "Invite Rounds", "1", "MAIN_BASE_SETTINGS")
+    val INVITE_PLAYERS_ROUND_DURATION = SettingDef("invite_players_round_duration", "每轮时长(分钟)", "Per Round (min)", "5", "MAIN_BASE_SETTINGS")
+    // Commented out: part of create_consecutive_clans which has no functional implementation
+    // val CLAN_NAME = SettingDef("clan_name", "部落名称:", "Clan Name:", "", "MAIN_BASE_SETTINGS")
+    // val CONSECUTIVE_COUNT = SettingDef("consecutive_count", "连号数量:", "Consecutive Count:", 3, "MAIN_BASE_SETTINGS")
 
     val ACCEPT_MAIN_WORLD_NORMAL_TASK = SettingDef("accept_main_world_normal_task", "接取主世界普通任务", "Accept Main Base Normal Task", 1, "MAIN_BASE_SETTINGS")
     val ACCEPT_MAIN_WORLD_ADVANCED_TASK = SettingDef("accept_main_world_advanced_task", "接取主世界高级任务", "Accept Main Base Advanced Task", 0, "MAIN_BASE_SETTINGS")
@@ -211,6 +229,10 @@ object MainBaseSettings {
         LIGHTING_ON_WIZARD_TOWER,
         AI_DEPLOY_TROOPS,
         CHANGE_HEROES,
+        DEPLOY_HEROES_ENABLED,
+        DEPLOY_SPELLS_ENABLED,
+        DEPLOY_REINFORCEMENTS_ENABLED,
+        DEPLOY_SIEGE_MACHINES_ENABLED,
         BUILD_SETTING,
         WALL_UPGRADE_SETTINGS,
         INSTANT_UPGRADE,
@@ -221,6 +243,7 @@ object MainBaseSettings {
         SAVE_WORKER,
         SAVE_WORKER_BUILD_AFTER_WALL_FULL,
         GEAR_UP_SETTINGS,
+        SPEED_SIX_BUILDER,
         UPGRADE_AFTER_FAIL_WALL_UPGRADE,
         UPGRADE_WALL_THRESHOLD,
         UPGRADE_PETS,
@@ -241,6 +264,13 @@ object MainBaseSettings {
         CLAIM_CLAN_GAME_REWARDS,
         PLAY_CLAN_WAR,
         PLAY_LEAGUE,
+        PLAY_LEAGUE_DONATION,
+        LEAGUE_DONATION_TROOP_1,
+        LEAGUE_DONATION_COUNT_1,
+        LEAGUE_DONATION_TROOP_2,
+        LEAGUE_DONATION_COUNT_2,
+        LEAGUE_DONATION_TROOP_3,
+        LEAGUE_DONATION_COUNT_3,
         PLAY_RAID,
         START_LEAGUE_SETTINGS,
         START_CLAN_LEAGUE,
@@ -248,7 +278,6 @@ object MainBaseSettings {
         START_CLAN_WAR_SETTINGS,
         START_CLAN_WAR,
         START_CLAN_WAR_METHOD,
-        OPEN_RAID,
         START_RAID,
         BUY_GOLD_ORE_WITH_RAID_MEDAL,
         BUY_PURPLE_ORE_WITH_RAID_MEDAL,
@@ -269,14 +298,14 @@ object MainBaseSettings {
         USE_BUILDER_POTION,
         SELL_RING_OF_WALL,
         UPGRADE_GEAR_MASTER,
-        UPGRADE_WERA_GEAR,
-        UPGRADE_ALL_GEAR,
-        UPGRADE_CUSTOM_GEAR,
+        UPGRADE_GEAR_SCOPE,
         REMOVE_OBSTACLES,
         CONTINUOUS_REMOVE_OBSTACLES,
         REMOVE_OBSTACLES_ENHANCEMENT,
         CLAIM_TIMED_REWARDS,
         CLAIM_TOKEN_REWARDS,
+        CLAIM_BADGE_EVENT_REWARDS,
+        CLAIM_EVENT_SHOP_REWARDS,
         COLLECT_CAPITAL_COINS,
         CONTRIBUTE_CAPITAL_COINS,
         CLAIM_FREE_SHOP_REWARDS,
@@ -285,10 +314,14 @@ object MainBaseSettings {
         CLAN_TAG,
         USE_TEMP_ITEMS,
         CLAN_JOIN_MESSAGE,
-        CREATE_CONSECUTIVE_CLANS,
+        APPROVE_MEMBER_SETTING,
+        APPROVE_MEMBER_CODE,
+        // CREATE_CONSECUTIVE_CLANS, // commented out: no functional implementation
         INVITE_PLAYERS,
-        CLAN_NAME,
-        CONSECUTIVE_COUNT,
+        INVITE_PLAYERS_ROUNDS,
+        INVITE_PLAYERS_ROUND_DURATION,
+        // CLAN_NAME,       // commented out: part of create_consecutive_clans (no functional implementation)
+        // CONSECUTIVE_COUNT, // commented out: part of create_consecutive_clans (no functional implementation)
         ACCEPT_MAIN_WORLD_NORMAL_TASK,
         ACCEPT_MAIN_WORLD_ADVANCED_TASK,
         ACCEPT_BUILDER_BASE_NORMAL_TASK,

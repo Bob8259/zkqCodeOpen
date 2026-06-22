@@ -21,6 +21,7 @@ import com.coc.zkqcode.jar.ui.Strings
 
 fun LazyListScope.builderBaseConfig(
     index: Int, isExpanded: Boolean, onToggleExpanded: () -> Unit, onNavigateBuilderBasePriority: (Int) -> Unit = {},
+    onNavigateBuilderBaseResearchPriority: (Int) -> Unit = {},
     onScrollToBottom: () -> Unit = {}
 ) {
     // Banner — Builder Base Settings
@@ -132,7 +133,13 @@ fun LazyListScope.builderBaseConfig(
             SettingSwitchIcon(key = "${BUILDER_BASE_SETTINGS.BUILDER_BASE_RESEARCH.key}_c${index}")
 
             AnimatedVisibility(visible = GlobalVars.configStates["${BUILDER_BASE_SETTINGS.BUILDER_BASE_RESEARCH.key}_c${index}"]?.value == "1") {
-                BuilderBaseResearchConfigs(index = index)
+                Column {
+                    CustomButton(
+                        onClick = { onNavigateBuilderBaseResearchPriority(index) },
+                        text = Strings.adjustBuilderBaseResearchPriority,
+                        containerColor = AppColors.Teal
+                    )
+                }
             }
         }
     }
@@ -143,6 +150,9 @@ fun LazyListScope.builderBaseConfig(
         SettingSection(visible = isExpanded && noBuilderBase) {
             FlowRow {
                 SettingSwitchIcon(key = "${BUILDER_BASE_SETTINGS.BUILDER_BASE_BUILD_SETTING.key}_c${index}")
+                AnimatedVisibility(visible = GlobalVars.configStates["${BUILDER_BASE_SETTINGS.BUILDER_BASE_BUILD_SETTING.key}_c${index}"]?.value == "1") {
+                    SettingSwitchIcon(key = "${BUILDER_BASE_SETTINGS.BUILDER_BASE_PURCHASE_BOTO_SHACK.key}_c${index}")
+                }
                 SettingSwitchIcon(key = "${BUILDER_BASE_SETTINGS.BUILDER_BASE_WALL_UPGRADE_SETTINGS.key}_c${index}")
 
                 SettingSwitchIcon(

@@ -1,4 +1,4 @@
-﻿package com.coc.zkqcode.jar.code.mainbase.clan
+package com.coc.zkqcode.jar.code.mainbase.clan
 
 import android.graphics.Bitmap
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
@@ -18,18 +18,41 @@ import com.coc.zkqcode.jar.code.universal.smalltools.data.getBooleanConfigRuntim
 import com.coc.zkqcode.jar.code.universal.smalltools.lifecycle.killGame
 import com.coc.zkqcode.jar.code.universal.smalltools.data.readMemory
 import com.coc.zkqcode.jar.code.universal.smalltools.data.writeMemory
+import com.coc.zkqcode.jar.code.auth.ServerChanHelper
+import com.coc.zkqcode.jar.ui.Strings
 import com.coc.zkqcode.jar.ui.schema.Schema
+import com.coc.zkqcode.core.data.database.GlobalVars
 
 private const val STRATEGY_POSITION = "position"
 private const val STRATEGY_RECOMMENDATION = "recommendation"
 
 suspend fun clanWar(): Boolean {
-    if (isInClanLeaguePeriod()) {
-        accountMessage("当前处于部落联赛期间，跳过部落战")
-        return true
+    // Only perform league-vs-clan-war decision when BOTH the league AND clan war switches are enabled.
+    val leagueEnabled = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.START_CLAN_LEAGUE.key)
+        || getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.PLAY_LEAGUE.key)
+        || getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.PLAY_LEAGUE_DONATION.key)
+
+    if (leagueEnabled && isInClanLeaguePeriod()) {
+        if (findMultiColors(MyColors.ClanLeagueEntryIndicator) != null) {
+            accountMessage("当前处于部落联赛期间且检测到联赛入口，跳过部落战")
+            return true
+        }
+        accountMessage("当前处于部落联赛时间段但未检测到联赛入口标志，继续执行部落战")
     }
     if (!getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.PLAY_CLAN_WAR.key) || InGameVars.townHallLevel < 3) return true
     findMultiColors(MyColors.ClanWarSwordIcon) ?: return true // No clan war attack times, return
+
+    // If clan war notification is enabled, skip the attack and send a push notification
+    if (GlobalVars.configStates[Schema.GLOBAL_SETTINGS.SERVERCHAN_WAR_NOTIFY.key]?.value == "1") {
+        val remarkKey = "remark${InGameVars.currentAccountNumber}"
+        val remark = GlobalVars.configStates[remarkKey]?.value.orEmpty()
+        ServerChanHelper.sendNotification(
+            title = Strings.serverchanWarTitle,
+            desp = Strings.serverchanWarMsg(InGameVars.currentAccountNumber, remark)
+        )
+        return true
+    }
+
     TouchActions.tap(50, 440) // Enter clan war
 
     // Determine strategy order based on last used strategy

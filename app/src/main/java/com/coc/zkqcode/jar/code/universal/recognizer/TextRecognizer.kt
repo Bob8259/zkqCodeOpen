@@ -34,10 +34,11 @@ object TextRecognizer {
         threshold: Int = 140,
         saveImage: Boolean = false,
         applyPreprocess: Boolean = true,
-        invertBinarization: Boolean = true
+        invertBinarization: Boolean = true,
+        screenBuffer: Bitmap? = null
     ): List<RecognizedText> {
-        val screenBuffer = ScreenCaptureManager.capture(asBitmap = true) as? Bitmap
-            ?: logAndRestart("in TextRecognizer, screen capture failed.")
+        val sourceBitmap = screenBuffer ?: ScreenCaptureManager.capture(asBitmap = true) as? Bitmap
+        ?: logAndRestart("in TextRecognizer, screen capture failed.")
 
         val width = endX - startX
         val height = endY - startY
@@ -49,9 +50,9 @@ object TextRecognizer {
         waitForPlay()
 
         try {
-            if (startX + width <= screenBuffer.width && startY + height <= screenBuffer.height) {
+            if (startX + width <= sourceBitmap.width && startY + height <= sourceBitmap.height) {
                 // 1. Crop the original region
-                val croppedBitmap = Bitmap.createBitmap(screenBuffer, startX, startY, width, height)
+                val croppedBitmap = Bitmap.createBitmap(sourceBitmap, startX, startY, width, height)
 
                 // 2. [Core Optimization] Apply preprocessing (optional)
                 val bitmapToRecognize = if (applyPreprocess) {

@@ -11,14 +11,6 @@ import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.recognizer.RecognizedText
 import com.coc.zkqcode.jar.code.universal.recognizer.TextRecognizer
 import com.coc.zkqcode.jar.code.universal.recognizer.cleanOcrDigits
-import com.google.android.gms.tasks.Tasks
-import com.google.mlkit.vision.common.InputImage
-import com.google.mlkit.vision.text.TextRecognition
-import com.google.mlkit.vision.text.latin.TextRecognizerOptions
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import java.io.File
-import java.io.FileOutputStream
 
 /**
  * Data class representing the worker information (available/total).
@@ -65,7 +57,7 @@ object WorkerAndResearch {
             val keepBottom = worker.y + 24 - startY
 
             val results = recognizeWorkerNumberWithMask(
-                startX, startY, endX, endY, keepLeft, keepTop, keepRight, keepBottom, saveImage = true
+                startX, startY, endX, endY, keepLeft, keepTop, keepRight, keepBottom
             )
 
             // Sort by x-axis position to ensure left-to-right reading order
@@ -162,25 +154,20 @@ object WorkerAndResearch {
         if (masked !== cropped) {
             cropped.recycle()
         }
-        val preprocessed = TextRecognizer.preprocess(masked, threshold = 240, invertBinarization = true)
-        if (preprocessed !== masked) {
+        return try {
+            TextRecognizer.recognize(
+                0,
+                0,
+                width,
+                height,
+                useChinese = false,
+                threshold = 240,
+                saveImage = saveImage,
+                screenBuffer = masked,
+            )
+        } finally {
             masked.recycle()
         }
-
-        if (saveImage) {
-            ScreenCaptureManager.getContext()?.let { context ->
-                runCatching {
-                    val file = File(context.filesDir, "test.png")
-                    FileOutputStream(file).use { out ->
-                        preprocessed.compress(Bitmap.CompressFormat.PNG, 100, out)
-                    }
-                }
-            }
-        }
-
-        val results = recognizeWorkerText(preprocessed)
-        preprocessed.recycle()
-        return results
     }
 
     /**
@@ -209,25 +196,6 @@ object WorkerAndResearch {
         out.setPixels(pixels, 0, width, 0, 0, width, height)
         return out
     }
-
-    /** Latin ML Kit OCR; mirrors [TextRecognizer] recognizeTextSync with useChinese = false. */
-    private suspend fun recognizeWorkerText(bitmap: Bitmap): List<RecognizedText> =
-        withContext(Dispatchers.IO) {
-            val recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
-            val image = InputImage.fromBitmap(bitmap, 0)
-            try {
-                val visionText = Tasks.await(recognizer.process(image))
-                val result = mutableListOf<RecognizedText>()
-                for (block in visionText.textBlocks) {
-                    for (line in block.lines) {
-                        result.add(RecognizedText(line.text, line.boundingBox))
-                    }
-                }
-                result
-            } catch (_: Exception) {
-                emptyList()
-            }
-        }
 
     /**
      * Fallback detection: use findMultiColors on a preprocessed (binarized) bitmap

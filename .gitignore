@@ -26,6 +26,5 @@ rust_logic/log.txt
 .idea
 app/src/main/jniLibs
 rust_logic/src/security/keys.rs
-app/encrypt_jar.py
-app/upload_jar.py
+/script/
 app/src/main/assets/ToCrackers.md

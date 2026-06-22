@@ -93,6 +93,8 @@ internal fun SmallTextField(
 }
 
 fun LazyListScope.accountSettings() {
+    val pinnedState = GlobalVars.configStates.getOrPut("_account_pinned") { mutableStateOf("0") }
+    val isPinned = pinnedState.value == "1"
     item {
         SettingSection {
             SettingInputRow(
@@ -120,6 +122,11 @@ fun LazyListScope.accountSettings() {
                     marginTop = 6.dp,
                     onClick = { batchUpdateAllAccounts(ACCOUNT_SETTINGS.ISOPEN.key) { if (it == "1") "0" else "1" } }
                 )
+                CustomButton(
+                    text = if (isPinned) Strings.unpinEnabledAccounts else Strings.pinEnabledAccounts,
+                    marginTop = 6.dp,
+                    onClick = { pinnedState.value = if (isPinned) "0" else "1" }
+                )
             }
             var configValue by remember { mutableStateOf("") }
             var startAccount by remember { mutableStateOf("") }
@@ -130,6 +137,10 @@ fun LazyListScope.accountSettings() {
             var selectedVerIndex by remember { mutableIntStateOf(0) }
             var expandedVer by remember { mutableStateOf(false) }
             val verOptions = listOf(Strings.cnVersion, Strings.globalVersion, Strings.atrasis)
+
+            var selectedStartMethodIndex by remember { mutableIntStateOf(0) }
+            var expandedStartMethod by remember { mutableStateOf(false) }
+            val startMethodOptions = listOf(Strings.gameSave, Strings.directLaunch, Strings.testMode)
 
             FlowRow(
                 modifier = Modifier.padding(top = 6.dp)
@@ -214,6 +225,7 @@ fun LazyListScope.accountSettings() {
                         .align(Alignment.CenterVertically)
                 )
 
+                // Version Dropdown
                 Box(
                     modifier = Modifier
                         .wrapContentSize(Alignment.TopStart)
@@ -253,10 +265,51 @@ fun LazyListScope.accountSettings() {
                     }
                 }
 
+                // Start Method Dropdown
+                Box(
+                    modifier = Modifier
+                        .wrapContentSize(Alignment.TopStart)
+                        .align(Alignment.CenterVertically).padding(end = 4.dp)
+                ) {
+                    Button(
+                        onClick = {
+                            GlobalVars.isAutoRunEnabled = false
+                            expandedStartMethod = true
+                        },
+                        shape = RoundedCornerShape(8.dp),
+                        modifier = Modifier.height(30.dp),
+                        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 0.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = AppColors.Primary)
+                    ) {
+                        Text(startMethodOptions[selectedStartMethodIndex], style = MaterialTheme.typography.labelMedium)
+                        Icon(Icons.Default.ArrowDropDown, contentDescription = null)
+                    }
+
+                    DropdownMenu(
+                        expanded = expandedStartMethod,
+                        onDismissRequest = { expandedStartMethod = false }
+                    ) {
+                        startMethodOptions.forEachIndexed { idx, option ->
+                            DropdownMenuItem(
+                                text = {
+                                    Text(option, style = MaterialTheme.typography.labelMedium)
+                                },
+                                onClick = {
+                                    GlobalVars.isAutoRunEnabled = false
+                                    selectedStartMethodIndex = idx
+                                    expandedStartMethod = false
+                                },
+                                modifier = Modifier.height(35.dp)
+                            )
+                        }
+                    }
+                }
+
                 CustomButton(
                     text = Strings.confirm,
                     onClick = {
                         batchUpdateByRange(batchVerStartAccount, batchVerEndAccount, ACCOUNT_SETTINGS.GAME_VERSION.key, selectedVerIndex.toString())
+                        batchUpdateByRange(batchVerStartAccount, batchVerEndAccount, ACCOUNT_SETTINGS.START_METHOD.key, selectedStartMethodIndex.toString())
                     },
                     marginTop = 0.dp
                 )
@@ -267,7 +320,20 @@ fun LazyListScope.accountSettings() {
     // Display account configurations based on account_count
     val accountCountStr = GlobalVars.configStates[GLOBAL_SETTINGS.ACCOUNT_COUNT.key]!!.value
     val currentAccountCount = accountCountStr.toIntOrNull() ?: 3
-    items(count = currentAccountCount, key = { it + 1 }) { i ->
-        AccountConfig(index = i + 1)
+
+    // Sort accounts: when isPinned is true, enabled (isopen=1) accounts come first by index ascending,
+    // then disabled (isopen=0) accounts by index ascending. When isPinned is false, keep natural order by index.
+    val sortedAccountIndices = if (isPinned) {
+        (1..currentAccountCount).sortedWith(
+            compareBy<Int> { index ->
+                GlobalVars.configStates["${ACCOUNT_SETTINGS.ISOPEN.key}${index}"]?.value != "1"
+            }.thenBy { it }
+        )
+    } else {
+        (1..currentAccountCount).toList()
+    }
+
+    items(count = sortedAccountIndices.size, key = { sortedAccountIndices[it] }) { i ->
+        AccountConfig(index = sortedAccountIndices[i])
     }
 }

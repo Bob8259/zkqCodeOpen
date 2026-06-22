@@ -1,4 +1,4 @@
-﻿package com.coc.zkqcode.jar.code.mainbase.attack
+package com.coc.zkqcode.jar.code.mainbase.attack
 
 import android.graphics.Bitmap
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
@@ -48,7 +48,7 @@ private const val GOLD_FULL_X_THRESHOLD = 1017
 private const val ELIXIR_FULL_X_THRESHOLD = 1017
 private const val DARK_ELIXIR_FULL_X_THRESHOLD = 1080
 
-suspend fun searchOpponentsAndDeployTroops(): Boolean {
+suspend fun searchOpponentsAndDeployTroops(battleNumber: Int = 1, battleTimes: Int = 1): Boolean {
 
     var targetGold = getConfigRuntime(Schema.MAIN_BASE_SETTINGS.GOLD_REQUIREMENT.key).toIntOrNull() ?: logAndRestart("${Schema.MAIN_BASE_SETTINGS.GOLD_REQUIREMENT.displayName} 必须是数字，请检查配置")
     var targetElixir = getConfigRuntime(Schema.MAIN_BASE_SETTINGS.ELIXIR_REQUIREMENT.key).toIntOrNull() ?: logAndRestart("${Schema.MAIN_BASE_SETTINGS.ELIXIR_REQUIREMENT.displayName} 必须是数字，请检查配置")
@@ -129,6 +129,7 @@ suspend fun searchOpponentsAndDeployTroops(): Boolean {
     var shouldStopNoStars = false
     if (stopNoStarEnabled) {
         val starsAvailable = findMultiColors(schema = MyColors.MainBaseStarsAvailable)
+            ?: findMultiColors(schema = MyColors.MainBaseStarsAvailable2)
         shouldStopNoStars = starsAvailable == null
     }
     // Combined decision: when both are enabled, both must be satisfied; when only one is enabled, that one decides
@@ -254,7 +255,7 @@ suspend fun searchOpponentsAndDeployTroops(): Boolean {
             }
         }
         val remainingMinutes = (SEARCH_TIMEOUT_MS - (System.currentTimeMillis() - battleStartTime)) / 60000.0
-        accountMessage("主世界搜索中... ${"%.1f".format(remainingMinutes)}分钟后强制退出")
+        accountMessage("主世界搜索中... 第${battleNumber}/${battleTimes}局\n${"%.1f".format(remainingMinutes)}分钟后强制退出")
         if (!checkReconnections()) return false
         delayWithMultiplier(200)
     }

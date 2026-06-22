@@ -26,8 +26,20 @@ interface IMainBaseClanWarColors {
     val JoinedClanWar: ColorSchema
 
     // Clan war league registration buttons
+    val ClanLeagueEntryIndicator: ColorSchema
     val StartClanLeagueButton: ColorSchema
     val ConfirmClanLeagueRegistration: ColorSchema
+    val LeagueWhiteCloud: ColorSchema
+    val LeaguePreparePhase: ColorSchema
+    val LeaguePreparePhase2: ColorSchema
+    val LeagueGrayArrow: ColorSchema
+    val LeaguePercentIndicator: ColorSchema
+    val LeagueOcrSkipRegion: ColorSchema
+    val LeagueReinforceRequest: ColorSchema
+    val LeagueDonatableTroop: ColorSchema
+    val ArcherDonatableTroop: ColorSchema
+    val FlameFlingerDonatableTroop: ColorSchema
+    val LeagueFirstMemberIndicator: ColorSchema
 }
 
 object MainBaseClanWarColors : IMainBaseClanWarColors {
@@ -106,6 +118,11 @@ object MainBaseClanWarColors : IMainBaseClanWarColors {
         959, 97, 1134, 540, "8CEABD", "28|0|8CEABD,56|0|8CEABD,83|0|8CEABD,111|0|8CEABD,0|19|3AD48B,28|19|3AD48B,56|19|3AD48B,83|19|3AD48B,111|19|3AD48B", 1, 0.95, "参战按钮"
     )
 
+    // Clan war league entry indicator (shown on home page when league is available)
+    override val ClanLeagueEntryIndicator = ColorSchema.parse(
+        19, 406, 86, 472, "E0FAFF", "0|-31|DBFFFF,3|-22|3E6ED3,-15|-18|28ACE8,-4|-9|BDEAFF,-25|-2|0DBADE,-11|22|0DA2C2,30|-13|92EDFC,20|-17|28ABE5,1064|-109|E0E8E8", 0, 0.9, "联赛入口标志"
+    )
+
     // Clan war league registration button
     override val StartClanLeagueButton = ColorSchema.parse(
         528, 428, 751, 504, "3BBCFC", "45|0|3BBCFC,90|0|3BBCFC,134|0|3BBCFC,179|0|3BBDFC,0|38|343C4B,45|38|1052E4,90|38|1052E4,134|38|1052E4,179|38|1052E4", 0, 0.9, "开联赛"
@@ -115,4 +132,59 @@ object MainBaseClanWarColors : IMainBaseClanWarColors {
     override val ConfirmClanLeagueRegistration = ColorSchema.parse(
         884, 606, 1137, 676, "3E74DB", "51|0|3BBBFB,102|0|3BBBFB,152|0|3BBBFB,203|0|3BBBFB,0|35|CBE2FF,51|35|1057E5,102|35|1057E5,152|35|1057E5,203|35|1057E5", 0, 0.9, "联赛报名确认"
     )
+
+    override val LeagueWhiteCloud = ColorSchema.parse(
+        1138, 580, 1256, 702, "CC9038", "23|0|65ABC5,47|0|1C3748,71|0|6DC3EB,94|0|CC9038,0|61|D0933E,23|61|C1AF95,47|61|13110F,71|61|EFDCC1,94|61|D0933E", 0, 0.9, "联赛白云图色"
+    )
+
+    override val LeaguePreparePhase = ColorSchema.parse(
+        309, 619, 981, 647, "3B6ED0", "0|-10|D3E4F6,-9|-4|C2D8EB,-8|5|BAD4EB,0|11|BAD4EB,8|4|C2D9EF,9|-5|D3E6F4,14|0|3E79EA,-14|0|3B6ED0,-1|18|4B82E3", 0, 0.9, "联赛准备阶段图色"
+    )
+    override val LeaguePreparePhase2 = ColorSchema.parse(
+        309, 619, 981, 647, "3B6ED0", "0|-7|CDDFF0,8|-4|D0E3F6,9|5|C2D9EF,-1|10|BAD4EB,-9|4|B9D4EB,-9|-7|C1E4EC,-9|0|BAD4EB,16|0|4982E9,-15|0|3E79E1", 0, 0.9, "联赛准备阶段图色2"
+    )
+
+    override val LeagueGrayArrow = ColorSchema.parse(
+        925, 541, 961, 599, "BBBBBB", "7|0|CCCCCC,14|0|CBCBCB,21|0|CBCBCB,28|0|CBCBCB,0|29|A7A7A7,7|29|ABABAB,14|29|ABABAB,21|29|A9A9A9,28|29|ACACAC", 0, 0.9, "联赛灰色切换箭头"
+    )
+
+    override val LeaguePercentIndicator = ColorSchema.parse(
+        598, 543, 718, 556, "1EA16B", "", 0, 0.9, "联赛百分比指示器"
+    )
+
+    override val LeagueOcrSkipRegion = ColorSchema.parse(
+        552, 528, 597, 569, "FFFFFF", "", 0, 0.9, "联赛OCR跳过区域"
+    )
+
+    override val LeagueReinforceRequest = ColorSchema.parse(
+        409, 535, 540, 566, "7BF7D8", "26|0|7BF7D8,53|0|7BF7D8,79|0|7BF6D7,105|0|7AF5D5,0|15|1DBF70,26|15|1DBF70,53|15|145F3B,79|15|20BF70,105|15|25BF70", 0, 0.9, "联赛增援请求"
+    )
+
+    override val LeagueDonatableTroop = ColorSchema.parse(
+        261, 166, 1020, 414, "9CA5A8", "-7|-17|F3F47D,11|-8|DECB80,20|-15|EDE97B,-3|-30|F4F4F4,10|7|5F585B,4|22|D3D4DB,29|21|BDB3BE,18|-22|CCCACC,-35|-26|FCC379", 0, 0.9, "联赛可捐赠兵种"
+    )
+
+    override val ArcherDonatableTroop = ColorSchema.parse(
+        261, 166, 1020, 414, "626DAB", "1|-13|7039CA,-28|-23|DB72FC,5|-35|AC5DFC,3|11|3E1D80,11|23|39BA9C,0|25|A1FFFF,-8|32|2BB999,17|33|A6C2FF,-7|-7|1A2022", 0, 0.9, "联赛可捐赠弓箭手"
+    )
+
+    override val FlameFlingerDonatableTroop = ColorSchema.parse(
+        261, 166, 1020, 414, "27C1F1", "13|1|71859B,2|21|777A7D,-4|13|384ACA,-26|-4|399CE1,16|-27|F5FFFF,16|-38|4F4F53,-3|-41|457CD7,-12|-22|2669DB,3|-5|2124B5", 0, 0.9, "联赛可捐赠烈焰锅炉"
+    )
+
+    override val LeagueFirstMemberIndicator = ColorSchema.parse(
+        925, 543, 958, 597, "5FA7FF", "7|0|57C2FF,14|0|57C1FF,20|0|57C1FF,27|0|57C1FF,0|27|468CFF,7|27|4793FF,14|27|4991FF,20|27|4990FF,27|27|4792FF", 0, 0.9, "联赛第一个成员指示器"
+    )
+
+    // League donatable troop list: pairs of display name -> ColorSchema.
+    // This list must be kept in sync with the dropdown options in MainBaseConfigs.kt.
+    // Add new troops here when more ColorSchema entries become available.
+    val leagueDonatableTroopList: List<Pair<String, ColorSchema>> = listOf(
+        "戈仑冰人" to LeagueDonatableTroop,
+        "弓箭手" to ArcherDonatableTroop,
+        "烈焰锅炉" to FlameFlingerDonatableTroop,
+    )
+
+    // Convenience: extract just the display names for UI dropdowns.
+    val leagueDonatableTroopNames: List<String> get() = listOf("无") + leagueDonatableTroopList.map { it.first }
 }

@@ -29,9 +29,21 @@ private const val CLAN_WAR_JOIN_BUTTON_SEARCH_RIGHT_OFFSET = 550
 private const val CLAN_WAR_JOIN_BUTTON_SEARCH_BOTTOM_OFFSET = 20
 
 suspend fun startClanWar(): Boolean {
-    if (isInClanLeaguePeriod()) {
-        accountMessage("当前处于部落联赛期间，跳过开启部落战")
-        return true
+    // Only perform league-vs-clan-war decision when BOTH the league AND clan war switches are enabled.
+    // - If league switch is OFF: proceed normally as plain clan war (regardless of league time window).
+    // - If both ON: during league time window, skip clan war only when ClanLeagueEntryIndicator
+    //   is actually visible (meaning the clan really has a league to join); otherwise fall through
+    //   and open a regular clan war.
+    val leagueEnabled = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.START_CLAN_LEAGUE.key)
+        || getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.PLAY_LEAGUE.key)
+        || getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.PLAY_LEAGUE_DONATION.key)
+
+    if (leagueEnabled && isInClanLeaguePeriod()) {
+        if (findMultiColors(MyColors.ClanLeagueEntryIndicator) != null) {
+            accountMessage("当前处于部落联赛期间且检测到联赛入口，跳过开启部落战")
+            return true
+        }
+        accountMessage("当前处于部落联赛时间段但未检测到联赛入口标志，恢复开启部落战")
     }
     if (!getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.START_CLAN_WAR.key)) return true
 
@@ -56,7 +68,7 @@ suspend fun startClanWar(): Boolean {
             selectClanWarParticipant()
             break
         }
-        delay(200)
+        delayWithMultiplier(200)
     }
     writeMemory(storageKey, (System.currentTimeMillis() / 60_000).toString())
 

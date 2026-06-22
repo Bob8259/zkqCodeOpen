@@ -33,3 +33,25 @@ object BuilderBaseTroops {
         ELECTROFIRE_WIZARD
     )
 }
+
+// Research priority definitions — mirrors BuilderBaseTroops.all order
+object BuilderBaseResearchPriorities {
+    val RAGED_BARBARIAN = SettingDef("raged_barbarian_research_priority", "狂暴野蛮人", "Raged Barbarian", 1, "BUILDER_BASE_RESEARCH_PRIORITIES")
+    val BOXER_GIANT = SettingDef("boxer_giant_research_priority", "巨人拳击手", "Boxer Giant", 2, "BUILDER_BASE_RESEARCH_PRIORITIES")
+    val BOMBER = SettingDef("bomber_research_priority", "夜世界炸弹兵", "Bomber", 3, "BUILDER_BASE_RESEARCH_PRIORITIES")
+    val CANNON_CART = SettingDef("cannon_cart_research_priority", "加农炮战车", "Cannon Cart", 4, "BUILDER_BASE_RESEARCH_PRIORITIES")
+    val DROP_SHIP = SettingDef("drop_ship_research_priority", "骷髅气球", "Drop Ship", 5, "BUILDER_BASE_RESEARCH_PRIORITIES")
+    val HOG_GLIDER = SettingDef("hog_glider_research_priority", "飞猪骑士", "Hog Glider", 6, "BUILDER_BASE_RESEARCH_PRIORITIES")
+    val SNEAKY_ARCHER = SettingDef("sneaky_archer_research_priority", "隐秘弓箭手", "Sneaky Archer", 7, "BUILDER_BASE_RESEARCH_PRIORITIES")
+    val BETA_MINION = SettingDef("beta_minion_research_priority", "异变亡灵", "Beta Minion", 8, "BUILDER_BASE_RESEARCH_PRIORITIES")
+    val BABY_DRAGON = SettingDef("baby_dragon_research_priority", "夜世界龙宝", "Baby Dragon", 9, "BUILDER_BASE_RESEARCH_PRIORITIES")
+    val NIGHT_WITCH = SettingDef("night_witch_research_priority", "暗夜女巫", "Night Witch", 10, "BUILDER_BASE_RESEARCH_PRIORITIES")
+    val POWER_PEKKA = SettingDef("power_pekka_research_priority", "雷霆皮卡", "Power P.E.K.K.A", 11, "BUILDER_BASE_RESEARCH_PRIORITIES")
+    val ELECTROFIRE_WIZARD = SettingDef("electrofire_wizard_research_priority", "电火法师", "Electrofire Wizard", 12, "BUILDER_BASE_RESEARCH_PRIORITIES")
+
+    val all = listOf(
+        RAGED_BARBARIAN, BOXER_GIANT, BOMBER, CANNON_CART,
+        DROP_SHIP, HOG_GLIDER, SNEAKY_ARCHER, BETA_MINION,
+        BABY_DRAGON, NIGHT_WITCH, POWER_PEKKA, ELECTROFIRE_WIZARD,
+    )
+}

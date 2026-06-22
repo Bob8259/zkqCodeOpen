@@ -35,6 +35,8 @@ object StorageKeys {
     const val CLAN_GAME_ACCEPTED_TASK_BASE = "ClanGameAcceptedTaskBase"
     const val CLAN_GAME_FINISHED_MONTH = "ClanGameFinishedMonth"
     const val CLAN_GAME_REWARD_CLAIMED_PERIOD = "ClanGameRewardClaimedPeriod"
+    const val CLAIM_BADGE_EVENT_REWARDS = "ClaimBadgeEventRewards"
+    const val LEAGUE_DONATION = "LeagueDonation"
 
     // Per-account keys for dynamic adjustment resource thresholds
     const val DYNAMIC_GOLD = "DynamicGold"

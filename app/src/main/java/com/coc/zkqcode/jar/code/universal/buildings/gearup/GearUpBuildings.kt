@@ -24,17 +24,15 @@ suspend fun gearUpBuildings(): Boolean {
     if (!getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.GEAR_UP_SETTINGS.key)) return true
 
     val storageKey = StorageKeys.withAccountNumber(
-        StorageKeys.UPGRADE_GEARS,
-        InGameVars.currentAccountNumber
+        StorageKeys.UPGRADE_GEARS, InGameVars.currentAccountNumber
     )
-
     if (!checkMemoryFile(storageKey, 2880)) {
         accountMessage("2天内已执行过改装建筑检查，跳过本次扫描")
         return true
     }
 
     val result = performGearUpBuildings()
-    writeMemory(storageKey, (System.currentTimeMillis() / 60_000).toString())
+
     return result
 }
 
@@ -54,8 +52,7 @@ private suspend fun upgradeGearUpBuildings(): Boolean {
     if (!enterMainBase()) return true
 
     val worker = findMultiColorsUntil(
-        schemas = MyColors.MainBaseWorkerSchemas,
-        duration = 1000
+        schemas = MyColors.MainBaseWorkerSchemas, duration = 1000
     )
 
     if (worker == null) {
@@ -66,10 +63,7 @@ private suspend fun upgradeGearUpBuildings(): Boolean {
     TouchActions.tap(worker.x, worker.y)
 
     iterateBuilderBaseBuildingUpgradeList(
-        baseType = BaseType.Main,
-        excludeNewBuildings = false,
-        excludeGearUpBuildings = false,
-        onDetect = { result ->
+        baseType = BaseType.Main, excludeNewBuildings = false, excludeGearUpBuildings = false, onDetect = { result ->
             val buildings = result.buildings
             if (buildings.isEmpty()) {
                 accountMessage("未检测到可改装建筑")
@@ -82,8 +76,7 @@ private suspend fun upgradeGearUpBuildings(): Boolean {
                     tapGoldBar()
                     delayWithMultiplier(300)
                     val gearUpButton = findMultiColorsUntil(
-                        schemas = listOf(MyColors.BuildingGearUpButton),
-                        duration = 1000
+                        schemas = listOf(MyColors.BuildingGearUpButton), duration = 1000
                     )
                     if (gearUpButton != null) {
                         TouchActions.tap(gearUpButton.x, gearUpButton.y)
@@ -95,8 +88,11 @@ private suspend fun upgradeGearUpBuildings(): Boolean {
                     false
                 }
             }
-        }
+        })
+    //If workers are available, then we should record the time regardless of whether a building that can be geared up is found or not.
+    val storageKey = StorageKeys.withAccountNumber(
+        StorageKeys.UPGRADE_GEARS, InGameVars.currentAccountNumber
     )
-
+    writeMemory(storageKey, (System.currentTimeMillis() / 60_000).toString())
     return enterMainScreen()
 }

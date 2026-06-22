@@ -32,6 +32,7 @@ import androidx.savedstate.setViewTreeSavedStateRegistryOwner
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.system.hotupdate.HotUpdateManager
 import com.coc.zkqcode.core.util.basic.ShowMessage
+import com.coc.zkqcode.core.util.exit.AppExitHelper
 import com.coc.zkqcode.loadjar.Loadjar
 import com.coc.zkqcode.statehelper.AppMode
 import com.coc.zkqcode.statehelper.AppStateManager
@@ -242,6 +243,11 @@ class UIWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner, View
     override fun onBind(intent: Intent?): IBinder? = null
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        if (AppExitHelper.isNormalExit(this)) {
+            AppExitHelper.setNormalExit(this, false)
+            stopSelf()
+            return START_NOT_STICKY
+        }
         updateForegroundRecord()
         lifecycleRegistry.currentState = Lifecycle.State.STARTED
         showFloatingWindow()

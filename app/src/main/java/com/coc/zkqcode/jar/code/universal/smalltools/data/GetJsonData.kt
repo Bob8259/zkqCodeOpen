@@ -1,6 +1,6 @@
 package com.coc.zkqcode.jar.code.universal.smalltools.data
 
-import com.coc.zkqcode.core.system.inputmethod.ZKQInputMethodService
+import com.coc.zkqcode.core.util.basic.ClipboardHelper
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
 import com.coc.zkqcode.jar.code.colorschema.MyColors
@@ -11,14 +11,52 @@ import com.coc.zkqcode.jar.code.universal.clickRightBottom
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.smalltools.input.TouchActions
-import com.coc.zkqcode.jar.code.universal.smalltools.input.setZKQInputMethod
+import com.coc.zkqcode.jar.code.universal.smalltools.data.getConfigRuntime
+import com.coc.zkqcode.jar.code.universal.buildings.upgrade.SpeedSixBuilderPriority
+import com.coc.zkqcode.jar.code.mainbase.research.MainBaseResearchMaxLevel
 import com.coc.zkqcode.jar.ui.schema.Schema
+import com.coc.zkqcode.jar.code.universal.BuildingStatus
+import com.coc.zkqcode.jar.ui.schema.details.MainBasePets
 import com.google.gson.Gson
+import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.google.gson.JsonSyntaxException
 
-suspend fun getJsonData(): Boolean {
-    if (!getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.SMART_DECISION.key)) return true
+// ── Speed 6 Builder: building data IDs in the game JSON ──
+// Main base buildings (in "buildings" array)
+private const val MAIN_ARCHER_TOWER_DATA_ID = 1000009  // 箭塔
+private const val MAIN_CANNON_DATA_ID = 1000008        // 加农炮
+private const val MAIN_MORTAR_DATA_ID = 1000013         // 迫击炮
+// Builder base buildings (in "buildings2" array)
+private const val BB_ARCHER_TOWER_DATA_ID = 1000048    // 箭塔(夜)
+private const val BB_CANNON_DATA_ID = 1000041          // 双管加农炮(夜) - for gear-up
+private const val BB_MULTI_MORTAR_DATA_ID = 1000045    // 多管迫击炮(夜)
+// Builder base heroes (in "heroes2" array, NOT "heroes")
+private const val BB_BATTLE_MACHINE_DATA_ID = 28000003 // 战争机器
+private const val BB_BATTLE_COPTER_DATA_ID = 28000005  // 战斗直升机
+// Pet house building for level detection
+private const val PET_HOUSE_DATA_ID = 1000068   // 战宠小屋
+
+// Pet data IDs for level detection (the 5 basic pets)
+private const val LASSI_DATA_ID = 73000000       // 莱希
+private const val MIGHTY_YAK_DATA_ID = 73000001  // 大牦
+private const val ELECTRO_OWL_DATA_ID = 73000002 // 闪枭
+private const val UNICORN_DATA_ID = 73000003     // 独角
+private const val FROSTY_DATA_ID = 73000009      // 冰牙
+
+// Builder base troops (in "units2" array) — for Speed 6 Builder level 18 target
+private const val BB_NIGHT_WITCH_DATA_ID = 4000042       // 暗夜女巫
+private const val BB_RAGED_BARBARIAN_DATA_ID = 4000031   // 狂暴野蛮人
+
+    suspend fun getJsonData(): Boolean {
+        // Check Speed 6 Builder toggle
+        InGameVars.speedSixBuilderEnabled = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.SPEED_SIX_BUILDER.key)
+        // Clear any leftover snapshots from a previous account so a stale "original"
+        // priority never bleeds into the current account's priority boost.
+        if (InGameVars.speedSixBuilderEnabled) {
+            SpeedSixBuilderPriority.clearAllSnapshots()
+        }
+    if (!getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.SMART_DECISION.key) && !InGameVars.speedSixBuilderEnabled) return true
     accountMessage("准备读取账号数据，请稍后")
     if (InGameVars.currentGameVersion != GameVersion.CN) {
         TouchActions.tap(1230, 520)//settings
@@ -39,13 +77,8 @@ suspend fun getJsonData(): Boolean {
     // Wait for clipboard to be populated after copy action
     delayWithMultiplier(500)
 
-    // Read clipboard content via IME service (only IME has clipboard access from background)
-    val imeService = ZKQInputMethodService.instance
-    if (imeService == null) {
-        // IME not bound — try to rebind and retry
-        setZKQInputMethod()
-    }
-    val clipboardText = (ZKQInputMethodService.instance ?: logAndRestart("ZKQInputMethodService instance is null after rebind attempt")).readClipboard()
+    // Read clipboard content via transparent ClipboardActivity
+    val clipboardText = ClipboardHelper.readClipboard()
     if (clipboardText.isNullOrBlank()) {
         // Clipboard is empty — skip updating townHallLevel
         accountMessage("剪贴板为空，跳过大本营等级检测")
@@ -95,11 +128,36 @@ suspend fun getJsonData(): Boolean {
         return enterMainScreen()
     }
     val targetLevel = getConfigRuntime(Schema.MAIN_BASE_SETTINGS.SKIP_TH_LEVEL.key).toIntOrNull() ?: logAndRestart("${Schema.MAIN_BASE_SETTINGS.SKIP_TH_LEVEL.displayName} 必须是数字，请检查配置")
-    accountMessage("大本营等级: $firstBuildingLvl\n设定目标等级：$targetLevel")
+    val thLevelInfo = "大本营等级: $firstBuildingLvl\n设定目标等级：$targetLevel"
     if (firstBuildingLvl >= targetLevel) {
+        accountMessage(thLevelInfo)
         return false//force switch account
     }
     InGameVars.townHallLevel = firstBuildingLvl
+
+    // Parse pet house and pet levels from the same JSON data (available even without Smart Decision)
+    parsePetLevels(jsonObject)
+
+    // Build account message based on enabled features, separated by blank line
+    val smartDecisionEnabled = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.SMART_DECISION.key)
+    val messageParts = mutableListOf<String>()
+
+    if (smartDecisionEnabled) {
+        messageParts.add(thLevelInfo)
+    }
+
+    if (InGameVars.speedSixBuilderEnabled) {
+        parseSpeedSixBuilderLevels(jsonObject)
+        val summary = SpeedSixBuilderPriority.buildUnmetSummaryMessage()
+        messageParts.add(summary)
+    }
+
+    // Parse research item levels from JSON data (if smart decision is enabled, we already have the JSON)
+    parseResearchItemLevels(jsonObject)
+
+    if (messageParts.isNotEmpty()) {
+        accountMessage(messageParts.joinToString("\n\n"))
+    }
 
     // Parse clock tower cooldown from boosts (may not exist)
     InGameVars.clockTowerCooldown = try {
@@ -150,6 +208,36 @@ suspend fun getJsonData(): Boolean {
 }
 
 /**
+ * Parse research item levels from the exported game JSON arrays (units, spells, siege_machines).
+ * Populates InGameVars.researchItemLevels so MainBaseResearch can read levels from data
+ * instead of performing color-based badge level detection.
+ */
+private fun parseResearchItemLevels(jsonObject: JsonObject) {
+    val nameToLevel = mutableMapOf<String, Int>()
+    try {
+        fun extractLevels(arrayName: String) {
+            val array = jsonObject.getAsJsonArray(arrayName) ?: return
+            for (element in array) {
+                val obj = element.asJsonObject
+                val dataId = try { obj.get("data").asInt } catch (_: Exception) { continue }
+                val lvl = try { obj.get("lvl").asInt } catch (_: Exception) { continue }
+                // Look up the research name from the data ID
+                val researchName = MainBaseResearchMaxLevel.allResearchDataIds.entries
+                    .firstOrNull { it.value == dataId }?.key
+                if (researchName != null) {
+                    // Use the max level if there are multiple entries with the same data ID
+                    nameToLevel[researchName] = maxOf(nameToLevel[researchName] ?: 0, lvl)
+                }
+            }
+        }
+        extractLevels("units")
+        extractLevels("spells")
+        extractLevels("siege_machines")
+    } catch (_: Exception) { /* ignore parse errors */ }
+    InGameVars.researchItemLevels = nameToLevel
+}
+
+/**
  * Wall quantity (number of walls) and max wall level for a given town hall level.
  * Returns Pair(wallQuantity, maxWallLevel). Unknown levels fall back to (0, 0).
  */
@@ -173,6 +261,139 @@ private fun wallRequirementForTownHall(townHallLevel: Int): Pair<Int, Int> = whe
     17 -> 325 to 18
     18 -> 325 to 19
     else -> 0 to 0
+}
+
+/**
+ * Parse pet house level and the 5 basic pet levels from the game JSON.
+ * This data is used by [checkPets] to decide whether a pet at level 10+
+ * should be excluded from the upgrade queue when the pet house is ≤ level 5.
+ *
+ * Pet house (战宠小屋) has data ID 1000068 in the "buildings" array.
+ * Pets have data IDs 73000000-73000009 in the "pets" array.
+ */
+private fun parsePetLevels(jsonObject: JsonObject) {
+    // Parse pet house level from "buildings" array
+    try {
+        val buildings = jsonObject.getAsJsonArray("buildings")
+        if (buildings != null) {
+            val petHouse = buildings.firstOrNull {
+                it.asJsonObject.get("data").asInt == PET_HOUSE_DATA_ID
+            }?.asJsonObject
+            if (petHouse != null) {
+                InGameVars.petHouseLevel = petHouse.get("lvl")?.asInt ?: 0
+            }
+        }
+    } catch (_: Exception) { /* ignore */ }
+
+    // Parse pet levels from "pets" array
+    try {
+        val pets = jsonObject.getAsJsonArray("pets")
+        if (pets != null) {
+            val petIdMap = mapOf(
+                LASSI_DATA_ID to MainBasePets.LASSI.key,
+                MIGHTY_YAK_DATA_ID to MainBasePets.MIGHTY_YAK.key,
+                ELECTRO_OWL_DATA_ID to MainBasePets.ELECTRO_OWL.key,
+                UNICORN_DATA_ID to MainBasePets.UNICORN.key,
+                FROSTY_DATA_ID to MainBasePets.FROSTY.key
+            )
+            val levels = mutableMapOf<String, Int>()
+            for ((dataId, key) in petIdMap) {
+                val petObj = pets.firstOrNull { it.asJsonObject.get("data").asInt == dataId }?.asJsonObject
+                if (petObj != null) {
+                    levels[key] = petObj.get("lvl")?.asInt ?: 0
+                }
+            }
+            InGameVars.petLevels = levels
+        }
+    } catch (_: Exception) { /* ignore */ }
+}
+
+/**
+ * Parse building levels needed for Speed 6 Builder priority calculation.
+ * Reads from the "buildings" and "buildings2" (and optionally "heroes") arrays.
+ */
+private fun parseSpeedSixBuilderLevels(jsonObject: JsonObject) {
+    val mainStatus = mutableMapOf<String, BuildingStatus>()
+    val builderStatus = mutableMapOf<String, BuildingStatus>()
+
+    // Parse main base buildings. Detect timer > 0 to know if an instance is already upgrading.
+    // When a building already has an instance upgrading, we skip the priority boost for that
+    // building type so the upgrade list won't try to queue another one of the same type.
+    try {
+        val buildings = jsonObject.getAsJsonArray("buildings")
+        if (buildings != null) {
+            fun extractStatus(dataId: Int): BuildingStatus? {
+                val entries = buildings.filter { it.asJsonObject.get("data").asInt == dataId }
+                if (entries.isEmpty()) return null
+                val level = entries.maxOfOrNull { it.asJsonObject.get("lvl")?.asInt ?: 0 } ?: 0
+                val upgrading = entries.any {
+                    try { it.asJsonObject.get("timer")?.asInt ?: 0 > 0 } catch (_: Exception) { false }
+                }
+                return BuildingStatus(level = level, unlocked = true, upgrading = upgrading)
+            }
+            extractStatus(MAIN_ARCHER_TOWER_DATA_ID)?.let { mainStatus["箭塔"] = it }
+            extractStatus(MAIN_CANNON_DATA_ID)?.let { mainStatus["加农炮"] = it }
+            extractStatus(MAIN_MORTAR_DATA_ID)?.let { mainStatus["迫击炮"] = it }
+        }
+    } catch (_: Exception) { /* ignore */ }
+
+    // Parse builder base buildings
+    try {
+        val buildings2 = jsonObject.getAsJsonArray("buildings2")
+        if (buildings2 != null) {
+            fun extractStatus2(dataId: Int): BuildingStatus? {
+                val entries = buildings2.filter { it.asJsonObject.get("data").asInt == dataId }
+                if (entries.isEmpty()) return null
+                val level = entries.maxOfOrNull { it.asJsonObject.get("lvl")?.asInt ?: 0 } ?: 0
+                val upgrading = entries.any {
+                    try { it.asJsonObject.get("timer")?.asInt ?: 0 > 0 } catch (_: Exception) { false }
+                }
+                return BuildingStatus(level = level, unlocked = true, upgrading = upgrading)
+            }
+            extractStatus2(BB_ARCHER_TOWER_DATA_ID)?.let { builderStatus["箭塔"] = it }
+            extractStatus2(BB_CANNON_DATA_ID)?.let { builderStatus["双管加农炮"] = it }
+            extractStatus2(BB_MULTI_MORTAR_DATA_ID)?.let { builderStatus["多管迫击炮"] = it }
+        }
+    } catch (_: Exception) { /* ignore */ }
+
+    // Parse builder base heroes (Battle Machine, Battle Copter) — they are in "heroes2", NOT "heroes"
+    try {
+        val heroes2 = jsonObject.getAsJsonArray("heroes2")
+        if (heroes2 != null) {
+            fun extractHeroStatus(dataId: Int): BuildingStatus? {
+                val entry = heroes2.firstOrNull { it.asJsonObject.get("data").asInt == dataId }?.asJsonObject ?: return null
+                val level = entry.get("lvl")?.asInt ?: 0
+                val upgrading = try { entry.get("timer")?.asInt ?: 0 > 0 } catch (_: Exception) { false }
+                return BuildingStatus(level = level, unlocked = true, upgrading = upgrading)
+            }
+            extractHeroStatus(BB_BATTLE_MACHINE_DATA_ID)?.let { builderStatus["战争机器"] = it }
+            extractHeroStatus(BB_BATTLE_COPTER_DATA_ID)?.let { builderStatus["战斗直升机"] = it }
+        }
+    } catch (_: Exception) { /* ignore */ }
+
+    InGameVars.mainBaseSpeedSixStatus = mainStatus
+    InGameVars.builderBaseSpeedSixStatus = builderStatus
+
+    // Parse builder base troop levels for Speed 6 Builder level-18 target
+    // Use Night Witch (暗夜女巫) if unlocked, otherwise fall back to Raged Barbarian (狂暴野蛮人)
+    try {
+        val units2 = jsonObject.getAsJsonArray("units2")
+        if (units2 != null) {
+            val nightWitch = units2.firstOrNull {
+                it.asJsonObject.get("data").asInt == BB_NIGHT_WITCH_DATA_ID
+            }
+            if (nightWitch != null) {
+                InGameVars.speedSixTroopChoice = "暗夜女巫"
+                InGameVars.speedSixTroopLevel = nightWitch.asJsonObject.get("lvl")?.asInt ?: 0
+            } else {
+                InGameVars.speedSixTroopChoice = "狂暴野蛮人"
+                val barbarian = units2.firstOrNull {
+                    it.asJsonObject.get("data").asInt == BB_RAGED_BARBARIAN_DATA_ID
+                }
+                InGameVars.speedSixTroopLevel = barbarian?.asJsonObject?.get("lvl")?.asInt ?: 0
+            }
+        }
+    } catch (_: Exception) { /* ignore */ }
 }
 
 /**

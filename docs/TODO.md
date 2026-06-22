@@ -3,7 +3,6 @@
 ## MainBaseConfigs.kt（主世界设置）
 
 ### 对战相关
-- 无胜利之星后停止对战（STOP_BATTLE_WHEN_NO_STAR）
 - 随机换英雄（CHANGE_HEROES）
 
 ### 战术与AI
@@ -13,13 +12,7 @@
 关键建筑：地狱塔，投石炮，黑油塔，防空火箭，空气炮，复仇塔，资源建筑。
 ）
 
-### 城墙相关
-- 升级城墙失败后建造（UPGRADE_AFTER_FAIL_WALL_UPGRADE）
-
 ### 升级战宠及之后的所有主世界UI
-- 发起部落战（START_CLAN_WAR_SETTINGS）
-- 发起联赛（START_LEAGUE_SETTINGS）
-- 发起都城突袭（START_RAID）
 - 领限时活动奖励（CLAIM_TIMED_REWARDS）
 - 领令牌奖励（CLAIM_TOKEN_REWARDS）
 - 使用临时物品（USE_TEMP_ITEMS）
@@ -29,5 +22,3 @@
 
 ## 其他
 - 上传云端配置，分享配置
-
-夜世界打1星退出战斗，刷经验，从下往上升级建筑，不下工程车，
