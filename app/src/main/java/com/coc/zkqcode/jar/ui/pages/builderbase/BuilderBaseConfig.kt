@@ -49,7 +49,6 @@ fun LazyListScope.builderBaseConfig(
                     if (checked) {
                         GlobalVars.configStates["${MAIN_BASE_SETTINGS.ACCEPT_BUILDER_BASE_NORMAL_TASK.key}_c$index"]?.value = "0"
                         GlobalVars.configStates["${MAIN_BASE_SETTINGS.ACCEPT_BUILDER_BASE_ADVANCED_TASK.key}_c$index"]?.value = "0"
-                        GlobalVars.configStates["${MAIN_BASE_SETTINGS.NO_MAIN_BASE.key}_c$index"]?.value = "0"
                     }
                 }
             )
@@ -72,16 +71,6 @@ fun LazyListScope.builderBaseConfig(
                     }
                 )
                 SettingSwitchIcon(key = "${BUILDER_BASE_SETTINGS.BUILDER_BASE_STOP_BATTLE_AFTER_FULL_RESOURCES.key}_c${index}")
-            }
-            AnimatedVisibility(
-                visible = GlobalVars.configStates["${BUILDER_BASE_SETTINGS.BUILDER_BASE_STOP_BATTLE_AFTER_FULL_RESOURCES.key}_c${index}"]?.value == "1"
-            ) {
-                FlowRow {
-                    SettingSwitchIcon(key = "${BUILDER_BASE_SETTINGS.BUILDER_BASE_STOP_WHEN_GOLD_FULL.key}_c${index}")
-                    SettingSwitchIcon(key = "${BUILDER_BASE_SETTINGS.BUILDER_BASE_STOP_WHEN_ELIXIR_FULL.key}_c${index}")
-                }
-            }
-            Row {
                 SettingSwitchIcon(
                     key = "${BUILDER_BASE_SETTINGS.BUILDER_BASE_STOP_BATTLE_WHEN_NO_STAR.key}_c${index}",
                     explain = Strings.stopBattleWhenNoStarExplain

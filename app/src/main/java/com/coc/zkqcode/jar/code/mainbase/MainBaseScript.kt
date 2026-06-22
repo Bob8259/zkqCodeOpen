@@ -6,11 +6,6 @@ import com.coc.zkqcode.jar.code.mainbase.attack.adjustBaseAndReinforcements
 import com.coc.zkqcode.jar.code.mainbase.attack.mainBaseAttack
 import com.coc.zkqcode.jar.code.mainbase.attack.mainBaseRemainingAttack
 import com.coc.zkqcode.jar.code.mainbase.attack.mainBaseTrainTroops
-import com.coc.zkqcode.jar.code.mainbase.attack.stopAllBattles
-import com.coc.zkqcode.jar.code.universal.smalltools.data.getConfigRuntime
-import com.coc.zkqcode.jar.code.universal.smalltools.data.readClanGameAcceptedTaskBase
-import com.coc.zkqcode.jar.code.universal.smalltools.data.CLAN_GAME_TASK_BASE_MAIN_WORLD
-import com.coc.zkqcode.jar.ui.schema.Schema
 import com.coc.zkqcode.jar.code.mainbase.attack.playTournament
 import com.coc.zkqcode.jar.code.mainbase.clan.clanLeague
 import com.coc.zkqcode.jar.code.universal.clangame.clanGame
@@ -39,14 +34,9 @@ import com.coc.zkqcode.jar.code.mainbase.research.mainBaseResearch
 import com.coc.zkqcode.jar.code.universal.buildings.BaseType
 import com.coc.zkqcode.jar.code.universal.buildings.upgradeWallsThenBuildings
 import com.coc.zkqcode.jar.code.universal.clangame.collectClanGameReward
-import com.coc.zkqcode.jar.code.universal.smalltools.data.getBooleanConfigRuntime
 import com.coc.zkqcode.jar.code.universal.smalltools.lifecycle.enterMainBase
-import com.coc.zkqcode.jar.ui.schema.Schema
 
 suspend fun playMainBase(): Boolean {
-    val noMainBase = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.NO_MAIN_BASE.key)
-    if (noMainBase) return true
-    stopAllBattles = false
     if (!enterMainBase()) return false
     if (!mainBaseCollectResources()) return false
     if (!checkItemsToBePlaced()) return false
@@ -55,9 +45,7 @@ suspend fun playMainBase(): Boolean {
     if (!playClanCapital()) return false
     if (!clanGame(BaseType.Main)) return false
     if (!mainBaseTrainTroops()) return false
-    val battleTimesSetting = if (readClanGameAcceptedTaskBase() == CLAN_GAME_TASK_BASE_MAIN_WORLD) Schema.MAIN_BASE_SETTINGS.BATTLE_TIMES_WITH_TASKS else Schema.MAIN_BASE_SETTINGS.BATTLE_TIMES
-    val totalBattleTimes = getConfigRuntime(battleTimesSetting.key).toIntOrNull() ?: 1
-    if (!mainBaseAttack(battleNumber = 1, battleTimes = totalBattleTimes)) return false
+    if (!mainBaseAttack()) return false
     if (!adjustBaseAndReinforcements()) return false
     if (!playTournament()) return false
     if (!startClanLeague()) return false

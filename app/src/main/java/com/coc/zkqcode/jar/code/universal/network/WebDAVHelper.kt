@@ -1,110 +1,38 @@
 package com.coc.zkqcode.jar.code.universal.network
 
-import okhttp3.Call
 import okhttp3.Credentials
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
-import org.xmlpull.v1.XmlPullParser
-import org.xmlpull.v1.XmlPullParserFactory
-import java.io.IOException
-import java.io.StringReader
-import java.net.URLDecoder
-import java.security.SecureRandom
-import java.security.cert.X509Certificate
 import java.util.concurrent.TimeUnit
-import javax.net.ssl.SSLContext
-import javax.net.ssl.TrustManager
-import javax.net.ssl.X509TrustManager
 
 /**
- * WebDAV helper using OkHttp with Basic Auth.
- *
- * Supports uploading (PUT), downloading (GET), directory listing (PROPFIND),
- * and automatic remote directory creation (MKCOL).
- *
- * Handles self-signed SSL certificates and retries transient failures.
+ * Simple WebDAV helper using OkHttp.
+ * Supports uploading (PUT) and downloading (GET) files with Basic Auth.
+ * Operates on byte arrays so callers can handle file I/O via root shell if needed.
+ * Automatically creates remote directories via MKCOL before uploading.
  */
 object WebDAVHelper {
 
-    // Trust-all SSL context for self-signed certificates
-    private val trustAllCerts = arrayOf<TrustManager>(object : X509TrustManager {
-        override fun checkClientTrusted(chain: Array<X509Certificate>, authType: String) {}
-        override fun checkServerTrusted(chain: Array<X509Certificate>, authType: String) {}
-        override fun getAcceptedIssuers(): Array<X509Certificate> = arrayOf()
-    })
-
-    private val client: OkHttpClient = run {
-        val sslContext = SSLContext.getInstance("TLS")
-        sslContext.init(null, trustAllCerts, SecureRandom())
-
-        OkHttpClient.Builder()
-            .connectTimeout(30, TimeUnit.SECONDS)
-            .writeTimeout(120, TimeUnit.SECONDS)
-            .readTimeout(120, TimeUnit.SECONDS)
-            .sslSocketFactory(sslContext.socketFactory, trustAllCerts[0] as X509TrustManager)
-            .hostnameVerifier { _, _ -> true }
-            .addInterceptor { chain ->
-                val orig = chain.request()
-                val modified = orig.newBuilder()
-                    .header("User-Agent", "ZKQ-WebDAV/1.0")
-                    .build()
-                chain.proceed(modified)
-            }
-            .build()
-    }
+    private val client = OkHttpClient.Builder()
+        .connectTimeout(30, TimeUnit.SECONDS)
+        .writeTimeout(120, TimeUnit.SECONDS)
+        .readTimeout(120, TimeUnit.SECONDS)
+        .build()
 
     private val octetStream = "application/octet-stream".toMediaType()
     private val xmlMedia = "application/xml".toMediaType()
-
-    // Cancel support — tracks the active OkHttp Call for cancellation
-    @Volatile
-    var currentCall: Call? = null
-        private set
-
-    /**
-     * Cancel the currently executing network operation, if any.
-     * The in-flight request will abort with an IOException.
-     */
-    fun cancelCurrentOperation() {
-        currentCall?.cancel()
-    }
-
-    // Retry policy
-    private const val MAX_RETRIES = 3
-    private const val BASE_DELAY_MS = 1000L
-
-    /**
-     * Execute a block with exponential-backoff retry.
-     * Only retries on [java.io.IOException] (network-level failures).
-     * Other exceptions (HTTP errors, etc.) are returned as [Result.failure] immediately.
-     */
-    private fun <T> retryable(block: () -> T): Result<T> {
-        var lastException: IOException? = null
-        for (attempt in 0..MAX_RETRIES) {
-            try {
-                val result = block()
-                return Result.success(result)
-            } catch (e: IOException) {
-                lastException = e
-                if (attempt < MAX_RETRIES) {
-                    Thread.sleep(BASE_DELAY_MS * (1L shl attempt))
-                }
-            } catch (e: Exception) {
-                // HTTP errors, parsing errors — return immediately, no retry
-                return Result.failure(e)
-            }
-        }
-        return Result.failure(lastException!!)
-    }
-
-    // ── Upload ─────────────────────────────────────────────────────────────
 
     /**
      * Upload raw bytes to a remote WebDAV path.
      * Automatically creates parent directories via MKCOL if they don't exist.
      *
+     * @param baseUrl    WebDAV server base URL (e.g. "http://192.168.1.100/zkq/")
+     * @param username   Basic Auth username
+     * @param password   Basic Auth password
+     * @param remotePath Relative path under baseUrl (e.g. "zkqFiles/my-device/config/file")
+     * @param data       File content as byte array
      * @return null on success, error message string on failure
      */
     fun upload(
@@ -127,38 +55,26 @@ object WebDAVHelper {
             .header("Authorization", credential)
             .build()
 
-        val r = retryable {
-            val call = client.newCall(request)
-            currentCall = call
-            try {
-                val response = call.execute()
-                try {
-                    if (response.isSuccessful) null
-                    else "Upload failed: HTTP ${response.code} ${response.message}"
-                } finally {
-                    response.close()
-                }
-            } finally {
-                currentCall = null
-            }
+        return try {
+            val response = client.newCall(request).execute()
+            if (response.isSuccessful) null
+            else "Upload failed: HTTP ${response.code} ${response.message}"
+        } catch (e: Exception) {
+            "Upload error: ${e.message}"
         }
-        return r.fold({ it }, { "Upload error: ${it.message}" })
     }
-
-    // ── Download ───────────────────────────────────────────────────────────
 
     /**
      * Download raw bytes from a remote WebDAV path.
      *
-     * @return [Result.success] with [ByteArray] on success,
-     *         [Result.failure] with exception on failure
+     * @return ByteArray on success, error message string on failure (prefixed with "ERROR: ")
      */
     fun download(
         baseUrl: String,
         username: String,
         password: String,
         remotePath: String
-    ): Result<ByteArray> {
+    ): Any {
         val credential = Credentials.basic(username, password)
         val url = buildUrl(baseUrl, remotePath)
         val request = Request.Builder()
@@ -167,38 +83,28 @@ object WebDAVHelper {
             .header("Authorization", credential)
             .build()
 
-        return retryable {
-            val call = client.newCall(request)
-            currentCall = call
-            try {
-                val response = call.execute()
-                if (!response.isSuccessful) {
-                    throw RuntimeException("Download failed: HTTP ${response.code} ${response.message}")
-                }
-                response.body.bytes()
-            } finally {
-                currentCall = null
+        return try {
+            val response = client.newCall(request).execute()
+            if (!response.isSuccessful) {
+                return "ERROR: Download failed: HTTP ${response.code} ${response.message}"
             }
+            response.body.bytes()
+        } catch (e: Exception) {
+            "ERROR: Download error: ${e.message}"
         }
     }
 
-    // ── Directory listing (PROPFIND) ───────────────────────────────────────
-
-    private data class ParsedPropfindResult(
-        val directories: List<String>,
-        val files: List<String>
-    )
-
     /**
      * Send a PROPFIND request (Depth: 1) and return parsed entries.
-     * 404 (Not Found) is treated as an empty result, not an error.
+     *
+     * @return ParsedPropfindResult on success, error string on failure
      */
-    private fun propfindRemote(
+    private fun propfind(
         baseUrl: String,
         username: String,
         password: String,
         remotePath: String
-    ): Result<ParsedPropfindResult> {
+    ): Any {
         val credential = Credentials.basic(username, password)
         val url = buildUrl(baseUrl, remotePath)
 
@@ -219,98 +125,71 @@ object WebDAVHelper {
             .build()
 
         return try {
-            val call = client.newCall(request)
-            currentCall = call
-            val response = call.execute()
-            try {
-                if (response.code == 404) {
-                    // Path does not exist — return empty result, not an error
-                    return Result.success(ParsedPropfindResult(emptyList(), emptyList()))
-                }
-                if (!response.isSuccessful) {
-                    return Result.failure(RuntimeException("PROPFIND failed: HTTP ${response.code} ${response.message}"))
-                }
-                val xml = response.body.string()
-                Result.success(parsePropfindXml(xml, remotePath))
-            } finally {
-                response.close()
+            val response = client.newCall(request).execute()
+            if (!response.isSuccessful) {
+                return "ERROR: List failed: HTTP ${response.code} ${response.message}"
             }
+            val xml = response.body.string()
+            parsePropfindResult(xml, baseUrl, remotePath)
         } catch (e: Exception) {
-            Result.failure(e)
-        } finally {
-            currentCall = null
+            "ERROR: List error: ${e.message}"
         }
     }
 
+    private data class ParsedPropfindResult(
+        val directories: List<String>,
+        val files: List<String>
+    )
+
     /**
-     * Parse PROPFIND XML response using [XmlPullParser].
-     * Correctly handles any namespace prefix as well as both self-closing
-     * (<D:collection/>) and expanded (<D:collection></D:collection>) collection tags.
+     * Parse PROPFIND XML response using regex (handles any namespace prefix).
+     * Extracts href values and checks for <collection/> tags.
      */
-    private fun parsePropfindXml(xml: String, queryPath: String): ParsedPropfindResult {
+    private fun parsePropfindResult(
+        xml: String,
+        baseUrl: String,
+        queryPath: String
+    ): ParsedPropfindResult {
         val directories = mutableListOf<String>()
         val files = mutableListOf<String>()
-        val queryDirName = queryPath.trimEnd('/').substringAfterLast("/")
 
         try {
-            val factory = XmlPullParserFactory.newInstance()
-            factory.setNamespaceAware(true)
-            val parser = factory.newPullParser()
-            parser.setInput(StringReader(xml))
+            // Match each <D:response>...</D:response> block
+            val responseRegex = Regex(
+                "<[^>]*:response[^>]*>(.*?)</[^>]*:response>",
+                setOf(RegexOption.IGNORE_CASE, RegexOption.DOT_MATCHES_ALL)
+            )
+            val hrefRegex = Regex(
+                "<[^>]*:href[^>]*>(.*?)</[^>]*:href>",
+                setOf(RegexOption.IGNORE_CASE, RegexOption.DOT_MATCHES_ALL)
+            )
+            val collectionRegex = Regex(
+                "<[^>]*:collection[^>]*\\s*/>",
+                setOf(RegexOption.IGNORE_CASE)
+            )
 
-            var currentHref: String? = null
-            var isCollection = false
-            var inResponse = false
-            var inResourcetype = false
+            // Extract the query dir name for self-filtering
+            val queryDirName = queryPath.trimEnd('/').substringAfterLast("/")
 
-            while (parser.eventType != XmlPullParser.END_DOCUMENT) {
-                when (parser.eventType) {
-                    XmlPullParser.START_TAG -> {
-                        // Strip any namespace prefix (e.g. "D:response" -> "response")
-                        val tag = parser.name.substringAfterLast(":").lowercase()
-                        when (tag) {
-                            "response" -> {
-                                currentHref = null
-                                isCollection = false
-                                inResponse = true
-                            }
-                            "href" -> {
-                                if (inResponse) {
-                                    // Some servers use self-closing <D:href/> (no text content)
-                                    currentHref = if (parser.isEmptyElementTag) "" else parser.nextText().trim()
-                                }
-                            }
-                            "resourcetype" -> inResourcetype = true
-                            "collection" -> {
-                                if (inResourcetype) isCollection = true
-                            }
-                        }
-                    }
-                    XmlPullParser.END_TAG -> {
-                        val tag = parser.name.substringAfterLast(":").lowercase()
-                        when (tag) {
-                            "resourcetype" -> inResourcetype = false
-                            "response" -> {
-                                if (inResponse && currentHref != null) {
-                                    val decoded = URLDecoder.decode(currentHref, "UTF-8")
-                                    val name = decoded.trimEnd('/').substringAfterLast("/")
-                                    if (name.isNotBlank() && name != queryDirName) {
-                                        if (isCollection) directories.add(name)
-                                        else files.add(name)
-                                    }
-                                }
-                                currentHref = null
-                                isCollection = false
-                                inResponse = false
-                            }
-                        }
-                    }
-                }
-                parser.next()
+            val responseMatches = responseRegex.findAll(xml)
+
+            for (respMatch in responseMatches) {
+                val respXml = respMatch.groupValues[1]
+
+                // Extract href value
+                val hrefMatch = hrefRegex.find(respXml) ?: continue
+                val href = java.net.URLDecoder.decode(hrefMatch.groupValues[1].trim(), "UTF-8")
+
+                // Skip the queried directory itself
+                val name = href.trimEnd('/').substringAfterLast("/")
+                if (name.isBlank() || name == queryDirName) continue
+
+                // Check if it's a collection
+                val isCollection = collectionRegex.containsMatchIn(respXml)
+
+                if (isCollection) directories.add(name) else files.add(name)
             }
-        } catch (_: Exception) {
-            // Return whatever was parsed so far, or empty lists
-        }
+        } catch (_: Exception) { }
 
         return ParsedPropfindResult(directories, files)
     }
@@ -318,40 +197,37 @@ object WebDAVHelper {
     /**
      * List subdirectory names under a remote path.
      *
-     * @return [Result.success] with [List] of directory names, or [Result.failure]
+     * @return List<String> of directory names on success, error string on failure
      */
     fun listDirectories(
         baseUrl: String,
         username: String,
         password: String,
         remotePath: String
-    ): Result<List<String>> {
-        return propfindRemote(baseUrl, username, password, remotePath)
-            .map { it.directories }
+    ): Any {
+        val result = propfind(baseUrl, username, password, remotePath)
+        return if (result is ParsedPropfindResult) result.directories
+        else result as String
     }
 
     /**
-     * List file names under a remote path.
+     * List all files under a remote path.
      *
-     * @return [Result.success] with [List] of file names, or [Result.failure]
+     * @return List<String> of file names on success, error string on failure
      */
     fun listFiles(
         baseUrl: String,
         username: String,
         password: String,
         remotePath: String
-    ): Result<List<String>> {
-        return propfindRemote(baseUrl, username, password, remotePath)
-            .map { it.files }
+    ): Any {
+        val result = propfind(baseUrl, username, password, remotePath)
+        return if (result is ParsedPropfindResult) result.files
+        else result as String
     }
-
-    // ── Directory creation (MKCOL) ─────────────────────────────────────────
 
     /**
      * Create all parent directories for a given remote path via MKCOL.
-     * Checks existence first via PROPFIND (Depth: 0) to avoid unnecessary errors.
-     *
-     * @return null on success, error message string on failure
      */
     fun ensureRemotePath(
         baseUrl: String,
@@ -376,17 +252,10 @@ object WebDAVHelper {
                 .build()
 
             try {
-                val call = client.newCall(request)
-                currentCall = call
-                try {
-                    val response = call.execute()
-                    val code = response.code
-                    // 201 = Created, 405 = Method Not Allowed (already exists, racing)
-                    if (code != 201 && code != 405) {
-                        return "Failed to create directory '$dirPath': HTTP $code"
-                    }
-                } finally {
-                    currentCall = null
+                val response = client.newCall(request).execute()
+                val code = response.code
+                if (code != 201 && code != 405) {
+                    return "Failed to create directory '$dirPath': HTTP $code"
                 }
             } catch (e: Exception) {
                 return "Error creating directory '$dirPath': ${e.message}"
@@ -395,24 +264,9 @@ object WebDAVHelper {
         return null
     }
 
-    // ── URL builder ────────────────────────────────────────────────────────
-
     private fun buildUrl(baseUrl: String, path: String): String {
         val normalizedBase = baseUrl.trimEnd('/') + "/"
         val normalizedPath = path.trimStart('/')
-        // Encode each path segment separately to handle spaces, Chinese, etc.
-        // Uses java.net.URI to produce %20 for spaces (not + which is form-encoding).
-        val encoded = normalizedPath.split("/").joinToString("/") { segment ->
-            try {
-                // URI encodes path segments correctly: spaces → %20
-                java.net.URI(null, null, null, -1, "/$segment", null, null)
-                    .rawPath
-                    .removePrefix("/")
-            } catch (_: Exception) {
-                // Fallback: URLEncoder + replace + → %20
-                java.net.URLEncoder.encode(segment, "UTF-8").replace("+", "%20")
-            }
-        }
-        return normalizedBase + encoded
+        return normalizedBase + normalizedPath
     }
 }

@@ -19,8 +19,6 @@ import com.coc.zkqcode.jar.code.universal.checkUpgradeTimers
 import com.coc.zkqcode.jar.code.universal.create.batchCreateAccounts
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.preCheck
-import com.coc.zkqcode.jar.code.universal.checkUpgradeTimers
-import com.coc.zkqcode.jar.code.universal.checkScheduledUpgradeNotifications
 import com.coc.zkqcode.jar.code.universal.smalltools.data.StorageKeys
 import com.coc.zkqcode.jar.code.universal.smalltools.data.getConfigOrStop
 import com.coc.zkqcode.jar.code.universal.smalltools.data.readMemory
