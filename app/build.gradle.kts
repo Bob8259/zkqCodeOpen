@@ -89,7 +89,7 @@ tasks.register<Exec>("buildJar") {
 
     // --- Path configuration ---
     val workingDir = project.projectDir.absolutePath
-    val sdkDir = "C:/Users/tz264/AppData/Local/Android/Sdk"
+    val sdkDir = "C:/Users/Azika/AppData/Local/Android/Sdk"
 
     // Auto-detect the highest installed Build-Tools version (e.g. 36.1.0)
     val buildToolsDir = file("$sdkDir/build-tools")
@@ -110,7 +110,7 @@ tasks.register<Exec>("buildJar") {
     }
 
     // Use the android platform jar as library reference
-    val sdkPlatform = "$sdkDir/platforms/android-36/android.jar"
+    val sdkPlatform = "$sdkDir/platforms/android-37.0/android.jar"
     // Use current timestamp (seconds since epoch minus offset) as the jar name
     val timestamp = System.currentTimeMillis() / 1000 - 1770000000
     val outputJar = "$workingDir/src/main/assets/$timestamp.jar"
@@ -197,6 +197,16 @@ tasks.register<Exec>("buildJar") {
         val outFile = file(outputJar)
         if (outFile.exists()) {
             println("--- SUCCESS: JAR built at ${outFile.name} ---")
+
+            // Encrypt the JAR using conda base Python
+            val pythonExe = "C:/Users/Azika/miniconda3/python.exe"
+            val scriptPath = file("encrypt_jar.py").absolutePath
+            val proc = ProcessBuilder(pythonExe, scriptPath, outFile.absolutePath)
+                .inheritIO().start()
+            val exitCode = proc.waitFor()
+            if (exitCode != 0) {
+                throw GradleException("JAR encryption failed with exit code $exitCode")
+            }
         } else {
             println("--- ERROR: Output file was not generated ---")
         }
@@ -246,7 +256,7 @@ tasks.register("uploadJar") {
             ?.firstOrNull { it.name.startsWith("encrypted_") && it.extension == "jar" }
             ?: throw GradleException("No encrypted jar found in assets directory")
 
-        val pythonExe = "E:/conda/python.exe"
+        val pythonExe = "C:/Users/Azika/miniconda3/python.exe"
         val scriptPath = file("upload_jar.py").absolutePath
 
         println("Uploading ${encryptedJar.name} to hot update server...")
