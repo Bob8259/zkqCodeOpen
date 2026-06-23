@@ -13,18 +13,6 @@ interface IMainBaseHeroHallColors {
     val PetShopIcon3: ColorSchema
     val RedExclamationMark: ColorSchema
     val PlaceBannerButton: ColorSchema
-    val UpgradeEquipmentArrow: ColorSchema
-    val UpgradeEquipmentArrow2: ColorSchema
-    val UpgradeEquipmentArrow3: ColorSchema
-    val UpgradeEquipmentArrow4: ColorSchema
-    val UpgradeEquipmentArrow5: ColorSchema
-    val UpgradeEquipmentArrow6: ColorSchema
-    val UpgradeEquipmentArrow7: ColorSchema
-    val Zone1EquippedArrow: ColorSchema
-    val Zone2EquipCheckmark: ColorSchema
-    val Zone2EquipmentArrow: ColorSchema
-    val NewEquipment: ColorSchema
-    val EquipmentMaxLevel: ColorSchema
     val SmithOreIcon: ColorSchema
     val PetsIconInHeroHall: ColorSchema
     val PetsIconInHeroHall2: ColorSchema
@@ -53,15 +41,12 @@ interface IMainBaseHeroHallColors {
     val GreedyRaven: ColorSchema
     val ConfirmUpgradePet: ColorSchema
     val AlreadyBeingUpgraded: ColorSchema
-    val EquipmentUpgradingAnimation: ColorSchema
-    val EquipmentListReturned: ColorSchema
 
     // Clan castle button variants shown after opening hero hall area
     val OpenClanCastle2: ColorSchema
     val OpenClanCastle3: ColorSchema
     val OpenClanCastle4: ColorSchema
     val OpenClanCastle5: ColorSchema
-    val OpenClanCastle6: ColorSchema
     val OpenClanCastle7: ColorSchema
     val OpenClanCastle8: ColorSchema
 }
@@ -101,72 +86,6 @@ object MainBaseHeroHallColors : IMainBaseHeroHallColors {
     // Button used to confirm hero banner placement
     override val PlaceBannerButton = ColorSchema.parse(
         627, 465, 775, 514, "7EE6B4", "29|0|7EE6B4,59|0|7EE6B4,89|0|7EE6B4,118|0|7EE6B4,0|25|3AD48B,29|25|3AD48B,59|25|3AD48B,89|25|3AD48B,118|25|3AD48B", 0, 0.9, "放置英雄战旗"
-    )
-
-    // Equipped equipment icon with upgrade indicator (precise region from game screenshot)
-    override val UpgradeEquipmentArrow = ColorSchema.parse(
-        245, 433, 259, 447, "9B9C9B", "3|0|0D0D0D,6|0|0D0D0D,9|0|FCFAFC,12|0|929292,0|7|21D880,3|7|0E1713,6|7|0D0D0D,9|7|21D880,12|7|21D880", 0, 0.9, "升级装备箭头"
-    )
-    // Equipped equipment icon variant 2 (different position/color scheme)
-    override val UpgradeEquipmentArrow2 = ColorSchema.parse(
-        332, 433, 348, 447, "E6E3E6", "3|0|0D0D0D,6|0|171717,9|0|FCFAFC,12|0|3A383A,0|7|21D880,3|7|0D0F0E,6|7|0E1C15,9|7|21D880,12|7|21D880", 0, 0.9, "升级装备箭头2"
-    )
-    // Equipped equipment icon variant 3 (different position/color scheme)
-    override val UpgradeEquipmentArrow3 = ColorSchema.parse(
-        242, 518, 259, 533, "1DE18A", "3|0|FDFDFD,7|0|1ABB73,10|0|FCFAFC,13|0|FFFDFF,0|7|20D880,3|7|1DD880,7|7|252125,10|7|1DD880,13|7|20D880", 0, 0.9, "升级装备箭头3"
-    )
-    // Equipped equipment icon variant 4 (different position/color scheme)
-    override val UpgradeEquipmentArrow4 = ColorSchema.parse(
-        156, 432, 172, 449, "0E1C16", "3|0|0E1B14,6|0|1DD785,9|0|F4F4F4,12|0|FFFFFF,0|9|23D77D,3|9|1DA65F,6|9|1DA35F,9|9|23D77D,12|9|23D77D", 0, 0.9, "升级装备箭头4"
-    )
-    // Equipped equipment icon variant 5 (different position/color scheme)
-    override val UpgradeEquipmentArrow5 = ColorSchema.parse(
-        156, 518, 172, 534, "3A3B3A", "3|0|292829,6|0|0D0D0D,9|0|FCFAFC,12|0|EBEBEB,0|8|23D77D,3|8|1DA65F,6|8|1DA35F,9|8|23D77D,12|8|23D77D", 0, 0.9, "升级装备箭头5"
-    )
-    // Equipped equipment icon variant 6 (different position/color scheme)
-    override val UpgradeEquipmentArrow6 = ColorSchema.parse(
-        332, 517, 347, 534, "0D0D0D", "3|0|19AC6C,6|0|146F46,9|0|F5F4F5,12|0|CBCDCB,0|9|23D77D,3|9|1DA35F,6|9|1DA564,9|9|23D77D,12|9|23D77D", 0, 0.9, "升级装备箭头6"
-    )
-    // Equipped equipment icon variant 7 (dynamic region, used by custom equipment upgrade check)
-    override val UpgradeEquipmentArrow7 = ColorSchema.parse(
-        0, 0, 0, 0, "3BD58E", "1|0|3BD58E,3|0|3BD58E,5|0|3BD58E,6|0|3BD58E,0|7|2EC87D,1|7|2EC87D,3|7|2EC87D,5|7|2EC87D,6|7|2ECA7F", 0, 0.9, "升级装备箭头7"
-    )
-
-    // Zone1 equipped equipment upgrade arrow (covers the top equipped-equipment area)
-    override val Zone1EquippedArrow = ColorSchema.parse(
-        110, 274, 1167, 352,
-        "2FC87D",
-        "0|-8|60FFD2,-4|-2|38D38D,4|-2|38D38D,-1|5|2FC87D,3|5|2EC77C,0|4|2FC87D,1|-6|52F6BB,-1|-5|4BEDAF,2|-2|38D38D",
-        0, 0.9,
-        "Zone1 穿戴装备升级箭头"
-    )
-
-    // Zone2 equip-checkmark ✓ (indicates an equipment is worn by the hero, in the equipment list area)
-    override val Zone2EquipCheckmark = ColorSchema.parse(
-        32, 412, 1248, 610,
-        "FFFFFF",
-        "-3|-2|FFFFFF,4|-3|FAFAFA,1|-7|1CE590,6|5|21D67F,-5|5|21D67F,1|7|21D47C,4|-6|0D0D0D,9|-4|1DE18B,-4|1|0D0D0D",
-        0, 0.9,
-        "Zone2 穿戴装备✓标记"
-    )
-
-    // Zone2 custom equipment upgrade arrow (wide region covering the equipment list area)
-    override val Zone2EquipmentArrow = ColorSchema.parse(
-        32, 412, 1248, 610,
-        "30CA7F",
-        "0|-8|59FFC7,-5|-3|3DDA97,6|-1|35D48D,-4|6|2EC67A,2|6|2FC87D,2|2|2FC87D,-2|-6|4FF2B5,-2|4|2FC87D,3|1|2FC87D",
-        0, 0.9,
-        "Zone2 自定义装备升级箭头"
-    )
-
-    // New equipment indicator shown in the hero hall list
-    override val NewEquipment = ColorSchema.parse(
-        114, 269, 1191, 302, "2ECB88", "0|1|2ECD91,0|2|2ECE93,0|3|2ED196,0|4|41EABA,0|5|42EABB,24|1|2ECD91,24|2|2ECE93,24|3|2ED196,24|4|41EABA", 0, 0.9, "新装备"
-    )
-
-    // Equipment max level indicator shown in the upgrade detail view (no upgrade button available)
-    override val EquipmentMaxLevel = ColorSchema.parse(
-        848, 588, 1153, 670, "383A3F", "61|0|383A3F,122|0|383A3F,183|0|383A3F,244|0|383A3F,0|41|383A3F,61|41|383A3F,122|41|383A3F,183|41|383A3F,244|41|383A3F", 0, 0.9, "装备已升到最高等级"
     )
 
     // Smithy ore icon used to open equipment upgrades
@@ -307,16 +226,6 @@ object MainBaseHeroHallColors : IMainBaseHeroHallColors {
         1018, 165, 1052, 326, "7AF7DB", "3|0|81F9DE,7|0|88FDE5,10|0|8DFEEA,13|0|94FFEF,0|9|99FFE7,3|9|6DF3C4,7|9|87FCDD,10|9|7BFBD9,13|9|76FCD9", 0, 0.9, "已有战宠升级中"
     )
 
-    // Equipment upgrading animation indicator
-    override val EquipmentUpgradingAnimation = ColorSchema.parse(
-        855, 589, 1147, 665, "447C6B", "59|0|447C6B,117|0|1C2321,175|0|447C6B,234|0|447C6B,0|38|256A51,59|38|256A51,117|38|61706A,175|38|256A51,234|38|256A51", 0, 0.9, "装备升级动画"
-    )
-    
-    // Equipment list returned indicator
-    override val EquipmentListReturned = ColorSchema.parse(
-        1212, 66, 1237, 92, "5F5AA1", "5|0|FFFFFF,10|0|97919B,15|0|FFFFFF,20|0|938CFF,0|13|0E0E45,5|13|F9F7F6,10|13|878687,15|13|E2DFE2,20|13|1814EB", 0, 0.9, "返回装备列表"
-    )
-
     // Clan castle collect button variant 2 shown near hero hall
     override val OpenClanCastle2 = ColorSchema.parse(
         174, 548, 1113, 628, "4778AD", "7|0|5FAFD5,14|0|3C4050,20|0|3DAFD1,27|0|4B7DB5,0|15|4374A9,7|15|297E9B,14|15|377590,20|15|78CEEB,27|15|4577AD", 0, 0.9, "领取宝库按钮10按钮"
@@ -333,9 +242,6 @@ object MainBaseHeroHallColors : IMainBaseHeroHallColors {
     )
     override val OpenClanCastle5 = ColorSchema.parse(
         210, 502, 1069, 624, "4E7FC5", "11|0|60AFD0,21|0|3A4351,31|0|3EADCE,42|0|5A97D3,0|22|4271A4,11|22|3495C1,21|22|1B1A1E,31|22|2B6780,42|22|406CA1", 0, 0.9, "领取宝库按钮6按钮"
-    )
-    override val OpenClanCastle6 = ColorSchema.parse(
-        172, 564, 1114, 630, "487AB4", "5|0|3CA0C8,10|0|353B4D,15|0|3DABCF,20|0|5695C9,0|11|467AB0,5|11|399FC8,10|11|7EECFF,15|11|3697C6,20|11|3F71A6", 0, 0.9, "领取宝库按钮13按钮"
     )
     override val OpenClanCastle7 = ColorSchema.parse(
         203, 526, 1095, 625, "4A78B5", "9|0|3CA2CB,17|0|3E4353,25|0|3EB7E1,34|0|558EC8,0|21|477CB2,9|21|40AED7,17|21|8AF4FF,25|21|3C8EB8,34|21|4272A8", 0, 0.9, "领取宝库按钮8按钮2"
