@@ -32,7 +32,7 @@ suspend fun mainBaseCheckTutorials(): Boolean {
     swipe(910, 135, 0, 720)
     handleTutorialArrowIfNeeded()
     TouchActions.tap(140, 325)//Resources Cart
-    TouchActions.tap(640, 560)
+    TouchActions.tap(620, 560)
     // Record the completed daily check so we only scan once per day.
     writeMemory(storageKey, (System.currentTimeMillis() / 60_000).toString())
     return enterMainScreen()

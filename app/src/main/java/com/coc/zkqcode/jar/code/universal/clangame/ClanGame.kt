@@ -85,7 +85,9 @@ suspend fun hasAcceptedClanGameTask(currentBaseType: BaseType): Boolean {
             if (detectAndAcceptTaskWithRetry(BaseType.Builder)) return enterMainScreen()
         }
         writeClanGameAcceptedTaskBase(CLAN_GAME_TASK_BASE_NONE)
-        giveUpATask()
+        if (currentBaseType == BaseType.Main) {
+            giveUpATask()
+        }
     }
     closeClanGamePage()
     return result
@@ -216,7 +218,7 @@ private suspend fun giveUpATask() {
     TouchActions.tap(900, 320, delayTime = 2000)
     val giveUpButton = findMultiColors(MyColors.GiveUpTaskButton)
     if (giveUpButton != null) {
-        TouchActions.tap(giveUpButton.x, giveUpButton.y)
+        TouchActions.tap(giveUpButton.x, giveUpButton.y, delayTime = 1500)
         TouchActions.tap(990, 345)
     }
     closeClanGamePage()

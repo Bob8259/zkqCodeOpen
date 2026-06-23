@@ -59,7 +59,7 @@ fun LazyListScope.builderBaseConfig(
     item {
         val noBuilderBase = GlobalVars.configStates["${BUILDER_BASE_SETTINGS.NO_BUILDER_BASE.key}_c${index}"]?.value == "0"
         SettingSection(visible = isExpanded && noBuilderBase) {
-            Row {
+            FlowRow {
                 SettingSwitchIcon(
                     key = "${BUILDER_BASE_SETTINGS.BUILDER_BASE_FARMING.key}_c${index}",
                     explain = Strings.builderBaseFarmingExplain,

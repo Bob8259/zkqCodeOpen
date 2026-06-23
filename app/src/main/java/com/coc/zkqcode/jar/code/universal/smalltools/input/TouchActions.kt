@@ -10,6 +10,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import kotlin.math.sqrt
 import kotlin.random.Random
+import kotlin.time.Duration.Companion.milliseconds
 
 object TouchActions {
     private val activePointers = mutableSetOf<Int>()
@@ -166,7 +167,7 @@ object TouchActions {
                     val currentY = p.fromY + (p.toY - p.fromY) * t
                     touchMove(currentX, currentY, p.id, isJitter = false)
                 }
-                delay((stepInterval * delayMultiplier).toLong())
+                delay((stepInterval * delayMultiplier).toLong().milliseconds)
             }
             return
         }
@@ -234,7 +235,7 @@ object TouchActions {
             }
 
             val varDelay = (avgDelay * Random.nextDouble(0.8, 1.2)).toLong()
-            delay((varDelay * delayMultiplier).toLong())
+            delay((varDelay * delayMultiplier).toLong().milliseconds)
         }
     }
 
@@ -253,7 +254,7 @@ object TouchActions {
             // Random delay; skipped on slow transports to reduce overhead.
             if (!isSlowTransport) {
                 val randomDelay = Random.nextLong(20, 31)
-                delay((randomDelay * delayMultiplier).toLong())
+                delay((randomDelay * delayMultiplier).toLong().milliseconds)
             }
 
             if (isJitter) {

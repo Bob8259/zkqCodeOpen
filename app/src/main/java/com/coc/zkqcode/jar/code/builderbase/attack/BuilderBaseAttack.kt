@@ -43,9 +43,7 @@ private suspend fun tapRepeat(x: Int, y: Int, times: Int = 12) {
 
 suspend fun builderBaseAttack(): Boolean {
     // 1. Check if Builder Base farming is enabled
-    val isEnabled = getBooleanConfigRuntime(Schema.BUILDER_BASE_SETTINGS.BUILDER_BASE_FARMING.key)
-    if (!isEnabled) {
-        accountMessage("未开启打 Builder Base")
+    if (!getBooleanConfigRuntime(Schema.BUILDER_BASE_SETTINGS.BUILDER_BASE_FARMING.key)) {
         return true
     }
 
@@ -62,12 +60,12 @@ suspend fun builderBaseAttack(): Boolean {
         Schema.BUILDER_BASE_SETTINGS.BUILDER_BASE_BATTLE_TIMES
     }
     val battleTimes = getConfigRuntime(battleTimesSetting.key).toIntOrNull() ?: logAndRestart("${battleTimesSetting.displayName} 必须是数字，请检查配置")
-    val normalBattleTimes = getConfigRuntime(Schema.BUILDER_BASE_SETTINGS.BUILDER_BASE_BATTLE_TIMES.key).toIntOrNull()
-        ?: logAndRestart("${Schema.BUILDER_BASE_SETTINGS.BUILDER_BASE_BATTLE_TIMES.displayName} 必须是数字，请检查配置")
+    val normalBattleTimes =
+        getConfigRuntime(Schema.BUILDER_BASE_SETTINGS.BUILDER_BASE_BATTLE_TIMES.key).toIntOrNull() ?: logAndRestart("${Schema.BUILDER_BASE_SETTINGS.BUILDER_BASE_BATTLE_TIMES.displayName} 必须是数字，请检查配置")
     val shouldCheckClanGameTask = battleTimesSetting == Schema.BUILDER_BASE_SETTINGS.BUILDER_BASE_BATTLE_TIMES_WITH_TASKS && battleTimes > normalBattleTimes
 
     // 4. Per-battle loop: recalculate resources and re-evaluate stop conditions before each battle
-    run loop@ {
+    run loop@{
         repeat(battleTimes) { index ->
             // ---- Recalculate resource percentages every battle ----
             val resourcePercentage = calculateResourcesPercentage(BaseType.Builder)
@@ -87,9 +85,9 @@ suspend fun builderBaseAttack(): Boolean {
             // Combined decision: when both are enabled, both must be satisfied; when only one is enabled, that one decides
             val finalStop = when {
                 stopResourcesEnabled && stopNoStarEnabled -> shouldStopResources && shouldStopNoStars
-                stopResourcesEnabled                       -> shouldStopResources
-                stopNoStarEnabled                          -> shouldStopNoStars
-                else                                       -> false
+                stopResourcesEnabled -> shouldStopResources
+                stopNoStarEnabled -> shouldStopNoStars
+                else -> false
             }
             if (finalStop) {
                 val reasons = mutableListOf<String>()
@@ -107,14 +105,17 @@ suspend fun builderBaseAttack(): Boolean {
                     accountMessage("检测到胜利之星，自动切换上分模式快速完成")
                     "gold"
                 }
+
                 getBooleanConfigRuntime(Schema.BUILDER_BASE_SETTINGS.TROPHY_PUSHING_MODE.key) -> {
                     accountMessage("已勾选上分模式")
                     "gold"
                 }
+
                 getBooleanConfigRuntime(Schema.BUILDER_BASE_SETTINGS.ELIXIR_CART_FARMING.key) -> {
                     accountMessage("已勾选刷圣水车模式")
                     "exile"
                 }
+
                 resourcePercentage.gold < 96 -> "gold"
                 else -> "exile"
             }
@@ -235,7 +236,7 @@ private suspend fun realAttack(mode: String, hasBuilderBaseTask: Boolean, battle
         if (machineSkills != null) {
             TouchActions.tap(machineSkills.x, machineSkills.y + 100, delayTime = 200)
         }
-        delayWithMultiplier(1000)
+        delayWithMultiplier(600)
     }
     if (!enterMainScreen()) return false
     return enterBuilderBase(false)
@@ -286,7 +287,7 @@ private suspend fun normalBattle(isNormal: Boolean = true, skipSkills: Boolean =
         val nightWitch = findMultiColors(schema = MyColors.NightWitch)
         if (nightWitch != null) {
             TouchActions.touchDown((deployPos.first + Random.nextInt(1, 4)).toFloat(), (deployPos.second + Random.nextInt(1, 4)).toFloat(), 1)
-            delayWithMultiplier(4000)
+            delayWithMultiplier(3000)
             TouchActions.touchUp(1)
             if (!skipSkills) {
                 accountMessage("等女巫走一会")
@@ -301,7 +302,7 @@ private suspend fun normalBattle(isNormal: Boolean = true, skipSkills: Boolean =
 
                     if (skillsPos != null) {
                         TouchActions.tap(skillsPos.x, 620)
-                        delayWithMultiplier(Random.nextInt(500, 4000))
+                        delayWithMultiplier(Random.nextInt(500, 2000))
                     }
                 }
             }
@@ -363,7 +364,7 @@ private suspend fun builderBaseTrainTroops() {
     val trainingButton = findMultiColorsUntil(schemas = listOf(MyColors.TrainTroops), duration = 1500)
 
     if (trainingButton == null) {
-        accountMessage("Builder Base练兵失败")
+        accountMessage("夜世界练兵失败")
         return
     }
 
