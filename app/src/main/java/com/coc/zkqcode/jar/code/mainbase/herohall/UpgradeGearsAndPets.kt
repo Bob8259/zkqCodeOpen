@@ -171,7 +171,8 @@ private suspend fun checkPets() {
                     // When level is unknown (0 from default), the check is effectively inactive.
                     val petMaxLevel = if (petDef.key in setOf(
                             "lassi", "electro_owl", "mighty_yak", "unicorn", "frosty"
-                        )) 15 else 10
+                        )
+                    ) 15 else 10
                     if (petLevel >= petMaxLevel) {
                         accountMessage("跳过 ${petDef.displayName}: 已满级($petLevel/$petMaxLevel)")
                         completedPets.add(petDef.key)
@@ -179,14 +180,16 @@ private suspend fun checkPets() {
                     }
 
                     completedPets.add(petDef.key)
-                    upgradeableItems.add(PetUpgradableItem(
-                        pet = petDef,
-                        displayName = petDef.displayName,
-                        priority = priority,
-                        x = result.x,
-                        y = result.y,
-                        screenIndex = screenIdx
-                    ))
+                    upgradeableItems.add(
+                        PetUpgradableItem(
+                            pet = petDef,
+                            displayName = petDef.displayName,
+                            priority = priority,
+                            x = result.x,
+                            y = result.y,
+                            screenIndex = screenIdx
+                        )
+                    )
                     accountMessage("发现可升级: ${petDef.displayName}, 第${screenIdx}页")
                     break
                 }
@@ -287,14 +290,7 @@ private suspend fun checkPets() {
 
 private suspend fun upgradeGearsAndPetsAction(shouldUpgradeGears: Boolean, shouldUpgradePets: Boolean) {
     if (shouldUpgradeGears) {
-        // Read scope: 0=wear only, 1=custom only, 2=all
-        val scope = getConfigRuntime(Schema.MAIN_BASE_SETTINGS.UPGRADE_GEAR_SCOPE.key).toIntOrNull() ?: 0
-        val shouldUpgradeWear = scope == 0 || scope == 2
-        val shouldUpgradeCustom = scope == 1 || scope == 2
-
-        if (shouldUpgradeWear || shouldUpgradeCustom) {
-            upgradeGearsAction(shouldUpgradeWear, shouldUpgradeCustom)
-        }
+        upgradeGearsAction()
     }
     if (shouldUpgradePets) {
         accountMessage("正在进入宠物店...")
@@ -330,13 +326,12 @@ internal suspend fun backToHeroHall() {
     while (System.currentTimeMillis() < deadline) {
         val smithIcon = findMultiColors(MyColors.SmithOreIcon)
         if (smithIcon != null) {
-            TouchActions.tap(1222, 80)
+            TouchActions.tap(1220, 80)
         }
         val petsIcon = findMultiColors(MyColors.PetsIconInHeroHall)
         if (petsIcon != null) {
             return
         }
-        TouchActions.tap(1216, 622)
-        delayWithMultiplier(500)
+        TouchActions.tap(1215, 620)
     }
 }

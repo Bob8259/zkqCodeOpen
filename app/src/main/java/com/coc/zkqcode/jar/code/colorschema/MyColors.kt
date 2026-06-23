@@ -37,6 +37,7 @@ import com.coc.zkqcode.jar.code.colorschema.colorpackage.clancapital.IClanCapita
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.mainbase.IMainBaseAttackColors
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.mainbase.IMainBaseClanColors
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.mainbase.IMainBaseClanWarColors
+import com.coc.zkqcode.jar.code.colorschema.colorpackage.mainbase.IMainBaseEquipmentColors
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.mainbase.IMainBaseHelperColors
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.mainbase.IMainBaseHeroHallColors
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.mainbase.IMainBaseMagicItemColors
@@ -51,6 +52,7 @@ import com.coc.zkqcode.jar.code.colorschema.colorpackage.mainbase.IMainBaseUpgra
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.mainbase.MainBaseAttackColors
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.mainbase.MainBaseClanColors
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.mainbase.MainBaseClanWarColors
+import com.coc.zkqcode.jar.code.colorschema.colorpackage.mainbase.MainBaseEquipmentColors
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.mainbase.MainBaseHelperColors
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.mainbase.MainBaseHeroHallColors
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.mainbase.MainBaseMagicItemColors
@@ -69,7 +71,7 @@ object MyColors : IUIColors by UIColors, IFeatureColors by FeatureColors, IClanG
     IBuilderBaseClockTowerColors by BuilderBaseClockTowerColors, IBuilderBaseResearchColors by BuilderBaseResearchColors, IBuilderBaseAttackColors by BuilderBaseAttackColors,
     IUniversalUpgradeColors by UniversalUpgradeColors, IMainBaseUpgradeColors by MainBaseUpgradeColors, IMainBaseResearchColors by MainBaseResearchColors, IMainBaseResourcesColors by MainBaseResourcesColors,
     IClanCapitalTutorialColors by ClanCapitalTutorialColors, IMainBaseAttackColors by MainBaseAttackColors, IMainBaseClanColors by MainBaseClanColors, IMainBaseClanWarColors by MainBaseClanWarColors,
-    IMainBaseHelperColors by MainBaseHelperColors, IMainBaseHeroHallColors by MainBaseHeroHallColors, IMainBaseSmallTutorialColors by MainBaseSmallTutorialColors, IMainBaseMagicItemColors by MainBaseMagicItemColors,
+    IMainBaseHelperColors by MainBaseHelperColors, IMainBaseHeroHallColors by MainBaseHeroHallColors, IMainBaseEquipmentColors by MainBaseEquipmentColors, IMainBaseSmallTutorialColors by MainBaseSmallTutorialColors, IMainBaseMagicItemColors by MainBaseMagicItemColors,
     IClanCapitalColors by ClanCapitalColors, IMainBaseShopColors by MainBaseShopColors, IMainBaseTournamentColors by MainBaseTournamentColors, IGameUpdateColors by GameUpdateColors, IEventColors by EventColors {
     //UI Colour
     val ContributionActivity = ColorSchema.parse(
