@@ -99,7 +99,7 @@ private fun finishDataNumberEntryOnlyRun() {
 
 private suspend fun runTestCode() {
     while (true) {
-        collectBadgeEventRewards()
+
         delayWithMultiplier(5000000)
     }
 }

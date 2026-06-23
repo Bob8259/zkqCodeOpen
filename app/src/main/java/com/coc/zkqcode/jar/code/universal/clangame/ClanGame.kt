@@ -74,7 +74,6 @@ suspend fun hasAcceptedClanGameTask(currentBaseType: BaseType): Boolean {
     prepareClanGameTaskState()
     val result = findMultiColors(MyColors.OnGoingTask) != null
     accountMessage("接取任务状态：$result")
-    delayWithMultiplier(1000)
     if (!result) {
         when (getCurrentClanGameTaskState(checkFourThousandPoints = false)) {
             ClanGameTaskState.CoolDown -> return closeClanGamePageAndEnterMainScreen()
@@ -218,8 +217,8 @@ private suspend fun giveUpATask() {
     TouchActions.tap(900, 320, delayTime = 2000)
     val giveUpButton = findMultiColors(MyColors.GiveUpTaskButton)
     if (giveUpButton != null) {
-        TouchActions.tap(giveUpButton.x, giveUpButton.y, delayTime = 1500)
-        TouchActions.tap(990, 345)
+        TouchActions.tap(giveUpButton.x, giveUpButton.y, delayTime = 1000)
+        TouchActions.tap(780, 440, delayTime = 1000)
     }
     closeClanGamePage()
 }
