@@ -89,7 +89,7 @@ tasks.register<Exec>("buildJar") {
 
     // --- Path configuration ---
     val workingDir = project.projectDir.absolutePath
-    val sdkDir = "C:/Users/Azika/AppData/Local/Android/Sdk"
+    val sdkDir = "C:/Users/Azikaban/AppData/Local/Android/Sdk"
 
     // Auto-detect the highest installed Build-Tools version (e.g. 36.1.0)
     val buildToolsDir = file("$sdkDir/build-tools")
@@ -103,14 +103,17 @@ tasks.register<Exec>("buildJar") {
         }
 
     val d8Path = if (highestBuildTools != null) {
-        "${highestBuildTools.absolutePath}/d8.bat"
+        file(highestBuildTools.resolve("d8.bat")).absolutePath
     } else {
-        // Fallback to a known version if auto-detection fails
-        "$sdkDir/build-tools/37.0.0/d8.bat"
+        throw GradleException("No Android Build-Tools installation found under $buildToolsDir")
     }
 
-    // Use the android platform jar as library reference
-    val sdkPlatform = "$sdkDir/platforms/android-37.0/android.jar"
+    // Use the android platform jar as library reference. Some preview SDKs use a decimal directory name (for example android-37.0).
+    val sdkPlatform = listOf(
+        file("$sdkDir/platforms/android-${android.compileSdk}/android.jar"),
+        file("$sdkDir/platforms/android-${android.compileSdk}.0/android.jar")
+    ).firstOrNull { it.exists() }?.absolutePath
+        ?: throw GradleException("Android platform android-${android.compileSdk} was not found under $sdkDir/platforms")
     // Use current timestamp (seconds since epoch minus offset) as the jar name
     val timestamp = System.currentTimeMillis() / 1000 - 1770000000
     val outputJar = "$workingDir/src/main/assets/$timestamp.jar"
@@ -184,7 +187,7 @@ tasks.register<Exec>("buildJar") {
         flagFile.writeText(content.joinToString("\n"), Charsets.UTF_8)
 
         println("--------------------------------------------------")
-        println("Using D8 from: ${highestBuildTools?.name ?: "Default Path"}")
+        println("Using D8 from: ${highestBuildTools.name ?: "Default Path"}")
         println("Target Output: $outputJar")
         println("Found ${classFiles.size} class files to convert.")
         println("--------------------------------------------------")
@@ -199,8 +202,8 @@ tasks.register<Exec>("buildJar") {
             println("--- SUCCESS: JAR built at ${outFile.name} ---")
 
             // Encrypt the JAR using conda base Python
-            val pythonExe = "C:/Users/Azika/miniconda3/python.exe"
-            val scriptPath = file("encrypt_jar.py").absolutePath
+            val pythonExe = "C:/Users/Azikaban/anaconda3/python.exe"
+            val scriptPath = rootProject.file("script/encrypt_jar.py").absolutePath
             val proc = ProcessBuilder(pythonExe, scriptPath, outFile.absolutePath)
                 .inheritIO().start()
             val exitCode = proc.waitFor()
@@ -256,8 +259,8 @@ tasks.register("uploadJar") {
             ?.firstOrNull { it.name.startsWith("encrypted_") && it.extension == "jar" }
             ?: throw GradleException("No encrypted jar found in assets directory")
 
-        val pythonExe = "C:/Users/Azika/miniconda3/python.exe"
-        val scriptPath = file("upload_jar.py").absolutePath
+        val pythonExe = "C:/Users/Azikaban/anaconda3/python.exe"
+        val scriptPath = rootProject.file("script/upload_jar.py").absolutePath
 
         println("Uploading ${encryptedJar.name} to hot update server...")
         val proc = ProcessBuilder(pythonExe, scriptPath, encryptedJar.absolutePath)
