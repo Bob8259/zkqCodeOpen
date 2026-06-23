@@ -22,7 +22,7 @@ import com.coc.zkqcode.jar.code.universal.smalltools.data.writeMemory
 import com.coc.zkqcode.jar.ui.schema.Schema
 
 suspend fun upgradeGearsAndPets(): Boolean {
-    val gearMasterOn = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.UPGRADE_GEAR_MASTER.key)
+    val gearMasterOn = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.UPGRADE_GEARS.key)
     // Gear upgrade is active when master is on; scope (0=wear, 1=custom, 2=all) is read inside upgradeGearsAndPetsAction
     var shouldUpgradeGears = gearMasterOn
     var shouldUpgradePets = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.UPGRADE_PETS.key)

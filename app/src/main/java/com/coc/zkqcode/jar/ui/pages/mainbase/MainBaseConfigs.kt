@@ -505,7 +505,7 @@ fun LazyListScope.mainBaseConfig(
             }
             // Gear upgrade master switch
             SettingSwitchIcon(
-                key = "${MAIN_BASE_SETTINGS.UPGRADE_GEAR_MASTER.key}_c$index",
+                key = "${MAIN_BASE_SETTINGS.UPGRADE_GEARS.key}_c$index",
                 afterChange = { checked ->
                     if (!checked) {
                         // When master is off, reset scope to default (0 = wear only)
@@ -515,15 +515,15 @@ fun LazyListScope.mainBaseConfig(
             )
 
             // Sub-switches visible only when master is on
-            AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.UPGRADE_GEAR_MASTER.key}_c$index"]?.value == "1") {
+            AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.UPGRADE_GEARS.key}_c$index"]?.value == "1") {
                 Column {
-                    // Gear upgrade scope selector: 0=wear only, 1=custom only, 2=all
+                    // Gear upgrade scope selector: 0=wear only, 1=custom only
                     SettingDropdown(
                         key = "${MAIN_BASE_SETTINGS.UPGRADE_GEAR_SCOPE.key}_c$index",
-                        options = listOf(Strings.upgradeScopeWear, Strings.upgradeScopeCustom, Strings.upgradeScopeAll)
+                        options = listOf(Strings.upgradeScopeWear, Strings.upgradeScopeCustom)
                     )
 
-                    // Custom gear selection list visible when scope is custom (1) or all (2)
+                    // Custom gear selection list visible when scope is custom (1)
                     val scopeValue = GlobalVars.configStates["${MAIN_BASE_SETTINGS.UPGRADE_GEAR_SCOPE.key}_c$index"]?.value ?: "0"
                     AnimatedVisibility(visible = scopeValue == "1") {
                         MainBaseGearConfigs(index)

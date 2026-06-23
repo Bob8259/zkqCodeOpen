@@ -257,9 +257,8 @@ object Strings {
     val reverseUpgradeExplain get() = if (LanguageManager.isChinese) "启用后，脚本将从下到上升级建筑。" else "When enabled, the script will upgrade buildings from the bottom to the top."
 
     // Gear scope options
-    val upgradeScopeWear get() = if (LanguageManager.isChinese) "仅穿戴装备" else "Equipped Only"
-    val upgradeScopeCustom get() = if (LanguageManager.isChinese) "仅指定装备" else "Custom Only"
-    val upgradeScopeAll get() = if (LanguageManager.isChinese) "全部装备" else "All Gear"
+    val upgradeScopeWear get() = if (LanguageManager.isChinese) "穿戴装备" else "Equipped"
+    val upgradeScopeCustom get() = if (LanguageManager.isChinese) "指定装备" else "Custom"
 
     // Hero names for gear grouping
     val barbarianKing get() = if (LanguageManager.isChinese) "野蛮人之王" else "Barbarian King"
