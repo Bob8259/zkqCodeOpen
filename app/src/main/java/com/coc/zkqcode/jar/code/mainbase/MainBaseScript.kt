@@ -19,7 +19,7 @@ import com.coc.zkqcode.jar.code.mainbase.clan.requestReinforcement
 import com.coc.zkqcode.jar.code.mainbase.clan.startClanWar
 import com.coc.zkqcode.jar.code.mainbase.daily.checkItemsToBePlaced
 import com.coc.zkqcode.jar.code.mainbase.herohall.placeHeroBanners
-import com.coc.zkqcode.jar.code.mainbase.herohall.upgradeGearsAndPets
+import com.coc.zkqcode.jar.code.mainbase.herohall.upgradeEquipmentsAndPets
 import com.coc.zkqcode.jar.code.mainbase.daily.checkLeagueShop
 import com.coc.zkqcode.jar.code.mainbase.others.checkRandomSchedule
 import com.coc.zkqcode.jar.code.mainbase.daily.checkNormalShop
@@ -65,7 +65,7 @@ suspend fun playMainBase(): Boolean {
     if (!upgradeWallsThenBuildings(BaseType.Main)) return false
     if (!mainBaseResearch()) return false
     if (!placeHeroBanners()) return false
-    if (!upgradeGearsAndPets()) return false
+    if (!upgradeEquipmentsAndPets()) return false
     if (!collectClanCastleResources()) return false
     if (!useHelpers()) return false
     if (!useMagicItems()) return false

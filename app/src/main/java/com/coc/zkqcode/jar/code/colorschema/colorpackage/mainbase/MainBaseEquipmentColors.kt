@@ -4,10 +4,10 @@ package com.coc.zkqcode.jar.code.colorschema.colorpackage.mainbase
 
 import com.coc.zkqcode.jar.code.colorschema.ColorSchema
 
-// Hero gear identification colour schemas used by the gear upgrade flow.
+// Hero equipment identification colour schemas used by the equipment upgrade flow.
 // Each schema identifies a specific hero equipment item by its on-screen colours.
 interface IMainBaseEquipmentColors {
-    // Barbarian King gears
+    // Barbarian King equipments
     val BarbarianKingPuppet: ColorSchema
     val BarbarianKingRageVial: ColorSchema
     val BarbarianKingEarthquakeBoots: ColorSchema
@@ -17,7 +17,7 @@ interface IMainBaseEquipmentColors {
     val BarbarianKingSnakeBracelet: ColorSchema
     val BarbarianKingStickHorse: ColorSchema
 
-    // Archer Queen gears
+    // Archer Queen equipments
     val ArcherQueenCloak: ColorSchema
     val ArcherQueenPuppet: ColorSchema
     val ArcherQueenGiantArrow: ColorSchema
@@ -27,7 +27,7 @@ interface IMainBaseEquipmentColors {
     val ArcherQueenActionFigure: ColorSchema
     val ArcherQueenMonolithArrow: ColorSchema
 
-    // Grand Warden gears
+    // Grand Warden equipments
     val GrandWardenEternalTome: ColorSchema
     val GrandWardenLifeGem: ColorSchema
     val GrandWardenHealingTome: ColorSchema
@@ -36,7 +36,7 @@ interface IMainBaseEquipmentColors {
     val GrandWardenLavaBalloonPuppet: ColorSchema
     val GrandWardenHeroicTorch: ColorSchema
 
-    // Royal Champion gears
+    // Royal Champion equipments
     val RoyalChampionSeekingShield: ColorSchema
     val RoyalChampionHogPuppet: ColorSchema
     val RoyalChampionRoyalGem: ColorSchema
@@ -45,14 +45,14 @@ interface IMainBaseEquipmentColors {
     val RoyalChampionRocketSpear: ColorSchema
     val RoyalChampionElectroBoots: ColorSchema
 
-    // Dragon Duke gears
+    // Dragon Duke equipments
     val DragonDukeFireRing: ColorSchema
     val DragonDukeScaleArmor: ColorSchema
     val DragonDukeCombustor: ColorSchema
     val DragonDukeLightningFang: ColorSchema
     val DragonDukeRocketPack: ColorSchema
 
-    // Minion Prince gears
+    // Minion Prince equipments
     val MinionPrinceGuardianPuppet: ColorSchema
     val MinionPrinceIronPants: ColorSchema
     val MinionPrinceNobleDumbbell: ColorSchema
@@ -62,9 +62,9 @@ interface IMainBaseEquipmentColors {
 }
 
 object MainBaseEquipmentColors : IMainBaseEquipmentColors {
-    // Barbarian King gears
+    // Barbarian King equipments
     override val BarbarianKingPuppet = ColorSchema.parse(
-        32, 412, 1248, 610, "88C5F8", "-2|13|818FA6,11|11|3B39FF,-10|-13|31B1FF,-33|12|E1B32C,-32|12|E2B42D,-31|12|E2B42D,37|-40|55F9BF,37|-35|38D48E,37|-29|2FC87D", 0, 0.9, "野蛮人木偶"
+        65, 275, 1235, 615, "7ABCFF", "0|7|8894E8,4|17|394C65,-5|-1|6997EA,-13|-18|41AFFF,0|-17|A5EBFF,14|-12|AFF5FF,9|-7|A1DDFF,5|-1|D6FFFF,6|19|3B4E65", 0, 0.9, "野蛮人木偶"
     )
     override val BarbarianKingRageVial = ColorSchema.parse(
         32, 412, 1248, 610, "FF4489", "11|0|FF46FF,-16|-28|65A4D9,-12|-22|53575D,-40|8|E1B12E,-39|8|E2B22F,-39|7|E2B130,31|-42|54F9BE,31|-37|38D48D,31|-32|2FC87D", 0, 0.9, "狂暴药水瓶"
@@ -88,7 +88,7 @@ object MainBaseEquipmentColors : IMainBaseEquipmentColors {
         32, 412, 1248, 610, "C1D1EF", "-20|1|D6C2FF,4|-18|158EFF,18|27|113E65,734|-72|CC33B1,735|-72|CC33B1,736|-72|CD34B2,-10|-121|28C585,-10|-110|4AF8CE,-8|-110|4AF8CE", 0, 0.9, "木棍马驹"
     )
 
-    // Archer Queen gears
+    // Archer Queen equipments
     override val ArcherQueenCloak = ColorSchema.parse(
         32, 412, 1248, 610, "AEAF69", "3|9|FFB752,-2|-17|4B545A,-20|-16|24353D,-37|12|E1B529,-36|12|E2B62A,-35|12|E1B52A,34|-41|53F8BE,34|-35|33CE85,34|-32|2FC87D", 0, 0.9, "隐形披风"
     )
@@ -114,7 +114,7 @@ object MainBaseEquipmentColors : IMainBaseEquipmentColors {
         32, 412, 1248, 610, "FFBDFD", "24|-21|A4374E,0|18|7E2538,-10|18|4C9CBD,398|-65|CC33B1,399|-65|CC33B1,400|-65|CD34B2,-346|-114|28C585,-346|-103|4AF8CE,-344|-103|4AF8CE", 0, 0.9, "擎天箭矢"
     )
 
-    // Grand Warden gears
+    // Grand Warden equipments
     override val GrandWardenEternalTome = ColorSchema.parse(
         32, 412, 1248, 610, "C84BFF", "1|-21|41FCFF,2|13|2D4FA5,15|23|67879D,-36|21|E2B52B,-35|21|E2B52B,-34|21|E2B52B,35|-31|54F8BE,35|-26|37D38C,35|-21|2FC87D", 0, 0.9, "永恒书卷"
     )
@@ -137,7 +137,7 @@ object MainBaseEquipmentColors : IMainBaseEquipmentColors {
         32, 412, 1248, 610, "FFFFFF", "16|16|2FCDFC,26|28|25FFFF,-13|-12|2499FD,-32|12|CD34B2,-31|12|CD34B2,-30|12|CE35B3,-29|-36|2AC788,-29|-27|48F4CA,-29|-30|42EABC", 0, 0.9, "英雄火炬"
     )
 
-    // Royal Champion gears
+    // Royal Champion equipments
     override val RoyalChampionSeekingShield = ColorSchema.parse(
         32, 412, 1248, 610, "515451", "4|-5|E9FBFC,17|0|2653AB,47|5|254EA1,55|1|868F8E,44|27|4C4C4C,25|-7|B5C4C5,18|-7|204184,30|13|0D214F,30|-2|A0ABAC", 0, 0.9, "寻踪飞盾"
     )
@@ -160,7 +160,7 @@ object MainBaseEquipmentColors : IMainBaseEquipmentColors {
         32, 412, 1248, 610, "3F464C", "22|14|C6C5C3,-4|26|B38625,24|-4|CE9E18,371|-74|CC33B1,372|-74|CC33B1,373|-74|CD34B2,-373|-123|28C585,-373|-112|4AF8CE,-371|-112|4AF8CE", 0, 0.9, "雷电战靴"
     )
 
-    // Dragon Duke gears
+    // Dragon Duke equipments
     override val DragonDukeFireRing = ColorSchema.parse(
         32, 412, 1248, 610, "2923D2", "-18|23|5F7999,3|18|465FFF,19|19|9EE0FF,31|-1|727AFF,21|43|0D117D,9|40|252D77,33|32|83A9D8,-4|33|7B93DA,-19|8|B4D3FB", 0, 0.9, "烈焰之心"
     )
@@ -177,7 +177,7 @@ object MainBaseEquipmentColors : IMainBaseEquipmentColors {
         32, 412, 1248, 610, "F4F2FF", "-8|-17|A7E0FF,-11|-3|AAA49E,16|24|4279D6,-25|12|CC33B1,-24|12|CC33B1,-23|12|CD34B2,-789|-37|28C585,-789|-26|4AF8CE,-787|-26|4AF8CE", 0, 0.9, "火箭背包"
     )
 
-    // Minion Prince gears
+    // Minion Prince equipments
     override val MinionPrinceGuardianPuppet = ColorSchema.parse(
         32, 412, 1248, 610, "3F3F3F", "38|-17|5E5E5E,3|-38|D0CFCA,-12|-28|8D8881,-25|4|E1B42A,-24|4|E2B52B,-23|4|E2B52B,46|-50|53F7BD,46|-43|2FC97E,46|-39|2FC87D", 0, 0.9, "护卫玩偶"
     )

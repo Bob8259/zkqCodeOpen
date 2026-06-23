@@ -24,7 +24,7 @@ suspend fun gearUpBuildings(): Boolean {
     if (!getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.GEAR_UP_SETTINGS.key)) return true
 
     val storageKey = StorageKeys.withAccountNumber(
-        StorageKeys.UPGRADE_GEARS, InGameVars.currentAccountNumber
+        StorageKeys.UPGRADE_EQUIPMENTS, InGameVars.currentAccountNumber
     )
     if (!checkMemoryFile(storageKey, 2880)) {
         accountMessage("2天内已执行过改装建筑检查，跳过本次扫描")
@@ -91,7 +91,7 @@ private suspend fun upgradeGearUpBuildings(): Boolean {
         })
     //If workers are available, then we should record the time regardless of whether a building that can be geared up is found or not.
     val storageKey = StorageKeys.withAccountNumber(
-        StorageKeys.UPGRADE_GEARS, InGameVars.currentAccountNumber
+        StorageKeys.UPGRADE_EQUIPMENTS, InGameVars.currentAccountNumber
     )
     writeMemory(storageKey, (System.currentTimeMillis() / 60_000).toString())
     return enterMainScreen()

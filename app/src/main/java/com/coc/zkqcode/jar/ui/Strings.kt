@@ -231,7 +231,7 @@ object Strings {
     val disableRestartExplain get() = if (LanguageManager.isChinese) "勾选后，所有重启游戏的设定将失效，可能会导致卡界面。建议谨慎使用。" else "Disabling restart may cause stuck screens. Use with caution."
     val batchCreateExplain get() = if (LanguageManager.isChinese) "启用批量创号后，辅助将优先检查所有游戏存档是否存在，若存档缺失则自动创建账号；若存档齐全，则按照指定序号依次运行对应账号。序号与游戏存档编号一致，且所有账号均采用配置1的设定。\n部分云手机在创号过程中可能出现异常，建议改用模拟器完成创号操作。启用批量创号时，掉线重连选项须设置为“立即重连”。" else "Batch creation checks for saves and creates missing ones. It runs accounts in order using Profile 1 settings.\nSome cloud phones may fail; emulators are recommended. Reconnect option must be set to 'Immediately'."
     val randomSchedulingExplain get() = if (LanguageManager.isChinese) "启用随机上号后，脚本将根据当前时间段，从对应组的账号中随机选取顺序依次运行。每个账号运行完毕后，根据设定的概率决定是否继续对战或直接下线，并按对战时间比例计算等待时间后再运行下一个账号。\n\n随机上号与批量创号不能同时启用。" else "Random scheduling runs accounts in random order per time group. After each run, it decides whether to continue or go offline based on probability and wait time.\n\nCannot be used with Batch Creation."
-    val smartDecisionExplain get() = if (LanguageManager.isChinese) "开启后，辅助会自动检测大本营等级，并根据大本营等级跳过部分内容（例如升级装备，战宠等）从而提升运行效率。" else "Auto-detect TH level and skip irrelevant upgrades (gear, pets, etc.) to improve efficiency."
+    val smartDecisionExplain get() = if (LanguageManager.isChinese) "开启后，辅助会自动检测大本营等级，并根据大本营等级跳过部分内容（例如升级装备，战宠等）从而提升运行效率。" else "Auto-detect TH level and skip irrelevant upgrades (equipment, pets, etc.) to improve efficiency."
     val tournamentExplain get() = if (LanguageManager.isChinese) "排位赛不保证胜率，请谨慎开启。" else "No win rate guarantee for ranked battles. Use with caution."
     val dynamicAdjustExplain get() = if (LanguageManager.isChinese) "启用后，辅助将自动跳过前两个搜索目标，并根据所有已搜索目标的可获取资源均值动态调整搜索条件。" else "Skip first 2 searches and adjust requirements dynamically based on average loot found."
     val waitForBattleExplain get() = if (LanguageManager.isChinese) "启用后，若当前处于对战冷却期，辅助将持续等待直至冷却结束。无论是否接取竞赛任务都生效。" else "Wait during battle cooldown until ready. Works regardless of clan games tasks."
@@ -256,11 +256,11 @@ object Strings {
     val batchWallExplain get() = if (LanguageManager.isChinese) "此功能对已开启月卡（黄金令牌）的账号不生效。" else "Does not apply to Gold Pass accounts."
     val reverseUpgradeExplain get() = if (LanguageManager.isChinese) "启用后，脚本将从下到上升级建筑。" else "When enabled, the script will upgrade buildings from the bottom to the top."
 
-    // Gear scope options
+    // Equipment scope options
     val upgradeScopeWear get() = if (LanguageManager.isChinese) "穿戴装备" else "Equipped"
     val upgradeScopeCustom get() = if (LanguageManager.isChinese) "指定装备" else "Custom"
 
-    // Hero names for gear grouping
+    // Hero names for equipment grouping
     val barbarianKing get() = if (LanguageManager.isChinese) "野蛮人之王" else "Barbarian King"
     val archerQueen get() = if (LanguageManager.isChinese) "弓箭女皇" else "Archer Queen"
     val grandWarden get() = if (LanguageManager.isChinese) "大守护者" else "Grand Warden"

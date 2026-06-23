@@ -19,12 +19,12 @@ import com.coc.zkqcode.jar.ui.Strings
 import com.coc.zkqcode.jar.ui.components.CustomButton
 import com.coc.zkqcode.jar.ui.components.SettingToggleButton
 import com.coc.zkqcode.jar.ui.theme.AppColors
-import com.coc.zkqcode.jar.ui.schema.Schema.MAIN_BASE_GEARS
+import com.coc.zkqcode.jar.ui.schema.Schema.MAIN_BASE_EQUIPMENTS
 
 @Composable
-fun MainBaseGearConfigs(index: Int) {
-    // Render gear toggles grouped by hero so new gears appear automatically.
-    val heroGroups = MAIN_BASE_GEARS.heroGroups
+fun MainBaseEquipmentConfigs(index: Int) {
+    // Render equipment toggles grouped by hero so new equipments appear automatically.
+    val heroGroups = MAIN_BASE_EQUIPMENTS.heroGroups
     val isExpanded = remember { mutableStateOf(false) }
 
     Column {
@@ -38,7 +38,7 @@ fun MainBaseGearConfigs(index: Int) {
 
         AnimatedVisibility(visible = isExpanded.value) {
             Column {
-                heroGroups.forEach { (heroKey, gears) ->
+                heroGroups.forEach { (heroKey, equipments) ->
                     // Hero group header
                     Text(
                         text = Strings.getHeroName(heroKey),
@@ -50,8 +50,8 @@ fun MainBaseGearConfigs(index: Int) {
                             .border(1.dp, Color.Gray, RoundedCornerShape(8.dp))
                             .padding(8.dp)
                     ) {
-                        gears.forEach { gear ->
-                            SettingToggleButton(key = "${gear.key}_c${index}", isEpic = gear.isEpic)
+                        equipments.forEach { equipment ->
+                            SettingToggleButton(key = "${equipment.key}_c${index}", isEpic = equipment.isEpic)
                         }
                     }
                 }

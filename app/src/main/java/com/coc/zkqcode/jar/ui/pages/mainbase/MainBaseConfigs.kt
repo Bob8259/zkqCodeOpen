@@ -503,14 +503,14 @@ fun LazyListScope.mainBaseConfig(
                     containerColor = AppColors.Teal
                 )
             }
-            // Gear upgrade master switch
+            // Equipment upgrade master switch
             SettingSwitchIcon(
-                key = "${MAIN_BASE_SETTINGS.UPGRADE_GEARS.key}_c$index"
+                key = "${MAIN_BASE_SETTINGS.UPGRADE_EQUIPMENTS.key}_c$index"
             )
 
-            // Custom gear selection list visible only when master is on
-            AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.UPGRADE_GEARS.key}_c$index"]?.value == "1") {
-                MainBaseGearConfigs(index)
+            // Custom equipment selection list visible only when master is on
+            AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.UPGRADE_EQUIPMENTS.key}_c$index"]?.value == "1") {
+                MainBaseEquipmentConfigs(index)
             }
         }
     }
@@ -574,7 +574,7 @@ fun LazyListScope.mainBaseConfig(
         }
     }
 
-    // Gear & Rewards
+    // Equipment & Rewards
     item {
         SettingSection(visible = isPetExpanded) {
             FlowRow {

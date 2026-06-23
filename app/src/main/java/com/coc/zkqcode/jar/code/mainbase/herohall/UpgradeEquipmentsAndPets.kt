@@ -7,7 +7,7 @@ import com.coc.zkqcode.jar.code.universal.smalltools.input.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.ColorSchema
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.mainbase.MainBaseResearchColors
-import com.coc.zkqcode.jar.code.mainbase.others.upgradeGearsAction
+import com.coc.zkqcode.jar.code.mainbase.others.upgradeEquipmentsAction
 import com.coc.zkqcode.jar.ui.schema.details.MainBasePets
 import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.jar.code.universal.InGameVars
@@ -21,14 +21,14 @@ import com.coc.zkqcode.jar.code.universal.smalltools.data.getConfigRuntime
 import com.coc.zkqcode.jar.code.universal.smalltools.data.writeMemory
 import com.coc.zkqcode.jar.ui.schema.Schema
 
-suspend fun upgradeGearsAndPets(): Boolean {
-    val gearMasterOn = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.UPGRADE_GEARS.key)
-    // Gear upgrade is active when master is on; scope (0=wear, 1=custom, 2=all) is read inside upgradeGearsAndPetsAction
-    var shouldUpgradeGears = gearMasterOn
+suspend fun upgradeEquipmentsAndPets(): Boolean {
+    val equipmentMasterOn = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.UPGRADE_EQUIPMENTS.key)
+    // Equipment upgrade is active when master is on; scope (0=wear, 1=custom, 2=all) is read inside upgradeEquipmentsAndPetsAction
+    var shouldUpgradeEquipments = equipmentMasterOn
     var shouldUpgradePets = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.UPGRADE_PETS.key)
 
-    // Gears require TH8+, pets require TH14+
-    if (InGameVars.townHallLevel < 8) shouldUpgradeGears = false
+    // Equipments require TH8+, pets require TH14+
+    if (InGameVars.townHallLevel < 8) shouldUpgradeEquipments = false
     if (InGameVars.townHallLevel < 14) {
         shouldUpgradePets = false
         if (getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.UPGRADE_PETS.key)) {
@@ -36,15 +36,15 @@ suspend fun upgradeGearsAndPets(): Boolean {
         }
     }
 
-    if (!shouldUpgradeGears && !shouldUpgradePets) return true
+    if (!shouldUpgradeEquipments && !shouldUpgradePets) return true
 
-    val gearStorageKey = StorageKeys.withAccountNumber(
-        StorageKeys.UPGRADE_GEARS, InGameVars.currentAccountNumber
+    val equipmentStorageKey = StorageKeys.withAccountNumber(
+        StorageKeys.UPGRADE_EQUIPMENTS, InGameVars.currentAccountNumber
     )
 
-    // Guard only gear checks so pets can still be upgraded during the cooldown window.
-    val canUpgradeGears = if (shouldUpgradeGears) {
-        if (!checkMemoryFile(gearStorageKey, 480)) {
+    // Guard only equipment checks so pets can still be upgraded during the cooldown window.
+    val canUpgradeEquipments = if (shouldUpgradeEquipments) {
+        if (!checkMemoryFile(equipmentStorageKey, 480)) {
             accountMessage("该账号8小时内已检测装备升级")
             false
         } else {
@@ -55,17 +55,17 @@ suspend fun upgradeGearsAndPets(): Boolean {
     }
 
     val actionName = when {
-        canUpgradeGears && shouldUpgradePets -> "装备和战宠"
-        canUpgradeGears -> "装备"
+        canUpgradeEquipments && shouldUpgradePets -> "装备和战宠"
+        canUpgradeEquipments -> "装备"
         shouldUpgradePets -> "战宠"
         else -> return true
     }
     accountMessage("准备升级$actionName")
-    val result: Boolean = withHeroHall { upgradeGearsAndPetsAction(canUpgradeGears, shouldUpgradePets) }
+    val result: Boolean = withHeroHall { upgradeEquipmentsAndPetsAction(canUpgradeEquipments, shouldUpgradePets) }
 
-    // Record only gear checks so the cooldown never blocks pet upgrades.
-    if (canUpgradeGears) {
-        writeMemory(gearStorageKey, (System.currentTimeMillis() / 60_000).toString())
+    // Record only equipment checks so the cooldown never blocks pet upgrades.
+    if (canUpgradeEquipments) {
+        writeMemory(equipmentStorageKey, (System.currentTimeMillis() / 60_000).toString())
     }
     return result
 }
@@ -288,9 +288,9 @@ private suspend fun checkPets() {
     }
 }
 
-private suspend fun upgradeGearsAndPetsAction(shouldUpgradeGears: Boolean, shouldUpgradePets: Boolean) {
-    if (shouldUpgradeGears) {
-        upgradeGearsAction()
+private suspend fun upgradeEquipmentsAndPetsAction(shouldUpgradeEquipments: Boolean, shouldUpgradePets: Boolean) {
+    if (shouldUpgradeEquipments) {
+        upgradeEquipmentsAction()
     }
     if (shouldUpgradePets) {
         accountMessage("正在进入宠物店...")
