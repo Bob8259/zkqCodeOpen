@@ -20,7 +20,8 @@ object Strings {
     val sectionClan get() = if (LanguageManager.isChinese) "部落设置" else "Clan"
     val sectionResearch get() = if (LanguageManager.isChinese) "自动研究" else "Research"
     val sectionBuild get() = if (LanguageManager.isChinese) "自动建造" else "Build"
-    val sectionPet get() = if (LanguageManager.isChinese) "战宠设置" else "Pets"
+    val sectionPet get() = if (LanguageManager.isChinese) "战宠装备" else "Pets & Equipments"
+    val sectionOther get() = if (LanguageManager.isChinese) "其他" else "Others"
     val sectionBuilderBase get() = if (LanguageManager.isChinese) "夜世界" else "Builder Base"
 
     // HomeScreenBottomBar
@@ -186,7 +187,8 @@ object Strings {
     val clanSettings get() = if (LanguageManager.isChinese) "部落设置" else "Clan Settings"
     val researchSettings get() = if (LanguageManager.isChinese) "研究设置" else "Research Settings"
     val buildSettingsMain get() = if (LanguageManager.isChinese) "建造设置（主世界）" else "Build Settings - Main Base"
-    val petAndOther get() = if (LanguageManager.isChinese) "战宠&其他设置" else "Pets & Other"
+    val petAndEquipment get() = if (LanguageManager.isChinese) "战宠装备" else "Pets & Equipments"
+    val others get() = if (LanguageManager.isChinese) "其他" else "Others"
     val adjustMainBasePriority get() = if (LanguageManager.isChinese) "点击调整主世界建筑升级" else "Adjust Main Base Upgrade Priority"
     val secondsSuffix get() = if (LanguageManager.isChinese) "秒钟" else "seconds"
     val countSuffix get() = if (LanguageManager.isChinese) "数量" else "Count"

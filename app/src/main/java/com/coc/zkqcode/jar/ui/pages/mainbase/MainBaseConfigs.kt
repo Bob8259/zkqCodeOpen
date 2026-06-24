@@ -32,6 +32,8 @@ fun LazyListScope.mainBaseConfig(
     onToggleBuild: () -> Unit,
     isPetExpanded: Boolean,
     onTogglePet: () -> Unit,
+    isOtherExpanded: Boolean,
+    onToggleOther: () -> Unit,
     onNavigatePriority: (Int) -> Unit = {},
     onNavigateResearchPriority: (Int) -> Unit = {},
     onNavigatePetPriority: (Int) -> Unit = {}
@@ -479,10 +481,10 @@ fun LazyListScope.mainBaseConfig(
         }
     }
 
-    // Banner — 战宠&其他设置
+    // Banner — 战宠装备
     item {
         SectionBanner(
-            title = Strings.petAndOther, isExpanded = isPetExpanded, onClick = onTogglePet
+            title = Strings.petAndEquipment, isExpanded = isPetExpanded, onClick = onTogglePet
         )
     }
 
@@ -525,9 +527,16 @@ fun LazyListScope.mainBaseConfig(
         }
     }
 
+    // Banner — 其他
+    item {
+        SectionBanner(
+            title = Strings.others, isExpanded = isOtherExpanded, onClick = onToggleOther
+        )
+    }
+
     // Helper settings
     item {
-        SettingSection(visible = isPetExpanded) {
+        SettingSection(visible = isOtherExpanded) {
             FlowRow {
                 SettingSwitchIcon(
                     key = "${MAIN_BASE_SETTINGS.HELPER_SETTINGS.key}_c$index", explain = Strings.helperExplain, afterChange = { checked ->
@@ -552,7 +561,7 @@ fun LazyListScope.mainBaseConfig(
 
     // Shop purchases
     item {
-        SettingSection(visible = isPetExpanded) {
+        SettingSection(visible = isOtherExpanded) {
             FlowRow {
                 listOf(
                     MAIN_BASE_SETTINGS.USE_RESEARCH_POTION,
@@ -586,7 +595,7 @@ fun LazyListScope.mainBaseConfig(
 
     // Equipment & Rewards
     item {
-        SettingSection(visible = isPetExpanded) {
+        SettingSection(visible = isOtherExpanded) {
             FlowRow {
                 SettingSwitchIcon(
                     key = "${MAIN_BASE_SETTINGS.REMOVE_OBSTACLES.key}_c$index", explain = Strings.removeObstaclesExplain

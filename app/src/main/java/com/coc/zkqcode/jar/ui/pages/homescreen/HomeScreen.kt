@@ -124,6 +124,7 @@ fun HomeScreen(
     val researchExpandedStates = remember { mutableStateMapOf<Int, Boolean>() }
     val buildExpandedStates = remember { mutableStateMapOf<Int, Boolean>() }
     val petExpandedStates = remember { mutableStateMapOf<Int, Boolean>() }
+    val otherExpandedStates = remember { mutableStateMapOf<Int, Boolean>() }
     val clanExpandedStates = remember { mutableStateMapOf<Int, Boolean>() }
     val builderBaseExpandedStates = remember { mutableStateMapOf<Int, Boolean>() }
 
@@ -136,7 +137,8 @@ fun HomeScreen(
         Strings.sectionResearch to 8,
         Strings.sectionBuild to 10,
         Strings.sectionPet to 12,
-        Strings.sectionBuilderBase to 18
+        Strings.sectionOther to 14,
+        Strings.sectionBuilderBase to 19
     )
 
     val lazyListState = rememberLazyListState()
@@ -285,6 +287,7 @@ fun HomeScreen(
                                 val currentResearchExpanded = researchExpandedStates[cfgIdx] ?: true
                                 val currentBuildExpanded = buildExpandedStates[cfgIdx] ?: true
                                 val currentPetExpanded = petExpandedStates[cfgIdx] ?: true
+                                val currentOtherExpanded = otherExpandedStates[cfgIdx] ?: true
                                 val currentBuilderBaseExpanded = builderBaseExpandedStates[cfgIdx] ?: true
 
                                 gameConfig(
@@ -301,6 +304,8 @@ fun HomeScreen(
                                     onToggleBuild = { buildExpandedStates[cfgIdx] = !currentBuildExpanded },
                                     isPetExpanded = currentPetExpanded,
                                     onTogglePet = { petExpandedStates[cfgIdx] = !currentPetExpanded },
+                                    isOtherExpanded = currentOtherExpanded,
+                                    onToggleOther = { otherExpandedStates[cfgIdx] = !currentOtherExpanded },
                                     isBuilderBaseExpanded = currentBuilderBaseExpanded,
                                     onToggleBuilderBaseExpanded = {
                                         val newExpanded = !currentBuilderBaseExpanded
