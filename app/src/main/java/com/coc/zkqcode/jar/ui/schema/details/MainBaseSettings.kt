@@ -148,9 +148,8 @@ object MainBaseSettings {
 
     //////////////
     val UPGRADE_EQUIPMENTS = SettingDef("upgrade_equipments", "升级装备", "Upgrade Equipment", 1, "MAIN_BASE_SETTINGS")
+    val UPGRADE_EQUIPED_EQUIPMENTS = SettingDef("upgrade_equiped_equipments", "升级已穿戴装备", "Upgrade Equipped Equipments", 0, "MAIN_BASE_SETTINGS")
 
-    // equipment upgrade scope: 0=only equipped, 1=custom selection, 2=all
-    val UPGRADE_EQUIPMENT_SCOPE = SettingDef("upgrade_equipment_scope", "升级范围", "Upgrade Scope", "0", "MAIN_BASE_SETTINGS")
     val REMOVE_OBSTACLES = SettingDef("remove_obstacles", "移除障碍物", "Remove Obstacles", 0, "MAIN_BASE_SETTINGS")
     val CONTINUOUS_REMOVE_OBSTACLES = SettingDef("continuous_remove_obstacles", "连续移除障碍物", "Continuous Removal", 0, "MAIN_BASE_SETTINGS")
     val REMOVE_OBSTACLES_ENHANCEMENT = SettingDef("remove_obstacles_enhancement", "增强移除", "Enhanced Removal", 0, "MAIN_BASE_SETTINGS")
@@ -284,7 +283,7 @@ object MainBaseSettings {
         USE_BUILDER_POTION,
         SELL_RING_OF_WALL,
         UPGRADE_EQUIPMENTS,
-        UPGRADE_EQUIPMENT_SCOPE,
+        UPGRADE_EQUIPED_EQUIPMENTS,
         REMOVE_OBSTACLES,
         CONTINUOUS_REMOVE_OBSTACLES,
         REMOVE_OBSTACLES_ENHANCEMENT,

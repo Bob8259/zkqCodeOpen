@@ -503,10 +503,20 @@ fun LazyListScope.mainBaseConfig(
                     containerColor = AppColors.Teal
                 )
             }
-            // Equipment upgrade master switch
-            SettingSwitchIcon(
-                key = "${MAIN_BASE_SETTINGS.UPGRADE_EQUIPMENTS.key}_c$index"
-            )
+            // Equipment upgrade master switch with equipped-equipments toggle in the same row
+            FlowRow {
+                SettingSwitchIcon(
+                    key = "${MAIN_BASE_SETTINGS.UPGRADE_EQUIPMENTS.key}_c$index",
+                    explain = Strings.upgradeEquipmentsExplain
+                )
+                // Only visible when Upgrade Equipments is enabled
+                AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.UPGRADE_EQUIPMENTS.key}_c$index"]?.value == "1") {
+                    SettingSwitchIcon(
+                        key = "${MAIN_BASE_SETTINGS.UPGRADE_EQUIPED_EQUIPMENTS.key}_c$index",
+                        explain = Strings.upgradeEquipedEquipmentsExplain
+                    )
+                }
+            }
 
             // Custom equipment selection list visible only when master is on
             AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.UPGRADE_EQUIPMENTS.key}_c$index"]?.value == "1") {
