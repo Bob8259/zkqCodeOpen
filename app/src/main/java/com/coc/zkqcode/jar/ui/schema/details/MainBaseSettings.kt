@@ -159,6 +159,7 @@ object MainBaseSettings {
     val COLLECT_CAPITAL_COINS = SettingDef("collect_capital_coins", "领都城币", "Collect Capital Coins", 0, "MAIN_BASE_SETTINGS")
     val CONTRIBUTE_CAPITAL_COINS = SettingDef("contribute_capital_coins", "捐都城币", "Contribute Capital Coins", 0, "MAIN_BASE_SETTINGS")
     val CLAIM_FREE_SHOP_REWARDS = SettingDef("claim_free_shop_rewards", "领每周精选免费奖励", "Claim Weekly Free Rewards", 1, "MAIN_BASE_SETTINGS")
+    val CLAIM_HERO_HALL_REWARDS = SettingDef("claim_hero_hall_rewards", "领取英雄殿堂奖励", "Claim Hero Hall Rewards", 0, "MAIN_BASE_SETTINGS")
     val AUTO_JOIN_CLAN = SettingDef("auto_join_clan", "自动加部落", "Auto Join Clan", 0, "MAIN_BASE_SETTINGS")
     val CLAIM_ACHIEVEMENT_GEMS = SettingDef("claim_achievement_gems", "领取成就宝石", "Claim Achievement Gems", 0, "MAIN_BASE_SETTINGS")
     val CLAN_TAG = SettingDef("clan_tag", "加指定部落标签(不填就随机加):", "Clan Tag:", "", "MAIN_BASE_SETTINGS")
@@ -292,6 +293,7 @@ object MainBaseSettings {
         COLLECT_CAPITAL_COINS,
         CONTRIBUTE_CAPITAL_COINS,
         CLAIM_FREE_SHOP_REWARDS,
+        CLAIM_HERO_HALL_REWARDS,
         AUTO_JOIN_CLAN,
         CLAIM_ACHIEVEMENT_GEMS,
         CLAN_TAG,
