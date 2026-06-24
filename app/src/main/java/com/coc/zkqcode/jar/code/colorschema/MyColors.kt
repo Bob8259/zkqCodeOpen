@@ -83,4 +83,7 @@ object MyColors : IUIColors by UIColors, IFeatureColors by FeatureColors, IClanG
     val EquipmentUpgradeArrow = ColorSchema.parse(
         110, 269, 1173, 303, "4FF3B6", "0|2|41E19E,-2|3|3BD892,2|3|3BD892,2|5|31CB80,2|8|2FC87D,-1|9|2FC87D,-1|9|2FC87D,0|6|2FC87D,1|3|3BD892", 0, 0.9, "升级装备箭头"
     )
+    val NewEquipment = ColorSchema.parse(
+        88, 420, 1232, 610, "31D197", "-7|0|31D197,-4|-4|2AC788,-5|3|44EFC1,18|4|46F0C5,15|3|44EFC1,18|-4|2AC788,20|-4|2AC788,22|0|31D197,21|3|44EFC1", 0, 0.9, "新装备"
+    )
 }

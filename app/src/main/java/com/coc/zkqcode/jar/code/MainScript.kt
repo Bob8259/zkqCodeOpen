@@ -12,7 +12,7 @@ import com.coc.zkqcode.jar.code.builderbase.playBuilderBase
 import com.coc.zkqcode.jar.code.colorschema.ColorSchema
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.mainbase.daily.collectBadgeEventRewards
-import com.coc.zkqcode.jar.code.mainbase.herohall.upgradeEquipmentsAndPets
+import com.coc.zkqcode.jar.code.mainbase.others.clearNewEquipments
 import com.coc.zkqcode.jar.code.mainbase.playMainBase
 import com.coc.zkqcode.jar.code.universal.GameVersion
 import com.coc.zkqcode.jar.code.universal.InGameVars
@@ -103,7 +103,9 @@ private fun finishDataNumberEntryOnlyRun() {
 
 private suspend fun runTestCode() {
     while (true) {
-        upgradeEquipmentsAndPets()
+        clearNewEquipments()
+//        val arrowSchema = ColorSchema.rescope(MyColors.NewEquipment, 736, 425, 786, 458)
+//        val result = findMultiColors(arrowSchema)
         ShowMessage("测试代码运行完成")
         delayWithMultiplier(5000000)
     }

@@ -1,6 +1,5 @@
 package com.coc.zkqcode.jar.code.mainbase.others
 
-import android.text.method.Touch
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
@@ -9,13 +8,11 @@ import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.mainbase.herohall.backToHeroHall
 import com.coc.zkqcode.jar.code.mainbase.herohall.clickHeroHallBottom
 import com.coc.zkqcode.jar.code.universal.accountMessage
-import com.coc.zkqcode.jar.code.universal.clickRightBottom
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.smalltools.data.getBooleanConfigRuntime
 import com.coc.zkqcode.jar.code.universal.smalltools.input.TouchActions
 import com.coc.zkqcode.jar.ui.schema.Schema
-import kotlin.math.abs
 
 data class HeroEquipmentEntry(
     val heroKey: String, val displayName: String, val tapX: Int, val tapY: Int, val equipments: List<Pair<String, ColorSchema>>
@@ -113,8 +110,73 @@ suspend fun upgradeEquipmentsAction() {
         }
     }
     if (HERO_ENTRIES.any { hero -> hero.equipments.any { (key, _) -> getBooleanConfigRuntime(key) } }) {
-
-     }
+        // Detect and upgrade one enabled equipment on the current page, then swipe
+        // to the next page and perform the same detection again.
+        tryUpgradeEnabledEquipment()
+        TouchActions.swipe(1220, 510, -500, 510, delayAfter = 500)
+        tryUpgradeEnabledEquipment()
+    }
     delayWithMultiplier(400000)
     backToHeroHall()
+}
+
+suspend fun clearNewEquipments() {
+    repeat(30) {
+        val newEquipment = findMultiColorsUntil(listOf(MyColors.NewEquipment), 200)
+        if (newEquipment != null) {
+            TouchActions.tap(newEquipment.x, newEquipment.y)
+            clickHeroHallBottom(2)
+        } else {
+            return
+        }
+    }
+}
+
+/**
+ * Scans the current page for the first enabled equipment that has an upgrade arrow
+ * nearby, and upgrades it. Only one equipment is upgraded per call.
+ *
+ * For each enabled equipment, its color schema is searched on the captured screen.
+ * When found at (x, y), the upgrade arrow ([MyColors.EquipmentUpgradeArrow]) is
+ * searched in the sub-region (x+15, y-50) to (x+50, y-15) via [ColorSchema.rescope].
+ * If the arrow is present, the equipment is tapped and the upgrade sequence is
+ * performed, then the function returns immediately.
+ */
+private suspend fun tryUpgradeEnabledEquipment() {
+    clearNewEquipments()
+    val screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult
+        ?: logAndRestart("tryUpgradeEnabledEquipment: Screen Capture Failed.")
+
+    for (hero in HERO_ENTRIES) {
+        for ((key, colorSchema) in hero.equipments) {
+            if (!getBooleanConfigRuntime(key)) continue
+
+            val name = colorSchema.name ?: key
+            val equipment = findMultiColors(schema = colorSchema, byteBuffer = screenBuffer, increment = 1)
+
+            if (equipment == null) {
+                accountMessage("装备$name 找到状态:未找到,是否可升级:否")
+                continue
+            }
+
+            val x = equipment.x
+            val y = equipment.y
+            // Narrow the upgrade-arrow search to the small area near the equipment icon
+            val arrowSchema = ColorSchema.rescope(
+                MyColors.EquipmentUpgradeArrow, x + 15, y - 50, x + 50, y - 15
+            )
+
+            val arrow = findMultiColors(schema = arrowSchema, byteBuffer = screenBuffer, increment = 1)
+            val upgradeable = arrow != null
+            accountMessage("装备$name 找到状态:已找到,是否可升级:${if (upgradeable) "是" else "否"}")
+
+            if (!upgradeable) continue
+
+            TouchActions.tap(x, y)
+            TouchActions.tap(970, 610)//Upgrade
+            TouchActions.tap(970, 610)
+            clickHeroHallBottom(2)
+            return
+        }
+    }
 }
