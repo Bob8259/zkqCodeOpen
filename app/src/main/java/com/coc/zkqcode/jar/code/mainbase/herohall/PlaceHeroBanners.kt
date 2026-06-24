@@ -14,7 +14,9 @@ import com.coc.zkqcode.jar.code.universal.clickRightBottom
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.smalltools.data.StorageKeys
 import com.coc.zkqcode.jar.code.universal.smalltools.data.checkMemoryFile
+import com.coc.zkqcode.jar.code.universal.smalltools.data.getBooleanConfigRuntime
 import com.coc.zkqcode.jar.code.universal.smalltools.data.writeMemory
+import com.coc.zkqcode.jar.ui.schema.Schema
 
 suspend fun placeHeroBanners(): Boolean {
     if (InGameVars.townHallLevel < 7) return true
@@ -39,6 +41,13 @@ private suspend fun placeHeroBannerAction() {
     val redExclamationMark = findMultiColorsUntil(schemas = listOf(MyColors.RedExclamationMark), duration = 500)
     // If there is no marker, we only need to close the panel.
     if (redExclamationMark == null) {
+        if (getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.CLAIM_HERO_HALL_REWARDS.key)) {
+            TouchActions.tap(820, 105)
+            repeat(4) {
+                TouchActions.tap(470, 455, delayTime = 200)
+                TouchActions.tap(690, 390, delayTime = 200)
+            }
+        }
         clickRightBottom(1)
         return
     }
