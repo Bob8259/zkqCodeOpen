@@ -326,6 +326,6 @@ internal suspend fun backToHeroHall() {
 
 suspend fun clickHeroHallBottom(times: Int = 1) {
     repeat(times) {
-        TouchActions.tap(1215, 620)
+        TouchActions.tap(1215, 620, delayTime = 200)
     }
 }

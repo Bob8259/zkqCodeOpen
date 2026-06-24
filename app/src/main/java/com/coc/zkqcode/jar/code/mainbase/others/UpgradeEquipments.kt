@@ -1,7 +1,6 @@
 package com.coc.zkqcode.jar.code.mainbase.others
 
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
-import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
 import com.coc.zkqcode.jar.code.colorschema.ColorSchema
 import com.coc.zkqcode.jar.code.colorschema.MyColors
@@ -91,7 +90,6 @@ private val HERO_ENTRIES = listOf(
 
 suspend fun upgradeEquipmentsAction() {
     TouchActions.tap(685, 590, delayTime = STEP_DELAY)
-    accountMessage("点击进入铁匠铺")
 
     if (findMultiColorsUntil(schemas = listOf(MyColors.SmithOreIcon), duration = 2000) == null) {
         accountMessage("未找到铁匠铺标志，返回英雄殿堂")
@@ -106,7 +104,7 @@ suspend fun upgradeEquipmentsAction() {
             TouchActions.tap(upgradeArrow.x - 20, upgradeArrow.y + 20)
             TouchActions.tap(970, 610)//Upgrade
             TouchActions.tap(970, 610)
-            clickHeroHallBottom(2)
+            clickHeroHallBottom(3)
         }
     }
     if (HERO_ENTRIES.any { hero -> hero.equipments.any { (key, _) -> getBooleanConfigRuntime(key) } }) {
@@ -116,11 +114,10 @@ suspend fun upgradeEquipmentsAction() {
         TouchActions.swipe(1220, 510, -500, 510, delayAfter = 500)
         tryUpgradeEnabledEquipment()
     }
-    delayWithMultiplier(400000)
     backToHeroHall()
 }
 
-suspend fun clearNewEquipments() {
+private suspend fun clearNewEquipments() {
     repeat(30) {
         val newEquipment = findMultiColorsUntil(listOf(MyColors.NewEquipment), 200)
         if (newEquipment != null) {

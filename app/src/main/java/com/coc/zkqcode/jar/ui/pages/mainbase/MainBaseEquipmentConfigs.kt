@@ -15,17 +15,48 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.jar.ui.Strings
 import com.coc.zkqcode.jar.ui.components.CustomButton
 import com.coc.zkqcode.jar.ui.components.SettingToggleButton
-import com.coc.zkqcode.jar.ui.theme.AppColors
 import com.coc.zkqcode.jar.ui.schema.Schema.MAIN_BASE_EQUIPMENTS
+import com.coc.zkqcode.jar.ui.schema.SettingDef
+import com.coc.zkqcode.jar.ui.theme.AppColors
 
 @Composable
 fun MainBaseEquipmentConfigs(index: Int) {
     // Render equipment toggles grouped by hero so new equipments appear automatically.
     val heroGroups = MAIN_BASE_EQUIPMENTS.heroGroups
     val isExpanded = remember { mutableStateOf(false) }
+
+    // Flatten all equipment across hero groups for bulk operations.
+    val allEquipments: List<SettingDef> = heroGroups.flatMap { it.second }
+
+    // Select all equipment toggles.
+    val selectAll = {
+        allEquipments.forEach { equipment ->
+            val key = "${equipment.key}_c${index}"
+            if (!GlobalVars.configStates.containsKey(key)) {
+                GlobalVars.configStates[key] = mutableStateOf("1")
+            } else {
+                GlobalVars.configStates[key]!!.value = "1"
+            }
+        }
+    }
+
+    // Invert all equipment toggles.
+    val invertSelection = {
+        allEquipments.forEach { equipment ->
+            val key = "${equipment.key}_c${index}"
+            val currentState = GlobalVars.configStates[key]?.value ?: "1"
+            val newValue = if (currentState == "1") "0" else "1"
+            if (!GlobalVars.configStates.containsKey(key)) {
+                GlobalVars.configStates[key] = mutableStateOf(newValue)
+            } else {
+                GlobalVars.configStates[key]!!.value = newValue
+            }
+        }
+    }
 
     Column {
         Row {
@@ -34,6 +65,12 @@ fun MainBaseEquipmentConfigs(index: Int) {
                 onClick = { isExpanded.value = !isExpanded.value },
                 containerColor = AppColors.Teal
             )
+            AnimatedVisibility(visible = isExpanded.value) {
+                Row {
+                    CustomButton(text = Strings.selectAll, onClick = selectAll)
+                    CustomButton(text = Strings.invertSelection, onClick = invertSelection)
+                }
+            }
         }
 
         AnimatedVisibility(visible = isExpanded.value) {

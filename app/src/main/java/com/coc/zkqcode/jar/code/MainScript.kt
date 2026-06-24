@@ -9,10 +9,7 @@ import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
 import com.coc.zkqcode.jar.code.auth.displayAds
 import com.coc.zkqcode.jar.code.auth.userAuth
 import com.coc.zkqcode.jar.code.builderbase.playBuilderBase
-import com.coc.zkqcode.jar.code.colorschema.ColorSchema
-import com.coc.zkqcode.jar.code.colorschema.MyColors
-import com.coc.zkqcode.jar.code.mainbase.daily.collectBadgeEventRewards
-import com.coc.zkqcode.jar.code.mainbase.others.clearNewEquipments
+import com.coc.zkqcode.jar.code.mainbase.others.upgradeEquipmentsAction
 import com.coc.zkqcode.jar.code.mainbase.playMainBase
 import com.coc.zkqcode.jar.code.universal.GameVersion
 import com.coc.zkqcode.jar.code.universal.InGameVars
@@ -72,7 +69,7 @@ suspend fun runMainScript() {
     var lastUpdateCheckTime = System.currentTimeMillis()
     var nextUpdateInterval = (3600_000L) + (Math.random() * 7200_000L).toLong()
     while (currentCoroutineContext().isActive) {
-        runTestCode()
+//        runTestCode()
         runAccountStepBlock()
         // Check scheduled upgrade notifications every cycle (runs in background)
         checkScheduledUpgradeNotifications()
@@ -103,7 +100,7 @@ private fun finishDataNumberEntryOnlyRun() {
 
 private suspend fun runTestCode() {
     while (true) {
-        clearNewEquipments()
+        upgradeEquipmentsAction()
 //        val arrowSchema = ColorSchema.rescope(MyColors.NewEquipment, 736, 425, 786, 458)
 //        val result = findMultiColors(arrowSchema)
         ShowMessage("测试代码运行完成")
