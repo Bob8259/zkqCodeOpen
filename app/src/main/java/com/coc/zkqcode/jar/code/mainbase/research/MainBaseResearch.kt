@@ -178,15 +178,7 @@ private suspend fun findAllResearchItems() {
     // Sort by priority (ascending: lower number = higher priority)
     upgradeableItems.sortBy { it.priority }
 
-    // Print priority summary of all upgradeable items
-    val summaryLines = upgradeableItems.mapIndexed { index, item ->
-        "${index + 1}. ${item.troopName}"
-    }
-    accountMessage("研究升级\n优先级列表 :\n${summaryLines.joinToString("\n")}")
-
     val target = upgradeableItems.first()
-
-    accountMessage("选择升级: ${target.troopName} (优先级${target.priority}, 等级${target.detectedLevel}→${target.targetLevel}, 第${target.screenIndex}页)")
 
     // ========== Phase 2: Navigate back page by page, re-scan and upgrade ==========
     // After Phase 1 we are at screen 8 (the last page).

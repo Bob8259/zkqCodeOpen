@@ -70,7 +70,7 @@ suspend fun runMainScript() {
     var lastUpdateCheckTime = System.currentTimeMillis()
     var nextUpdateInterval = (3600_000L) + (Math.random() * 7200_000L).toLong()
     while (currentCoroutineContext().isActive) {
-        runTestCode()
+//        runTestCode()
         runAccountStepBlock()
         // Check scheduled upgrade notifications every cycle (runs in background)
         checkScheduledUpgradeNotifications()
