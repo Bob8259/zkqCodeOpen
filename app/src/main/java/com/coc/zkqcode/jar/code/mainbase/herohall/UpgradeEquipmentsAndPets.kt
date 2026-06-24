@@ -71,12 +71,7 @@ suspend fun upgradeEquipmentsAndPets(): Boolean {
 }
 
 private data class PetUpgradableItem(
-    val pet: com.coc.zkqcode.jar.ui.schema.SettingDef,
-    val displayName: String,
-    val priority: Int,
-    val x: Int,
-    val y: Int,
-    val screenIndex: Int
+    val pet: com.coc.zkqcode.jar.ui.schema.SettingDef, val displayName: String, val priority: Int, val x: Int, val y: Int, val screenIndex: Int
 )
 
 private suspend fun checkPets() {
@@ -121,8 +116,7 @@ private suspend fun checkPets() {
     val completedPets = mutableSetOf<String>() // Track already-processed pets to avoid duplicates
 
     for (screenIdx in 0 until 4) {
-        val screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult
-            ?: logAndRestart("checkPets Phase 1: Screen Capture Failed.")
+        val screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult ?: logAndRestart("checkPets Phase 1: Screen Capture Failed.")
 
         for (petDef in enabledPetDefs) {
             if (petDef.key in completedPets) continue
@@ -182,12 +176,7 @@ private suspend fun checkPets() {
                     completedPets.add(petDef.key)
                     upgradeableItems.add(
                         PetUpgradableItem(
-                            pet = petDef,
-                            displayName = petDef.displayName,
-                            priority = priority,
-                            x = result.x,
-                            y = result.y,
-                            screenIndex = screenIdx
+                            pet = petDef, displayName = petDef.displayName, priority = priority, x = result.x, y = result.y, screenIndex = screenIdx
                         )
                     )
                     accountMessage("发现可升级: ${petDef.displayName}, 第${screenIdx}页")
@@ -230,8 +219,7 @@ private suspend fun checkPets() {
         val targetSchemas = petColorMap.filter { it.first.key == target.pet.key }.map { it.second }
         var foundAndUpgraded = false
         for (currentPage in 3 downTo 0) {
-            val buffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult
-                ?: logAndRestart("checkPets Phase 3: Screen capture failed at page $currentPage")
+            val buffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult ?: logAndRestart("checkPets Phase 3: Screen capture failed at page $currentPage")
 
             for (targetSchema in targetSchemas) {
                 val result = findMultiColors(schema = targetSchema, byteBuffer = buffer, increment = 1) ?: continue
@@ -332,6 +320,12 @@ internal suspend fun backToHeroHall() {
         if (petsIcon != null) {
             return
         }
+        clickHeroHallBottom()
+    }
+}
+
+suspend fun clickHeroHallBottom(times: Int = 1) {
+    repeat(times) {
         TouchActions.tap(1215, 620)
     }
 }

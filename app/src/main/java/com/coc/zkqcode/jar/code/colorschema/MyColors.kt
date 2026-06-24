@@ -71,10 +71,16 @@ object MyColors : IUIColors by UIColors, IFeatureColors by FeatureColors, IClanG
     IBuilderBaseClockTowerColors by BuilderBaseClockTowerColors, IBuilderBaseResearchColors by BuilderBaseResearchColors, IBuilderBaseAttackColors by BuilderBaseAttackColors,
     IUniversalUpgradeColors by UniversalUpgradeColors, IMainBaseUpgradeColors by MainBaseUpgradeColors, IMainBaseResearchColors by MainBaseResearchColors, IMainBaseResourcesColors by MainBaseResourcesColors,
     IClanCapitalTutorialColors by ClanCapitalTutorialColors, IMainBaseAttackColors by MainBaseAttackColors, IMainBaseClanColors by MainBaseClanColors, IMainBaseClanWarColors by MainBaseClanWarColors,
-    IMainBaseHelperColors by MainBaseHelperColors, IMainBaseHeroHallColors by MainBaseHeroHallColors, IMainBaseEquipmentColors by MainBaseEquipmentColors, IMainBaseSmallTutorialColors by MainBaseSmallTutorialColors, IMainBaseMagicItemColors by MainBaseMagicItemColors,
-    IClanCapitalColors by ClanCapitalColors, IMainBaseShopColors by MainBaseShopColors, IMainBaseTournamentColors by MainBaseTournamentColors, IGameUpdateColors by GameUpdateColors, IEventColors by EventColors {
+    IMainBaseHelperColors by MainBaseHelperColors, IMainBaseHeroHallColors by MainBaseHeroHallColors, IMainBaseEquipmentColors by MainBaseEquipmentColors, IMainBaseSmallTutorialColors by MainBaseSmallTutorialColors,
+    IMainBaseMagicItemColors by MainBaseMagicItemColors, IClanCapitalColors by ClanCapitalColors, IMainBaseShopColors by MainBaseShopColors, IMainBaseTournamentColors by MainBaseTournamentColors,
+    IGameUpdateColors by GameUpdateColors, IEventColors by EventColors {
     //UI Colour
     val ContributionActivity = ColorSchema.parse(
         1198, 66, 1255, 121, "FFFFFF", "3|4|FFFFFF,-13|-9|8D8FF3,-7|-13|8D8FF3,16|-11|8D8FF3,19|9|2722F0,14|18|2520DE,-2|18|2520DE,-10|18|2520DE,-12|8|2722F0", 0, 0.9, "捐赠活动"
+    )
+
+    //Upgrade Equipment Colors
+    val EquipmentUpgradeArrow = ColorSchema.parse(
+        110, 269, 1173, 303, "4FF3B6", "0|2|41E19E,-2|3|3BD892,2|3|3BD892,2|5|31CB80,2|8|2FC87D,-1|9|2FC87D,-1|9|2FC87D,0|6|2FC87D,1|3|3BD892", 0, 0.9, "升级装备箭头"
     )
 }
