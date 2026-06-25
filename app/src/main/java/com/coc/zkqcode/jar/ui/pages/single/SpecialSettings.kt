@@ -34,7 +34,9 @@ import androidx.compose.ui.unit.dp
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.jar.code.ShellHelper
-import com.coc.zkqcode.jar.code.universal.push.ServerChanHelper
+import com.coc.zkqcode.jar.code.universal.push.PushMessage
+import com.coc.zkqcode.jar.code.universal.push.PushRouter
+import com.coc.zkqcode.jar.ui.LanguageManager
 import com.coc.zkqcode.jar.ui.Strings
 import com.coc.zkqcode.jar.ui.components.CustomButton
 import com.coc.zkqcode.jar.ui.components.SettingDropdown
@@ -102,7 +104,28 @@ fun LazyListScope.specialSettings() {
             SettingSwitchIcon(key = GLOBAL_SETTINGS.SERVERCHAN_UPGRADE_SCHEDULE_NOTIFY.key)
             if (scheduleEnabled) { SettingInputRow(key = GLOBAL_SETTINGS.SERVERCHAN_UPGRADE_ADVANCE.key) }
             val scope = rememberCoroutineScope()
-            CustomButton(text = Strings.serverchanTestBtn, marginTop = 6.dp, onClick = { /* push test */ })
+            CustomButton(
+                text = Strings.serverchanTestBtn,
+                marginTop = 6.dp,
+                onClick = {
+                    scope.launch {
+                        ShowMessage(Strings.serverchanTestSending, isChecking = false)
+                        val error = withContext(Dispatchers.IO) {
+                            PushRouter.send(
+                                PushMessage(
+                                    title = Strings.serverchanTestBtn,
+                                    desp = if (LanguageManager.isChinese) "这是一条测试通知" else "This is a test notification"
+                                )
+                            )
+                        }
+                        if (error == null) {
+                            ShowMessage(Strings.serverchanTestSuccess, isChecking = false)
+                        } else {
+                            ShowMessage(Strings.serverchanTestFailed(error), isChecking = false)
+                        }
+                    }
+                }
+            )
         }
     }
     // ── WebDAV Sync ────────────────────────────────────────────────────────

@@ -10,7 +10,8 @@ import com.coc.zkqcode.core.util.crypto.solvePoW
 import com.coc.zkqcode.jar.code.universal.network.UrlFallbackUtil
 import com.coc.zkqcode.jar.ui.Strings
 import com.coc.zkqcode.jar.ui.schema.Schema.GLOBAL_SETTINGS
-import com.coc.zkqcode.jar.code.universal.push.ServerChanHelper
+import com.coc.zkqcode.jar.code.universal.push.PushMessage
+import com.coc.zkqcode.jar.code.universal.push.PushRouter
 import com.coc.zkqcode.nativehelper.RustTools
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -215,10 +216,7 @@ suspend fun userAuth() {
             // Send Server酱³ push notification on login failure if enabled
             val loginNotify = GlobalVars.configStates[GLOBAL_SETTINGS.SERVERCHAN_LOGIN_NOTIFY.key]?.value == "1"
             if (loginNotify) {
-                ServerChanHelper.sendNotification(
-                    title = Strings.serverchanLoginFailedTitle,
-                    desp = Strings.serverchanLoginFailedMsg
-                )
+                PushRouter.send(PushMessage(title = Strings.serverchanLoginFailedTitle, desp = Strings.serverchanLoginFailedMsg))
             }
         }
 

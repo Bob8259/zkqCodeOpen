@@ -19,7 +19,8 @@ import com.coc.zkqcode.jar.code.universal.smalltools.lifecycle.checkReconnection
 import com.coc.zkqcode.jar.code.universal.smalltools.lifecycle.isGameAtFront
 import com.coc.zkqcode.jar.code.universal.smalltools.lifecycle.killGame
 import com.coc.zkqcode.jar.code.universal.smalltools.lifecycle.runGame
-import com.coc.zkqcode.jar.code.universal.push.ServerChanHelper
+import com.coc.zkqcode.jar.code.universal.push.PushMessage
+import com.coc.zkqcode.jar.code.universal.push.PushRouter
 import com.coc.zkqcode.jar.code.universal.tutorial.AllTutorials
 import com.coc.zkqcode.jar.ui.Strings
 import com.coc.zkqcode.jar.ui.schema.Schema
@@ -81,8 +82,11 @@ suspend fun enterMainScreen(isDoubleCheck: Boolean = false): Boolean {
         val deviceRemark = GlobalVars.configStates[Schema.GLOBAL_SETTINGS.DEVICE_REMARK.key]?.value.orEmpty()
         val remarkKey = "remark${InGameVars.currentAccountNumber}"
         val remark = GlobalVars.configStates[remarkKey]?.value.orEmpty()
-        ServerChanHelper.sendNotification(
-            title = Strings.serverchanKickTitle, desp = Strings.serverchanKickMsg(deviceRemark, InGameVars.currentAccountNumber, remark, timeoutSeconds)
+        PushRouter.send(
+            PushMessage(
+                title = Strings.serverchanKickTitle,
+                desp = Strings.serverchanKickMsg(deviceRemark, InGameVars.currentAccountNumber, remark, timeoutSeconds)
+            )
         )
     }
     killGame()

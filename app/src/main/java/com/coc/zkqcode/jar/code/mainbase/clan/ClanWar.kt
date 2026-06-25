@@ -19,7 +19,8 @@ import com.coc.zkqcode.jar.code.universal.smalltools.lifecycle.killGame
 import com.coc.zkqcode.jar.code.universal.smalltools.data.checkMemoryFile
 import com.coc.zkqcode.jar.code.universal.smalltools.data.readMemory
 import com.coc.zkqcode.jar.code.universal.smalltools.data.writeMemory
-import com.coc.zkqcode.jar.code.universal.push.ServerChanHelper
+import com.coc.zkqcode.jar.code.universal.push.PushMessage
+import com.coc.zkqcode.jar.code.universal.push.PushRouter
 import com.coc.zkqcode.jar.ui.Strings
 import com.coc.zkqcode.jar.ui.schema.Schema
 import com.coc.zkqcode.core.data.database.GlobalVars
@@ -63,9 +64,11 @@ suspend fun clanWar(): Boolean {
         val deviceRemark = GlobalVars.configStates[Schema.GLOBAL_SETTINGS.DEVICE_REMARK.key]?.value.orEmpty()
         val remarkKey = "remark${InGameVars.currentAccountNumber}"
         val remark = GlobalVars.configStates[remarkKey]?.value.orEmpty()
-        ServerChanHelper.sendNotification(
-            title = Strings.serverchanWarTitle,
-            desp = Strings.serverchanWarMsg(deviceRemark, InGameVars.currentAccountNumber, remark)
+        PushRouter.send(
+            PushMessage(
+                title = Strings.serverchanWarTitle,
+                desp = Strings.serverchanWarMsg(deviceRemark, InGameVars.currentAccountNumber, remark)
+            )
         )
         writeMemory(battleCooldownKey, (System.currentTimeMillis() / 60_000).toString())
         return enterMainScreen()

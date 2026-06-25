@@ -11,38 +11,7 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONObject
 import java.util.concurrent.TimeUnit
 
-/**
- * Unified push notification router.
- *
- * Dispatches to the provider selected in config (push_provider):
- *   "0" → Server酱³
- *   "1" → WxPusher
- *   "2" → PushPlus
- *   "3" → Telegram
- *
- * All call sites use ServerChanHelper.sendNotification() — the routing
- * is transparent and no call-site changes are needed.
- */
 object ServerChanHelper {
-
-    /**
-     * Send a push notification through the currently configured provider.
-     *
-     * @param title   Message title.
-     * @param desp    Message body (optional).
-     * @return null on success, or an error message string on failure.
-     */
-    suspend fun sendNotification(title: String, desp: String = ""): String? {
-        val provider = GlobalVars.configStates[GLOBAL_SETTINGS.PUSH_PROVIDER.key]?.value ?: "0"
-        return when (provider) {
-            "1" -> WxPusherHelper.sendNotification(title, desp)
-            "2" -> PushPlusHelper.sendNotification(title, desp)
-            "3" -> TelegramHelper.sendNotification(title, desp)
-            else -> sendViaServerChan(title, desp)
-        }
-    }
-
-    // ── Server酱³ implementation ──────────────────────────────────────────
 
     private val client = OkHttpClient.Builder()
         .connectTimeout(10, TimeUnit.SECONDS)
@@ -52,12 +21,10 @@ object ServerChanHelper {
 
     private val MEDIA_TYPE = "application/x-www-form-urlencoded;charset=utf-8".toMediaTypeOrNull()
 
-    /** @return null on success, error string on failure. */
-    private suspend fun sendViaServerChan(title: String, desp: String = ""): String? {
+    suspend fun send(message: PushMessage): String? {
         val sendKey = getSendKey() ?: return "SendKey 未配置"
         val url = buildApiUrl(sendKey) ?: return "SendKey 格式错误"
-
-        val postBody = buildPostBody(title, desp)
+        val postBody = buildPostBody(message)
 
         return try {
             withContext(Dispatchers.IO) {
@@ -103,9 +70,9 @@ object ServerChanHelper {
         }
     }
 
-    private fun buildPostBody(title: String, desp: String): String {
-        val encodedTitle = java.net.URLEncoder.encode(title, "UTF-8")
-        val encodedDesp = java.net.URLEncoder.encode(desp, "UTF-8")
+    private fun buildPostBody(message: PushMessage): String {
+        val encodedTitle = java.net.URLEncoder.encode(message.title, "UTF-8")
+        val encodedDesp = java.net.URLEncoder.encode(message.desp, "UTF-8")
         return "title=$encodedTitle&desp=$encodedDesp"
     }
 }

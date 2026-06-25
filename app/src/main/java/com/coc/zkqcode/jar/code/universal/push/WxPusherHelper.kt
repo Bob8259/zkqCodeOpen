@@ -26,13 +26,16 @@ object WxPusherHelper {
 
     /** @return null on success, error string on failure. */
     suspend fun sendNotification(title: String, desp: String = ""): String? {
+        return sendNotification(PushMessage(title = title, desp = desp))
+    }
+
+    suspend fun sendNotification(message: PushMessage): String? {
         val appToken = getAppToken() ?: return "AppToken 未配置"
         val uid = getUid() ?: return "UID 未配置"
 
-        val content = if (desp.isBlank()) title else "$title\n$desp"
         val jsonBody = JSONObject().apply {
             put("appToken", appToken)
-            put("content", content)
+            put("content", message.content)
             put("contentType", 1)
             put("uids", JSONArray().put(uid))
         }

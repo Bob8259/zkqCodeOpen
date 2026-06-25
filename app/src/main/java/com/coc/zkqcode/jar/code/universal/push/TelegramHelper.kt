@@ -23,15 +23,18 @@ object TelegramHelper {
 
     /** @return null on success, error string on failure. */
     suspend fun sendNotification(title: String, desp: String = ""): String? {
+        return sendNotification(PushMessage(title = title, desp = desp))
+    }
+
+    suspend fun sendNotification(message: PushMessage): String? {
         val botToken = getBotToken() ?: return "BotToken 未配置"
         val chatId = getChatId() ?: return "ChatID 未配置"
 
-        val text = if (desp.isBlank()) title else "*$title*\n$desp"
         val apiUrl = "https://api.telegram.org/bot$botToken/sendMessage"
 
         val jsonBody = JSONObject().apply {
             put("chat_id", chatId)
-            put("text", text)
+            put("text", message.telegramText)
             put("parse_mode", "Markdown")
         }
 

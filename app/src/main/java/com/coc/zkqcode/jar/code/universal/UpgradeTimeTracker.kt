@@ -3,7 +3,8 @@ package com.coc.zkqcode.jar.code.universal
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.util.basic.ClipboardHelper
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
-import com.coc.zkqcode.jar.code.universal.push.ServerChanHelper
+import com.coc.zkqcode.jar.code.universal.push.PushMessage
+import com.coc.zkqcode.jar.code.universal.push.PushRouter
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.smalltools.data.readMemory
@@ -104,7 +105,7 @@ suspend fun checkUpgradeTimers() {
         }
     }
 
-    ServerChanHelper.sendNotification(title = Strings.serverchanUpgradingTitle, desp = lines.joinToString("\n"))
+    PushRouter.send(PushMessage(title = Strings.serverchanUpgradingTitle, desp = lines.joinToString("\n")))
     writeMemory(sigKey, fingerprint)
 
     // Save completion timestamps for background checking
@@ -159,7 +160,7 @@ suspend fun checkScheduledUpgradeNotifications() {
                 "设备：${deviceRemark.ifBlank { "无" }}，账号${acc}，备注:${remarkText}\n即将在${advanceMin}分钟内完成的升级:\n$summary"
             else
                 "Device: ${deviceRemark.ifBlank { "N/A" }}, Account $acc, Remark: $remarkText\nUpgrades completing in $advanceMin minutes:\n$summary"
-            ServerChanHelper.sendNotification(title = Strings.serverchanUpgradeTitle, desp = msg)
+            PushRouter.send(PushMessage(title = Strings.serverchanUpgradeTitle, desp = msg))
         }
     }
 

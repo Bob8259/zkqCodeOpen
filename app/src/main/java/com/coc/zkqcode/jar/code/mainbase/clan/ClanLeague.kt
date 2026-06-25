@@ -17,7 +17,8 @@ import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.isInHomePage
 import com.coc.zkqcode.jar.code.universal.smalltools.input.TouchActions
 import com.coc.zkqcode.jar.code.universal.smalltools.data.getBooleanConfigRuntime
-import com.coc.zkqcode.jar.code.universal.push.ServerChanHelper
+import com.coc.zkqcode.jar.code.universal.push.PushMessage
+import com.coc.zkqcode.jar.code.universal.push.PushRouter
 import com.coc.zkqcode.jar.ui.Strings
 import com.coc.zkqcode.jar.ui.schema.Schema
 
@@ -56,9 +57,11 @@ suspend fun clanLeague(): Boolean {
             val deviceRemark = GlobalVars.configStates[Schema.GLOBAL_SETTINGS.DEVICE_REMARK.key]?.value.orEmpty()
             val remarkKey = "remark${InGameVars.currentAccountNumber}"
             val remark = GlobalVars.configStates[remarkKey]?.value.orEmpty()
-            ServerChanHelper.sendNotification(
-                title = Strings.serverchanLeagueTitle,
-                desp = Strings.serverchanLeagueMsg(deviceRemark, InGameVars.currentAccountNumber, remark)
+            PushRouter.send(
+                PushMessage(
+                    title = Strings.serverchanLeagueTitle,
+                    desp = Strings.serverchanLeagueMsg(deviceRemark, InGameVars.currentAccountNumber, remark)
+                )
             )
             writeMemory(battleCooldownKey, (System.currentTimeMillis() / 60_000).toString())
             return enterMainScreen()

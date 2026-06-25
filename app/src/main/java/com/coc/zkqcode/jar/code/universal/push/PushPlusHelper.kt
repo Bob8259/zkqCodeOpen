@@ -34,12 +34,16 @@ object PushPlusHelper {
 
     /** @return null on success, error string on failure. */
     suspend fun sendNotification(title: String, desp: String = ""): String? {
+        return sendNotification(PushMessage(title = title, desp = desp))
+    }
+
+    suspend fun sendNotification(message: PushMessage): String? {
         val token = getToken() ?: return "Token 未配置"
 
         val jsonBody = JSONObject().apply {
             put("token", token)
-            put("title", title)
-            put("content", if (desp.isBlank()) title else "$title\n$desp")
+            put("title", message.title)
+            put("content", message.content)
             put("template", "txt")
         }
 

@@ -330,6 +330,9 @@ object Strings {
     val serverchanLoginFailedMsg get() = if (LanguageManager.isChinese) "辅助账号登录失败，请检查邮箱密码或网络连接" else "Assistant account login failed. Please check email/password or network."
     val serverchanSectionTitle get() = if (LanguageManager.isChinese) "推送通知" else "Push Notification"
     val serverchanTestBtn get() = if (LanguageManager.isChinese) "发送测试" else "Send Test"
+    val serverchanTestSending get() = if (LanguageManager.isChinese) "正在发送测试通知..." else "Sending test notification..."
+    val serverchanTestSuccess get() = if (LanguageManager.isChinese) "测试通知已发送" else "Test notification sent"
+    fun serverchanTestFailed(reason: String) = if (LanguageManager.isChinese) "测试通知发送失败：$reason" else "Test notification failed: $reason"
     val serverchanSendKeyEmpty get() = if (LanguageManager.isChinese) "请先填写 Server酱³ SendKey" else "Please enter your Server酱³ SendKey first"
     val serverchanKickTitle get() = if (LanguageManager.isChinese) "进入游戏失败 - 紫孔雀" else "Game Enter Failed - ZKQ"
     fun serverchanKickMsg(deviceRemark: String, accountIndex: Int, remark: String, timeoutSec: Int) =
