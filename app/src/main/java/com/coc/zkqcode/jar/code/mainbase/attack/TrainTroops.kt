@@ -92,11 +92,13 @@ suspend fun mainBaseTrainTroops(): Boolean {
         // Spell Tab
         TouchActions.tap(797, 420, delayTime = 1000)
         if (findMultiColorsUntil(schemas = listOf(MyColors.TrainLighteningSpell), duration = 500) != null) {
-            // Optimized sequence of taps for lightning spells
-            val spellCoords = listOf(351 to 621, 351 to 621, 351 to 621, 220 to 499, 91 to 494, 91 to 494, 91 to 494, 91 to 494)
-            for (coord in spellCoords) {
-                TouchActions.tap(coord.first, coord.second, delayTime = 50)
+            findMultiColors(schema = MyColors.CloneSpell)?.let { p ->
+                repeat(4) { TouchActions.tap(p.x, p.y, delayTime = 40) }
             }
+            findMultiColors(schema = MyColors.RageSpell)?.let { p ->
+                repeat(4) { TouchActions.tap(p.x, p.y, delayTime = 40) }
+            }
+            repeat(8) { TouchActions.tap(100, 490, delayTime = 40) }
         }
 
         // Close tab and Clean Queue 3

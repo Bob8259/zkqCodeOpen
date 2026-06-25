@@ -86,4 +86,12 @@ object MyColors : IUIColors by UIColors, IFeatureColors by FeatureColors, IClanG
     val NewEquipment = ColorSchema.parse(
         88, 420, 1232, 610, "31D197", "-7|0|31D197,-4|-4|2AC788,-5|3|44EFC1,18|4|46F0C5,15|3|44EFC1,18|-4|2AC788,20|-4|2AC788,22|0|31D197,21|3|44EFC1", 0, 0.9, "新装备"
     )
+
+    //Main base training colors
+    val CloneSpell = ColorSchema.parse(
+        30, 425, 1260, 670, "E3E32B", "13|6|E4F221,24|2|EBF92C,12|10|E1F021,-3|12|E3E027,2|0|E5E82E,17|0|F3FE63,30|-4|EFF754,34|-8|FFFFFF,19|-2|EEFB42", 0, 0.9, "克隆法术"
+    )
+    val RageSpell = ColorSchema.parse(
+        30, 425, 1260, 670, "E73991", "-7|1|AC226D,-21|-8|A34382,-19|-19|793450,-5|-10|A2286F,4|-10|D642B5,7|-16|C03377,2|-20|BB336D,-10|-16|882B4F,-15|-42|BB8C95", 0, 0.9, "狂暴法术"
+    )
 }
