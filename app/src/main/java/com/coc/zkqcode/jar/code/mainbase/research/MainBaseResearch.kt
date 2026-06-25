@@ -162,7 +162,29 @@ private suspend fun startResearch(upgradeableItems: List<ResearchItem>) {
         .filter { it.name != null }
         .groupBy { it.name!! }
 
+    // Read the fast-research fallback config.
+    val isFallbackEnabled = getBooleanConfigRuntime(
+        Schema.MAIN_BASE_SETTINGS.RESEARCH_AFTER_CONSECUTIVE_FAILURES.key
+    )
+    val fallbackThreshold = if (isFallbackEnabled) {
+        getConfigRuntime(
+            Schema.MAIN_BASE_SETTINGS.RESEARCH_AFTER_CONSECUTIVE_FAILURES_THRESHOLD.key
+        ).toIntOrNull() ?: 3
+    } else {
+        0
+    }
+    var consecutiveFailureCount = 0
+
     for (item in upgradeableItems) {
+        // If we've hit the fallback threshold, switch to fast research:
+        // research the first available item on the current screen.
+        if (isFallbackEnabled && consecutiveFailureCount >= fallbackThreshold) {
+            accountMessage("连续${consecutiveFailureCount}次未找到研究项目，改为快速研究")
+            if (fastResearch()) return
+            // If fast research also failed, reset counter and continue trying priority items.
+            consecutiveFailureCount = 0
+        }
+
         val schemas = schemasByName[item.name] ?: continue
         var found = false
 
@@ -198,9 +220,58 @@ private suspend fun startResearch(upgradeableItems: List<ResearchItem>) {
 
         if (found) {
             accountMessage("开始研究: ${item.name}")
-            break
+            return
+        } else {
+            consecutiveFailureCount++
         }
-        // If not found, the outer loop continues to the next item.
-        // The reset swipe at the top of the next iteration handles re-scrolling.
     }
+
+    // If we exhausted all priority items without success, try fast research as a last resort.
+    if (isFallbackEnabled && consecutiveFailureCount >= fallbackThreshold) {
+        accountMessage("优先级列表全部未找到，改为快速研究")
+        fastResearch()
+    }
+}
+
+/**
+ * Fast research fallback: scans the research screen for any enabled item
+ * (regardless of priority) and taps the first one found. Used when consecutive
+ * failures exceed the configured threshold.
+ *
+ * @return true if an item was found and tapped, false otherwise.
+ */
+private suspend fun fastResearch(): Boolean {
+    // Build a name → enable-key lookup to respect user-disabled items.
+    val nameToEnableKey = mutableMapOf<String, String>()
+    for (def in MainBaseTroopsAndSpells.all) {
+        nameToEnableKey[def.displayName] = def.key
+    }
+
+    // Reset to the beginning.
+    TouchActions.swipe(240, 500, 4000, 500, delayAfter = 800)
+
+    for (page in 0 until 8) {
+        val screenBuffer = ScreenCaptureManager.capture(asBitmap = false)
+            as? ScreenCaptureManager.CaptureResult ?: continue
+
+        for (schema in MainBaseResearchColors.allResearchColors) {
+            val itemName = schema.name ?: continue
+            val enableKey = nameToEnableKey[itemName]
+            if (enableKey != null && !getBooleanConfigRuntime(enableKey)) continue
+
+            val pos = findMultiColors(
+                schema = schema,
+                byteBuffer = screenBuffer,
+                increment = 1
+            )
+            if (pos != null) {
+                TouchActions.tap(pos.x, pos.y, delayTime = 800)
+                accountMessage("快速研究: $itemName")
+                return true
+            }
+        }
+
+        TouchActions.swipe(950, 500, 200, 500, delayAfter = 300)
+    }
+    return false
 }

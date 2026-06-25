@@ -31,6 +31,12 @@ object MainBaseSettings {
     val DONATION_FARMING_STOP_THRESHOLD = SettingDef("donation_farming_stop_threshold", "直到资源超过", "Stop when resources >", "80", "MAIN_BASE_SETTINGS")
     val RESEARCH_SETTING = SettingDef("research_setting", "自动研究", "Auto Research", 1, "MAIN_BASE_SETTINGS")
     val RESEARCH_LEVEL = SettingDef("research_level", "研究等级至", "Research Level to", "0", "MAIN_BASE_SETTINGS")
+    val RESEARCH_AFTER_CONSECUTIVE_FAILURES = SettingDef(
+        "research_after_consecutive_failures", "连续研究失败", "After consecutive failures", 1, "MAIN_BASE_SETTINGS"
+    )
+    val RESEARCH_AFTER_CONSECUTIVE_FAILURES_THRESHOLD = SettingDef(
+        "research_after_consecutive_failures_threshold", "次后，改为快速研究", "times, use fast research", "3", "MAIN_BASE_SETTINGS"
+    )
     val COLLECT_CLAN_CASTLE = SettingDef("collect_clan_castle", "领取部落城堡资源", "Collect Clan Castle Loot", 1, "MAIN_BASE_SETTINGS")
     val LIGHTING_ON_AIR_SWEEPER = SettingDef("lighting_on_air_sweeper", "闪空气炮次数", "Lightning on Air Sweeper", "2", "MAIN_BASE_SETTINGS")
     val LIGHTING_ON_AIR_DEFENCE = SettingDef("lighting_on_air_defence", "闪火箭次数", "Lightning on Air Defense", "3", "MAIN_BASE_SETTINGS")
@@ -207,6 +213,8 @@ object MainBaseSettings {
         DONATION_FARMING_STOP_THRESHOLD,
         RESEARCH_SETTING,
         RESEARCH_LEVEL,
+        RESEARCH_AFTER_CONSECUTIVE_FAILURES,
+        RESEARCH_AFTER_CONSECUTIVE_FAILURES_THRESHOLD,
         COLLECT_CLAN_CASTLE,
         LIGHTING_ON_AIR_SWEEPER,
         LIGHTING_ON_AIR_DEFENCE,

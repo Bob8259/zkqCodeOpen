@@ -422,6 +422,10 @@ fun LazyListScope.mainBaseConfig(
                                 }
                             }
                         )
+                        InputRowWithCheckBox(
+                            checkBoxKey = "${MAIN_BASE_SETTINGS.RESEARCH_AFTER_CONSECUTIVE_FAILURES.key}_c$index",
+                            inputKey = "${MAIN_BASE_SETTINGS.RESEARCH_AFTER_CONSECUTIVE_FAILURES_THRESHOLD.key}_c$index"
+                        )
                     }
                 }
             }
