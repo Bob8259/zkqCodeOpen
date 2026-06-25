@@ -4,21 +4,19 @@ import com.coc.zkqcode.core.util.basic.ClipboardHelper
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
 import com.coc.zkqcode.jar.code.colorschema.MyColors
+import com.coc.zkqcode.jar.code.mainbase.research.MainBaseResearchMaxLevel
+import com.coc.zkqcode.jar.code.universal.BuildingStatus
 import com.coc.zkqcode.jar.code.universal.GameVersion
 import com.coc.zkqcode.jar.code.universal.InGameVars
 import com.coc.zkqcode.jar.code.universal.accountMessage
+import com.coc.zkqcode.jar.code.universal.buildings.upgrade.SpeedSixBuilderPriority
 import com.coc.zkqcode.jar.code.universal.clickRightBottom
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.smalltools.input.TouchActions
-import com.coc.zkqcode.jar.code.universal.smalltools.data.getConfigRuntime
-import com.coc.zkqcode.jar.code.universal.buildings.upgrade.SpeedSixBuilderPriority
-import com.coc.zkqcode.jar.code.mainbase.research.MainBaseResearchMaxLevel
 import com.coc.zkqcode.jar.ui.schema.Schema
-import com.coc.zkqcode.jar.code.universal.BuildingStatus
 import com.coc.zkqcode.jar.ui.schema.details.MainBasePets
 import com.google.gson.Gson
-import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.google.gson.JsonSyntaxException
 
@@ -345,7 +343,9 @@ private fun parseSpeedSixBuilderLevels(jsonObject: JsonObject) {
                 if (entries.isEmpty()) return null
                 val level = entries.maxOfOrNull { it.asJsonObject.get("lvl")?.asInt ?: 0 } ?: 0
                 val upgrading = entries.any {
-                    try { it.asJsonObject.get("timer")?.asInt ?: 0 > 0 } catch (_: Exception) { false }
+                    try {
+                        (it.asJsonObject.get("timer")?.asInt ?: 0) > 0
+                    } catch (_: Exception) { false }
                 }
                 return BuildingStatus(level = level, unlocked = true, upgrading = upgrading)
             }
@@ -364,7 +364,9 @@ private fun parseSpeedSixBuilderLevels(jsonObject: JsonObject) {
                 if (entries.isEmpty()) return null
                 val level = entries.maxOfOrNull { it.asJsonObject.get("lvl")?.asInt ?: 0 } ?: 0
                 val upgrading = entries.any {
-                    try { it.asJsonObject.get("timer")?.asInt ?: 0 > 0 } catch (_: Exception) { false }
+                    try {
+                        (it.asJsonObject.get("timer")?.asInt ?: 0) > 0
+                    } catch (_: Exception) { false }
                 }
                 return BuildingStatus(level = level, unlocked = true, upgrading = upgrading)
             }
@@ -381,7 +383,9 @@ private fun parseSpeedSixBuilderLevels(jsonObject: JsonObject) {
             fun extractHeroStatus(dataId: Int): BuildingStatus? {
                 val entry = heroes2.firstOrNull { it.asJsonObject.get("data").asInt == dataId }?.asJsonObject ?: return null
                 val level = entry.get("lvl")?.asInt ?: 0
-                val upgrading = try { entry.get("timer")?.asInt ?: 0 > 0 } catch (_: Exception) { false }
+                val upgrading = try {
+                    (entry.get("timer")?.asInt ?: 0) > 0
+                } catch (_: Exception) { false }
                 return BuildingStatus(level = level, unlocked = true, upgrading = upgrading)
             }
             extractHeroStatus(BB_BATTLE_MACHINE_DATA_ID)?.let { builderStatus["战争机器"] = it }

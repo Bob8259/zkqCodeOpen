@@ -1,7 +1,6 @@
 package com.coc.zkqcode.jar.code.mainbase.research
 
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
-import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
 import com.coc.zkqcode.jar.code.colorschema.ColorSchema
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.mainbase.MainBaseResearchColors
@@ -9,15 +8,14 @@ import com.coc.zkqcode.jar.code.universal.InGameVars
 import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.jar.code.universal.buildings.BaseType
 import com.coc.zkqcode.jar.code.universal.buildings.WorkerAndResearch
-import com.coc.zkqcode.jar.code.universal.clickRightBottom
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
-import com.coc.zkqcode.jar.code.universal.smalltools.input.TouchActions
 import com.coc.zkqcode.jar.code.universal.smalltools.data.getBooleanConfigRuntime
 import com.coc.zkqcode.jar.code.universal.smalltools.data.getConfigRuntime
+import com.coc.zkqcode.jar.code.universal.smalltools.input.TouchActions
 import com.coc.zkqcode.jar.ui.schema.Schema
-import com.coc.zkqcode.jar.ui.schema.details.MainBaseSettings
+import com.coc.zkqcode.jar.ui.schema.details.MainBaseResearchPriorities
 import com.coc.zkqcode.jar.ui.schema.details.MainBaseTroopsAndSpells
 
 suspend fun mainBaseResearch(): Boolean {
@@ -38,197 +36,115 @@ suspend fun mainBaseResearch(): Boolean {
     return enterMainScreen()
 }
 
-/** Holds info about an upgradeable research item found during scouting. */
-private data class UpgradableItem(
-    val schema: ColorSchema,
-    val troopName: String,
-    val priority: Int,
-    val x: Int,
-    val y: Int,
-    val detectedLevel: Int,
-    val targetLevel: Int,
-    val screenIndex: Int
+/** Holds info about an upgradeable main-base research item found on screen. */
+private data class ResearchItem(
+    val name: String,   // Chinese name from ColorSchema (e.g. "野蛮人")
+    val priority: Int,  // User-defined priority (lower = higher priority)
+    val x: Int,         // X coordinate of the item icon on screen
+    val y: Int,         // Y coordinate of the item icon on screen
 )
 
-private suspend fun findAllResearchItems() {
-    // Build a map from display name to setting key for filtering enabled items
-    val displayNameToKey = MainBaseTroopsAndSpells.all.associate { it.displayName to it.key }
-
-    // Filter research colours to only include enabled items
-    val enabledResearchColors = MainBaseResearchColors.allResearchColors.filter { schema ->
-        val displayName = schema.name ?: return@filter false
-        val key = displayNameToKey[displayName] ?: return@filter false
-        getBooleanConfigRuntime(key)
+suspend fun findAllResearchItems() {
+    // Build name → priority-key and name → enable-key lookup maps from the settings definitions.
+    val nameToPriorityKey = mutableMapOf<String, String>()
+    val nameToEnableKey = mutableMapOf<String, String>()
+    for (def in MainBaseResearchPriorities.all) {
+        nameToPriorityKey[def.displayName] = def.key
+    }
+    for (def in MainBaseTroopsAndSpells.all) {
+        nameToEnableKey[def.displayName] = def.key
     }
 
-    if (enabledResearchColors.isEmpty()) {
-        accountMessage("没有启用的研究项目")
-        return
-    }
+    // Read the user-selected research level target: 0 = Max, 1 = Max-1, 2 = Max-2
+    val researchLevelConfig = getConfigRuntime(Schema.MAIN_BASE_SETTINGS.RESEARCH_LEVEL.key).toIntOrNull() ?: 0
 
-    // Build priority map for each schema
-    val schemaPriorityMap = enabledResearchColors.associateWith { schema ->
-        val displayName = schema.name ?: return@associateWith Int.MAX_VALUE
-        val troopKey = displayNameToKey[displayName] ?: return@associateWith Int.MAX_VALUE
-        val priorityKey = "${troopKey}_research_priority"
-        getConfigRuntime(priorityKey).toIntOrNull() ?: Int.MAX_VALUE
-    }
+    val upgradeableItems = mutableListOf<ResearchItem>()
+    val insufficientItems = mutableListOf<String>()
+    val foundNames = mutableSetOf<String>() // Dedup across pages and duplicate schemas
 
-    accountMessage("已启用 ${enabledResearchColors.map { it.name }.distinct().size} 个研究项目")
-
-    // Read target level offset once (same for all items)
-    val researchLevelStr = getConfigRuntime(MainBaseSettings.RESEARCH_LEVEL.key)
-    val researchLevelOffset = researchLevelStr.toIntOrNull()
-        ?: logAndRestart("研究等级至 配置值无效: $researchLevelStr")
-
-    // ========== Phase 1: Scout all screens, collect upgradeable info ==========
-    val upgradeableItems = mutableListOf<UpgradableItem>()
-    val seenNames = mutableSetOf<String>() // Avoid duplicate processing of same troop across variant schemas
-
-    for (screenIdx in 0 until 9) {
+    repeat(8) {
+        // Take a single screenshot per swipe page and reuse it for all searches.
         val screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult
-            ?: logAndRestart("findAllResearchItems: Screen Capture Failed.")
+            ?: return
 
-        for (schema in enabledResearchColors) {
-            val troopName = schema.name ?: continue
-            if (troopName in seenNames) continue // Already processed this troop
+        // Scan all research colour schemas on the current page.
+        for (schema in MainBaseResearchColors.allResearchColors) {
+            val itemName = schema.name ?: continue
 
-            val result = findMultiColors(schema = schema, byteBuffer = screenBuffer, increment = 1) ?: continue
+            // Skip if already collected or checked on a previous page.
+            if (itemName in foundNames) continue
 
-            // Check resource sufficiency
-            val insufficientLeft = (result.x - 25).coerceAtLeast(0)
-            val insufficientTop = (result.y + 60).coerceAtLeast(0)
-            val insufficientRight = minOf(result.x + 100, screenBuffer.width - 1)
-            val insufficientBottom = minOf(result.y + 100, screenBuffer.height - 1)
+            // Skip if the user has disabled this research item.
+            val enableKey = nameToEnableKey[itemName]
+            if (enableKey != null && !getBooleanConfigRuntime(enableKey)) continue
+
+            // Search for the research item icon in the current screenshot.
+            val itemPos = findMultiColors(
+                schema = schema,
+                byteBuffer = screenBuffer,
+                increment = 1
+            ) ?: continue
+
+            // Check for the insufficient-resources indicator in the area below the item icon.
             val insufficientSchema = ColorSchema.rescope(
-                MyColors.MainBaseResearchInsufficientColors,
-                insufficientLeft, insufficientTop, insufficientRight, insufficientBottom
+                MainBaseResearchColors.MainBaseResearchInsufficientColors,
+                x1 = (itemPos.x - 35).coerceAtLeast(0),
+                y1 = itemPos.y + 59,
+                x2 = itemPos.x + 105,
+                y2 = itemPos.y + 84
             )
-            if (findMultiColors(byteBuffer = screenBuffer, schema = insufficientSchema, increment = 1) != null) {
-                accountMessage("跳过 ${troopName}: 资源不足")
-                seenNames.add(troopName)
-                continue
-            }
+            val insufficient = findMultiColors(
+                schema = insufficientSchema,
+                byteBuffer = screenBuffer,
+                increment = 1
+            )
 
-            // Detect level from pre-parsed game JSON data (more reliable than color badge matching)
-            val detectedLevel = InGameVars.researchItemLevels[troopName]
+            // Mark as found so we don't re-check on subsequent pages.
+            foundNames.add(itemName)
 
-            if (researchLevelOffset > 0) {
-                // When targeting a specific level offset, we need the current level to decide
-                if (detectedLevel == null) {
-                    accountMessage("跳过 ${troopName}: 数据中无等级信息")
-                    seenNames.add(troopName)
-                    continue
+            if (insufficient != null) {
+                // Resources insufficient — skip this item.
+                if (itemName !in insufficientItems) {
+                    insufficientItems.add(itemName)
                 }
-
-                val maxLevel = MainBaseResearchMaxLevel.getMaxLevel(troopName)
-                    ?: logAndRestart("未找到 $troopName 的最大等级")
-                val targetLevel = maxLevel - researchLevelOffset
-
-                if (detectedLevel >= targetLevel) {
-                    accountMessage("跳过 ${troopName}: 当前等级$detectedLevel >= 目标等级$targetLevel")
-                    seenNames.add(troopName)
-                    continue
-                }
-
-                seenNames.add(troopName)
-                upgradeableItems.add(UpgradableItem(
-                    schema = schema,
-                    troopName = troopName,
-                    priority = schemaPriorityMap[schema] ?: Int.MAX_VALUE,
-                    x = result.x,
-                    y = result.y,
-                    detectedLevel = detectedLevel,
-                    targetLevel = targetLevel,
-                    screenIndex = screenIdx
-                ))
-                accountMessage("发现可升级: ${troopName}, 等级$detectedLevel, 页$screenIdx")
             } else {
-                // Max level target: no level detection needed, always upgradeable
-                val maxLevel = MainBaseResearchMaxLevel.getMaxLevel(troopName)
-                    ?: logAndRestart("未找到 $troopName 的最大等级")
-                seenNames.add(troopName)
-                upgradeableItems.add(UpgradableItem(
-                    schema = schema,
-                    troopName = troopName,
-                    priority = schemaPriorityMap[schema] ?: Int.MAX_VALUE,
-                    x = result.x,
-                    y = result.y,
-                    detectedLevel = 0,
-                    targetLevel = maxLevel,
-                    screenIndex = screenIdx
-                ))
-                accountMessage("发现可升级: ${troopName}, 页$screenIdx")
+                // Resources sufficient — check if the item is below the target level.
+                val maxLevel = MainBaseResearchMaxLevel.getMaxLevel(itemName)
+                if (maxLevel != null) {
+                    val currentLevel = InGameVars.researchItemLevels[itemName] ?: 0
+                    val targetLevel = maxLevel - researchLevelConfig
+                    if (currentLevel >= targetLevel) {
+                        // Already at or above the target level — skip.
+                        continue
+                    }
+                }
+                // Item is eligible — add to the upgradeable list.
+                val priorityKey = nameToPriorityKey[itemName]
+                val priority = if (priorityKey != null) {
+                    getConfigRuntime(priorityKey).toIntOrNull() ?: Int.MAX_VALUE
+                } else {
+                    Int.MAX_VALUE
+                }
+                upgradeableItems.add(ResearchItem(itemName, priority, itemPos.x, itemPos.y))
             }
         }
 
-        // Swipe to next page (except after the last page)
-        if (screenIdx < 8) {
-            TouchActions.swipe(860, 500, 400, 500, delayAfter = 300)
-        }
+        // Swipe left to reveal the next page of research items.
+        TouchActions.swipe(950, 500, 200, 500, delayAfter = 300)
     }
 
-    // ========== Phase 2: Select highest priority item and upgrade ==========
-    if (upgradeableItems.isEmpty()) {
-        accountMessage("未找到任何已启用且可升级的研究项目")
-        clickRightBottom(3)
-        return
-    }
-
-    // Sort by priority (ascending: lower number = higher priority)
+    // Sort the collected items by user-defined priority (ascending — lower number = higher priority).
     upgradeableItems.sortBy { it.priority }
 
-    val target = upgradeableItems.first()
-
-    // ========== Phase 2: Navigate back page by page, re-scan and upgrade ==========
-    // After Phase 1 we are at screen 8 (the last page).
-    // Swipe backwards one page at a time, re-capturing and re-verifying at each page.
-    val targetSchemas = enabledResearchColors.filter { it.name == target.troopName }
-    var foundAndUpgraded = false
-    for (currentPage in 8 downTo 0) {
-        val buffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult
-            ?: logAndRestart("Phase 2: Screen capture failed at page $currentPage")
-
-        for (targetSchema in targetSchemas) {
-            val result = findMultiColors(schema = targetSchema, byteBuffer = buffer, increment = 1) ?: continue
-
-            // Re-verify resource sufficiency
-            val insLeft = (result.x - 25).coerceAtLeast(0)
-            val insTop = (result.y + 60).coerceAtLeast(0)
-            val insRight = minOf(result.x + 100, buffer.width - 1)
-            val insBottom = minOf(result.y + 100, buffer.height - 1)
-            val insSchema = ColorSchema.rescope(
-                MyColors.MainBaseResearchInsufficientColors,
-                insLeft, insTop, insRight, insBottom
-            )
-            if (findMultiColors(byteBuffer = buffer, schema = insSchema, increment = 1) != null) {
-                accountMessage("跳过 ${target.troopName}: 资源不足（阶段二重检）")
-                continue
-            }
-
-            // Re-verify level is still below target (using pre-parsed game data)
-            val reDetectedLevel = InGameVars.researchItemLevels[target.troopName]
-            if (reDetectedLevel != null && reDetectedLevel < target.targetLevel) {
-                // Still upgradeable — perform the upgrade
-                TouchActions.tap(result.x, result.y)
-                TouchActions.tap(894, 617)
-                clickRightBottom(3)
-                foundAndUpgraded = true
-                accountMessage("升级: ${target.troopName}, 等级$reDetectedLevel")
-                break
-            }
+    // Display the result to the user.
+    if (upgradeableItems.isEmpty()) {
+        val msg = if (insufficientItems.isEmpty()) {
+            "未找到任何可升级的研究项目"
+        } else {
+            "无可升级项目，${insufficientItems.size}项资源不足: ${insufficientItems.joinToString("、")}"
         }
-
-        if (foundAndUpgraded) break
-
-        // Target not found on this page — swipe back one more page
-        if (currentPage > 0) {
-            TouchActions.swipe(400, 500, 860, 500, delayAfter = 300)
-        }
-    }
-
-    if (!foundAndUpgraded) {
-        accountMessage("阶段二未能定位到 ${target.troopName}，跳过")
-        clickRightBottom(3)
+        accountMessage(msg)
+    } else {
+        accountMessage("可升级研究(${upgradeableItems.size}项)")
     }
 }

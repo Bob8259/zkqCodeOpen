@@ -74,7 +74,7 @@ object MainBaseResearchMaxLevel {
         "攻城烈焰车" to 4000091,
         "攻城钻机" to 4000092,
         "部队发射器" to 4000135,
-        "空中战车" to 0, // Data ID unknown; will be looked up gracefully
+        "空中战车" to 4000188,
     )
 
     /** Returns the game data ID for a given research item name, or null if not found. */
