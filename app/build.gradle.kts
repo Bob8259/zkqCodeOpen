@@ -332,6 +332,7 @@ tasks.register<Exec>("rustBuild") {
 
 dependencies {
 
+    implementation(libs.androidx.compose.foundation.layout)
     implementation(libs.libsu.core)
     implementation(libs.androidx.webkit)
     implementation(libs.okhttp)

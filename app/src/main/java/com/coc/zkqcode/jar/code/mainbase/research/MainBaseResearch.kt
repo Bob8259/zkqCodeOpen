@@ -40,8 +40,6 @@ suspend fun mainBaseResearch(): Boolean {
 private data class ResearchItem(
     val name: String,   // Chinese name from ColorSchema (e.g. "野蛮人")
     val priority: Int,  // User-defined priority (lower = higher priority)
-    val x: Int,         // X coordinate of the item icon on screen
-    val y: Int,         // Y coordinate of the item icon on screen
 )
 
 suspend fun findAllResearchItems() {
@@ -125,7 +123,7 @@ suspend fun findAllResearchItems() {
                 } else {
                     Int.MAX_VALUE
                 }
-                upgradeableItems.add(ResearchItem(itemName, priority, itemPos.x, itemPos.y))
+                upgradeableItems.add(ResearchItem(itemName, priority))
             }
         }
 
@@ -146,5 +144,63 @@ suspend fun findAllResearchItems() {
         accountMessage(msg)
     } else {
         accountMessage("可升级研究(${upgradeableItems.size}项)")
+        startResearch(upgradeableItems)
+    }
+}
+
+/**
+ * Iterates through the sorted upgradeable items and attempts to find and tap
+ * the first available item on the research screen.
+ *
+ * For each item: resets the scroll position, then swipes through up to 8 pages
+ * looking for it. If found, taps it and stops. If not found after 8 swipes,
+ * moves on to the next item in the priority list.
+ */
+private suspend fun startResearch(upgradeableItems: List<ResearchItem>) {
+    // Build a name → schemas lookup so we can search for an item by its name.
+    val schemasByName = MainBaseResearchColors.allResearchColors
+        .filter { it.name != null }
+        .groupBy { it.name!! }
+
+    for (item in upgradeableItems) {
+        val schemas = schemasByName[item.name] ?: continue
+        var found = false
+
+        // Reset the research list to the beginning.
+        TouchActions.swipe(240, 500, 4000, 500, delayAfter = 800)
+
+        for (page in 0 until 8) {
+            if (found) break
+
+            // Take a screenshot and search for any of this item's schemas.
+            val screenBuffer = ScreenCaptureManager.capture(asBitmap = false)
+                as? ScreenCaptureManager.CaptureResult ?: continue
+
+            for (schema in schemas) {
+                val pos = findMultiColors(
+                    schema = schema,
+                    byteBuffer = screenBuffer,
+                    increment = 1
+                )
+                if (pos != null) {
+                    // Found the item — tap it and exit.
+                    TouchActions.tap(pos.x, pos.y, delayTime = 800)
+                    found = true
+                    break
+                }
+            }
+
+            if (!found) {
+                // Swipe to the next page.
+                TouchActions.swipe(950, 500, 200, 500, delayAfter = 300)
+            }
+        }
+
+        if (found) {
+            accountMessage("开始研究: ${item.name}")
+            break
+        }
+        // If not found, the outer loop continues to the next item.
+        // The reset swipe at the top of the next iteration handles re-scrolling.
     }
 }

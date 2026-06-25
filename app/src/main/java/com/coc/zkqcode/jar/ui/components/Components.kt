@@ -10,6 +10,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -70,6 +71,7 @@ import com.coc.zkqcode.jar.ui.theme.AppColors
 import com.coc.zkqcode.jar.ui.schema.Schema
 import com.coc.zkqcode.jar.ui.Strings
 import kotlinx.coroutines.delay
+import kotlin.time.Duration.Companion.milliseconds
 
 
 // Hardcoded SVG info icon (circle with question mark), sourced from SVG Repo.
@@ -145,10 +147,11 @@ private fun rememberConfigState(key: String) = GlobalVars.configStates.getOrPut(
 @Composable
 internal fun ExplainIcon(explain: String) {
     var showExplanation by remember { mutableStateOf(false) }
-    Image(imageVector = InfoSvgIcon, contentDescription = "info", modifier = Modifier
-        .size(18.dp)
-        .clickable { showExplanation = true }
-        .padding(end = 2.dp))
+    Image(
+        imageVector = InfoSvgIcon, contentDescription = "info", modifier = Modifier
+            .size(18.dp)
+            .clickable { showExplanation = true }
+            .padding(end = 2.dp))
     if (showExplanation) {
         CustomAlertDialog(onDismissRequest = { showExplanation = false }, title = {
             Text(
@@ -194,9 +197,7 @@ fun InputRowWithCheckBox(
     val checkBoxLabel = Schema.getDisplayName(checkBoxKey)
     val inputLabel = Schema.getDisplayName(inputKey)
 
-    Row(
-        verticalAlignment = Alignment.CenterVertically
-    ) {
+    FlowRow {
         CustomSwitch(
             text = checkBoxLabel,
             checkedState = checkBoxState.value,
@@ -282,7 +283,7 @@ fun CustomNotificationWindow(
     message: String, onDismissRequest: () -> Unit
 ) {
     LaunchedEffect(message) {
-        delay(2000)
+        delay(2000.milliseconds)
         onDismissRequest()
     }
 
@@ -576,16 +577,17 @@ fun SettingDropdown(
                                 val textColor = if (isSelected) Color.White
                                 else AppColors.TextPrimary
 
-                                Box(modifier = Modifier
-                                    .background(cardBg, RoundedCornerShape(8.dp))
-                                    .border(1.dp, cardBorder, RoundedCornerShape(8.dp))
-                                    .clickable {
-                                        GlobalVars.isAutoRunEnabled = false
-                                        state.value = idx.toString()
-                                        expanded = false
-                                        afterChange?.invoke(idx)
-                                    }
-                                    .padding(horizontal = 16.dp, vertical = 8.dp)) {
+                                Box(
+                                    modifier = Modifier
+                                        .background(cardBg, RoundedCornerShape(8.dp))
+                                        .border(1.dp, cardBorder, RoundedCornerShape(8.dp))
+                                        .clickable {
+                                            GlobalVars.isAutoRunEnabled = false
+                                            state.value = idx.toString()
+                                            expanded = false
+                                            afterChange?.invoke(idx)
+                                        }
+                                        .padding(horizontal = 16.dp, vertical = 8.dp)) {
                                     Text(
                                         text = option, color = textColor, style = MaterialTheme.typography.labelMedium
                                     )
@@ -609,12 +611,13 @@ fun SectionBanner(
         colors = listOf(AppColors.Primary, AppColors.PrimaryLight)
     )
     val shape = RoundedCornerShape(10.dp)
-    Row(modifier = Modifier
-        .fillMaxWidth()
-        .padding(horizontal = 4.dp, vertical = 4.dp)
-        .background(gradient, shape)
-        .clickable { onClick() }
-        .padding(horizontal = 16.dp, vertical = 14.dp),
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 4.dp, vertical = 4.dp)
+            .background(gradient, shape)
+            .clickable { onClick() }
+            .padding(horizontal = 16.dp, vertical = 14.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically) {
         Text(
