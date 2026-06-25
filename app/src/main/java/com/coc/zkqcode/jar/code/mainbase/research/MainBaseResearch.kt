@@ -1,6 +1,7 @@
 package com.coc.zkqcode.jar.code.mainbase.research
 
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
+import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
 import com.coc.zkqcode.jar.code.colorschema.ColorSchema
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.mainbase.MainBaseResearchColors
@@ -8,6 +9,7 @@ import com.coc.zkqcode.jar.code.universal.InGameVars
 import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.jar.code.universal.buildings.BaseType
 import com.coc.zkqcode.jar.code.universal.buildings.WorkerAndResearch
+import com.coc.zkqcode.jar.code.universal.clickRightBottom
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
@@ -63,7 +65,7 @@ suspend fun findAllResearchItems() {
     repeat(8) {
         // Take a single screenshot per swipe page and reuse it for all searches.
         val screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult
-            ?: return
+            ?: logAndRestart("ScreenCaptureManager.capture failed in findAllResearchItems")
 
         // Scan all research colour schemas on the current page.
         for (schema in MainBaseResearchColors.allResearchColors) {
@@ -196,7 +198,7 @@ private suspend fun startResearch(upgradeableItems: List<ResearchItem>) {
 
             // Take a screenshot and search for any of this item's schemas.
             val screenBuffer = ScreenCaptureManager.capture(asBitmap = false)
-                as? ScreenCaptureManager.CaptureResult ?: continue
+                as? ScreenCaptureManager.CaptureResult ?: logAndRestart("ScreenCaptureManager.capture failed in startResearch")
 
             for (schema in schemas) {
                 val pos = findMultiColors(
@@ -205,8 +207,10 @@ private suspend fun startResearch(upgradeableItems: List<ResearchItem>) {
                     increment = 1
                 )
                 if (pos != null) {
-                    // Found the item — tap it and exit.
+                    // Found the item — tap it, then confirm the research.
                     TouchActions.tap(pos.x, pos.y, delayTime = 800)
+                    TouchActions.tap(895, 620)
+                    clickRightBottom(2)
                     found = true
                     break
                 }
@@ -252,7 +256,7 @@ private suspend fun fastResearch(): Boolean {
 
     for (page in 0 until 8) {
         val screenBuffer = ScreenCaptureManager.capture(asBitmap = false)
-            as? ScreenCaptureManager.CaptureResult ?: continue
+            as? ScreenCaptureManager.CaptureResult ?: logAndRestart("ScreenCaptureManager.capture failed in fastResearch")
 
         for (schema in MainBaseResearchColors.allResearchColors) {
             val itemName = schema.name ?: continue
@@ -266,6 +270,8 @@ private suspend fun fastResearch(): Boolean {
             )
             if (pos != null) {
                 TouchActions.tap(pos.x, pos.y, delayTime = 800)
+                TouchActions.tap(895, 620)
+                clickRightBottom(2)
                 accountMessage("快速研究: $itemName")
                 return true
             }
