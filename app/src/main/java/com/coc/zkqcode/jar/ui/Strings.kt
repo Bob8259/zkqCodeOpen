@@ -373,5 +373,14 @@ object Strings {
     val webdavUrlEmpty get() = if (LanguageManager.isChinese) "请先填写 WebDAV 服务器地址" else "Please enter the WebDAV server URL"
     val webdavCredentialEmpty get() = if (LanguageManager.isChinese) "请先填写 WebDAV 用户名和密码" else "Please enter WebDAV username and password"
     val webdavRemarkEmpty get() = if (LanguageManager.isChinese) "请先在「通用设置」中填写设备备注" else "Please set your device remark in General Settings first"
+    val webdavEditMode get() = if (LanguageManager.isChinese) "编辑模式" else "Edit Mode"
+    val webdavEditModeExit get() = if (LanguageManager.isChinese) "完成编辑" else "Done Editing"
+    val webdavSyncMode get() = if (LanguageManager.isChinese) "同步模式" else "Sync Mode"
+    val webdavSyncModeNone get() = if (LanguageManager.isChinese) "请选择同步模式" else "Select sync mode"
+    val webdavSyncModeOverwrite get() = if (LanguageManager.isChinese) "覆盖同步" else "Overwrite Sync"
+    val webdavSyncModeIncremental get() = if (LanguageManager.isChinese) "增量同步" else "Incremental Sync"
+    val webdavSyncOverwriteDesc get() = if (LanguageManager.isChinese) "按原始序号直接覆盖远程文件，本地与远程保持完全一致" else "Overwrite remote files using original indices — keeps local and remote identical"
+    val webdavSyncIncrementalDesc get() = if (LanguageManager.isChinese) "自动分配新序号上传，本地存档按序号递增排列，避免覆盖已有存档" else "Auto-assign new indices on upload — local archives increment without overwriting existing files"
+    val webdavSelectAll get() = if (LanguageManager.isChinese) "全选" else "Select All"
 }
 

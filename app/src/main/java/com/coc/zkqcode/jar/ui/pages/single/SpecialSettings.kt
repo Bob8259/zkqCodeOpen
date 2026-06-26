@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -23,9 +24,12 @@ import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -34,6 +38,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.window.Popup
+import androidx.compose.ui.window.PopupProperties
 import androidx.compose.ui.unit.dp
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.util.basic.ShowMessage
@@ -164,8 +170,8 @@ fun LazyListScope.specialSettings() {
             )
             val folderSelections = remember { mutableStateOf(mapOf<String, FolderSelection>()) }
             val isProcessing = remember { mutableStateOf(false) }
-            val overwriteSync = remember { mutableStateOf(false) }
-            val incrementalSync = remember { mutableStateOf(false) }
+            val syncMode = remember { mutableStateOf(0) } // 0=none, 1=overwrite, 2=incremental
+            val syncExpanded = remember { mutableStateOf(false) }
             var refreshFolderList: (() -> Unit)? = null
 
             fun getSelectedTargets(): List<Pair<String, Set<String>>> {
@@ -294,7 +300,7 @@ fun LazyListScope.specialSettings() {
                         for (d in devices) {
                             val fr = withContext(Dispatchers.IO) { com.coc.zkqcode.jar.code.universal.network.WebDAVHelper.listFiles(url, username, password, "zkqFiles/$d/zkqGlobalGameSave") }
                             @Suppress("UNCHECKED_CAST")
-                            am[d] = if (fr is List<*>) { val frl = fr as List<String>; frl.filter { it.endsWith(".tar.gz") }.sorted() } else emptyList()
+                            am[d] = if (fr is List<*>) { val frl = fr as List<String>; frl.filter { it.endsWith(".tar.gz") }.sortedBy { it.removeSuffix(".tar.gz").toIntOrNull() ?: Int.MAX_VALUE } } else emptyList()
                         }
                         folderArchiveMap.value = am
                         isProcessing.value = false; ShowMessage("找到 ${devices.size} 个文件夹", isChecking = false)
@@ -309,15 +315,20 @@ fun LazyListScope.specialSettings() {
                 folderSelections.value = emptyMap()
                 scope.launch {
                     isProcessing.value = true; var suc = 0; var fail = 0
-                    for ((device, items) in targets) {
+                    for ((device, selectedArchives) in targets) {
                         val dirs = withContext(Dispatchers.IO) { ShellHelper.runBlockingOutput("ls -d \"$localSaveDir\"/*/ 2>/dev/null").map { it.trimEnd('/').substringAfterLast("/") }.filter { it.isNotBlank() } }
-                        val inc = incrementalSync.value
+                        val inc = syncMode.value == 2
                         val startIdx = if (inc) {
                             val rf = withContext(Dispatchers.IO) { com.coc.zkqcode.jar.code.universal.network.WebDAVHelper.listFiles(url, username, password, "zkqFiles/$device/zkqGlobalGameSave") }
                             @Suppress("UNCHECKED_CAST")
-                            if (rf is List<*>) { val rfl = rf as List<String>; val nums = rfl.mapNotNull { it.removeSuffix(".tar.gz").trim().toIntOrNull() }; (nums.maxOrNull() ?: 0) + 1 } else 1
+                        if (rf is List<*>) { val rfl = rf as List<String>; val nums = rfl.mapNotNull { it.removeSuffix(".tar.gz").trim().toIntOrNull() }; (nums.maxOrNull() ?: 0) + 1 } else 1
                         } else 1
-                        val upl = dirs.mapNotNull { it.trim().toIntOrNull() }.sorted(); var seq = startIdx
+                        val upl = if (selectedArchives.isNotEmpty()) {
+                            selectedArchives.mapNotNull { it.removeSuffix(".tar.gz").trim().toIntOrNull() }.sorted()
+                        } else {
+                            dirs.mapNotNull { it.trim().toIntOrNull() }.sorted()
+                        }
+                        var seq = startIdx
                         for (n in upl) {
                             val sn = if (inc) { val s = seq; seq++; s } else n; val ss = sn.toString()
                             ShowMessage("上传 $device / $ss...", isChecking = false)
@@ -339,7 +350,7 @@ fun LazyListScope.specialSettings() {
             fun performDownload() {
                 val url = getConfig(GLOBAL_SETTINGS.WEBDAV_URL.key); val username = getConfig(GLOBAL_SETTINGS.WEBDAV_USERNAME.key); val password = getConfig(GLOBAL_SETTINGS.WEBDAV_PASSWORD.key)
                 val localSaveDir = "$sdPath/zkqFiles/zkqGlobalGameSave"; val tempDir = "${context.filesDir.absolutePath}/webdav_tar"
-                val inc = incrementalSync.value
+                val inc = syncMode.value == 2
                 val targets = getSelectedTargets()
                 folderSelections.value = emptyMap()
                 scope.launch {
@@ -467,19 +478,75 @@ fun LazyListScope.specialSettings() {
                 }
             }
 
-            // ── Sync option checkboxes ─────────────────────────────────────
-            Column(modifier = Modifier.padding(top = 4.dp)) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Checkbox(checked = overwriteSync.value, onCheckedChange = { overwriteSync.value = it; if (it) incrementalSync.value = false }, modifier = Modifier.padding(end = 2.dp))
-                    Text(text = "覆盖同步", style = MaterialTheme.typography.labelSmall, color = AppColors.TextPrimary)
-                }
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Checkbox(checked = incrementalSync.value, onCheckedChange = { incrementalSync.value = it; if (it) overwriteSync.value = false }, modifier = Modifier.padding(end = 2.dp))
-                    Text(text = "增量同步", style = MaterialTheme.typography.labelSmall, color = AppColors.TextPrimary)
+            // ── Sync mode dropdown ─────────────────────────────────────────
+            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(top = 4.dp)) {
+                Text(text = Strings.webdavSyncMode, style = MaterialTheme.typography.labelSmall, color = AppColors.TextPrimary, modifier = Modifier.padding(end = 8.dp))
+                Box(modifier = Modifier.wrapContentSize(Alignment.TopStart)) {
+                    Button(
+                        onClick = { syncExpanded.value = true },
+                        shape = RoundedCornerShape(8.dp),
+                        modifier = Modifier.height(30.dp),
+                        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 0.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = AppColors.Primary)
+                    ) {
+                        Text(
+                            when (syncMode.value) {
+                                1 -> Strings.webdavSyncModeOverwrite
+                                2 -> Strings.webdavSyncModeIncremental
+                                else -> Strings.webdavSyncModeNone
+                            },
+                            style = MaterialTheme.typography.labelSmall
+                        )
+                        Icon(Icons.Default.ArrowDropDown, contentDescription = null)
+                    }
+                    if (syncExpanded.value) {
+                        Popup(
+                            onDismissRequest = { syncExpanded.value = false },
+                            properties = PopupProperties(focusable = true)
+                        ) {
+                            Surface(
+                                shape = RoundedCornerShape(8.dp),
+                                color = AppColors.CardBg,
+                                shadowElevation = 4.dp
+                            ) {
+                                Column(modifier = Modifier.padding(4.dp)) {
+                                    listOf(0, 1, 2).forEach { idx ->
+                                        Text(
+                                            text = when (idx) {
+                                                1 -> Strings.webdavSyncModeOverwrite
+                                                2 -> Strings.webdavSyncModeIncremental
+                                                else -> Strings.webdavSyncModeNone
+                                            },
+                                            style = MaterialTheme.typography.labelSmall,
+                                            color = if (idx == syncMode.value) AppColors.Primary else AppColors.TextPrimary,
+                                            modifier = Modifier
+                                                .clickable { syncMode.value = idx; syncExpanded.value = false }
+                                                .padding(horizontal = 12.dp, vertical = 8.dp)
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
+            if (syncMode.value == 1) {
+                Text(
+                    text = Strings.webdavSyncOverwriteDesc,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = AppColors.TextPrimary.copy(alpha = 0.7f),
+                    modifier = Modifier.padding(top = 2.dp)
+                )
+            } else if (syncMode.value == 2) {
+                Text(
+                    text = Strings.webdavSyncIncrementalDesc,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = AppColors.TextPrimary.copy(alpha = 0.7f),
+                    modifier = Modifier.padding(top = 2.dp)
+                )
+            }
             Row(modifier = Modifier.padding(top = 4.dp)) {
-                val sel = overwriteSync.value || incrementalSync.value
+                val sel = syncMode.value != 0
                 val hasSelection = folderSelections.value.isNotEmpty()
                 val ue = hasSelection && !isProcessing.value && sel
                 val de = ue
