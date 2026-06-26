@@ -1,10 +1,13 @@
 package com.coc.zkqcode.core.system.appupdate
 
+import com.coc.zkqcode.core.app.ZKQApplication
 import com.coc.zkqcode.core.util.basic.RunShell
-import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.fileactions.LogHelper.showDebugInfo
 import com.coc.zkqcode.nativehelper.RustTools
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
@@ -14,6 +17,24 @@ import java.io.File
 import java.io.IOException
 import java.net.SocketTimeoutException
 import java.util.concurrent.TimeUnit
+
+/**
+ * Represents the current state of the app-update check, displayed on the
+ * [com.coc.zkqcode.core.system.checkpermissions.CheckRootScreen] startup UI.
+ */
+sealed class AppUpdateState {
+    /** No update check has run yet, or it completed without finding an update. */
+    data object Idle : AppUpdateState()
+
+    /** An update is available and the APK is being downloaded. [progress] is 0–100. */
+    data class Downloading(val progress: Int) : AppUpdateState()
+
+    /** The APK has been downloaded and is being installed. */
+    data object Installing : AppUpdateState()
+
+    /** The update check or download/install failed; startup continues normally. */
+    data class Error(val message: String) : AppUpdateState()
+}
 
 /**
  * Checks for a new app (APK) version on startup.
@@ -26,6 +47,9 @@ import java.util.concurrent.TimeUnit
  * force-installed via `setsid` (so the install survives the current process termination),
  * and the app is relaunched.
  *
+ * Progress is exposed via [state] (a [StateFlow] of [AppUpdateState]) so the UI can
+ * display status messages and download progress without using [ShowMessage].
+ *
  * This runs in the core module (before the JAR is loaded) and therefore has its own
  * URL fallback logic mirroring [com.coc.zkqcode.jar.code.universal.network.UrlFallbackUtil].
  */
@@ -37,10 +61,10 @@ object AppUpdateChecker {
 
     // Gitee release download URL (URL-decoded form of the encoded path)
     private const val APK_DOWNLOAD_URL =
-        "https://gitee.com/azikaban/zkqCodeOpen/releases/download/发行版/紫孔雀.apk"
+        "https://gitee.com/azikaban/zkqCodeOpen/releases/download/发行版/app-release.apk"
 
-    // Root-accessible temp path for the downloaded APK
-    private const val APK_TEMP_PATH = "/data/local/tmp/zkqcode_update.apk"
+    // APK filename within the app's private cache directory
+    private const val APK_FILENAME = "zkqcode_update.apk"
 
     private val httpClient = OkHttpClient.Builder()
         .connectTimeout(15, TimeUnit.SECONDS)
@@ -48,12 +72,18 @@ object AppUpdateChecker {
         .writeTimeout(15, TimeUnit.SECONDS)
         .build()
 
+    private val _state = MutableStateFlow<AppUpdateState>(AppUpdateState.Idle)
+
+    /** Observable update-check state for the UI. */
+    val state: StateFlow<AppUpdateState> = _state.asStateFlow()
+
     /**
      * Checks for a new app version. If the server returns a version > 1,
      * downloads the APK from Gitee, force-installs it via setsid, and launches it.
      *
-     * This call is non-blocking (runs on [Dispatchers.IO]) and fails silently —
-     * any error is logged via [showDebugInfo] and never prevents normal startup.
+     * Progress is reported through [state]. This call is non-blocking (runs on
+     * [Dispatchers.IO]) and fails gracefully — any error sets [AppUpdateState.Error]
+     * and never prevents normal startup.
      */
     suspend fun checkForUpdate() = withContext(Dispatchers.IO) {
         try {
@@ -75,8 +105,8 @@ object AppUpdateChecker {
                 return@withContext
             }
 
-            // 4. Parse version number
-            val version = decrypted.trim().toIntOrNull()
+            // 4. Parse version number (supports decimals like 1.1, 1.2)
+            val version = decrypted.trim().toDoubleOrNull()
             if (version == null) {
                 showDebugInfo("AppUpdateChecker: Invalid version response: $decrypted")
                 return@withContext
@@ -86,48 +116,81 @@ object AppUpdateChecker {
 
             // 5. If version > 1, download and install the new APK
             if (version > 1) {
-                ShowMessage("检测到新版本，正在下载更新... / New version detected, downloading update...", isChecking = false)
                 downloadAndInstall()
             }
         } catch (e: Exception) {
             showDebugInfo("AppUpdateChecker: Update check failed: ${e.message}")
+            _state.value = AppUpdateState.Error(e.message ?: "Unknown error")
         }
     }
 
     /**
-     * Downloads the APK from Gitee to a temp path, then force-installs it via a
-     * detached `setsid` session that also deletes the temp file and relaunches the app.
+     * Downloads the APK from Gitee to the app's private cache directory, then
+     * force-installs it via a detached `setsid` session that also deletes the
+     * temp file and relaunches the app.
+     *
+     * The APK is streamed into `pm install` via `cat` to bypass SELinux
+     * file-access restrictions (PackageManagerService cannot read files from
+     * the app's private storage), following the same pattern as AiDetector's
+     * plugin installation.
+     *
+     * Download progress is reported through [state] as [AppUpdateState.Downloading].
      */
     private suspend fun downloadAndInstall() {
-        val apkFile = File(APK_TEMP_PATH)
+        // Use the app's private cache directory (writable by the app process)
+        val cacheDir = ZKQApplication.appContext.cacheDir
+        val apkFile = File(cacheDir, APK_FILENAME)
         try {
-            // Download APK from Gitee
+            _state.value = AppUpdateState.Downloading(0)
+
+            // Download APK from Gitee with progress reporting
             val request = Request.Builder().url(APK_DOWNLOAD_URL).get().build()
             httpClient.newCall(request).execute().use { response ->
                 if (!response.isSuccessful) {
-                    ShowMessage("下载更新失败：HTTP ${response.code} / Download failed: HTTP ${response.code}", isChecking = false)
+                    _state.value = AppUpdateState.Error("HTTP ${response.code}")
                     return
                 }
+                val totalBytes = response.body.contentLength()
                 response.body.byteStream().use { input ->
                     apkFile.outputStream().use { output ->
-                        input.copyTo(output)
+                        val buffer = ByteArray(8192)
+                        var totalBytesRead = 0L
+                        var lastProgress = -1
+                        var bytesRead: Int
+                        while (input.read(buffer).also { bytesRead = it } != -1) {
+                            output.write(buffer, 0, bytesRead)
+                            totalBytesRead += bytesRead
+                            // Report progress only when the integer percentage changes
+                            if (totalBytes > 0) {
+                                val progress = ((totalBytesRead * 100) / totalBytes).toInt().coerceIn(0, 100)
+                                if (progress != lastProgress) {
+                                    lastProgress = progress
+                                    _state.value = AppUpdateState.Downloading(progress)
+                                }
+                            }
+                        }
+                        output.flush()
                     }
                 }
             }
 
             if (!apkFile.exists() || apkFile.length() == 0L) {
-                ShowMessage("下载更新失败：APK文件为空 / Download failed: APK file is empty", isChecking = false)
+                _state.value = AppUpdateState.Error("APK file is empty")
                 return
             }
 
-            ShowMessage("下载完成，正在安装更新... / Download complete, installing update...", isChecking = false)
+            _state.value = AppUpdateState.Installing
 
-            // Force install via setsid, delete the temp APK, then relaunch the app.
+            // Force install via setsid: stream the APK into pm install via cat
+            // (bypasses SELinux file-access restrictions on private storage),
+            // delete the temp APK, then relaunch the app.
             // The setsid creates a new session so the install+launch survives the
             // current process termination (same pattern as LogHelper/ControlWindowService restart).
+            val apkPath = apkFile.absolutePath
+            val apkSize = apkFile.length()
             val cmd = "setsid sh -c '" +
-                "pm install -r $APK_TEMP_PATH; " +
-                "rm -f $APK_TEMP_PATH; " +
+                "cat \"$apkPath\" | pm install -S $apkSize; " +
+                "rm -f \"$apkPath\"; " +
                 "sleep 1; " +
                 "am start -n com.coc.zkqcode/.MainActivity" +
                 "' > /dev/null 2>&1 &"
@@ -135,7 +198,7 @@ object AppUpdateChecker {
 
         } catch (e: Exception) {
             showDebugInfo("AppUpdateChecker: Download/install failed: ${e.message}")
-            ShowMessage("更新安装失败：${e.message} / Update install failed: ${e.message}", isChecking = false)
+            _state.value = AppUpdateState.Error(e.message ?: "Unknown error")
             if (apkFile.exists()) {
                 apkFile.delete()
             }

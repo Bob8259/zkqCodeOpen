@@ -9,14 +9,17 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -41,6 +44,7 @@ import com.coc.zkqcode.core.ui.floatingwindows.UIWindowService
 import com.coc.zkqcode.core.ui.localcomponents.LocalCustomButton
 import com.coc.zkqcode.core.util.basic.RunShell
 import com.coc.zkqcode.core.system.appupdate.AppUpdateChecker
+import com.coc.zkqcode.core.system.appupdate.AppUpdateState
 import com.coc.zkqcode.statehelper.AppMode
 import com.coc.zkqcode.statehelper.AppStateManager
 import kotlinx.coroutines.Dispatchers
@@ -77,6 +81,8 @@ private fun isAlreadyInitialized(): Boolean {
 fun CheckRootScreen() {
     val context = LocalContext.current
     var status by remember { mutableStateOf(RootStatus.CHECKING) }
+    // Observe the app-update state to show download/install progress on screen
+    val updateState by AppUpdateChecker.state.collectAsState()
 
     // Use LaunchedEffect to perform startup checks without blocking the main thread.
     LaunchedEffect(Unit) {
@@ -121,13 +127,39 @@ fun CheckRootScreen() {
             .background(ColorBackground),
         contentAlignment = Alignment.Center
     ) {
-        when (status) {
-            RootStatus.CHECKING -> {
-                FullScreenMessage(
-                    message = "正在检测Root环境...",
-                    englishMessage = "Checking Root environment..."
+        // App-update states take priority over the normal checking flow
+        when (updateState) {
+            is AppUpdateState.Downloading -> {
+                val progress = (updateState as AppUpdateState.Downloading).progress
+                UpdateProgressMessage(
+                    message = "检测到新版本，正在下载更新... $progress%",
+                    englishMessage = "New version detected, downloading update... $progress%",
+                    progress = { progress / 100f }
                 )
             }
+
+            AppUpdateState.Installing -> {
+                FullScreenMessage(
+                    message = "下载完成，正在安装更新...",
+                    englishMessage = "Download complete, installing update..."
+                )
+            }
+
+            is AppUpdateState.Error -> {
+                val errMsg = (updateState as AppUpdateState.Error).message
+                FullScreenMessage(
+                    message = "更新安装失败：$errMsg\n请手动重新下载App。",
+                    englishMessage = "Update install failed: $errMsg\nPlease re-download the App manually."
+                )
+            }
+
+            AppUpdateState.Idle -> when (status) {
+                RootStatus.CHECKING -> {
+                    FullScreenMessage(
+                        message = "正在检测Root环境...",
+                        englishMessage = "Checking Root environment..."
+                    )
+                }
 
             RootStatus.ROOT_DENIED -> {
                 FullScreenMessage(
@@ -222,6 +254,7 @@ fun CheckRootScreen() {
                 }
             }
         }
+        }
     }
 }
 
@@ -273,6 +306,66 @@ fun FullScreenMessage(
                 Spacer(modifier = Modifier.height(20.dp))
                 action()
             }
+        }
+    }
+}
+
+/**
+ * A status card that displays the app-update download progress with a
+ * [LinearProgressIndicator] beneath the message.
+ *
+ * @param message   The status message (includes percentage).
+ * @param englishMessage Optional English subtitle.
+ * @param progress  Lambda returning the current progress as a 0f–1f fraction.
+ */
+@Composable
+fun UpdateProgressMessage(
+    message: String,
+    englishMessage: String? = null,
+    progress: () -> Float
+) {
+    val cardShape = RoundedCornerShape(16.dp)
+    Box(
+        modifier = Modifier
+            .padding(horizontal = 32.dp)
+            .clip(cardShape)
+            .background(ColorCardBg)
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.padding(horizontal = 24.dp, vertical = 28.dp)
+        ) {
+            Text(
+                text = message,
+                textAlign = TextAlign.Center,
+                fontWeight = FontWeight.Medium,
+                fontSize = 15.sp,
+                lineHeight = 24.sp,
+                color = ColorTextPrimary
+            )
+
+            if (englishMessage != null) {
+                Spacer(modifier = Modifier.height(6.dp))
+                Text(
+                    text = englishMessage,
+                    textAlign = TextAlign.Center,
+                    fontWeight = FontWeight.Normal,
+                    fontSize = 11.sp,
+                    lineHeight = 16.sp,
+                    color = ColorTextPrimary.copy(alpha = 0.7f)
+                )
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+            LinearProgressIndicator(
+                progress = { progress() },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(6.dp)
+                    .clip(RoundedCornerShape(3.dp)),
+                color = ColorPrimary,
+                trackColor = ColorPrimary.copy(alpha = 0.2f)
+            )
         }
     }
 }
