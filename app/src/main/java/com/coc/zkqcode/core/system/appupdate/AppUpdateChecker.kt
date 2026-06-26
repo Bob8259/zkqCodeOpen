@@ -109,6 +109,7 @@ object AppUpdateChecker {
             val version = decrypted.trim().toDoubleOrNull()
             if (version == null) {
                 showDebugInfo("AppUpdateChecker: Invalid version response: $decrypted")
+                _state.value = AppUpdateState.Error("Invalid version response: $decrypted")
                 return@withContext
             }
 

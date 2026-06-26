@@ -104,12 +104,17 @@ fun CheckRootScreen() {
             GlobalVars.serverActions = null
         }
 
-        // Check for a new app version early in startup (non-blocking, fails silently).
+        // Check for a new app version early in startup.
         // Only runs on a fresh startup, not when reusing an existing session.
+        // If the update check fails with an error, stop startup entirely so the
+        // error message stays on screen for the user to act on.
         try {
             AppUpdateChecker.checkForUpdate()
         } catch (e: Exception) {
             LogHelper.showDebugInfo("CheckRootScreen: App update check failed: ${e.message}")
+        }
+        if (AppUpdateChecker.state.value is AppUpdateState.Error) {
+            return@LaunchedEffect
         }
 
         withContext(Dispatchers.IO) {
