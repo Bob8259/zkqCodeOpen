@@ -19,6 +19,10 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -148,119 +152,219 @@ fun LazyListScope.specialSettings() {
             SettingInputRow(key = GLOBAL_SETTINGS.WEBDAV_PASSWORD.key)
 
             fun getConfig(k: String) = GlobalVars.configStates[k]?.value.orEmpty()
-            fun readSdFile(p: String): ByteArray? {
-                val l = ShellHelper.runBlockingOutput("base64 \"$p\""); if (l.isEmpty()) return null
-                return try { java.util.Base64.getDecoder().decode(l.joinToString("")) } catch (_: Exception) { null }
-            }
-            fun writeSdFile(d: ByteArray, p: String): Boolean {
-                return ShellHelper.runBlocking("echo \"${java.util.Base64.getEncoder().encodeToString(d)}\" | base64 -d > \"$p\"").isSuccess
-            }
 
-            val deviceList = remember { mutableStateOf(listOf<String>()) }
-            val expandedDevices = remember { mutableStateOf(setOf<String>()) }
+            val folderList = remember { mutableStateOf(listOf<String>()) }
             val expandedFolders = remember { mutableStateOf(setOf<String>()) }
-            val deviceArchiveMap = remember { mutableStateOf(mapOf<String, List<String>>()) }
-            val deviceConfigMap = remember { mutableStateOf(mapOf<String, Boolean>()) }
-            val checkedItems = remember { mutableStateOf(mapOf<String, Set<String>>()) }
+            val folderArchiveMap = remember { mutableStateOf(mapOf<String, List<String>>()) }
+            val folderRenameDrafts = remember { mutableStateOf(mapOf<String, String>()) }
+            val folderEditingName = remember { mutableStateOf(setOf<String>()) }
+            data class FolderSelection(
+                val selectAll: Boolean = false,
+                val selectedArchives: Set<String> = emptySet()
+            )
+            val folderSelections = remember { mutableStateOf(mapOf<String, FolderSelection>()) }
             val isProcessing = remember { mutableStateOf(false) }
-            val syncMode = remember { mutableStateOf(0) }
             val overwriteSync = remember { mutableStateOf(false) }
             val incrementalSync = remember { mutableStateOf(false) }
+            var refreshFolderList: (() -> Unit)? = null
 
-            fun refreshDeviceList() {
+            fun getSelectedTargets(): List<Pair<String, Set<String>>> {
+                return folderSelections.value.mapNotNull { (folder, selection) ->
+                    val archives = folderArchiveMap.value[folder].orEmpty()
+                    if (archives.isEmpty()) return@mapNotNull null
+                    val selected = if (selection.selectAll) archives.toSet() else selection.selectedArchives.intersect(archives.toSet())
+                    if (selected.isEmpty()) null else folder to selected
+                }.sortedBy { it.first }
+            }
+
+            fun currentSelection(folder: String): FolderSelection {
+                return folderSelections.value[folder] ?: FolderSelection()
+            }
+
+            fun isFolderChecked(folder: String, archives: List<String>): Boolean {
+                val selection = currentSelection(folder)
+                return selection.selectAll || (archives.isNotEmpty() && archives.all { it in selection.selectedArchives })
+            }
+
+            fun isArchiveChecked(folder: String, archive: String): Boolean {
+                val selection = currentSelection(folder)
+                return selection.selectAll || archive in selection.selectedArchives
+            }
+
+            fun setFolderSelection(folder: String, selection: FolderSelection?) {
+                folderSelections.value = if (selection == null) {
+                    folderSelections.value - folder
+                } else {
+                    folderSelections.value + (folder to selection)
+                }
+            }
+
+            fun startRename(folder: String) {
+                folderRenameDrafts.value = folderRenameDrafts.value + (folder to folder)
+                folderEditingName.value = folderEditingName.value + folder
+            }
+
+            fun cancelRename(folder: String) {
+                folderRenameDrafts.value = folderRenameDrafts.value - folder
+                folderEditingName.value = folderEditingName.value - folder
+            }
+
+            fun saveRename(folder: String) {
+                val draft = folderRenameDrafts.value[folder]?.trim().orEmpty()
                 val url = getConfig(GLOBAL_SETTINGS.WEBDAV_URL.key); val username = getConfig(GLOBAL_SETTINGS.WEBDAV_USERNAME.key); val password = getConfig(GLOBAL_SETTINGS.WEBDAV_PASSWORD.key)
-                if (url.isBlank()) { ShowMessage("请先填写 WebDAV 服务器信息", isChecking = false); return }
+                if (draft.isBlank()) { ShowMessage("请先输入文件夹名称", isChecking = false); return }
+                if (draft == folder) {
+                    cancelRename(folder)
+                    return
+                }
                 scope.launch {
-                    isProcessing.value = true; ShowMessage("正在扫描远程文件夹...", isChecking = false)
-                    val r = withContext(Dispatchers.IO) { com.coc.zkqcode.jar.code.universal.network.WebDAVHelper.listDirectories(url, username, password, "zkqFiles") }
-                    if (r is String) { ShowMessage(r, isChecking = false); isProcessing.value = false; return@launch }
-                    @Suppress("UNCHECKED_CAST") val devices = (r as List<String>).sorted(); deviceList.value = devices
-                    val am = mutableMapOf<String, List<String>>(); val cm = mutableMapOf<String, Boolean>()
-                    for (d in devices) {
-                        val fr = withContext(Dispatchers.IO) { com.coc.zkqcode.jar.code.universal.network.WebDAVHelper.listFiles(url, username, password, "zkqFiles/$d/zkqGlobalGameSave") }
-                        @Suppress("UNCHECKED_CAST")
-                        am[d] = if (fr is List<*>) { val frl = fr as List<String>; frl.filter { it.endsWith(".tar.gz") }.sorted() } else emptyList()
-                        val cr = withContext(Dispatchers.IO) { com.coc.zkqcode.jar.code.universal.network.WebDAVHelper.listFiles(url, username, password, "zkqFiles/$d/config") }
-                        cm[d] = cr is List<*> && cr.any { it.toString().endsWith("zkq_config.json") }
+                    isProcessing.value = true
+                    val error = withContext(Dispatchers.IO) {
+                        com.coc.zkqcode.jar.code.universal.network.WebDAVHelper.movePath(
+                            url,
+                            username,
+                            password,
+                            "zkqFiles/$folder",
+                            "zkqFiles/$draft"
+                        )
                     }
-                    deviceArchiveMap.value = am; deviceConfigMap.value = cm
-                    isProcessing.value = false; ShowMessage("找到 ${devices.size} 个文件夹", isChecking = false)
+                    if (error == null) {
+                        ShowMessage("文件夹重命名成功: $draft", isChecking = false)
+                        cancelRename(folder)
+                        refreshFolderList?.invoke()
+                    } else {
+                        ShowMessage("重命名失败: $error", isChecking = false)
+                    }
+                    isProcessing.value = false
+                }
+            }
+
+            fun deleteFolder(folder: String) {
+                val url = getConfig(GLOBAL_SETTINGS.WEBDAV_URL.key); val username = getConfig(GLOBAL_SETTINGS.WEBDAV_USERNAME.key); val password = getConfig(GLOBAL_SETTINGS.WEBDAV_PASSWORD.key)
+                scope.launch {
+                    isProcessing.value = true
+                    val error = withContext(Dispatchers.IO) {
+                        com.coc.zkqcode.jar.code.universal.network.WebDAVHelper.deletePath(
+                            url,
+                            username,
+                            password,
+                            "zkqFiles/$folder"
+                        )
+                    }
+                    if (error == null) {
+                        ShowMessage("文件夹删除成功: $folder", isChecking = false)
+                        cancelRename(folder)
+                        refreshFolderList?.invoke()
+                    } else {
+                        ShowMessage("删除失败: $error", isChecking = false)
+                    }
+                    isProcessing.value = false
+                }
+            }
+
+            fun toggleFolder(folder: String, archives: List<String>, checked: Boolean) {
+                setFolderSelection(
+                    folder,
+                    if (checked) FolderSelection(selectAll = true, selectedArchives = archives.toSet())
+                    else null
+                )
+            }
+
+            fun toggleArchive(folder: String, archive: String, checked: Boolean) {
+                val current = currentSelection(folder)
+                val next = current.copy(
+                    selectAll = false,
+                    selectedArchives = if (checked) current.selectedArchives + archive else current.selectedArchives - archive
+                )
+                setFolderSelection(folder, if (next.selectedArchives.isEmpty()) null else next)
+            }
+
+            refreshFolderList = {
+                val url = getConfig(GLOBAL_SETTINGS.WEBDAV_URL.key); val username = getConfig(GLOBAL_SETTINGS.WEBDAV_USERNAME.key); val password = getConfig(GLOBAL_SETTINGS.WEBDAV_PASSWORD.key)
+                if (url.isBlank()) {
+                    ShowMessage("请先填写 WebDAV 服务器信息", isChecking = false)
+                } else {
+                    scope.launch {
+                        isProcessing.value = true; ShowMessage("正在扫描远程文件夹...", isChecking = false)
+                        val r = withContext(Dispatchers.IO) { com.coc.zkqcode.jar.code.universal.network.WebDAVHelper.listDirectories(url, username, password, "zkqFiles") }
+                        if (r is String) { ShowMessage(r, isChecking = false); isProcessing.value = false; return@launch }
+                        @Suppress("UNCHECKED_CAST") val devices = (r as List<String>).sorted(); folderList.value = devices
+                        folderRenameDrafts.value = folderRenameDrafts.value.filterKeys { it in devices }
+                        val am = mutableMapOf<String, List<String>>()
+                        for (d in devices) {
+                            val fr = withContext(Dispatchers.IO) { com.coc.zkqcode.jar.code.universal.network.WebDAVHelper.listFiles(url, username, password, "zkqFiles/$d/zkqGlobalGameSave") }
+                            @Suppress("UNCHECKED_CAST")
+                            am[d] = if (fr is List<*>) { val frl = fr as List<String>; frl.filter { it.endsWith(".tar.gz") }.sorted() } else emptyList()
+                        }
+                        folderArchiveMap.value = am
+                        isProcessing.value = false; ShowMessage("找到 ${devices.size} 个文件夹", isChecking = false)
+                    }
                 }
             }
 
             fun performUpload() {
                 val url = getConfig(GLOBAL_SETTINGS.WEBDAV_URL.key); val username = getConfig(GLOBAL_SETTINGS.WEBDAV_USERNAME.key); val password = getConfig(GLOBAL_SETTINGS.WEBDAV_PASSWORD.key)
-                val localSaveDir = "$sdPath/zkqFiles/zkqGlobalGameSave"; val localConfigPath = "$sdPath/zkqFiles/zkq_config.json"; val tempDir = "${context.filesDir.absolutePath}/webdav_tar"; val mode = syncMode.value
-                val targets = checkedItems.value.keys.toList()
-                checkedItems.value = emptyMap()
+                val localSaveDir = "$sdPath/zkqFiles/zkqGlobalGameSave"; val tempDir = "${context.filesDir.absolutePath}/webdav_tar"
+                val targets = getSelectedTargets()
+                folderSelections.value = emptyMap()
                 scope.launch {
                     isProcessing.value = true; var suc = 0; var fail = 0
-                    for (device in targets) {
-                        if (mode != 2) {
-                            ShowMessage("上传配置到 $device...", isChecking = false)
-                            val cfg = withContext(Dispatchers.IO) { readSdFile(localConfigPath) }
-                            if (cfg != null) { val e = withContext(Dispatchers.IO) { com.coc.zkqcode.jar.code.universal.network.WebDAVHelper.upload(url, username, password, "zkqFiles/$device/config/zkq_config.json", cfg) }; if (e == null) suc++ else fail++ } else fail++
-                        }
-                        if (mode != 1) {
-                            val dirs = withContext(Dispatchers.IO) { ShellHelper.runBlockingOutput("ls -d \"$localSaveDir\"/*/ 2>/dev/null").map { it.trimEnd('/').substringAfterLast("/") }.filter { it.isNotBlank() } }
-                            val inc = incrementalSync.value && mode != 1
-                            val startIdx = if (inc) {
-                                val rf = withContext(Dispatchers.IO) { com.coc.zkqcode.jar.code.universal.network.WebDAVHelper.listFiles(url, username, password, "zkqFiles/$device/zkqGlobalGameSave") }
-                                @Suppress("UNCHECKED_CAST")
+                    for ((device, items) in targets) {
+                        val dirs = withContext(Dispatchers.IO) { ShellHelper.runBlockingOutput("ls -d \"$localSaveDir\"/*/ 2>/dev/null").map { it.trimEnd('/').substringAfterLast("/") }.filter { it.isNotBlank() } }
+                        val inc = incrementalSync.value
+                        val startIdx = if (inc) {
+                            val rf = withContext(Dispatchers.IO) { com.coc.zkqcode.jar.code.universal.network.WebDAVHelper.listFiles(url, username, password, "zkqFiles/$device/zkqGlobalGameSave") }
+                            @Suppress("UNCHECKED_CAST")
                             if (rf is List<*>) { val rfl = rf as List<String>; val nums = rfl.mapNotNull { it.removeSuffix(".tar.gz").trim().toIntOrNull() }; (nums.maxOrNull() ?: 0) + 1 } else 1
-                            } else 1
-                            val upl = dirs.mapNotNull { it.trim().toIntOrNull() }.sorted(); var seq = startIdx
-                            for (n in upl) {
-                                val sn = if (inc) { val s = seq; seq++; s } else n; val ss = sn.toString()
-                                ShowMessage("上传 $device / $ss...", isChecking = false)
-                                val tf = "$tempDir/$ss.tar.gz"; val tok = withContext(Dispatchers.IO) { ShellHelper.runBlocking("mkdir -p \"$tempDir\" && tar -czf \"$tf\" -C \"$localSaveDir\" \"$n\"") }
-                                if (!tok.isSuccess) { fail++; continue }; val d = withContext(Dispatchers.IO) { readSdFile(tf) }
-                                if (d == null) { fail++; continue }; val e = withContext(Dispatchers.IO) { com.coc.zkqcode.jar.code.universal.network.WebDAVHelper.upload(url, username, password, "zkqFiles/$device/zkqGlobalGameSave/$ss.tar.gz", d) }
-                                if (e == null) suc++ else fail++; withContext(Dispatchers.IO) { ShellHelper.runBlockingNoOutput("rm -f \"$tf\"") }
+                        } else 1
+                        val upl = dirs.mapNotNull { it.trim().toIntOrNull() }.sorted(); var seq = startIdx
+                        for (n in upl) {
+                            val sn = if (inc) { val s = seq; seq++; s } else n; val ss = sn.toString()
+                            ShowMessage("上传 $device / $ss...", isChecking = false)
+                            val tf = "$tempDir/$ss.tar.gz"; val tok = withContext(Dispatchers.IO) { ShellHelper.runBlocking("mkdir -p \"$tempDir\" && tar -czf \"$tf\" -C \"$localSaveDir\" \"$n\"") }
+                            if (!tok.isSuccess) { fail++; continue }
+                            val d = withContext(Dispatchers.IO) {
+                                val l = ShellHelper.runBlockingOutput("base64 \"$tf\""); if (l.isEmpty()) null
+                                else try { java.util.Base64.getDecoder().decode(l.joinToString("")) } catch (_: Exception) { null }
                             }
+                            if (d == null) { fail++; continue }; val e = withContext(Dispatchers.IO) { com.coc.zkqcode.jar.code.universal.network.WebDAVHelper.upload(url, username, password, "zkqFiles/$device/zkqGlobalGameSave/$ss.tar.gz", d) }
+                            if (e == null) suc++ else fail++; withContext(Dispatchers.IO) { ShellHelper.runBlockingNoOutput("rm -f \"$tf\"") }
                         }
                     }
                     ShowMessage(if (fail == 0) "一键上传完成！" else "一键上传完成 ($suc 成功, $fail 失败)", isChecking = false)
-                    refreshDeviceList(); isProcessing.value = false
+                    refreshFolderList(); isProcessing.value = false
                 }
             }
 
             fun performDownload() {
                 val url = getConfig(GLOBAL_SETTINGS.WEBDAV_URL.key); val username = getConfig(GLOBAL_SETTINGS.WEBDAV_USERNAME.key); val password = getConfig(GLOBAL_SETTINGS.WEBDAV_PASSWORD.key)
-                val localSaveDir = "$sdPath/zkqFiles/zkqGlobalGameSave"; val localConfigPath = "$sdPath/zkqFiles/zkq_config.json"; val tempDir = "${context.filesDir.absolutePath}/webdav_tar"; val mode = syncMode.value
-                val inc = incrementalSync.value && mode != 1
-                val targets = checkedItems.value.toList()
-                checkedItems.value = emptyMap()
+                val localSaveDir = "$sdPath/zkqFiles/zkqGlobalGameSave"; val tempDir = "${context.filesDir.absolutePath}/webdav_tar"
+                val inc = incrementalSync.value
+                val targets = getSelectedTargets()
+                folderSelections.value = emptyMap()
                 scope.launch {
                     isProcessing.value = true; var suc = 0; var fail = 0
                     for ((device, items) in targets) {
                         for (itemId in items) {
-                            val isCfg = itemId == "config"; if (mode == 1 && !isCfg) continue; if (mode == 2 && isCfg) continue
-                            if (isCfg) {
-                                ShowMessage("下载配置从 $device...", isChecking = false)
-                                val cr = withContext(Dispatchers.IO) { com.coc.zkqcode.jar.code.universal.network.WebDAVHelper.download(url, username, password, "zkqFiles/$device/config/zkq_config.json") }
-                                if (cr is ByteArray) { if (withContext(Dispatchers.IO) { writeSdFile(cr, localConfigPath) }) suc++ else fail++ } else fail++
-                            } else {
-                                val rn = itemId.removeSuffix(".tar.gz"); val rNum = rn.toIntOrNull()
-                                val ldn = if (inc && rNum != null) {
-                                    val ld = withContext(Dispatchers.IO) { ShellHelper.runBlockingOutput("ls -d \"$localSaveDir\"/*/ 2>/dev/null").mapNotNull { it.trimEnd('/').substringAfterLast("/").toIntOrNull() } }
-                                    ((ld.maxOrNull() ?: 0) + 1).toString()
-                                } else rn
-                                ShowMessage("下载 $device / $ldn...", isChecking = false)
-                                val dr = withContext(Dispatchers.IO) { com.coc.zkqcode.jar.code.universal.network.WebDAVHelper.download(url, username, password, "zkqFiles/$device/zkqGlobalGameSave/$itemId") }
-                                if (dr !is ByteArray) { fail++; continue }; val tf = "$tempDir/$itemId"
-                                val wok = withContext(Dispatchers.IO) { ShellHelper.runBlocking("mkdir -p \"$tempDir\" && echo \"${java.util.Base64.getEncoder().encodeToString(dr)}\" | base64 -d > \"$tf\"") }
-                                if (!wok.isSuccess) { fail++; continue }
-                                if (withContext(Dispatchers.IO) { ShellHelper.runBlocking("mkdir -p \"$localSaveDir\" && tar -xzf \"$tf\" -C \"$localSaveDir\"").isSuccess }) {
-                                    if (ldn != rn) { withContext(Dispatchers.IO) { ShellHelper.runBlocking("mv \"$localSaveDir/$rn\" \"$localSaveDir/$ldn\"") } }
-                                    suc++
-                                } else fail++
-                                withContext(Dispatchers.IO) { ShellHelper.runBlockingNoOutput("rm -f \"$tf\"") }
-                            }
+                            val rn = itemId.removeSuffix(".tar.gz"); val rNum = rn.toIntOrNull()
+                            val ldn = if (inc && rNum != null) {
+                                val ld = withContext(Dispatchers.IO) { ShellHelper.runBlockingOutput("ls -d \"$localSaveDir\"/*/ 2>/dev/null").mapNotNull { it.trimEnd('/').substringAfterLast("/").toIntOrNull() } }
+                                ((ld.maxOrNull() ?: 0) + 1).toString()
+                            } else rn
+                            ShowMessage("下载 $device / $ldn...", isChecking = false)
+                            val dr = withContext(Dispatchers.IO) { com.coc.zkqcode.jar.code.universal.network.WebDAVHelper.download(url, username, password, "zkqFiles/$device/zkqGlobalGameSave/$itemId") }
+                            if (dr !is ByteArray) { fail++; continue }; val tf = "$tempDir/$itemId"
+                            val wok = withContext(Dispatchers.IO) { ShellHelper.runBlocking("mkdir -p \"$tempDir\" && echo \"${java.util.Base64.getEncoder().encodeToString(dr)}\" | base64 -d > \"$tf\"") }
+                            if (!wok.isSuccess) { fail++; continue }
+                            if (withContext(Dispatchers.IO) { ShellHelper.runBlocking("mkdir -p \"$localSaveDir\" && tar -xzf \"$tf\" -C \"$localSaveDir\"").isSuccess }) {
+                                if (ldn != rn) { withContext(Dispatchers.IO) { ShellHelper.runBlocking("mv \"$localSaveDir/$rn\" \"$localSaveDir/$ldn\"") } }
+                                suc++
+                            } else fail++
+                            withContext(Dispatchers.IO) { ShellHelper.runBlockingNoOutput("rm -f \"$tf\"") }
                         }
                     }
                     ShowMessage(if (fail == 0) "一键下载完成！" else "一键下载完成 ($suc 成功, $fail 失败)", isChecking = false)
-                    refreshDeviceList(); isProcessing.value = false
+                    refreshFolderList(); isProcessing.value = false
                 }
             }
 
@@ -273,7 +377,7 @@ fun LazyListScope.specialSettings() {
                     isProcessing.value = true; ShowMessage("正在连接 WebDAV 服务器...", isChecking = false)
                     val r = withContext(Dispatchers.IO) { com.coc.zkqcode.jar.code.universal.network.WebDAVHelper.listDirectories(url, username, password, "zkqFiles") }
                     if (r is String) { ShowMessage("连接失败: $r", isChecking = false) }
-                    else { ShowMessage("WebDAV 登录成功！", isChecking = false); refreshDeviceList() }
+                    else { ShowMessage("WebDAV 登录成功！", isChecking = false); refreshFolderList() }
                     isProcessing.value = false
                 }
             })
@@ -281,7 +385,7 @@ fun LazyListScope.specialSettings() {
             // ── Create folder ────────────────────────────────────────────────
             val folderName = remember { mutableStateOf("") }
             Row(modifier = Modifier.padding(top = 6.dp), verticalAlignment = Alignment.CenterVertically) {
-                Text("文件夹名称:", style = MaterialTheme.typography.labelMedium, modifier = Modifier.padding(end = 8.dp))
+                Text(Strings.folderNameLabel, style = MaterialTheme.typography.labelMedium, modifier = Modifier.padding(end = 8.dp))
                 BasicTextField(value = folderName.value, onValueChange = { folderName.value = it }, modifier = Modifier.widthIn(min = 80.dp).background(Color.White, RoundedCornerShape(4.dp)).border(1.dp, AppColors.Border, RoundedCornerShape(4.dp)).padding(4.dp).heightIn(max = 120.dp).verticalScroll(rememberScrollState()))
             }
             CustomButton(text = "新建文件夹", onClick = {
@@ -291,57 +395,68 @@ fun LazyListScope.specialSettings() {
                 if (name.isBlank()) { ShowMessage("请先输入文件夹名称", isChecking = false); return@CustomButton }
                 scope.launch {
                     isProcessing.value = true; ShowMessage("正在创建文件夹: $name ...", isChecking = false)
-                    var ok = true; var err: String? = null
-                    for (p in listOf("zkqFiles/$name/config", "zkqFiles/$name/zkqGlobalGameSave")) {
-                        val e = withContext(Dispatchers.IO) { com.coc.zkqcode.jar.code.universal.network.WebDAVHelper.ensureRemotePath(url, username, password, p) }
-                        if (e != null) { ok = false; err = e }
-                    }
-                    if (ok) { ShowMessage("文件夹创建成功: $name", isChecking = false); folderName.value = "" } else { ShowMessage("创建失败: $err", isChecking = false) }
-                    refreshDeviceList(); isProcessing.value = false
+                    val p = "zkqFiles/$name/zkqGlobalGameSave"
+                    val e = withContext(Dispatchers.IO) { com.coc.zkqcode.jar.code.universal.network.WebDAVHelper.ensureRemotePath(url, username, password, p) }
+                    if (e == null) { ShowMessage("文件夹创建成功: $name", isChecking = false); folderName.value = "" } else { ShowMessage("创建失败: $e", isChecking = false) }
+                    refreshFolderList(); isProcessing.value = false
                 }
             })
 
-            // ── Device list ──────────────────────────────────────────────────
-            if (deviceList.value.isEmpty()) {
+            // ── Folder list ──────────────────────────────────────────────────
+            if (folderList.value.isEmpty()) {
                 Text("暂无文件夹，请先点击「新建文件夹」创建", style = MaterialTheme.typography.bodySmall, color = AppColors.NavInactive, modifier = Modifier.padding(top = 8.dp, start = 4.dp))
             } else {
                 Column(modifier = Modifier.fillMaxWidth().padding(top = 4.dp)) {
-                    deviceList.value.forEach { device ->
-                        val archives = deviceArchiveMap.value[device] ?: emptyList(); val hasCfg = deviceConfigMap.value[device] ?: false; val cnt = archives.size
-                        val exp = expandedDevices.value.contains(device); val ckd = checkedItems.value[device] ?: emptySet()
-                        val ids = mutableListOf<String>(); if (hasCfg) ids.add("config"); ids.addAll(archives)
+                    folderList.value.forEach { folder ->
+                        val archives = folderArchiveMap.value[folder] ?: emptyList(); val cnt = archives.size
+                        val exp = expandedFolders.value.contains(folder)
                         Row(modifier = Modifier.fillMaxWidth().padding(vertical = 2.dp, horizontal = 2.dp), verticalAlignment = Alignment.CenterVertically) {
-                            val full = ids.isNotEmpty() && ckd.containsAll(ids); val empty = ids.isEmpty()
-                            Checkbox(checked = full || (empty && device in checkedItems.value.keys), enabled = true, onCheckedChange = {
-                                if (empty) { checkedItems.value = if (device in checkedItems.value.keys) checkedItems.value - device else checkedItems.value + (device to emptySet()) }
-                                else { checkedItems.value = if (full) checkedItems.value - device else checkedItems.value + (device to ids.toSet()) }
-                            }, modifier = Modifier.padding(end = 4.dp))
-                            Row(modifier = Modifier.weight(1f).clickable(enabled = syncMode.value != 1) { expandedDevices.value = if (exp) expandedDevices.value - device else expandedDevices.value + device }) {
-                                Text(text = "${if (exp && syncMode.value != 1) "▼" else if (!exp && syncMode.value != 1) "▶" else ""} $device", style = MaterialTheme.typography.labelMedium, color = AppColors.TextPrimary)
-                            }
-                            Text(text = "$cnt 个存档", style = MaterialTheme.typography.labelSmall, color = AppColors.NavInactive, modifier = Modifier.padding(start = 8.dp))
-                        }
-                        if (exp && syncMode.value != 1) {
-                            Column(modifier = Modifier.padding(start = 40.dp)) {
-                                if (hasCfg) { val ce = "$device/config" in expandedFolders.value
-                                    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(vertical = 2.dp)) {
-                                        Checkbox(checked = "config" in ckd, onCheckedChange = { c -> checkedItems.value = if (c) checkedItems.value + (device to (ckd + "config")) else checkedItems.value + (device to (ckd - "config")) }, modifier = Modifier.padding(end = 2.dp))
-                                        Row(modifier = Modifier.clickable { expandedFolders.value = if (ce) expandedFolders.value - "$device/config" else expandedFolders.value + "$device/config" }) { Text(text = "${if (ce) "▼" else "▶"} 📁 配置文件", style = MaterialTheme.typography.labelSmall, color = AppColors.TextPrimary) }
+                            Checkbox(checked = isFolderChecked(folder, archives), onCheckedChange = { checked -> toggleFolder(folder, archives, checked) }, modifier = Modifier.padding(end = 4.dp))
+                            Row(modifier = Modifier.weight(1f), verticalAlignment = Alignment.CenterVertically) {
+                                Box(modifier = Modifier.weight(1f).clickable { if (folder !in folderEditingName.value) expandedFolders.value = if (exp) expandedFolders.value - folder else expandedFolders.value + folder }) {
+                                    if (folder in folderEditingName.value) {
+                                        Row(verticalAlignment = Alignment.CenterVertically) {
+                                            BasicTextField(
+                                                value = folderRenameDrafts.value[folder].orEmpty(),
+                                                onValueChange = { folderRenameDrafts.value = folderRenameDrafts.value + (folder to it) },
+                                                modifier = Modifier.widthIn(min = 60.dp).background(Color.White, RoundedCornerShape(4.dp)).border(1.dp, AppColors.Border, RoundedCornerShape(4.dp)).padding(4.dp)
+                                            )
+                                            CustomButton(text = Strings.saveFolderName, icon = Icons.Filled.Check, marginEnd = 2.dp, onClick = { saveRename(folder) })
+                                            CustomButton(text = Strings.renameFolder, icon = Icons.Filled.Close, marginEnd = 0.dp, onClick = { cancelRename(folder) })
+                                        }
+                                    } else {
+                                        Text(text = "${if (exp) "▼" else "▶"} $folder", style = MaterialTheme.typography.labelMedium, color = AppColors.TextPrimary)
                                     }
-                                    if (ce) { Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(start = 16.dp)) {
-                                        Checkbox(checked = "config" in ckd, onCheckedChange = { c -> checkedItems.value = if (c) checkedItems.value + (device to (ckd + "config")) else checkedItems.value + (device to (ckd - "config")) }, modifier = Modifier.padding(end = 2.dp))
-                                        Text("⚙️ zkq_config.json", style = MaterialTheme.typography.labelSmall, color = AppColors.NavInactive)
-                                    } }
                                 }
-                                if (hasCfg || archives.isNotEmpty()) { val ae = "$device/archive" in expandedFolders.value
+                                Text(text = "$cnt 个存档", style = MaterialTheme.typography.labelSmall, color = AppColors.NavInactive, modifier = Modifier.padding(start = 8.dp, end = 8.dp))
+                                CustomButton(text = Strings.deleteFolder, icon = Icons.Filled.Delete, enable = !isProcessing.value, onClick = { deleteFolder(folder) })
+                                CustomButton(
+                                    text = Strings.renameFolder,
+                                    icon = Icons.Filled.Edit,
+                                    enable = !isProcessing.value,
+                                    onClick = {
+                                        startRename(folder)
+                                    }
+                                )
+                            }
+                        }
+                        if (exp) {
+                            Column(modifier = Modifier.padding(start = 40.dp)) {
+                                if (archives.isNotEmpty()) { val ae = "$folder/archive" in expandedFolders.value
                                     Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(vertical = 2.dp)) {
-                                        val aac = archives.isNotEmpty() && archives.all { it in ckd }
-                                        Checkbox(checked = aac, onCheckedChange = { checkedItems.value = if (aac) checkedItems.value + (device to (ckd - archives.toSet())) else checkedItems.value + (device to (ckd + archives.toSet())) }, modifier = Modifier.padding(end = 2.dp))
-                                        Row(modifier = Modifier.clickable { expandedFolders.value = if (ae) expandedFolders.value - "$device/archive" else expandedFolders.value + "$device/archive" }) { Text(text = "${if (ae) "▼" else "▶"} 📁 国际服存档", style = MaterialTheme.typography.labelSmall, color = AppColors.TextPrimary) }
+                                        Checkbox(
+                                            checked = archives.all { isArchiveChecked(folder, it) },
+                                            onCheckedChange = { c ->
+                                                if (c) toggleFolder(folder, archives, true)
+                                                else archives.forEach { toggleArchive(folder, it, false) }
+                                            },
+                                            modifier = Modifier.padding(end = 2.dp)
+                                        )
+                                        Row(modifier = Modifier.clickable { expandedFolders.value = if (ae) expandedFolders.value - "$folder/archive" else expandedFolders.value + "$folder/archive" }) { Text(text = "${if (ae) "▼" else "▶"} 📁 国际服存档", style = MaterialTheme.typography.labelSmall, color = AppColors.TextPrimary) }
                                     }
                                     if (ae) { if (archives.isEmpty()) { Text("暂无存档", style = MaterialTheme.typography.labelSmall, color = AppColors.NavInactive, modifier = Modifier.padding(start = 16.dp)) }
                                         else { archives.forEach { a -> Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(start = 16.dp)) {
-                                            Checkbox(checked = a in ckd, onCheckedChange = { c -> checkedItems.value = if (c) checkedItems.value + (device to (ckd + a)) else checkedItems.value + (device to (ckd - a)) }, modifier = Modifier.padding(end = 2.dp))
+                                            Checkbox(checked = isArchiveChecked(folder, a), onCheckedChange = { c -> toggleArchive(folder, a, c) }, modifier = Modifier.padding(end = 2.dp))
                                             Text("📦 $a", style = MaterialTheme.typography.labelSmall, color = AppColors.NavInactive)
                                         } } }
                                     }
@@ -352,48 +467,24 @@ fun LazyListScope.specialSettings() {
                 }
             }
 
-            // ── Sync mode dropdown + option checkboxes ─────────────────────
-            if (deviceList.value.isNotEmpty()) {
-                val labels = listOf("全部", "配置文件", "国际服存档"); val sde = remember { mutableStateOf(false) }
-                Row(modifier = Modifier.padding(top = 8.dp), verticalAlignment = Alignment.CenterVertically) {
-                    Text("同步:", style = MaterialTheme.typography.labelSmall, modifier = Modifier.padding(end = 4.dp))
-                    androidx.compose.material3.Button(onClick = { sde.value = true }, shape = RoundedCornerShape(8.dp), modifier = Modifier.height(30.dp), contentPadding = PaddingValues(horizontal = 12.dp, vertical = 0.dp), colors = androidx.compose.material3.ButtonDefaults.buttonColors(containerColor = AppColors.Primary)) {
-                        Text(labels[syncMode.value], style = MaterialTheme.typography.labelMedium); Icon(Icons.Default.ArrowDropDown, contentDescription = null)
-                    }
-                    if (sde.value) {
-                        androidx.compose.ui.window.Popup(popupPositionProvider = com.coc.zkqcode.jar.ui.components.BelowAnchorPositionProvider(), onDismissRequest = { sde.value = false }, properties = androidx.compose.ui.window.PopupProperties(focusable = true)) {
-                            androidx.compose.material3.Surface(shape = RoundedCornerShape(12.dp), color = AppColors.CardBg, shadowElevation = 8.dp, modifier = Modifier.padding(4.dp)) {
-                                Column(modifier = Modifier.padding(8.dp)) { labels.forEachIndexed { idx, label ->
-                                    Box(modifier = Modifier.background(if (idx == syncMode.value) AppColors.Primary else AppColors.PrimaryLight.copy(alpha = 0.10f), RoundedCornerShape(8.dp)).border(1.dp, if (idx == syncMode.value) AppColors.Primary else AppColors.PrimaryLight, RoundedCornerShape(8.dp)).clickable {
-                                        syncMode.value = idx; sde.value = false
-                                        if (idx == 1) { val cur = checkedItems.value; val dl = cur.filter { it.value.isNotEmpty() }.keys.toList(); if (dl.size > 1) { checkedItems.value = mutableMapOf(dl.first() to (cur[dl.first()] ?: emptySet())) } }
-                                    }.padding(horizontal = 16.dp, vertical = 8.dp)) { Text(label, color = if (idx == syncMode.value) Color.White else AppColors.TextPrimary, style = MaterialTheme.typography.labelMedium) }
-                                } }
-                            }
-                        }
-                    }
+            // ── Sync option checkboxes ─────────────────────────────────────
+            Column(modifier = Modifier.padding(top = 4.dp)) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Checkbox(checked = overwriteSync.value, onCheckedChange = { overwriteSync.value = it; if (it) incrementalSync.value = false }, modifier = Modifier.padding(end = 2.dp))
+                    Text(text = "覆盖同步", style = MaterialTheme.typography.labelSmall, color = AppColors.TextPrimary)
                 }
-                // Vertical checkboxes: 覆盖 and 增量 are mutually exclusive
-                Column(modifier = Modifier.padding(top = 4.dp)) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Checkbox(checked = overwriteSync.value, onCheckedChange = { overwriteSync.value = it; if (it) incrementalSync.value = false }, modifier = Modifier.padding(end = 2.dp))
-                        Text(text = "覆盖同步", style = MaterialTheme.typography.labelSmall, color = AppColors.TextPrimary)
-                    }
-                    if (syncMode.value != 1) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Checkbox(checked = incrementalSync.value, onCheckedChange = { incrementalSync.value = it; if (it) overwriteSync.value = false }, modifier = Modifier.padding(end = 2.dp))
-                            Text(text = "增量同步", style = MaterialTheme.typography.labelSmall, color = AppColors.TextPrimary)
-                        }
-                    }
-                    Text(text = "覆盖: 直接覆盖已有文件 / 增量: 跳过已有序号并自动续接编号", style = MaterialTheme.typography.labelSmall, color = AppColors.NavInactive, modifier = Modifier.padding(start = 40.dp, top = 2.dp, bottom = 4.dp))
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Checkbox(checked = incrementalSync.value, onCheckedChange = { incrementalSync.value = it; if (it) overwriteSync.value = false }, modifier = Modifier.padding(end = 2.dp))
+                    Text(text = "增量同步", style = MaterialTheme.typography.labelSmall, color = AppColors.TextPrimary)
                 }
-                Row(modifier = Modifier.padding(top = 4.dp)) {
-                    val sel = if (syncMode.value == 1) overwriteSync.value else (overwriteSync.value || incrementalSync.value)
-                    val ue = checkedItems.value.isNotEmpty() && !isProcessing.value && sel
-                    val de = checkedItems.value.any { it.value.isNotEmpty() } && !isProcessing.value && sel
-                    CustomButton(text = if (isProcessing.value) "处理中..." else "一键上传", marginEnd = 4.dp, enable = ue, onClick = { performUpload() })
-                    CustomButton(text = if (isProcessing.value) "处理中..." else "一键下载", marginEnd = 4.dp, enable = de, onClick = { performDownload() })
-                }
+            }
+            Row(modifier = Modifier.padding(top = 4.dp)) {
+                val sel = overwriteSync.value || incrementalSync.value
+                val hasSelection = folderSelections.value.isNotEmpty()
+                val ue = hasSelection && !isProcessing.value && sel
+                val de = ue
+                CustomButton(text = if (isProcessing.value) "处理中..." else "一键上传", marginEnd = 4.dp, enable = ue, onClick = { performUpload() })
+                CustomButton(text = if (isProcessing.value) "处理中..." else "一键下载", marginEnd = 4.dp, enable = de, onClick = { performDownload() })
             }
         }
     }

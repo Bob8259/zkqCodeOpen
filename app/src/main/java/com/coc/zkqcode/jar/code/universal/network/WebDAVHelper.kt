@@ -5,6 +5,7 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.HttpUrl.Companion.toHttpUrl
 import java.util.concurrent.TimeUnit
 
 /**
@@ -262,6 +263,65 @@ object WebDAVHelper {
             }
         }
         return null
+    }
+
+    /**
+     * Delete a remote WebDAV resource.
+     *
+     * @return null on success, error message string on failure
+     */
+    fun deletePath(
+        baseUrl: String,
+        username: String,
+        password: String,
+        remotePath: String
+    ): String? {
+        val credential = Credentials.basic(username, password)
+        val request = Request.Builder()
+            .url(buildUrl(baseUrl, remotePath))
+            .delete()
+            .header("Authorization", credential)
+            .build()
+
+        return try {
+            val response = client.newCall(request).execute()
+            if (response.isSuccessful) null
+            else "Delete failed: HTTP ${response.code} ${response.message}"
+        } catch (e: Exception) {
+            "Delete error: ${e.message}"
+        }
+    }
+
+    /**
+     * Move/rename a remote WebDAV resource.
+     *
+     * @return null on success, error message string on failure
+     */
+    fun movePath(
+        baseUrl: String,
+        username: String,
+        password: String,
+        sourcePath: String,
+        destinationPath: String
+    ): String? {
+        val credential = Credentials.basic(username, password)
+        val sourceUrl = buildUrl(baseUrl, sourcePath)
+        val destinationUrl = buildUrl(baseUrl, destinationPath)
+        val request = Request.Builder()
+            .url(sourceUrl)
+            .method("MOVE", null)
+            .header("Authorization", credential)
+            .header("Destination", destinationUrl)
+            .header("Overwrite", "F")
+            .build()
+
+        return try {
+            val response = client.newCall(request).execute()
+            if (response.isSuccessful) null
+            else "Move failed: HTTP ${response.code} ${response.message}"
+        } catch (e: Exception) {
+            "Move error: ${e.message}"
+        }
     }
 
     private fun buildUrl(baseUrl: String, path: String): String {

@@ -368,6 +368,7 @@ fun SettingInputRow(
 fun CustomButton(
     text: String,
     onClick: () -> Unit,
+    icon: ImageVector? = null,
     enable: Boolean = true,
     explain: String? = null,
     marginTop: Dp = 6.dp,
@@ -375,18 +376,22 @@ fun CustomButton(
     marginStart: Dp = 0.dp,
     marginEnd: Dp = 8.dp,
     containerColor: Color = AppColors.Primary,
-    contentPadding: PaddingValues = PaddingValues(horizontal = 18.dp, vertical = 0.dp),
+    contentPadding: PaddingValues = if (icon != null) PaddingValues(horizontal = 6.dp, vertical = 0.dp) else PaddingValues(horizontal = 18.dp, vertical = 0.dp),
 ) {
     Row(modifier = Modifier.padding(top = marginTop, bottom = marginBottom, start = marginStart, end = marginEnd)) {
         Button(
             onClick = {
                 GlobalVars.isAutoRunEnabled = false
                 onClick()
-            }, modifier = Modifier.height(32.dp), shape = RoundedCornerShape(8.dp), enabled = enable, colors = ButtonDefaults.buttonColors(
+            }, modifier = if (icon != null) Modifier.size(32.dp) else Modifier.height(32.dp), shape = RoundedCornerShape(8.dp), enabled = enable, colors = ButtonDefaults.buttonColors(
                 containerColor = containerColor
             ), contentPadding = contentPadding
         ) {
-            Text(text, style = MaterialTheme.typography.labelMedium)
+            if (icon != null) {
+                Icon(imageVector = icon, contentDescription = text, modifier = Modifier.size(20.dp))
+            } else {
+                Text(text, style = MaterialTheme.typography.labelMedium)
+            }
         }
         Column(Modifier.padding(top = 8.dp)) {
             explain?.let { ExplainIcon(it) }

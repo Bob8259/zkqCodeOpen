@@ -324,6 +324,10 @@ object Strings {
     val memoryCleanFail get() = if (LanguageManager.isChinese) "清除失败，可能记忆文件不存在" else "Clear failed - cache may not exist"
     val clearMemoryExplain get() = if (LanguageManager.isChinese) "辅助会缓存账号的运行状态，例如当前账号是否已完成突袭、部落竞赛等任务。切换账号后若未清除缓存，辅助将沿用先前账号的状态信息，可能导致异常操作。" else "The app caches account status (e.g., Raid, Clan Games). If not cleared when switching accounts, it may use old data and cause issues."
     val copyLogs get() = if (LanguageManager.isChinese) "复制日志" else "Copy Logs"
+    val deleteFolder get() = if (LanguageManager.isChinese) "删除" else "Delete"
+    val renameFolder get() = if (LanguageManager.isChinese) "更改名称" else "Rename"
+    val saveFolderName get() = if (LanguageManager.isChinese) "保存" else "Save"
+    val folderNameLabel get() = if (LanguageManager.isChinese) "文件夹名称:" else "Folder Name:"
 
     // Server酱³
     val serverchanLoginFailedTitle get() = if (LanguageManager.isChinese) "辅助账号登录失败" else "Login Failed - Assistant Account"
@@ -357,17 +361,14 @@ object Strings {
     val pushProviderTelegram get() = "Telegram"
 
     // WebDAV Sync
-    val webdavSectionTitle get() = if (LanguageManager.isChinese) "WebDAV 同步" else "WebDAV Sync"
-    val webdavSectionDesc get() = if (LanguageManager.isChinese) "此功能可以将辅助配置与国际服存档上传到自己的网盘进行备份与恢复" else "Upload auxiliary configs and global saves to your own cloud drive for backup and restore"
-    val webdavUploadConfig get() = if (LanguageManager.isChinese) "上传配置" else "Upload Config"
-    val webdavDownloadConfig get() = if (LanguageManager.isChinese) "下载配置" else "Download Config"
+    val webdavSectionTitle get() = if (LanguageManager.isChinese) "WebDAV 文件夹管理" else "WebDAV Folder Management"
+    val webdavSectionDesc get() = if (LanguageManager.isChinese) "此功能可以将国际服存档上传到自己的网盘进行备份与恢复" else "Upload global saves to your own cloud drive for backup and restore"
     val webdavUploadGlobalSave get() = if (LanguageManager.isChinese) "上传国际服存档" else "Upload Global Save"
     val webdavDownloadGlobalSave get() = if (LanguageManager.isChinese) "下载国际服存档" else "Download Global Save"
     val webdavUploading get() = if (LanguageManager.isChinese) "正在上传..." else "Uploading..."
     val webdavDownloading get() = if (LanguageManager.isChinese) "正在下载..." else "Downloading..."
     val webdavUploadSuccess get() = if (LanguageManager.isChinese) "上传成功！" else "Upload successful!"
     val webdavDownloadSuccess get() = if (LanguageManager.isChinese) "下载成功！" else "Download successful!"
-    val webdavConfigPath get() = if (LanguageManager.isChinese) "配置文件" else "Config file"
     val webdavGlobalSavePath get() = if (LanguageManager.isChinese) "国际服存档" else "Global save"
     val webdavUrlEmpty get() = if (LanguageManager.isChinese) "请先填写 WebDAV 服务器地址" else "Please enter the WebDAV server URL"
     val webdavCredentialEmpty get() = if (LanguageManager.isChinese) "请先填写 WebDAV 用户名和密码" else "Please enter WebDAV username and password"
