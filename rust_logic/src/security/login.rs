@@ -98,6 +98,64 @@ pub fn encryptLoginPayload(
     env.new_string(result).unwrap().into_raw()
 }
 
+/// Generates an ephemeral X25519 keypair, computes the shared secret with the
+/// server's public key, derives a 32-byte Blake2b session key, stores it in the
+/// shared `SESSION_KEY` Mutex (so `decryptLoginResponse` can reuse it), and
+/// returns only the ephemeral public key hex.
+///
+/// Used by the app-update check endpoint (`api/get-new-version`), where the
+/// client sends only its public key and the server responds with an encrypted
+/// version number in `nonce=<hex>&data=<hex>` format.
+#[allow(non_snake_case)]
+pub fn encryptVersionCheckRequest(
+    env: JNIEnv,
+    _class: jni::objects::JClass,
+) -> jstring {
+    // Read server public key directly from hardcoded constant
+    let server_pub_bin = match hex::decode(server_public_key_hex()) {
+        Ok(bin) => bin,
+        Err(_) => {
+            return env
+                .new_string("Error: Invalid server key hex")
+                .unwrap()
+                .into_raw();
+        }
+    };
+    if server_pub_bin.len() != 32 {
+        return env.new_string("Error: Invalid key").unwrap().into_raw();
+    }
+
+    // 1. Generate ephemeral key pair
+    let mut my_secret_bytes = [0u8; 32];
+    rand::thread_rng().fill_bytes(&mut my_secret_bytes);
+    let my_secret = StaticSecret::from(my_secret_bytes);
+    let my_public = PublicKey::from(&my_secret);
+
+    // 2. Compute shared secret
+    let mut server_pub_bytes = [0u8; 32];
+    server_pub_bytes.copy_from_slice(&server_pub_bin);
+    let server_pub = PublicKey::from(server_pub_bytes);
+    let shared_secret = my_secret.diffie_hellman(&server_pub);
+
+    // 3. Derive session key via Blake2b (32 bytes output)
+    let mut hasher = Blake2bVar::new(32).expect("Invalid Blake2b output size");
+    hasher.update(shared_secret.as_bytes());
+    let mut session_key = [0u8; 32];
+    hasher
+        .finalize_variable(&mut session_key)
+        .expect("Blake2b finalize failed");
+
+    // 4. Store session key (reuses the same Mutex as encryptLoginPayload)
+    {
+        let mut key_lock = SESSION_KEY.lock().unwrap();
+        *key_lock = Some(session_key);
+    }
+
+    // 5. Return only the public key hex (no payload to encrypt)
+    let result = hex::encode(my_public.as_bytes());
+    env.new_string(result).unwrap().into_raw()
+}
+
 #[allow(non_snake_case)]
 pub fn decryptLoginResponse(
     mut env: JNIEnv,

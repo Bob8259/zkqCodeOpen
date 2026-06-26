@@ -73,6 +73,11 @@ pub extern "system" fn JNI_OnLoad(vm: JavaVM, _reserved: *mut c_void) -> jint {
             fn_ptr: security::login::decryptLoginResponse as *mut c_void,
         },
         NativeMethod {
+            name: "encryptVersionCheckRequest".into(),
+            sig: "()Ljava/lang/String;".into(),
+            fn_ptr: security::login::encryptVersionCheckRequest as *mut c_void,
+        },
+        NativeMethod {
             name: "createInMemoryDex".into(),
             sig: "([B)I".into(),
             fn_ptr: dexloader::dex_loader::create_in_memory_dex as *mut c_void,

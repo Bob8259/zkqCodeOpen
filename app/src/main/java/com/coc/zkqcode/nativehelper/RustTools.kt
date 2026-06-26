@@ -17,6 +17,8 @@ object RustTools {
 
     external fun decryptLoginResponse(encryptedResponse: String): String
 
+    external fun encryptVersionCheckRequest(): String
+
     external fun getLastTime(): Long
 
     external fun updateLastTime(newTime: Long)

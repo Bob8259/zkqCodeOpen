@@ -40,6 +40,7 @@ import com.coc.zkqcode.core.ui.floatingwindows.ControlWindowService
 import com.coc.zkqcode.core.ui.floatingwindows.UIWindowService
 import com.coc.zkqcode.core.ui.localcomponents.LocalCustomButton
 import com.coc.zkqcode.core.util.basic.RunShell
+import com.coc.zkqcode.core.system.appupdate.AppUpdateChecker
 import com.coc.zkqcode.statehelper.AppMode
 import com.coc.zkqcode.statehelper.AppStateManager
 import kotlinx.coroutines.Dispatchers
@@ -95,6 +96,14 @@ fun CheckRootScreen() {
             LogHelper.showDebugInfo("CheckRootScreen: clearing stale ServerActions before re-init")
             stale.close()
             GlobalVars.serverActions = null
+        }
+
+        // Check for a new app version early in startup (non-blocking, fails silently).
+        // Only runs on a fresh startup, not when reusing an existing session.
+        try {
+            AppUpdateChecker.checkForUpdate()
+        } catch (e: Exception) {
+            LogHelper.showDebugInfo("CheckRootScreen: App update check failed: ${e.message}")
         }
 
         withContext(Dispatchers.IO) {
