@@ -359,7 +359,7 @@ class ControlWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner 
     }
 
     private fun shouldSkipDetachedRelaunch(mode: AppMode): Boolean {
-        return mode == AppMode.SwitchAccount || mode == AppMode.Main || mode == AppMode.BugReport
+        return mode == AppMode.SwitchAccount || mode == AppMode.BugReport
     }
 
     private fun relaunchMainActivityDetached() {
