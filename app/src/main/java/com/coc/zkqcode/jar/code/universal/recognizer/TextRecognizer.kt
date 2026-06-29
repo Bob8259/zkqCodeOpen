@@ -56,7 +56,10 @@ object TextRecognizer {
 
                 // 2. [Core Optimization] Apply preprocessing (optional)
                 val bitmapToRecognize = if (applyPreprocess) {
-                    preprocess(croppedBitmap, threshold = threshold, invertBinarization = invertBinarization)
+                    // 2a. Color filtering: turn any pixel with a channel below 200 to black
+                    val colorFiltered = applyColorFilter(croppedBitmap, minChannelValue = 200)
+                    // 2b. Existing grayscale + binarization
+                    preprocess(colorFiltered, threshold = threshold, invertBinarization = invertBinarization)
                 } else {
                     croppedBitmap
                 }
@@ -88,6 +91,39 @@ object TextRecognizer {
             // Handle actual business errors here (e.g., out of memory, Bitmap creation failure, etc.)
             logAndRestart("Error during cropping or recognition: ${e.message}")
         }
+    }
+
+    /**
+     * Color filtering: any pixel whose R, G, or B channel is below [minChannelValue]
+     * is turned to black. Pixels where all channels are >= [minChannelValue] are left unchanged.
+     *
+     * Example (minChannelValue = 200):
+     * - (255, 199, 255) -> black (G < 200)
+     * - (200, 200, 201) -> unchanged (all channels >= 200)
+     */
+    fun applyColorFilter(src: Bitmap, minChannelValue: Int): Bitmap {
+        val width = src.width
+        val height = src.height
+        val pixels = IntArray(width * height)
+        src.getPixels(pixels, 0, width, 0, 0, width, height)
+
+        val black = -0x1000000 // 0xFF000000
+
+        for (i in pixels.indices) {
+            val color = pixels[i]
+            val r = (color shr 16) and 0xFF
+            val g = (color shr 8) and 0xFF
+            val b = color and 0xFF
+
+            if (r < minChannelValue || g < minChannelValue || b < minChannelValue) {
+                pixels[i] = black
+            }
+            // else: keep the original pixel unchanged
+        }
+
+        val out = createBitmap(width, height)
+        out.setPixels(pixels, 0, width, 0, 0, width, height)
+        return out
     }
 
     /**
