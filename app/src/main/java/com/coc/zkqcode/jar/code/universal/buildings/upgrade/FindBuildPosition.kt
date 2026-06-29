@@ -36,7 +36,7 @@ suspend fun tryToFindBuildPosition(baseType: BaseType): Point? {
 
     if (redCross != null) {
         val centerX = redCross.x + 20
-        val centerY = redCross.y + 45
+        val centerY = redCross.y + 35
         val downX = centerX.toFloat()
         val downY = centerY.toFloat()
         TouchActions.touchDown(downX, downY, 1)

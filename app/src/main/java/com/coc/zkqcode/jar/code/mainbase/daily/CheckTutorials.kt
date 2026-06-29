@@ -64,11 +64,11 @@ private suspend fun handleTutorialArrowIfNeeded() {
                 clanCastleTutorialHelper()
             }
 
-            val th18Tutorial = findMultiColorsUntil(schemas = listOf(MyColors.RemoteGuardsIcon, MyColors.MeleeGuardsIcon), duration = 200)
+            val th18Tutorial = findMultiColorsUntil(schemas = listOf(MyColors.RemoteGuardsIcon, MyColors.MeleeGuardsIcon), duration = 20)
             if (th18Tutorial != null) {
                 TouchActions.tap(th18Tutorial.x, th18Tutorial.y)
             }
-
+            TouchActions.tap(1055, 185, delayTime = 100)
         }
     }
 

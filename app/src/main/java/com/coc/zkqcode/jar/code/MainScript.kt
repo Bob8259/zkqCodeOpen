@@ -9,6 +9,7 @@ import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
 import com.coc.zkqcode.jar.code.auth.displayAds
 import com.coc.zkqcode.jar.code.auth.userAuth
 import com.coc.zkqcode.jar.code.builderbase.playBuilderBase
+import com.coc.zkqcode.jar.code.mainbase.herohall.withHeroHall
 import com.coc.zkqcode.jar.code.mainbase.others.upgradeEquipmentsAction
 import com.coc.zkqcode.jar.code.mainbase.playMainBase
 import com.coc.zkqcode.jar.code.mainbase.research.findAllResearchItems
@@ -101,7 +102,6 @@ private fun finishDataNumberEntryOnlyRun() {
 
 private suspend fun runTestCode() {
     while (true) {
-        findAllResearchItems()
         ShowMessage("测试代码运行完成")
         delayWithMultiplier(5000000)
     }

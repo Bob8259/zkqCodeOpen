@@ -114,6 +114,7 @@ suspend fun upgradeEquipmentsAction() {
         TouchActions.swipe(1220, 510, -500, 510, delayAfter = 500)
         tryUpgradeEnabledEquipment()
     }
+    accountMessage("升级装备完成")
     backToHeroHall()
 }
 

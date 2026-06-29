@@ -34,6 +34,7 @@ private const val CLAN_GAME_START_DAY = 22
 private const val CLAN_GAME_END_DAY = 28
 private const val CLAN_GAME_WINDOW_HOUR = 16
 private const val CLAN_GAME_OPEN_BUTTON_WAIT_MS = 100
+private const val CLAN_GAME_OPEN_BUTTON_MAX_SWIPES = 2
 private const val CLAN_GAME_SWIPE_DELAY_MS = 300
 private const val CLAN_GAME_FIRST_TASK_X = 550
 private const val CLAN_GAME_FIRST_TASK_Y = 200
@@ -146,9 +147,11 @@ private suspend fun openClanGameTaskPage(): Boolean {
     TouchActions.tap(calendar.x, calendar.y)
 
     var openClanGame = findMultiColorsUntil(schemas = listOf(MyColors.OpenClanGame), duration = CLAN_GAME_OPEN_BUTTON_WAIT_MS)
-    if (openClanGame == null) {
+    var swipeAttempts = 0
+    while (openClanGame == null && swipeAttempts < CLAN_GAME_OPEN_BUTTON_MAX_SWIPES) {
         swipeClanGameTaskList()
         openClanGame = findMultiColorsUntil(schemas = listOf(MyColors.OpenClanGame), duration = CLAN_GAME_OPEN_BUTTON_WAIT_MS)
+        swipeAttempts++
     }
     if (openClanGame == null) return false
 

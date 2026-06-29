@@ -316,7 +316,7 @@ internal suspend fun backToHeroHall() {
         if (smithIcon != null) {
             TouchActions.tap(1220, 80)
         }
-        val petsIcon = findMultiColors(MyColors.PetsIconInHeroHall)
+        val petsIcon = findMultiColorsUntil(listOf(MyColors.PetsIconInHeroHall, MyColors.PetsIconInHeroHall2), 10)
         if (petsIcon != null) {
             return
         }
