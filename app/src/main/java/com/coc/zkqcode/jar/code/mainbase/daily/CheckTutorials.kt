@@ -17,8 +17,8 @@ import com.coc.zkqcode.jar.code.universal.smalltools.data.writeMemory
 
 suspend fun mainBaseCheckTutorials(): Boolean {
     val storageKey = StorageKeys.withAccountNumber(StorageKeys.MAIN_BASE_CHECK_TUTORIALS, InGameVars.currentAccountNumber)
-    if (!checkMemoryFile(storageKey, 1440)) {
-        accountMessage("今天已检查常见教程")
+    if (!checkMemoryFile(storageKey, 360)) {
+        accountMessage("6小时内已检查常见教程")
         return true
     }
 
@@ -44,7 +44,7 @@ private suspend fun handleTutorialArrowIfNeeded() {
         schemas = listOf(MyColors.MainBaseSmallTutorial), duration = 1500
     ) ?: return
 
-    val xOffsets = (-20..20 step 15).toMutableList()
+    val xOffsets = (-20..20 step 20).toMutableList()
     if (xOffsets.last() != 20) {
         xOffsets.add(20)
     }
@@ -68,7 +68,8 @@ private suspend fun handleTutorialArrowIfNeeded() {
             if (th18Tutorial != null) {
                 TouchActions.tap(th18Tutorial.x, th18Tutorial.y)
             }
-            TouchActions.tap(1055, 185, delayTime = 100)
+            TouchActions.tap(1055, 185, delayTime = 10)//close goblin builder
+            TouchActions.tap(1105, 75, delayTime = 10)//close shop
         }
     }
 

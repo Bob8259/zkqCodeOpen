@@ -27,6 +27,7 @@ import com.coc.zkqcode.jar.code.universal.smalltools.data.getConfigOrStop
 import com.coc.zkqcode.jar.code.universal.smalltools.data.readMemory
 import com.coc.zkqcode.jar.code.universal.smalltools.data.writeGameFiles
 import com.coc.zkqcode.jar.code.universal.smalltools.data.writeMemory
+import com.coc.zkqcode.jar.code.universal.smalltools.input.TouchActions
 import com.coc.zkqcode.jar.code.universal.smalltools.lifecycle.tapDataNumberEntryButtons
 import com.coc.zkqcode.jar.code.universal.smalltools.scheduling.checkAndCoolDown
 import com.coc.zkqcode.jar.code.universal.smalltools.scheduling.runRandomSchedulingScript
@@ -102,6 +103,7 @@ private fun finishDataNumberEntryOnlyRun() {
 
 private suspend fun runTestCode() {
     while (true) {
+
         ShowMessage("测试代码运行完成")
         delayWithMultiplier(5000000)
     }

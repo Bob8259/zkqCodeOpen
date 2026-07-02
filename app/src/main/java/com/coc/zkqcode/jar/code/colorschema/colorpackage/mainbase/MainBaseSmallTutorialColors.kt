@@ -15,7 +15,7 @@ interface IMainBaseSmallTutorialColors {
 object MainBaseSmallTutorialColors : IMainBaseSmallTutorialColors {
     // Down arrow used by early main-base tutorial prompts
     override val MainBaseSmallTutorial = ColorSchema.parse(
-        164, 77, 1064, 605, "21ABFE", "7|0|1FB9FE,14|0|1EBBFE,20|0|1EB5FE,27|0|21A8FE,0|21|2CC8F9,7|21|28C7F9,14|21|26C5F9,20|21|25C2F8,27|21|28C2F9", 0, 0.9, "教程朝下箭头"
+        164, 77, 1064, 605, "21ABFE", "7|0|1FB9FE,14|0|1EBBFE,20|0|1EB5FE,27|0|21A8FE,0|21|2CC8F9,7|21|28C7F9,14|21|26C5F9,20|21|25C2F8,27|21|28C2F9", 1, 0.9, "教程朝下箭头"
     )
     // Pet entry icon shown during the hero hall related tutorial flow
     override val OuterPetIcon = ColorSchema.parse(

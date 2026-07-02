@@ -62,7 +62,7 @@ suspend fun findAllResearchItems() {
     val insufficientItems = mutableListOf<String>()
     val foundNames = mutableSetOf<String>() // Dedup across pages and duplicate schemas
 
-    repeat(8) {
+    repeat(6) {
         // Take a single screenshot per swipe page and reuse it for all searches.
         val screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult
             ?: logAndRestart("ScreenCaptureManager.capture failed in findAllResearchItems")

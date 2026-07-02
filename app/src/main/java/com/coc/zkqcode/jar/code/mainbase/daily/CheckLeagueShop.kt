@@ -44,7 +44,10 @@ suspend fun checkLeagueShop(): Boolean {
     val shopButton = findMultiColors(MyColors.ShopButton) ?: return enterMainScreen()
     TouchActions.tap(shopButton.x, shopButton.y)
     if (enterLeagueShopPage()) {
-        leagueShopItems.forEach { buyLeagueShopItem(it) }
+        repeat(3) {
+            leagueShopItems.forEach { buyLeagueShopItem(it) }
+            TouchActions.swipe(1000, 470, 200, 470, delayAfter = 300)
+        }
     }
     // Record current time so we don't check again within 3 days
     writeMemory(memoryKey, (System.currentTimeMillis() / 60_000).toString())
