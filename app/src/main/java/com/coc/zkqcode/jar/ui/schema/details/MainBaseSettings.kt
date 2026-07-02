@@ -160,7 +160,7 @@ object MainBaseSettings {
     val CONTINUOUS_REMOVE_OBSTACLES = SettingDef("continuous_remove_obstacles", "连续移除障碍物", "Continuous Removal", 0, "MAIN_BASE_SETTINGS")
     val REMOVE_OBSTACLES_ENHANCEMENT = SettingDef("remove_obstacles_enhancement", "增强移除", "Enhanced Removal", 0, "MAIN_BASE_SETTINGS")
 
-    val CLAIM_TOKEN_REWARDS = SettingDef("claim_token_rewards", "领令牌奖励", "Claim Token Rewards", 0, "MAIN_BASE_SETTINGS")
+    val CLAIM_PASS_REWARDS = SettingDef("claim_pass_rewards", "领令牌奖励", "Claim Pass Rewards", 0, "MAIN_BASE_SETTINGS")
     val CLAIM_BADGE_EVENT_REWARDS = SettingDef("claim_badge_event_rewards", "领取限时活动奖励", "Claim Badge Event Rewards", 0, "MAIN_BASE_SETTINGS")
     val COLLECT_CAPITAL_COINS = SettingDef("collect_capital_coins", "领都城币", "Collect Capital Coins", 0, "MAIN_BASE_SETTINGS")
     val CONTRIBUTE_CAPITAL_COINS = SettingDef("contribute_capital_coins", "捐都城币", "Contribute Capital Coins", 0, "MAIN_BASE_SETTINGS")
@@ -296,7 +296,7 @@ object MainBaseSettings {
         REMOVE_OBSTACLES,
         CONTINUOUS_REMOVE_OBSTACLES,
         REMOVE_OBSTACLES_ENHANCEMENT,
-        CLAIM_TOKEN_REWARDS,
+        CLAIM_PASS_REWARDS,
         CLAIM_BADGE_EVENT_REWARDS,
         COLLECT_CAPITAL_COINS,
         CONTRIBUTE_CAPITAL_COINS,

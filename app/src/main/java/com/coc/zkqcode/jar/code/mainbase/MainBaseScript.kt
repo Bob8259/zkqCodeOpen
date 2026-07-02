@@ -25,6 +25,7 @@ import com.coc.zkqcode.jar.code.mainbase.others.checkRandomSchedule
 import com.coc.zkqcode.jar.code.mainbase.daily.checkNormalShop
 import com.coc.zkqcode.jar.code.mainbase.daily.collectBadgeEventRewards
 import com.coc.zkqcode.jar.code.mainbase.daily.collectClanCastleResources
+import com.coc.zkqcode.jar.code.mainbase.daily.collectPassRewards
 import com.coc.zkqcode.jar.code.mainbase.daily.mainBaseCheckTutorials
 import com.coc.zkqcode.jar.code.mainbase.daily.mainBaseCollectResources
 import com.coc.zkqcode.jar.code.mainbase.daily.mainBaseRemoveObstacles
@@ -52,6 +53,7 @@ suspend fun playMainBase(): Boolean {
     if (!startClanWar()) return false
     if (!collectClanGameReward()) return false
     if (!collectBadgeEventRewards()) return false
+    if (!collectPassRewards()) return false
     if (!checkNormalShop()) return false
     if (!checkLeagueShop()) return false
     if (!clanWar()) return false
