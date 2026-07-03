@@ -30,13 +30,8 @@ private const val STRATEGY_RECOMMENDATION = "recommendation"
 
 suspend fun clanWar(): Boolean {
     if (!getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.PLAY_CLAN_WAR.key) || InGameVars.townHallLevel < 3) return true
-    // Time guard: skip the entire war/league task if within 12h cooldown
-    // War and league share the same cooldown — one cooling covers both.
+    // Cooldown key shared with league — used only to gate push notifications
     val battleCooldownKey = StorageKeys.withAccountNumber(StorageKeys.CLAN_WAR_ATTACK, InGameVars.currentAccountNumber)
-    if (!checkMemoryFile(battleCooldownKey, 720)) {
-        accountMessage("冷却中(12h)，跳过部落战")
-        return true
-    }
 
     findMultiColors(MyColors.ClanWarSwordIcon) ?: return true // No clan war attack times, return
 
@@ -60,7 +55,10 @@ suspend fun clanWar(): Boolean {
 
     // Confirmed: this is a regular clan war
     // If clan war notification is enabled, skip the attack and send a push notification
-    if (GlobalVars.configStates[Schema.GLOBAL_SETTINGS.SERVERCHAN_WAR_NOTIFY.key]?.value == "1") {
+    // Time guard: only send the push notification if outside the 12h cooldown
+    if (GlobalVars.configStates[Schema.GLOBAL_SETTINGS.SERVERCHAN_WAR_NOTIFY.key]?.value == "1"
+        && checkMemoryFile(battleCooldownKey, 720)
+    ) {
         val deviceRemark = GlobalVars.configStates[Schema.GLOBAL_SETTINGS.DEVICE_REMARK.key]?.value.orEmpty()
         val remarkKey = "remark${InGameVars.currentAccountNumber}"
         val remark = GlobalVars.configStates[remarkKey]?.value.orEmpty()
@@ -73,6 +71,7 @@ suspend fun clanWar(): Boolean {
         writeMemory(battleCooldownKey, (System.currentTimeMillis() / 60_000).toString())
         return enterMainScreen()
     }
+    // Within cooldown or notification disabled — proceed with the attack
 
     when (currentStrategy) {
         STRATEGY_POSITION -> attackByPosition()

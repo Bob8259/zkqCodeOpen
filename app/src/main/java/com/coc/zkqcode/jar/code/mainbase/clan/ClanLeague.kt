@@ -25,13 +25,8 @@ import com.coc.zkqcode.jar.ui.schema.Schema
 suspend fun clanLeague(): Boolean {
     if (!getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.PLAY_LEAGUE.key) || InGameVars.townHallLevel < 3) return true
 
-    // Time guard: skip the entire war/league task if within 12h cooldown
-    // War and league share the same cooldown — one cooling covers both.
+    // Cooldown key shared with clan war — used only to gate push notifications
     val battleCooldownKey = StorageKeys.withAccountNumber(StorageKeys.CLAN_WAR_ATTACK, InGameVars.currentAccountNumber)
-    if (!checkMemoryFile(battleCooldownKey, 720)) {
-        accountMessage("冷却中(12h)，跳过联赛")
-        return true
-    }
 
     if (findMultiColors(MyColors.ClanWarSwordIcon) != null) {
         TouchActions.tap(50, 440) // Enter clan war
@@ -53,7 +48,10 @@ suspend fun clanLeague(): Boolean {
         accountMessage("已进入联赛")
 
         // If league notification is enabled, skip the attack and send a push notification
-        if (GlobalVars.configStates[Schema.GLOBAL_SETTINGS.SERVERCHAN_LEAGUE_NOTIFY.key]?.value == "1") {
+        // Time guard: only send the push notification if outside the 12h cooldown
+        if (GlobalVars.configStates[Schema.GLOBAL_SETTINGS.SERVERCHAN_LEAGUE_NOTIFY.key]?.value == "1"
+            && checkMemoryFile(battleCooldownKey, 720)
+        ) {
             val deviceRemark = GlobalVars.configStates[Schema.GLOBAL_SETTINGS.DEVICE_REMARK.key]?.value.orEmpty()
             val remarkKey = "remark${InGameVars.currentAccountNumber}"
             val remark = GlobalVars.configStates[remarkKey]?.value.orEmpty()
@@ -66,6 +64,7 @@ suspend fun clanLeague(): Boolean {
             writeMemory(battleCooldownKey, (System.currentTimeMillis() / 60_000).toString())
             return enterMainScreen()
         }
+        // Within cooldown or notification disabled — proceed with the attack
 
         TouchActions.tap(1220, 490)
         TouchActions.tap(760, 60)
