@@ -310,6 +310,10 @@ class ControlWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner 
         val botActive = botJob?.isActive == true
         val currentMode = AppStateManager.currentMode
         if (botActive) {
+            LogHelper.showDebugInfo(
+                "ControlWindowService: task removed but bot is active, keeping service alive. " +
+                        "rootComponent=$rootComponent, mode=$currentMode, botActive=$botActive"
+            )
             return
         }
 
