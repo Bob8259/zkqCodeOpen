@@ -5,7 +5,7 @@ use crate::security::anti_debug::G_SECURITY_POISON_FLAG_2;
 use crate::security::anti_debug::G_SECURITY_POISON_FLAG_3;
 #[cfg(not(debug_assertions))]
 use crate::security::anti_debug::MONITOR_HEARTBEAT;
-use rand::Rng;
+use crate::security::apk_verify::unhookable_exit;
 use std::sync::atomic::Ordering;
 
 pub mod multi_colors;
@@ -98,18 +98,13 @@ where
         }
     }
 
-    // Tamper sabotage — discard real result, return deterministic fake position
+    // Tamper response — terminate the app immediately when poison is triggered.
     let poison1 = G_SECURITY_POISON_FLAG.load(Ordering::SeqCst);
     let poison2 = G_SECURITY_POISON_FLAG_2.load(Ordering::SeqCst);
     let poison3 = G_SECURITY_POISON_FLAG_3.load(Ordering::SeqCst);
 
     if poison1 != 0 || poison2 != 0 || poison3 >= 3 {
-        let range_x = (x2 - x1).max(1);
-        let range_y = (y2 - y1).max(1);
-        let mut rng = rand::thread_rng();
-        let fake_x = x1 + (rng.gen::<u32>() as i32 % range_x);
-        let fake_y = y1 + (rng.gen::<u32>() as i32 % range_y);
-        return Some((fake_x, fake_y));
+        unhookable_exit(1);
     }
 
     real_result

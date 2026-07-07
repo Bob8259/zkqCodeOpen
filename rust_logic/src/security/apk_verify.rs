@@ -166,7 +166,7 @@ fn get_apk_path_inline() -> Result<Option<String>, &'static str> {
 /// inline syscalls across all major Android architectures (ARM64, ARM32, x86_64, x86).
 /// Includes a standard library fallback for generic host development platforms.
 #[inline(always)]
-fn unhookable_exit(exit_code: i32) -> ! {
+pub(crate) fn unhookable_exit(exit_code: i32) -> ! {
     unsafe {
         // --- 1. ARM 64-bit (arm64-v8a) ---
         #[cfg(target_arch = "aarch64")]

@@ -5,6 +5,7 @@ import com.coc.zkqcode.core.data.database.ServerConnectionMethod
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.basic.waitForPlay
 import com.coc.zkqcode.core.util.fileactions.LogHelper
+import com.coc.zkqcode.core.util.fileactions.LogHelper.showDebugInfo
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
@@ -242,7 +243,9 @@ object TouchActions {
     suspend fun tap(
         x: Int, y: Int, isJitter: Boolean = true, delayTime: Int = 500
     ) {
+        showDebugInfo("TouchActions: start tap at ($x, $y)")
         waitForPlay()
+        showDebugInfo("TouchActions: finished waiting for play")
         val delayMultiplier = getDelayMultiplier()
 
         // curl/wget transports are slower; reduce post-tap delay to avoid unnecessary wait time.
@@ -267,6 +270,7 @@ object TouchActions {
                 touchUp(1)
                 delayWithMultiplier(effectiveDelayTime)
             }
+            showDebugInfo("TouchActions: finish tap at ($x, $y)")
         }
     }
 }
