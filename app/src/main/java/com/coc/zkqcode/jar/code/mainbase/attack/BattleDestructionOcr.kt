@@ -1,5 +1,6 @@
 package com.coc.zkqcode.jar.code.mainbase.attack
 
+import android.graphics.Bitmap
 import com.coc.zkqcode.core.util.fileactions.LogHelper.showDebugInfo
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.accountMessage
@@ -50,7 +51,7 @@ class BattleDestructionOcrState {
  * Reads the on-screen destruction percentage via OCR in [MyColors.BattleDestructionPercentOcrRegion].
  * Returns null when digits cannot be parsed.
  */
-suspend fun readBattleDestructionPercent(maxPercent: Int = 100): Int? {
+suspend fun readBattleDestructionPercent(maxPercent: Int = 100, bitmap: Bitmap? = null): Int? {
     val region = MyColors.BattleDestructionPercentOcrRegion
     val preProcess = true // 与己方资源识别一致，都启用预处理
     val results = TextRecognizer.recognize(
@@ -60,7 +61,8 @@ suspend fun readBattleDestructionPercent(maxPercent: Int = 100): Int? {
         region.y2,
         useChinese = false,
         applyPreprocess = preProcess,
-        threshold = 240
+        threshold = 240,
+        screenBuffer = bitmap
     )
     val combined = results.joinToString("") { it.text }
     val cleanValue = extractValue(combined)
@@ -103,7 +105,8 @@ suspend fun checkBattleDestructionOcrExit(
     enabledKey: String = MainBaseSettings.OCR_EXIT_ENABLED.key,
     targetPercentKey: String = MainBaseSettings.OCR_EXIT_TARGET_PERCENT.key,
     staleSecondsKey: String = MainBaseSettings.OCR_EXIT_STALE_SECONDS.key,
-    maxPercent: Int = 100
+    maxPercent: Int = 100,
+    bitmap: Bitmap? = null
 ): Pair<Int?, BattleDestructionOcrExitResult> {
     if (!getBooleanConfigRuntime(enabledKey)) {
         return Pair(null, BattleDestructionOcrExitResult.Continue)
@@ -115,7 +118,7 @@ suspend fun checkBattleDestructionOcrExit(
         .toIntOrNull()?.coerceAtLeast(1) ?: DEFAULT_STALE_SECONDS
     val staleMs = staleSeconds * 1000L
 
-    val percent = readBattleDestructionPercent(maxPercent)
+    val percent = readBattleDestructionPercent(maxPercent, bitmap)
     val now = System.currentTimeMillis()
     
     if (percent == null) {

@@ -79,6 +79,7 @@ object MainBaseSettings {
     val OCR_EXIT_ENABLED = SettingDef("ocr_exit_enabled", "破坏%退出", "Destruction % Exit", 0, "MAIN_BASE_SETTINGS")
     val OCR_EXIT_TARGET_PERCENT = SettingDef("ocr_exit_target_percent", "目标破坏", "Target Destruction", "0", "MAIN_BASE_SETTINGS")
     val OCR_EXIT_STALE_SECONDS = SettingDef("ocr_exit_stale_seconds", "百分比不变", "Unchanged for", "20", "MAIN_BASE_SETTINGS")
+    val BATTLE_SPEEDUP = SettingDef("battle_speedup", "对战加速", "Battle Speed-up", 0, "MAIN_BASE_SETTINGS")
     val RESTART_GAME = SettingDef("restart_game", "部署后重启游戏", "Restart after deploy", 1, "MAIN_BASE_SETTINGS")
     val PLAY_TOURNAMENT = SettingDef("play_tournament", "排位对战", "Ranked Battle", 0, "MAIN_BASE_SETTINGS")
     val CHANGE_BASE = SettingDef("change_base", "调整援兵/阵型", "Adjust Reinforcements/Base", 1, "MAIN_BASE_SETTINGS")
@@ -323,6 +324,7 @@ object MainBaseSettings {
         EXIT_ON_ONE_STAR_MAIN,
         OCR_EXIT_ENABLED,
         OCR_EXIT_TARGET_PERCENT,
-        OCR_EXIT_STALE_SECONDS
+        OCR_EXIT_STALE_SECONDS,
+        BATTLE_SPEEDUP
     )
 }

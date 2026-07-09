@@ -71,6 +71,9 @@ interface IMainBaseAttackColors {
 
     /** Screen crop bounds for OCR of destruction % (top-center HUD, 1280x720). */
     val BattleDestructionPercentOcrRegion: ColorSchema
+
+    /** Battle speed-up button (2x speed toggle, top-right corner during battle). */
+    val BattleSpeedUp: ColorSchema
 }
 
 object MainBaseAttackColors : IMainBaseAttackColors {
@@ -283,5 +286,14 @@ object MainBaseAttackColors : IMainBaseAttackColors {
     // OCR crop for battle destruction percentage (bounds only; color match not used for OCR)
     override val BattleDestructionPercentOcrRegion = ColorSchema.parse(
         1177, 526, 1261, 560, "FFFFFF", "0|0|FFFFFF", 0, 0.5, "主世界破坏百分比OCR区域"
+    )
+
+    // Battle speed-up button (2x speed toggle, top-right corner)
+    override val BattleSpeedUp = ColorSchema.parse(
+        1193, 370, 1259, 447,
+        "81F5DB",
+        "13|0|81F5DA,26|0|81F5DA,39|0|81F5DA,52|0|81F5DB,0|39|2DC77E,13|39|2DC77E,26|39|2DC77E,39|39|2DC77E,52|39|2DC77E",
+        0, 0.9,
+        "对战加速按钮"
     )
 }

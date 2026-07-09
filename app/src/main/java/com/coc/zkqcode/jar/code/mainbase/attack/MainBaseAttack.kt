@@ -1,5 +1,7 @@
 package com.coc.zkqcode.jar.code.mainbase.attack
 
+import android.graphics.Bitmap
+import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
 import com.coc.zkqcode.jar.code.colorschema.MyColors
@@ -64,9 +66,11 @@ suspend fun mainBaseAttack(battleNumber: Int = 1, battleTimes: Int? = null): Boo
     } else {
         val exitOnOneStar = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.EXIT_ON_ONE_STAR_MAIN.key)
         val ocrExitEnabled = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.OCR_EXIT_ENABLED.key)
+        val speedUpEnabled = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.BATTLE_SPEEDUP.key)
         val destructionOcrState = BattleDestructionOcrState()
         // Show disabled message once at the beginning if has task
         var taskDisableMessageShown = false
+        var speedUpClicked = false // Prevent re-clicking the persistent speed-up button
         while (true) {
             val elapsed = System.currentTimeMillis() - startTime
             // Force exit if battle has exceeded the maximum allowed duration
@@ -86,19 +90,28 @@ suspend fun mainBaseAttack(battleNumber: Int = 1, battleTimes: Int? = null): Boo
                 taskDisableMessageShown = true
             }
 
-            // Detect 1-star result and exit immediately (disabled when has clan game task)
-            if (exitOnOneStar && !hasMainWorldTask) {
-                val oneStar1 = findMultiColors(schema = MyColors.MainBaseOneStar1)
-                val oneStar2 = findMultiColors(schema = MyColors.MainBaseOneStar2)
-                if (oneStar1 != null || oneStar2 != null) {
-                    surrenderMainBaseBattle("检测到一星，退出对战")
-                    break
+            // Decide whether to capture one shared screenshot for speed-up and OCR
+            val needScreenshot = (speedUpEnabled && !speedUpClicked) || (ocrExitEnabled && !hasMainWorldTask)
+            val sharedBitmap = if (needScreenshot) {
+                ScreenCaptureManager.capture(asBitmap = true) as? Bitmap
+            } else null
+
+            // Battle speed-up: detect and click the 2x speed button (persistent, so click only once)
+            if (speedUpEnabled && !speedUpClicked && sharedBitmap != null) {
+                val speedUpBtn = findMultiColors(schema = MyColors.BattleSpeedUp, bitmap = sharedBitmap)
+                if (speedUpBtn != null) {
+                    accountMessage("检测到加速按钮")
+                    TouchActions.tap(speedUpBtn.x, speedUpBtn.y)
+                    delayWithMultiplier(2000)
+                    TouchActions.tap(speedUpBtn.x, speedUpBtn.y)
+                    accountMessage("对战已加速完成")
+                    speedUpClicked = true
                 }
             }
 
             // OCR destruction-% exit detection (only when enabled and no task)
             if (ocrExitEnabled && !hasMainWorldTask) {
-                val (_, ocrResult) = checkBattleDestructionOcrExit(destructionOcrState)
+                val (_, ocrResult) = checkBattleDestructionOcrExit(destructionOcrState, bitmap = sharedBitmap)
                 when (ocrResult) {
                     BattleDestructionOcrExitResult.ExitTargetMet -> {
                         surrenderMainBaseBattle("破坏百分比已达目标，退出对战")
@@ -119,6 +132,15 @@ suspend fun mainBaseAttack(battleNumber: Int = 1, battleTimes: Int? = null): Boo
                 }
             }
 
+            // Detect 1-star result and exit immediately (disabled when has clan game task)
+            if (exitOnOneStar && !hasMainWorldTask) {
+                val oneStar1 = findMultiColors(schema = MyColors.MainBaseOneStar1)
+                val oneStar2 = findMultiColors(schema = MyColors.MainBaseOneStar2)
+                if (oneStar1 != null || oneStar2 != null) {
+                    surrenderMainBaseBattle("检测到一星，退出对战")
+                    break
+                }
+            }
 
             val endBattleButton = findMultiColors(schema = MyColors.EndBattle)
             if (endBattleButton == null) {
@@ -128,7 +150,7 @@ suspend fun mainBaseAttack(battleNumber: Int = 1, battleTimes: Int? = null): Boo
                 break
             }
 
-            delayWithMultiplier(200) // Poll every 200ms
+            delayWithMultiplier(500) // Poll every 500ms
         }
     }
     return enterMainScreen(isRestartGame)
