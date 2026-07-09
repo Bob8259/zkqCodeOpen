@@ -118,7 +118,9 @@ suspend fun donateToClan(): Boolean {
                         TouchActions.tap(approveBtn.x, approveBtn.y)
                         continue
                     } else {
-                        accountMessage("批准成员加入: 暗号不匹配, 跳过")
+                        accountMessage("批准成员加入: 暗号不匹配($ocrText), 点击拒绝")
+                        TouchActions.tap(approveBtn.x - 211, approveBtn.y + 2)
+                        continue
                     }
                 }
             }

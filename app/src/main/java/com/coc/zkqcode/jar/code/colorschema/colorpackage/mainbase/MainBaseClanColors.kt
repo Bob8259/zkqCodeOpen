@@ -35,6 +35,8 @@ interface IMainBaseClanColors {
     val ClanInviteCloseButtonAlt: ColorSchema
     val ClanInvitePlayerItemIndicator: ColorSchema
     val ClanInviteNotInClanFlag: ColorSchema
+    val ClanInviteRefreshButton: ColorSchema
+    val ClanInviteRefreshButtonAlt: ColorSchema
 }
 
 object MainBaseClanColors : IMainBaseClanColors {
@@ -161,5 +163,15 @@ object MainBaseClanColors : IMainBaseClanColors {
     )
     override val ClanInviteNotInClanFlag = ColorSchema.parse(
         17, 404, 83, 473, "B6B5B7", "13|0|FEFEFE,26|0|878787,39|0|FFFFFF,52|0|606464,0|35|565F66,13|35|8C8C8C,26|35|4F4F4F,39|35|9B9B9B,52|35|272727", 0, 0.9, "未加入部落标志"
+    )
+    override val ClanInviteRefreshButton = ColorSchema.parse(
+        566, 609, 749, 653, "7FF3D7",
+        "37|0|7FF3D7,74|0|7FF3D7,110|0|7FF3D7,147|0|7FF3D7,0|22|2EC57C,37|22|2EC57C,74|22|2EC57C,110|22|2EC57C,147|22|2EC57C",
+        0, 0.9, "部落拉人-刷新按钮"
+    )
+    override val ClanInviteRefreshButtonAlt = ColorSchema.parse(
+        566, 609, 749, 653, "2EC57C",
+        "37|0|2EC57C,74|0|2EC57C,110|0|2EC57C,147|0|2EC57C,0|22|7FF3D7,37|22|7FF3D7,74|22|7FF3D7,110|22|7FF3D7,147|22|7FF3D7",
+        0, 0.9, "部落拉人-刷新按钮(备选)"
     )
 }

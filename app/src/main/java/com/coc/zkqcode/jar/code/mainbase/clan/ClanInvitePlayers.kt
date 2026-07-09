@@ -15,6 +15,7 @@ import com.coc.zkqcode.jar.code.universal.smalltools.data.getConfigRuntime
 import com.coc.zkqcode.jar.ui.schema.Schema
 import kotlinx.coroutines.delay
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
+import kotlin.random.Random
 
 /**
  * 部落拉人功能（多轮次）
@@ -28,7 +29,7 @@ import com.coc.zkqcode.core.util.basic.delayWithMultiplier
  *        c. 图色检测玩家项，循环邀请直到该轮时间到：
  *             - 检测到玩家项 → 点击 → 检测邀请按钮 → 邀请 → 返回列表
  *             - 检测不到 → 滑动列表
- *        d. 返回主页面，进入下一轮
+ *        d. 滑动查找刷新按钮 → 点击/补点 → 返回主页面，进入下一轮
  *   3. 所有轮次完成 → 结束
  */
 suspend fun clanInvitePlayers(): Boolean {
@@ -164,8 +165,33 @@ suspend fun clanInvitePlayers(): Boolean {
             swipeList()
         }
 
-        // ---- 2d. 该轮结束，返回主页面 ----
-        accountMessage("${roundTag}本轮结束（已运行${roundDurationMinutes}分钟），返回主页面")
+        // ---- 2d. 该轮结束，滑动查找刷新按钮后返回主页面 ----
+        accountMessage("${roundTag}本轮即将结束，滑动查找刷新按钮")
+        // 大距离滑动以显示刷新按钮
+        TouchActions.swipe(
+            startX = REFRESH_SWIPE_COORDS.startX,
+            startY = REFRESH_SWIPE_COORDS.startY,
+            endX = REFRESH_SWIPE_COORDS.endX,
+            endY = REFRESH_SWIPE_COORDS.endY,
+            delayTime = 500,
+            delayAfter = 800
+        )
+        delayWithMultiplier(300)
+        val refreshButton = findMultiColorsUntil(
+            schemas = listOf(MyColors.ClanInviteRefreshButton, MyColors.ClanInviteRefreshButtonAlt),
+            duration = 2000
+        )
+        if (refreshButton != null) {
+            accountMessage("${roundTag}检测到刷新按钮，点击刷新")
+            TouchActions.tap(refreshButton.x, refreshButton.y, delayTime = 600)
+        } else {
+            // 未检测到刷新按钮时，在识别区域内随机点击一次
+            val randomX = Random.nextInt(566, 749)
+            val randomY = Random.nextInt(609, 653)
+            accountMessage("${roundTag}未检测到刷新按钮，在识别区域($randomX,$randomY)随机补点")
+            TouchActions.tap(randomX, randomY, delayTime = 600)
+        }
+        accountMessage("${roundTag}本轮结束，返回主页面")
         if (!enterMainScreen()) return false
     }
 
@@ -218,4 +244,12 @@ private val SWIPE_COORDS: SwipeCoords = SwipeCoords(
     startY = 685,
     endX = 460,
     endY = 607
+)
+
+// 滑动参数：大距离向上滑动以显示刷新按钮
+private val REFRESH_SWIPE_COORDS: SwipeCoords = SwipeCoords(
+    startX = 644,
+    startY = 671,
+    endX = 644,
+    endY = -500
 )
