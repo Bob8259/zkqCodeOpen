@@ -4,8 +4,10 @@ import okhttp3.Credentials
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.HttpUrl.Companion.toHttpUrl
+import java.io.File
 import java.util.concurrent.TimeUnit
 
 /**
@@ -43,13 +45,38 @@ object WebDAVHelper {
         remotePath: String,
         data: ByteArray
     ): String? {
+        return upload(baseUrl, username, password, remotePath, data.toRequestBody(octetStream))
+    }
+
+    /**
+     * Upload a local file to a remote WebDAV path using a streaming request body.
+     * Automatically creates parent directories via MKCOL if they don't exist.
+     *
+     * @return null on success, error message string on failure
+     */
+    fun upload(
+        baseUrl: String,
+        username: String,
+        password: String,
+        remotePath: String,
+        file: File
+    ): String? {
+        return upload(baseUrl, username, password, remotePath, file.asRequestBody(octetStream))
+    }
+
+    private fun upload(
+        baseUrl: String,
+        username: String,
+        password: String,
+        remotePath: String,
+        body: okhttp3.RequestBody
+    ): String? {
         // Ensure parent directories exist
         val dirError = ensureRemotePath(baseUrl, username, password, remotePath)
         if (dirError != null) return dirError
 
         val credential = Credentials.basic(username, password)
         val url = buildUrl(baseUrl, remotePath)
-        val body = data.toRequestBody(octetStream)
         val request = Request.Builder()
             .url(url)
             .put(body)

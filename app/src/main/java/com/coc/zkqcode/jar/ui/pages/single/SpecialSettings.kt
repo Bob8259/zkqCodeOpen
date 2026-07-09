@@ -41,6 +41,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupProperties
 import androidx.compose.ui.unit.dp
+import java.io.File
+import java.io.FileOutputStream
+import java.util.zip.ZipEntry
+import java.util.zip.ZipInputStream
+import java.util.zip.ZipOutputStream
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.jar.code.ShellHelper
@@ -231,6 +236,8 @@ fun LazyListScope.specialSettings() {
 
             val folderList = remember { mutableStateOf(listOf<String>()) }
             val expandedFolders = remember { mutableStateOf(setOf<String>()) }
+            val localSaveDirPath = "$sdPath/zkqFiles/zkqGlobalGameSave"
+            val localHasSaves = remember { mutableStateOf(File(localSaveDirPath).isDirectory() && File(localSaveDirPath).listFiles()?.any { it.isDirectory } == true) }
             val folderArchiveMap = remember { mutableStateOf(mapOf<String, List<String>>()) }
             val folderRenameDrafts = remember { mutableStateOf(mapOf<String, String>()) }
             val folderEditingName = remember { mutableStateOf(setOf<String>()) }
@@ -247,10 +254,84 @@ fun LazyListScope.specialSettings() {
             fun getSelectedTargets(): List<Pair<String, Set<String>>> {
                 return folderSelections.value.mapNotNull { (folder, selection) ->
                     val archives = folderArchiveMap.value[folder].orEmpty()
-                    if (archives.isEmpty()) return@mapNotNull null
                     val selected = if (selection.selectAll) archives.toSet() else selection.selectedArchives.intersect(archives.toSet())
-                    if (selected.isEmpty()) null else folder to selected
+                    if (selected.isEmpty() && archives.isNotEmpty()) null else folder to selected
                 }.sortedBy { it.first }
+            }
+
+            fun parseArchiveNumber(name: String): Int? {
+                val raw = when {
+                    name.endsWith(".tar.gz") -> name.removeSuffix(".tar.gz")
+                    name.endsWith(".zip") -> name.removeSuffix(".zip")
+                    else -> return null
+                }
+                return raw.trim().toIntOrNull()
+            }
+
+            fun listLocalArchiveNumbers(localSaveDir: File): List<Int> {
+                return localSaveDir.listFiles()
+                    ?.filter { it.isDirectory }
+                    ?.mapNotNull { it.name.trim().toIntOrNull() }
+                    ?.sorted()
+                    .orEmpty()
+            }
+
+            fun zipDirectory(sourceDir: File, targetZip: File) {
+                targetZip.parentFile?.mkdirs()
+                ZipOutputStream(FileOutputStream(targetZip)).use { zip ->
+                    sourceDir.walkTopDown().forEach { file ->
+                        val entryName = sourceDir.parentFile?.toPath()?.relativize(file.toPath())?.toString()?.replace('\\', '/') ?: return@forEach
+                        if (file.isDirectory) {
+                            val dirName = if (entryName.endsWith('/')) entryName else "$entryName/"
+                            zip.putNextEntry(ZipEntry(dirName))
+                            zip.closeEntry()
+                        } else {
+                            zip.putNextEntry(ZipEntry(entryName))
+                            file.inputStream().use { input -> input.copyTo(zip) }
+                            zip.closeEntry()
+                        }
+                    }
+                }
+            }
+
+            fun unzipToDirectory(zipFile: File, destinationDir: File): Boolean {
+                return try {
+                    destinationDir.mkdirs()
+                    ZipInputStream(zipFile.inputStream().buffered()).use { zip ->
+                        var entry = zip.nextEntry
+                        while (entry != null) {
+                            val outFile = File(destinationDir, entry.name)
+                            if (entry.isDirectory) {
+                                outFile.mkdirs()
+                            } else {
+                                outFile.parentFile?.mkdirs()
+                                outFile.outputStream().use { out -> zip.copyTo(out) }
+                            }
+                            zip.closeEntry()
+                            entry = zip.nextEntry
+                        }
+                    }
+                    true
+                } catch (_: Exception) {
+                    false
+                }
+            }
+
+            fun extractLegacyTarGzToPrivateStage(archiveFile: File, destinationDir: File): Boolean {
+                destinationDir.mkdirs()
+                val command = "tar -xzf \"${archiveFile.absolutePath}\" -C \"${destinationDir.absolutePath}\""
+                return ShellHelper.runBlocking(command).isSuccess
+            }
+
+            fun copyDirectoryToTarget(sourceDir: File, targetDir: File): Boolean {
+                return try {
+                    if (targetDir.exists()) targetDir.deleteRecursively()
+                    targetDir.parentFile?.mkdirs()
+                    sourceDir.copyRecursively(targetDir, overwrite = true)
+                    true
+                } catch (_: Exception) {
+                    false
+                }
             }
 
             fun currentSelection(folder: String): FolderSelection {
@@ -370,9 +451,15 @@ fun LazyListScope.specialSettings() {
                         for (d in devices) {
                             val fr = withContext(Dispatchers.IO) { com.coc.zkqcode.jar.code.universal.network.WebDAVHelper.listFiles(url, username, password, "zkqFiles/$d/zkqGlobalGameSave") }
                             @Suppress("UNCHECKED_CAST")
-                            am[d] = if (fr is List<*>) { val frl = fr as List<String>; frl.filter { it.endsWith(".tar.gz") }.sortedBy { it.removeSuffix(".tar.gz").toIntOrNull() ?: Int.MAX_VALUE } } else emptyList()
+                            am[d] = if (fr is List<*>) {
+                                val frl = fr as List<String>
+                                frl.filter { parseArchiveNumber(it) != null }.sortedBy { parseArchiveNumber(it) ?: Int.MAX_VALUE }
+                            } else emptyList()
                         }
                         folderArchiveMap.value = am
+                        localHasSaves.value = withContext(Dispatchers.IO) {
+                            File(localSaveDirPath).let { it.isDirectory() && it.listFiles()?.any { f -> f.isDirectory } == true }
+                        }
                         isProcessing.value = false; ShowMessage("找到 ${devices.size} 个文件夹", isChecking = false)
                     }
                 }
@@ -380,38 +467,57 @@ fun LazyListScope.specialSettings() {
 
             fun performUpload() {
                 val url = getConfig(GLOBAL_SETTINGS.WEBDAV_URL.key); val username = getConfig(GLOBAL_SETTINGS.WEBDAV_USERNAME.key); val password = getConfig(GLOBAL_SETTINGS.WEBDAV_PASSWORD.key)
-                val localSaveDir = "$sdPath/zkqFiles/zkqGlobalGameSave"; val tempDir = "${context.filesDir.absolutePath}/webdav_tar"
+                val localSaveDir = File(localSaveDirPath)
+                val stageRoot = File(context.filesDir, "webdav_stage/upload")
+                val sourceStageRoot = File(stageRoot, "source")
+                val archiveStageRoot = File(stageRoot, "archive")
                 val targets = getSelectedTargets()
                 folderSelections.value = emptyMap()
                 scope.launch {
                     isProcessing.value = true; var suc = 0; var fail = 0
                     for ((device, selectedArchives) in targets) {
-                        val dirs = withContext(Dispatchers.IO) { ShellHelper.runBlockingOutput("ls -d \"$localSaveDir\"/*/ 2>/dev/null").map { it.trimEnd('/').substringAfterLast("/") }.filter { it.isNotBlank() } }
+                        val dirs = withContext(Dispatchers.IO) { listLocalArchiveNumbers(localSaveDir) }
                         val inc = syncMode.value == 2
                         val startIdx = if (inc) {
                             val rf = withContext(Dispatchers.IO) { com.coc.zkqcode.jar.code.universal.network.WebDAVHelper.listFiles(url, username, password, "zkqFiles/$device/zkqGlobalGameSave") }
                             @Suppress("UNCHECKED_CAST")
-                        if (rf is List<*>) { val rfl = rf as List<String>; val nums = rfl.mapNotNull { it.removeSuffix(".tar.gz").trim().toIntOrNull() }; (nums.maxOrNull() ?: 0) + 1 } else 1
+                            if (rf is List<*>) {
+                                val rfl = rf as List<String>
+                                val nums = rfl.mapNotNull { parseArchiveNumber(it) }
+                                (nums.maxOrNull() ?: 0) + 1
+                            } else 1
                         } else 1
                         val upl = if (selectedArchives.isNotEmpty()) {
-                            selectedArchives.mapNotNull { it.removeSuffix(".tar.gz").trim().toIntOrNull() }.sorted()
+                            selectedArchives.mapNotNull { parseArchiveNumber(it) }.sorted()
                         } else {
-                            dirs.mapNotNull { it.trim().toIntOrNull() }.sorted()
+                            dirs
                         }
                         var seq = startIdx
                         for (n in upl) {
                             val sn = if (inc) { val s = seq; seq++; s } else n; val ss = sn.toString()
+                            val sourceDir = File(localSaveDir, n.toString())
+                            if (!sourceDir.isDirectory) { fail++; continue }
                             ShowMessage("上传 $device / $ss...", isChecking = false)
-                            val tf = "$tempDir/$ss.tar.gz"; val tok = withContext(Dispatchers.IO) { ShellHelper.runBlocking("mkdir -p \"$tempDir\" && tar -czf \"$tf\" -C \"$localSaveDir\" \"$n\"") }
-                            if (!tok.isSuccess) { fail++; continue }
-                            val d = withContext(Dispatchers.IO) {
-                                val l = ShellHelper.runBlockingOutput("base64 \"$tf\""); if (l.isEmpty()) null
-                                else try { java.util.Base64.getDecoder().decode(l.joinToString("")) } catch (_: Exception) { null }
+                            val sourceStageDir = File(sourceStageRoot, ss)
+                            val zipFile = File(archiveStageRoot, "$ss.zip")
+                            val archive = withContext(Dispatchers.IO) {
+                                if (sourceStageDir.exists()) sourceStageDir.deleteRecursively()
+                                if (zipFile.exists()) zipFile.delete()
+                                sourceDir.copyRecursively(sourceStageDir, overwrite = true)
+                                archiveStageRoot.mkdirs()
+                                zipDirectory(sourceStageDir, zipFile)
+                                zipFile.takeIf { it.isFile }
                             }
-                            if (d == null) { fail++; continue }; val e = withContext(Dispatchers.IO) { com.coc.zkqcode.jar.code.universal.network.WebDAVHelper.upload(url, username, password, "zkqFiles/$device/zkqGlobalGameSave/$ss.tar.gz", d) }
-                            if (e == null) suc++ else fail++; withContext(Dispatchers.IO) { ShellHelper.runBlockingNoOutput("rm -f \"$tf\"") }
+                            if (archive == null) { fail++; continue }
+                            val e = withContext(Dispatchers.IO) { com.coc.zkqcode.jar.code.universal.network.WebDAVHelper.upload(url, username, password, "zkqFiles/$device/zkqGlobalGameSave/$ss.zip", archive) }
+                            if (e == null) suc++ else fail++
+                            withContext(Dispatchers.IO) {
+                                if (zipFile.exists()) zipFile.delete()
+                                if (sourceStageDir.exists()) sourceStageDir.deleteRecursively()
+                            }
                         }
                     }
+                    withContext(Dispatchers.IO) { if (stageRoot.exists()) stageRoot.deleteRecursively() }
                     ShowMessage(if (fail == 0) "一键上传完成！" else "一键上传完成 ($suc 成功, $fail 失败)", isChecking = false)
                     refreshFolderList(); isProcessing.value = false
                 }
@@ -419,7 +525,10 @@ fun LazyListScope.specialSettings() {
 
             fun performDownload() {
                 val url = getConfig(GLOBAL_SETTINGS.WEBDAV_URL.key); val username = getConfig(GLOBAL_SETTINGS.WEBDAV_USERNAME.key); val password = getConfig(GLOBAL_SETTINGS.WEBDAV_PASSWORD.key)
-                val localSaveDir = "$sdPath/zkqFiles/zkqGlobalGameSave"; val tempDir = "${context.filesDir.absolutePath}/webdav_tar"
+                val localSaveDir = File(localSaveDirPath)
+                val stageRoot = File(context.filesDir, "webdav_stage/download")
+                val archiveStageRoot = File(stageRoot, "archive")
+                val extractedStageRoot = File(stageRoot, "extracted")
                 val inc = syncMode.value == 2
                 val targets = getSelectedTargets()
                 folderSelections.value = emptyMap()
@@ -427,23 +536,56 @@ fun LazyListScope.specialSettings() {
                     isProcessing.value = true; var suc = 0; var fail = 0
                     for ((device, items) in targets) {
                         for (itemId in items) {
-                            val rn = itemId.removeSuffix(".tar.gz"); val rNum = rn.toIntOrNull()
-                            val ldn = if (inc && rNum != null) {
-                                val ld = withContext(Dispatchers.IO) { ShellHelper.runBlockingOutput("ls -d \"$localSaveDir\"/*/ 2>/dev/null").mapNotNull { it.trimEnd('/').substringAfterLast("/").toIntOrNull() } }
+                            val remoteNumber = parseArchiveNumber(itemId)
+                            val rn = remoteNumber?.toString() ?: itemId.substringBeforeLast('.')
+                            val ldn = if (inc && remoteNumber != null) {
+                                val ld = withContext(Dispatchers.IO) { listLocalArchiveNumbers(localSaveDir) }
                                 ((ld.maxOrNull() ?: 0) + 1).toString()
                             } else rn
                             ShowMessage("下载 $device / $ldn...", isChecking = false)
                             val dr = withContext(Dispatchers.IO) { com.coc.zkqcode.jar.code.universal.network.WebDAVHelper.download(url, username, password, "zkqFiles/$device/zkqGlobalGameSave/$itemId") }
-                            if (dr !is ByteArray) { fail++; continue }; val tf = "$tempDir/$itemId"
-                            val wok = withContext(Dispatchers.IO) { ShellHelper.runBlocking("mkdir -p \"$tempDir\" && echo \"${java.util.Base64.getEncoder().encodeToString(dr)}\" | base64 -d > \"$tf\"") }
-                            if (!wok.isSuccess) { fail++; continue }
-                            if (withContext(Dispatchers.IO) { ShellHelper.runBlocking("mkdir -p \"$localSaveDir\" && tar -xzf \"$tf\" -C \"$localSaveDir\"").isSuccess }) {
-                                if (ldn != rn) { withContext(Dispatchers.IO) { ShellHelper.runBlocking("mv \"$localSaveDir/$rn\" \"$localSaveDir/$ldn\"") } }
-                                suc++
-                            } else fail++
-                            withContext(Dispatchers.IO) { ShellHelper.runBlockingNoOutput("rm -f \"$tf\"") }
+                            if (dr !is ByteArray) { fail++; continue }
+                            val archiveFile = File(archiveStageRoot, itemId)
+                            val extractedStageDir = File(extractedStageRoot, "$device-$ldn")
+                            val extractedTargetDir = File(extractedStageDir, ldn)
+                            val extractedRemoteDir = File(extractedStageDir, rn)
+                            val extracted = withContext(Dispatchers.IO) {
+                                archiveStageRoot.mkdirs()
+                                if (extractedStageDir.exists()) extractedStageDir.deleteRecursively()
+                                if (archiveFile.exists()) archiveFile.delete()
+                                archiveFile.writeBytes(dr)
+                                if (itemId.endsWith(".zip")) {
+                                    unzipToDirectory(archiveFile, extractedStageDir)
+                                } else if (itemId.endsWith(".tar.gz")) {
+                                    extractLegacyTarGzToPrivateStage(archiveFile, extractedStageDir)
+                                } else {
+                                    false
+                                }
+                            }
+                            if (!extracted) {
+                                fail++
+                                withContext(Dispatchers.IO) {
+                                    if (archiveFile.exists()) archiveFile.delete()
+                                    if (extractedStageDir.exists()) extractedStageDir.deleteRecursively()
+                                }
+                                continue
+                            }
+                            val copied = withContext(Dispatchers.IO) {
+                                val sourceDir = when {
+                                    extractedTargetDir.isDirectory -> extractedTargetDir
+                                    extractedRemoteDir.isDirectory -> extractedRemoteDir
+                                    else -> extractedStageDir.listFiles()?.firstOrNull { it.isDirectory }
+                                }
+                                sourceDir?.let { copyDirectoryToTarget(it, File(localSaveDir, ldn)) } == true
+                            }
+                            if (copied) suc++ else fail++
+                            withContext(Dispatchers.IO) {
+                                if (archiveFile.exists()) archiveFile.delete()
+                                if (extractedStageDir.exists()) extractedStageDir.deleteRecursively()
+                            }
                         }
                     }
+                    withContext(Dispatchers.IO) { if (stageRoot.exists()) stageRoot.deleteRecursively() }
                     ShowMessage(if (fail == 0) "一键下载完成！" else "一键下载完成 ($suc 成功, $fail 失败)", isChecking = false)
                     refreshFolderList(); isProcessing.value = false
                 }
@@ -618,8 +760,9 @@ fun LazyListScope.specialSettings() {
             Row(modifier = Modifier.padding(top = 4.dp)) {
                 val sel = syncMode.value != 0
                 val hasSelection = folderSelections.value.isNotEmpty()
-                val ue = hasSelection && !isProcessing.value && sel
-                val de = ue
+                val anyRemoteHasFiles = folderSelections.value.keys.any { folder -> folderArchiveMap.value[folder]?.isNotEmpty() == true }
+                val ue = hasSelection && !isProcessing.value && sel && localHasSaves.value
+                val de = hasSelection && !isProcessing.value && sel && anyRemoteHasFiles
                 CustomButton(text = if (isProcessing.value) "处理中..." else "一键上传", marginEnd = 4.dp, enable = ue, onClick = { performUpload() })
                 CustomButton(text = if (isProcessing.value) "处理中..." else "一键下载", marginEnd = 4.dp, enable = de, onClick = { performDownload() })
             }
