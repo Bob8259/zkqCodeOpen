@@ -156,6 +156,10 @@ fun LazyListScope.mainBaseConfig(
                     key = "${MAIN_BASE_SETTINGS.OCR_EXIT_ENABLED.key}_c$index",
                     explain = Strings.ocrExitExplain
                 )
+                SettingSwitchIcon(
+                    key = "${MAIN_BASE_SETTINGS.BATTLE_SPEEDUP.key}_c$index",
+                    explain = Strings.battleSpeedupExplain
+                )
             }
             AnimatedVisibility(
                 visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.OCR_EXIT_ENABLED.key}_c$index"]?.value == "1"

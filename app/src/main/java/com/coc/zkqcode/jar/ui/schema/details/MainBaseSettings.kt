@@ -179,7 +179,7 @@ object MainBaseSettings {
     // val CREATE_CONSECUTIVE_CLANS = SettingDef("create_consecutive_clans", "创建连号部落", "Create Consecutive Clans", 0, "MAIN_BASE_SETTINGS")
     val INVITE_PLAYERS = SettingDef("invite_players", "邀请玩家", "Invite Players", 0, "MAIN_BASE_SETTINGS")
     val INVITE_PLAYERS_ROUNDS = SettingDef("invite_players_rounds", "拉人轮次", "Invite Rounds", "1", "MAIN_BASE_SETTINGS")
-    val INVITE_PLAYERS_ROUND_DURATION = SettingDef("invite_players_round_duration", "每轮时长(分钟)", "Per Round (min)", "5", "MAIN_BASE_SETTINGS")
+    val INVITE_PLAYERS_ROUND_DURATION = SettingDef("invite_players_round_duration", "每轮时长(秒)", "Per Round (sec)", "300", "MAIN_BASE_SETTINGS")
     // Commented out: part of create_consecutive_clans which has no functional implementation
     // val CLAN_NAME = SettingDef("clan_name", "部落名称:", "Clan Name:", "", "MAIN_BASE_SETTINGS")
     // val CONSECUTIVE_COUNT = SettingDef("consecutive_count", "连号数量:", "Consecutive Count:", 3, "MAIN_BASE_SETTINGS")

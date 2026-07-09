@@ -15,4 +15,6 @@ Help me commit and push my code to both | `origin` | https://github.com/Bob8259/
 
 Help me read all open pull requests of https://github.com/Bob8259/zkqCode-collaborate.git and list the changes under app/src/main/java/com/coc/zkqcode/jar except suspend fun displayAds(). First list all open PRs using `gh pr list --repo Bob8259/zkqCode-collaborate`, then for each PR, view its diff using `gh pr diff <PR_NUMBER> --repo Bob8259/zkqCode-collaborate`. Create a new .md file to list the changes. Remember, you should compare the diffs with my local code. List changes only; do not modify any files.
 
+OK. Now, merge the changes to my local code manually according to the plan, and close this PR (mark as merged), delete the plan after merging.
+
 Help me modify this file to add a time guard. I want to perform the operation once per day using memory file at app\src\main\java\com\coc\zkqcode\jar\code\universal\smalltools\data\Memory.kt

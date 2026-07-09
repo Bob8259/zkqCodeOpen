@@ -1,5 +1,7 @@
 package com.coc.zkqcode.jar.code.mainbase.clan
 
+import android.graphics.Point
+import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
 import com.coc.zkqcode.jar.code.colorschema.ColorSchema
 import com.coc.zkqcode.jar.code.colorschema.MyColors
@@ -9,13 +11,11 @@ import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
-import com.coc.zkqcode.jar.code.universal.smalltools.input.TouchActions
 import com.coc.zkqcode.jar.code.universal.smalltools.data.getBooleanConfigRuntime
 import com.coc.zkqcode.jar.code.universal.smalltools.data.getConfigRuntime
+import com.coc.zkqcode.jar.code.universal.smalltools.input.TouchActions
 import com.coc.zkqcode.jar.ui.schema.Schema
 import kotlinx.coroutines.delay
-import com.coc.zkqcode.core.util.basic.delayWithMultiplier
-import kotlin.random.Random
 
 /**
  * 部落拉人功能（多轮次）
@@ -25,11 +25,11 @@ import kotlin.random.Random
  *   1. 读取配置轮次和每轮时长
  *   2. 每轮：
  *        a. 点击进入部落页面
- *        b. 检测语言按钮 → 检测是否成功进入
+ *        b. 检测语言按钮 → 检测是否成功进入 → 等待刷新按钮亮起（最长80秒）
  *        c. 图色检测玩家项，循环邀请直到该轮时间到：
  *             - 检测到玩家项 → 点击 → 检测邀请按钮 → 邀请 → 返回列表
  *             - 检测不到 → 滑动列表
- *        d. 滑动查找刷新按钮 → 点击/补点 → 返回主页面，进入下一轮
+ *        d. 返回主页面，进入下一轮
  *   3. 所有轮次完成 → 结束
  */
 suspend fun clanInvitePlayers(): Boolean {
@@ -47,10 +47,10 @@ suspend fun clanInvitePlayers(): Boolean {
     // ========== 步骤 1：读取配置 ==========
     val totalRounds = getConfigRuntime(Schema.MAIN_BASE_SETTINGS.INVITE_PLAYERS_ROUNDS.key).toIntOrNull()
         ?: logAndRestart("${Schema.MAIN_BASE_SETTINGS.INVITE_PLAYERS_ROUNDS.displayName} 必须是数字，请检查配置")
-    val roundDurationMinutes = getConfigRuntime(Schema.MAIN_BASE_SETTINGS.INVITE_PLAYERS_ROUND_DURATION.key).toIntOrNull()
+    val roundDurationSeconds = getConfigRuntime(Schema.MAIN_BASE_SETTINGS.INVITE_PLAYERS_ROUND_DURATION.key).toIntOrNull()
         ?: logAndRestart("${Schema.MAIN_BASE_SETTINGS.INVITE_PLAYERS_ROUND_DURATION.displayName} 必须是数字，请检查配置")
 
-    accountMessage("拉人配置：${totalRounds}轮，每轮${roundDurationMinutes}分钟")
+    accountMessage("拉人配置：${totalRounds}轮，每轮${roundDurationSeconds}秒")
 
     // ========== 步骤 2：多轮循环 ==========
     for (round in 1..totalRounds) {
@@ -84,90 +84,8 @@ suspend fun clanInvitePlayers(): Boolean {
         }
         accountMessage("${roundTag}已进入部落拉人页面")
 
-        // 点击确认进入坐标
-        TouchActions.tap(INVITE_ENTER_CONFIRM_COORDS[0].x, INVITE_ENTER_CONFIRM_COORDS[0].y, delayTime = 600)
-        TouchActions.tap(INVITE_ENTER_CONFIRM_COORDS[1].x, INVITE_ENTER_CONFIRM_COORDS[1].y, delayTime = 800)
-
-        // ---- 2c. 单轮时长循环 ----
-        val roundStartTime = System.currentTimeMillis()
-        val roundDurationMillis = roundDurationMinutes * 60_000L
-        var lastTimeLogTime = 0L
-
-        while (System.currentTimeMillis() - roundStartTime < roundDurationMillis) {
-            val elapsed = System.currentTimeMillis() - roundStartTime
-            val remainingSec = (roundDurationMillis - elapsed) / 1000
-
-            // 每 30 秒显示一次剩余时间
-            if (elapsed - lastTimeLogTime >= 30_000) {
-                lastTimeLogTime = elapsed
-                accountMessage("${roundTag}本轮剩余 ${remainingSec / 60} 分 ${remainingSec % 60} 秒")
-            }
-
-            // 图色检测玩家项（根据版本自动选择检测区域）
-            val playerItemSchema = if (InGameVars.currentGameVersion == GameVersion.CN) {
-                ColorSchema.rescope(MyColors.ClanInvitePlayerItemIndicator, 932, 513, 1000, 688)
-            } else {
-                MyColors.ClanInvitePlayerItemIndicator
-            }
-            val playerItem = findMultiColorsUntil(
-                schemas = listOf(playerItemSchema),
-                duration = 1000
-            )
-
-            if (playerItem != null) {
-                accountMessage("${roundTag}检测到可邀请玩家，点击进入")
-
-                // 点击玩家列表项
-                val itemTap = INVITE_ITEM_TAP_COORDS[0]
-                TouchActions.tap(itemTap.x, itemTap.y, delayTime = 500)
-
-                // 检测更多信息按钮图色
-                val moreInfoButton = findMultiColorsUntil(
-                    schemas = listOf(MyColors.ClanInviteActionButton, MyColors.ClanInviteActionButtonAlt),
-                    duration = 2000
-                )
-                if (moreInfoButton == null) {
-                    accountMessage("${roundTag}未检测到更多信息按钮，跳过该成员")
-                    swipeList()
-                    continue
-                }
-
-                accountMessage("${roundTag}检测到更多信息按钮，点击")
-                TouchActions.tap(moreInfoButton.x, moreInfoButton.y, delayTime = 600)
-
-                // 检测邀请确认按钮图色
-                val confirmButton = findMultiColorsUntil(
-                    schemas = listOf(MyColors.ClanInviteConfirmButton, MyColors.ClanInviteConfirmButtonAlt),
-                    duration = 2000
-                )
-                if (confirmButton != null) {
-                    accountMessage("${roundTag}检测到邀请确认按钮，点击邀请")
-                    TouchActions.tap(confirmButton.x, confirmButton.y, delayTime = 600)
-                }
-
-                // 邀请后返回成员列表
-                val backIndicator = findMultiColorsUntil(
-                    schemas = listOf(MyColors.ClanInviteBackToListIndicator),
-                    duration = 2000
-                )
-                if (backIndicator != null) {
-                    accountMessage("${roundTag}检测到返回列表标志，点击返回")
-                    TouchActions.tap(backIndicator.x, backIndicator.y, delayTime = 800)
-                } else {
-                    accountMessage("${roundTag}未检测到返回标志，尝试点击默认返回位置")
-                    TouchActions.tap(176, 56, delayTime = 800)
-                }
-            } else {
-                accountMessage("${roundTag}未检测到可邀请玩家项，滑动列表（剩余${remainingSec}秒）")
-            }
-
-            // 滑动列表
-            swipeList()
-        }
-
-        // ---- 2d. 该轮结束，滑动查找刷新按钮后返回主页面 ----
-        accountMessage("${roundTag}本轮即将结束，滑动查找刷新按钮")
-        // 大距离滑动以显示刷新按钮
+        // ---- 滑动查找刷新按钮（最长等待80秒） ----
+        accountMessage("${roundTag}即将进入邀请页面，滑动查找刷新按钮")
         TouchActions.swipe(
             startX = REFRESH_SWIPE_COORDS.startX,
             startY = REFRESH_SWIPE_COORDS.startY,
@@ -177,22 +95,134 @@ suspend fun clanInvitePlayers(): Boolean {
             delayAfter = 800
         )
         delayWithMultiplier(300)
-        val refreshButton = findMultiColorsUntil(
-            schemas = listOf(MyColors.ClanInviteRefreshButton, MyColors.ClanInviteRefreshButtonAlt),
-            duration = 2000
-        )
+        accountMessage("${roundTag}等待刷新按钮亮起（最长80秒）")
+        val refreshStartTime = System.currentTimeMillis()
+        val refreshTimeoutMs = 80_000L
+        var refreshLastLogTime = 0L
+        var refreshButton: Point? = null
+        while (System.currentTimeMillis() - refreshStartTime < refreshTimeoutMs && refreshButton == null) {
+            val elapsed = System.currentTimeMillis() - refreshStartTime
+            val remainingSec = (refreshTimeoutMs - elapsed) / 1000
+
+            // Log countdown every 10 seconds
+            if (elapsed - refreshLastLogTime >= 10_000) {
+                refreshLastLogTime = elapsed
+                accountMessage("${roundTag}等待刷新按钮亮起，剩余 ${remainingSec} 秒")
+            }
+
+            refreshButton = findMultiColors(
+                schema = MyColors.ClanInviteRefreshButton,
+                increment = 1
+            )
+            if (refreshButton == null) {
+                refreshButton = findMultiColors(
+                    schema = MyColors.ClanInviteRefreshButtonAlt,
+                    increment = 1
+                )
+            }
+            if (refreshButton == null) {
+                delay(50)
+            }
+        }
         if (refreshButton != null) {
             accountMessage("${roundTag}检测到刷新按钮，点击刷新")
             TouchActions.tap(refreshButton.x, refreshButton.y, delayTime = 600)
+
+            // Swipe down to return to top of list after refresh
+            accountMessage("${roundTag}刷新完成，向下滑动返回置顶")
+            TouchActions.swipe(
+                startX = BACK_TO_TOP_SWIPE_COORDS.startX,
+                startY = BACK_TO_TOP_SWIPE_COORDS.startY,
+                endX = BACK_TO_TOP_SWIPE_COORDS.endX,
+                endY = BACK_TO_TOP_SWIPE_COORDS.endY,
+                delayTime = 500,
+                delayAfter = 800
+            )
+            delayWithMultiplier(300)
+
+            // Tap confirm-enter coordinates after refresh succeeds
+            TouchActions.tap(INVITE_ENTER_CONFIRM_COORDS[0].x, INVITE_ENTER_CONFIRM_COORDS[0].y, delayTime = 600)
+            TouchActions.tap(INVITE_ENTER_CONFIRM_COORDS[1].x, INVITE_ENTER_CONFIRM_COORDS[1].y, delayTime = 800)
+
+            // ---- 2c. 单轮时长循环 ----
+            val roundStartTime = System.currentTimeMillis()
+            val roundDurationMillis = roundDurationSeconds * 1000L
+            var lastTimeLogTime = 0L
+
+            while (System.currentTimeMillis() - roundStartTime < roundDurationMillis) {
+                val elapsed = System.currentTimeMillis() - roundStartTime
+                val remainingSec = (roundDurationMillis - elapsed) / 1000
+
+                // Log remaining time every 30 seconds
+                if (elapsed - lastTimeLogTime >= 30_000) {
+                    lastTimeLogTime = elapsed
+                    accountMessage("${roundTag}本轮剩余 ${remainingSec} 秒（共${roundDurationSeconds}秒）")
+                }
+
+                // Detect player items (region varies by game version)
+                val playerItemSchema = if (InGameVars.currentGameVersion == GameVersion.CN) {
+                    ColorSchema.rescope(MyColors.ClanInvitePlayerItemIndicator, 932, 513, 1000, 688)
+                } else {
+                    MyColors.ClanInvitePlayerItemIndicator
+                }
+                val playerItem = findMultiColorsUntil(
+                    schemas = listOf(playerItemSchema),
+                    duration = 1000
+                )
+
+                if (playerItem != null) {
+                    accountMessage("${roundTag}检测到可邀请玩家，点击进入（剩余${remainingSec}秒）")
+
+                    val itemTap = INVITE_ITEM_TAP_COORDS[0]
+                    TouchActions.tap(itemTap.x, itemTap.y, delayTime = 500)
+
+                    val moreInfoButton = findMultiColorsUntil(
+                        schemas = listOf(MyColors.ClanInviteActionButton, MyColors.ClanInviteActionButtonAlt),
+                        duration = 2000
+                    )
+                    if (moreInfoButton == null) {
+                        accountMessage("${roundTag}未检测到更多信息按钮，跳过该成员")
+                        swipeList()
+                        continue
+                    }
+
+                    accountMessage("${roundTag}检测到更多信息按钮，点击（剩余${remainingSec}秒）")
+                    TouchActions.tap(moreInfoButton.x, moreInfoButton.y, delayTime = 600)
+
+                    val confirmButton = findMultiColorsUntil(
+                        schemas = listOf(MyColors.ClanInviteConfirmButton, MyColors.ClanInviteConfirmButtonAlt),
+                        duration = 2000
+                    )
+                    if (confirmButton != null) {
+                        accountMessage("${roundTag}检测到邀请确认按钮，点击邀请（剩余${remainingSec}秒）")
+                        TouchActions.tap(confirmButton.x, confirmButton.y, delayTime = 600)
+                    }
+
+                    val backIndicator = findMultiColorsUntil(
+                        schemas = listOf(MyColors.ClanInviteBackToListIndicator),
+                        duration = 2000
+                    )
+                    if (backIndicator != null) {
+                        accountMessage("${roundTag}检测到返回列表标志，点击返回（剩余${remainingSec}秒）")
+                        TouchActions.tap(backIndicator.x, backIndicator.y, delayTime = 800)
+                    } else {
+                        accountMessage("${roundTag}未检测到返回标志，尝试点击默认返回位置（剩余${remainingSec}秒）")
+                        TouchActions.tap(176, 56, delayTime = 800)
+                    }
+                } else {
+                    accountMessage("${roundTag}未检测到可邀请玩家项，滑动列表（剩余${remainingSec}秒）")
+                }
+
+                swipeList()
+            }
+
+            // ---- 2d. Round complete, return to main screen ----
+            accountMessage("${roundTag}本轮邀请完成，返回主页面")
+            if (!enterMainScreen()) return false
         } else {
-            // 未检测到刷新按钮时，在识别区域内随机点击一次
-            val randomX = Random.nextInt(566, 749)
-            val randomY = Random.nextInt(609, 653)
-            accountMessage("${roundTag}未检测到刷新按钮，在识别区域($randomX,$randomY)随机补点")
-            TouchActions.tap(randomX, randomY, delayTime = 600)
+            accountMessage("${roundTag}80秒超时，刷新按钮未亮起，跳过本轮拉人")
+            if (!enterMainScreen()) return false
         }
-        accountMessage("${roundTag}本轮结束，返回主页面")
-        if (!enterMainScreen()) return false
     }
 
     accountMessage("部落拉人全部完成（共${totalRounds}轮）")
@@ -200,7 +230,7 @@ suspend fun clanInvitePlayers(): Boolean {
 }
 
 /**
- * 向上滑动玩家列表
+ * Swipe up on the player list.
  */
 private suspend fun swipeList() {
     TouchActions.swipe(
@@ -215,30 +245,27 @@ private suspend fun swipeList() {
 }
 
 // ============================================================
-// 配置区
+// Configuration
 // ============================================================
 
 private data class TapCoord(val x: Int, val y: Int)
 
-// 进入部落页面的两个点击坐标
 private val INVITE_TAP_COORDS: Array<TapCoord> = arrayOf(
     TapCoord(54, 46),
     TapCoord(753, 70)
 )
 
-// 成功进入页面后的两个确认点击坐标
 private val INVITE_ENTER_CONFIRM_COORDS: Array<TapCoord> = arrayOf(
     TapCoord(375, 386),
     TapCoord(536, 582)
 )
 
-// 玩家列表项点击坐标
 private val INVITE_ITEM_TAP_COORDS: Array<TapCoord> = arrayOf(
     TapCoord(388, 651)
 )
 
-// 滑动参数：向上滑动，从下方滑到上方
 private data class SwipeCoords(val startX: Int, val startY: Int, val endX: Int, val endY: Int)
+
 private val SWIPE_COORDS: SwipeCoords = SwipeCoords(
     startX = 460,
     startY = 685,
@@ -246,10 +273,18 @@ private val SWIPE_COORDS: SwipeCoords = SwipeCoords(
     endY = 607
 )
 
-// 滑动参数：大距离向上滑动以显示刷新按钮
+// Large upward swipe to reveal the refresh button
 private val REFRESH_SWIPE_COORDS: SwipeCoords = SwipeCoords(
     startX = 644,
     startY = 671,
     endX = 644,
     endY = -500
+)
+
+// Downward swipe to return to top of list after refresh
+private val BACK_TO_TOP_SWIPE_COORDS: SwipeCoords = SwipeCoords(
+    startX = 644,
+    startY = 200,
+    endX = 644,
+    endY = 1500
 )

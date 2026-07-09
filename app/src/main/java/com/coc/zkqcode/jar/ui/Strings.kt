@@ -319,6 +319,12 @@ object Strings {
         else "OCR-based destruction % detection. Set target to 0 to disable target exit.\n" +
                 "Default: exit if % unchanged for 20s."
 
+    // Battle speed-up button
+    val battleSpeedupExplain
+        get() = if (LanguageManager.isChinese)
+            "启用后，战斗中检测右上角加速按钮并自动点击 2 次加速。"
+        else "Detect and click the 2x speed button twice during battle."
+
     // Memory cleaning
     val memoryCleanSuccess get() = if (LanguageManager.isChinese) "记忆文件清除成功" else "Memory cache cleared"
     val memoryCleanFail get() = if (LanguageManager.isChinese) "清除失败，可能记忆文件不存在" else "Clear failed - cache may not exist"
