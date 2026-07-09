@@ -360,6 +360,18 @@ object Strings {
     val pushProviderPushPlus get() = "PushPlus"
     val pushProviderTelegram get() = "Telegram"
 
+    // Cloud Expiry Notification
+    val cloudExpireSectionTitle get() = if (LanguageManager.isChinese) "云机到期通知" else "Cloud Expiry Notification"
+    fun cloudExpireExpiringTitle(deviceRemark: String, daysLeft: Int) =
+        if (LanguageManager.isChinese) "云机即将在 ${daysLeft} 天后到期 - ${deviceRemark.ifBlank { "无" }}" else "Cloud Expiring in $daysLeft Days - ${deviceRemark.ifBlank { "N/A" }}"
+    fun cloudExpireExpiringMsg(deviceRemark: String, daysLeft: Int, expireDate: String) =
+        if (LanguageManager.isChinese) "设备备注：${deviceRemark.ifBlank { "无" }}，将在 $daysLeft 天后到期，到期时间：$expireDate\n请及时备份游戏存档并清除全部数据，保护账号安全。"
+        else "Device: ${deviceRemark.ifBlank { "N/A" }}, expires in $daysLeft days, Expiry: $expireDate\nPlease back up game saves and clear all data to protect your account."
+    val cloudExpireResetTitle get() = if (LanguageManager.isChinese) "云机已自动重置 - " else "Cloud Expiry Reset - "
+    fun cloudExpireResetMsg(deviceRemark: String, resetDays: Int, newExpireDate: String) =
+        if (LanguageManager.isChinese) "设备备注：${deviceRemark.ifBlank { "无" }}，已过期，自动重置 $resetDays 天，新到期时间：$newExpireDate"
+        else "Device: ${deviceRemark.ifBlank { "N/A" }}, expired. Auto reset $resetDays days, new expiry: $newExpireDate"
+
     // WebDAV Sync
     val webdavSectionTitle get() = if (LanguageManager.isChinese) "WebDAV 文件夹管理" else "WebDAV Folder Management"
     val webdavSectionDesc get() = if (LanguageManager.isChinese) "此功能可以将国际服存档上传到自己的网盘进行备份与恢复" else "Upload global saves to your own cloud drive for backup and restore"

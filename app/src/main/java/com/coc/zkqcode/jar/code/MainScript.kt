@@ -18,6 +18,7 @@ import com.coc.zkqcode.jar.code.universal.InGameVars
 import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.jar.code.universal.checkScheduledUpgradeNotifications
 import com.coc.zkqcode.jar.code.universal.checkUpgradeTimers
+import com.coc.zkqcode.jar.code.universal.cloud.checkCloudExpiry
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.create.batchCreateAccounts
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
@@ -76,6 +77,8 @@ suspend fun runMainScript() {
         runAccountStepBlock()
         // Check scheduled upgrade notifications every cycle (runs in background)
         checkScheduledUpgradeNotifications()
+        // Check cloud expiry notification (runs every cycle, 24h cooldown prevents spam)
+        checkCloudExpiry()
         // Circularly search for the next enabled account, wrapping back to currentAccountNumber (inclusive)
         // Emit hot update signal at safe point, throttled to once every 2-3 hours randomly
         if (updateOption == 2 && System.currentTimeMillis() - lastUpdateCheckTime >= nextUpdateInterval) {

@@ -62,6 +62,12 @@ object GlobalSettings {
     // ── Random Scheduling (随机上号) ──────────────────────────────────────────
     val RANDOM_SCHEDULING = SettingDef("random_scheduling", "随机上号", "Random Scheduling", 0, "GLOBAL_SETTINGS")
 
+    // ── Cloud Expiry Notification (云机到期通知) ────────────────────────────────
+    val CLOUD_EXPIRE_NOTIFY = SettingDef("cloud_expire_notify", "云机到期通知", "Cloud Expiry Notify", 0, "GLOBAL_SETTINGS")
+    val CLOUD_EXPIRE_DATE = SettingDef("cloud_expire_date", "到期日期", "Expiry Date", "", "GLOBAL_SETTINGS")
+    val CLOUD_EXPIRE_RESET_DAYS = SettingDef("cloud_expire_reset_days", "自动重置(天)", "Auto Reset (Days)", "30", "GLOBAL_SETTINGS")
+    val CLOUD_EXPIRE_ADVANCE_DAYS = SettingDef("cloud_expire_advance_days", "提前提醒(天)", "Advance Notice (Days)", "3", "GLOBAL_SETTINGS")
+
     // ── Scheduled Restart (定时重启) ───────────────────────────────────────────
     val SCHEDULED_RESTART = SettingDef("scheduled_restart", "定时重启设备", "Scheduled Restart", 0, "GLOBAL_SETTINGS")
     val RESTART_INTERVAL = SettingDef("restart_interval", "重启间隔(分钟)", "Restart Interval (min)", "60", "GLOBAL_SETTINGS")
@@ -168,6 +174,7 @@ object GlobalSettings {
         RS_NO_WORKER_DAWN, RS_NO_WORKER_MORNING, RS_NO_WORKER_AFTERNOON, RS_NO_WORKER_NIGHT,
         RS_FULL_RES_DAWN, RS_FULL_RES_MORNING, RS_FULL_RES_AFTERNOON, RS_FULL_RES_NIGHT,
         RS_ACCOUNTS_DAWN, RS_ACCOUNTS_MORNING, RS_ACCOUNTS_AFTERNOON, RS_ACCOUNTS_NIGHT,
+        CLOUD_EXPIRE_NOTIFY, CLOUD_EXPIRE_DATE, CLOUD_EXPIRE_RESET_DAYS, CLOUD_EXPIRE_ADVANCE_DAYS,
         SCHEDULED_RESTART, RESTART_INTERVAL,
         WEBDAV_URL, WEBDAV_USERNAME, WEBDAV_PASSWORD
     )

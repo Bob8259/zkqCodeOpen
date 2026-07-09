@@ -31,9 +31,12 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -58,6 +61,7 @@ import com.coc.zkqcode.jar.ui.components.SettingDropdown
 import com.coc.zkqcode.jar.ui.components.SettingInputRow
 import com.coc.zkqcode.jar.ui.components.SettingSection
 import com.coc.zkqcode.jar.ui.components.SettingSwitchIcon
+import com.coc.zkqcode.jar.ui.schema.Schema
 import com.coc.zkqcode.jar.ui.schema.Schema.GLOBAL_SETTINGS
 import com.coc.zkqcode.jar.ui.theme.AppColors
 import android.content.ClipData
@@ -120,6 +124,31 @@ fun LazyListScope.specialSettings() {
             val scheduleEnabled = scheduleState.value == "1"
             SettingSwitchIcon(key = GLOBAL_SETTINGS.SERVERCHAN_UPGRADE_SCHEDULE_NOTIFY.key)
             if (scheduleEnabled) { SettingInputRow(key = GLOBAL_SETTINGS.SERVERCHAN_UPGRADE_ADVANCE.key) }
+            val cloudState = GlobalVars.configStates.getOrPut(GLOBAL_SETTINGS.CLOUD_EXPIRE_NOTIFY.key) { mutableStateOf("0") }
+            val cloudEnabled = cloudState.value == "1"
+            SettingSwitchIcon(key = GLOBAL_SETTINGS.CLOUD_EXPIRE_NOTIFY.key)
+            if (cloudEnabled) {
+                val dateState = GlobalVars.configStates.getOrPut(GLOBAL_SETTINGS.CLOUD_EXPIRE_DATE.key) { mutableStateOf("") }
+                val parts = dateState.value.split("-")
+                val yearSel = remember { mutableStateOf(parts.getOrNull(0)?.toIntOrNull() ?: 0) }
+                val monthSel = remember { mutableStateOf(parts.getOrNull(1)?.toIntOrNull() ?: 0) }
+                val daySel = remember { mutableStateOf(parts.getOrNull(2)?.toIntOrNull() ?: 0) }
+                fun writeDate() {
+                    if (yearSel.value > 0 && monthSel.value > 0 && daySel.value > 0)
+                        dateState.value = "${yearSel.value}-${monthSel.value.toString().padStart(2,'0')}-${daySel.value.toString().padStart(2,'0')}"
+                }
+                Row(modifier = Modifier.padding(top = 6.dp), verticalAlignment = Alignment.CenterVertically) {
+                    Text(text = Schema.getDisplayName(GLOBAL_SETTINGS.CLOUD_EXPIRE_DATE.key) + "：", style = MaterialTheme.typography.labelMedium, modifier = Modifier.padding(end = 4.dp))
+                    SimpleDropdown(sel = if (yearSel.value > 0) "${yearSel.value}" else "-", opts = (2025..2040).map { it.toString() }, onSel = { yearSel.value = it.toIntOrNull() ?: yearSel.value; writeDate() })
+                    Text(text = "年", style = MaterialTheme.typography.labelSmall, modifier = Modifier.padding(horizontal = 2.dp))
+                    SimpleDropdown(sel = if (monthSel.value > 0) "${monthSel.value}" else "-", opts = (1..12).map { it.toString() }, onSel = { monthSel.value = it.toIntOrNull() ?: monthSel.value; writeDate() })
+                    Text(text = "月", style = MaterialTheme.typography.labelSmall, modifier = Modifier.padding(horizontal = 2.dp))
+                    SimpleDropdown(sel = if (daySel.value > 0) "${daySel.value}" else "-", opts = (1..31).map { it.toString() }, onSel = { daySel.value = it.toIntOrNull() ?: daySel.value; writeDate() })
+                    Text(text = "日", style = MaterialTheme.typography.labelSmall, modifier = Modifier.padding(horizontal = 2.dp))
+                }
+                SettingInputRow(key = GLOBAL_SETTINGS.CLOUD_EXPIRE_RESET_DAYS.key)
+                SettingInputRow(key = GLOBAL_SETTINGS.CLOUD_EXPIRE_ADVANCE_DAYS.key)
+            }
             val scope = rememberCoroutineScope()
             CustomButton(
                 text = Strings.serverchanTestBtn,
@@ -145,6 +174,7 @@ fun LazyListScope.specialSettings() {
             )
         }
     }
+    // ── Cloud Expiry Notification is now inside Push Notification section above
     // ── WebDAV Sync ────────────────────────────────────────────────────────
     item {
         SettingSection {
@@ -777,5 +807,27 @@ fun LazyListScope.specialSettings() {
                 ShellHelper.runBlockingNoOutput("mkdir -p \"$dst\" && cp -rf \"$src\" \"$dst/\"")
             }
         })
+    }
+}
+
+@Composable
+private fun SimpleDropdown(sel: String, opts: List<String>, onSel: (String) -> Unit, mod: Modifier = Modifier) {
+    var expanded by remember { mutableStateOf(false) }
+    Box(modifier = mod.wrapContentSize(Alignment.TopStart)) {
+        Button(onClick = { expanded = true }, shape = RoundedCornerShape(6.dp), modifier = Modifier.height(26.dp), contentPadding = PaddingValues(horizontal = 6.dp, vertical = 0.dp), colors = ButtonDefaults.buttonColors(containerColor = AppColors.Primary)) {
+            Text(sel, style = MaterialTheme.typography.labelSmall, maxLines = 1)
+            Icon(Icons.Default.ArrowDropDown, contentDescription = null, modifier = Modifier.height(16.dp))
+        }
+        if (expanded) {
+            Popup(onDismissRequest = { expanded = false }, properties = PopupProperties(focusable = true)) {
+                Surface(shape = RoundedCornerShape(8.dp), color = AppColors.CardBg, shadowElevation = 4.dp, modifier = Modifier.heightIn(max = 200.dp)) {
+                    Column(modifier = Modifier.padding(4.dp).verticalScroll(rememberScrollState())) {
+                        opts.forEach { opt ->
+                            Text(text = opt, style = MaterialTheme.typography.labelSmall, color = if (opt == sel) AppColors.Primary else AppColors.TextPrimary, modifier = Modifier.clickable { onSel(opt); expanded = false }.padding(horizontal = 10.dp, vertical = 6.dp))
+                        }
+                    }
+                }
+            }
+        }
     }
 }
