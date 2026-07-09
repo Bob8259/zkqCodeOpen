@@ -55,6 +55,8 @@ import com.coc.zkqcode.jar.ui.components.SettingSection
 import com.coc.zkqcode.jar.ui.components.SettingSwitchIcon
 import com.coc.zkqcode.jar.ui.schema.Schema.GLOBAL_SETTINGS
 import com.coc.zkqcode.jar.ui.theme.AppColors
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.os.Environment
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -158,6 +160,74 @@ fun LazyListScope.specialSettings() {
             SettingInputRow(key = GLOBAL_SETTINGS.WEBDAV_PASSWORD.key)
 
             fun getConfig(k: String) = GlobalVars.configStates[k]?.value.orEmpty()
+
+            // ── WebDAV one-click copy / paste credentials ─────────────────────
+            val pasteDialogVisible = remember { mutableStateOf(false) }
+            val pasteInput = remember { mutableStateOf("") }
+
+            Row(modifier = Modifier.padding(top = 4.dp)) {
+                CustomButton(text = Strings.webdavCopyCredentials, marginEnd = 4.dp, onClick = {
+                    val url = getConfig(GLOBAL_SETTINGS.WEBDAV_URL.key)
+                    val username = getConfig(GLOBAL_SETTINGS.WEBDAV_USERNAME.key)
+                    val password = getConfig(GLOBAL_SETTINGS.WEBDAV_PASSWORD.key)
+                    val combined = "$url|||$username|||$password"
+                    context.getSystemService(ClipboardManager::class.java)?.let { cm ->
+                        cm.setPrimaryClip(ClipData.newPlainText("WebDAV", combined))
+                        ShowMessage(Strings.webdavCopiedMsg, isChecking = false)
+                    }
+                })
+                CustomButton(text = Strings.webdavPasteCredentials, onClick = { pasteDialogVisible.value = true })
+            }
+
+            if (pasteDialogVisible.value) {
+                Popup(
+                    onDismissRequest = { pasteDialogVisible.value = false; pasteInput.value = "" },
+                    properties = PopupProperties(focusable = true)
+                ) {
+                    Surface(
+                        shape = RoundedCornerShape(12.dp),
+                        color = AppColors.CardBg,
+                        shadowElevation = 8.dp
+                    ) {
+                        Column(modifier = Modifier.padding(16.dp).widthIn(min = 240.dp)) {
+                            Text(
+                                Strings.webdavPasteDialogTitle,
+                                style = MaterialTheme.typography.labelMedium,
+                                color = AppColors.TextPrimary,
+                                modifier = Modifier.padding(bottom = 8.dp)
+                            )
+                            BasicTextField(
+                                value = pasteInput.value,
+                                onValueChange = { pasteInput.value = it },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .heightIn(min = 40.dp)
+                                    .background(Color.White, RoundedCornerShape(4.dp))
+                                    .border(1.dp, AppColors.Border, RoundedCornerShape(4.dp))
+                                    .padding(8.dp),
+                                singleLine = false
+                            )
+                            Row(modifier = Modifier.padding(top = 12.dp)) {
+                                CustomButton(text = Strings.webdavPasteCancel, marginEnd = 8.dp, onClick = {
+                                    pasteDialogVisible.value = false; pasteInput.value = ""
+                                })
+                                CustomButton(text = Strings.webdavPasteConfirm, onClick = {
+                                    val parts = pasteInput.value.split("|||")
+                                    if (parts.size >= 3) {
+                                        GlobalVars.configStates[GLOBAL_SETTINGS.WEBDAV_URL.key]?.value = parts[0].trim()
+                                        GlobalVars.configStates[GLOBAL_SETTINGS.WEBDAV_USERNAME.key]?.value = parts[1].trim()
+                                        GlobalVars.configStates[GLOBAL_SETTINGS.WEBDAV_PASSWORD.key]?.value = parts.subList(2, parts.size).joinToString("|||").trim()
+                                        ShowMessage(Strings.webdavPastedMsg, isChecking = false)
+                                        pasteDialogVisible.value = false; pasteInput.value = ""
+                                    } else {
+                                        ShowMessage(Strings.webdavPasteInvalidMsg, isChecking = false)
+                                    }
+                                })
+                            }
+                        }
+                    }
+                }
+            }
 
             val folderList = remember { mutableStateOf(listOf<String>()) }
             val expandedFolders = remember { mutableStateOf(setOf<String>()) }

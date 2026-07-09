@@ -382,5 +382,15 @@ object Strings {
     val webdavSyncOverwriteDesc get() = if (LanguageManager.isChinese) "按原始序号直接覆盖远程文件，本地与远程保持完全一致" else "Overwrite remote files using original indices — keeps local and remote identical"
     val webdavSyncIncrementalDesc get() = if (LanguageManager.isChinese) "自动分配新序号上传，本地存档按序号递增排列，避免覆盖已有存档" else "Auto-assign new indices on upload — local archives increment without overwriting existing files"
     val webdavSelectAll get() = if (LanguageManager.isChinese) "全选" else "Select All"
+
+    // WebDAV one-click copy/paste credentials
+    val webdavCopyCredentials get() = if (LanguageManager.isChinese) "一键复制" else "Copy"
+    val webdavPasteCredentials get() = if (LanguageManager.isChinese) "一键粘贴" else "Paste"
+    val webdavPasteDialogTitle get() = if (LanguageManager.isChinese) "粘贴 WebDAV 信息" else "Paste WebDAV Info"
+    val webdavPasteConfirm get() = if (LanguageManager.isChinese) "确定" else "OK"
+    val webdavPasteCancel get() = if (LanguageManager.isChinese) "取消" else "Cancel"
+    val webdavCopiedMsg get() = if (LanguageManager.isChinese) "已复制服务器地址、用户名、密码" else "Copied server URL, username, and password"
+    val webdavPastedMsg get() = if (LanguageManager.isChinese) "已填入 WebDAV 信息" else "WebDAV info filled in"
+    val webdavPasteInvalidMsg get() = if (LanguageManager.isChinese) "格式错误，请粘贴包含服务器地址、用户名、密码的内容" else "Invalid format — paste content with URL, username, and password"
 }
 
