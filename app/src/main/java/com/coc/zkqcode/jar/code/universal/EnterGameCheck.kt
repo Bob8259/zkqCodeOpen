@@ -1,6 +1,7 @@
 package com.coc.zkqcode.jar.code.universal
 
 import android.os.Environment
+import com.coc.zkqcode.core.app.ZKQApplication
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.system.inputmethod.inputTextReliable
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
@@ -147,16 +148,30 @@ private suspend fun installCNGameUpdateApkIfExists() {
 
 private suspend fun updateCNGame(maxWaitMillis: Int) {
     val startTime = System.currentTimeMillis()
+    var timedOut = false
 
     while (true) {
         val elapsedMillis = (System.currentTimeMillis() - startTime).toInt()
-        if (elapsedMillis >= maxWaitMillis) break
+        if (elapsedMillis >= maxWaitMillis) {
+            timedOut = true
+            break
+        }
         val remainingMinutes = ((maxWaitMillis - elapsedMillis).coerceAtLeast(0)) / 60_000.0
         accountMessage("国服更新等待剩余 ${String.format(Locale.US, "%.2f", remainingMinutes)} 分钟")
         delayWithMultiplier(3000)
         findMultiColors(MyColors.CNGameUpdating) ?: break
     }
-    installCNGameUpdateApkIfExists()
+
+    if (timedOut && getStaticConfig(Schema.GLOBAL_SETTINGS.ENHANCED_CN_UPDATE.key) == "1") {
+        accountMessage("等待超时，开始增强更新流程")
+        val channelIdx = getStaticConfig(Schema.GLOBAL_SETTINGS.ENHANCED_CN_UPDATE_SOURCE.key).toIntOrNull() ?: 1
+        CNApkDownloader.runEnhancedUpdate(
+            ZKQApplication.appContext,
+            preferredSource = channelIdx - 1
+        )
+    } else {
+        installCNGameUpdateApkIfExists()
+    }
 }
 
 private suspend fun closeAdvertisements() {

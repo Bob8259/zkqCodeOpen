@@ -360,6 +360,14 @@ object Strings {
     val pushProviderPushPlus get() = "PushPlus"
     val pushProviderTelegram get() = "Telegram"
 
+    // Enhanced CN Game Update
+    val enhancedUpdateHint get() = if (LanguageManager.isChinese)
+        "开启后，等待国服游戏内更新超时，将自动从所选渠道下载最新 APK 并通过 Root 静默安装。"
+    else
+        "When enabled, after in-game update wait times out, auto-download latest CN APK from selected channel and install via root."
+    val enhancedSourceAppStore get() = "应用宝 (a.app.qq.com)"
+    val enhancedSourceTencent get() = "腾讯官网 (coc.qq.com)"
+
     // Cloud Expiry Notification
     val cloudExpireSectionTitle get() = if (LanguageManager.isChinese) "云机到期通知" else "Cloud Expiry Notification"
     fun cloudExpireExpiringTitle(deviceRemark: String, daysLeft: Int) =

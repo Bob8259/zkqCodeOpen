@@ -76,10 +76,32 @@ fun LazyListScope.specialSettings() {
     item { SettingSection { RandomScheduling() } }
     item {
         SettingSection {
-            val state = GlobalVars.configStates.getOrPut(GLOBAL_SETTINGS.UPDATE_CN_GAME.key) { mutableStateOf("0") }
-            val enabled = state.value == "1"
-            SettingSwitchIcon(key = GLOBAL_SETTINGS.UPDATE_CN_GAME.key)
-            if (enabled) { SettingInputRow(key = GLOBAL_SETTINGS.MAX_DOWNLOAD_WAITING_TIME.key) }
+            val parentState = GlobalVars.configStates.getOrPut(GLOBAL_SETTINGS.UPDATE_CN_GAME.key) { mutableStateOf("0") }
+            val parentEnabled = parentState.value == "1"
+            SettingSwitchIcon(key = GLOBAL_SETTINGS.UPDATE_CN_GAME.key, afterChange = { checked ->
+                if (!checked) {
+                    GlobalVars.configStates.getOrPut(GLOBAL_SETTINGS.ENHANCED_CN_UPDATE.key) { mutableStateOf("0") }.value = "0"
+                }
+            })
+            if (parentEnabled) {
+                SettingInputRow(key = GLOBAL_SETTINGS.MAX_DOWNLOAD_WAITING_TIME.key)
+
+                val enhancedState = GlobalVars.configStates.getOrPut(GLOBAL_SETTINGS.ENHANCED_CN_UPDATE.key) { mutableStateOf("0") }
+                val enhancedEnabled = enhancedState.value == "1"
+                SettingSwitchIcon(key = GLOBAL_SETTINGS.ENHANCED_CN_UPDATE.key)
+                if (enhancedEnabled) {
+                    Text(
+                        text = Strings.enhancedUpdateHint,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = AppColors.TextPrimary.copy(alpha = 0.75f),
+                        modifier = Modifier.padding(start = 4.dp, top = 4.dp)
+                    )
+                    SettingDropdown(
+                        key = GLOBAL_SETTINGS.ENHANCED_CN_UPDATE_SOURCE.key,
+                        options = listOf("无", Strings.enhancedSourceAppStore, Strings.enhancedSourceTencent)
+                    )
+                }
+            }
         }
     }
     item {

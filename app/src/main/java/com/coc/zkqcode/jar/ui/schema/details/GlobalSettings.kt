@@ -26,6 +26,8 @@ object GlobalSettings {
     val MAX_DOWNLOAD_WAITING_TIME = SettingDef(
         "max_download_waiting_time", "最长下载等待时间(分)", "Maximum Download Waiting Time (m)", "60", "GLOBAL_SETTINGS"
     )
+    val ENHANCED_CN_UPDATE = SettingDef("enhanced_cn_update", "增强更新", "Enhanced CN Update", "0", "GLOBAL_SETTINGS")
+    val ENHANCED_CN_UPDATE_SOURCE = SettingDef("enhanced_cn_update_source", "下载渠道", "Download Channel", "0", "GLOBAL_SETTINGS")
     val BATCH_CREATE_ACCOUNT = SettingDef("batch_create_account", "批量创号", "Batch Create", 0, "GLOBAL_SETTINGS")
     val CREATE_START_ID = SettingDef("create_start_id", "创号开始序号", "Start ID", 1, "GLOBAL_SETTINGS")
     val CREATE_END_ID = SettingDef("create_end_id", "创号结束序号", "End ID", 10, "GLOBAL_SETTINGS")
@@ -138,6 +140,8 @@ object GlobalSettings {
         AUTO_UPDATE,
         UPDATE_CN_GAME,
         MAX_DOWNLOAD_WAITING_TIME,
+        ENHANCED_CN_UPDATE,
+        ENHANCED_CN_UPDATE_SOURCE,
         BATCH_CREATE_ACCOUNT,
         CREATE_START_ID,
         CREATE_END_ID,
