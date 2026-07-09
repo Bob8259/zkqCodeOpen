@@ -3,6 +3,7 @@ package com.coc.zkqcode.jar.code.mainbase.attack
 
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
+import com.coc.zkqcode.core.util.fileactions.LogHelper
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
 import com.coc.zkqcode.jar.code.universal.smalltools.data.getBooleanConfigRuntime
 import com.coc.zkqcode.jar.ui.schema.Schema
@@ -70,6 +71,7 @@ private suspend fun deploySiegeMachine(useReinforcements: Boolean = true) {
 
 private suspend fun deployOthers(useSpells: Boolean = true) {
     //Deploy other troops and spells
+    LogHelper.showDebugInfo("Start to deploy others")
     repeat(15) {
         val troops = findMultiColorsUntil(
             schemas = listOf(MyColors.TroopColorAtDeploymentBar, MyColors.TroopColorAtDeploymentBar2, MyColors.SuperTroopColorAtDeploymentBar, MyColors.SpecialTroopColorAtDeploymentBar), duration = 20
@@ -92,6 +94,7 @@ private suspend fun deployOthers(useSpells: Boolean = true) {
             }
         }
     }
+    LogHelper.showDebugInfo("Finish deploying others")
 }
 
 private suspend fun deployHeroes() {
