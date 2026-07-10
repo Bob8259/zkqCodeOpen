@@ -22,9 +22,21 @@ object ServerChanHelper {
     private val MEDIA_TYPE = "application/x-www-form-urlencoded;charset=utf-8".toMediaTypeOrNull()
 
     suspend fun send(message: PushMessage): String? {
+        return send(message, null)
+    }
+
+    suspend fun send(message: PushMessage, brailleArt: String?): String? {
         val sendKey = getSendKey() ?: return "SendKey 未配置"
         val url = buildApiUrl(sendKey) ?: return "SendKey 格式错误"
-        val postBody = buildPostBody(message)
+
+        // Append braille art to desp if provided, wrapped in code block for monospace alignment
+        val effectiveDesp = if (brailleArt != null && brailleArt.isNotBlank()) {
+            val codeBlock = "```\n$brailleArt\n```"
+            if (message.desp.isBlank()) codeBlock else "${message.desp}\n\n$codeBlock"
+        } else {
+            message.desp
+        }
+        val postBody = buildPostBody(message.title, effectiveDesp)
 
         return try {
             withContext(Dispatchers.IO) {
@@ -70,9 +82,9 @@ object ServerChanHelper {
         }
     }
 
-    private fun buildPostBody(message: PushMessage): String {
-        val encodedTitle = java.net.URLEncoder.encode(message.title, "UTF-8")
-        val encodedDesp = java.net.URLEncoder.encode(message.desp, "UTF-8")
+    private fun buildPostBody(title: String, desp: String): String {
+        val encodedTitle = java.net.URLEncoder.encode(title, "UTF-8")
+        val encodedDesp = java.net.URLEncoder.encode(desp, "UTF-8")
         return "title=$encodedTitle&desp=$encodedDesp"
     }
 }

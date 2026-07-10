@@ -1,6 +1,7 @@
 package com.coc.zkqcode.jar.code.universal
 
 import android.os.Environment
+import android.graphics.Bitmap
 import com.coc.zkqcode.core.app.ZKQApplication
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.system.inputmethod.inputTextReliable
@@ -13,6 +14,9 @@ import com.coc.zkqcode.jar.code.mainbase.attack.mainBaseDeployTroops
 import com.coc.zkqcode.jar.code.mainbase.others.zoomSmallMainBase
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
+import com.coc.zkqcode.jar.code.universal.push.PixelBlockEncoder
+import com.coc.zkqcode.jar.code.universal.push.PushMessage
+import com.coc.zkqcode.jar.code.universal.push.PushRouter
 import com.coc.zkqcode.jar.code.universal.smalltools.data.getBooleanConfigRuntime
 import com.coc.zkqcode.jar.code.universal.smalltools.data.getStaticConfig
 import com.coc.zkqcode.jar.code.universal.smalltools.input.TouchActions
@@ -20,13 +24,18 @@ import com.coc.zkqcode.jar.code.universal.smalltools.lifecycle.checkReconnection
 import com.coc.zkqcode.jar.code.universal.smalltools.lifecycle.isGameAtFront
 import com.coc.zkqcode.jar.code.universal.smalltools.lifecycle.killGame
 import com.coc.zkqcode.jar.code.universal.smalltools.lifecycle.runGame
-import com.coc.zkqcode.jar.code.universal.push.PushMessage
-import com.coc.zkqcode.jar.code.universal.push.PushRouter
 import com.coc.zkqcode.jar.code.universal.tutorial.AllTutorials
 import com.coc.zkqcode.jar.ui.Strings
 import com.coc.zkqcode.jar.ui.schema.Schema
 import java.util.Locale
 
+
+/**
+ * Tracks per-account push state to avoid redundant notifications.
+ * An account is "locked" after we send a kick notification;
+ * it gets unlocked when the game enters successfully.
+ */
+private val accountPushLocked = mutableSetOf<Int>()
 
 /**
  * Waits for the game to enter the main screen within a specified timeout.
@@ -51,11 +60,15 @@ suspend fun enterMainScreen(isDoubleCheck: Boolean = false): Boolean {
             if (isInHomePage(countdownMessage())) {
                 if (!isDoubleCheck) {
                     accountMessage("已进入主界面")
+                    // Unlock push for this account on successful enter
+                    accountPushLocked.remove(InGameVars.currentAccountNumber)
                     return true
                 }
                 if (InGameVars.currentGameVersion == GameVersion.CN) delayWithMultiplier(1200)
                 else delayWithMultiplier(500)
                 if (isInHomePage(countdownMessage())) {
+                    // Unlock push for this account on successful enter
+                    accountPushLocked.remove(InGameVars.currentAccountNumber)
                     return true
                 }
             }
@@ -80,15 +93,52 @@ suspend fun enterMainScreen(isDoubleCheck: Boolean = false): Boolean {
     // Send Server酱³ push notification on game enter timeout if enabled
     val kickNotify = GlobalVars.configStates[Schema.GLOBAL_SETTINGS.SERVERCHAN_KICK_NOTIFY.key]?.value == "1"
     if (kickNotify) {
-        val deviceRemark = GlobalVars.configStates[Schema.GLOBAL_SETTINGS.DEVICE_REMARK.key]?.value.orEmpty()
-        val remarkKey = "remark${InGameVars.currentAccountNumber}"
-        val remark = GlobalVars.configStates[remarkKey]?.value.orEmpty()
-        PushRouter.send(
-            PushMessage(
-                title = Strings.serverchanKickTitle,
-                desp = Strings.serverchanKickMsg(deviceRemark, InGameVars.currentAccountNumber, remark, timeoutSeconds)
-            )
-        )
+        val account = InGameVars.currentAccountNumber
+        // Only push if this account hasn't been notified since last successful enter
+        if (account !in accountPushLocked) {
+            accountPushLocked.add(account)
+
+            // Check push provider: Telegram gets a screenshot, others get braille art
+            val provider = GlobalVars.configStates[Schema.GLOBAL_SETTINGS.PUSH_PROVIDER.key]?.value ?: "0"
+            if (provider == "3") {
+                // Telegram: capture screenshot and send as photo
+                val screenshot = ScreenCaptureManager.capture(asBitmap = true) as? Bitmap
+                if (screenshot != null) {
+                    val imageBytes = PixelBlockEncoder.bitmapToJpegBytes(screenshot)
+                    screenshot.recycle()
+                    val deviceRemark = GlobalVars.configStates[Schema.GLOBAL_SETTINGS.DEVICE_REMARK.key]?.value.orEmpty()
+                    val remarkKey = "remark${account}"
+                    val remark = GlobalVars.configStates[remarkKey]?.value.orEmpty()
+                    PushRouter.send(
+                        PushMessage(
+                            title = Strings.serverchanKickTitle,
+                            desp = Strings.serverchanKickMsg(deviceRemark, account, remark, timeoutSeconds)
+                        ),
+                        imageBytes = imageBytes,
+                        brailleArt = null
+                    )
+                }
+            } else {
+                // Other platforms: capture screenshot and generate braille art
+                var brailleArt: String? = null
+                val screenshot = ScreenCaptureManager.capture(asBitmap = true) as? Bitmap
+                if (screenshot != null) {
+                    brailleArt = PixelBlockEncoder.encodeBitmapToBraille(screenshot)
+                    screenshot.recycle()
+                }
+                val deviceRemark = GlobalVars.configStates[Schema.GLOBAL_SETTINGS.DEVICE_REMARK.key]?.value.orEmpty()
+                val remarkKey = "remark${account}"
+                val remark = GlobalVars.configStates[remarkKey]?.value.orEmpty()
+                PushRouter.send(
+                    PushMessage(
+                        title = Strings.serverchanKickTitle,
+                        desp = Strings.serverchanKickMsg(deviceRemark, account, remark, timeoutSeconds)
+                    ),
+                    imageBytes = null,
+                    brailleArt = brailleArt
+                )
+            }
+        }
     }
     killGame()
     return false

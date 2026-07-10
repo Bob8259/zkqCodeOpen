@@ -38,12 +38,23 @@ object PushPlusHelper {
     }
 
     suspend fun sendNotification(message: PushMessage): String? {
+        return sendNotification(message, null)
+    }
+
+    suspend fun sendNotification(message: PushMessage, brailleArt: String?): String? {
         val token = getToken() ?: return "Token 未配置"
+
+        val effectiveContent = if (brailleArt != null && brailleArt.isNotBlank()) {
+            val codeBlock = "```\n$brailleArt\n```"
+            if (message.content.isBlank()) codeBlock else "${message.content}\n\n$codeBlock"
+        } else {
+            message.content
+        }
 
         val jsonBody = JSONObject().apply {
             put("token", token)
             put("title", message.title)
-            put("content", message.content)
+            put("content", effectiveContent)
             put("template", "txt")
         }
 
@@ -69,7 +80,6 @@ object PushPlusHelper {
             e.message ?: "网络异常"
         }
     }
-
     private fun getToken(): String? {
         val token = GlobalVars.configStates[GLOBAL_SETTINGS.PUSHPLUS_TOKEN.key]?.value.orEmpty()
         return token.ifBlank { null }

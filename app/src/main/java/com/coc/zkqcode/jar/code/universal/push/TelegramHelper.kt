@@ -27,9 +27,27 @@ object TelegramHelper {
     }
 
     suspend fun sendNotification(message: PushMessage): String? {
+        return sendNotification(message, null)
+    }
+
+    /**
+     * Sends notification with optional image via sendPhoto.
+     * When imageBytes is provided, sends the photo with caption.
+     * Otherwise falls back to sendMessage.
+     */
+    private val MEDIA_TYPE_JPEG = "image/jpeg".toMediaTypeOrNull()
+    suspend fun sendNotification(message: PushMessage, imageBytes: ByteArray?): String? {
         val botToken = getBotToken() ?: return "BotToken 未配置"
         val chatId = getChatId() ?: return "ChatID 未配置"
 
+        if (imageBytes != null) {
+            return sendPhoto(botToken, chatId, message.telegramText, imageBytes)
+        }
+
+        return sendTextMessage(botToken, chatId, message)
+    }
+
+    private suspend fun sendTextMessage(botToken: String, chatId: String, message: PushMessage): String? {
         val apiUrl = "https://api.telegram.org/bot$botToken/sendMessage"
 
         val jsonBody = JSONObject().apply {
@@ -54,7 +72,6 @@ object TelegramHelper {
                             error = json.optString("description", "unknown")
                         }
                     } else {
-                        // Try to extract description from Telegram error body
                         val desc = try {
                             JSONObject(body).optString("description", "")
                         } catch (_: Exception) { "" }
@@ -68,6 +85,53 @@ object TelegramHelper {
             }
         } catch (e: Exception) {
             android.util.Log.w("Telegram", "Push error: ${e.message}")
+            e.message ?: "网络异常"
+        }
+    }
+
+    /**
+     * Sends a photo via sendPhoto API using multipart/form-data.
+     */
+    private suspend fun sendPhoto(botToken: String, chatId: String, caption: String, imageBytes: ByteArray): String? {
+        val apiUrl = "https://api.telegram.org/bot$botToken/sendPhoto"
+
+        return try {
+            withContext(Dispatchers.IO) {
+                val multipartBody = okhttp3.MultipartBody.Builder()
+                    .setType(okhttp3.MultipartBody.FORM)
+                    .addFormDataPart("chat_id", chatId)
+                    .addFormDataPart("photo", "screenshot.jpg", imageBytes.toRequestBody(MEDIA_TYPE_JPEG))
+                    .addFormDataPart("caption", caption.take(1024))
+                    .addFormDataPart("parse_mode", "Markdown")
+                    .build()
+
+                val request = Request.Builder()
+                    .url(apiUrl)
+                    .post(multipartBody)
+                    .build()
+
+                var error: String? = null
+                client.newCall(request).execute().use { response ->
+                    val body = response.body.string()
+                    if (response.isSuccessful) {
+                        val json = JSONObject(body)
+                        if (!json.optBoolean("ok", false)) {
+                            error = json.optString("description", "unknown")
+                        }
+                    } else {
+                        val desc = try {
+                            JSONObject(body).optString("description", "")
+                        } catch (_: Exception) { "" }
+                        error = if (desc.isNotBlank()) "HTTP ${response.code}: $desc" else "HTTP ${response.code}"
+                    }
+                    if (error != null) {
+                        android.util.Log.w("Telegram", "Push photo failed: $error | body=$body")
+                    }
+                }
+                error
+            }
+        } catch (e: Exception) {
+            android.util.Log.w("Telegram", "Push photo error: ${e.message}")
             e.message ?: "网络异常"
         }
     }

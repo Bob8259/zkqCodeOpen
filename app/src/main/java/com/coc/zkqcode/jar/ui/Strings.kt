@@ -94,6 +94,9 @@ object Strings {
     val gameSave get() = if (LanguageManager.isChinese) "游戏存档" else "Game Save"
     val directLaunch get() = if (LanguageManager.isChinese) "直接启动" else "Direct Launch"
     val testMode get() = if (LanguageManager.isChinese) "测试功能" else "Test Mode"
+    val statusEnabled get() = if (LanguageManager.isChinese) "开启" else "Enabled"
+    val statusDisabled get() = if (LanguageManager.isChinese) "关闭" else "Disabled"
+    val statusTo get() = if (LanguageManager.isChinese) "状态改为" else "Status to"
 
     // ExtractGameSave
     val extractFailedExists get() = if (LanguageManager.isChinese) "提取失败，存档已存在" else "Extract failed - save already exists"
@@ -346,8 +349,8 @@ object Strings {
     val serverchanSendKeyEmpty get() = if (LanguageManager.isChinese) "请先填写 Server酱³ SendKey" else "Please enter your Server酱³ SendKey first"
     val serverchanKickTitle get() = if (LanguageManager.isChinese) "进入游戏失败 - 紫孔雀" else "Game Enter Failed - ZKQ"
     fun serverchanKickMsg(deviceRemark: String, accountIndex: Int, remark: String, timeoutSec: Int) =
-        if (LanguageManager.isChinese) "设备：${deviceRemark.ifBlank { "无" }}，账号${accountIndex}，备注：${remark.ifBlank { "无" }}。倒计时${timeoutSec}结束，进入游戏失败"
-        else "Device: ${deviceRemark.ifBlank { "N/A" }}, Account $accountIndex, Remark: ${remark.ifBlank { "N/A" }}. Countdown $timeoutSec ended, failed to enter game."
+        if (LanguageManager.isChinese) "设备：${deviceRemark.ifBlank { "无" }}，账号${accountIndex}，备注：${remark.ifBlank { "无" }}。\n倒计时${timeoutSec}结束，进入游戏失败"
+        else "Device: ${deviceRemark.ifBlank { "N/A" }}, Account $accountIndex, Remark: ${remark.ifBlank { "N/A" }}.\nCountdown $timeoutSec ended, failed to enter game."
 
     val serverchanWarTitle get() = if (LanguageManager.isChinese) "部落战已开战 - 紫孔雀" else "Clan War Started - ZKQ"
     fun serverchanWarMsg(deviceRemark: String, accountIndex: Int, remark: String) =

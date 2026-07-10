@@ -30,12 +30,23 @@ object WxPusherHelper {
     }
 
     suspend fun sendNotification(message: PushMessage): String? {
+        return sendNotification(message, null)
+    }
+
+    suspend fun sendNotification(message: PushMessage, brailleArt: String?): String? {
         val appToken = getAppToken() ?: return "AppToken 未配置"
         val uid = getUid() ?: return "UID 未配置"
 
+        val effectiveContent = if (brailleArt != null && brailleArt.isNotBlank()) {
+            val codeBlock = "```\n$brailleArt\n```"
+            if (message.content.isBlank()) codeBlock else "${message.content}\n\n$codeBlock"
+        } else {
+            message.content
+        }
+
         val jsonBody = JSONObject().apply {
             put("appToken", appToken)
-            put("content", message.content)
+            put("content", effectiveContent)
             put("contentType", 1)
             put("uids", JSONArray().put(uid))
         }

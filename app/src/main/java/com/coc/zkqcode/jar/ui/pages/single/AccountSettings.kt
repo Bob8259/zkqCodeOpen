@@ -2,8 +2,15 @@ package com.coc.zkqcode.jar.ui.pages.single
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyListScope
@@ -14,13 +21,14 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 
 import androidx.compose.runtime.Composable
@@ -34,15 +42,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Popup
+import androidx.compose.ui.window.PopupProperties
 import com.coc.zkqcode.jar.ui.Strings
 import com.coc.zkqcode.jar.ui.components.CustomButton
 import com.coc.zkqcode.jar.ui.components.SettingSection
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.jar.ui.theme.AppColors
-import com.coc.zkqcode.jar.ui.components.SettingInputRow
 import com.coc.zkqcode.jar.ui.schema.Schema.ACCOUNT_SETTINGS
 import com.coc.zkqcode.jar.ui.schema.Schema.GLOBAL_SETTINGS
 import com.coc.zkqcode.jar.ui.schema.ConfigManager
+import com.coc.zkqcode.jar.ui.components.BelowAnchorPositionProvider
+import com.coc.zkqcode.jar.ui.schema.Schema
 
 private fun updateConfigValue(key: String, value: String) {
     GlobalVars.configStates[key]?.let {
@@ -92,25 +103,167 @@ internal fun SmallTextField(
     )
 }
 
+@Composable
+internal fun SmallTextFieldWithDropdown(
+    modifier: Modifier = Modifier,
+    value: String,
+    onValueChange: (String) -> Unit,
+    options: List<String>,
+    width: Dp = 40.dp,
+) {
+    var expanded by remember { mutableStateOf(false) }
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        SmallTextField(
+            value = value,
+            onValueChange = onValueChange,
+            width = width
+        )
+        Box(modifier = Modifier.wrapContentSize(Alignment.TopStart)) {
+            Button(
+                onClick = {
+                    GlobalVars.isAutoRunEnabled = false
+                    expanded = true
+                },
+                shape = RoundedCornerShape(8.dp),
+                modifier = Modifier.width(25.dp).height(25.dp),
+                contentPadding = PaddingValues(horizontal = 0.dp, vertical = 0.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = AppColors.Primary)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.ArrowDropDown,
+                    contentDescription = null
+                )
+            }
+            if (expanded) {
+                Popup(
+                    popupPositionProvider = BelowAnchorPositionProvider(),
+                    onDismissRequest = { expanded = false },
+                    properties = PopupProperties(focusable = true)
+                ) {
+                    Surface(
+                        shape = RoundedCornerShape(12.dp),
+                        color = AppColors.CardBg,
+                        shadowElevation = 8.dp,
+                        modifier = Modifier.padding(4.dp)
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .padding(8.dp)
+                                .heightIn(max = 320.dp)
+                                .verticalScroll(rememberScrollState()),
+                            verticalArrangement = Arrangement.spacedBy(6.dp)
+                        ) {
+                            options.forEach { option ->
+                                val isSelected = option == value
+                                val cardBg = if (isSelected) AppColors.Primary
+                                else AppColors.PrimaryLight.copy(alpha = 0.10f)
+                                val cardBorder = if (isSelected) AppColors.Primary
+                                else AppColors.PrimaryLight
+                                val textColor = if (isSelected) Color.White
+                                else AppColors.TextPrimary
+
+                                Box(
+                                    modifier = Modifier
+                                        .background(cardBg, RoundedCornerShape(8.dp))
+                                        .border(1.dp, cardBorder, RoundedCornerShape(8.dp))
+                                        .clickable {
+                                            GlobalVars.isAutoRunEnabled = false
+                                            onValueChange(option)
+                                            expanded = false
+                                        }
+                                        .padding(horizontal = 16.dp, vertical = 8.dp)
+                                ) {
+                                    Text(
+                                        text = option,
+                                        color = textColor,
+                                        style = MaterialTheme.typography.labelMedium
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
 fun LazyListScope.accountSettings() {
     val pinnedState = GlobalVars.configStates.getOrPut("_account_pinned") { mutableStateOf("0") }
     val isPinned = pinnedState.value == "1"
+    val configCount = GlobalVars.configStates[GLOBAL_SETTINGS.CONFIG_COUNT.key]?.value?.toIntOrNull() ?: 2
+    val accountCount = GlobalVars.configStates[GLOBAL_SETTINGS.ACCOUNT_COUNT.key]?.value?.toIntOrNull() ?: 3
     item {
         SettingSection {
-            SettingInputRow(
-                key = GLOBAL_SETTINGS.ACCOUNT_COUNT.key,
-                afterChange = { newValue ->
-                    val newCount = newValue.toIntOrNull()
-                    if (newCount != null) {
-                        // Clamp to max 5000
-                        val clamped = newCount.coerceAtMost(5000)
-                        if (clamped != newCount) {
-                            GlobalVars.configStates[GLOBAL_SETTINGS.ACCOUNT_COUNT.key]?.value = clamped.toString()
+            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(top = 6.dp)) {
+                val accountCountState = GlobalVars.configStates.getOrPut(GLOBAL_SETTINGS.ACCOUNT_COUNT.key) { mutableStateOf("3") }
+                Text(
+                    text = Schema.getDisplayName(GLOBAL_SETTINGS.ACCOUNT_COUNT.key),
+                    style = MaterialTheme.typography.labelMedium,
+                    modifier = Modifier.padding(end = 8.dp)
+                )
+                SmallTextField(
+                    value = accountCountState.value,
+                    onValueChange = { newValue ->
+                        accountCountState.value = newValue
+                        val newCount = newValue.toIntOrNull()
+                        if (newCount != null) {
+                            val clamped = newCount.coerceAtMost(5000)
+                            if (clamped != newCount) {
+                                accountCountState.value = clamped.toString()
+                            }
+                            ConfigManager.expandAccountConfigs(clamped)
                         }
-                        ConfigManager.expandAccountConfigs(clamped)
                     }
+                )
+                // Minus button
+                Button(
+                    onClick = {
+                        GlobalVars.isAutoRunEnabled = false
+                        val current = accountCountState.value.toIntOrNull() ?: 1
+                        if (current > 1) {
+                            val newVal = current - 1
+                            accountCountState.value = newVal.toString()
+                            ConfigManager.expandAccountConfigs(newVal)
+                        }
+                    },
+                    shape = RoundedCornerShape(8.dp),
+                    modifier = Modifier.width(25.dp).height(25.dp).padding(end = 1.dp),
+                    contentPadding = PaddingValues(horizontal = 0.dp, vertical = 0.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = AppColors.Primary)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Remove,
+                        contentDescription = "-",
+                        modifier = Modifier.size(18.dp)
+                    )
                 }
-            )
+                // Plus button
+                Button(
+                    onClick = {
+                        GlobalVars.isAutoRunEnabled = false
+                        val current = accountCountState.value.toIntOrNull() ?: 1
+                        if (current < 5000) {
+                            val newVal = current + 1
+                            accountCountState.value = newVal.toString()
+                            ConfigManager.expandAccountConfigs(newVal)
+                        }
+                    },
+                    shape = RoundedCornerShape(8.dp),
+                    modifier = Modifier.width(25.dp).height(25.dp),
+                    contentPadding = PaddingValues(horizontal = 0.dp, vertical = 0.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = AppColors.Primary)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = "+",
+                        modifier = Modifier.size(18.dp)
+                    )
+                }
+            }
             Row {
                 CustomButton(
                     text = Strings.selectAll,
@@ -142,6 +295,12 @@ fun LazyListScope.accountSettings() {
             var expandedStartMethod by remember { mutableStateOf(false) }
             val startMethodOptions = listOf(Strings.gameSave, Strings.directLaunch, Strings.testMode)
 
+            var batchStatusStart by remember { mutableStateOf("") }
+            var batchStatusEnd by remember { mutableStateOf("") }
+            var selectedStatusIndex by remember { mutableIntStateOf(0) }
+            var expandedStatus by remember { mutableStateOf(false) }
+            val statusOptions = listOf(Strings.statusEnabled, Strings.statusDisabled)
+
             FlowRow(
                 modifier = Modifier.padding(top = 6.dp)
             ) {
@@ -152,10 +311,11 @@ fun LazyListScope.accountSettings() {
                         .padding(end = 4.dp)
                         .align(Alignment.CenterVertically)
                 )
-                SmallTextField(
+                SmallTextFieldWithDropdown(
                     modifier = Modifier.align(Alignment.CenterVertically),
                     value = configValue,
                     onValueChange = { configValue = it },
+                    options = (1..configCount).map { it.toString() },
                 )
                 Text(
                     text = Strings.toAccounts,
@@ -164,10 +324,11 @@ fun LazyListScope.accountSettings() {
                         .padding(horizontal = 4.dp)
                         .align(Alignment.CenterVertically)
                 )
-                SmallTextField(
+                SmallTextFieldWithDropdown(
                     modifier = Modifier.align(Alignment.CenterVertically),
                     value = startAccount,
-                    onValueChange = { startAccount = it }
+                    onValueChange = { startAccount = it },
+                    options = (1..accountCount).map { it.toString() },
                 )
                 Text(
                     text = "-",
@@ -176,10 +337,11 @@ fun LazyListScope.accountSettings() {
                         .padding(horizontal = 4.dp)
                         .align(Alignment.CenterVertically)
                 )
-                SmallTextField(
+                SmallTextFieldWithDropdown(
                     modifier = Modifier.align(Alignment.CenterVertically).padding(end = 4.dp),
                     value = endAccount,
-                    onValueChange = { endAccount = it }
+                    onValueChange = { endAccount = it },
+                    options = (1..accountCount).map { it.toString() },
                 )
                 CustomButton(
                     text = Strings.confirm,
@@ -200,10 +362,11 @@ fun LazyListScope.accountSettings() {
                         .padding(end = 4.dp)
                         .align(Alignment.CenterVertically)
                 )
-                SmallTextField(
+                SmallTextFieldWithDropdown(
                     modifier = Modifier.align(Alignment.CenterVertically),
                     value = batchVerStartAccount,
-                    onValueChange = { batchVerStartAccount = it }
+                    onValueChange = { batchVerStartAccount = it },
+                    options = (1..accountCount).map { it.toString() },
                 )
                 Text(
                     text = "-",
@@ -212,10 +375,11 @@ fun LazyListScope.accountSettings() {
                         .padding(horizontal = 4.dp)
                         .align(Alignment.CenterVertically)
                 )
-                SmallTextField(
+                SmallTextFieldWithDropdown(
                     modifier = Modifier.align(Alignment.CenterVertically),
                     value = batchVerEndAccount,
-                    onValueChange = { batchVerEndAccount = it }
+                    onValueChange = { batchVerEndAccount = it },
+                    options = (1..accountCount).map { it.toString() },
                 )
                 Text(
                     text = Strings.changeTo,
@@ -245,22 +409,54 @@ fun LazyListScope.accountSettings() {
                         Icon(Icons.Default.ArrowDropDown, contentDescription = null)
                     }
 
-                    DropdownMenu(
-                        expanded = expandedVer,
-                        onDismissRequest = { expandedVer = false }
-                    ) {
-                        verOptions.forEachIndexed { idx, option ->
-                            DropdownMenuItem(
-                                text = {
-                                    Text(option, style = MaterialTheme.typography.labelMedium)
-                                },
-                                onClick = {
-                                    GlobalVars.isAutoRunEnabled = false
-                                    selectedVerIndex = idx
-                                    expandedVer = false
-                                },
-                                modifier = Modifier.height(35.dp)
-                            )
+                    if (expandedVer) {
+                        Popup(
+                            popupPositionProvider = BelowAnchorPositionProvider(),
+                            onDismissRequest = { expandedVer = false },
+                            properties = PopupProperties(focusable = true)
+                        ) {
+                            Surface(
+                                shape = RoundedCornerShape(12.dp),
+                                color = AppColors.CardBg,
+                                shadowElevation = 8.dp,
+                                modifier = Modifier.padding(4.dp)
+                            ) {
+                                Column(
+                                    modifier = Modifier
+                                        .padding(8.dp)
+                                        .heightIn(max = 320.dp)
+                                        .verticalScroll(rememberScrollState()),
+                                    verticalArrangement = Arrangement.spacedBy(6.dp)
+                                ) {
+                                    verOptions.forEachIndexed { idx, option ->
+                                        val isSelected = idx == selectedVerIndex
+                                        val cardBg = if (isSelected) AppColors.Primary
+                                        else AppColors.PrimaryLight.copy(alpha = 0.10f)
+                                        val cardBorder = if (isSelected) AppColors.Primary
+                                        else AppColors.PrimaryLight
+                                        val textColor = if (isSelected) Color.White
+                                        else AppColors.TextPrimary
+
+                                        Box(
+                                            modifier = Modifier
+                                                .background(cardBg, RoundedCornerShape(8.dp))
+                                                .border(1.dp, cardBorder, RoundedCornerShape(8.dp))
+                                                .clickable {
+                                                    GlobalVars.isAutoRunEnabled = false
+                                                    selectedVerIndex = idx
+                                                    expandedVer = false
+                                                }
+                                                .padding(horizontal = 16.dp, vertical = 8.dp)
+                                        ) {
+                                            Text(
+                                                text = option,
+                                                color = textColor,
+                                                style = MaterialTheme.typography.labelMedium
+                                            )
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -285,22 +481,54 @@ fun LazyListScope.accountSettings() {
                         Icon(Icons.Default.ArrowDropDown, contentDescription = null)
                     }
 
-                    DropdownMenu(
-                        expanded = expandedStartMethod,
-                        onDismissRequest = { expandedStartMethod = false }
-                    ) {
-                        startMethodOptions.forEachIndexed { idx, option ->
-                            DropdownMenuItem(
-                                text = {
-                                    Text(option, style = MaterialTheme.typography.labelMedium)
-                                },
-                                onClick = {
-                                    GlobalVars.isAutoRunEnabled = false
-                                    selectedStartMethodIndex = idx
-                                    expandedStartMethod = false
-                                },
-                                modifier = Modifier.height(35.dp)
-                            )
+                    if (expandedStartMethod) {
+                        Popup(
+                            popupPositionProvider = BelowAnchorPositionProvider(),
+                            onDismissRequest = { expandedStartMethod = false },
+                            properties = PopupProperties(focusable = true)
+                        ) {
+                            Surface(
+                                shape = RoundedCornerShape(12.dp),
+                                color = AppColors.CardBg,
+                                shadowElevation = 8.dp,
+                                modifier = Modifier.padding(4.dp)
+                            ) {
+                                Column(
+                                    modifier = Modifier
+                                        .padding(8.dp)
+                                        .heightIn(max = 320.dp)
+                                        .verticalScroll(rememberScrollState()),
+                                    verticalArrangement = Arrangement.spacedBy(6.dp)
+                                ) {
+                                    startMethodOptions.forEachIndexed { idx, option ->
+                                        val isSelected = idx == selectedStartMethodIndex
+                                        val cardBg = if (isSelected) AppColors.Primary
+                                        else AppColors.PrimaryLight.copy(alpha = 0.10f)
+                                        val cardBorder = if (isSelected) AppColors.Primary
+                                        else AppColors.PrimaryLight
+                                        val textColor = if (isSelected) Color.White
+                                        else AppColors.TextPrimary
+
+                                        Box(
+                                            modifier = Modifier
+                                                .background(cardBg, RoundedCornerShape(8.dp))
+                                                .border(1.dp, cardBorder, RoundedCornerShape(8.dp))
+                                                .clickable {
+                                                    GlobalVars.isAutoRunEnabled = false
+                                                    selectedStartMethodIndex = idx
+                                                    expandedStartMethod = false
+                                                }
+                                                .padding(horizontal = 16.dp, vertical = 8.dp)
+                                        ) {
+                                            Text(
+                                                text = option,
+                                                color = textColor,
+                                                style = MaterialTheme.typography.labelMedium
+                                            )
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -310,6 +538,121 @@ fun LazyListScope.accountSettings() {
                     onClick = {
                         batchUpdateByRange(batchVerStartAccount, batchVerEndAccount, ACCOUNT_SETTINGS.GAME_VERSION.key, selectedVerIndex.toString())
                         batchUpdateByRange(batchVerStartAccount, batchVerEndAccount, ACCOUNT_SETTINGS.START_METHOD.key, selectedStartMethodIndex.toString())
+                    },
+                    marginTop = 0.dp
+                )
+            }
+
+            FlowRow(
+                modifier = Modifier.padding(top = 6.dp)
+            ) {
+                Text(
+                    text = Strings.applyAccountLabel,
+                    style = MaterialTheme.typography.labelMedium,
+                    modifier = Modifier
+                        .padding(end = 4.dp)
+                        .align(Alignment.CenterVertically)
+                )
+                SmallTextFieldWithDropdown(
+                    modifier = Modifier.align(Alignment.CenterVertically),
+                    value = batchStatusStart,
+                    onValueChange = { batchStatusStart = it },
+                    options = (1..accountCount).map { it.toString() },
+                )
+                Text(
+                    text = "-",
+                    style = MaterialTheme.typography.labelMedium,
+                    modifier = Modifier
+                        .padding(horizontal = 4.dp)
+                        .align(Alignment.CenterVertically)
+                )
+                SmallTextFieldWithDropdown(
+                    modifier = Modifier.align(Alignment.CenterVertically),
+                    value = batchStatusEnd,
+                    onValueChange = { batchStatusEnd = it },
+                    options = (1..accountCount).map { it.toString() },
+                )
+                Text(
+                    text = Strings.statusTo,
+                    style = MaterialTheme.typography.labelMedium,
+                    modifier = Modifier
+                        .padding(horizontal = 4.dp)
+                        .align(Alignment.CenterVertically)
+                )
+                Box(
+                    modifier = Modifier
+                        .wrapContentSize(Alignment.TopStart)
+                        .align(Alignment.CenterVertically).padding(end = 4.dp)
+                ) {
+                    Button(
+                        onClick = {
+                            GlobalVars.isAutoRunEnabled = false
+                            expandedStatus = true
+                        },
+                        shape = RoundedCornerShape(8.dp),
+                        modifier = Modifier.height(30.dp),
+                        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 0.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = AppColors.Primary)
+                    ) {
+                        Text(statusOptions[selectedStatusIndex], style = MaterialTheme.typography.labelMedium)
+                        Icon(Icons.Default.ArrowDropDown, contentDescription = null)
+                    }
+
+                    if (expandedStatus) {
+                        Popup(
+                            popupPositionProvider = BelowAnchorPositionProvider(),
+                            onDismissRequest = { expandedStatus = false },
+                            properties = PopupProperties(focusable = true)
+                        ) {
+                            Surface(
+                                shape = RoundedCornerShape(12.dp),
+                                color = AppColors.CardBg,
+                                shadowElevation = 8.dp,
+                                modifier = Modifier.padding(4.dp)
+                            ) {
+                                Column(
+                                    modifier = Modifier
+                                        .padding(8.dp)
+                                        .heightIn(max = 320.dp)
+                                        .verticalScroll(rememberScrollState()),
+                                    verticalArrangement = Arrangement.spacedBy(6.dp)
+                                ) {
+                                    statusOptions.forEachIndexed { idx, option ->
+                                        val isSelected = idx == selectedStatusIndex
+                                        val cardBg = if (isSelected) AppColors.Primary
+                                        else AppColors.PrimaryLight.copy(alpha = 0.10f)
+                                        val cardBorder = if (isSelected) AppColors.Primary
+                                        else AppColors.PrimaryLight
+                                        val textColor = if (isSelected) Color.White
+                                        else AppColors.TextPrimary
+
+                                        Box(
+                                            modifier = Modifier
+                                                .background(cardBg, RoundedCornerShape(8.dp))
+                                                .border(1.dp, cardBorder, RoundedCornerShape(8.dp))
+                                                .clickable {
+                                                    GlobalVars.isAutoRunEnabled = false
+                                                    selectedStatusIndex = idx
+                                                    expandedStatus = false
+                                                }
+                                                .padding(horizontal = 16.dp, vertical = 8.dp)
+                                        ) {
+                                            Text(
+                                                text = option,
+                                                color = textColor,
+                                                style = MaterialTheme.typography.labelMedium
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                CustomButton(
+                    text = Strings.confirm,
+                    onClick = {
+                        batchUpdateByRange(batchStatusStart, batchStatusEnd, ACCOUNT_SETTINGS.ISOPEN.key, if (selectedStatusIndex == 0) "1" else "0")
                     },
                     marginTop = 0.dp
                 )
