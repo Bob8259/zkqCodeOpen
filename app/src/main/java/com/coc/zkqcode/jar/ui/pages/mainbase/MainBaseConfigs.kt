@@ -357,9 +357,15 @@ fun LazyListScope.mainBaseConfig(
                 key = "${MAIN_BASE_SETTINGS.START_CLAN_LEAGUE.key}_c$index", explain = Strings.startClanLeagueExplain
             )
             AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.START_CLAN_LEAGUE.key}_c$index"]?.value == "1") {
-                SettingDropdown(
-                    key = "${MAIN_BASE_SETTINGS.START_CLAN_LEAGUE_SIZE.key}_c$index", options = listOf("11v11", "15v15", "30v30")
-                )
+                Column {
+                    SettingDropdown(
+                        key = "${MAIN_BASE_SETTINGS.START_CLAN_LEAGUE_SIZE.key}_c$index", options = listOf("11v11", "15v15", "30v30")
+                    )
+                    SettingDropdown(
+                        key = "${MAIN_BASE_SETTINGS.EVENT_LEAGUE_START_DAY.key}_c$index",
+                        options = listOf("禁用") + (11..22).map { "${it}日" }
+                    )
+                }
             }
 
             SettingSwitchIcon(

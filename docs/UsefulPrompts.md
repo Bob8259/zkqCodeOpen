@@ -13,7 +13,7 @@ Help me modify app\src\main\java\com\coc\zkqcode\jar\code\colorschema\MyColors.k
 Help me commit and push my code to both | `origin` | https://github.com/Bob8259/zkqCode.git |
 | `collaborate` | https://github.com/Bob8259/zkqCode-collaborate.git |, and switch back to origin. You can write a concise commit message. If there are any conflicts, keep my local code. NEVER pull the remote code.
 
-Help me read all open pull requests of https://github.com/Bob8259/zkqCode-collaborate.git and list the changes under app/src/main/java/com/coc/zkqcode/jar except suspend fun displayAds(). First list all open PRs using `gh pr list --repo Bob8259/zkqCode-collaborate`, then for each PR, view its diff using `gh pr diff <PR_NUMBER> --repo Bob8259/zkqCode-collaborate`. Create a new .md file to list the changes. Remember, you should compare the diffs with my local code. List changes only; do not modify any files.
+Help me read the oldest open pull request of https://github.com/Bob8259/zkqCode-collaborate.git and list the changes under app/src/main/java/com/coc/zkqcode/jar except suspend fun displayAds(). First find the oldest open PR using `gh pr list --repo Bob8259/zkqCode-collaborate --json number,title,createdAt --jq "sort_by(.createdAt) | .[0]"`, then view its diff using `gh pr diff <PR_NUMBER> --repo Bob8259/zkqCode-collaborate`. Create a new .md file to list the changes. Remember, you should compare the diffs with my local code. List changes only; do not modify any files.
 
 OK. Now, merge the changes to my local code manually according to the plan, and close this PR (mark as merged), delete the plan after merging.
 

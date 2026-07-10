@@ -57,9 +57,11 @@ object TouchActions {
     suspend fun moveSmoothly(
         fromX: Float, fromY: Float, toX: Float, toY: Float, duration: Int, id: Int = 1, isJitter: Boolean = false
     ) {
+        showDebugInfo("TouchActions: moveSmoothly start ($fromX,$fromY)->($toX,$toY) duration=$duration id=$id isJitter=$isJitter")
         performMove(
             duration = duration, isJitter = isJitter, PointerMove(id, fromX, fromY, toX, toY)
         )
+        showDebugInfo("TouchActions: moveSmoothly end ($fromX,$fromY)->($toX,$toY) id=$id")
     }
 
 
@@ -69,6 +71,7 @@ object TouchActions {
         waitForPlay()
         val actualDelayTime = delayTime ?: Random.nextInt(200, 301)
         val delayMultiplier = getDelayMultiplier()
+        showDebugInfo("TouchActions: swipe start ($startX,$startY)->($endX,$endY) delayTime=$actualDelayTime isJitter=$isJitter delayAfter=$delayAfter")
 
         touchDown(startX.toFloat(), startY.toFloat(), 1)
         try {
@@ -91,6 +94,7 @@ object TouchActions {
         if (delayAfter > 0) {
             delayWithMultiplier(delayAfter)
         }
+        showDebugInfo("TouchActions: swipe end ($startX,$startY)->($endX,$endY)")
     }
 
     suspend fun pinchIn(
@@ -99,6 +103,7 @@ object TouchActions {
         waitForPlay()
         val actualDuration = duration ?: Random.nextLong(100, 201)
         val delayMultiplier = getDelayMultiplier()
+        showDebugInfo("TouchActions: pinchIn start ($x1,$y1)+($x2,$y2)->($finalX,$finalY) duration=$actualDuration isJitter=$isJitter")
 
         touchDown(x1.toFloat(), y1.toFloat(), 1)
         touchDown(x2.toFloat(), y2.toFloat(), 2)
@@ -116,6 +121,7 @@ object TouchActions {
                 touchUp(2)
             }
         }
+        showDebugInfo("TouchActions: pinchIn end ($x1,$y1)+($x2,$y2)->($finalX,$finalY)")
     }
 
     suspend fun pinchOut(
@@ -124,6 +130,7 @@ object TouchActions {
         waitForPlay()
         val actualDuration = duration ?: Random.nextLong(300, 501)
         val delayMultiplier = getDelayMultiplier()
+        showDebugInfo("TouchActions: pinchOut start ($finalX,$finalY)->($x1,$y1)+($x2,$y2) duration=$actualDuration isJitter=$isJitter")
 
         touchDown(finalX.toFloat(), finalY.toFloat(), 1)
         touchDown(finalX.toFloat(), finalY.toFloat(), 2)
@@ -141,6 +148,7 @@ object TouchActions {
                 touchUp(2)
             }
         }
+        showDebugInfo("TouchActions: pinchOut end ($finalX,$finalY)->($x1,$y1)+($x2,$y2)")
     }
 
     private class PointerMove(
@@ -249,6 +257,7 @@ object TouchActions {
         // curl/wget transports are slower; reduce post-tap delay to avoid unnecessary wait time.
         val isSlowTransport = GlobalVars.serverConnectionMethod == ServerConnectionMethod.LIBSU_CURL || GlobalVars.serverConnectionMethod == ServerConnectionMethod.LIBSU_WGET
         val effectiveDelayTime = if (isSlowTransport) maxOf(0, delayTime - 20) else delayTime
+        showDebugInfo("TouchActions: tap start ($x,$y) isJitter=$isJitter delayTime=$effectiveDelayTime")
 
         touchDown(x.toFloat(), y.toFloat(), 1)
         try {
@@ -269,5 +278,6 @@ object TouchActions {
                 delayWithMultiplier(effectiveDelayTime)
             }
         }
+        showDebugInfo("TouchActions: tap end ($x,$y)")
     }
 }
