@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.padding
@@ -87,7 +88,7 @@ internal fun SmallTextField(
     modifier: Modifier = Modifier,
     value: String,
     onValueChange: (String) -> Unit,
-    width: Dp = 40.dp,
+    width: Dp = 50.dp,
 ) {
     BasicTextField(
         value = value,
@@ -109,7 +110,7 @@ internal fun SmallTextFieldWithDropdown(
     value: String,
     onValueChange: (String) -> Unit,
     options: List<String>,
-    width: Dp = 40.dp,
+    width: Dp = 50.dp,
 ) {
     var expanded by remember { mutableStateOf(false) }
     Row(
@@ -182,6 +183,82 @@ internal fun SmallTextFieldWithDropdown(
                                         style = MaterialTheme.typography.labelMedium
                                     )
                                 }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+internal fun DropdownSelectButton(
+    selectedText: String,
+    options: List<String>,
+    expanded: Boolean,
+    onToggle: () -> Unit,
+    onSelect: (Int) -> Unit,
+    onDismiss: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Box(modifier = modifier.wrapContentSize(Alignment.TopStart)) {
+        Button(
+            onClick = {
+                GlobalVars.isAutoRunEnabled = false
+                onToggle()
+            },
+            shape = RoundedCornerShape(8.dp),
+            modifier = Modifier.height(30.dp),
+            contentPadding = PaddingValues(horizontal = 12.dp, vertical = 0.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = AppColors.Primary)
+        ) {
+            Text(selectedText, style = MaterialTheme.typography.labelMedium)
+            Icon(Icons.Default.ArrowDropDown, contentDescription = null)
+        }
+        if (expanded) {
+            Popup(
+                popupPositionProvider = BelowAnchorPositionProvider(),
+                onDismissRequest = onDismiss,
+                properties = PopupProperties(focusable = true)
+            ) {
+                Surface(
+                    shape = RoundedCornerShape(12.dp),
+                    color = AppColors.CardBg,
+                    shadowElevation = 8.dp,
+                    modifier = Modifier.padding(4.dp)
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .padding(8.dp)
+                            .heightIn(max = 320.dp)
+                            .verticalScroll(rememberScrollState()),
+                        verticalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        options.forEachIndexed { idx, option ->
+                            val isSelected = option == selectedText
+                            val cardBg = if (isSelected) AppColors.Primary
+                            else AppColors.PrimaryLight.copy(alpha = 0.10f)
+                            val cardBorder = if (isSelected) AppColors.Primary
+                            else AppColors.PrimaryLight
+                            val textColor = if (isSelected) Color.White
+                            else AppColors.TextPrimary
+
+                            Box(
+                                modifier = Modifier
+                                    .background(cardBg, RoundedCornerShape(8.dp))
+                                    .border(1.dp, cardBorder, RoundedCornerShape(8.dp))
+                                    .clickable {
+                                        GlobalVars.isAutoRunEnabled = false
+                                        onSelect(idx)
+                                    }
+                                    .padding(horizontal = 16.dp, vertical = 8.dp)
+                            ) {
+                                Text(
+                                    text = option,
+                                    color = textColor,
+                                    style = MaterialTheme.typography.labelMedium
+                                )
                             }
                         }
                     }
@@ -281,381 +358,140 @@ fun LazyListScope.accountSettings() {
                     onClick = { pinnedState.value = if (isPinned) "0" else "1" }
                 )
             }
-            var configValue by remember { mutableStateOf("") }
-            var startAccount by remember { mutableStateOf("") }
-            var endAccount by remember { mutableStateOf("") }
+            // ─── Batch operation: single dynamic form ───
+            var batchOpType by remember { mutableIntStateOf(0) }
+            val batchOpOptions = listOf(Strings.applyConfigLabel, Strings.batchOpVersionMethod, Strings.batchOpStatus)
+            var expandedOpType by remember { mutableStateOf(false) }
 
-            var batchVerStartAccount by remember { mutableStateOf("") }
-            var batchVerEndAccount by remember { mutableStateOf("") }
-            var selectedVerIndex by remember { mutableIntStateOf(0) }
-            var expandedVer by remember { mutableStateOf(false) }
-            val verOptions = listOf(Strings.cnVersion, Strings.globalVersion, Strings.atrasis)
+            var batchStart by remember { mutableStateOf("") }
+            var batchEnd by remember { mutableStateOf("") }
 
-            var selectedStartMethodIndex by remember { mutableIntStateOf(0) }
-            var expandedStartMethod by remember { mutableStateOf(false) }
-            val startMethodOptions = listOf(Strings.gameSave, Strings.directLaunch, Strings.testMode)
+            var batchCfgValue by remember { mutableStateOf("") }
 
-            var batchStatusStart by remember { mutableStateOf("") }
-            var batchStatusEnd by remember { mutableStateOf("") }
-            var selectedStatusIndex by remember { mutableIntStateOf(0) }
-            var expandedStatus by remember { mutableStateOf(false) }
-            val statusOptions = listOf(Strings.statusEnabled, Strings.statusDisabled)
+            var batchVerIdx by remember { mutableIntStateOf(0) }
+            var expandedBatchVer by remember { mutableStateOf(false) }
+            var batchMethodIdx by remember { mutableIntStateOf(0) }
+            var expandedBatchMethod by remember { mutableStateOf(false) }
 
-            FlowRow(
-                modifier = Modifier.padding(top = 6.dp)
-            ) {
-                Text(
-                    text = Strings.applyConfigLabel,
-                    style = MaterialTheme.typography.labelMedium,
-                    modifier = Modifier
-                        .padding(end = 4.dp)
-                        .align(Alignment.CenterVertically)
-                )
-                SmallTextFieldWithDropdown(
-                    modifier = Modifier.align(Alignment.CenterVertically),
-                    value = configValue,
-                    onValueChange = { configValue = it },
-                    options = (1..configCount).map { it.toString() },
-                )
-                Text(
-                    text = Strings.toAccounts,
-                    style = MaterialTheme.typography.labelMedium,
-                    modifier = Modifier
-                        .padding(horizontal = 4.dp)
-                        .align(Alignment.CenterVertically)
-                )
-                SmallTextFieldWithDropdown(
-                    modifier = Modifier.align(Alignment.CenterVertically),
-                    value = startAccount,
-                    onValueChange = { startAccount = it },
-                    options = (1..accountCount).map { it.toString() },
-                )
-                Text(
-                    text = "-",
-                    style = MaterialTheme.typography.labelMedium,
-                    modifier = Modifier
-                        .padding(horizontal = 4.dp)
-                        .align(Alignment.CenterVertically)
-                )
-                SmallTextFieldWithDropdown(
-                    modifier = Modifier.align(Alignment.CenterVertically).padding(end = 4.dp),
-                    value = endAccount,
-                    onValueChange = { endAccount = it },
-                    options = (1..accountCount).map { it.toString() },
-                )
-                CustomButton(
-                    text = Strings.confirm,
-                    onClick = {
-                        batchUpdateByRange(startAccount, endAccount, ACCOUNT_SETTINGS.ACCOUNT_CONFIG.key, configValue)
-                    },
-                    marginTop = 0.dp
-                )
-            }
+            var batchStsIdx by remember { mutableIntStateOf(0) }
+            var expandedBatchSts by remember { mutableStateOf(false) }
+            val batchStsOptions = listOf(Strings.statusEnabled, Strings.statusDisabled)
 
-            FlowRow(
-                modifier = Modifier.padding(top = 6.dp)
-            ) {
-                Text(
-                    text = Strings.applyAccountLabel,
-                    style = MaterialTheme.typography.labelMedium,
-                    modifier = Modifier
-                        .padding(end = 4.dp)
-                        .align(Alignment.CenterVertically)
-                )
-                SmallTextFieldWithDropdown(
-                    modifier = Modifier.align(Alignment.CenterVertically),
-                    value = batchVerStartAccount,
-                    onValueChange = { batchVerStartAccount = it },
-                    options = (1..accountCount).map { it.toString() },
-                )
-                Text(
-                    text = "-",
-                    style = MaterialTheme.typography.labelMedium,
-                    modifier = Modifier
-                        .padding(horizontal = 4.dp)
-                        .align(Alignment.CenterVertically)
-                )
-                SmallTextFieldWithDropdown(
-                    modifier = Modifier.align(Alignment.CenterVertically),
-                    value = batchVerEndAccount,
-                    onValueChange = { batchVerEndAccount = it },
-                    options = (1..accountCount).map { it.toString() },
-                )
-                Text(
-                    text = Strings.changeTo,
-                    style = MaterialTheme.typography.labelMedium,
-                    modifier = Modifier
-                        .padding(horizontal = 4.dp)
-                        .align(Alignment.CenterVertically)
-                )
-
-                // Version Dropdown
-                Box(
-                    modifier = Modifier
-                        .wrapContentSize(Alignment.TopStart)
-                        .align(Alignment.CenterVertically).padding(end = 4.dp)
+            Column(modifier = Modifier.padding(top = 8.dp)) {
+                // Row 1: Operation type
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        text = Strings.batchOperation,
+                        style = MaterialTheme.typography.labelMedium,
+                        modifier = Modifier.padding(end = 6.dp)
+                    )
+                    DropdownSelectButton(
+                        selectedText = batchOpOptions[batchOpType],
+                        options = batchOpOptions,
+                        expanded = expandedOpType,
+                        onToggle = { expandedOpType = true },
+                        onSelect = { batchOpType = it; expandedOpType = false },
+                        onDismiss = { expandedOpType = false }
+                    )
+                }
+                // Row 2: Account range
+                Row(
+                    modifier = Modifier.padding(top = 6.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Button(
-                        onClick = {
-                            GlobalVars.isAutoRunEnabled = false
-                            expandedVer = true
-                        },
-                        shape = RoundedCornerShape(8.dp),
-                        modifier = Modifier.height(30.dp),
-                        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 0.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = AppColors.Primary)
-                    ) {
-                        Text(verOptions[selectedVerIndex], style = MaterialTheme.typography.labelMedium)
-                        Icon(Icons.Default.ArrowDropDown, contentDescription = null)
-                    }
-
-                    if (expandedVer) {
-                        Popup(
-                            popupPositionProvider = BelowAnchorPositionProvider(),
-                            onDismissRequest = { expandedVer = false },
-                            properties = PopupProperties(focusable = true)
-                        ) {
-                            Surface(
-                                shape = RoundedCornerShape(12.dp),
-                                color = AppColors.CardBg,
-                                shadowElevation = 8.dp,
-                                modifier = Modifier.padding(4.dp)
-                            ) {
-                                Column(
-                                    modifier = Modifier
-                                        .padding(8.dp)
-                                        .heightIn(max = 320.dp)
-                                        .verticalScroll(rememberScrollState()),
-                                    verticalArrangement = Arrangement.spacedBy(6.dp)
-                                ) {
-                                    verOptions.forEachIndexed { idx, option ->
-                                        val isSelected = idx == selectedVerIndex
-                                        val cardBg = if (isSelected) AppColors.Primary
-                                        else AppColors.PrimaryLight.copy(alpha = 0.10f)
-                                        val cardBorder = if (isSelected) AppColors.Primary
-                                        else AppColors.PrimaryLight
-                                        val textColor = if (isSelected) Color.White
-                                        else AppColors.TextPrimary
-
-                                        Box(
-                                            modifier = Modifier
-                                                .background(cardBg, RoundedCornerShape(8.dp))
-                                                .border(1.dp, cardBorder, RoundedCornerShape(8.dp))
-                                                .clickable {
-                                                    GlobalVars.isAutoRunEnabled = false
-                                                    selectedVerIndex = idx
-                                                    expandedVer = false
-                                                }
-                                                .padding(horizontal = 16.dp, vertical = 8.dp)
-                                        ) {
-                                            Text(
-                                                text = option,
-                                                color = textColor,
-                                                style = MaterialTheme.typography.labelMedium
-                                            )
-                                        }
-                                    }
-                                }
-                            }
+                    Text(
+                        text = Strings.batchAccount,
+                        style = MaterialTheme.typography.labelMedium,
+                        modifier = Modifier.padding(end = 6.dp)
+                    )
+                    SmallTextFieldWithDropdown(
+                        value = batchStart,
+                        onValueChange = { batchStart = it },
+                        options = (1..accountCount).map { it.toString() },
+                    )
+                    Text(
+                        text = "-",
+                        style = MaterialTheme.typography.labelMedium,
+                        modifier = Modifier.padding(horizontal = 6.dp)
+                    )
+                    SmallTextFieldWithDropdown(
+                        value = batchEnd,
+                        onValueChange = { batchEnd = it },
+                        options = (1..accountCount).map { it.toString() },
+                    )
+                }
+                // Row 3: Parameter (dynamic based on operation type)
+                FlowRow(
+                    modifier = Modifier.padding(top = 6.dp),
+                ) {
+                    Text(
+                        text = Strings.batchParam,
+                        style = MaterialTheme.typography.labelMedium,
+                        modifier = Modifier.padding(top = 6.dp, end = 6.dp)
+                    )
+                    when (batchOpType) {
+                        0 -> { // Assign config profile
+                            Text(
+                                text = Strings.applyConfigLabel,
+                                style = MaterialTheme.typography.labelMedium,
+                                modifier = Modifier.padding(top = 6.dp, end = 6.dp)
+                            )
+                            SmallTextFieldWithDropdown(
+                                value = batchCfgValue,
+                                onValueChange = { batchCfgValue = it },
+                                options = (1..configCount).map { it.toString() },
+                            )
+                        }
+                        1 -> { // Version + start method
+                            DropdownSelectButton(
+                                selectedText = listOf(Strings.cnVersion, Strings.globalVersion, Strings.atrasis)[batchVerIdx],
+                                options = listOf(Strings.cnVersion, Strings.globalVersion, Strings.atrasis),
+                                expanded = expandedBatchVer,
+                                onToggle = { expandedBatchVer = true },
+                                onSelect = { batchVerIdx = it; expandedBatchVer = false },
+                                onDismiss = { expandedBatchVer = false }
+                            )
+                            Text(
+                                text = Strings.batchMethodLabel,
+                                style = MaterialTheme.typography.labelMedium,
+                                modifier = Modifier.padding(top = 6.dp, start = 6.dp, end = 6.dp)
+                            )
+                            DropdownSelectButton(
+                                selectedText = listOf(Strings.gameSave, Strings.directLaunch, Strings.testMode)[batchMethodIdx],
+                                options = listOf(Strings.gameSave, Strings.directLaunch, Strings.testMode),
+                                expanded = expandedBatchMethod,
+                                onToggle = { expandedBatchMethod = true },
+                                onSelect = { batchMethodIdx = it; expandedBatchMethod = false },
+                                onDismiss = { expandedBatchMethod = false }
+                            )
+                        }
+                        2 -> { // Status
+                            DropdownSelectButton(
+                                selectedText = batchStsOptions[batchStsIdx],
+                                options = batchStsOptions,
+                                expanded = expandedBatchSts,
+                                onToggle = { expandedBatchSts = true },
+                                onSelect = { batchStsIdx = it; expandedBatchSts = false },
+                                onDismiss = { expandedBatchSts = false }
+                            )
                         }
                     }
-                }
-
-                // Start Method Dropdown
-                Box(
-                    modifier = Modifier
-                        .wrapContentSize(Alignment.TopStart)
-                        .align(Alignment.CenterVertically).padding(end = 4.dp)
-                ) {
-                    Button(
+                    Spacer(Modifier.width(8.dp))
+                    CustomButton(
+                        text = Strings.confirm,
                         onClick = {
-                            GlobalVars.isAutoRunEnabled = false
-                            expandedStartMethod = true
-                        },
-                        shape = RoundedCornerShape(8.dp),
-                        modifier = Modifier.height(30.dp),
-                        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 0.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = AppColors.Primary)
-                    ) {
-                        Text(startMethodOptions[selectedStartMethodIndex], style = MaterialTheme.typography.labelMedium)
-                        Icon(Icons.Default.ArrowDropDown, contentDescription = null)
-                    }
-
-                    if (expandedStartMethod) {
-                        Popup(
-                            popupPositionProvider = BelowAnchorPositionProvider(),
-                            onDismissRequest = { expandedStartMethod = false },
-                            properties = PopupProperties(focusable = true)
-                        ) {
-                            Surface(
-                                shape = RoundedCornerShape(12.dp),
-                                color = AppColors.CardBg,
-                                shadowElevation = 8.dp,
-                                modifier = Modifier.padding(4.dp)
-                            ) {
-                                Column(
-                                    modifier = Modifier
-                                        .padding(8.dp)
-                                        .heightIn(max = 320.dp)
-                                        .verticalScroll(rememberScrollState()),
-                                    verticalArrangement = Arrangement.spacedBy(6.dp)
-                                ) {
-                                    startMethodOptions.forEachIndexed { idx, option ->
-                                        val isSelected = idx == selectedStartMethodIndex
-                                        val cardBg = if (isSelected) AppColors.Primary
-                                        else AppColors.PrimaryLight.copy(alpha = 0.10f)
-                                        val cardBorder = if (isSelected) AppColors.Primary
-                                        else AppColors.PrimaryLight
-                                        val textColor = if (isSelected) Color.White
-                                        else AppColors.TextPrimary
-
-                                        Box(
-                                            modifier = Modifier
-                                                .background(cardBg, RoundedCornerShape(8.dp))
-                                                .border(1.dp, cardBorder, RoundedCornerShape(8.dp))
-                                                .clickable {
-                                                    GlobalVars.isAutoRunEnabled = false
-                                                    selectedStartMethodIndex = idx
-                                                    expandedStartMethod = false
-                                                }
-                                                .padding(horizontal = 16.dp, vertical = 8.dp)
-                                        ) {
-                                            Text(
-                                                text = option,
-                                                color = textColor,
-                                                style = MaterialTheme.typography.labelMedium
-                                            )
-                                        }
-                                    }
+                            when (batchOpType) {
+                                0 -> batchUpdateByRange(batchStart, batchEnd, ACCOUNT_SETTINGS.ACCOUNT_CONFIG.key, batchCfgValue)
+                                1 -> {
+                                    batchUpdateByRange(batchStart, batchEnd, ACCOUNT_SETTINGS.GAME_VERSION.key, batchVerIdx.toString())
+                                    batchUpdateByRange(batchStart, batchEnd, ACCOUNT_SETTINGS.START_METHOD.key, batchMethodIdx.toString())
                                 }
+                                2 -> batchUpdateByRange(batchStart, batchEnd, ACCOUNT_SETTINGS.ISOPEN.key, if (batchStsIdx == 0) "1" else "0")
                             }
-                        }
-                    }
-                }
-
-                CustomButton(
-                    text = Strings.confirm,
-                    onClick = {
-                        batchUpdateByRange(batchVerStartAccount, batchVerEndAccount, ACCOUNT_SETTINGS.GAME_VERSION.key, selectedVerIndex.toString())
-                        batchUpdateByRange(batchVerStartAccount, batchVerEndAccount, ACCOUNT_SETTINGS.START_METHOD.key, selectedStartMethodIndex.toString())
-                    },
-                    marginTop = 0.dp
-                )
-            }
-
-            FlowRow(
-                modifier = Modifier.padding(top = 6.dp)
-            ) {
-                Text(
-                    text = Strings.applyAccountLabel,
-                    style = MaterialTheme.typography.labelMedium,
-                    modifier = Modifier
-                        .padding(end = 4.dp)
-                        .align(Alignment.CenterVertically)
-                )
-                SmallTextFieldWithDropdown(
-                    modifier = Modifier.align(Alignment.CenterVertically),
-                    value = batchStatusStart,
-                    onValueChange = { batchStatusStart = it },
-                    options = (1..accountCount).map { it.toString() },
-                )
-                Text(
-                    text = "-",
-                    style = MaterialTheme.typography.labelMedium,
-                    modifier = Modifier
-                        .padding(horizontal = 4.dp)
-                        .align(Alignment.CenterVertically)
-                )
-                SmallTextFieldWithDropdown(
-                    modifier = Modifier.align(Alignment.CenterVertically),
-                    value = batchStatusEnd,
-                    onValueChange = { batchStatusEnd = it },
-                    options = (1..accountCount).map { it.toString() },
-                )
-                Text(
-                    text = Strings.statusTo,
-                    style = MaterialTheme.typography.labelMedium,
-                    modifier = Modifier
-                        .padding(horizontal = 4.dp)
-                        .align(Alignment.CenterVertically)
-                )
-                Box(
-                    modifier = Modifier
-                        .wrapContentSize(Alignment.TopStart)
-                        .align(Alignment.CenterVertically).padding(end = 4.dp)
-                ) {
-                    Button(
-                        onClick = {
-                            GlobalVars.isAutoRunEnabled = false
-                            expandedStatus = true
                         },
-                        shape = RoundedCornerShape(8.dp),
-                        modifier = Modifier.height(30.dp),
-                        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 0.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = AppColors.Primary)
-                    ) {
-                        Text(statusOptions[selectedStatusIndex], style = MaterialTheme.typography.labelMedium)
-                        Icon(Icons.Default.ArrowDropDown, contentDescription = null)
-                    }
-
-                    if (expandedStatus) {
-                        Popup(
-                            popupPositionProvider = BelowAnchorPositionProvider(),
-                            onDismissRequest = { expandedStatus = false },
-                            properties = PopupProperties(focusable = true)
-                        ) {
-                            Surface(
-                                shape = RoundedCornerShape(12.dp),
-                                color = AppColors.CardBg,
-                                shadowElevation = 8.dp,
-                                modifier = Modifier.padding(4.dp)
-                            ) {
-                                Column(
-                                    modifier = Modifier
-                                        .padding(8.dp)
-                                        .heightIn(max = 320.dp)
-                                        .verticalScroll(rememberScrollState()),
-                                    verticalArrangement = Arrangement.spacedBy(6.dp)
-                                ) {
-                                    statusOptions.forEachIndexed { idx, option ->
-                                        val isSelected = idx == selectedStatusIndex
-                                        val cardBg = if (isSelected) AppColors.Primary
-                                        else AppColors.PrimaryLight.copy(alpha = 0.10f)
-                                        val cardBorder = if (isSelected) AppColors.Primary
-                                        else AppColors.PrimaryLight
-                                        val textColor = if (isSelected) Color.White
-                                        else AppColors.TextPrimary
-
-                                        Box(
-                                            modifier = Modifier
-                                                .background(cardBg, RoundedCornerShape(8.dp))
-                                                .border(1.dp, cardBorder, RoundedCornerShape(8.dp))
-                                                .clickable {
-                                                    GlobalVars.isAutoRunEnabled = false
-                                                    selectedStatusIndex = idx
-                                                    expandedStatus = false
-                                                }
-                                                .padding(horizontal = 16.dp, vertical = 8.dp)
-                                        ) {
-                                            Text(
-                                                text = option,
-                                                color = textColor,
-                                                style = MaterialTheme.typography.labelMedium
-                                            )
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
+                        marginTop = 0.dp
+                    )
                 }
-                CustomButton(
-                    text = Strings.confirm,
-                    onClick = {
-                        batchUpdateByRange(batchStatusStart, batchStatusEnd, ACCOUNT_SETTINGS.ISOPEN.key, if (selectedStatusIndex == 0) "1" else "0")
-                    },
-                    marginTop = 0.dp
-                )
             }
         }
     }

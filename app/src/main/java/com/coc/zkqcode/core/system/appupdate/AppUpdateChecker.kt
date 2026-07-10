@@ -211,7 +211,7 @@ object AppUpdateChecker {
      * response body as a string. Mirrors [UrlFallbackUtil] logic but is self-contained
      * because the JAR (and thus UrlFallbackUtil) is not loaded at startup time.
      */
-    private suspend fun executePostWithFallbackAndReadBody(
+    private fun executePostWithFallbackAndReadBody(
         endpoint: String,
         postData: String
     ): String {

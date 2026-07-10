@@ -79,7 +79,7 @@ object Strings {
     val invertSelection get() = if (LanguageManager.isChinese) "一键反选" else "Invert All"
     val pinEnabledAccounts get() = if (LanguageManager.isChinese) "置顶开启的账号" else "Pin Enabled"
     val unpinEnabledAccounts get() = if (LanguageManager.isChinese) "取消置顶" else "Unpin"
-    val applyConfigLabel get() = if (LanguageManager.isChinese) "将配置" else "Apply profile"
+    val applyConfigLabel get() = if (LanguageManager.isChinese) "调整配置" else "Apply profile"
     val applyAccountLabel get() = if (LanguageManager.isChinese) "将账号" else "Apply account"
     val toAccounts get() = if (LanguageManager.isChinese) "应用到账号" else "to accounts"
     val changeTo get() = if (LanguageManager.isChinese) "改为" else "to"
@@ -97,6 +97,12 @@ object Strings {
     val statusEnabled get() = if (LanguageManager.isChinese) "开启" else "Enabled"
     val statusDisabled get() = if (LanguageManager.isChinese) "关闭" else "Disabled"
     val statusTo get() = if (LanguageManager.isChinese) "状态改为" else "Status to"
+    val batchOperation get() = if (LanguageManager.isChinese) "操作" else "Operation"
+    val batchAccount get() = if (LanguageManager.isChinese) "账号" else "Account"
+    val batchParam get() = if (LanguageManager.isChinese) "改为" else "to"
+    val batchOpVersionMethod get() = if (LanguageManager.isChinese) "版本+方式" else "Version+Method"
+    val batchOpStatus get() = if (LanguageManager.isChinese) "状态" else "Status"
+    val batchMethodLabel get() = if (LanguageManager.isChinese) "方式" else "Method"
 
     // ExtractGameSave
     val extractFailedExists get() = if (LanguageManager.isChinese) "提取失败，存档已存在" else "Extract failed - save already exists"
