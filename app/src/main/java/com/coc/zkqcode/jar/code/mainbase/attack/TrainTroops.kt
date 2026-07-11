@@ -44,17 +44,14 @@ suspend fun mainBaseTrainTroops(): Boolean {
             if (armyLink.isNotBlank()) {
                 CopyArmyLink.openCopyArmyLink(armyLink)
 
-                findMultiColorsUntil(schemas = listOf(MyColors.SaveArmyButton), duration = 5000)?.let {
+                findMultiColorsUntil(schemas = listOf(MyColors.SaveArmyButton, MyColors.SaveArmyButton2), duration = 5000)?.let {
                     TouchActions.tap(it.x, it.y)
                 }
                 findMultiColorsUntil(schemas = listOf(MyColors.UseArmyButton), duration = 5000)?.let {
                     TouchActions.tap(it.x, it.y)
                 }
+                // First batch: process all currently visible enable buttons
                 var enablePoint = findMultiColorsUntil(schemas = listOf(MyColors.EnableSuperTroopButton), duration = 5000)
-                if (enablePoint == null) {
-                    TouchActions.swipe(1229, 243, 542, 243)
-                    enablePoint = findMultiColorsUntil(schemas = listOf(MyColors.EnableSuperTroopButton), duration = 3000)
-                }
                 while (enablePoint != null) {
                     TouchActions.tap(enablePoint.x, enablePoint.y)
                     delayWithMultiplier(500)
@@ -63,10 +60,20 @@ suspend fun mainBaseTrainTroops(): Boolean {
                         delayWithMultiplier(300)
                     }
                     enablePoint = findMultiColorsUntil(schemas = listOf(MyColors.EnableSuperTroopButton), duration = 2000)
-                    if (enablePoint == null) {
-                        TouchActions.swipe(1229, 243, 542, 243)
-                        enablePoint = findMultiColorsUntil(schemas = listOf(MyColors.EnableSuperTroopButton), duration = 3000)
+                }
+                // Swipe once to reveal remaining super troops
+                TouchActions.swipe(1229, 243, 542, 243)
+                delayWithMultiplier(1000)
+                // Second batch: process buttons revealed by swipe
+                enablePoint = findMultiColorsUntil(schemas = listOf(MyColors.EnableSuperTroopButton), duration = 3000)
+                while (enablePoint != null) {
+                    TouchActions.tap(enablePoint.x, enablePoint.y)
+                    delayWithMultiplier(500)
+                    findMultiColorsUntil(schemas = listOf(MyColors.UseResourcesButton), duration = 5000)?.let {
+                        TouchActions.tap(it.x, it.y)
+                        delayWithMultiplier(300)
                     }
+                    enablePoint = findMultiColorsUntil(schemas = listOf(MyColors.EnableSuperTroopButton), duration = 2000)
                 }
             }
         }
