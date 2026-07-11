@@ -26,5 +26,6 @@ rust_logic/log.txt
 .idea
 app/src/main/jniLibs
 rust_logic/src/security/keys.rs
-/script/
+script/local_secrets.py
+**/__pycache__/
 app/src/main/assets/ToCrackers.md
