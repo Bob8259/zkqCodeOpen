@@ -162,6 +162,21 @@ fun LazyListScope.mainBaseConfig(
                 )
             }
             AnimatedVisibility(
+                visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.MANUAL_TRAINING.key}_c$index"]?.value == "1"
+            ) {
+                Column {
+                    SettingDropdown(
+                        key = "${MAIN_BASE_SETTINGS.ARMY_CONFIG_MODE.key}_c$index",
+                        options = listOf(Strings.armyConfigModeLink, Strings.armyConfigModeManual)
+                    )
+                    AnimatedVisibility(
+                        visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.ARMY_CONFIG_MODE.key}_c$index"]?.value == "0"
+                    ) {
+                        SettingInputRow(key = "${MAIN_BASE_SETTINGS.ARMY_LINK.key}_c$index")
+                    }
+                }
+            }
+            AnimatedVisibility(
                 visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.OCR_EXIT_ENABLED.key}_c$index"]?.value == "1"
             ) {
                 FlowRow {

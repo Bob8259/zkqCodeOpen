@@ -22,6 +22,11 @@ interface IMainBaseTraining {
     val GrayBarbarian: ColorSchema
     val TrainLighteningSpell: ColorSchema
     val TrainSiegeMachine: ColorSchema
+    // CopyArmy link post-processing buttons — placeholder schemas, replace with actual colors later
+    val SaveArmyButton: ColorSchema
+    val UseArmyButton: ColorSchema
+    val EnableSuperTroopButton: ColorSchema
+    val UseResourcesButton: ColorSchema
 }
 
 object MainBaseTraining : IMainBaseTraining {
@@ -72,5 +77,27 @@ object MainBaseTraining : IMainBaseTraining {
     )
     override val TrainSiegeMachine = ColorSchema.parse(
         82, 509, 198, 567, "2B2D7F", "23|0|292E8C,46|0|404BBD,69|0|254687,92|0|111243,0|29|212053,23|29|191E68,46|29|181A4B,69|29|2C57A9,92|29|325595", 0, 0.9, "训练攻城机器"
+    )
+
+    // CopyArmy link post-processing buttons
+    override val SaveArmyButton = ColorSchema.parse(
+        1112, 165, 1246, 320, "6E8AAC",
+        "27|0|6E8AAC,74|-3|6E8AAC,81|0|6E8AAC,108|0|6E8AAC,0|77|7A97B9,27|77|7A97B9,54|77|7A97B9,81|77|7A97B9,108|77|7A97B9",
+        0, 0.9, "保存军队"
+    )
+    override val UseArmyButton = ColorSchema.parse(
+        1118, 165, 1242, 205, "8EEABF",
+        "25|0|8EEABF,50|0|8EEABF,75|0|8EEABF,100|0|8EEABF,0|20|3AD289,25|20|39D289,50|20|36C17F,75|20|3AD289,100|20|3AD289",
+        0, 0.9, "使用"
+    )
+    override val EnableSuperTroopButton = ColorSchema.parse(
+        550, 252, 1251, 292, "7AF8D2",
+        "0|-6|8FFFE7,0|9|39DA91,0|14|3CC87F,5|16|3EBE75,5|13|3BCD84,5|10|3AD78E,5|4|68EFC0,5|-3|86FEDE,5|-9|92FFEA",
+        0, 0.9, "超级兵启用"
+    )
+    override val UseResourcesButton = ColorSchema.parse(
+        312, 471, 969, 596, "84E4B9",
+        "43|0|84E4B9,86|0|84E4B9,128|0|84E4B9,171|0|84E4B9,0|49|2CCD84,43|49|2CCD84,86|49|2CCD84,128|49|2CCD84,171|49|2CCD84",
+        0, 0.9, "使用资源"
     )
 }

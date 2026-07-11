@@ -16,6 +16,8 @@ object MainBaseSettings {
     val GOLD_REQUIREMENT = SettingDef("gold_requirement", "金币要求", "Gold Required", "100", "MAIN_BASE_SETTINGS")
     val ELIXIR_REQUIREMENT = SettingDef("elixir_requirement", "圣水要求", "Elixir Required", "100", "MAIN_BASE_SETTINGS")
     val DARK_ELIXIR_REQUIREMENT = SettingDef("dark_elixir_requirement", "黑油要求", "Dark Elixir Required", "10", "MAIN_BASE_SETTINGS")
+    val ARMY_LINK = SettingDef("army_link", "链接配兵", "Army Link", "", "MAIN_BASE_SETTINGS")
+    val ARMY_CONFIG_MODE = SettingDef("army_config_mode", "配兵配置方式", "Army Config Mode", "0", "MAIN_BASE_SETTINGS")
     val DYNAMIC_ADJUSTMENT = SettingDef("dynamic_adjustment", "动态调节", "Dynamic Adjustment", 1, "MAIN_BASE_SETTINGS")
     val STOP_BATTLE_AFTER_FULL_RESOURCES = SettingDef(
         "stop_battle_after_full_resources", "资源满后停止对战", "Stop if resources full", 1, "MAIN_BASE_SETTINGS"
@@ -204,6 +206,8 @@ object MainBaseSettings {
         GOLD_REQUIREMENT,
         ELIXIR_REQUIREMENT,
         DARK_ELIXIR_REQUIREMENT,
+        ARMY_LINK,
+        ARMY_CONFIG_MODE,
         DYNAMIC_ADJUSTMENT,
         STOP_BATTLE_AFTER_FULL_RESOURCES,
         MANUAL_TRAINING,
