@@ -140,7 +140,21 @@ fun LazyListScope.specialSettings() {
             SettingSwitchIcon(key = GLOBAL_SETTINGS.SERVERCHAN_LOGIN_NOTIFY.key)
             SettingSwitchIcon(key = GLOBAL_SETTINGS.SERVERCHAN_KICK_NOTIFY.key)
             SettingSwitchIcon(key = GLOBAL_SETTINGS.SERVERCHAN_WAR_NOTIFY.key)
+            val warNotifyOn = GlobalVars.configStates.getOrPut(GLOBAL_SETTINGS.SERVERCHAN_WAR_NOTIFY.key) { mutableStateOf("0") }.value == "1"
+            if (warNotifyOn) {
+                SettingDropdown(
+                    key = GLOBAL_SETTINGS.SERVERCHAN_WAR_NOTIFY_MODE.key,
+                    options = listOf(Strings.notifyModeManual, Strings.notifyModeAuto)
+                )
+            }
             SettingSwitchIcon(key = GLOBAL_SETTINGS.SERVERCHAN_LEAGUE_NOTIFY.key)
+            val leagueNotifyOn = GlobalVars.configStates.getOrPut(GLOBAL_SETTINGS.SERVERCHAN_LEAGUE_NOTIFY.key) { mutableStateOf("0") }.value == "1"
+            if (leagueNotifyOn) {
+                SettingDropdown(
+                    key = GLOBAL_SETTINGS.SERVERCHAN_LEAGUE_NOTIFY_MODE.key,
+                    options = listOf(Strings.notifyModeManual, Strings.notifyModeAuto)
+                )
+            }
             SettingSwitchIcon(key = GLOBAL_SETTINGS.SERVERCHAN_UPGRADE_NOTIFY.key)
             val scheduleState = GlobalVars.configStates.getOrPut(GLOBAL_SETTINGS.SERVERCHAN_UPGRADE_SCHEDULE_NOTIFY.key) { mutableStateOf("0") }
             val scheduleEnabled = scheduleState.value == "1"

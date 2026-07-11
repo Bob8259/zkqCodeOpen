@@ -47,7 +47,7 @@ suspend fun clanLeague(): Boolean {
     if (findMultiColorsUntil(listOf(MyColors.ClanLeagueGreenWarIcon), 5000) != null) {
         accountMessage("已进入联赛")
 
-        // If league notification is enabled, skip the attack and send a push notification
+        // If league notification is enabled, send a push notification
         // Time guard: only send the push notification if outside the 12h cooldown
         if (GlobalVars.configStates[Schema.GLOBAL_SETTINGS.SERVERCHAN_LEAGUE_NOTIFY.key]?.value == "1"
             && checkMemoryFile(battleCooldownKey, 720)
@@ -62,9 +62,14 @@ suspend fun clanLeague(): Boolean {
                 )
             )
             writeMemory(battleCooldownKey, (System.currentTimeMillis() / 60_000).toString())
-            return enterMainScreen()
+            // Check notification mode: "0" = manual (notify only, skip attack), "1" = auto (notify and attack)
+            val mode = GlobalVars.configStates[Schema.GLOBAL_SETTINGS.SERVERCHAN_LEAGUE_NOTIFY_MODE.key]?.value ?: "0"
+            if (mode == "0") {
+                return enterMainScreen()
+            }
+            // mode == "1": fall through to proceed with the attack
         }
-        // Within cooldown or notification disabled — proceed with the attack
+        // Within cooldown, notification disabled, or auto mode — proceed with the attack
 
         TouchActions.tap(1220, 490)
         TouchActions.tap(760, 60)

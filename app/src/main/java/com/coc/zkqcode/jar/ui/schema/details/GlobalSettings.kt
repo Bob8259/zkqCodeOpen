@@ -50,8 +50,10 @@ object GlobalSettings {
     val TELEGRAM_CHAT_ID = SettingDef("telegram_chat_id", "Telegram ChatID", "Telegram ChatID", "", "GLOBAL_SETTINGS")
     val SERVERCHAN_LOGIN_NOTIFY = SettingDef("serverchan_login_notify", "辅助账号掉线通知", "Kicked-out Notification", 0, "GLOBAL_SETTINGS")
     val SERVERCHAN_KICK_NOTIFY = SettingDef("serverchan_kick_notify", "进入游戏失败通知", "Kick Notification", 0, "GLOBAL_SETTINGS")
-    val SERVERCHAN_WAR_NOTIFY = SettingDef("serverchan_war_notify", "部落战通知(手动打推荐开启，开启后不会自动打)", "Clan War (manual only, auto-attack disabled)", 0, "GLOBAL_SETTINGS")
-    val SERVERCHAN_LEAGUE_NOTIFY = SettingDef("serverchan_league_notify", "联赛通知(手动打推荐开启，开启后不会自动打)", "League (manual only, auto-attack disabled)", 0, "GLOBAL_SETTINGS")
+    val SERVERCHAN_WAR_NOTIFY = SettingDef("serverchan_war_notify", "部落战通知", "Clan War Notification", 0, "GLOBAL_SETTINGS")
+    val SERVERCHAN_LEAGUE_NOTIFY = SettingDef("serverchan_league_notify", "联赛通知", "League Notification", 0, "GLOBAL_SETTINGS")
+    val SERVERCHAN_WAR_NOTIFY_MODE = SettingDef("serverchan_war_notify_mode", "通知模式", "Notify Mode", "0", "GLOBAL_SETTINGS")
+    val SERVERCHAN_LEAGUE_NOTIFY_MODE = SettingDef("serverchan_league_notify_mode", "通知模式", "Notify Mode", "0", "GLOBAL_SETTINGS")
     val SERVERCHAN_UPGRADE_NOTIFY = SettingDef("serverchan_upgrade_notify", "退出时推送升级概览", "Upgrade Overview on Exit", 0, "GLOBAL_SETTINGS")
     val SERVERCHAN_UPGRADE_SCHEDULE_NOTIFY = SettingDef("serverchan_upgrade_schedule_notify", "即将完成推送提醒", "Advance Completion Alert", 0, "GLOBAL_SETTINGS")
     val SERVERCHAN_UPGRADE_ADVANCE = SettingDef("serverchan_upgrade_advance", "提前提醒(分钟)", "Advance Minutes", "10", "GLOBAL_SETTINGS")
@@ -163,7 +165,9 @@ object GlobalSettings {
         SERVERCHAN_LOGIN_NOTIFY,
         SERVERCHAN_KICK_NOTIFY,
         SERVERCHAN_WAR_NOTIFY,
+        SERVERCHAN_WAR_NOTIFY_MODE,
         SERVERCHAN_LEAGUE_NOTIFY,
+        SERVERCHAN_LEAGUE_NOTIFY_MODE,
         SERVERCHAN_UPGRADE_NOTIFY,
         SERVERCHAN_UPGRADE_SCHEDULE_NOTIFY,
         SERVERCHAN_UPGRADE_ADVANCE,

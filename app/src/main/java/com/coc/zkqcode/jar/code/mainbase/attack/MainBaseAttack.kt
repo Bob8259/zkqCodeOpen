@@ -102,8 +102,6 @@ suspend fun mainBaseAttack(battleNumber: Int = 1, battleTimes: Int? = null): Boo
                 if (speedUpBtn != null) {
                     accountMessage("检测到加速按钮，坐标：${speedUpBtn.x}, ${speedUpBtn.y}")
                     TouchActions.tap(speedUpBtn.x, speedUpBtn.y)
-                    delayWithMultiplier(2000)
-                    TouchActions.tap(speedUpBtn.x, speedUpBtn.y)
                     accountMessage("对战已加速完成")
                     speedUpClicked = true
                 }
