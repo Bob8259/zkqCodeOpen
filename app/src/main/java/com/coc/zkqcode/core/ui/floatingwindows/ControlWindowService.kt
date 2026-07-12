@@ -80,6 +80,7 @@ class ControlWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner 
         startBotLogic()
         startHotUpdateListener()
         startOomProtection()
+        startBotJobMonitor()
     }
 
     private fun startBotLogic() {
@@ -129,6 +130,29 @@ class ControlWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner 
                     }
                 } catch (_: Exception) { }
                 delay(5000.milliseconds)
+            }
+        }
+    }
+
+    // Periodically snapshot botJob health and AppMode into monitor.log
+    private fun startBotJobMonitor() {
+        serviceScope.launch(Dispatchers.IO) {
+            while (true) {
+                try {
+                    val job = botJob
+                    val isNull = job == null
+                    val isActive = job?.isActive == true
+                    val mode = AppStateManager.currentMode.name
+                    LogHelper.writeMonitorLog(
+                        context = this@ControlWindowService,
+                        isBotJobNull = isNull,
+                        isBotJobActive = isActive,
+                        appMode = mode
+                    )
+                } catch (_: Exception) {
+                    // Never let monitor failures crash the service
+                }
+                delay(10_000.milliseconds)
             }
         }
     }
@@ -312,7 +336,7 @@ class ControlWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner 
         if (botActive) {
             LogHelper.showDebugInfo(
                 "ControlWindowService: task removed but bot is active, keeping service alive. " +
-                        "rootComponent=$rootComponent, mode=$currentMode, botActive=$botActive"
+                        "rootComponent=$rootComponent, mode=$currentMode, botActive=${true}"
             )
             return
         }

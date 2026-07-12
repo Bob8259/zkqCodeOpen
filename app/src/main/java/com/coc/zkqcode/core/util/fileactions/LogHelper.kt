@@ -61,6 +61,40 @@ object LogHelper {
     }
 
     /**
+     * Append a botJob monitor snapshot to filesDir/logs/monitor.log.
+     * Keeps the last 500 lines.
+     */
+    @SuppressLint("LogNotTimber")
+    fun writeMonitorLog(
+        context: Context,
+        isBotJobNull: Boolean,
+        isBotJobActive: Boolean,
+        appMode: String
+    ) {
+        try {
+            val logDir = File(context.filesDir, "logs")
+            if (!logDir.exists()) logDir.mkdirs()
+            val monitorFile = File(logDir, "monitor.log")
+
+            val timestamp = SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.getDefault()).format(Date())
+            val entry =
+                "$timestamp botJobNull=$isBotJobNull botJobActive=$isBotJobActive appMode=$appMode\n"
+
+            FileOutputStream(monitorFile, true).use { fos ->
+                fos.write(entry.toByteArray())
+            }
+
+            // Keep monitor.log at a reasonable size (last 500 lines)
+            val lines = monitorFile.readLines()
+            if (lines.size > 500) {
+                monitorFile.writeText(lines.takeLast(500).joinToString("\n") + "\n")
+            }
+        } catch (e: Exception) {
+            Log.e("LogHelper", "Failed to write monitor log", e)
+        }
+    }
+
+    /**
      * Write crash details to a dedicated crash.log file in the app's private logs directory.
      * Called by the global uncaught exception handler installed in ZKQApplication.
      */
@@ -111,11 +145,11 @@ object LogHelper {
                     fos.write(logEntry.toByteArray())
                 }
 
-                // Maintain 100 lines limit for each file
+                // Maintain 500 lines limit for each file
                 synchronized(this) {
                     val lines = logFile.readLines()
-                    if (lines.size > 100) {
-                        val trimmedLines = lines.takeLast(100)
+                    if (lines.size > 500) {
+                        val trimmedLines = lines.takeLast(500)
                         logFile.writeText(trimmedLines.joinToString("\n") + "\n")
                     }
                 }
