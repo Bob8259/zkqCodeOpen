@@ -1,6 +1,7 @@
 package com.coc.zkqcode.jar.code.universal
 
 import com.coc.zkqcode.core.util.basic.RunShell
+import com.coc.zkqcode.core.util.fileactions.LogHelper.showDebugInfo
 import java.net.URLDecoder
 
 /**
@@ -26,10 +27,10 @@ object CopyArmyLink {
      * @return A [clashofclans://] intent string, or the original [url] if it cannot be parsed.
      */
     fun toClashIntent(url: String): String {
-        // Already in the target format
-        if (url.startsWith(CUSTOM_SCHEME_PREFIX)) return url
+        val trimmed = url.trim().replace(Regex("[\\x00-\\x08\\x0B\\x0C\\x0E-\\x1F]")) {""}
+        if (trimmed.startsWith(CUSTOM_SCHEME_PREFIX)) return trimmed
 
-        val army = extractArmy(url) ?: return url
+        val army = extractArmy(trimmed) ?: return trimmed
         return "$CUSTOM_SCHEME_PREFIX$army"
     }
 
@@ -81,7 +82,9 @@ object CopyArmyLink {
      * @param armyLink The CopyArmy URL.
      */
     suspend fun openCopyArmyLink(armyLink: String) {
-        val intentUrl = toClashIntent(armyLink)
+        val cleanLink = armyLink.trim().replace(Regex("[\\x00-\\x08\\x0B\\x0C\\x0E-\\x1F]")) {""}
+        val intentUrl = toClashIntent(cleanLink)
+        showDebugInfo("CopyArmyLink: intentUrl=[$intentUrl]")
         RunShell.runNoOutput(
             "am start -a android.intent.action.VIEW -d '$intentUrl' -p ${InGameVars.currentGameVersion.packageName}"
         )

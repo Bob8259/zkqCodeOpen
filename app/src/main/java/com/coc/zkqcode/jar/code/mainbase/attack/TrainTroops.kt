@@ -49,6 +49,10 @@ suspend fun mainBaseTrainTroops(): Boolean {
                 }
                 findMultiColorsUntil(schemas = listOf(MyColors.UseArmyButton), duration = 5000)?.let {
                     TouchActions.tap(it.x, it.y)
+                    delayWithMultiplier(500)
+                    findMultiColorsUntil(schemas = listOf(MyColors.ConfirmUseButton), duration = 3000)?.let {
+                        TouchActions.tap(it.x, it.y)
+                    }
                 }
                 // First batch: process all currently visible enable buttons
                 var enablePoint = findMultiColorsUntil(schemas = listOf(MyColors.EnableSuperTroopButton), duration = 5000)

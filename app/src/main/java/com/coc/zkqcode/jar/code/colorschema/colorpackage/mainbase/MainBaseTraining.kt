@@ -26,6 +26,7 @@ interface IMainBaseTraining {
     val SaveArmyButton: ColorSchema
     val SaveArmyButton2: ColorSchema
     val UseArmyButton: ColorSchema
+    val ConfirmUseButton: ColorSchema
     val EnableSuperTroopButton: ColorSchema
     val UseResourcesButton: ColorSchema
 }
@@ -95,6 +96,11 @@ object MainBaseTraining : IMainBaseTraining {
         1118, 165, 1242, 205, "8EEABF",
         "25|0|8EEABF,50|0|8EEABF,75|0|8EEABF,100|0|8EEABF,0|20|3AD289,25|20|39D289,50|20|36C17F,75|20|3AD289,100|20|3AD289",
         0, 0.9, "使用"
+    )
+    override val ConfirmUseButton = ColorSchema.parse(
+        656, 409, 898, 518, "84F8DD",
+        "49|0|84F8DD,97|0|84F8DD,145|0|84F8DD,194|0|84F8DD,0|55|1FBC6D,49|55|1FBC6D,97|55|1FBC6D,145|55|1FBC6D,194|55|1FBC6D",
+        0, 0.9, "确认使用"
     )
     override val EnableSuperTroopButton = ColorSchema.parse(
         550, 252, 1251, 292, "7AF8D2",
