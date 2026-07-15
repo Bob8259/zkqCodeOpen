@@ -2,6 +2,7 @@ package com.coc.zkqcode.core.util.exit
 
 import android.content.Context
 import android.content.Intent
+import com.coc.zkqcode.MainActivity
 import com.coc.zkqcode.core.system.daemon.DaemonService
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.core.ui.floatingwindows.ControlWindowService
@@ -38,6 +39,29 @@ object AppExitHelper {
         stopAllServices(context)
         stopShellServer()
         // Kill the current process
+        exitProcess(0)
+    }
+
+    /**
+     * Restart the app without using root/shell commands.
+     * Used when Root is denied and su-based restart paths are unavailable.
+     */
+    fun restartApplicationWithoutRoot(context: Context) {
+        val appContext = context.applicationContext
+        val launchIntent = appContext.packageManager.getLaunchIntentForPackage(appContext.packageName)
+            ?: Intent(appContext, MainActivity::class.java)
+        launchIntent.addFlags(
+            Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        )
+
+        // Best-effort non-root cleanup; services may not be running yet.
+        try {
+            stopAllServices(appContext)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+        appContext.startActivity(launchIntent)
         exitProcess(0)
     }
 

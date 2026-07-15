@@ -1,5 +1,6 @@
 package com.coc.zkqcode.core.system.checkpermissions
 
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.provider.Settings
@@ -21,6 +22,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -48,6 +50,7 @@ import com.coc.zkqcode.core.system.appupdate.AppUpdateState
 import com.coc.zkqcode.statehelper.AppMode
 import com.coc.zkqcode.statehelper.AppStateManager
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 
 // Local colour palette mirroring AppColors from the jar module
@@ -167,10 +170,7 @@ fun CheckRootScreen() {
                 }
 
             RootStatus.ROOT_DENIED -> {
-                FullScreenMessage(
-                    message = "请授予 Root 权限后，再启动本软件（本软件名：紫孔雀）\n若授权失败，请尝试重启软件/设备。",
-                    englishMessage = "Please grant Root permission before starting this app (App name: 紫孔雀).\nIf authorization fails, try restarting the app/device."
-                )
+                RootDeniedRestartMessage(context = context)
             }
 
             RootStatus.PERMISSION_DENIED -> {
@@ -260,6 +260,42 @@ fun CheckRootScreen() {
             }
         }
         }
+    }
+}
+
+/**
+ * ROOT_DENIED screen: shows root guidance, a 10s restart countdown, and an exit button.
+ * Restart is performed without root because su is unavailable in this state.
+ */
+@Composable
+private fun RootDeniedRestartMessage(context: Context) {
+    var countdown by remember { mutableIntStateOf(10) }
+    var exited by remember { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        while (countdown > 0 && !exited) {
+            delay(1000L)
+            if (exited) return@LaunchedEffect
+            countdown--
+        }
+        if (!exited) {
+            LogHelper.showDebugInfo("ROOT_DENIED: countdown finished, restarting without root")
+            AppExitHelper.restartApplicationWithoutRoot(context)
+        }
+    }
+
+    FullScreenMessage(
+        message = "请授予 Root 权限后，再启动本软件（本软件名：紫孔雀）\n若授权失败，请尝试重启软件/设备。\n\n将在 $countdown 秒后尝试重启应用...",
+        englishMessage = "Please grant Root permission before starting this app (App name: 紫孔雀).\nIf authorization fails, try restarting the app/device.\n\nThe app will try to restart in $countdown seconds..."
+    ) {
+        LocalCustomButton(
+            text = "退出应用 / Exit App",
+            onClick = {
+                exited = true
+                LogHelper.showDebugInfo("ROOT_DENIED: user chose to exit app")
+                AppExitHelper.exitApplication(context)
+            }
+        )
     }
 }
 
