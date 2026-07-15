@@ -4,7 +4,9 @@ import android.graphics.Bitmap
 import com.coc.zkqcode.core.util.fileactions.LogHelper.showDebugInfo
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.accountMessage
+import com.coc.zkqcode.jar.code.universal.recognizer.Resources
 import com.coc.zkqcode.jar.code.universal.recognizer.TextRecognizer
+import com.coc.zkqcode.jar.code.universal.recognizer.recognizeResourcesOrNull
 import com.coc.zkqcode.jar.code.universal.smalltools.data.getBooleanConfigRuntime
 import com.coc.zkqcode.jar.code.universal.smalltools.data.getConfigRuntime
 import com.coc.zkqcode.jar.ui.schema.details.MainBaseSettings
@@ -27,6 +29,11 @@ sealed class BattleDestructionOcrExitResult {
     /** Destruction % unchanged for the configured stale interval. */
     data object ExitStale : BattleDestructionOcrExitResult()
 
+    data object ExitResourceStale : BattleDestructionOcrExitResult()
+
+    /** Destruction % and opponent resources are both unchanged for the configured interval. */
+    data object ExitCombinedStale : BattleDestructionOcrExitResult()
+
     /** OCR failed continuously for [OCR_FAIL_SAFE_MS]. */
     data object ExitOcrFailed : BattleDestructionOcrExitResult()
 }
@@ -46,6 +53,22 @@ class BattleDestructionOcrState {
         ocrFailStartMs = null
     }
 }
+
+class BattleResourceOcrState {
+    var lastResources: Resources? = null
+    var lastChangeTimeMs: Long = System.currentTimeMillis()
+    var ocrFailStartMs: Long? = null
+}
+
+data class BattleDetectionStatus(
+    val percent: Int?,
+    val percentRemainingMs: Long,
+    val resources: Resources?,
+    val resourceRemainingMs: Long?,
+    val percentFailureElapsedMs: Long? = null,
+    val resourceFailureElapsedMs: Long? = null
+)
+
 
 /**
  * Reads the on-screen destruction percentage via OCR in [MyColors.BattleDestructionPercentOcrRegion].
@@ -102,11 +125,14 @@ internal fun extractValue(text: String): Int {
  */
 suspend fun checkBattleDestructionOcrExit(
     state: BattleDestructionOcrState,
+    resourceState: BattleResourceOcrState? = null,
     enabledKey: String = MainBaseSettings.OCR_EXIT_ENABLED.key,
     targetPercentKey: String = MainBaseSettings.OCR_EXIT_TARGET_PERCENT.key,
     staleSecondsKey: String = MainBaseSettings.OCR_EXIT_STALE_SECONDS.key,
+    modeKey: String = MainBaseSettings.OCR_EXIT_MODE.key,
     maxPercent: Int = 100,
-    bitmap: Bitmap? = null
+    bitmap: Bitmap? = null,
+    onStatusUpdate: ((BattleDetectionStatus) -> Unit)? = null
 ): Pair<Int?, BattleDestructionOcrExitResult> {
     if (!getBooleanConfigRuntime(enabledKey)) {
         return Pair(null, BattleDestructionOcrExitResult.Continue)
@@ -117,51 +143,114 @@ suspend fun checkBattleDestructionOcrExit(
     val staleSeconds = getConfigRuntime(staleSecondsKey)
         .toIntOrNull()?.coerceAtLeast(1) ?: DEFAULT_STALE_SECONDS
     val staleMs = staleSeconds * 1000L
+    val mode = getConfigRuntime(modeKey).toIntOrNull()?.coerceIn(0, 2) ?: 0
+    val needsPercent = mode == 0 || mode == 2 || targetPercent > 0
+    val needsResources = targetPercent == 0 && (mode == 1 || mode == 2)
 
-    val percent = readBattleDestructionPercent(maxPercent, bitmap)
     val now = System.currentTimeMillis()
-    
-    if (percent == null) {
+
+    val percent = if (needsPercent) readBattleDestructionPercent(maxPercent, bitmap) else null
+    val resources = if (needsResources && resourceState != null) {
+        recognizeResourcesOrNull(isOpponent = true, bitmap = bitmap)
+    } else {
+        null
+    }
+
+    if (resources == null && needsResources && resourceState != null) {
+        if (resourceState.ocrFailStartMs == null) {
+            resourceState.ocrFailStartMs = now
+        }
+    } else if (resources != null && resourceState != null) {
+        resourceState.ocrFailStartMs = null
+        val previousResources = resourceState.lastResources
+        resourceState.lastResources = resources
+        if (previousResources == null || previousResources != resources) {
+            resourceState.lastChangeTimeMs = now
+        }
+    }
+
+    if (needsPercent && percent == null) {
         val failStart = state.ocrFailStartMs
         if (failStart == null) {
-            accountMessage("摧毁率 OCR 识别失败，开始计时")
             state.ocrFailStartMs = now
         } else {
-            val failElapsed = (now - failStart) / 1000
-            accountMessage("摧毁率识别失败 (已持续${failElapsed}s)")
             if (now - failStart >= OCR_FAIL_SAFE_MS) {
                 accountMessage("摧毁率识别连续失败超30秒，退出")
                 return Pair(null, BattleDestructionOcrExitResult.ExitOcrFailed)
             }
         }
+        val failureStart = state.ocrFailStartMs ?: now
+        onStatusUpdate?.invoke(
+            BattleDetectionStatus(
+                percent = null,
+                percentRemainingMs = 0,
+                resources = if (resources != null) resourceState?.lastResources else null,
+                resourceRemainingMs = if (resources != null) {
+                    resourceState?.let { (staleMs - (now - it.lastChangeTimeMs)).coerceAtLeast(0) }
+                } else null,
+                percentFailureElapsedMs = now - failureStart,
+                resourceFailureElapsedMs = resourceState?.ocrFailStartMs?.let { now - it }
+            )
+        )
         return Pair(null, BattleDestructionOcrExitResult.Continue)
     }
 
-    state.ocrFailStartMs = null
+    if (needsPercent) state.ocrFailStartMs = null
 
-    accountMessage("摧毁率: ${percent}% (目标: ${targetPercent}%)")
-
-    if (targetPercent in 1..percent) {
+    if (needsPercent && percent != null && targetPercent in 1..percent) {
         accountMessage("摧毁率达标(${percent}% >= ${targetPercent}%)")
         return Pair(percent, BattleDestructionOcrExitResult.ExitTargetMet)
     }
 
     val previous = state.lastPercent
-    if (previous != null && percent == previous) {
-        val elapsed = (now - state.lastChangeTimeMs) / 1000
-        if (now - state.lastChangeTimeMs >= staleMs) {
-            accountMessage("摧毁率 ${elapsed}s 未变化，已达退出阈值 ${staleSeconds}s")
+    val percentStale = if (needsPercent && percent != null && previous != null && percent == previous) {
+        now - state.lastChangeTimeMs >= staleMs
+    } else {
+        false
+    }
+    if (needsPercent && percent != null && previous != null && percent == previous) {
+    } else {
+        if (needsPercent && percent != null) {
+            state.lastPercent = percent
+            state.lastChangeTimeMs = now
+        }
+    }
+
+    if (needsResources && resourceState != null) {
+        val resourcesStale = resourceState.lastResources != null &&
+                now - resourceState.lastChangeTimeMs >= staleMs
+        if (mode == 1 && resourcesStale) {
+            accountMessage("对手资源已 ${staleSeconds}s 未变化，退出对战")
+            return Pair(percent, BattleDestructionOcrExitResult.ExitResourceStale)
+        }
+        if (mode == 2 && percentStale && resourcesStale) {
+            accountMessage("摧毁率与对手资源均已 ${staleSeconds}s 未变化，退出对战")
+            return Pair(percent, BattleDestructionOcrExitResult.ExitCombinedStale)
+        }
+        onStatusUpdate?.invoke(
+            BattleDetectionStatus(
+                percent,
+                if (needsPercent) (staleMs - (now - state.lastChangeTimeMs)).coerceAtLeast(0) else 0,
+                if (resources != null) resourceState.lastResources else null,
+                if (resources != null) {
+                    (staleMs - (now - resourceState.lastChangeTimeMs)).coerceAtLeast(0)
+                } else null,
+                resourceFailureElapsedMs = resourceState.ocrFailStartMs?.let { now - it }
+            )
+        )
+    } else if (needsPercent) {
+        if (mode == 0 && percentStale) {
+            accountMessage("摧毁率已 ${staleSeconds}s 未变化，退出对战")
             return Pair(percent, BattleDestructionOcrExitResult.ExitStale)
         }
-        if (elapsed % 5 == 0L) {
-            accountMessage("摧毁率 ${elapsed}s 未变化 (阈值: ${staleSeconds}s)")
-        }
-    } else {
-        if (previous != null) {
-            accountMessage("摧毁率变化: ${previous}% → ${percent}%")
-        }
-        state.lastPercent = percent
-        state.lastChangeTimeMs = now
+        onStatusUpdate?.invoke(
+            BattleDetectionStatus(
+                percent,
+                (staleMs - (now - state.lastChangeTimeMs)).coerceAtLeast(0),
+                null,
+                null
+            )
+        )
     }
 
     return Pair(percent, BattleDestructionOcrExitResult.Continue)

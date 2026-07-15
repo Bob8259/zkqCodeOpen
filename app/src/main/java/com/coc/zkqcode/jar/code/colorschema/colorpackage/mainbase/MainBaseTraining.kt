@@ -22,6 +22,7 @@ interface IMainBaseTraining {
     val GrayBarbarian: ColorSchema
     val TrainLighteningSpell: ColorSchema
     val TrainSiegeMachine: ColorSchema
+
     // CopyArmy link post-processing buttons — placeholder schemas, replace with actual colors later
     val SaveArmyButton: ColorSchema
     val SaveArmyButton2: ColorSchema
@@ -29,6 +30,7 @@ interface IMainBaseTraining {
     val ConfirmUseButton: ColorSchema
     val EnableSuperTroopButton: ColorSchema
     val UseResourcesButton: ColorSchema
+    val UseArmyButton2: ColorSchema
 }
 
 object MainBaseTraining : IMainBaseTraining {
@@ -83,33 +85,27 @@ object MainBaseTraining : IMainBaseTraining {
 
     // CopyArmy link post-processing buttons
     override val SaveArmyButton = ColorSchema.parse(
-        1112, 165, 1246, 320, "6E8AAC",
-        "27|0|6E8AAC,74|-3|6E8AAC,81|0|6E8AAC,108|0|6E8AAC,0|77|7A97B9,27|77|7A97B9,54|77|7A97B9,81|77|7A97B9,108|77|7A97B9",
-        0, 0.9, "保存军队"
+        1112, 165, 1246, 320, "6E8AAC", "27|0|6E8AAC,74|-3|6E8AAC,81|0|6E8AAC,108|0|6E8AAC,0|77|7A97B9,27|77|7A97B9,54|77|7A97B9,81|77|7A97B9,108|77|7A97B9", 0, 0.9, "保存军队"
     )
     override val SaveArmyButton2 = ColorSchema.parse(
-        1113, 123, 1246, 238, "7387A5",
-        "27|0|7387A5,54|0|FFFFFF,80|0|7387A5,107|0|7387A5,0|57|8297B5,27|57|545C68,54|57|7C90AD,80|57|B8BDC5,107|57|8297B5",
-        0, 0.9, "保存军队2"
+        1113, 123, 1246, 238, "7387A5", "27|0|7387A5,54|0|FFFFFF,80|0|7387A5,107|0|7387A5,0|57|8297B5,27|57|545C68,54|57|7C90AD,80|57|B8BDC5,107|57|8297B5", 0, 0.9, "保存军队2"
     )
     override val UseArmyButton = ColorSchema.parse(
-        1118, 165, 1242, 205, "8EEABF",
-        "25|0|8EEABF,50|0|8EEABF,75|0|8EEABF,100|0|8EEABF,0|20|3AD289,25|20|39D289,50|20|36C17F,75|20|3AD289,100|20|3AD289",
-        0, 0.9, "使用"
+        1118, 165, 1242, 205, "8EEABF", "25|0|8EEABF,50|0|8EEABF,75|0|8EEABF,100|0|8EEABF,0|20|3AD289,25|20|39D289,50|20|36C17F,75|20|3AD289,100|20|3AD289", 0, 0.9, "使用"
     )
     override val ConfirmUseButton = ColorSchema.parse(
-        656, 409, 898, 518, "84F8DD",
-        "49|0|84F8DD,97|0|84F8DD,145|0|84F8DD,194|0|84F8DD,0|55|1FBC6D,49|55|1FBC6D,97|55|1FBC6D,145|55|1FBC6D,194|55|1FBC6D",
-        0, 0.9, "确认使用"
+        659, 408, 899, 518, "84F8DD", "48|0|84F8DD,96|0|84F8DD,144|0|84F8DD,192|0|84F8DD,0|55|1FBC6D,48|55|1FBC6D,96|55|1FBC6D,144|55|1FBC6D,192|55|1FBC6D", 0, 0.9, "确认使用"
     )
     override val EnableSuperTroopButton = ColorSchema.parse(
-        550, 252, 1251, 292, "7AF8D2",
-        "0|-6|8FFFE7,0|9|39DA91,0|14|3CC87F,5|16|3EBE75,5|13|3BCD84,5|10|3AD78E,5|4|68EFC0,5|-3|86FEDE,5|-9|92FFEA",
-        0, 0.9, "超级兵启用"
+        550, 252, 1251, 292, "7AF8D2", "0|-6|8FFFE7,0|9|39DA91,0|14|3CC87F,5|16|3EBE75,5|13|3BCD84,5|10|3AD78E,5|4|68EFC0,5|-3|86FEDE,5|-9|92FFEA", 0, 0.9, "超级兵启用"
     )
     override val UseResourcesButton = ColorSchema.parse(
-        312, 471, 969, 596, "84E4B9",
-        "43|0|84E4B9,86|0|84E4B9,128|0|84E4B9,171|0|84E4B9,0|49|2CCD84,43|49|2CCD84,86|49|2CCD84,128|49|2CCD84,171|49|2CCD84",
-        0, 0.9, "使用资源"
+        312, 471, 969, 596, "84E4B9", "43|0|84E4B9,86|0|84E4B9,128|0|84E4B9,171|0|84E4B9,0|49|2CCD84,43|49|2CCD84,86|49|2CCD84,128|49|2CCD84,171|49|2CCD84", 0, 0.9, "使用资源"
+    )
+    // Alternate confirm-use button used after army-link import on some layouts
+    override val UseArmyButton2 = ColorSchema.parse(
+        659, 408, 899, 518, "84F8DD",
+        "48|0|84F8DD,96|0|84F8DD,144|0|84F8DD,192|0|84F8DD,0|55|1FBC6D,48|55|1FBC6D,96|55|1FBC6D,144|55|1FBC6D,192|55|1FBC6D",
+        0, 0.9, "确认使用按钮2"
     )
 }

@@ -1,5 +1,7 @@
 package com.coc.zkqcode.jar.code.universal.recognizer
 
+import android.graphics.Bitmap
+
 /**
  * Data class representing the game's core resources.
  */
@@ -23,7 +25,12 @@ data class Resources(
  * @param isOpponent Whether to recognize the opponent's resources instead of own.
  * @return A [Resources] object containing the detected values.
  */
-suspend fun recognizeResources(isOpponent: Boolean = false): Resources {
+suspend fun recognizeResources(isOpponent: Boolean = false, bitmap: Bitmap? = null): Resources {
+    return recognizeResourcesOrNull(isOpponent, bitmap) ?: Resources()
+}
+
+/** Returns null when no resource values were recognized. */
+suspend fun recognizeResourcesOrNull(isOpponent: Boolean = false, bitmap: Bitmap? = null): Resources? {
     // Select crop area based on target
     val (startX, startY, endX, endY) = if (isOpponent) {
         listOf(50, 98, 293, 209)
@@ -31,7 +38,12 @@ suspend fun recognizeResources(isOpponent: Boolean = false): Resources {
         listOf(990, 20, 1270, 190)
     }
     val preProcess = !isOpponent
-    val results = TextRecognizer.recognize(startX, startY, endX, endY, useChinese = false, applyPreprocess = preProcess, threshold = 240)
+    val results = TextRecognizer.recognize(
+        startX, startY, endX, endY, useChinese = false, applyPreprocess = preProcess,
+        threshold = 240, screenBuffer = bitmap
+    )
+
+    if (results.isEmpty()) return null
 
     // Sort by the top coordinate of the bounding box
     val sortedResults = results.sortedBy { it.position?.top ?: Int.MAX_VALUE }
@@ -40,8 +52,10 @@ suspend fun recognizeResources(isOpponent: Boolean = false): Resources {
     var elixir = 0
     var darkElixir = 0
 
+    var recognizedValueCount = 0
     sortedResults.forEachIndexed { index, recognizedText ->
         val cleanValue = extractValue(recognizedText.text)
+        if (recognizedText.text.any { it.isDigit() }) recognizedValueCount++
         when (index) {
             0 -> gold = cleanValue
             1 -> elixir = cleanValue
@@ -49,7 +63,7 @@ suspend fun recognizeResources(isOpponent: Boolean = false): Resources {
         }
     }
 
-    return Resources(gold, elixir, darkElixir)
+    return if (recognizedValueCount > 0) Resources(gold, elixir, darkElixir) else null
 }
 
 /**

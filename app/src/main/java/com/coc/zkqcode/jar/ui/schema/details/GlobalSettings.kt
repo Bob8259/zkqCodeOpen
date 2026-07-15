@@ -13,6 +13,7 @@ object GlobalSettings {
     val EXTRACT_GLOBAL = SettingDef("extract_global", "提取国际服存档到此序号", "Extract Global to Slot", "1", "GLOBAL_SETTINGS")
     val EXTRACT_DATA_NUMBER = SettingDef("extract_data_number", "保存到此序号", "Save to Slot", "1", "GLOBAL_SETTINGS")
     val EXTRACT_DATA_CONTENT = SettingDef("extract_data_content", "内容", "Content", "", "GLOBAL_SETTINGS")
+    val DEPLOY_PRESETS = SettingDef("deploy_presets", "下兵预设数据", "Deploy Preset Data", "[]", "GLOBAL_SETTINGS")
 
     val EMAIL = SettingDef("email", "邮箱", "Email", "", "GLOBAL_SETTINGS")
     val PASSWORD = SettingDef("password", "密码", "Password", "", "GLOBAL_SETTINGS")
@@ -134,6 +135,7 @@ object GlobalSettings {
         EXTRACT_GLOBAL,
         EXTRACT_DATA_NUMBER,
         EXTRACT_DATA_CONTENT,
+        DEPLOY_PRESETS,
         EMAIL,
         PASSWORD,
         ENTER_GAME_TIMER,

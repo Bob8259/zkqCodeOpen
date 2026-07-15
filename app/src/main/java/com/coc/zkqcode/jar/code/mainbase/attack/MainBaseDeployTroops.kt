@@ -6,6 +6,7 @@ import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.fileactions.LogHelper
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
 import com.coc.zkqcode.jar.code.universal.smalltools.data.getBooleanConfigRuntime
+import com.coc.zkqcode.jar.code.universal.smalltools.data.getConfigRuntime
 import com.coc.zkqcode.jar.ui.schema.Schema
 import com.coc.zkqcode.jar.code.universal.smalltools.input.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.ColorSchema
@@ -31,6 +32,8 @@ private const val DRAG_END_Y = 430F
 // Duration (ms) for each individual smooth drag sweep
 private const val DRAG_SWEEP_MS = 600
 private const val DRAG_SWEEP_SLOW_MS = 3000
+private const val MAX_CN_DEPLOY_ROUNDS = 20
+private const val MAX_CN_SPELL_BATCHES = 20
 
 suspend fun mainBaseDeployTroops() {
     // Record the start time of the battle
@@ -186,5 +189,191 @@ private suspend fun dragUntilDeployed(x: Int, y: Int, dragSweepMs: Int, schemas:
         withContext(NonCancellable) {
             TouchActions.touchUp(1)
         }
+    }
+}
+
+// ========== CN server (国服) specific deployment ==========
+
+private data class DeployPath(
+    val startX: Float, val startY: Float,
+    val endX: Float, val endY: Float,
+    val name: String = ""
+)
+
+private data class DetectedTroop(
+    val x: Int, val y: Int,
+    val schemas: List<ColorSchema>,
+    val dragSweepMs: Int
+)
+
+// CN 4 deployment paths covering all 4 edges of the battlefield
+private val CN_P1_A = DeployPath(561f, 76f, 138f, 390f, "P1A")
+private val CN_P1_B = DeployPath(679f, 103f, 1080f, 404f, "P1B")
+private val CN_P2_C = DeployPath(96f, 226f, 530f, 544f, "P2C")
+private val CN_P2_D = DeployPath(1097f, 213f, 663f, 542f, "P2D")
+
+// CN troop bar schemas. Spells are detected and deployed separately.
+private val cnTroopSchemas = listOf(
+    MyColors.TroopColorAtDeploymentBar,
+    MyColors.SuperTroopColorAtDeploymentBar,
+    MyColors.SpecialTroopColorAtDeploymentBar
+)
+
+private suspend fun cnScanBar(): List<DetectedTroop> {
+    val screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult
+        ?: return emptyList()
+
+    val results = mutableListOf<DetectedTroop>()
+
+    for (schema in cnTroopSchemas) {
+        var searchX1 = schema.x1
+        while (searchX1 < schema.x2) {
+            val narrowed = ColorSchema.rescope(schema, searchX1, schema.y1, schema.x2, schema.y2)
+            val found = findMultiColors(schema = narrowed, byteBuffer = screenBuffer)
+            if (found == null) break
+            results.add(DetectedTroop(found.x, found.y, listOf(schema), DRAG_SWEEP_MS))
+            searchX1 = found.x + 40
+        }
+    }
+
+    // Dedup: sort by x, then remove entries within 40px of the previous kept one.
+    // 40px ≈ half a deployment slot width — catches same-icon multi-schema matches
+    // while keeping genuinely adjacent different troop types separate.
+    val sorted = results.sortedBy { it.x }
+    val deduped = mutableListOf<DetectedTroop>()
+    for (troop in sorted) {
+        if (deduped.isEmpty() || kotlin.math.abs(troop.x - deduped.last().x) >= 40) {
+            deduped.add(troop)
+        }
+    }
+    return deduped
+}
+
+private suspend fun cnHasAnyTroop(): Boolean {
+    return cnTroopSchemas.any { findMultiColors(schema = it) != null }
+}
+
+private suspend fun cnDeploySpells() {
+    if (!getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.DEPLOY_SPELLS_ENABLED.key)) return
+
+    repeat(MAX_CN_SPELL_BATCHES) {
+        // Refresh the bar after each batch so depleted spells disappear from the next snapshot.
+        val screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult
+            ?: return
+        val spells = mutableListOf<Pair<Int, Int>>()
+        val schema = MyColors.SpellColorAtDeploymentBar
+        var searchX1 = schema.x1
+        while (searchX1 < schema.x2) {
+            val narrowed = ColorSchema.rescope(schema, searchX1, schema.y1, schema.x2, schema.y2)
+            val found = findMultiColors(schema = narrowed, byteBuffer = screenBuffer) ?: break
+            spells.add(found.x to found.y)
+            searchX1 = found.x + 40
+        }
+
+        if (spells.isEmpty()) return
+
+        for ((x, y) in spells) {
+            TouchActions.tap(x, y, delayTime = 300)
+            TouchActions.tap(520, 240, delayTime = 300)
+            TouchActions.tap(465, 320, delayTime = 300)
+            TouchActions.tap(370, 355, delayTime = 300)
+        }
+    }
+}
+
+private suspend fun cnDeployOneBatch(finger1: DeployPath, finger2: DeployPath, customSweepMs: Int = DRAG_SWEEP_MS) {
+    // One screenshot creates the troop snapshot for this area. Each detected slot
+    // receives one pass on both paths; do not wait for the slot to disappear.
+    val troops = cnScanBar()
+    for (troop in troops) {
+        TouchActions.tap(troop.x, troop.y, delayTime = 300)
+        val sweepMs = (if (customSweepMs > 0) customSweepMs else troop.dragSweepMs) + Random.nextInt(-500, 500)
+        TouchActions.touchDown(finger1.startX, finger1.startY, 1)
+        delayWithMultiplier(600)
+        TouchActions.moveSmoothly(finger1.startX, finger1.startY, finger1.endX, finger1.endY, sweepMs, 1)
+        TouchActions.touchUp(1)
+        delayWithMultiplier(200)
+        TouchActions.touchDown(finger2.startX, finger2.startY, 1)
+        delayWithMultiplier(600)
+        TouchActions.moveSmoothly(finger2.startX, finger2.startY, finger2.endX, finger2.endY, sweepMs, 1)
+        TouchActions.touchUp(1)
+    }
+
+    // Step 2: deploy heroes (reuse international version)
+    if (getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.DEPLOY_HEROES_ENABLED.key)) {
+        deployHeroes()
+    }
+
+    // Step 3: deploy spells
+    cnDeploySpells()
+}
+
+private suspend fun cnDeployClickOnPath(path: DeployPath, density: Int, clickDelayMs: Int) {
+    val dx = path.endX - path.startX
+    val dy = path.endY - path.startY
+    val distance = kotlin.math.sqrt((dx * dx + dy * dy).toDouble())
+    val steps = maxOf(1, (distance / density).toInt())
+    for (i in 0..steps) {
+        val t = if (steps == 0) 0f else i.toFloat() / steps
+        val x = (path.startX + dx * t).toInt()
+        val y = (path.startY + dy * t).toInt()
+        TouchActions.tap(x, y, delayTime = clickDelayMs)
+    }
+}
+
+private suspend fun cnDeployOneBatchClick(finger1: DeployPath, finger2: DeployPath, density: Int, clickDelayMs: Int) {
+    val troops = cnScanBar()
+    for (troop in troops) {
+        TouchActions.tap(troop.x, troop.y, delayTime = 300)
+        cnDeployClickOnPath(finger1, density, clickDelayMs)
+        delayWithMultiplier(200)
+        cnDeployClickOnPath(finger2, density, clickDelayMs)
+    }
+
+    if (getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.DEPLOY_HEROES_ENABLED.key)) {
+        deployHeroes()
+    }
+    cnDeploySpells()
+}
+
+suspend fun cnMainBaseDeployTroops() {
+    zoomSmallMainBase(isForAttack = true)
+
+    val deployMode = getConfigRuntime(Schema.MAIN_BASE_SETTINGS.DEPLOY_MODE.key)
+    val customSweepMs = getConfigRuntime(Schema.MAIN_BASE_SETTINGS.DEPLOY_DRAG_SPEED.key).toIntOrNull() ?: DRAG_SWEEP_MS
+    val clickDensity = getConfigRuntime(Schema.MAIN_BASE_SETTINGS.DEPLOY_CLICK_DENSITY.key).toIntOrNull() ?: 50
+
+    if (getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.DEPLOY_SIEGE_MACHINES_ENABLED.key)) {
+        deploySiegeMachine(
+            useReinforcements = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.DEPLOY_REINFORCEMENTS_ENABLED.key)
+        )
+    }
+
+    val isClickMode = deployMode == "2"
+
+    var isUpperHalf = true
+    for (round in 1..MAX_CN_DEPLOY_ROUNDS) {
+        if (isUpperHalf) {
+            if (isClickMode) {
+                cnDeployOneBatchClick(CN_P1_A, CN_P1_B, clickDensity, customSweepMs)
+            } else {
+                cnDeployOneBatch(CN_P1_A, CN_P1_B, customSweepMs)
+            }
+        } else {
+            if (isClickMode) {
+                cnDeployOneBatchClick(CN_P2_C, CN_P2_D, clickDensity, customSweepMs)
+            } else {
+                cnDeployOneBatch(CN_P2_C, CN_P2_D, customSweepMs)
+            }
+        }
+
+        if (!cnHasAnyTroop() || round == MAX_CN_DEPLOY_ROUNDS) break
+
+        if (isUpperHalf) {
+            TouchActions.swipe(1209, 463, 1209, 156, delayTime = 100)
+        } else {
+            TouchActions.swipe(1209, 156, 1209, 463, delayTime = 100)
+        }
+        isUpperHalf = !isUpperHalf
     }
 }

@@ -68,6 +68,7 @@ suspend fun mainBaseAttack(battleNumber: Int = 1, battleTimes: Int? = null): Boo
         val ocrExitEnabled = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.OCR_EXIT_ENABLED.key)
         val speedUpEnabled = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.BATTLE_SPEEDUP.key)
         val destructionOcrState = BattleDestructionOcrState()
+        val resourceOcrState = BattleResourceOcrState()
         // Show disabled message once at the beginning if has task
         var taskDisableMessageShown = false
         var speedUpClicked = false // Prevent re-clicking the persistent speed-up button
@@ -109,7 +110,30 @@ suspend fun mainBaseAttack(battleNumber: Int = 1, battleTimes: Int? = null): Boo
 
             // OCR destruction-% exit detection (only when enabled and no task)
             if (ocrExitEnabled && !hasMainWorldTask) {
-                val (_, ocrResult) = checkBattleDestructionOcrExit(destructionOcrState, bitmap = sharedBitmap)
+                val (_, ocrResult) = checkBattleDestructionOcrExit(
+                    destructionOcrState,
+                    resourceState = resourceOcrState,
+                    bitmap = sharedBitmap,
+                    onStatusUpdate = { status ->
+                        val percentSeconds = status.percentRemainingMs / 1000.0
+                        val resourceSeconds = status.resourceRemainingMs?.let { it / 1000.0 }
+                        val statusText = buildString {
+                            if (status.percentFailureElapsedMs != null) {
+                                append("%识别失败 ${"%.1f".format(status.percentFailureElapsedMs / 1000.0)}秒")
+                            } else if (status.percent != null) {
+                                append("${status.percent}% ${"%.1f".format(percentSeconds)}秒")
+                            }
+                            if (status.resourceFailureElapsedMs != null) {
+                                append(if (isNotEmpty()) "，" else "")
+                                append("资源识别失败 ${"%.1f".format(status.resourceFailureElapsedMs / 1000.0)}秒")
+                            } else if (resourceSeconds != null) {
+                                append(if (isNotEmpty()) "，" else "")
+                                append("资源 ${"%.1f".format(resourceSeconds)}秒")
+                            }
+                        }
+                        accountMessage(statusText)
+                    }
+                )
                 when (ocrResult) {
                     BattleDestructionOcrExitResult.ExitTargetMet -> {
                         surrenderMainBaseBattle("破坏百分比已达目标，退出对战")
@@ -118,6 +142,16 @@ suspend fun mainBaseAttack(battleNumber: Int = 1, battleTimes: Int? = null): Boo
 
                     BattleDestructionOcrExitResult.ExitStale -> {
                         surrenderMainBaseBattle("破坏百分比长时间未变化，退出对战")
+                        break
+                    }
+
+                    BattleDestructionOcrExitResult.ExitResourceStale -> {
+                        surrenderMainBaseBattle("对手资源长时间未变化，退出对战")
+                        break
+                    }
+
+                    BattleDestructionOcrExitResult.ExitCombinedStale -> {
+                        surrenderMainBaseBattle("破坏百分比与对手资源长时间未变化，退出对战")
                         break
                     }
 

@@ -331,26 +331,32 @@ class BelowAnchorPositionProvider : PopupPositionProvider {
 // The optional `suffix` parameter replaces the now-deleted SettingInputRowWithSuffix.
 @Composable
 fun SettingInputRow(
-    key: String, topPadding: Dp = 6.dp, labelVerticalOffset: Dp = 0.dp, suffix: String? = null, minWidth: Dp? = null, afterChange: ((String) -> Unit)? = null
+    key: String, topPadding: Dp = 6.dp, labelVerticalOffset: Dp = 0.dp, suffix: String? = null, minWidth: Dp? = null, numericOnly: Boolean = false, afterChange: ((String) -> Unit)? = null, labelOverride: String? = null
 ) {
     val state = rememberConfigState(key)
-    val label = Schema.getDisplayName(key)
+    // Optional override lets callers hide the schema label (e.g. OCR exit second row).
+    val label = labelOverride ?: Schema.getDisplayName(key)
 
     Row(
         modifier = Modifier.padding(top = topPadding), verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(
-            text = label, modifier = Modifier
-                .padding(end = 8.dp)
-                .offset(y = labelVerticalOffset)
-                .align(Alignment.CenterVertically), style = MaterialTheme.typography.labelMedium
-        )
+        if (label.isNotEmpty()) {
+            Text(
+                text = label, modifier = Modifier
+                    .padding(end = 8.dp)
+                    .offset(y = labelVerticalOffset)
+                    .align(Alignment.CenterVertically), style = MaterialTheme.typography.labelMedium
+            )
+        }
 
         StyledBasicTextField(
             value = state.value, onValueChange = { newValue ->
-                GlobalVars.isAutoRunEnabled = false
-                state.value = newValue
-                afterChange?.invoke(newValue)
+                // Optional digit-only filter for numeric config fields
+                if (!numericOnly || newValue.all { it.isDigit() }) {
+                    GlobalVars.isAutoRunEnabled = false
+                    state.value = newValue
+                    afterChange?.invoke(newValue)
+                }
             }, modifier = Modifier
                 .align(Alignment.CenterVertically)
                 .then(if (minWidth != null) Modifier.widthIn(min = minWidth) else Modifier), endPadding = if (suffix != null) 2.dp else 16.dp
@@ -524,10 +530,11 @@ fun SettingSection(
 
 @Composable
 fun SettingDropdown(
-    key: String, options: List<String>, afterChange: ((Int) -> Unit)? = null
+    key: String, options: List<String>, afterChange: ((Int) -> Unit)? = null, labelOverride: String? = null
 ) {
     val state = rememberConfigState(key)
-    val label = Schema.getDisplayName(key)
+    // Optional override lets callers hide the schema label (e.g. OCR exit mode dropdown).
+    val label = labelOverride ?: Schema.getDisplayName(key)
 
     var expanded by remember { mutableStateOf(false) }
 
@@ -539,9 +546,11 @@ fun SettingDropdown(
             .padding(top = 6.dp)
             .padding(end = 6.dp)
     ) {
-        Text(
-            text = label, textAlign = TextAlign.Center, modifier = Modifier.padding(end = 10.dp), style = MaterialTheme.typography.labelMedium
-        )
+        if (label.isNotEmpty()) {
+            Text(
+                text = label, textAlign = TextAlign.Center, modifier = Modifier.padding(end = 10.dp), style = MaterialTheme.typography.labelMedium
+            )
+        }
 
         Box(modifier = Modifier.wrapContentSize(Alignment.TopStart)) {
             // Trigger button

@@ -50,6 +50,10 @@ object MainBaseSettings {
     val DEPLOY_SPELLS_ENABLED = SettingDef("deploy_spells_enabled", "下法术", "Deploy Spells", 1, "MAIN_BASE_SETTINGS")
     val DEPLOY_REINFORCEMENTS_ENABLED = SettingDef("deploy_reinforcements_enabled", "下援兵", "Deploy Reinforcements", 1, "MAIN_BASE_SETTINGS")
     val DEPLOY_SIEGE_MACHINES_ENABLED = SettingDef("deploy_siege_machines_enabled", "下攻城机器", "Deploy Siege Machines", 1, "MAIN_BASE_SETTINGS")
+    val DEPLOY_MODE = SettingDef("deploy_mode", "下兵方式", "Deploy Mode", "0", "MAIN_BASE_SETTINGS")
+    val DEPLOY_DRAG_SPEED = SettingDef("deploy_drag_speed", "滑动速度（毫秒）", "Drag Speed (ms)", "600", "MAIN_BASE_SETTINGS")
+    val DEPLOY_CLICK_DENSITY = SettingDef("deploy_click_density", "下兵密度", "Deploy Density", "50", "MAIN_BASE_SETTINGS")
+    val DEPLOY_REMARK = SettingDef("deploy_remark", "预设备注", "Preset Remark", "", "MAIN_BASE_SETTINGS")
 
     ///////
     val BUILD_SETTING = SettingDef("build_setting", "自动建造", "Auto Build", 1, "MAIN_BASE_SETTINGS")
@@ -80,7 +84,9 @@ object MainBaseSettings {
     val EXIT_ON_ONE_STAR_MAIN = SettingDef("exit_on_one_star_main", "一星退出", "Exit on 1-star", 0, "MAIN_BASE_SETTINGS")
     val OCR_EXIT_ENABLED = SettingDef("ocr_exit_enabled", "破坏%退出", "Destruction % Exit", 0, "MAIN_BASE_SETTINGS")
     val OCR_EXIT_TARGET_PERCENT = SettingDef("ocr_exit_target_percent", "目标破坏", "Target Destruction", "0", "MAIN_BASE_SETTINGS")
-    val OCR_EXIT_STALE_SECONDS = SettingDef("ocr_exit_stale_seconds", "百分比不变", "Unchanged for", "20", "MAIN_BASE_SETTINGS")
+    val OCR_EXIT_MODE = SettingDef("ocr_exit_mode", "未变化检测", "Unchanged Detection", "0", "MAIN_BASE_SETTINGS")
+    // Display names left empty; suffix text comes from Strings.unchangedExitSuffix in the UI row.
+    val OCR_EXIT_STALE_SECONDS = SettingDef("ocr_exit_stale_seconds", "", "", "20", "MAIN_BASE_SETTINGS")
     val BATTLE_SPEEDUP = SettingDef("battle_speedup", "对战加速", "Battle Speed-up", 0, "MAIN_BASE_SETTINGS")
     val RESTART_GAME = SettingDef("restart_game", "部署后重启游戏", "Restart after deploy", 1, "MAIN_BASE_SETTINGS")
     val PLAY_TOURNAMENT = SettingDef("play_tournament", "排位对战", "Ranked Battle", 0, "MAIN_BASE_SETTINGS")
@@ -232,6 +238,10 @@ object MainBaseSettings {
         DEPLOY_SPELLS_ENABLED,
         DEPLOY_REINFORCEMENTS_ENABLED,
         DEPLOY_SIEGE_MACHINES_ENABLED,
+        DEPLOY_MODE,
+        DEPLOY_DRAG_SPEED,
+        DEPLOY_CLICK_DENSITY,
+        DEPLOY_REMARK,
         BUILD_SETTING,
         WALL_UPGRADE_SETTINGS,
         INSTANT_UPGRADE,
@@ -329,6 +339,7 @@ object MainBaseSettings {
         EXIT_ON_ONE_STAR_MAIN,
         OCR_EXIT_ENABLED,
         OCR_EXIT_TARGET_PERCENT,
+        OCR_EXIT_MODE,
         OCR_EXIT_STALE_SECONDS,
         BATTLE_SPEEDUP,
         EVENT_LEAGUE_START_DAY

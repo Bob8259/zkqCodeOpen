@@ -172,7 +172,8 @@ suspend fun searchOpponentsAndDeployTroops(battleNumber: Int = 1, battleTimes: I
             // Fast path: all targets below 10 → attack immediately without OCR
             if (targetGold < 10 && targetElixir < 10 && targetDarkElixir < 10) {
                 battleStarted = true
-                mainBaseDeployTroops()
+                // Mode "0" = original single-side deploy; otherwise CN 4-side deploy
+                if (getConfigRuntime(Schema.MAIN_BASE_SETTINGS.DEPLOY_MODE.key) != "0") cnMainBaseDeployTroops() else mainBaseDeployTroops()
                 break
             }
 
@@ -226,7 +227,8 @@ suspend fun searchOpponentsAndDeployTroops(battleNumber: Int = 1, battleTimes: I
                 }
 
                 battleStarted = true
-                mainBaseDeployTroops()
+                // Mode "0" = original single-side deploy; otherwise CN 4-side deploy
+                if (getConfigRuntime(Schema.MAIN_BASE_SETTINGS.DEPLOY_MODE.key) != "0") cnMainBaseDeployTroops() else mainBaseDeployTroops()
                 break
             } else {
                 TouchActions.tap(nextOpponent.x, nextOpponent.y, delayTime = 2000)

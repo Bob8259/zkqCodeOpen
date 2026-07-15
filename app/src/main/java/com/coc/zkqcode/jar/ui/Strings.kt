@@ -86,6 +86,11 @@ object Strings {
     val cnVersion get() = if (LanguageManager.isChinese) "国服" else "CN Version"
     val globalVersion get() = if (LanguageManager.isChinese) "国际服" else "Global Version"
     val atrasis get() = "Atrasis"
+    val deployModeOriginal get() = if (LanguageManager.isChinese) "单边下兵 (原版)" else "Single Side"
+    val deployModeSlider get() = if (LanguageManager.isChinese) "四面下兵 (真滑屏)" else "4-Side Slide"
+    val deployModeFast get() = if (LanguageManager.isChinese) "四面下兵 (快速)" else "4-Side Fast"
+    val deployPreset get() = if (LanguageManager.isChinese) "预设" else "Preset"
+    val selectDeployPreset get() = if (LanguageManager.isChinese) "选择预设" else "Select preset"
 
     // AccountConfig
     fun account(index: Int) = if (LanguageManager.isChinese) "账号$index" else "Account $index"
@@ -324,12 +329,12 @@ object Strings {
     // OCR destruction-% battle exit
     val percentTargetSuffix get() = if (LanguageManager.isChinese) "％时退出" else "% exit"
     val percentStaleSuffix get() = if (LanguageManager.isChinese) "秒内％未变则退出" else "s if % unchanged"
+    val unchangedExitSuffix get() = if (LanguageManager.isChinese) "秒内未变则退出" else "s unchanged, then exit"
+    val unchangedDetectionOptions get() = if (LanguageManager.isChinese) listOf("百分比", "对手资源", "百分比+资源") else listOf("Percent", "Opponent resources", "Percent + resources")
     val ocrExitExplain
         get() = if (LanguageManager.isChinese)
-            "OCR 检测对战摧毁率百分比。设定目标%为 0 则不触发目标退出；\n" +
-                    "默认 20 秒内百分比不变化则自动退出。"
-        else "OCR-based destruction % detection. Set target to 0 to disable target exit.\n" +
-                "Default: exit if % unchanged for 20s."
+            "目标破坏大于 0 时，摧毁率达到目标即退出；目标破坏为 0 时，按下拉选项检测百分比、对手资源或两者。"
+        else "If the target is above 0, exit when the destruction target is reached. If it is 0, use the dropdown to detect percent, opponent resources, or both."
 
     // Battle speed-up button
     val battleSpeedupExplain

@@ -1,11 +1,52 @@
 package com.coc.zkqcode.jar.ui.pages.mainbase
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.Remove
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Popup
+import androidx.compose.ui.window.PopupProperties
 import com.coc.zkqcode.core.data.database.GlobalVars
+import com.coc.zkqcode.jar.code.universal.smalltools.data.DeployPresetManager
 import com.coc.zkqcode.jar.ui.Strings
+import com.coc.zkqcode.jar.ui.components.BelowAnchorPositionProvider
 import com.coc.zkqcode.jar.ui.components.CustomButton
 import com.coc.zkqcode.jar.ui.components.InputRowWithCheckBox
 import com.coc.zkqcode.jar.ui.components.SectionBanner
@@ -164,7 +205,112 @@ fun LazyListScope.mainBaseConfig(
             AnimatedVisibility(
                 visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.MANUAL_TRAINING.key}_c$index"]?.value == "1"
             ) {
+                var presets by remember { mutableStateOf(DeployPresetManager.listPresets()) }
+                var selectedRemark by remember { mutableStateOf("") }
+                var showDropdown by remember { mutableStateOf(false) }
+
                 Column {
+                    // Preset bar: matching project dropdown style
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.padding(top = 6.dp, end = 6.dp)
+                    ) {
+                        Text(
+                            text = Strings.deployPreset,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.padding(end = 10.dp),
+                            style = MaterialTheme.typography.labelMedium
+                        )
+                        Box(modifier = Modifier.wrapContentSize(Alignment.TopStart)) {
+                            Button(
+                                onClick = { showDropdown = true },
+                                shape = RoundedCornerShape(8.dp),
+                                modifier = Modifier.height(30.dp),
+                                contentPadding = PaddingValues(horizontal = 12.dp, vertical = 0.dp),
+                                colors = ButtonDefaults.buttonColors(containerColor = AppColors.Primary)
+                            ) {
+                                Text(
+                                    text = if (selectedRemark.isNotEmpty()) selectedRemark else Strings.selectDeployPreset,
+                                    style = MaterialTheme.typography.labelMedium,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis
+                                )
+                                Icon(Icons.Default.ArrowDropDown, contentDescription = null)
+                            }
+                            if (showDropdown) {
+                                Popup(
+                                    popupPositionProvider = BelowAnchorPositionProvider(),
+                                    onDismissRequest = { showDropdown = false },
+                                    properties = PopupProperties(focusable = true)
+                                ) {
+                                    Surface(
+                                        shape = RoundedCornerShape(12.dp),
+                                        color = AppColors.CardBg,
+                                        shadowElevation = 8.dp,
+                                        modifier = Modifier.padding(4.dp)
+                                    ) {
+                                        Column(
+                                            modifier = Modifier.padding(8.dp).heightIn(max = 320.dp).verticalScroll(rememberScrollState()),
+                                            verticalArrangement = Arrangement.spacedBy(6.dp)
+                                        ) {
+                                            presets.forEach { preset ->
+                                                val isSelected = preset.remark == selectedRemark
+                                                Box(
+                                                    modifier = Modifier
+                                                        .background(if (isSelected) AppColors.Primary else AppColors.PrimaryLight.copy(alpha = 0.10f), RoundedCornerShape(8.dp))
+                                                        .border(1.dp, if (isSelected) AppColors.Primary else AppColors.PrimaryLight, RoundedCornerShape(8.dp))
+                                                        .clickable {
+                                                            selectedRemark = preset.remark
+                                                            GlobalVars.configStates["${MAIN_BASE_SETTINGS.DEPLOY_REMARK.key}_c$index"]?.value = preset.remark
+                                                            GlobalVars.configStates["${MAIN_BASE_SETTINGS.ARMY_CONFIG_MODE.key}_c$index"]?.value = preset.armyConfigMode
+                                                            GlobalVars.configStates["${MAIN_BASE_SETTINGS.ARMY_LINK.key}_c$index"]?.value = preset.armyLink
+                                                            GlobalVars.configStates["${MAIN_BASE_SETTINGS.DEPLOY_MODE.key}_c$index"]?.value = preset.deployMode
+                                                            GlobalVars.configStates["${MAIN_BASE_SETTINGS.DEPLOY_DRAG_SPEED.key}_c$index"]?.value = preset.dragSpeed
+                                                            GlobalVars.configStates["${MAIN_BASE_SETTINGS.DEPLOY_CLICK_DENSITY.key}_c$index"]?.value = preset.clickDensity
+                                                            showDropdown = false
+                                                        }
+                                                        .padding(horizontal = 16.dp, vertical = 8.dp)
+                                                ) {
+                                                    Text(
+                                                        text = preset.remark,
+                                                        color = if (isSelected) Color.White else AppColors.TextPrimary,
+                                                        style = MaterialTheme.typography.labelMedium
+                                                    )
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        Spacer(modifier = Modifier.width(8.dp))
+                        CustomButton(onClick = {
+                            val remark = GlobalVars.configStates["${MAIN_BASE_SETTINGS.DEPLOY_REMARK.key}_c$index"]?.value ?: ""
+                            if (remark.isBlank()) return@CustomButton
+                            val armMode = GlobalVars.configStates["${MAIN_BASE_SETTINGS.ARMY_CONFIG_MODE.key}_c$index"]?.value ?: "0"
+                            val armLink = GlobalVars.configStates["${MAIN_BASE_SETTINGS.ARMY_LINK.key}_c$index"]?.value ?: ""
+                            val depMode = GlobalVars.configStates["${MAIN_BASE_SETTINGS.DEPLOY_MODE.key}_c$index"]?.value ?: "0"
+                            val depSpeed = GlobalVars.configStates["${MAIN_BASE_SETTINGS.DEPLOY_DRAG_SPEED.key}_c$index"]?.value ?: "600"
+                            val depDensity = GlobalVars.configStates["${MAIN_BASE_SETTINGS.DEPLOY_CLICK_DENSITY.key}_c$index"]?.value ?: "50"
+                            DeployPresetManager.savePreset(remark, armMode, armLink, depMode, depSpeed, depDensity)
+                            selectedRemark = remark
+                            presets = DeployPresetManager.listPresets()
+                        }, text = Strings.saveFolderName)
+                        Spacer(modifier = Modifier.width(8.dp))
+                        CustomButton(onClick = {
+                            if (selectedRemark.isNotEmpty()) {
+                                DeployPresetManager.deletePreset(selectedRemark)
+                                selectedRemark = ""
+                                GlobalVars.configStates["${MAIN_BASE_SETTINGS.DEPLOY_REMARK.key}_c$index"]?.value = ""
+                                presets = DeployPresetManager.listPresets()
+                            }
+                        }, text = Strings.deleteFolder, containerColor = Color(0xFFB71C1C))
+                    }
+
+                    // Remark — standard SettingInputRow
+                    SettingInputRow(key = "${MAIN_BASE_SETTINGS.DEPLOY_REMARK.key}_c$index")
+
+                    // Army config
                     SettingDropdown(
                         key = "${MAIN_BASE_SETTINGS.ARMY_CONFIG_MODE.key}_c$index",
                         options = listOf(Strings.armyConfigModeLink, Strings.armyConfigModeManual)
@@ -174,20 +320,81 @@ fun LazyListScope.mainBaseConfig(
                     ) {
                         SettingInputRow(key = "${MAIN_BASE_SETTINGS.ARMY_LINK.key}_c$index")
                     }
+
+                    // Deploy mode
+                    SettingDropdown(
+                        key = "${MAIN_BASE_SETTINGS.DEPLOY_MODE.key}_c$index",
+                        options = listOf(Strings.deployModeOriginal, Strings.deployModeSlider, Strings.deployModeFast)
+                    )
+                    AnimatedVisibility(
+                        visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.DEPLOY_MODE.key}_c$index"]?.value != "0"
+                    ) {
+                        Column {
+                            // Speed with +/-
+                            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(top = 6.dp)) {
+                                SettingInputRow(key = "${MAIN_BASE_SETTINGS.DEPLOY_DRAG_SPEED.key}_c$index", topPadding = 0.dp)
+                                val speedK = "${MAIN_BASE_SETTINGS.DEPLOY_DRAG_SPEED.key}_c$index"
+                                Button(onClick = {
+                                    val v = (GlobalVars.configStates[speedK]?.value?.toIntOrNull() ?: 600) - 1
+                                    if (v >= 1) GlobalVars.configStates[speedK]?.value = v.toString()
+                                }, shape = RoundedCornerShape(8.dp), modifier = Modifier.width(25.dp).height(25.dp).padding(end = 1.dp), contentPadding = PaddingValues(0.dp), colors = ButtonDefaults.buttonColors(containerColor = AppColors.Primary)) {
+                                    Icon(Icons.Default.Remove, "-", modifier = Modifier.size(18.dp))
+                                }
+                                Button(onClick = {
+                                    val v = (GlobalVars.configStates[speedK]?.value?.toIntOrNull() ?: 600) + 1
+                                    GlobalVars.configStates[speedK]?.value = v.toString()
+                                }, shape = RoundedCornerShape(8.dp), modifier = Modifier.width(25.dp).height(25.dp), contentPadding = PaddingValues(0.dp), colors = ButtonDefaults.buttonColors(containerColor = AppColors.Primary)) {
+                                    Icon(Icons.Default.Add, "+", modifier = Modifier.size(18.dp))
+                                }
+                            }
+
+                            // Density with +/- (click-deploy mode only)
+                            AnimatedVisibility(
+                                visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.DEPLOY_MODE.key}_c$index"]?.value == "2"
+                            ) {
+                                Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(top = 6.dp)) {
+                                    SettingInputRow(key = "${MAIN_BASE_SETTINGS.DEPLOY_CLICK_DENSITY.key}_c$index", topPadding = 0.dp)
+                                    val densityK = "${MAIN_BASE_SETTINGS.DEPLOY_CLICK_DENSITY.key}_c$index"
+                                    Button(onClick = {
+                                        val v = (GlobalVars.configStates[densityK]?.value?.toIntOrNull() ?: 50) - 1
+                                        if (v >= 1) GlobalVars.configStates[densityK]?.value = v.toString()
+                                    }, shape = RoundedCornerShape(8.dp), modifier = Modifier.width(25.dp).height(25.dp).padding(end = 1.dp), contentPadding = PaddingValues(0.dp), colors = ButtonDefaults.buttonColors(containerColor = AppColors.Primary)) {
+                                        Icon(Icons.Default.Remove, "-", modifier = Modifier.size(18.dp))
+                                    }
+                                    Button(onClick = {
+                                        val v = (GlobalVars.configStates[densityK]?.value?.toIntOrNull() ?: 50) + 1
+                                        GlobalVars.configStates[densityK]?.value = v.toString()
+                                    }, shape = RoundedCornerShape(8.dp), modifier = Modifier.width(25.dp).height(25.dp), contentPadding = PaddingValues(0.dp), colors = ButtonDefaults.buttonColors(containerColor = AppColors.Primary)) {
+                                        Icon(Icons.Default.Add, "+", modifier = Modifier.size(18.dp))
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
             AnimatedVisibility(
                 visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.OCR_EXIT_ENABLED.key}_c$index"]?.value == "1"
             ) {
-                FlowRow {
-                    SettingInputRow(
-                        key = "${MAIN_BASE_SETTINGS.OCR_EXIT_TARGET_PERCENT.key}_c$index",
-                        suffix = Strings.percentTargetSuffix
-                    )
-                    SettingInputRow(
-                        key = "${MAIN_BASE_SETTINGS.OCR_EXIT_STALE_SECONDS.key}_c$index",
-                        suffix = Strings.percentStaleSuffix
-                    )
+                // Two-row OCR exit layout: target on row 1; mode + stale seconds on row 2.
+                Column {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        SettingInputRow(
+                            key = "${MAIN_BASE_SETTINGS.OCR_EXIT_TARGET_PERCENT.key}_c$index",
+                            suffix = Strings.percentTargetSuffix
+                        )
+                    }
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        SettingDropdown(
+                            key = "${MAIN_BASE_SETTINGS.OCR_EXIT_MODE.key}_c$index",
+                            options = Strings.unchangedDetectionOptions,
+                            labelOverride = ""
+                        )
+                        SettingInputRow(
+                            key = "${MAIN_BASE_SETTINGS.OCR_EXIT_STALE_SECONDS.key}_c$index",
+                            suffix = Strings.unchangedExitSuffix
+                        )
+                    }
                 }
             }
         }
