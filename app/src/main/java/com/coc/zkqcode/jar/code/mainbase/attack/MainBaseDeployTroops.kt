@@ -370,9 +370,9 @@ suspend fun cnMainBaseDeployTroops() {
         if (!cnHasAnyTroop() || round == MAX_CN_DEPLOY_ROUNDS) break
 
         if (isUpperHalf) {
-            TouchActions.swipe(1209, 463, 1209, 156, delayTime = 100)
+            TouchActions.swipe(1100, 460, 1100, 155, delayTime = 100)
         } else {
-            TouchActions.swipe(1209, 156, 1209, 463, delayTime = 100)
+            TouchActions.swipe(1100, 155, 1100, 460, delayTime = 100)
         }
         isUpperHalf = !isUpperHalf
     }

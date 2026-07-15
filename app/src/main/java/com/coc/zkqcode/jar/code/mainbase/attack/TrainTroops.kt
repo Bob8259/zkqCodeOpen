@@ -69,7 +69,7 @@ suspend fun mainBaseTrainTroops(): Boolean {
                     enablePoint = findMultiColorsUntil(schemas = listOf(MyColors.EnableSuperTroopButton), duration = 2000)
                 }
                 // Swipe once to reveal remaining super troops
-                TouchActions.swipe(1229, 243, 542, 243)
+                TouchActions.swipe(1120, 240, 435, 240)
                 delayWithMultiplier(1000)
                 // Second batch: process buttons revealed by swipe
                 enablePoint = findMultiColorsUntil(schemas = listOf(MyColors.EnableSuperTroopButton), duration = 3000)

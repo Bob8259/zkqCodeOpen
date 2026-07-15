@@ -111,7 +111,7 @@ suspend fun upgradeEquipmentsAction() {
         // Detect and upgrade one enabled equipment on the current page, then swipe
         // to the next page and perform the same detection again.
         tryUpgradeEnabledEquipment()
-        TouchActions.swipe(1220, 510, -500, 510, delayAfter = 500)
+        TouchActions.swipe(1120, 510, -600, 510, delayAfter = 500)
         tryUpgradeEnabledEquipment()
     }
     accountMessage("升级装备完成")

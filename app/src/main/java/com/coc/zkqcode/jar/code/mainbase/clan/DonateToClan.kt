@@ -179,8 +179,8 @@ suspend fun donateToClan(): Boolean {
         if (donationButton != null) {
             TouchActions.tap(donationButton.x, donationButton.y)
             donateActions()
-            TouchActions.swipe(1155, 237, -500, 250, delayTime = 100)//Swipe troops
-            TouchActions.swipe(1155, 480, -500, 480, delayTime = 100)//Spells
+            TouchActions.swipe(1055, 240, -600, 250, delayTime = 100)//Swipe troops
+            TouchActions.swipe(1055, 480, -600, 480, delayTime = 100)//Spells
             donateActions()
             clickRightBottom(1)
             // If remaining detection time is less than 3 seconds, extend it to 3 seconds

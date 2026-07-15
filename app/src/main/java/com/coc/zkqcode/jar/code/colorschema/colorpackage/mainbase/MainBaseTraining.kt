@@ -102,10 +102,9 @@ object MainBaseTraining : IMainBaseTraining {
     override val UseResourcesButton = ColorSchema.parse(
         312, 471, 969, 596, "84E4B9", "43|0|84E4B9,86|0|84E4B9,128|0|84E4B9,171|0|84E4B9,0|49|2CCD84,43|49|2CCD84,86|49|2CCD84,128|49|2CCD84,171|49|2CCD84", 0, 0.9, "使用资源"
     )
+
     // Alternate confirm-use button used after army-link import on some layouts
     override val UseArmyButton2 = ColorSchema.parse(
-        659, 408, 899, 518, "84F8DD",
-        "48|0|84F8DD,96|0|84F8DD,144|0|84F8DD,192|0|84F8DD,0|55|1FBC6D,48|55|1FBC6D,96|55|1FBC6D,144|55|1FBC6D,192|55|1FBC6D",
-        0, 0.9, "确认使用按钮2"
+        659, 408, 899, 518, "84F8DD", "48|0|84F8DD,96|0|84F8DD,144|0|84F8DD,192|0|84F8DD,0|55|1FBC6D,48|55|1FBC6D,96|55|1FBC6D,144|55|1FBC6D,192|55|1FBC6D", 0, 0.9, "确认使用按钮2"
     )
 }

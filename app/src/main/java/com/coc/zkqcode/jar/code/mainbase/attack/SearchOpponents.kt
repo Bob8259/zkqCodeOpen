@@ -257,7 +257,7 @@ private suspend fun mainBaseBattleTutorial(): Boolean {
         if (innerSetBaseIcon != null) {
             TouchActions.tap(640, 300)
             TouchActions.tap(590, 590, delayTime = 1200)//Add backups
-            TouchActions.swipe(1210, 560, -1000, 560, delayAfter = 400)
+            TouchActions.swipe(1110, 560, -1100, 560, delayAfter = 400)
             TouchActions.tap(280, 630, delayTime = 200)//Furnace
             TouchActions.tap(280, 630)
             TouchActions.swipe(85, 560, 2500, 500, delayAfter = 400)
