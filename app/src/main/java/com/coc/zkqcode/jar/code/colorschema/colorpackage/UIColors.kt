@@ -9,6 +9,7 @@ interface IUIColors {
     val ReconnectionOnCloudPhone: ColorSchema
     val ReconnectionOnOppoA57: ColorSchema
     val ReconnectionOnLeiDian: ColorSchema
+    val ReconnectionOnSamsung: ColorSchema
     val RatingOnCloudPhone: ColorSchema
     val RatingOnCloudPhone2: ColorSchema
     val GreenConfirm: ColorSchema
@@ -76,6 +77,9 @@ object UIColors : IUIColors {
     )
     override val ReconnectionOnLeiDian = ColorSchema.parse(
         260, 142, 1001, 581, "201B1C", "15|8|201B1C,98|16|201B1C,176|19|201B1C,238|19|201B1C,290|17|201B1C,270|45|201B1C,170|51|201B1C,98|55|201B1C,62|56|201B1C", 0, 0.99, "雷电模拟器断线重连"
+    )
+    override val ReconnectionOnSamsung = ColorSchema.parse(
+        20, 338, 1172, 691, "1F1F1F", "51|-7|1F1F1F,137|-6|1F1F1F,205|-7|1F1F1F,291|-8|1F1F1F,319|-8|1F1F1F,387|-5|1F1F1F,429|-5|1F1F1F,514|-5|1F1F1F,636|-7|1F1F1F", 0, 0.9, "三星断线重连"
     )
     override val RatingOnCloudPhone = ColorSchema.parse(
         249, 206, 1035, 522, "424242", "157|0|424242,314|0|424242,471|0|424242,628|0|424242,0|158|424242,157|158|424242,314|158|424242,471|158|424242,628|158|424242", 0, 0.99, "云手机打分提示"
@@ -207,38 +211,47 @@ object UIColors : IUIColors {
     override val BackToCamp = ColorSchema.parse(
         58, 597, 102, 644, "10135B", "9|0|80A3EA,18|0|6682B6,27|0|7FA2E6,36|0|293265,0|23|2540A8,9|23|718BFD,18|23|7996FE,27|23|86A6FE,36|23|637AAE", 0, 0.9, "回营"
     )
+
     // Agree terms checkbox
     override val AgreeTerms = ColorSchema.parse(
         260, 470, 299, 509, "ACBAC2", "8|0|ACBAC2,16|0|ACBAC2,23|0|ACBAC2,31|0|ACBAC2,0|19|ACBAC2,8|19|ACBAC2,16|19|ACBAC2,23|19|ACBAC2,31|19|ACBAC2", 0, 0.97, "同意条款"
     )
+
     // Agree privacy button
     override val AgreePrivacy = ColorSchema.parse(
         184, 598, 593, 653, "67E2BF", "82|0|67E2BF,208|5|5CDCB3,245|0|67E2BF,327|0|67E2BF,0|27|21B76E,82|27|21B76E,164|27|21B76E,245|27|21B76E,327|27|21B76E", 0, 0.9, "同意隐私"
     )
+
     // Log in button
     override val LogIn = ColorSchema.parse(
         663, 406, 879, 451, "FFFFFF", "-4|-8|261CE8,-1|-28|000000,27|-23|EDCD62,57|-16|E4C357,60|7|A77019,164|-23|EDCD62,182|-17|E6C459,178|4|B3791C,155|2|BB7E1E", 0, 0.9, "登录"
     )
+
     // Skin advertisement popup
     override val SkinAd = ColorSchema.parse(
         1167, 39, 1203, 77, "6761B8", "7|0|FFFFFF,14|0|FFFFFF,21|0|FFFFFF,28|0|8C84FF,0|19|3D3D3D,7|19|F9F7F7,14|19|0D0D0D,21|19|F9F9F9,28|19|1511EB", 0, 0.9, "皮肤广告"
     )
+
     // Capital back to camp button
     override val CapitalBackToCamp = ColorSchema.parse(
         32, 589, 134, 686, "C2D7DC", "21|0|ADDEFF,41|0|86A9F6,61|0|53537C,82|0|C2D7DC,0|49|A9C5CC,21|49|A3BFC9,41|49|B0B7B9,61|49|A3BEC4,82|49|A9C5CC", 0, 0.9, "都城回营"
     )
+
     // Capital back to camp button (variant 2)
     override val CapitalBackToCamp2 = ColorSchema.parse(
         60, 598, 99, 649, "5162B5", "8|0|5E6FB4,16|0|6D80C5,23|0|83A8F4,31|0|4E483A,0|25|2648BE,8|25|6786E2,16|25|6987D5,23|25|5C6DB7,31|25|6F7AB2", 0, 0.9, "都城回营2"
     )
+
     // Capital airship button
     override val CapitalAirShip = ColorSchema.parse(
         64, 589, 124, 613, "385CBF", "12|0|365975,24|0|2A4567,36|0|355DAA,48|0|3860C3,0|12|2A396D,12|12|242A5B,24|12|2E4F5F,36|12|39618D,48|12|2F388E", 0, 0.9, "都城飞艇"
     )
+
     // Capital airship button (variant 2)
     override val CapitalAirShip2 = ColorSchema.parse(
         60, 573, 113, 596, "4475AE", "11|0|2B4760,22|0|38557D,32|0|265AA9,43|0|3A61C5,0|11|325794,11|11|192F31,22|11|213636,32|11|305585,43|11|2E408F", 0, 0.9, "都城飞船2"
     )
+
     // Cloud phone shop button
     override val CloudPhoneShopButton = ColorSchema.parse(
         1231, 34, 1253, 72, "FFFFFF", "5|0|FFFFFF,9|0|101013,13|0|8C85FF,18|0|8B84FF,0|19|F6F6F6,5|19|FAF6F6,9|19|101010,13|19|1511EC,18|19|1C18ED", 0, 0.9, "云手机商店"

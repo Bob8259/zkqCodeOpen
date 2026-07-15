@@ -1,5 +1,6 @@
 package com.coc.zkqcode.jar.code.universal.smalltools.lifecycle
 
+import android.graphics.Bitmap
 import android.os.Environment
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
@@ -16,6 +17,7 @@ import com.coc.zkqcode.jar.ui.schema.Schema
 import kotlinx.coroutines.delay
 import kotlin.random.Random
 import kotlin.time.Duration.Companion.milliseconds
+import androidx.core.graphics.createBitmap
 
 private const val ANR_DIALOG_LEFT = 160
 private const val ANR_DIALOG_TOP = 120
@@ -28,7 +30,7 @@ suspend fun checkReconnections(): Boolean {
     checkPrivacy()
 
     val homeSchemas = listOf(
-        MyColors.Reconnection, MyColors.ReconnectionOnCloudPhone, MyColors.ReconnectionOnOppoA57, MyColors.ReconnectionOnLeiDian, MyColors.RatingOnCloudPhone, MyColors.RatingOnCloudPhone2
+        MyColors.Reconnection, MyColors.ReconnectionOnCloudPhone, MyColors.ReconnectionOnOppoA57, MyColors.ReconnectionOnLeiDian, MyColors.ReconnectionOnSamsung, MyColors.RatingOnCloudPhone, MyColors.RatingOnCloudPhone2
     )
     var screenBuffer = captureOrRestart()
 
@@ -49,11 +51,22 @@ suspend fun checkReconnections(): Boolean {
             }
             accountMessage("检测到重连，白色像素个数$whiteCount")
 
-            // Use ML Kit to detect rating/review dialogue text on the full screen
+            // Use ML Kit to detect rating/review dialogue text on the full screen.
+            // Custom preprocess: pixels with R,G,B all < 150 become black; all others become white.
+            // Then OCR with no extra preprocess/binarization inside TextRecognizer.
             val ratingOcrLeft = 0
             val ratingOcrTop = 0
+            val ratingBitmap = ScreenCaptureManager.capture(asBitmap = true) as? Bitmap
+                ?: logAndRestart("failed to take screenshot for rating OCR")
+            val processedRatingBitmap = binarizeDarkPixelsToBlack(ratingBitmap)
             val recognizedTexts = TextRecognizer.recognize(
-                startX = ratingOcrLeft, startY = ratingOcrTop, endX = 1280, endY = 720, useChinese = true, threshold = 140, applyPreprocess = true, invertBinarization = true
+                startX = ratingOcrLeft,
+                startY = ratingOcrTop,
+                endX = 1280,
+                endY = 720,
+                useChinese = true,
+                applyPreprocess = false,
+                screenBuffer = processedRatingBitmap
             )
             val recognizedTextString = recognizedTexts.joinToString(" ") { it.text }
             val isRatingDialog = recognizedTextString.contains("评分") || recognizedTextString.contains("反馈意见")
@@ -62,19 +75,24 @@ suspend fun checkReconnections(): Boolean {
             val action = GlobalVars.configStates[configKey]?.value?.toInt() ?: logAndRestart("Can not get $configKey")
             if (isRatingDialog) {
                 accountMessage("检测到评分/反馈对话框，执行重新提取存档，识别文本: $recognizedTextString")
-                val dismissButton = recognizedTexts.firstOrNull { recognizedText ->
+                val neverShowAgainButton = recognizedTexts.firstOrNull { recognizedText ->
                     recognizedText.text.replace(" ", "").contains("不再提示")
-                } ?: recognizedTexts.firstOrNull { recognizedText ->
+                }
+                if (neverShowAgainButton?.position != null) {
+                    val neverShowAgainX = ratingOcrLeft + neverShowAgainButton.position.centerX()
+                    val neverShowAgainY = ratingOcrTop + neverShowAgainButton.position.centerY()
+                    TouchActions.tap(neverShowAgainX, neverShowAgainY)
+                }
+                val laterButton = recognizedTexts.firstOrNull { recognizedText ->
                     recognizedText.text.replace(" ", "").contains("稍后")
                 }
-                if (dismissButton?.position != null) {
-                    val dismissX = ratingOcrLeft + dismissButton.position.centerX()
-                    val dismissY = ratingOcrTop + dismissButton.position.centerY()
-                    TouchActions.tap(dismissX, dismissY)
-                } else {
-                    // Fallback to the previous hard-coded dismiss position
-                    TouchActions.tap(793, 459)
+                if (laterButton?.position != null) {
+                    val laterX = ratingOcrLeft + laterButton.position.centerX()
+                    val laterY = ratingOcrTop + laterButton.position.centerY()
+                    TouchActions.tap(laterX, laterY)
                 }
+                // Always tap the hard-coded dismiss position as the final fallback
+                TouchActions.tap(793, 459)
                 reExtractGameSavings()
                 return@any true
             }
@@ -95,6 +113,7 @@ suspend fun checkReconnections(): Boolean {
         }
     }
 
+    delayWithMultiplier(400)
     return !needReturnFalse
 }
 
@@ -145,6 +164,36 @@ private suspend fun checkAnrDialog() {
     }
 
     accountMessage("检测到游戏ANR，但未识别到等待按钮，识别文本: $recognizedTextString")
+}
+
+/**
+ * Binarize for rating OCR: if R, G, and B are all below 150, set black;
+ * otherwise set white. No grayscale step.
+ */
+private fun binarizeDarkPixelsToBlack(src: Bitmap): Bitmap {
+    val width = src.width
+    val height = src.height
+    val pixels = IntArray(width * height)
+    src.getPixels(pixels, 0, width, 0, 0, width, height)
+
+    val black = -0x1000000 // 0xFF000000
+    val white = -0x1       // 0xFFFFFFFF
+
+    for (i in pixels.indices) {
+        val color = pixels[i]
+        val r = (color shr 16) and 0xFF
+        val g = (color shr 8) and 0xFF
+        val b = color and 0xFF
+        pixels[i] = if (r < 150 && g < 150 && b < 150) {
+            black
+        } else {
+            white
+        }
+    }
+
+    val out = createBitmap(width, height)
+    out.setPixels(pixels, 0, width, 0, 0, width, height)
+    return out
 }
 
 /**
