@@ -230,10 +230,28 @@ fun cleanBuildingName(raw: String, candidateBuildings: List<String> = ALL_BUILDI
         findBestFuzzyMatch(chineseOnly, SPECIAL_OCR_LABELS)?.let { return it }
     }
 
+    // Extra layer: disambiguate dark elixir drill vs storage by keywords.
+    // Falls through to fuzzy match when this layer does not match.
+    matchDarkElixirBuilding(chineseOnly, candidateBuildings)?.let { return prefix + it }
+
     // Match building names last to avoid treating section labels as real buildings.
     findBestFuzzyMatch(chineseOnly, candidateBuildings)?.let { return prefix + it }
 
     return prefix + name
+}
+
+/**
+ * Keyword disambiguation for dark elixir drill vs storage.
+ * OCR often confuses 暗黑重油钻井 with 暗黑重油罐 because they share 暗黑重油.
+ * Returns null when this layer does not apply so fuzzy match can run as usual.
+ */
+private fun matchDarkElixirBuilding(name: String, candidates: List<String>): String? {
+    if ('油' !in name) return null
+
+    val hasDrillHint = '钻' in name || '井' in name
+    val target = if (hasDrillHint) "暗黑重油钻井" else "暗黑重油罐"
+
+    return target.takeIf { it in candidates }
 }
 
 /**

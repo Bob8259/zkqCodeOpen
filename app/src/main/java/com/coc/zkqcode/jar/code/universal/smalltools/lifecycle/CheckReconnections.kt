@@ -49,9 +49,11 @@ suspend fun checkReconnections(): Boolean {
             }
             accountMessage("检测到重连，白色像素个数$whiteCount")
 
-            // Use ML Kit to detect rating/review dialogue text in the same area as countWhitePixels
+            // Use ML Kit to detect rating/review dialogue text on the full screen
+            val ratingOcrLeft = 0
+            val ratingOcrTop = 0
             val recognizedTexts = TextRecognizer.recognize(
-                startX = 270, startY = 230, endX = 1010, endY = 430, useChinese = true, threshold = 140, applyPreprocess = true, invertBinarization = true
+                startX = ratingOcrLeft, startY = ratingOcrTop, endX = 1280, endY = 720, useChinese = true, threshold = 140, applyPreprocess = true, invertBinarization = true
             )
             val recognizedTextString = recognizedTexts.joinToString(" ") { it.text }
             val isRatingDialog = recognizedTextString.contains("评分") || recognizedTextString.contains("反馈意见")
@@ -60,7 +62,19 @@ suspend fun checkReconnections(): Boolean {
             val action = GlobalVars.configStates[configKey]?.value?.toInt() ?: logAndRestart("Can not get $configKey")
             if (isRatingDialog) {
                 accountMessage("检测到评分/反馈对话框，执行重新提取存档，识别文本: $recognizedTextString")
-                TouchActions.tap(793, 459)
+                val dismissButton = recognizedTexts.firstOrNull { recognizedText ->
+                    recognizedText.text.replace(" ", "").contains("不再提示")
+                } ?: recognizedTexts.firstOrNull { recognizedText ->
+                    recognizedText.text.replace(" ", "").contains("稍后")
+                }
+                if (dismissButton?.position != null) {
+                    val dismissX = ratingOcrLeft + dismissButton.position.centerX()
+                    val dismissY = ratingOcrTop + dismissButton.position.centerY()
+                    TouchActions.tap(dismissX, dismissY)
+                } else {
+                    // Fallback to the previous hard-coded dismiss position
+                    TouchActions.tap(793, 459)
+                }
                 reExtractGameSavings()
                 return@any true
             }
@@ -134,7 +148,7 @@ private suspend fun checkAnrDialog() {
 }
 
 /**
- * Counts pixels in the confirmation area (270,230)→(1010,430) where R,G,B > 235 (white).
+ * Counts pixels in the confirmation area (10,10)→(1200,690) where R,G,B > 235 (white).
  * Uses absolute ByteBuffer.get(index) so it is position-independent.
  */
 private fun countWhitePixels(screenBuffer: ScreenCaptureManager.CaptureResult): Int {
@@ -142,8 +156,8 @@ private fun countWhitePixels(screenBuffer: ScreenCaptureManager.CaptureResult): 
     val pixelStride = screenBuffer.pixelStride
     val rowStride = screenBuffer.rowStride
     var count = 0
-    for (y in 230 until 430) {
-        for (x in 270 until 1010) {
+    for (y in 10 until 690) {
+        for (x in 10 until 1200) {
             val offset = y * rowStride + x * pixelStride
             val r = buf.get(offset).toInt() and 0xFF
             val g = buf.get(offset + 1).toInt() and 0xFF
