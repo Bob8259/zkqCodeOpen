@@ -473,13 +473,9 @@ private fun getOrderedList(buildings: List<String>, baseType: BaseType): List<St
     val ordered = buildings.filter { it in priorityMap && it in enabledBuildingNames }.sortedBy {
         priorityMap[it]!!
     }
-    // Reverse Upgrade (Main Base only): upgrade buildings from the bottom of the
-    // priority list to the top instead of the default top-to-bottom order.
-    return if (baseType == BaseType.Main && getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.REVERSE_UPGRADE.key)) {
-        ordered.reversed()
-    } else {
-        ordered
-    }
+    // Priority order is always top-to-bottom. Reverse Upgrade only affects
+    // in-game list scroll direction (see iterateBuilderBaseBuildingUpgradeList).
+    return ordered
 }
 
 // Represents the loop control action returned by extracted upgrade functions
