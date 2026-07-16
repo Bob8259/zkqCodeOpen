@@ -1,11 +1,13 @@
 package com.coc.zkqcode.jar.code
 
 import com.coc.zkqcode.core.data.database.GlobalVars
+import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.core.util.basic.RunShell
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.basic.waitForPlay
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
+import com.coc.zkqcode.core.util.fileactions.LogHelper.showDebugInfo
 import com.coc.zkqcode.jar.code.auth.displayAds
 import com.coc.zkqcode.jar.code.auth.userAuth
 import com.coc.zkqcode.jar.code.builderbase.playBuilderBase
@@ -108,24 +110,51 @@ private fun finishDataNumberEntryOnlyRun() {
 
 private suspend fun runTestCode() {
     while (true) {
-        // Open the worker upgrade list first, then run this test.
-        // Detects building names from the currently visible upgrade list.
-        val result = detectBuildingList(
-            baseType = BaseType.Main,
-            excludeNewBuildings = false,
-            excludeGearUpBuildings = true,
-        )
-        val affordableSummary = result.buildings.joinToString("\n") { "${it.name}(${it.x},${it.y})" }
-        val allSummary = result.allDetectedBuildings.joinToString("\n") { "${it.name}(${it.x},${it.y})" }
-        accountMessage(
-            "detectBuildingList 测试结果\n" +
-                "可升级(资源足够): ${result.buildings.size}\n" +
-                "${affordableSummary.ifBlank { "(空)" }}\n" +
-                "全部检测: ${result.allDetectedBuildings.size}\n" +
-                allSummary.ifBlank { "(空)" }
-        )
-        ShowMessage("建筑列表检测完成: 可升级${result.buildings.size}/全部${result.allDetectedBuildings.size}")
-        delayWithMultiplier(3000000)
+        val startMs = System.currentTimeMillis()
+        val captureAny = ScreenCaptureManager.capture(asBitmap = false)
+        val elapsedMs = System.currentTimeMillis() - startMs
+
+        when (captureAny) {
+            null -> {
+                showDebugInfo("runTestCode capture(asBitmap=false): null after ${elapsedMs}ms")
+                ShowMessage("capture(asBitmap=false) failed: null (${elapsedMs}ms)", isChecking = false)
+            }
+
+            is ScreenCaptureManager.CaptureResult -> {
+                val buf = captureAny.buffer
+                val capacity = buf.capacity()
+                val remaining = buf.remaining()
+                val position = buf.position()
+                // Sample center pixel (RGBA) to verify buffer content is readable
+                val centerX = captureAny.width / 2
+                val centerY = captureAny.height / 2
+                val offset = centerY * captureAny.rowStride + centerX * captureAny.pixelStride
+                val sampleRgba = if (offset + 3 < capacity) {
+                    val r = buf.get(offset).toInt() and 0xFF
+                    val g = buf.get(offset + 1).toInt() and 0xFF
+                    val b = buf.get(offset + 2).toInt() and 0xFF
+                    val a = buf.get(offset + 3).toInt() and 0xFF
+                    "RGBA($r,$g,$b,$a)"
+                } else {
+                    "offset_out_of_range"
+                }
+
+                val info = "ok ${elapsedMs}ms " +
+                        "${captureAny.width}x${captureAny.height} " +
+                        "pixelStride=${captureAny.pixelStride} rowStride=${captureAny.rowStride} " +
+                        "cap=$capacity rem=$remaining pos=$position center=$sampleRgba"
+                showDebugInfo("runTestCode capture(asBitmap=false): $info")
+                ShowMessage("capture(asBitmap=false): $info", isChecking = false)
+            }
+
+            else -> {
+                val typeName = captureAny::class.simpleName ?: captureAny.javaClass.name
+                showDebugInfo("runTestCode capture(asBitmap=false): unexpected type=$typeName after ${elapsedMs}ms")
+                ShowMessage("capture(asBitmap=false) unexpected type: $typeName (${elapsedMs}ms)", isChecking = false)
+            }
+        }
+
+        delayWithMultiplier(2000)
     }
 }
 
