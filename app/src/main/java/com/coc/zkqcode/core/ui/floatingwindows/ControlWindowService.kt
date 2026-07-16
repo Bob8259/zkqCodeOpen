@@ -134,7 +134,8 @@ class ControlWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner 
         }
     }
 
-    // Periodically snapshot botJob health and AppMode into monitor.log
+    // Periodically snapshot botJob health and AppMode into monitor.log.
+    // If botJob exists but is no longer active while AppMode is Run, force-restart the app.
     private fun startBotJobMonitor() {
         serviceScope.launch(Dispatchers.IO) {
             while (true) {
@@ -142,13 +143,22 @@ class ControlWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner 
                     val job = botJob
                     val isNull = job == null
                     val isActive = job?.isActive == true
-                    val mode = AppStateManager.currentMode.name
+                    val currentMode = AppStateManager.currentMode
+                    val mode = currentMode.name
                     LogHelper.writeMonitorLog(
                         context = this@ControlWindowService,
                         isBotJobNull = isNull,
                         isBotJobActive = isActive,
                         appMode = mode
                     )
+                    // botJob is non-null, inactive, and mode is still Run → bot died without recovery
+                    if (!isNull && !isActive && currentMode == AppMode.Run) {
+                        LogHelper.showDebugInfo(
+                            "ControlWindowService: botJob inactive while AppMode.Run, triggering force restart. " +
+                                    "botJobNull=$isNull, botJobActive=$isActive, appMode=$mode"
+                        )
+                        relaunchMainActivityDetached()
+                    }
                 } catch (_: Exception) {
                     // Never let monitor failures crash the service
                 }

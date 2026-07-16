@@ -16,6 +16,8 @@ import com.coc.zkqcode.jar.code.mainbase.research.findAllResearchItems
 import com.coc.zkqcode.jar.code.universal.GameVersion
 import com.coc.zkqcode.jar.code.universal.InGameVars
 import com.coc.zkqcode.jar.code.universal.accountMessage
+import com.coc.zkqcode.jar.code.universal.buildings.BaseType
+import com.coc.zkqcode.jar.code.universal.buildings.detectBuildingList
 import com.coc.zkqcode.jar.code.universal.checkScheduledUpgradeNotifications
 import com.coc.zkqcode.jar.code.universal.checkUpgradeTimers
 import com.coc.zkqcode.jar.code.universal.cloud.checkCloudExpiry
@@ -73,7 +75,7 @@ suspend fun runMainScript() {
     var lastUpdateCheckTime = System.currentTimeMillis()
     var nextUpdateInterval = (3600_000L) + (Math.random() * 7200_000L).toLong()
     while (currentCoroutineContext().isActive) {
-//        runTestCode()
+        runTestCode()
         runAccountStepBlock()
         // Check scheduled upgrade notifications every cycle (runs in background)
         checkScheduledUpgradeNotifications()
@@ -106,9 +108,24 @@ private fun finishDataNumberEntryOnlyRun() {
 
 private suspend fun runTestCode() {
     while (true) {
-
-        ShowMessage("测试代码运行完成")
-        delayWithMultiplier(5000000)
+        // Open the worker upgrade list first, then run this test.
+        // Detects building names from the currently visible upgrade list.
+        val result = detectBuildingList(
+            baseType = BaseType.Main,
+            excludeNewBuildings = false,
+            excludeGearUpBuildings = true,
+        )
+        val affordableSummary = result.buildings.joinToString("\n") { "${it.name}(${it.x},${it.y})" }
+        val allSummary = result.allDetectedBuildings.joinToString("\n") { "${it.name}(${it.x},${it.y})" }
+        accountMessage(
+            "detectBuildingList 测试结果\n" +
+                "可升级(资源足够): ${result.buildings.size}\n" +
+                "${affordableSummary.ifBlank { "(空)" }}\n" +
+                "全部检测: ${result.allDetectedBuildings.size}\n" +
+                allSummary.ifBlank { "(空)" }
+        )
+        ShowMessage("建筑列表检测完成: 可升级${result.buildings.size}/全部${result.allDetectedBuildings.size}")
+        delayWithMultiplier(3000000)
     }
 }
 

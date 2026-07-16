@@ -7,6 +7,7 @@ import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.InGameVars
+import com.coc.zkqcode.jar.code.universal.GameVersion
 import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
@@ -172,8 +173,8 @@ suspend fun searchOpponentsAndDeployTroops(battleNumber: Int = 1, battleTimes: I
             // Fast path: all targets below 10 → attack immediately without OCR
             if (targetGold < 10 && targetElixir < 10 && targetDarkElixir < 10) {
                 battleStarted = true
-                // Mode "0" = original single-side deploy; otherwise CN 4-side deploy
-                if (getConfigRuntime(Schema.MAIN_BASE_SETTINGS.DEPLOY_MODE.key) != "0") cnMainBaseDeployTroops() else mainBaseDeployTroops()
+                // Mode "0" = original single-side deploy; otherwise CN 4-side deploy (requires manual training + CN)
+                if (getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.MANUAL_TRAINING.key) && getConfigRuntime(Schema.MAIN_BASE_SETTINGS.DEPLOY_MODE.key) != "0" && InGameVars.currentGameVersion == GameVersion.CN) cnMainBaseDeployTroops() else mainBaseDeployTroops()
                 break
             }
 
@@ -227,8 +228,8 @@ suspend fun searchOpponentsAndDeployTroops(battleNumber: Int = 1, battleTimes: I
                 }
 
                 battleStarted = true
-                // Mode "0" = original single-side deploy; otherwise CN 4-side deploy
-                if (getConfigRuntime(Schema.MAIN_BASE_SETTINGS.DEPLOY_MODE.key) != "0") cnMainBaseDeployTroops() else mainBaseDeployTroops()
+                // Mode "0" = original single-side deploy; otherwise CN 4-side deploy (requires manual training + CN)
+                if (getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.MANUAL_TRAINING.key) && getConfigRuntime(Schema.MAIN_BASE_SETTINGS.DEPLOY_MODE.key) != "0" && InGameVars.currentGameVersion == GameVersion.CN) cnMainBaseDeployTroops() else mainBaseDeployTroops()
                 break
             } else {
                 TouchActions.tap(nextOpponent.x, nextOpponent.y, delayTime = 2000)

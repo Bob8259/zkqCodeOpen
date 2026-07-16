@@ -64,38 +64,39 @@ suspend fun builderBaseAttack(): Boolean {
         getConfigRuntime(Schema.BUILDER_BASE_SETTINGS.BUILDER_BASE_BATTLE_TIMES.key).toIntOrNull() ?: logAndRestart("${Schema.BUILDER_BASE_SETTINGS.BUILDER_BASE_BATTLE_TIMES.displayName} 必须是数字，请检查配置")
     val shouldCheckClanGameTask = battleTimesSetting == Schema.BUILDER_BASE_SETTINGS.BUILDER_BASE_BATTLE_TIMES_WITH_TASKS && battleTimes > normalBattleTimes
 
-    // 4. Per-battle loop: recalculate resources and re-evaluate stop conditions before each battle
+    // Shared stop-condition check used before the first battle and after each completed battle
+    suspend fun shouldStopBuilderBaseBattle(): Boolean {
+        val resourcePercentage = calculateResourcesPercentage(BaseType.Builder)
+        accountMessage("金币百分比: ${resourcePercentage.gold}%, 圣水百分比: ${resourcePercentage.elixir}%")
+        val stopResourcesEnabled = stopIfFull && !hasBuilderBaseTask
+        val stopNoStarEnabled = stopNoStarConfig && !hasBuilderBaseTask
+        val shouldStopResources = stopResourcesEnabled && resourcePercentage.gold >= 96 && resourcePercentage.elixir >= 96
+        val shouldStopNoStars = stopNoStarEnabled && findMultiColors(schema = MyColors.BuilderBaseStarsAvailable) == null
+        // Combined decision: when both are enabled, both must be satisfied; when only one is enabled, that one decides
+        val finalStop = when {
+            stopResourcesEnabled && stopNoStarEnabled -> shouldStopResources && shouldStopNoStars
+            stopResourcesEnabled -> shouldStopResources
+            stopNoStarEnabled -> shouldStopNoStars
+            else -> false
+        }
+        if (finalStop) {
+            val reasons = mutableListOf<String>()
+            if (shouldStopResources) reasons.add("资源已满")
+            if (shouldStopNoStars) reasons.add("无胜利之星")
+            accountMessage("${reasons.joinToString("，")}，停止对战")
+        }
+        return finalStop
+    }
+
+    // Check once before starting any battle.
+    if (shouldStopBuilderBaseBattle()) return enterMainScreen()
+
+    // Recheck after each completed battle so later battles are skipped immediately.
     run loop@{
         repeat(battleTimes) { index ->
-            // ---- Recalculate resource percentages every battle ----
+            // Recalculate resources every battle for attack strategy selection.
             val resourcePercentage = calculateResourcesPercentage(BaseType.Builder)
             accountMessage("金币百分比: ${resourcePercentage.gold}%, 圣水百分比: ${resourcePercentage.elixir}%")
-            val isGoldFull = resourcePercentage.gold >= 96
-            val isExileFull = resourcePercentage.elixir >= 96
-
-            // ---- Evaluate stop conditions every battle ----
-            val stopResourcesEnabled = stopIfFull && !hasBuilderBaseTask
-            val stopNoStarEnabled = stopNoStarConfig && !hasBuilderBaseTask
-
-            val shouldStopResources = stopResourcesEnabled && isGoldFull && isExileFull
-            val shouldStopNoStars = if (stopNoStarEnabled) {
-                findMultiColors(schema = MyColors.BuilderBaseStarsAvailable) == null
-            } else false
-
-            // Combined decision: when both are enabled, both must be satisfied; when only one is enabled, that one decides
-            val finalStop = when {
-                stopResourcesEnabled && stopNoStarEnabled -> shouldStopResources && shouldStopNoStars
-                stopResourcesEnabled -> shouldStopResources
-                stopNoStarEnabled -> shouldStopNoStars
-                else -> false
-            }
-            if (finalStop) {
-                val reasons = mutableListOf<String>()
-                if (shouldStopResources) reasons.add("资源已满")
-                if (shouldStopNoStars) reasons.add("无胜利之星")
-                accountMessage("${reasons.joinToString("，")}，停止对战")
-                return@loop // break out of the entire repeat loop
-            }
 
             // ---- Determine attack strategy based on current resource state ----
             // Auto-detect Victory Star: if stars are available, force trophy-pushing mode to claim them fast
@@ -122,6 +123,7 @@ suspend fun builderBaseAttack(): Boolean {
 
             if (!realAttack(attackType, hasBuilderBaseTask, index + 1, battleTimes)) return false
             val completedBattleTimes = index + 1
+            if (shouldStopBuilderBaseBattle()) return@loop
             if (shouldCheckClanGameTask && completedBattleTimes >= normalBattleTimes && !hasAcceptedClanGameTask(BaseType.Builder)) return true
 
             if ((index + 1) % 5 == 0) {

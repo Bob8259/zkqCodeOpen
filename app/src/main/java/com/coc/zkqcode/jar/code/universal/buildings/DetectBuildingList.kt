@@ -34,7 +34,7 @@ suspend fun detectBuildingList(baseType: BaseType, excludeNewBuildings: Boolean 
     val endY = 560
 
     // Recognize text in the specified area after removing the bright green marker noise.
-    val results = recognizeBuildingListWithGreenMask(startX, startY, endX, endY, threshold = 130)
+    val results = recognizeBuildingListWithGreenMask(startX, startY, endX, endY, threshold = 130, saveImage = true)
 
     if (results.isEmpty()) return BuildingDetectionResult(emptyList())
 
