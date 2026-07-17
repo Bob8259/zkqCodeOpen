@@ -37,8 +37,12 @@ object ScreenCaptureManager {
     private var cachedCaptureResult: CaptureResult? = null
     private var lastFrameTimestamp: Long = 0
 
-    // Skip MediaProjection and go straight to shell screencap after first failure
+    // Skip MediaProjection and go straight to shell screencap after repeated hard failures
     private var useShellFallback = false
+    private var consecutiveProjectionFailures = 0
+    private var lastCaptureSource: String = "none"
+    private const val SHELL_FALLBACK_FAILURE_THRESHOLD = 3
+    private const val MIN_VALID_OPAQUE_SAMPLE_RATIO = 0.20
 
     // Android 14+ enforces single-use MediaProjection tokens.
     // Track whether the cached resultData has already been consumed by
@@ -85,6 +89,8 @@ object ScreenCaptureManager {
     }
 
     fun getContext(): Context? = appContext
+
+    fun getLastCaptureSource(): String = lastCaptureSource
 
     private fun updateMetrics() {
         val context = appContext ?: return
@@ -149,7 +155,7 @@ object ScreenCaptureManager {
         }
 
         // Keep the accessibility logic here
-        AutoGrantTool.forceEnableAccessibility() 
+        AutoGrantTool.forceEnableAccessibility()
         MyAccessibilityService.isDetectionEnabled = true
 
         mediaProjectionManager?.let {
@@ -185,6 +191,8 @@ object ScreenCaptureManager {
         cachedResultCode = null
         cachedIntentData = null
         projectionTokenUsed = false
+        consecutiveProjectionFailures = 0
+        useShellFallback = false
     }
 
     /**
@@ -196,57 +204,103 @@ object ScreenCaptureManager {
         return Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE
     }
 
-    private fun ensureVirtualDisplay(projection: MediaProjection) {
-        if (virtualDisplay == null) {
-            // If ImageReader is needed, ensure it's ready
-            if (imageReader == null) prepareImageReader()
+    /**
+     * Resize an existing VirtualDisplay and rebind it to a new ImageReader.
+     * This avoids calling createVirtualDisplay() again, which is restricted on API 34+.
+     */
+    private fun rebindVirtualDisplayToNewSize(): Boolean {
+        val display = virtualDisplay ?: return false
+        val oldReader = imageReader
+        var newReader: ImageReader? = null
+        return try {
+            newReader = ImageReader.newInstance(screenWidth, screenHeight, PixelFormat.RGBA_8888, 2)
+            display.resize(screenWidth, screenHeight, screenDensity)
+            display.setSurface(newReader.surface)
 
+            oldReader?.setOnImageAvailableListener(null, null)
+            oldReader?.close()
+            imageReader = newReader
+
+            // Old frames are the wrong size after rotation/rebind
+            invalidateFrameCache()
+
+            LogHelper.showDebugInfo(
+                "rebindVirtualDisplayToNewSize: resized to ${screenWidth}x${screenHeight} dpi=$screenDensity"
+            )
+            true
+        } catch (e: Exception) {
+            LogHelper.showDebugInfo("rebindVirtualDisplayToNewSize failed: ${e.message}")
             try {
-                virtualDisplay = projection.createVirtualDisplay(
-                    "ScreenCapture",
-                    screenWidth,
-                    screenHeight,
-                    screenDensity,
-                    DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
-                    imageReader?.surface,
-                    null,
-                    backgroundHandler
-                )
-            } catch (e: Exception) {
-                LogHelper.showDebugInfo("ensureVirtualDisplay: Error creating VirtualDisplay: ${e.message}")
-                cleanupDisplayResources()
+                newReader?.setOnImageAvailableListener(null, null)
+                newReader?.close()
+            } catch (_: Exception) {
+                // ignore cleanup errors
             }
-        } else {
-            // If VirtualDisplay already exists, check if size has changed
-            if (imageReader?.width != screenWidth || imageReader?.height != screenHeight) {
-                // On Android 14+, we cannot call createVirtualDisplay() again on the same
-                // projection instance. Fall back to shell instead of crashing.
-                if (!canRecreateVirtualDisplay()) {
-                    LogHelper.showDebugInfo("ensureVirtualDisplay: Size changed but API 34+ prevents recreation, will use shell fallback")
-                    return
-                }
-
-                LogHelper.showDebugInfo("ensureVirtualDisplay: Size changed, recreating resources")
-                cleanupDisplayResources()
-                prepareImageReader()
-                try {
-                    virtualDisplay = projection.createVirtualDisplay(
-                        "ScreenCapture",
-                        screenWidth,
-                        screenHeight,
-                        screenDensity,
-                        DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
-                        imageReader?.surface,
-                        null,
-                        backgroundHandler
-                    )
-                } catch (e: Exception) {
-                    LogHelper.showDebugInfo("ensureVirtualDisplay: Error recreating VirtualDisplay: ${e.message}")
-                    // Clean up dangling imageReader to prevent Surface/native buffer leak
-                    cleanupDisplayResources()
-                }
-            }
+            false
         }
+    }
+
+    private fun createVirtualDisplay(projection: MediaProjection): Boolean {
+        if (imageReader == null) prepareImageReader()
+        return try {
+            virtualDisplay = projection.createVirtualDisplay(
+                "ScreenCapture",
+                screenWidth,
+                screenHeight,
+                screenDensity,
+                DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
+                imageReader?.surface,
+                null,
+                backgroundHandler
+            )
+            virtualDisplay != null
+        } catch (e: Exception) {
+            LogHelper.showDebugInfo("createVirtualDisplay: Error creating VirtualDisplay: ${e.message}")
+            cleanupDisplayResources()
+            false
+        }
+    }
+
+    /**
+     * Ensure VirtualDisplay + ImageReader match current metrics.
+     * @return true when the pipeline is ready for capture at the current size.
+     */
+    private fun ensureVirtualDisplay(projection: MediaProjection): Boolean {
+        val display = virtualDisplay
+        if (display == null) {
+            return createVirtualDisplay(projection)
+        }
+
+        val reader = imageReader
+        val sizeChanged = reader == null || reader.width != screenWidth || reader.height != screenHeight
+        if (!sizeChanged) {
+            return true
+        }
+
+        LogHelper.showDebugInfo(
+            "ensureVirtualDisplay: Size changed ${reader?.width}x${reader?.height} -> ${screenWidth}x${screenHeight}"
+        )
+
+        // Preferred path on all API levels: resize + rebind surface (no second createVirtualDisplay)
+        if (rebindVirtualDisplayToNewSize()) {
+            return true
+        }
+
+        // Resize failed — recreate only when the platform allows another createVirtualDisplay()
+        if (canRecreateVirtualDisplay()) {
+            LogHelper.showDebugInfo("ensureVirtualDisplay: resize failed, recreating resources (pre-API 34)")
+            cleanupDisplayResources()
+            return createVirtualDisplay(projection)
+        }
+
+        // API 34+: cannot recreate VirtualDisplay on the same projection instance.
+        // Drop broken display resources so capture can temporarily use shell without
+        // permanently abandoning a still-valid MediaProjection session.
+        LogHelper.showDebugInfo(
+            "ensureVirtualDisplay: resize failed and API 34+ prevents recreation; display resources released for temporary shell fallback"
+        )
+        cleanupDisplayResources()
+        return false
     }
 
     /**
@@ -263,7 +317,6 @@ object ScreenCaptureManager {
 
         return try {
             ensureVirtualDisplay(projection)
-            virtualDisplay != null
         } catch (e: Exception) {
             LogHelper.showDebugInfo("takeScreenshot: Error during capture setup: ${e.message}")
             cleanupDisplayResources()
@@ -288,6 +341,7 @@ object ScreenCaptureManager {
             cachedIntentData = data
             // Re-enable MediaProjection path since new permission was granted
             useShellFallback = false
+            consecutiveProjectionFailures = 0
             // Fresh token — mark as not yet consumed
             projectionTokenUsed = false
             ensureHandlerThread()
@@ -301,6 +355,13 @@ object ScreenCaptureManager {
         }
     }
 
+    private fun invalidateFrameCache() {
+        cachedBitmap?.recycle()
+        cachedBitmap = null
+        cachedCaptureResult = null
+        lastFrameTimestamp = 0
+    }
+
     private fun cleanupDisplayResources() {
         // Remove the image listener BEFORE closing the reader to prevent the
         // background handler from receiving a callback on a closing/closed reader.
@@ -312,11 +373,7 @@ object ScreenCaptureManager {
         imageReader?.close()
         imageReader = null
 
-        // Recycle cached bitmap to free native pixel memory before clearing
-        cachedBitmap?.recycle()
-        cachedBitmap = null
-        cachedCaptureResult = null
-        lastFrameTimestamp = 0
+        invalidateFrameCache()
 
         // Do NOT set mediaProjection to null here, so we can reuse it
     }
@@ -328,6 +385,8 @@ object ScreenCaptureManager {
         cachedResultCode = null
         cachedIntentData = null
         projectionTokenUsed = false
+        consecutiveProjectionFailures = 0
+        useShellFallback = false
         // Stop background thread
         handlerThread?.quitSafely()
         handlerThread = null
@@ -344,6 +403,85 @@ object ScreenCaptureManager {
         val rowStride: Int
     )
 
+    private fun isFrameContentValid(buffer: ByteBuffer, width: Int, height: Int, pixelStride: Int, rowStride: Int): Boolean {
+        if (width <= 0 || height <= 0 || pixelStride < 4 || rowStride < width * pixelStride) {
+            return false
+        }
+
+        val capacity = buffer.capacity()
+        var samples = 0
+        var opaque = 0
+        var nonZero = 0
+        val stepX = (width / 32).coerceAtLeast(1)
+        val stepY = (height / 32).coerceAtLeast(1)
+        var y = 0
+        while (y < height) {
+            var x = 0
+            while (x < width) {
+                val offset = y * rowStride + x * pixelStride
+                if (offset + 3 < capacity) {
+                    val r = buffer.get(offset).toInt() and 0xFF
+                    val g = buffer.get(offset + 1).toInt() and 0xFF
+                    val b = buffer.get(offset + 2).toInt() and 0xFF
+                    val a = buffer.get(offset + 3).toInt() and 0xFF
+                    if ((r or g or b or a) != 0) nonZero++
+                    if (a == 255) opaque++
+                    samples++
+                }
+                x += stepX
+            }
+            y += stepY
+        }
+
+        if (samples == 0) return false
+        val opaqueRatio = opaque.toDouble() / samples.toDouble()
+        val isValid = opaqueRatio >= MIN_VALID_OPAQUE_SAMPLE_RATIO
+        if (!isValid) {
+            LogHelper.showDebugInfo(
+                "capture: rejected MediaProjection frame content " +
+                        "${width}x${height} opaque=$opaque/$samples nonZero=$nonZero/$samples"
+            )
+        }
+        return isValid
+    }
+
+    private fun isCacheGeometryValid(asBitmap: Boolean): Boolean {
+        val reader = imageReader ?: return false
+        return if (asBitmap) {
+            val bitmap = cachedBitmap
+            bitmap != null && !bitmap.isRecycled &&
+                    bitmap.width == reader.width && bitmap.height == reader.height
+        } else {
+            val result = cachedCaptureResult
+            result != null &&
+                    result.width == reader.width && result.height == reader.height
+        }
+    }
+
+    private fun noteProjectionSuccess() {
+        consecutiveProjectionFailures = 0
+        // A healthy MediaProjection frame means shell lockout can be cleared.
+        useShellFallback = false
+    }
+
+    private fun noteProjectionFailure(reason: String): Boolean {
+        consecutiveProjectionFailures++
+        val permanent = consecutiveProjectionFailures >= SHELL_FALLBACK_FAILURE_THRESHOLD
+        if (permanent) {
+            useShellFallback = true
+            LogHelper.showDebugInfo(
+                "capture: $reason — permanent shell fallback after " +
+                        "$consecutiveProjectionFailures consecutive MediaProjection failures"
+            )
+        } else {
+            LogHelper.showDebugInfo(
+                "capture: $reason — temporary shell fallback " +
+                        "($consecutiveProjectionFailures/$SHELL_FALLBACK_FAILURE_THRESHOLD)"
+            )
+        }
+        return permanent
+    }
+
     /**
      * Improved coroutine screenshot method.
      * Tries MediaProjection first; falls back to shell screencap -p on failure.
@@ -351,13 +489,13 @@ object ScreenCaptureManager {
      * Strategy:
      * 1. Try to acquire a fresh frame with a short timeout.
      * 2. If no new frame arrives (screen is static), return the cached frame as
-     *    long as the VirtualDisplay is still alive — the cache is a valid
-     *    representation of the current screen regardless of its age.
-     * 3. Only fall back to shell when the MediaProjection pipeline is actually
-     *    broken (projection/virtualDisplay/imageReader is null).
+     *    long as the VirtualDisplay is still alive and cache geometry matches.
+     * 3. On size change, resize/rebind VirtualDisplay instead of abandoning the session.
+     * 4. Use temporary shell fallback on isolated failures; permanent shell only after
+     *    repeated hard MediaProjection failures.
      */
     suspend fun capture(asBitmap: Boolean = true): Any? = captureMutex.withLock {
-        // If MediaProjection already failed, skip directly to shell
+        // If MediaProjection already failed repeatedly, skip directly to shell
         if (useShellFallback) {
             return@withLock captureViaShell(asBitmap)
         }
@@ -378,7 +516,12 @@ object ScreenCaptureManager {
                         return@suspendCancellableCoroutine
                     }
 
-                    ensureVirtualDisplay(projection)
+                    if (!ensureVirtualDisplay(projection)) {
+                        LogHelper.showDebugInfo("capture: VirtualDisplay pipeline not ready for ${screenWidth}x${screenHeight}")
+                        if (cont.isActive) cont.resume(null)
+                        return@suspendCancellableCoroutine
+                    }
+
                     val reader = imageReader
                     if (reader == null) {
                         if (cont.isActive) cont.resume(null)
@@ -395,16 +538,25 @@ object ScreenCaptureManager {
                             val buffer: ByteBuffer = plane.buffer
                             val pixelStride = plane.pixelStride
                             val rowStride = plane.rowStride
-                            val rowPadding = rowStride - pixelStride * screenWidth
+                            // Prefer actual image geometry over window metrics so rotation
+                            // cannot label a buffer with the wrong width/height.
+                            val imageWidth = image.width
+                            val imageHeight = image.height
+                            val rowPadding = rowStride - pixelStride * imageWidth
+
+                            if (!isFrameContentValid(buffer, imageWidth, imageHeight, pixelStride, rowStride)) {
+                                if (cont.isActive) cont.resume(null)
+                                return
+                            }
 
                             if (asBitmap) {
-                                val bitmap = createBitmap(screenWidth + rowPadding / pixelStride, screenHeight)
+                                val bitmap = createBitmap(imageWidth + rowPadding / pixelStride, imageHeight)
                                 pendingBitmap = bitmap
                                 bitmap.copyPixelsFromBuffer(buffer)
                                 val finalBitmap = if (rowPadding == 0) {
                                     bitmap
                                 } else {
-                                    Bitmap.createBitmap(bitmap, 0, 0, screenWidth, screenHeight).also {
+                                    Bitmap.createBitmap(bitmap, 0, 0, imageWidth, imageHeight).also {
                                         if (it != bitmap) bitmap.recycle()
                                         pendingBitmap = it
                                     }
@@ -429,8 +581,8 @@ object ScreenCaptureManager {
 
                                 val result = CaptureResult(
                                     buffer = directCopy,
-                                    width = screenWidth,
-                                    height = screenHeight,
+                                    width = imageWidth,
+                                    height = imageHeight,
                                     pixelStride = pixelStride,
                                     rowStride = rowStride
                                 )
@@ -494,27 +646,24 @@ object ScreenCaptureManager {
                 result
             } else {
                 // 2. No new frame — the screen is likely static.
-                //    Return the cached frame as long as the pipeline is alive.
-                //    A static screen produces no new ImageReader frames, but the
-                //    last captured frame is still a valid representation.
+                //    Return the cached frame as long as the pipeline is alive and
+                //    cache geometry still matches the current ImageReader.
                 val pipelineAlive = virtualDisplay != null && imageReader != null && mediaProjection != null
 
                 if (pipelineAlive) {
-                    val cached = if (asBitmap) cachedBitmap else cachedCaptureResult
-                    if (cached != null) {
-                        cached
+                    if (isCacheGeometryValid(asBitmap)) {
+                        if (asBitmap) cachedBitmap else cachedCaptureResult
                     } else {
-                        // Pipeline is alive but we never got a single frame yet.
-                        // This can happen on very first capture if the device is slow.
-                        // Give it one more try with a longer timeout.
-                        LogHelper.showDebugInfo("capture: Pipeline alive but no cached frame, retrying with longer timeout")
+                        // Pipeline is alive but we never got a single valid frame yet,
+                        // or cache was invalidated after resize. Retry with longer timeout.
+                        LogHelper.showDebugInfo("capture: Pipeline alive but no valid cached frame, retrying with longer timeout")
                         withTimeoutOrNull(500) {
                             attemptCapture()
                         }
                     }
                 } else {
                     // Pipeline is broken — resources are null.
-                    // On pre-API 34 we can try to recreate; on 34+ go straight to shell.
+                    // On pre-API 34 we can try to recreate; on 34+ leave null for temporary shell.
                     if (canRecreateVirtualDisplay()) {
                         LogHelper.showDebugInfo("capture: Pipeline broken, recreating resources (pre-API 34)")
                         cleanupDisplayResources()
@@ -522,7 +671,7 @@ object ScreenCaptureManager {
                             attemptCapture()
                         }
                     } else {
-                        LogHelper.showDebugInfo("capture: Pipeline broken on API 34+, cannot recreate")
+                        LogHelper.showDebugInfo("capture: Pipeline broken on API 34+, cannot recreate VirtualDisplay")
                         null
                     }
                 }
@@ -533,12 +682,14 @@ object ScreenCaptureManager {
         }
 
         if (projectionResult != null) {
+            lastCaptureSource = "mediaprojection"
+            noteProjectionSuccess()
             return@withLock projectionResult
         }
 
-        // Fallback to shell screencap when MediaProjection fails or returns null
-        useShellFallback = true
-        LogHelper.showDebugInfo("capture: Falling back to shell screencap -p (will skip MediaProjection next time)")
+        // Fallback to shell screencap when MediaProjection fails or returns null.
+        // Permanent shell lockout only after repeated consecutive hard failures.
+        noteProjectionFailure("MediaProjection returned null or invalid frame")
         return@withLock captureViaShell(asBitmap)
     }
 
@@ -547,6 +698,10 @@ object ScreenCaptureManager {
      * persistent root shell and reads screencap output directly from stdout.
      */
     private suspend fun captureViaShell(asBitmap: Boolean): Any? {
-        return ShellScreenCapture.capture(asBitmap)
+        val result = ShellScreenCapture.capture(asBitmap)
+        if (result != null) {
+            lastCaptureSource = "shell"
+        }
+        return result
     }
 }
