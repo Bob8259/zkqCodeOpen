@@ -77,7 +77,7 @@ suspend fun runMainScript() {
     var lastUpdateCheckTime = System.currentTimeMillis()
     var nextUpdateInterval = (3600_000L) + (Math.random() * 7200_000L).toLong()
     while (currentCoroutineContext().isActive) {
-//        runTestCode()
+        runTestCode()
         runAccountStepBlock()
         // Check scheduled upgrade notifications every cycle (runs in background)
         checkScheduledUpgradeNotifications()
@@ -110,77 +110,6 @@ private fun finishDataNumberEntryOnlyRun() {
 
 private suspend fun runTestCode() {
     while (true) {
-        val startMs = System.currentTimeMillis()
-        val captureAny = ScreenCaptureManager.capture(asBitmap = false)
-        val elapsedMs = System.currentTimeMillis() - startMs
-
-        when (captureAny) {
-            null -> {
-                showDebugInfo("runTestCode capture(asBitmap=false): null after ${elapsedMs}ms")
-                ShowMessage("capture(asBitmap=false) failed: null (${elapsedMs}ms)", isChecking = false)
-            }
-
-            is ScreenCaptureManager.CaptureResult -> {
-                val buf = captureAny.buffer
-                val capacity = buf.capacity()
-                val remaining = buf.remaining()
-                val position = buf.position()
-                val expectedMinStride = captureAny.width * captureAny.pixelStride
-                val strideOk = captureAny.rowStride >= expectedMinStride
-                // Sample center pixel (RGBA) to verify buffer content is readable
-                val centerX = captureAny.width / 2
-                val centerY = captureAny.height / 2
-                val offset = centerY * captureAny.rowStride + centerX * captureAny.pixelStride
-                val sampleRgba = if (offset + 3 < capacity) {
-                    val r = buf.get(offset).toInt() and 0xFF
-                    val g = buf.get(offset + 1).toInt() and 0xFF
-                    val b = buf.get(offset + 2).toInt() and 0xFF
-                    val a = buf.get(offset + 3).toInt() and 0xFF
-                    "RGBA($r,$g,$b,$a)"
-                } else {
-                    "offset_out_of_range"
-                }
-
-                // Sparse sample for blank-frame detection after rotation/rebind
-                var nonZero = 0
-                var opaque = 0
-                var samples = 0
-                val stepX = (captureAny.width / 32).coerceAtLeast(1)
-                val stepY = (captureAny.height / 32).coerceAtLeast(1)
-                var y = 0
-                while (y < captureAny.height) {
-                    var x = 0
-                    while (x < captureAny.width) {
-                        val o = y * captureAny.rowStride + x * captureAny.pixelStride
-                        if (o + 3 < capacity) {
-                            val r = buf.get(o).toInt() and 0xFF
-                            val g = buf.get(o + 1).toInt() and 0xFF
-                            val b = buf.get(o + 2).toInt() and 0xFF
-                            val a = buf.get(o + 3).toInt() and 0xFF
-                            if ((r or g or b or a) != 0) nonZero++
-                            if (a == 255) opaque++
-                            samples++
-                        }
-                        x += stepX
-                    }
-                    y += stepY
-                }
-
-                val info = "ok ${elapsedMs}ms source=${ScreenCaptureManager.getLastCaptureSource()} " +
-                        "${captureAny.width}x${captureAny.height} " +
-                        "pixelStride=${captureAny.pixelStride} rowStride=${captureAny.rowStride} " +
-                        "strideOk=$strideOk cap=$capacity rem=$remaining pos=$position " +
-                        "center=$sampleRgba nonZero=$nonZero/$samples opaque=$opaque/$samples"
-                showDebugInfo("runTestCode capture(asBitmap=false): $info")
-                ShowMessage("capture(asBitmap=false): $info", isChecking = false)
-            }
-
-            else -> {
-                val typeName = captureAny::class.simpleName ?: captureAny.javaClass.name
-                showDebugInfo("runTestCode capture(asBitmap=false): unexpected type=$typeName after ${elapsedMs}ms")
-                ShowMessage("capture(asBitmap=false) unexpected type: $typeName (${elapsedMs}ms)", isChecking = false)
-            }
-        }
 
         delayWithMultiplier(2000)
     }

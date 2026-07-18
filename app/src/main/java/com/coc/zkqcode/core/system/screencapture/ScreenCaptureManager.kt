@@ -24,6 +24,7 @@ import kotlin.coroutines.resume
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import com.coc.zkqcode.core.util.fileactions.LogHelper
+import kotlin.time.Duration.Companion.milliseconds
 
 
 object ScreenCaptureManager {
@@ -215,7 +216,7 @@ object ScreenCaptureManager {
         return try {
             newReader = ImageReader.newInstance(screenWidth, screenHeight, PixelFormat.RGBA_8888, 2)
             display.resize(screenWidth, screenHeight, screenDensity)
-            display.setSurface(newReader.surface)
+            display.surface = newReader.surface
 
             oldReader?.setOnImageAvailableListener(null, null)
             oldReader?.close()
@@ -234,7 +235,7 @@ object ScreenCaptureManager {
                 newReader?.setOnImageAvailableListener(null, null)
                 newReader?.close()
             } catch (_: Exception) {
-                // ignore cleanup errors
+                // ignore clean-up errors
             }
             false
         }
@@ -266,10 +267,7 @@ object ScreenCaptureManager {
      * @return true when the pipeline is ready for capture at the current size.
      */
     private fun ensureVirtualDisplay(projection: MediaProjection): Boolean {
-        val display = virtualDisplay
-        if (display == null) {
-            return createVirtualDisplay(projection)
-        }
+        virtualDisplay ?: return createVirtualDisplay(projection)
 
         val reader = imageReader
         val sizeChanged = reader == null || reader.width != screenWidth || reader.height != screenHeight
@@ -638,7 +636,7 @@ object ScreenCaptureManager {
             }
 
             // 1. Try to get a new frame (increased timeout for slower devices)
-            val result = withTimeoutOrNull(300) {
+            val result = withTimeoutOrNull(300.milliseconds) {
                 attemptCapture()
             }
 
@@ -657,7 +655,7 @@ object ScreenCaptureManager {
                         // Pipeline is alive but we never got a single valid frame yet,
                         // or cache was invalidated after resize. Retry with longer timeout.
                         LogHelper.showDebugInfo("capture: Pipeline alive but no valid cached frame, retrying with longer timeout")
-                        withTimeoutOrNull(500) {
+                        withTimeoutOrNull(500.milliseconds) {
                             attemptCapture()
                         }
                     }
@@ -667,7 +665,7 @@ object ScreenCaptureManager {
                     if (canRecreateVirtualDisplay()) {
                         LogHelper.showDebugInfo("capture: Pipeline broken, recreating resources (pre-API 34)")
                         cleanupDisplayResources()
-                        withTimeoutOrNull(500) {
+                        withTimeoutOrNull(500.milliseconds) {
                             attemptCapture()
                         }
                     } else {
