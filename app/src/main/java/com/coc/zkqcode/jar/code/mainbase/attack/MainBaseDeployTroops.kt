@@ -48,7 +48,7 @@ suspend fun mainBaseDeployTroops() {
 
     // Upload a screenshot every 3 hours for monitoring
 //    uploadSearchScreenshot()
-    if (deploySiegeMachines) deploySiegeMachine(useReinforcements = deployReinforcements)
+    if (deploySiegeMachines || deployReinforcements) deploySiegeMachineAndReinforcements(useReinforcements = deployReinforcements)
     repeat(3) {
         // Deploy each troop type if detected in the deployment bar
         deployIfPresent(DRAG_SWEEP_MS, MyColors.DragonAtDeploymentBar, MyColors.DragonAtDeploymentBar2)
@@ -60,16 +60,68 @@ suspend fun mainBaseDeployTroops() {
     }
 }
 
-private suspend fun deploySiegeMachine(useReinforcements: Boolean = true) {
+/**
+ * Deploys the siege machine (high TH) and/or clan-castle reinforcements.
+ *
+ * At high Town Hall levels (TH10+), the siege machine slot exists in the deployment
+ * bar. Tapping it opens a popup with siege machine options and a separate CC
+ * reinforcements button.
+ *
+ * At low Town Hall levels (TH9-), no siege machine is available. The CC icon is
+ * displayed directly in the deployment bar at the same slot position.
+ *
+ * When called after a siege-machine detection failure, it falls back to
+ * clicking the same slot area; at low TH this releases the CC troops directly.
+ *
+ * The slot is always at the rightmost part of the deployment bar, so we use the
+ * x-range of the SiegeMachineAtDeploymentBar detection area as a guide.
+ */
+private suspend fun deploySiegeMachineAndReinforcements(useReinforcements: Boolean = true) {
     val siegeMachine = findMultiColors(MyColors.SiegeMachineAtDeploymentBar)
     if (siegeMachine != null) {
+        // High TH: siege machine slot exists in the deployment bar.
         TouchActions.tap(siegeMachine.x + 10, siegeMachine.y + 20, delayTime = 100)
         if (useReinforcements) {
-            // Tap the clan-castle reinforcements icon to release the donated troops
+            // Tap the clan-castle reinforcements button in the popup panel.
             TouchActions.tap(350, 250, delayTime = 100)
         }
+        // Deploy the siege machine in the battle field.
         TouchActions.tap(DRAG_START_X.toInt(), DRAG_START_Y.toInt(), delayTime = 100)
+    } else if (useReinforcements) {
+        // Low TH: no siege machine. The CC icon occupies the same slot position
+        // directly in the deployment bar. Find and click it to deploy reinforcements.
+        deployReinforcementsDirect()
     }
+}
+
+/**
+ * Low Town Hall fallback: deploy clan-castle reinforcements without siege machines.
+ *
+ * The CC/reinforcement icon is at the rightmost special slot of the deployment bar.
+ * At low TH this slot shows the CC icon, and tapping it directly releases the
+ * donated troops.
+ *
+ * If a dedicated CC-icon colour schema is added later, replace the position-based
+ * click below with a colour-detected one by adding a new ColorSchema in the
+ * color-package files and using it here via findMultiColors.
+ */
+private suspend fun deployReinforcementsDirect() {
+    // Try detecting the CC icon under the special troop colour schema first.
+    // At low TH the CC icon might register under this schema depending on the
+    // current game theme/event.
+    val ccIcon = findMultiColors(MyColors.SpecialTroopColorAtDeploymentBar)
+    if (ccIcon != null) {
+        TouchActions.tap(ccIcon.x, ccIcon.y, delayTime = 100)
+        return
+    }
+
+    // Fallback: tap the approximate area of the rightmost special slot.
+    // The siege-machine schema uses detection area (66-1244, 590-717).
+    // At low TH the CC icon sits at roughly the same x position (~1150, y ~650).
+    TouchActions.tap(1150, 650, delayTime = 100)
+    delayWithMultiplier(200)
+    // Tap the deploy zone to ensure the UI returns to a known state.
+    TouchActions.tap(DRAG_START_X.toInt(), DRAG_START_Y.toInt(), delayTime = 100)
 }
 
 private suspend fun deployOthers(useSpells: Boolean = true) {
@@ -343,11 +395,12 @@ suspend fun cnMainBaseDeployTroops() {
     val customSweepMs = getConfigRuntime(Schema.MAIN_BASE_SETTINGS.DEPLOY_DRAG_SPEED.key).toIntOrNull() ?: DRAG_SWEEP_MS
     val clickDensity = getConfigRuntime(Schema.MAIN_BASE_SETTINGS.DEPLOY_CLICK_DENSITY.key).toIntOrNull() ?: 50
 
-    if (getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.DEPLOY_SIEGE_MACHINES_ENABLED.key)) {
-        deploySiegeMachine(
-            useReinforcements = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.DEPLOY_REINFORCEMENTS_ENABLED.key)
-        )
-    }
+    // Decoupled call: low-TH bases can deploy reinforcements even without siege machines.
+    val cnDeploySiegeMachines = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.DEPLOY_SIEGE_MACHINES_ENABLED.key)
+    val cnDeployReinforcements = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.DEPLOY_REINFORCEMENTS_ENABLED.key)
+    if (cnDeploySiegeMachines || cnDeployReinforcements) deploySiegeMachineAndReinforcements(
+        useReinforcements = cnDeployReinforcements
+    )
 
     val isClickMode = deployMode == "2"
 
