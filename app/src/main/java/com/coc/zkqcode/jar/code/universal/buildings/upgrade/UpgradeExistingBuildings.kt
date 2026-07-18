@@ -62,7 +62,7 @@ suspend fun upgradeAllExistingBuildings(buildings: List<String>, currentBase: Ba
         "天鹰火炮",
         "巨石碑",
         "复合机械塔",
-        "复仇之塔",
+        "反击之塔",
         "终极炸弹",
         "暗黑重油罐",
         "大本营",
