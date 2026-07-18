@@ -2,7 +2,7 @@
 
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
-import com.coc.zkqcode.jar.code.universal.CopyArmyLink
+import com.coc.zkqcode.jar.code.universal.smalltools.CopyArmyLink
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.smalltools.input.TouchActions

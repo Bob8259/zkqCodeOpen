@@ -1,6 +1,7 @@
-package com.coc.zkqcode.jar.code.universal
+package com.coc.zkqcode.jar.code.universal.smalltools
 
 import com.coc.zkqcode.core.util.basic.RunShell
+import com.coc.zkqcode.jar.code.universal.InGameVars
 import com.coc.zkqcode.core.util.fileactions.LogHelper.showDebugInfo
 import java.net.URLDecoder
 

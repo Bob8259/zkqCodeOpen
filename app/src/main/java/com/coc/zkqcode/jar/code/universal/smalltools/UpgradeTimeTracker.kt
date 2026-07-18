@@ -1,6 +1,8 @@
-package com.coc.zkqcode.jar.code.universal
+package com.coc.zkqcode.jar.code.universal.smalltools
 
 import com.coc.zkqcode.core.data.database.GlobalVars
+import com.coc.zkqcode.jar.code.universal.GameVersion
+import com.coc.zkqcode.jar.code.universal.InGameVars
 import com.coc.zkqcode.core.util.basic.ClipboardHelper
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.jar.code.universal.push.PushMessage

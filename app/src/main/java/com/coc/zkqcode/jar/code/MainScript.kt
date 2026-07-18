@@ -20,8 +20,8 @@ import com.coc.zkqcode.jar.code.universal.InGameVars
 import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.jar.code.universal.buildings.BaseType
 import com.coc.zkqcode.jar.code.universal.buildings.detectBuildingList
-import com.coc.zkqcode.jar.code.universal.checkScheduledUpgradeNotifications
-import com.coc.zkqcode.jar.code.universal.checkUpgradeTimers
+import com.coc.zkqcode.jar.code.universal.smalltools.checkScheduledUpgradeNotifications
+import com.coc.zkqcode.jar.code.universal.smalltools.checkUpgradeTimers
 import com.coc.zkqcode.jar.code.universal.cloud.checkCloudExpiry
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.create.batchCreateAccounts

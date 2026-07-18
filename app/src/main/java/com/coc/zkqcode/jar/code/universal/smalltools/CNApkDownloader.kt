@@ -1,4 +1,4 @@
-package com.coc.zkqcode.jar.code.universal
+package com.coc.zkqcode.jar.code.universal.smalltools
 
 import android.content.Context
 import com.coc.zkqcode.core.util.basic.ShowMessage
