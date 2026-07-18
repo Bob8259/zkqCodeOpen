@@ -38,6 +38,7 @@ import java.util.concurrent.TimeUnit
 // Timeout constants
 private const val SEARCH_TIMEOUT_MS = 8 * 60 * 1000L
 private const val TUTORIAL_TIMEOUT_MS = 3 * 60 * 1000L
+private const val AUTO_BATTLE_DETECT_MS = 3000L
 
 // X-coordinate thresholds for detecting full storage bars on screen
 private const val GOLD_FULL_X_THRESHOLD = 1017
@@ -173,8 +174,7 @@ suspend fun searchOpponentsAndDeployTroops(battleNumber: Int = 1, battleTimes: I
             // Fast path: all targets below 10 → attack immediately without OCR
             if (targetGold < 10 && targetElixir < 10 && targetDarkElixir < 10) {
                 battleStarted = true
-                // Mode "0" = original single-side deploy; otherwise CN 4-side deploy (requires manual training + CN)
-                if (getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.MANUAL_TRAINING.key) && getConfigRuntime(Schema.MAIN_BASE_SETTINGS.DEPLOY_MODE.key) != "0" && InGameVars.currentGameVersion == GameVersion.CN) cnMainBaseDeployTroops() else mainBaseDeployTroops()
+                tryAutoBattleOrDeploy()
                 break
             }
 
@@ -228,8 +228,7 @@ suspend fun searchOpponentsAndDeployTroops(battleNumber: Int = 1, battleTimes: I
                 }
 
                 battleStarted = true
-                // Mode "0" = original single-side deploy; otherwise CN 4-side deploy (requires manual training + CN)
-                if (getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.MANUAL_TRAINING.key) && getConfigRuntime(Schema.MAIN_BASE_SETTINGS.DEPLOY_MODE.key) != "0" && InGameVars.currentGameVersion == GameVersion.CN) cnMainBaseDeployTroops() else mainBaseDeployTroops()
+                tryAutoBattleOrDeploy()
                 break
             } else {
                 TouchActions.tap(nextOpponent.x, nextOpponent.y, delayTime = 2000)
@@ -241,6 +240,38 @@ suspend fun searchOpponentsAndDeployTroops(battleNumber: Int = 1, battleTimes: I
         delayWithMultiplier(200)
     }
     return battleStarted
+}
+
+/**
+ * If AUTO_BATTLE_CN is enabled (CN version only), tries to detect the auto-battle
+ * button on the deploy preparation screen. If the button is found, clicks it and
+ * uses the game's built-in auto-battle feature. Otherwise, falls back to the
+ * standard troop deployment logic.
+ */
+private suspend fun tryAutoBattleOrDeploy() {
+    val autoBattleEnabled = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.AUTO_BATTLE_CN.key)
+    // Auto-battle is CN-exclusive; skip detection for global version
+    if (autoBattleEnabled && InGameVars.currentGameVersion == GameVersion.CN) {
+        val autoBtn = findMultiColorsUntil(
+            schemas = listOf(MyColors.AutoBattleBtn),
+            duration = AUTO_BATTLE_DETECT_MS.toInt()
+        )
+        if (autoBtn != null) {
+            TouchActions.tap(autoBtn.x, autoBtn.y)
+            accountMessage("检测到自动战斗按钮，已点击启用")
+            return
+        }
+        accountMessage("未检测到自动战斗按钮，使用原有下兵方式兜底")
+    }
+    // Fallback: Mode "0" = original single-side deploy; otherwise CN 4-side deploy
+    if (getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.MANUAL_TRAINING.key) &&
+        getConfigRuntime(Schema.MAIN_BASE_SETTINGS.DEPLOY_MODE.key) != "0" &&
+        InGameVars.currentGameVersion == GameVersion.CN
+    ) {
+        cnMainBaseDeployTroops()
+    } else {
+        mainBaseDeployTroops()
+    }
 }
 
 private suspend fun mainBaseBattleTutorial(): Boolean {

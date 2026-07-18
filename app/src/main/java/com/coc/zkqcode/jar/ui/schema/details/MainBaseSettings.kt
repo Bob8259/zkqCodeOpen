@@ -54,6 +54,7 @@ object MainBaseSettings {
     val DEPLOY_DRAG_SPEED = SettingDef("deploy_drag_speed", "滑动速度（毫秒）", "Drag Speed (ms)", "600", "MAIN_BASE_SETTINGS")
     val DEPLOY_CLICK_DENSITY = SettingDef("deploy_click_density", "下兵密度", "Deploy Density", "50", "MAIN_BASE_SETTINGS")
     val DEPLOY_REMARK = SettingDef("deploy_remark", "预设备注", "Preset Remark", "", "MAIN_BASE_SETTINGS")
+    val AUTO_BATTLE_CN = SettingDef("auto_battle_cn", "自动战斗", "Auto Battle (CN)", 0, "MAIN_BASE_SETTINGS")
 
     ///////
     val BUILD_SETTING = SettingDef("build_setting", "自动建造", "Auto Build", 1, "MAIN_BASE_SETTINGS")
@@ -243,6 +244,7 @@ object MainBaseSettings {
         DEPLOY_DRAG_SPEED,
         DEPLOY_CLICK_DENSITY,
         DEPLOY_REMARK,
+        AUTO_BATTLE_CN,
         BUILD_SETTING,
         WALL_UPGRADE_SETTINGS,
         INSTANT_UPGRADE,

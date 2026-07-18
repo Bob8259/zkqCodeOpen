@@ -74,6 +74,9 @@ interface IMainBaseAttackColors {
 
     /** Battle speed-up button (2x speed toggle, top-right corner during battle). */
     val BattleSpeedUp: ColorSchema
+
+    /** CN auto-battle button on the deploy/preparation screen. Placeholder — update actual colors when available. */
+    val AutoBattleBtn: ColorSchema
 }
 
 object MainBaseAttackColors : IMainBaseAttackColors {
@@ -295,5 +298,14 @@ object MainBaseAttackColors : IMainBaseAttackColors {
         "13|0|81F5DA,26|0|81F5DA,39|0|81F5DA,52|0|81F5DB,0|39|2DC77E,13|39|2DC77E,26|39|2DC77E,39|39|2DC77E,52|39|2DC77E",
         0, 0.9,
         "对战加速按钮"
+    )
+
+    // CN auto-battle button on the deploy/preparation screen
+    override val AutoBattleBtn = ColorSchema.parse(
+        832, 511, 1032, 563,
+        "81F8DC",
+        "40|0|E6E6E6,80|0|81F8DC,120|0|81F8DC,160|0|81F8DC,0|26|1FBC6E,40|26|1FBD6F,80|26|1FBD6F,120|26|1FBD6F,160|26|1FBD6F",
+        0, 0.9,
+        "自动战斗按钮"
     )
 }

@@ -84,7 +84,11 @@ suspend fun enterMainScreen(isDoubleCheck: Boolean = false): Boolean {
             val currentTime = System.currentTimeMillis()
             if (currentTime - lastClickRightBottomTime >= 5000L) {
                 clickRightBottom(10)
-                if (!checkReconnections()) return false
+                if (!checkReconnections()) {
+                    // Notify before returning so reconnect-fail path also sends kick push
+                    sendGameEntryFailNotification(timeoutSeconds)
+                    return false
+                }
                 lastClickRightBottomTime = currentTime
             }
 
@@ -95,66 +99,77 @@ suspend fun enterMainScreen(isDoubleCheck: Boolean = false): Boolean {
 
     // Return false if the loop finishes without finding the main screen
     // Send Server酱³ push notification on game enter timeout if enabled
-    val kickNotify = GlobalVars.configStates[Schema.GLOBAL_SETTINGS.SERVERCHAN_KICK_NOTIFY.key]?.value == "1"
-    if (kickNotify) {
-        val account = InGameVars.currentAccountNumber
-        // Only push if this account hasn't been notified since last successful enter
-        val pushCooldownMinutes = 120
-        if (account !in accountPushLocked
-            && checkMemoryFile(
-                StorageKeys.withAccountNumber(StorageKeys.KICK_NOTIFY_LAST_SENT, account),
-                pushCooldownMinutes
-            )) {
-            accountPushLocked.add(account)
-            writeMemory(
-                StorageKeys.withAccountNumber(StorageKeys.KICK_NOTIFY_LAST_SENT, account),
-                (System.currentTimeMillis() / 60_000).toString()
-            )
-
-            // Check push provider: Telegram gets a screenshot, others get braille art
-            val provider = GlobalVars.configStates[Schema.GLOBAL_SETTINGS.PUSH_PROVIDER.key]?.value ?: "0"
-            if (provider == "3") {
-                // Telegram: capture screenshot and send as photo
-                val screenshot = ScreenCaptureManager.capture(asBitmap = true) as? Bitmap
-                if (screenshot != null) {
-                    val imageBytes = PixelBlockEncoder.bitmapToJpegBytes(screenshot)
-                    screenshot.recycle()
-                    val deviceRemark = GlobalVars.configStates[Schema.GLOBAL_SETTINGS.DEVICE_REMARK.key]?.value.orEmpty()
-                    val remarkKey = "remark${account}"
-                    val remark = GlobalVars.configStates[remarkKey]?.value.orEmpty()
-                    PushRouter.send(
-                        PushMessage(
-                            title = Strings.serverchanKickTitle,
-                            desp = Strings.serverchanKickMsg(deviceRemark, account, remark, timeoutSeconds)
-                        ),
-                        imageBytes = imageBytes,
-                        brailleArt = null
-                    )
-                }
-            } else {
-                // Other platforms: capture screenshot and generate braille art
-                var brailleArt: String? = null
-                val screenshot = ScreenCaptureManager.capture(asBitmap = true) as? Bitmap
-                if (screenshot != null) {
-                    brailleArt = PixelBlockEncoder.encodeBitmapToBraille(screenshot)
-                    screenshot.recycle()
-                }
-                val deviceRemark = GlobalVars.configStates[Schema.GLOBAL_SETTINGS.DEVICE_REMARK.key]?.value.orEmpty()
-                val remarkKey = "remark${account}"
-                val remark = GlobalVars.configStates[remarkKey]?.value.orEmpty()
-                PushRouter.send(
-                    PushMessage(
-                        title = Strings.serverchanKickTitle,
-                        desp = Strings.serverchanKickMsg(deviceRemark, account, remark, timeoutSeconds)
-                    ),
-                    imageBytes = null,
-                    brailleArt = brailleArt
-                )
-            }
-        }
-    }
+    // Send push notification if enabled (with cooldown)
+    sendGameEntryFailNotification(timeoutSeconds)
     killGame()
     return false
+}
+
+private const val PUSH_COOLDOWN_MINUTES = 120
+
+/**
+ * Sends a kick/entry-fail push with per-account cooldown.
+ * Shared by timeout exit and reconnect-dialog failure paths.
+ */
+private suspend fun sendGameEntryFailNotification(timeoutSeconds: Int) {
+    val kickNotify = GlobalVars.configStates[Schema.GLOBAL_SETTINGS.SERVERCHAN_KICK_NOTIFY.key]?.value == "1"
+    if (!kickNotify) return
+
+    val account = InGameVars.currentAccountNumber
+    if (account in accountPushLocked) return
+
+    if (!checkMemoryFile(
+            StorageKeys.withAccountNumber(StorageKeys.KICK_NOTIFY_LAST_SENT, account),
+            PUSH_COOLDOWN_MINUTES
+        )
+    ) return
+
+    accountPushLocked.add(account)
+    writeMemory(
+        StorageKeys.withAccountNumber(StorageKeys.KICK_NOTIFY_LAST_SENT, account),
+        (System.currentTimeMillis() / 60_000).toString()
+    )
+
+    // Check push provider: Telegram gets a screenshot, others get braille art
+    val provider = GlobalVars.configStates[Schema.GLOBAL_SETTINGS.PUSH_PROVIDER.key]?.value ?: "0"
+    if (provider == "3") {
+        // Telegram: capture screenshot and send as photo
+        val screenshot = ScreenCaptureManager.capture(asBitmap = true) as? Bitmap
+        if (screenshot != null) {
+            val imageBytes = PixelBlockEncoder.bitmapToJpegBytes(screenshot)
+            screenshot.recycle()
+            val deviceRemark = GlobalVars.configStates[Schema.GLOBAL_SETTINGS.DEVICE_REMARK.key]?.value.orEmpty()
+            val remarkKey = "remark${account}"
+            val remark = GlobalVars.configStates[remarkKey]?.value.orEmpty()
+            PushRouter.send(
+                PushMessage(
+                    title = Strings.serverchanKickTitle,
+                    desp = Strings.serverchanKickMsg(deviceRemark, account, remark, timeoutSeconds)
+                ),
+                imageBytes = imageBytes,
+                brailleArt = null
+            )
+        }
+    } else {
+        // Other platforms: capture screenshot and generate braille art
+        var brailleArt: String? = null
+        val screenshot = ScreenCaptureManager.capture(asBitmap = true) as? Bitmap
+        if (screenshot != null) {
+            brailleArt = PixelBlockEncoder.encodeBitmapToBraille(screenshot)
+            screenshot.recycle()
+        }
+        val deviceRemark = GlobalVars.configStates[Schema.GLOBAL_SETTINGS.DEVICE_REMARK.key]?.value.orEmpty()
+        val remarkKey = "remark${account}"
+        val remark = GlobalVars.configStates[remarkKey]?.value.orEmpty()
+        PushRouter.send(
+            PushMessage(
+                title = Strings.serverchanKickTitle,
+                desp = Strings.serverchanKickMsg(deviceRemark, account, remark, timeoutSeconds)
+            ),
+            imageBytes = null,
+            brailleArt = brailleArt
+        )
+    }
 }
 
 

@@ -342,6 +342,13 @@ object Strings {
             "启用后，战斗中检测右上角加速按钮并自动点击 1 次加速。"
         else "Detect and click the 2x speed button once during battle."
 
+    // CN auto battle
+    val autoBattleCn get() = if (LanguageManager.isChinese) "自动战斗" else "Auto Battle (CN)"
+    val autoBattleCnExplain
+        get() = if (LanguageManager.isChinese)
+            "开启后，布阵界面将检测自动战斗按钮并点击；若未检测到（说明账号无此功能），则使用原有下兵方式兜底。"
+        else "When enabled, detects and clicks the auto-battle button on the deploy screen. Falls back to the normal deploy method if the button is not found (account lacks this feature)."
+
     // Memory cleaning
     val memoryCleanSuccess get() = if (LanguageManager.isChinese) "记忆文件清除成功" else "Memory cache cleared"
     val memoryCleanFail get() = if (LanguageManager.isChinese) "清除失败，可能记忆文件不存在" else "Clear failed - cache may not exist"

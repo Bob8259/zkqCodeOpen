@@ -141,6 +141,10 @@ fun LazyListScope.mainBaseConfig(
                     SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.CHANGE_BASE.key}_c$index")
                 }
                 SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.SWITCH_ACCOUNT_AFTER_BATTLE.key}_c$index")
+                SettingSwitchIcon(
+                    key = "${MAIN_BASE_SETTINGS.AUTO_BATTLE_CN.key}_c$index",
+                    explain = Strings.autoBattleCnExplain
+                )
             }
             SettingInputRow(key = "${MAIN_BASE_SETTINGS.BATTLE_TIMES.key}_c$index")
             SettingInputRow(key = "${MAIN_BASE_SETTINGS.BATTLE_TIMES_WITH_TASKS.key}_c$index")
