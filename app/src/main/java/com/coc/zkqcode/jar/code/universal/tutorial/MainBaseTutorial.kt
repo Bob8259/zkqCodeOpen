@@ -158,6 +158,10 @@ suspend fun mainBaseTutorial(): Boolean {
         }
 
         inputTextReliable(gameName)
+        delayWithMultiplier(500)
+        // Dismiss keyboard after naming, then confirm the village name
+        RunShell.runNoOutput("input keyevent 4") // Press Back
+        delayWithMultiplier(500)
         TouchActions.tap(640, 370, delayTime = 300)
     }
 

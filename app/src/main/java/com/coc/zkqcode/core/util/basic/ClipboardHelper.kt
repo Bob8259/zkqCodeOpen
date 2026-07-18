@@ -9,6 +9,8 @@ import com.coc.zkqcode.core.ui.floatingwindows.ClipboardActivity
 import com.coc.zkqcode.core.util.fileactions.LogHelper.showDebugInfo
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
 
 /**
@@ -55,14 +57,18 @@ object ClipboardHelper {
 
     /**
      * Sets the clipboard content to the given text.
+     * Must run on the main thread because ClipboardManager creates an internal Handler.
      * Used as part of the clipboard-paste fallback for text input.
      */
-    fun setClipboard(text: String) {
-        try {
-            val clipboard = ZKQApplication.appContext.getSystemService(Context.CLIPBOARD_SERVICE) as? ClipboardManager
-            clipboard?.setPrimaryClip(ClipData.newPlainText("input", text))
-        } catch (_: Exception) {
-            // Silently fail — caller will handle via shell fallback
+    suspend fun setClipboard(text: String) {
+        withContext(Dispatchers.Main) {
+            try {
+                val clipboard = ZKQApplication.appContext
+                    .getSystemService(Context.CLIPBOARD_SERVICE) as? ClipboardManager
+                clipboard?.setPrimaryClip(ClipData.newPlainText("input", text))
+            } catch (e: Exception) {
+                showDebugInfo("ClipboardHelper: Exception during setClipboard: ${e.message}")
+            }
         }
     }
 }
