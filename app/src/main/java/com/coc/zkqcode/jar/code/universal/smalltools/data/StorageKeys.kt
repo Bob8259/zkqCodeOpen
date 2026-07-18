@@ -55,8 +55,14 @@ object StorageKeys {
     // Per-account key for clan capital raid start
     const val START_RAID = "StartRaid"
 
+    // Per-account key for kick clan members last-timestamp
+    const val KICK_CLAN_MEMBERS = "KickClanMembers"
+
     // Periodic screenshot upload timestamp
     const val SEARCH_SCREENSHOT_UPLOAD = "SearchScreenshotUpload"
+
+    // Per-account key for game entry failure notification cooldown
+    const val KICK_NOTIFY_LAST_SENT = "KickNotifyLastSent"
 
     /**
      * Generate a storage key with account number suffix.

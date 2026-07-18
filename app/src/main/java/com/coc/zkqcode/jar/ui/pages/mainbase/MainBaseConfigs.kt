@@ -376,25 +376,19 @@ fun LazyListScope.mainBaseConfig(
             AnimatedVisibility(
                 visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.OCR_EXIT_ENABLED.key}_c$index"]?.value == "1"
             ) {
-                // Two-row OCR exit layout: target on row 1; mode + stale seconds on row 2.
-                Column {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        SettingInputRow(
-                            key = "${MAIN_BASE_SETTINGS.OCR_EXIT_TARGET_PERCENT.key}_c$index",
-                            suffix = Strings.percentTargetSuffix
-                        )
-                    }
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        SettingDropdown(
-                            key = "${MAIN_BASE_SETTINGS.OCR_EXIT_MODE.key}_c$index",
-                            options = Strings.unchangedDetectionOptions,
-                            labelOverride = ""
-                        )
-                        SettingInputRow(
-                            key = "${MAIN_BASE_SETTINGS.OCR_EXIT_STALE_SECONDS.key}_c$index",
-                            suffix = Strings.unchangedExitSuffix
-                        )
-                    }
+                FlowRow {
+                    SettingInputRow(
+                        key = "${MAIN_BASE_SETTINGS.OCR_EXIT_TARGET_PERCENT.key}_c$index",
+                        suffix = Strings.percentTargetSuffix
+                    )
+                    SettingDropdown(
+                        key = "${MAIN_BASE_SETTINGS.OCR_EXIT_MODE.key}_c$index",
+                        options = Strings.unchangedDetectionOptions
+                    )
+                    SettingInputRow(
+                        key = "${MAIN_BASE_SETTINGS.OCR_EXIT_STALE_SECONDS.key}_c$index",
+                        suffix = Strings.percentStaleSuffix
+                    )
                 }
             }
         }
@@ -612,6 +606,20 @@ fun LazyListScope.mainBaseConfig(
                     SettingInputRow(key = "${MAIN_BASE_SETTINGS.INVITE_PLAYERS_ROUND_DURATION.key}_c$index")
                 }
             }
+
+            // 部落踢出成员
+            FlowRow {
+                SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.KICK_CLAN_MEMBERS.key}_c$index")
+            }
+            AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.KICK_CLAN_MEMBERS.key}_c$index"]?.value == "1") {
+                Column {
+                    SettingInputRow(
+                        key = "${MAIN_BASE_SETTINGS.KICK_CLAN_MEMBERS_INTERVAL.key}_c$index",
+                        suffix = "分钟"
+                    )
+                }
+            }
+
             // Commented out: create_consecutive_clans has no functional implementation
             // AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.CREATE_CONSECUTIVE_CLANS.key}_c$index"]?.value == "1") {
             //     Column {

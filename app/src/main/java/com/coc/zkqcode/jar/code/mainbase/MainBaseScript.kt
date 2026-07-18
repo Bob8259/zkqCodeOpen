@@ -14,6 +14,7 @@ import com.coc.zkqcode.jar.code.mainbase.clan.clanWar
 import com.coc.zkqcode.jar.code.mainbase.clan.donateToClan
 import com.coc.zkqcode.jar.code.mainbase.clan.leagueDonation
 import com.coc.zkqcode.jar.code.mainbase.clan.clanInvitePlayers
+import com.coc.zkqcode.jar.code.mainbase.clan.kickClanMembers
 import com.coc.zkqcode.jar.code.mainbase.clan.joinClan
 import com.coc.zkqcode.jar.code.mainbase.clan.requestReinforcement
 import com.coc.zkqcode.jar.code.mainbase.clan.startClanWar
@@ -62,6 +63,7 @@ suspend fun playMainBase(): Boolean {
     if (!mainBaseRemoveObstacles()) return false
     if (!joinClan()) return false
     if (!clanInvitePlayers()) return false
+    if (!kickClanMembers()) return false
     if (!requestReinforcement()) return false
     if (!donateToClan()) return false
     if (!upgradeWallsThenBuildings(BaseType.Main)) return false

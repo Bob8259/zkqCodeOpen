@@ -19,6 +19,9 @@ import com.coc.zkqcode.jar.code.universal.push.PushMessage
 import com.coc.zkqcode.jar.code.universal.push.PushRouter
 import com.coc.zkqcode.jar.code.universal.smalltools.data.getBooleanConfigRuntime
 import com.coc.zkqcode.jar.code.universal.smalltools.data.getStaticConfig
+import com.coc.zkqcode.jar.code.universal.smalltools.data.checkMemoryFile
+import com.coc.zkqcode.jar.code.universal.smalltools.data.StorageKeys
+import com.coc.zkqcode.jar.code.universal.smalltools.data.writeMemory
 import com.coc.zkqcode.jar.code.universal.smalltools.input.TouchActions
 import com.coc.zkqcode.jar.code.universal.smalltools.lifecycle.checkReconnections
 import com.coc.zkqcode.jar.code.universal.smalltools.lifecycle.isGameAtFront
@@ -95,8 +98,17 @@ suspend fun enterMainScreen(isDoubleCheck: Boolean = false): Boolean {
     if (kickNotify) {
         val account = InGameVars.currentAccountNumber
         // Only push if this account hasn't been notified since last successful enter
-        if (account !in accountPushLocked) {
+        val pushCooldownMinutes = 120
+        if (account !in accountPushLocked
+            && checkMemoryFile(
+                StorageKeys.withAccountNumber(StorageKeys.KICK_NOTIFY_LAST_SENT, account),
+                pushCooldownMinutes
+            )) {
             accountPushLocked.add(account)
+            writeMemory(
+                StorageKeys.withAccountNumber(StorageKeys.KICK_NOTIFY_LAST_SENT, account),
+                (System.currentTimeMillis() / 60_000).toString()
+            )
 
             // Check push provider: Telegram gets a screenshot, others get braille art
             val provider = GlobalVars.configStates[Schema.GLOBAL_SETTINGS.PUSH_PROVIDER.key]?.value ?: "0"

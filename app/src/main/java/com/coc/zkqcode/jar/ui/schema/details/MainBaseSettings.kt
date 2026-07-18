@@ -85,8 +85,7 @@ object MainBaseSettings {
     val OCR_EXIT_ENABLED = SettingDef("ocr_exit_enabled", "破坏%退出", "Destruction % Exit", 0, "MAIN_BASE_SETTINGS")
     val OCR_EXIT_TARGET_PERCENT = SettingDef("ocr_exit_target_percent", "目标破坏", "Target Destruction", "0", "MAIN_BASE_SETTINGS")
     val OCR_EXIT_MODE = SettingDef("ocr_exit_mode", "未变化检测", "Unchanged Detection", "0", "MAIN_BASE_SETTINGS")
-    // Display names left empty; suffix text comes from Strings.unchangedExitSuffix in the UI row.
-    val OCR_EXIT_STALE_SECONDS = SettingDef("ocr_exit_stale_seconds", "", "", "20", "MAIN_BASE_SETTINGS")
+    val OCR_EXIT_STALE_SECONDS = SettingDef("ocr_exit_stale_seconds", "百分比不变", "Unchanged for", "20", "MAIN_BASE_SETTINGS")
     val BATTLE_SPEEDUP = SettingDef("battle_speedup", "对战加速", "Battle Speed-up", 0, "MAIN_BASE_SETTINGS")
     val RESTART_GAME = SettingDef("restart_game", "部署后重启游戏", "Restart after deploy", 1, "MAIN_BASE_SETTINGS")
     val PLAY_TOURNAMENT = SettingDef("play_tournament", "排位对战", "Ranked Battle", 0, "MAIN_BASE_SETTINGS")
@@ -189,6 +188,8 @@ object MainBaseSettings {
     val INVITE_PLAYERS = SettingDef("invite_players", "邀请玩家", "Invite Players", 0, "MAIN_BASE_SETTINGS")
     val INVITE_PLAYERS_ROUNDS = SettingDef("invite_players_rounds", "拉人轮次", "Invite Rounds", "1", "MAIN_BASE_SETTINGS")
     val INVITE_PLAYERS_ROUND_DURATION = SettingDef("invite_players_round_duration", "每轮时长(秒)", "Per Round (sec)", "300", "MAIN_BASE_SETTINGS")
+    val KICK_CLAN_MEMBERS = SettingDef("kick_clan_members", "踢出部落成员", "Kick Clan Members", 0, "MAIN_BASE_SETTINGS")
+    val KICK_CLAN_MEMBERS_INTERVAL = SettingDef("kick_clan_members_interval", "踢出间隔（分钟）", "Kick Interval (min)", "5", "MAIN_BASE_SETTINGS")
     // Commented out: part of create_consecutive_clans which has no functional implementation
     // val CLAN_NAME = SettingDef("clan_name", "部落名称:", "Clan Name:", "", "MAIN_BASE_SETTINGS")
     // val CONSECUTIVE_COUNT = SettingDef("consecutive_count", "连号数量:", "Consecutive Count:", 3, "MAIN_BASE_SETTINGS")
@@ -329,6 +330,8 @@ object MainBaseSettings {
         INVITE_PLAYERS,
         INVITE_PLAYERS_ROUNDS,
         INVITE_PLAYERS_ROUND_DURATION,
+        KICK_CLAN_MEMBERS,
+        KICK_CLAN_MEMBERS_INTERVAL,
         // CLAN_NAME,       // commented out: part of create_consecutive_clans (no functional implementation)
         // CONSECUTIVE_COUNT, // commented out: part of create_consecutive_clans (no functional implementation)
         ACCEPT_MAIN_WORLD_NORMAL_TASK,

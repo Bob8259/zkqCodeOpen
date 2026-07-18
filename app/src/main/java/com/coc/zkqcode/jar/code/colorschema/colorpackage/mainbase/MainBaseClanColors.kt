@@ -37,6 +37,9 @@ interface IMainBaseClanColors {
     val ClanInviteNotInClanFlag: ColorSchema
     val ClanInviteRefreshButton: ColorSchema
     val ClanInviteRefreshButtonAlt: ColorSchema
+    val ClanKickButton: ColorSchema
+    val ClanKickConfirmButton: ColorSchema
+    val ClanKickPageIndicator: ColorSchema
 }
 
 object MainBaseClanColors : IMainBaseClanColors {
@@ -173,5 +176,24 @@ object MainBaseClanColors : IMainBaseClanColors {
         566, 609, 749, 653, "2EC57C",
         "37|0|2EC57C,74|0|2EC57C,110|0|2EC57C,147|0|2EC57C,0|22|7FF3D7,37|22|7FF3D7,74|22|7FF3D7,110|22|7FF3D7,147|22|7FF3D7",
         0, 0.9, "部落拉人-刷新按钮(备选)"
+    )
+
+    // Kick clan member button on member profile
+    override val ClanKickButton = ColorSchema.parse(
+        687, 632, 872, 699, "82F5DA",
+        "37|0|82F5DA,74|0|82F5DA,111|0|82F5DA,148|0|82F5DA,0|33|2FBD74,37|33|2FBD74,74|33|2FBD74,111|33|2FBD74,148|33|2FBD74",
+        0, 0.9, "踢出成员-踢出按钮"
+    )
+
+    // Confirm kick dialog button
+    override val ClanKickConfirmButton = ColorSchema.parse(
+        674, 285, 916, 394, "84F8DF",
+        "49|0|84F8DE,97|0|84F8DE,145|0|84F8DE,194|0|84F8DE,0|55|1EBC6C,49|55|1FBB6C,97|55|1FBB6C,145|55|1FBB6C,194|55|1FBB6C",
+        0, 0.9, "踢出成员-确认按钮"
+    )
+
+    // Page indicator for clan member list
+    override val ClanKickPageIndicator = ColorSchema.parse(
+        0, 0, 0, 0, "000000", "", 0, 0.9, "踢出成员-页面标识"
     )
 }
