@@ -109,9 +109,19 @@ private fun finishDataNumberEntryOnlyRun() {
 }
 
 private suspend fun runTestCode() {
-    while (true) {
-
-        delayWithMultiplier(2000)
+    while (currentCoroutineContext().isActive) {
+        val result = detectBuildingList(
+            baseType = BaseType.Main,
+            excludeNewBuildings = false,
+            excludeGearUpBuildings = true,
+        )
+        showDebugInfo(
+            "detectBuildingList test: baseType=${BaseType.Main}, " +
+                "excludeNewBuildings=false, excludeGearUpBuildings=true, " +
+                "buildings=${result.buildings}, " +
+                "allDetectedBuildings=${result.allDetectedBuildings}"
+        )
+        delay(2_000_000.milliseconds)
     }
 }
 

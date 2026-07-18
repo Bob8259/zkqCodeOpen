@@ -56,8 +56,13 @@ object TextRecognizer {
 
                 // 2. [Core Optimization] Apply preprocessing (optional)
                 val bitmapToRecognize = if (applyPreprocess) {
-                    // 2a. Color filtering: turn any pixel with a channel below 200 to black
-                    val colorFiltered = applyColorFilter(croppedBitmap, minChannelValue = 200)
+                    // 2a. Color filtering: require R >= 100, G >= 170, and B >= 70
+                    val colorFiltered = applyColorFilter(
+                        croppedBitmap,
+                        minRedChannelValue = 100,
+                        minGreenChannelValue = 170,
+                        minBlueChannelValue = 70,
+                    )
                     // 2b. Existing grayscale + binarization
                     preprocess(colorFiltered, threshold = threshold, invertBinarization = invertBinarization)
                 } else {
@@ -94,14 +99,19 @@ object TextRecognizer {
     }
 
     /**
-     * Color filtering: any pixel whose R, G, or B channel is below [minChannelValue]
-     * is turned to black. Pixels where all channels are >= [minChannelValue] are left unchanged.
+     * Color filtering: a pixel is turned to black when R is below [minRedChannelValue], G is
+     * below [minGreenChannelValue], or B is below [minBlueChannelValue]. Other pixels are unchanged.
      *
-     * Example (minChannelValue = 200):
-     * - (255, 199, 255) -> black (G < 200)
-     * - (200, 200, 201) -> unchanged (all channels >= 200)
+     * Example (R >= 100, G >= 170, B >= 70):
+     * - (255, 169, 255) -> black (G < 170)
+     * - (155, 186, 91) -> unchanged
      */
-    fun applyColorFilter(src: Bitmap, minChannelValue: Int): Bitmap {
+    fun applyColorFilter(
+        src: Bitmap,
+        minRedChannelValue: Int,
+        minGreenChannelValue: Int,
+        minBlueChannelValue: Int,
+    ): Bitmap {
         val width = src.width
         val height = src.height
         val pixels = IntArray(width * height)
@@ -115,7 +125,7 @@ object TextRecognizer {
             val g = (color shr 8) and 0xFF
             val b = color and 0xFF
 
-            if (r < minChannelValue || g < minChannelValue || b < minChannelValue) {
+            if (r < minRedChannelValue || g < minGreenChannelValue || b < minBlueChannelValue) {
                 pixels[i] = black
             }
             // else: keep the original pixel unchanged
