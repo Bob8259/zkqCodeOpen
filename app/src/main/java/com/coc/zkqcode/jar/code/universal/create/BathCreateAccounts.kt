@@ -13,6 +13,12 @@ import com.coc.zkqcode.jar.code.universal.smalltools.lifecycle.killGame
 import com.coc.zkqcode.jar.code.universal.smalltools.lifecycle.runGame
 import com.coc.zkqcode.jar.code.universal.tutorial.AllTutorials
 import com.coc.zkqcode.jar.ui.schema.Schema
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.milliseconds
+
 @SuppressLint("SdCardPath")
 suspend fun batchCreateAccounts() {
     if (getConfigOrStop(Schema.GLOBAL_SETTINGS.BATCH_CREATE_ACCOUNT.key) != "1") return
@@ -40,8 +46,20 @@ suspend fun batchCreateAccounts() {
                 // Launch the global version game
                 runGame()
 
-                // Run through the tutorial; returns true when completed successfully
-                tutorialPassed = AllTutorials.allBaseTutorial()
+                // Press Back every 5s in the background while the tutorial runs
+                tutorialPassed = coroutineScope {
+                    val backPressJob = launch {
+                        while (isActive) {
+                            delay(5000.milliseconds)
+                            RunShell.runNoOutput("input keyevent 4") // Press Back
+                        }
+                    }
+                    try {
+                        AllTutorials.allBaseTutorial()
+                    } finally {
+                        backPressJob.cancel()
+                    }
+                }
                 if (!tutorialPassed) {
                     accountMessage("账号$i 教程未完成，正在重试...")
                 }

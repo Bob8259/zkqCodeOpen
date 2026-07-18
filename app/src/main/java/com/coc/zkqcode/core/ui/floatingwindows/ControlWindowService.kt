@@ -155,7 +155,7 @@ class ControlWindowService : Service(), LifecycleOwner, SavedStateRegistryOwner 
                     if (!isNull && !isActive && currentMode == AppMode.Run) {
                         LogHelper.showDebugInfo(
                             "ControlWindowService: botJob inactive while AppMode.Run, triggering force restart. " +
-                                    "botJobNull=$isNull, botJobActive=$isActive, appMode=$mode"
+                                    "botJobNull=${false}, botJobActive=${false}, appMode=$mode"
                         )
                         relaunchMainActivityDetached()
                     }

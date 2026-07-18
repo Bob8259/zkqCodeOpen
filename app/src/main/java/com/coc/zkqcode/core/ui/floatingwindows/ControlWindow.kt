@@ -41,6 +41,7 @@ import com.coc.zkqcode.core.util.exit.AppExitHelper
 import com.coc.zkqcode.statehelper.AppMode
 import com.coc.zkqcode.statehelper.AppStateManager
 import kotlinx.coroutines.delay
+import kotlin.time.Duration.Companion.milliseconds
 
 // Base DPI for consistent physical size across devices
 private const val BASE_DPI = 320f
@@ -66,7 +67,6 @@ enum class ControlState {
     HIDDEN     // State 3
 }
 
-@Suppress("AssignedValueIsNeverRead")
 @Composable
 fun ControlWindow(
     externalInteractionCount: Int = 0,
@@ -88,7 +88,7 @@ fun ControlWindow(
     var showExitConfirmation by remember { mutableStateOf(false) }
 
     LaunchedEffect(internalInteractionCount, externalInteractionCount) {
-        delay(2500)
+        delay(2500.milliseconds)
         controlState = ControlState.HIDDEN
     }
 
@@ -362,7 +362,7 @@ fun ControlWindow(
                     // anchorBounds is the position of the ControlWindow icons relative to the floating window
                     // windowSize is the size of the floating window (which is WRAP_CONTENT, so it fits the icons)
 
-                    // We want to center the popup on the SCREEN
+                    // We want to centre the popup on the SCREEN
                     // Popup is relative to the anchor (the top-left of the Row in ControlWindow)
                     // The anchor's screen position is (currentX, currentY)
 

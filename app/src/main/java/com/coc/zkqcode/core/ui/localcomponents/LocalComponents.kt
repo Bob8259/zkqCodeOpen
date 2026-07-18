@@ -28,6 +28,7 @@ import androidx.compose.ui.window.PopupProperties
 import com.coc.zkqcode.core.data.database.GlobalVars
 import androidx.compose.ui.graphics.Color
 import kotlinx.coroutines.delay
+import kotlin.time.Duration.Companion.milliseconds
 
 @Composable
 fun LocalCustomAlertDialog(
@@ -75,7 +76,7 @@ fun CustomNotificationWindow(
     onDismissRequest: () -> Unit
 ) {
     LaunchedEffect(message) {
-        delay(2000)
+        delay(2000.milliseconds)
         onDismissRequest()
     }
 
