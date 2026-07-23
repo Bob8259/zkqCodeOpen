@@ -29,9 +29,12 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.TimeZone
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicInteger
 import kotlin.random.Random
 
 private val authMutex = Mutex()
+private const val MAX_AUTOMATIC_SESSION_REFRESHES = 2
+private val automaticSessionRefreshCount = AtomicInteger(0)
 
 // Dedicated client with short timeouts for network time fetching
 private val timeClient = OkHttpClient.Builder().connectTimeout(5, TimeUnit.SECONDS).readTimeout(5, TimeUnit.SECONDS).build()
@@ -221,6 +224,13 @@ suspend fun userAuth() {
         }
 
         suspend fun refreshSessionKeyAfterInvalidSession(): String? {
+            if (automaticSessionRefreshCount.get() >= MAX_AUTOMATIC_SESSION_REFRESHES) {
+                clearStoredSessionKey()
+                GlobalVars.isShowAd = true
+                return null
+            }
+
+            automaticSessionRefreshCount.incrementAndGet()
             clearStoredSessionKey()
             return loginAndStoreSessionKey(showFailureMessage = false)
         }
