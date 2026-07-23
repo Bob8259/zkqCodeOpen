@@ -73,10 +73,6 @@ object GlobalSettings {
     val CLOUD_EXPIRE_RESET_DAYS = SettingDef("cloud_expire_reset_days", "自动重置(天)", "Auto Reset (Days)", "30", "GLOBAL_SETTINGS")
     val CLOUD_EXPIRE_ADVANCE_DAYS = SettingDef("cloud_expire_advance_days", "提前提醒(天)", "Advance Notice (Days)", "3", "GLOBAL_SETTINGS")
 
-    // ── Scheduled Restart (定时重启) ───────────────────────────────────────────
-    val SCHEDULED_RESTART = SettingDef("scheduled_restart", "定时重启设备", "Scheduled Restart", 0, "GLOBAL_SETTINGS")
-    val RESTART_INTERVAL = SettingDef("restart_interval", "重启间隔(分钟)", "Restart Interval (min)", "60", "GLOBAL_SETTINGS")
-
     // ── WebDAV Sync (WebDAV同步) ──────────────────────────────────────────────────
     val WEBDAV_URL = SettingDef("webdav_url", "WebDAV 服务器地址", "WebDAV Server URL", "", "GLOBAL_SETTINGS")
     val WEBDAV_USERNAME = SettingDef("webdav_username", "WebDAV 用户名", "WebDAV Username", "", "GLOBAL_SETTINGS")
@@ -185,7 +181,6 @@ object GlobalSettings {
         RS_FULL_RES_DAWN, RS_FULL_RES_MORNING, RS_FULL_RES_AFTERNOON, RS_FULL_RES_NIGHT,
         RS_ACCOUNTS_DAWN, RS_ACCOUNTS_MORNING, RS_ACCOUNTS_AFTERNOON, RS_ACCOUNTS_NIGHT,
         CLOUD_EXPIRE_NOTIFY, CLOUD_EXPIRE_DATE, CLOUD_EXPIRE_RESET_DAYS, CLOUD_EXPIRE_ADVANCE_DAYS,
-        SCHEDULED_RESTART, RESTART_INTERVAL,
         WEBDAV_URL, WEBDAV_USERNAME, WEBDAV_PASSWORD
     )
 }

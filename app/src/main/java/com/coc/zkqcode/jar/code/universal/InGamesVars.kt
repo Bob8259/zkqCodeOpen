@@ -20,7 +20,7 @@ enum class GameVersion(
         1, "com.supercell.clashofclans", "com.supercell.clashofclans/com.supercell.titan.GameApp", "zkqGlobalGameSave", listOf("shared_prefs")
     ),
     PRIVATE(
-        2, "com.atrasis.live", "com.atrasis.live/com.atrasis.main.AtrasisGameApp", "", emptyList()
+        2, "com.atrasis.original", "com.atrasis.original/com.atrasis.main.AtrasisGameApp", "", emptyList()
     );
 
     companion object {

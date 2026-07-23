@@ -11,6 +11,7 @@ import com.coc.zkqcode.core.util.fileactions.LogHelper.showDebugInfo
 import com.coc.zkqcode.jar.code.auth.displayAds
 import com.coc.zkqcode.jar.code.auth.userAuth
 import com.coc.zkqcode.jar.code.builderbase.playBuilderBase
+import com.coc.zkqcode.jar.code.mainbase.daily.useHelpers
 import com.coc.zkqcode.jar.code.mainbase.herohall.withHeroHall
 import com.coc.zkqcode.jar.code.mainbase.others.upgradeEquipmentsAction
 import com.coc.zkqcode.jar.code.mainbase.playMainBase
@@ -20,6 +21,7 @@ import com.coc.zkqcode.jar.code.universal.InGameVars
 import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.jar.code.universal.buildings.BaseType
 import com.coc.zkqcode.jar.code.universal.buildings.detectBuildingList
+import com.coc.zkqcode.jar.code.universal.buildings.upgrade.upgradeBuildings
 import com.coc.zkqcode.jar.code.universal.smalltools.checkScheduledUpgradeNotifications
 import com.coc.zkqcode.jar.code.universal.smalltools.checkUpgradeTimers
 import com.coc.zkqcode.jar.code.universal.cloud.checkCloudExpiry
@@ -47,7 +49,6 @@ import kotlin.time.Duration.Companion.milliseconds
 
 
 suspend fun runMainScript() {
-    val scriptStartTime = (System.currentTimeMillis() / 1000).toInt()
     if (GlobalVars.runDataNumberEntryOnly) {
         tapDataNumberEntryButtons()
         finishDataNumberEntryOnlyRun()
@@ -77,7 +78,7 @@ suspend fun runMainScript() {
     var lastUpdateCheckTime = System.currentTimeMillis()
     var nextUpdateInterval = (3600_000L) + (Math.random() * 7200_000L).toLong()
     while (currentCoroutineContext().isActive) {
-//        runTestCode()
+        runTestCode()
         runAccountStepBlock()
         // Check scheduled upgrade notifications every cycle (runs in background)
         checkScheduledUpgradeNotifications()
@@ -98,7 +99,6 @@ suspend fun runMainScript() {
         InGameVars.currentAccountNumber = nextAccount
         writeMemory(StorageKeys.ACCOUNT_NUMBER, nextAccount.toString())
         InGameVars.currentGameVersion = resolveGameVersion(isBatchCreate)
-        checkScheduledReboot(scriptStartTime)
     }
 }
 
@@ -110,17 +110,8 @@ private fun finishDataNumberEntryOnlyRun() {
 
 private suspend fun runTestCode() {
     while (currentCoroutineContext().isActive) {
-        val result = detectBuildingList(
-            baseType = BaseType.Main,
-            excludeNewBuildings = false,
-            excludeGearUpBuildings = true,
-        )
-        showDebugInfo(
-            "detectBuildingList test: baseType=${BaseType.Main}, " +
-                "excludeNewBuildings=false, excludeGearUpBuildings=true, " +
-                "buildings=${result.buildings}, " +
-                "allDetectedBuildings=${result.allDetectedBuildings}"
-        )
+        ShowMessage("测试代码开始")
+        upgradeBuildings(BaseType.Builder)
         delay(2_000_000.milliseconds)
     }
 }
@@ -245,15 +236,3 @@ private suspend fun findAndActivateAccount(
     return found
 }
 
-private suspend fun checkScheduledReboot(scriptStartTime: Int) {
-    val isScheduledRestartEnabled = GlobalVars.configStates[Schema.GLOBAL_SETTINGS.SCHEDULED_RESTART.key]?.value == "1"
-    if (isScheduledRestartEnabled) {
-        val intervalMinutes = GlobalVars.configStates[Schema.GLOBAL_SETTINGS.RESTART_INTERVAL.key]?.value?.toLongOrNull() ?: 60L
-        val currentTimeSeconds = (System.currentTimeMillis() / 1000).toInt()
-        if (currentTimeSeconds - scriptStartTime >= intervalMinutes * 60) {
-            accountMessage("定时重启时间已到，即将重启设备...")
-            delay(2000.milliseconds)
-            RunShell.runNoOutput("reboot", false)
-        }
-    }
-}

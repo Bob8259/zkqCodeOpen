@@ -115,14 +115,6 @@ fun LazyListScope.specialSettings() {
             }
         }
     }
-    item {
-        SettingSection {
-            val state = GlobalVars.configStates.getOrPut(GLOBAL_SETTINGS.SCHEDULED_RESTART.key) { mutableStateOf("0") }
-            val enabled = state.value == "1"
-            SettingSwitchIcon(key = GLOBAL_SETTINGS.SCHEDULED_RESTART.key)
-            if (enabled) { SettingInputRow(key = GLOBAL_SETTINGS.RESTART_INTERVAL.key) }
-        }
-    }
     // ── Push Notification ─────────────────────────────────────────────────
     item {
         SettingSection {

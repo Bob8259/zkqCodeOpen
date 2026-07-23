@@ -34,7 +34,7 @@ suspend fun detectBuildingList(baseType: BaseType, excludeNewBuildings: Boolean 
     val endY = 560
 
     // Recognize text in the specified area after removing the bright green marker noise.
-    val results = recognizeBuildingListWithGreenMask(startX, startY, endX, endY, threshold = 130, saveImage = true)
+    val results = recognizeBuildingListWithGreenMask(startX, startY, endX, endY, threshold = 130)
 
     if (results.isEmpty()) return BuildingDetectionResult(emptyList())
 
@@ -57,7 +57,9 @@ suspend fun detectBuildingList(baseType: BaseType, excludeNewBuildings: Boolean 
     // Post-process: Check for green indicator (new building marker) and gear-up icon
     // If green pixels > 20 in area (x-15, y-3, x, y+20), add "新" prefix
     // If gear-up icon detected in area (x-55, y-10, x+55, y+25), add "改装" prefix
-    val shouldPurchaseBotoShack = baseType != BaseType.Builder || getBooleanConfigRuntime(Schema.BUILDER_BASE_SETTINGS.BUILDER_BASE_PURCHASE_BOTO_SHACK.key)
+    // The persisted setting name remains B.O.T.O.'s-Shack-specific, but its behavior applies
+    // to every gem-priced Builder Base building.
+    val allowGemPricedBuilderBaseBuildings = baseType != BaseType.Builder || getBooleanConfigRuntime(Schema.BUILDER_BASE_SETTINGS.BUILDER_BASE_PURCHASE_BOTO_SHACK.key)
     val processedResults = results.mapNotNull { item ->
         val pos = item.position ?: return@mapNotNull item
         val x = pos.left + startX
@@ -69,12 +71,6 @@ suspend fun detectBuildingList(baseType: BaseType, excludeNewBuildings: Boolean 
         val greenCount = countGreenPixelsInArea(screenBuffer, x - 15, y - 3, x, y + 20)
         if (greenCount > 20 && !text.startsWith("新")) {
             text = "新$text"
-        }
-
-        if (!shouldPurchaseBotoShack) {
-            val gemSchema = ColorSchema.rescope(MyColors.GemInBuildingList, x + 155, y - 3, x + 250, y + 30)
-            val gemDetected = findMultiColors(schema = gemSchema, byteBuffer = screenBuffer, increment = 1) != null
-            if (gemDetected) return@mapNotNull null
         }
 
         // Check for gear-up icon
@@ -96,11 +92,16 @@ suspend fun detectBuildingList(baseType: BaseType, excludeNewBuildings: Boolean 
     }.minOrNull()
 
     // Filter, clean, and return building names with positions.
-    // Resource affordability is tracked as a flag instead of dropping buildings immediately,
-    // so that two lists can be produced: a pre-resource-filter list (for scroll-exit checking)
-    // and a resource-filtered list (for upgrade decisions).
-    // Map results to DetectedBuilding with flags indicating if it was marked as "New" or "GearUp"
-    data class BuildingWithFlags(val building: DetectedBuilding, val isNew: Boolean, val isGearUp: Boolean, val affordable: Boolean)
+    // Resource affordability and the disabled gem-priced-building policy are tracked as flags
+    // instead of dropping buildings immediately. This keeps skipped gem-priced rows available
+    // to the scroll-exit check while excluding them from upgrade decisions.
+    data class BuildingWithFlags(
+        val building: DetectedBuilding,
+        val isNew: Boolean,
+        val isGearUp: Boolean,
+        val affordable: Boolean,
+        val isGemPriced: Boolean
+    )
 
     val allBuildingsWithFlags = processedResults.mapNotNull { item ->
         val pos = item.position ?: return@mapNotNull null
@@ -120,21 +121,27 @@ suspend fun detectBuildingList(baseType: BaseType, excludeNewBuildings: Boolean 
         val cleanedName = cleanBuildingName(item.text, candidateBuildings)
         val isNew = cleanedName.startsWith("新")
         val isGearUp = cleanedName.startsWith("改装")
+        val isGemPriced = !allowGemPricedBuilderBaseBuildings && findMultiColors(
+            schema = ColorSchema.rescope(MyColors.GemInBuildingList, x + 155, y - 3, x + 250, y + 30),
+            byteBuffer = screenBuffer,
+            increment = 1
+        ) != null
 
         if (isNew || isGearUp || cleanedName in candidateBuildings) {
-            BuildingWithFlags(DetectedBuilding(name = cleanedName, x = x, y = y), isNew, isGearUp, affordable)
+            BuildingWithFlags(DetectedBuilding(name = cleanedName, x = x, y = y), isNew, isGearUp, affordable, isGemPriced)
         } else {
             null
         }
     }
 
-    // Pre-resource-filter list: all detected buildings regardless of affordability.
-    // Used by iterateBuilderBaseBuildingUpgradeList for scroll-exit checking so that
-    // unaffordable-only screens are not treated as an empty (stopped) list.
+    // Pre-action-filter list: all detected buildings regardless of affordability or the
+    // gem-priced-building policy. Used by iterateBuilderBaseBuildingUpgradeList for scroll-exit
+    // checking so that unaffordable or skipped-gem-only screens are not treated as stopped.
     val allDetectedBuildings = allBuildingsWithFlags.map { it.building }
 
-    // Resource-filtered list: only affordable buildings, used for upgrade decisions.
-    val allBuildings = allBuildingsWithFlags.filter { it.affordable }
+    // Actionable list: only affordable buildings that are not gem-priced while the Builder Base
+    // gem purchase setting is disabled.
+    val allBuildings = allBuildingsWithFlags.filter { it.affordable && !it.isGemPriced }
 
     // Filter based on excludeGearUpBuildings parameter
     // If excludeGearUpBuildings is false, return only the first gear-up building
