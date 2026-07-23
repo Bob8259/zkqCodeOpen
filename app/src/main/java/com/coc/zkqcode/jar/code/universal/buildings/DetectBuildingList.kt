@@ -57,11 +57,11 @@ suspend fun detectBuildingList(baseType: BaseType, excludeNewBuildings: Boolean 
     // Post-process: Check for green indicator (new building marker) and gear-up icon
     // If green pixels > 20 in area (x-15, y-3, x, y+20), add "新" prefix
     // If gear-up icon detected in area (x-55, y-10, x+55, y+25), add "改装" prefix
-    // The persisted setting name remains B.O.T.O.'s-Shack-specific, but its behavior applies
+    // The persisted setting name remains B.O.T.O.'s-Shack-specific, but its behaviour applies
     // to every gem-priced Builder Base building.
     val allowGemPricedBuilderBaseBuildings = baseType != BaseType.Builder || getBooleanConfigRuntime(Schema.BUILDER_BASE_SETTINGS.BUILDER_BASE_PURCHASE_BOTO_SHACK.key)
-    val processedResults = results.mapNotNull { item ->
-        val pos = item.position ?: return@mapNotNull item
+    val processedResults = results.map { item ->
+        val pos = item.position ?: return@map item
         val x = pos.left + startX
         val y = pos.top + startY
 
@@ -121,11 +121,12 @@ suspend fun detectBuildingList(baseType: BaseType, excludeNewBuildings: Boolean 
         val cleanedName = cleanBuildingName(item.text, candidateBuildings)
         val isNew = cleanedName.startsWith("新")
         val isGearUp = cleanedName.startsWith("改装")
-        val isGemPriced = !allowGemPricedBuilderBaseBuildings && findMultiColors(
+        val gemDetected = findMultiColors(
             schema = ColorSchema.rescope(MyColors.GemInBuildingList, x + 155, y - 3, x + 250, y + 30),
             byteBuffer = screenBuffer,
             increment = 1
         ) != null
+        val isGemPriced = !allowGemPricedBuilderBaseBuildings && gemDetected
 
         if (isNew || isGearUp || cleanedName in candidateBuildings) {
             BuildingWithFlags(DetectedBuilding(name = cleanedName, x = x, y = y), isNew, isGearUp, affordable, isGemPriced)

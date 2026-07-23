@@ -68,6 +68,6 @@ object MainBaseUpgradeColors : IMainBaseUpgradeColors {
         1, 1, 1270, 710, "FF299A", "0|-2|FF4CC2,-2|-3|FF47BF,-3|0|FF338B,3|0|FF45BC,3|-3|FF81ED,3|-5|FF5FD9,1|3|FF2C83,-2|3|FA307B,-3|2|FB307B", 0, 0.9
     )
     override val GemInBuildingList = ColorSchema.parse(
-        0, 0, 0, 0, "8DFDE7", "-2|0|86FAE0,-4|0|7EF7DC,-4|-3|4DD8A1,-2|-4|45D097,2|-4|80FCE9,3|0|9DFFF1,3|3|75FBD9,2|4|76FAD5,-2|4|7BF8CE", 0, 0.95, "建筑列表宝石"
+        0, 0, 0, 0, "94FFE8", "0|-3|82FBE3,-2|-3|7AF7DE,-5|-3|4CD89E,-5|0|82F8DC,-5|2|8EFCE0,-3|2|9BFFE9,0|2|88FBDC,2|2|75FBD8,3|-2|95FFEF", 0, 0.95, "建筑列表宝石"
     )
 }
