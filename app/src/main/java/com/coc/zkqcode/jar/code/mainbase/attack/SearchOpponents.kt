@@ -253,7 +253,7 @@ private suspend fun tryAutoBattleOrDeploy() {
     // Auto-battle is CN-exclusive; skip detection for global version
     if (autoBattleEnabled && InGameVars.currentGameVersion == GameVersion.CN) {
         val autoBtn = findMultiColorsUntil(
-            schemas = listOf(MyColors.AutoBattleBtn),
+            schemas = listOf(MyColors.AutoBattleBtn, MyColors.AutoBattleBtn2),
             duration = AUTO_BATTLE_DETECT_MS.toInt()
         )
         if (autoBtn != null) {

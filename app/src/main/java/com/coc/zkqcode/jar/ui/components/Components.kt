@@ -67,6 +67,7 @@ import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupPositionProvider
 import androidx.compose.ui.window.PopupProperties
 import com.coc.zkqcode.core.data.database.GlobalVars
+import com.coc.zkqcode.jar.ui.LanguageManager
 import com.coc.zkqcode.jar.ui.theme.AppColors
 import com.coc.zkqcode.jar.ui.schema.Schema
 import com.coc.zkqcode.jar.ui.Strings
@@ -607,6 +608,79 @@ fun SettingDropdown(
                                     )
                                 }
                             }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+// Displays one selectable reward button for every clan-game reward tier.
+@Composable
+fun ClanGameRewardGroup(index: Int) {
+    val rewardDefinitions = listOf(
+        Schema.MAIN_BASE_SETTINGS.CLAIM_CG_REWARD_1,
+        Schema.MAIN_BASE_SETTINGS.CLAIM_CG_REWARD_2,
+        Schema.MAIN_BASE_SETTINGS.CLAIM_CG_REWARD_3,
+        Schema.MAIN_BASE_SETTINGS.CLAIM_CG_REWARD_4,
+        Schema.MAIN_BASE_SETTINGS.CLAIM_CG_REWARD_5,
+        Schema.MAIN_BASE_SETTINGS.CLAIM_CG_REWARD_6,
+        Schema.MAIN_BASE_SETTINGS.CLAIM_CG_FINAL_REWARD,
+    )
+
+    FlowRow(
+        horizontalArrangement = Arrangement.spacedBy(6.dp),
+        modifier = Modifier.padding(top = 4.dp, bottom = 4.dp)
+    ) {
+        rewardDefinitions.forEach { definition ->
+            val state = rememberConfigState("${definition.key}_c$index")
+            val selected = state.value.toIntOrNull() ?: 0
+            val displayName =
+                if (!LanguageManager.isChinese && definition.englishDisplayName.isNotEmpty()) {
+                    definition.englishDisplayName
+                } else {
+                    definition.displayName
+                }
+
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier
+                    .border(1.dp, AppColors.GlassBorder, RoundedCornerShape(8.dp))
+                    .padding(horizontal = 8.dp, vertical = 6.dp)
+            ) {
+                Text(
+                    text = displayName,
+                    style = MaterialTheme.typography.labelSmall,
+                    color = AppColors.TextPrimary,
+                    modifier = Modifier.padding(bottom = 4.dp)
+                )
+                Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                    for (buttonIndex in 1..3) {
+                        val isSelected = selected == buttonIndex
+                        val backgroundColor =
+                            if (isSelected) AppColors.Primary
+                            else AppColors.PrimaryLight.copy(alpha = 0.10f)
+                        val borderColor =
+                            if (isSelected) AppColors.Primary else AppColors.PrimaryLight
+                        val textColor = if (isSelected) Color.White else AppColors.TextPrimary
+
+                        Box(
+                            modifier = Modifier
+                                .background(backgroundColor, RoundedCornerShape(8.dp))
+                                .border(1.dp, borderColor, RoundedCornerShape(8.dp))
+                                .clickable {
+                                    GlobalVars.isAutoRunEnabled = false
+                                    state.value = if (isSelected) "0" else buttonIndex.toString()
+                                }
+                                .size(26.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = buttonIndex.toString(),
+                                color = textColor,
+                                style = MaterialTheme.typography.labelSmall
+                            )
                         }
                     }
                 }

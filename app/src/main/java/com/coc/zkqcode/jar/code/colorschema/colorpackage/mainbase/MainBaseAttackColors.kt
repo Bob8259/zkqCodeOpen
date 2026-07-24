@@ -77,6 +77,9 @@ interface IMainBaseAttackColors {
 
     /** CN auto-battle button on the deploy/preparation screen. Placeholder — update actual colors when available. */
     val AutoBattleBtn: ColorSchema
+
+    /** CN auto-battle button color variant 2 on the deploy/preparation screen. */
+    val AutoBattleBtn2: ColorSchema
 }
 
 object MainBaseAttackColors : IMainBaseAttackColors {
@@ -307,5 +310,14 @@ object MainBaseAttackColors : IMainBaseAttackColors {
         "40|0|E6E6E6,80|0|81F8DC,120|0|81F8DC,160|0|81F8DC,0|26|1FBC6E,40|26|1FBD6F,80|26|1FBD6F,120|26|1FBD6F,160|26|1FBD6F",
         0, 0.9,
         "自动战斗按钮"
+    )
+
+    // CN auto-battle button color variant 2 on the deploy/preparation screen
+    override val AutoBattleBtn2 = ColorSchema.parse(
+        396, 512, 598, 563,
+        "7EF7DA",
+        "27|0|7EF6DA,81|0|7EF6DA,121|0|7EF6DA,162|0|7EF6DA,0|25|1FBC6E,41|25|1FBC6F,81|25|1FBC6F,121|25|1FBC6F,162|25|1FBC6F",
+        0, 0.9,
+        "自动战斗按钮2"
     )
 }

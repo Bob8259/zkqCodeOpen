@@ -104,6 +104,13 @@ object MainBaseSettings {
     val PROSPECTOR_PURPLE_TO_GOLD = SettingDef("prospector_purple_to_gold", "探矿者紫矿转黄矿", "Prospector Purple to Gold", 0, "MAIN_BASE_SETTINGS")
     val DO_CLAN_GAMES = SettingDef("do_clan_games", "做部落竞赛任务", "Do Clan Games", 1, "MAIN_BASE_SETTINGS")
     val CLAIM_CLAN_GAME_REWARDS = SettingDef("claim_clan_game_rewards", "领竞赛奖励", "Claim Clan Game Rewards", 0, "MAIN_BASE_SETTINGS")
+    val CLAIM_CG_REWARD_1 = SettingDef("claim_cg_reward_1", "第1个", "1st", "3", "MAIN_BASE_SETTINGS")
+    val CLAIM_CG_REWARD_2 = SettingDef("claim_cg_reward_2", "第2个", "2nd", "2", "MAIN_BASE_SETTINGS")
+    val CLAIM_CG_REWARD_3 = SettingDef("claim_cg_reward_3", "第3个", "3rd", "1", "MAIN_BASE_SETTINGS")
+    val CLAIM_CG_REWARD_4 = SettingDef("claim_cg_reward_4", "第4个", "4th", "3", "MAIN_BASE_SETTINGS")
+    val CLAIM_CG_REWARD_5 = SettingDef("claim_cg_reward_5", "第5个", "5th", "2", "MAIN_BASE_SETTINGS")
+    val CLAIM_CG_REWARD_6 = SettingDef("claim_cg_reward_6", "第6个", "6th", "1", "MAIN_BASE_SETTINGS")
+    val CLAIM_CG_FINAL_REWARD = SettingDef("claim_cg_final_reward", "额外", "Extra", "3", "MAIN_BASE_SETTINGS")
     val PLAY_CLAN_WAR = SettingDef("play_clan_war", "打部落战", "Play Clan War", 0, "MAIN_BASE_SETTINGS")
     val PLAY_LEAGUE = SettingDef("play_league", "打部落联赛", "Play League", 0, "MAIN_BASE_SETTINGS")
     val PLAY_LEAGUE_DONATION = SettingDef("play_league_donation", "联赛捐兵", "Donate Troops in League", 0, "MAIN_BASE_SETTINGS")
@@ -275,6 +282,13 @@ object MainBaseSettings {
         PROSPECTOR_PURPLE_TO_GOLD,
         DO_CLAN_GAMES,
         CLAIM_CLAN_GAME_REWARDS,
+        CLAIM_CG_REWARD_1,
+        CLAIM_CG_REWARD_2,
+        CLAIM_CG_REWARD_3,
+        CLAIM_CG_REWARD_4,
+        CLAIM_CG_REWARD_5,
+        CLAIM_CG_REWARD_6,
+        CLAIM_CG_FINAL_REWARD,
         PLAY_CLAN_WAR,
         PLAY_LEAGUE,
         PLAY_LEAGUE_DONATION,

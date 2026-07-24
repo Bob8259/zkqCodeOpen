@@ -18,6 +18,12 @@ interface IClanGameColors {
     val TaskCoolDown: ColorSchema
     val FailedTask: ColorSchema
     val FourThousandPoints: ColorSchema
+    val UnclaimedReward1: ColorSchema
+    val UnclaimedReward2: ColorSchema
+    val UnclaimedReward3: ColorSchema
+    val UnclaimedReward4: ColorSchema
+    val UnclaimedReward5: ColorSchema
+    val UnclaimedReward6: ColorSchema
     val ClanGameRewards: ColorSchema
 }
 
@@ -60,6 +66,36 @@ object ClanGameColors : IClanGameColors {
     )
     override val FourThousandPoints = ColorSchema.parse(
         243, 638, 249, 663, "6ADDFA", "-1|0|6ADDFA,-2|0|6ADDFA,-3|0|6ADDFA,-4|0|6ADDFA,-4|22|6ADDFA,-3|22|6ADDFA,-2|22|6ADDFA,-1|22|6ADDFA,1|12|FFFFFF", 0, 0.9, "4000积分"
+    )
+    override val UnclaimedReward1 = ColorSchema.parse(
+        450, 165, 542, 485, "D2D2D2",
+        "-3|19|D2D2D2,-1|111|D2D2D2,1|201|D2D2D2,72|201|D2D2D2,78|288|D2D2D2,2|291|D2D2D2,33|199|D2D2D2,31|110|D2D2D2,73|10|D2D2D2",
+        0, 0.9, "第1个奖励未达标"
+    )
+    override val UnclaimedReward2 = ColorSchema.parse(
+        566, 167, 658, 484, "D2D2D2",
+        "72|8|D2D2D2,73|86|D2D2D2,0|97|D2D2D2,-3|184|D2D2D2,74|182|D2D2D2,0|275|D2D2D2,44|277|D2D2D2,71|274|D2D2D2,35|185|D2D2D2",
+        0, 0.9, "第2个奖励未达标"
+    )
+    override val UnclaimedReward3 = ColorSchema.parse(
+        679, 166, 773, 484, "D2D2D2",
+        "-2|92|D2D2D2,-3|184|D2D2D2,-3|266|D2D2D2,76|267|D2D2D2,73|177|D2D2D2,75|84|D2D2D2,73|-11|D2D2D2,36|91|D2D2D2,36|181|D2D2D2",
+        0, 0.9, "第3个奖励未达标"
+    )
+    override val UnclaimedReward4 = ColorSchema.parse(
+        796, 168, 888, 484, "D2D2D2",
+        "68|0|D2D2D2,-4|92|D2D2D2,68|89|D2D2D2,-5|181|D2D2D2,73|174|D2D2D2,-2|269|D2D2D2,74|267|D2D2D2,30|178|D2D2D2,32|89|D2D2D2",
+        0, 0.9, "第4个奖励未达标"
+    )
+    override val UnclaimedReward5 = ColorSchema.parse(
+        910, 168, 1003, 484, "D2D2D2",
+        "76|-3|D2D2D2,-3|87|D2D2D2,72|83|D2D2D2,0|178|D2D2D2,74|172|D2D2D2,-4|265|D2D2D2,75|263|D2D2D2,37|179|D2D2D2,38|87|D2D2D2",
+        0, 0.9, "第5个奖励未达标"
+    )
+    override val UnclaimedReward6 = ColorSchema.parse(
+        1026, 168, 1119, 484, "D2D2D2",
+        "78|-16|D2D2D2,3|86|D2D2D2,76|81|D2D2D2,1|175|D2D2D2,75|179|D2D2D2,0|264|D2D2D2,75|265|D2D2D2,39|179|D2D2D2,38|90|D2D2D2",
+        0, 0.9, "第6个奖励未达标"
     )
     override val ClanGameRewards = ColorSchema.parse(
         453, 186, 526, 206, "59D2D2", "15|0|59D2D2,30|0|59D2D2,44|0|59D2D2,59|0|59D2D2,0|10|59D2D2,15|10|59D2D2,30|10|59D2D2,44|10|59D2D2,59|10|59D2D2", 0, 0.9, "竞赛奖励"

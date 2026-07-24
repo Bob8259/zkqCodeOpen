@@ -54,6 +54,7 @@ import com.coc.zkqcode.jar.ui.components.SettingDropdown
 import com.coc.zkqcode.jar.ui.components.SettingInputRow
 import com.coc.zkqcode.jar.ui.components.SettingSection
 import com.coc.zkqcode.jar.ui.components.SettingSwitchIcon
+import com.coc.zkqcode.jar.ui.components.ClanGameRewardGroup
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.mainbase.MainBaseClanWarColors
 import com.coc.zkqcode.jar.ui.schema.Schema.BUILDER_BASE_SETTINGS
 import com.coc.zkqcode.jar.ui.schema.Schema.MAIN_BASE_SETTINGS
@@ -476,6 +477,11 @@ fun LazyListScope.mainBaseConfig(
             }
 
             SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.CLAIM_CLAN_GAME_REWARDS.key}_c$index", explain = Strings.claimRewardsExplain)
+            AnimatedVisibility(
+                visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.CLAIM_CLAN_GAME_REWARDS.key}_c$index"]?.value == "1"
+            ) {
+                ClanGameRewardGroup(index)
+            }
             FlowRow {
                 SettingSwitchIcon(
                     key = "${MAIN_BASE_SETTINGS.PLAY_CLAN_WAR.key}_c$index", explain = Strings.clanWarExplain
