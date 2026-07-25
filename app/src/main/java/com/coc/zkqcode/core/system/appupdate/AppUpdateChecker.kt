@@ -4,10 +4,14 @@ import com.coc.zkqcode.core.app.ZKQApplication
 import com.coc.zkqcode.core.util.basic.RunShell
 import com.coc.zkqcode.core.util.fileactions.LogHelper.showDebugInfo
 import com.coc.zkqcode.nativehelper.RustTools
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
@@ -23,17 +27,20 @@ import java.util.concurrent.TimeUnit
  * [com.coc.zkqcode.core.system.checkpermissions.CheckRootScreen] startup UI.
  */
 sealed class AppUpdateState {
-    /** No update check has run yet, or it completed without finding an update. */
+    /** No update check has run yet. */
     data object Idle : AppUpdateState()
+
+    /** The installed version was confirmed current by the update server. */
+    data object UpToDate : AppUpdateState()
+
+    /** An update check or download failed and the next attempt is scheduled. */
+    data object Retrying : AppUpdateState()
 
     /** An update is available and the APK is being downloaded. [progress] is 0–100. */
     data class Downloading(val progress: Int) : AppUpdateState()
 
     /** The APK has been downloaded and is being installed. */
     data object Installing : AppUpdateState()
-
-    /** The update check or download/install failed; startup continues normally. */
-    data class Error(val message: String) : AppUpdateState()
 }
 
 /**
@@ -66,62 +73,75 @@ object AppUpdateChecker {
     // APK filename within the app's private cache directory
     private const val APK_FILENAME = "zkqcode_update.apk"
 
+    private const val RETRY_DELAY_MS = 10_000L
+
     private val httpClient = OkHttpClient.Builder()
         .connectTimeout(15, TimeUnit.SECONDS)
         .readTimeout(60, TimeUnit.SECONDS)
         .writeTimeout(15, TimeUnit.SECONDS)
         .build()
 
+    private val updateMutex = Mutex()
+    private var updateInstallStarted = false
     private val _state = MutableStateFlow<AppUpdateState>(AppUpdateState.Idle)
 
     /** Observable update-check state for the UI. */
     val state: StateFlow<AppUpdateState> = _state.asStateFlow()
 
     /**
-     * Checks for a new app version. If the server returns a version > 1,
-     * downloads the APK from Gitee, force-installs it via setsid, and launches it.
+     * Checks for a new app version until the installed version is confirmed current.
      *
-     * Progress is reported through [state]. This call is non-blocking (runs on
-     * [Dispatchers.IO]) and fails gracefully — any error sets [AppUpdateState.Error]
-     * and never prevents normal startup.
+     * Any check or download failure is logged, displayed as [AppUpdateState.Retrying],
+     * and retried after ten seconds. The mutex serializes the entire operation so a
+     * recreated screen or another caller cannot start a second check or download.
      */
-    suspend fun checkForUpdate() = withContext(Dispatchers.IO) {
-        try {
-            // 1. Generate ephemeral X25519 keypair and derive session key (stored in native layer)
-            val publicKeyHex = RustTools.encryptVersionCheckRequest()
-            if (publicKeyHex.startsWith("Error")) {
-                showDebugInfo("AppUpdateChecker: Failed to generate key: $publicKeyHex")
-                return@withContext
+    suspend fun checkForUpdate() = updateMutex.withLock {
+        if (_state.value is AppUpdateState.UpToDate || updateInstallStarted) return@withLock
+
+        withContext(Dispatchers.IO) {
+            while (true) {
+                try {
+                    checkForUpdateOnce()
+                    return@withContext
+                } catch (e: CancellationException) {
+                    throw e
+                } catch (e: Exception) {
+                    showDebugInfo("AppUpdateChecker: Update check/download failed: ${e.message}")
+                    _state.value = AppUpdateState.Retrying
+                    delay(RETRY_DELAY_MS)
+                }
             }
+        }
+    }
 
-            // 2. POST public_key to the server (with URL fallback)
-            val postData = "public_key=$publicKeyHex"
-            val responseBody = executePostWithFallbackAndReadBody(ENDPOINT, postData)
+    private suspend fun checkForUpdateOnce() {
+        // 1. Generate ephemeral X25519 keypair and derive session key (stored in native layer)
+        val publicKeyHex = RustTools.encryptVersionCheckRequest()
+        if (publicKeyHex.startsWith("Error")) {
+            throw IOException("Failed to generate update-check key: $publicKeyHex")
+        }
 
-            // 3. Decrypt the response: nonce=<hex>&data=<hex> → version string
-            val decrypted = RustTools.decryptLoginResponse(responseBody)
-            if (decrypted.startsWith("Error")) {
-                showDebugInfo("AppUpdateChecker: Decryption failed: $decrypted")
-                return@withContext
-            }
+        // 2. POST public_key to the server (with URL fallback)
+        val postData = "public_key=$publicKeyHex"
+        val responseBody = executePostWithFallbackAndReadBody(ENDPOINT, postData)
 
-            // 4. Parse version number (supports decimals like 1.1, 1.2)
-            val version = decrypted.trim().toDoubleOrNull()
-            if (version == null) {
-                showDebugInfo("AppUpdateChecker: Invalid version response: $decrypted")
-                _state.value = AppUpdateState.Error("Invalid version response: $decrypted")
-                return@withContext
-            }
+        // 3. Decrypt the response: nonce=<hex>&data=<hex> → version string
+        val decrypted = RustTools.decryptLoginResponse(responseBody)
+        if (decrypted.startsWith("Error")) {
+            throw IOException("Failed to decrypt update-check response: $decrypted")
+        }
 
-            showDebugInfo("AppUpdateChecker: Server version = $version")
+        // 4. Parse version number (supports decimals like 1.1, 1.2)
+        val version = decrypted.trim().toDoubleOrNull()
+            ?: throw IOException("Invalid version response: $decrypted")
 
-            // 5. If version > 1, download and install the new APK
-            if (version > 1) {
-                downloadAndInstall()
-            }
-        } catch (e: Exception) {
-            showDebugInfo("AppUpdateChecker: Update check failed: ${e.message}")
-            _state.value = AppUpdateState.Error(e.message ?: "Unknown error")
+        showDebugInfo("AppUpdateChecker: Server version = $version")
+
+        // 5. If version > 1, download and install the new APK; otherwise startup can continue.
+        if (version > 1) {
+            downloadAndInstall()
+        } else {
+            _state.value = AppUpdateState.UpToDate
         }
     }
 
@@ -148,11 +168,11 @@ object AppUpdateChecker {
             val request = Request.Builder().url(APK_DOWNLOAD_URL).get().build()
             httpClient.newCall(request).execute().use { response ->
                 if (!response.isSuccessful) {
-                    _state.value = AppUpdateState.Error("HTTP ${response.code}")
-                    return
+                    throw IOException("APK download failed with HTTP ${response.code}")
                 }
-                val totalBytes = response.body.contentLength()
-                response.body.byteStream().use { input ->
+                val responseBody = response.body
+                val totalBytes = responseBody.contentLength()
+                responseBody.byteStream().use { input ->
                     apkFile.outputStream().use { output ->
                         val buffer = ByteArray(8192)
                         var totalBytesRead = 0L
@@ -176,8 +196,7 @@ object AppUpdateChecker {
             }
 
             if (!apkFile.exists() || apkFile.length() == 0L) {
-                _state.value = AppUpdateState.Error("APK file is empty")
-                return
+                throw IOException("Downloaded APK file is empty")
             }
 
             _state.value = AppUpdateState.Installing
@@ -196,13 +215,13 @@ object AppUpdateChecker {
                 "am start -n com.coc.zkqcode/.MainActivity" +
                 "' > /dev/null 2>&1 &"
             RunShell.runNoOutput(cmd, checkIsPlaying = false)
-
+            updateInstallStarted = true
+        } catch (e: CancellationException) {
+            if (apkFile.exists()) apkFile.delete()
+            throw e
         } catch (e: Exception) {
-            showDebugInfo("AppUpdateChecker: Download/install failed: ${e.message}")
-            _state.value = AppUpdateState.Error(e.message ?: "Unknown error")
-            if (apkFile.exists()) {
-                apkFile.delete()
-            }
+            if (apkFile.exists()) apkFile.delete()
+            throw e
         }
     }
 

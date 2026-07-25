@@ -107,18 +107,9 @@ fun CheckRootScreen() {
             GlobalVars.serverActions = null
         }
 
-        // Check for a new app version early in startup.
-        // Only runs on a fresh startup, not when reusing an existing session.
-        // If the update check fails with an error, stop startup entirely so the
-        // error message stays on screen for the user to act on.
-        try {
-            AppUpdateChecker.checkForUpdate()
-        } catch (e: Exception) {
-            LogHelper.showDebugInfo("CheckRootScreen: App update check failed: ${e.message}")
-        }
-        if (AppUpdateChecker.state.value is AppUpdateState.Error) {
-            return@LaunchedEffect
-        }
+        // Check for a new app version early in startup. The checker retries every
+        // failed request or download until the current version is confirmed.
+        AppUpdateChecker.checkForUpdate()
 
         withContext(Dispatchers.IO) {
             CheckIntergrity.checkAppIntegrity(context)
@@ -153,15 +144,15 @@ fun CheckRootScreen() {
                 )
             }
 
-            is AppUpdateState.Error -> {
-                val errMsg = (updateState as AppUpdateState.Error).message
+            AppUpdateState.Retrying -> {
                 FullScreenMessage(
-                    message = "更新安装失败：$errMsg\n请手动重新下载App。",
-                    englishMessage = "Update install failed: $errMsg\nPlease re-download the App manually."
+                    message = "更新检查或下载失败，将在 10 秒后自动重试。",
+                    englishMessage = "Update check or download failed. Retrying automatically every 10 seconds."
                 )
             }
 
-            AppUpdateState.Idle -> when (status) {
+            AppUpdateState.Idle,
+            AppUpdateState.UpToDate -> when (status) {
                 RootStatus.CHECKING -> {
                     FullScreenMessage(
                         message = "正在检测Root环境...",
