@@ -1,11 +1,14 @@
 package com.coc.zkqcode.jar.code.universal.tutorial
 
+import android.graphics.Bitmap
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.fileactions.LogHelper
+import com.coc.zkqcode.core.util.fileactions.LogHelper.showDebugInfo
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
+import com.coc.zkqcode.jar.code.universal.recognizer.TextRecognizer
 import com.coc.zkqcode.jar.code.universal.smalltools.input.TouchActions
 import com.coc.zkqcode.jar.code.universal.smalltools.lifecycle.checkReconnections
 import com.coc.zkqcode.jar.code.universal.smalltools.lifecycle.isGameAtFront
@@ -14,6 +17,10 @@ import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.isActive
 
 object AllTutorials {
+
+    private const val CONFIRM_TEXT = "确定"
+    private const val CONFIRM_OCR_INTERVAL_MILLIS = 1_000L
+    private var lastConfirmOcrTime = 0L
 
     suspend fun allBaseTutorial(): Boolean {
         val durationMillis = 500_000L
@@ -33,12 +40,46 @@ object AllTutorials {
 
                 // Maintenance checks
                 if (!checkReconnections()) return false
+                // Tutorial text checks
+                tapConfirmButtonIfFound()
+
             } else {
                 runGame()
             }
             delayWithMultiplier(200)
         }
         return false
+    }
+
+    /**
+     * Recognizes the full screen with ML Kit and taps the center of a "确定" button if found.
+     */
+    private suspend fun tapConfirmButtonIfFound() {
+        val currentTime = System.currentTimeMillis()
+        if (currentTime - lastConfirmOcrTime < CONFIRM_OCR_INTERVAL_MILLIS) return
+        lastConfirmOcrTime = currentTime
+
+        val screenBitmap = ScreenCaptureManager.capture(asBitmap = true) as? Bitmap
+            ?: run {
+                showDebugInfo("Tutorial confirm OCR: failed to capture screen")
+                return
+            }
+        val recognizedTexts = TextRecognizer.recognize(
+            startX = 0,
+            startY = 0,
+            endX = screenBitmap.width,
+            endY = screenBitmap.height,
+            useChinese = true,
+            applyPreprocess = false,
+            screenBuffer = screenBitmap
+        )
+        val confirmButton = recognizedTexts.firstOrNull { recognizedText ->
+            recognizedText.text.replace(" ", "").contains(CONFIRM_TEXT)
+        } ?: return
+        val confirmPosition = confirmButton.position ?: return
+
+        showDebugInfo("Tutorial confirm OCR: tapping '${confirmButton.text}' at ${confirmPosition.centerX()}, ${confirmPosition.centerY()}")
+        TouchActions.tap(confirmPosition.centerX(), confirmPosition.centerY())
     }
 
     /**

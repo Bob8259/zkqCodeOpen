@@ -48,7 +48,7 @@ suspend fun clanGame(targetBaseType: BaseType): Boolean {
 
     if (openClanGameTaskPage()) {
         if (prepareClanGameTaskState()) {
-            when (getCurrentClanGameTaskState(checkFourThousandPoints = false)) {
+            when (getCurrentClanGameTaskState()) {
                 ClanGameTaskState.FourThousandPointsReached -> {
                     markClanGameFinishedThisMonth()
                     return closeClanGamePageAndEnterMainScreen()
@@ -76,7 +76,7 @@ suspend fun hasAcceptedClanGameTask(currentBaseType: BaseType): Boolean {
     val result = findMultiColors(MyColors.OnGoingTask) != null
     accountMessage("接取任务状态：$result")
     if (!result) {
-        when (getCurrentClanGameTaskState(checkFourThousandPoints = false)) {
+        when (getCurrentClanGameTaskState()) {
             ClanGameTaskState.CoolDown -> return closeClanGamePageAndEnterMainScreen()
             ClanGameTaskState.Failed -> clearFailedTask()
             ClanGameTaskState.FourThousandPointsReached, ClanGameTaskState.OnGoing, ClanGameTaskState.None -> Unit

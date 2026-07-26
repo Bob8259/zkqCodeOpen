@@ -52,6 +52,7 @@ import com.coc.zkqcode.statehelper.AppStateManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
+import kotlin.time.Duration.Companion.milliseconds
 
 // Local colour palette mirroring AppColors from the jar module
 private val ColorPrimary     = Color(0xFF4299E1)
@@ -265,7 +266,7 @@ private fun RootDeniedRestartMessage(context: Context) {
 
     LaunchedEffect(Unit) {
         while (countdown > 0 && !exited) {
-            delay(1000L)
+            delay(1000L.milliseconds)
             if (exited) return@LaunchedEffect
             countdown--
         }
