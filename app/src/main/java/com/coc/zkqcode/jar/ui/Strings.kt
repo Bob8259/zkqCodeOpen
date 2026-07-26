@@ -23,6 +23,11 @@ object Strings {
     val sectionPet get() = if (LanguageManager.isChinese) "战宠装备" else "Pets & Equipments"
     val sectionOther get() = if (LanguageManager.isChinese) "其他" else "Others"
     val sectionBuilderBase get() = if (LanguageManager.isChinese) "夜世界" else "Builder Base"
+    val sectionClanGames get() = if (LanguageManager.isChinese) "部落竞赛" else "Clan Games"
+    val mainWorldLabel get() = if (LanguageManager.isChinese) "主世界任务" else "Main World Tasks"
+    val builderBaseTasks get() = if (LanguageManager.isChinese) "夜世界任务" else "Builder Base Tasks"
+    val normalLabel get() = if (LanguageManager.isChinese) "普通" else "Normal"
+    val advancedLabel get() = if (LanguageManager.isChinese) "高级" else "Advanced"
 
     // HomeScreenBottomBar
     val saveAndRun get() = if (LanguageManager.isChinese) "保存并运行" else "Save&Run"
@@ -199,6 +204,10 @@ object Strings {
     val generalSettings get() = if (LanguageManager.isChinese) "通用设置" else "General"
     val battleSettingsMain get() = if (LanguageManager.isChinese) "对战设置（主世界）" else "Battle Settings - Main Base"
     val clanSettings get() = if (LanguageManager.isChinese) "部落设置" else "Clan Settings"
+    val sectionCapitalSettings get() = if (LanguageManager.isChinese) "都城设置" else "Capital Settings"
+    val sectionWarLeague get() = if (LanguageManager.isChinese) "部落战与联赛" else "War & League"
+    val capitalRaidPermissions get() = if (LanguageManager.isChinese) "都城突袭" else "Capital Raid"
+    val capitalCoinPermissions get() = if (LanguageManager.isChinese) "都城币" else "Capital Coins"
     val researchSettings get() = if (LanguageManager.isChinese) "研究设置" else "Research Settings"
     val buildSettingsMain get() = if (LanguageManager.isChinese) "建造设置（主世界）" else "Build Settings - Main Base"
     val petAndEquipment get() = if (LanguageManager.isChinese) "战宠装备" else "Pets & Equipments"
@@ -446,5 +455,9 @@ object Strings {
     val webdavCopiedMsg get() = if (LanguageManager.isChinese) "已复制服务器地址、用户名、密码" else "Copied server URL, username, and password"
     val webdavPastedMsg get() = if (LanguageManager.isChinese) "已填入 WebDAV 信息" else "WebDAV info filled in"
     val webdavPasteInvalidMsg get() = if (LanguageManager.isChinese) "格式错误，请粘贴包含服务器地址、用户名、密码的内容" else "Invalid format — paste content with URL, username, and password"
+
+    // Upgrade Time Scheduling
+    val upgradeSchedulingTitle get() = if (LanguageManager.isChinese) "根据升级时间上号" else "Upgrade-based Scheduling"
+    val upgradeSchedulingDesc get() = if (LanguageManager.isChinese) "监控所有建筑/英雄/实验室等升级完成时间，完成时自动切号执行" else "Monitors all upgrade timers (buildings, heroes, lab, etc.) and auto-switches on completion"
 }
 

@@ -433,10 +433,14 @@ private val DisabledSettingToggleTextColor = AppColors.TextPrimary
 
 // Single toggle text button for research/building item lists
 @Composable
-fun SettingToggleButton(key: String, isEpic: Boolean = false) {
+fun SettingToggleButton(key: String, isEpic: Boolean = false, afterChange: ((Boolean) -> Unit)? = null, labelOverride: String? = null, labelOn: String? = null, labelOff: String? = null) {
     val state = rememberConfigState(key)
-    val label = Schema.getDisplayName(key)
     val isEnabled = state.value == "1"
+    val label = when {
+        isEnabled && labelOn != null -> labelOn
+        !isEnabled && labelOff != null -> labelOff
+        else -> labelOverride ?: Schema.getDisplayName(key)
+    }
     val buttonColor = if (isEpic) AppColors.Epic else ToggleButtonBlue
 
     if (isEnabled) {
@@ -444,6 +448,7 @@ fun SettingToggleButton(key: String, isEpic: Boolean = false) {
             onClick = {
                 GlobalVars.isAutoRunEnabled = false
                 state.value = "0"
+                afterChange?.invoke(false)
             }, modifier = Modifier
                 .padding(2.dp)
                 .height(32.dp), shape = RoundedCornerShape(8.dp), contentPadding = PaddingValues(horizontal = 10.dp, vertical = 0.dp), colors = ButtonDefaults.buttonColors(
@@ -457,6 +462,7 @@ fun SettingToggleButton(key: String, isEpic: Boolean = false) {
             onClick = {
                 GlobalVars.isAutoRunEnabled = false
                 state.value = "1"
+                afterChange?.invoke(true)
             }, modifier = Modifier
                 .padding(2.dp)
                 .height(32.dp), shape = RoundedCornerShape(8.dp), contentPadding = PaddingValues(horizontal = 10.dp, vertical = 0.dp), colors = ButtonDefaults.outlinedButtonColors(

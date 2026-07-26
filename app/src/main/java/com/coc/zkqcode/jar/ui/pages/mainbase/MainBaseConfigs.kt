@@ -7,24 +7,28 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Remove
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -37,7 +41,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -54,8 +60,10 @@ import com.coc.zkqcode.jar.ui.components.SettingDropdown
 import com.coc.zkqcode.jar.ui.components.SettingInputRow
 import com.coc.zkqcode.jar.ui.components.SettingSection
 import com.coc.zkqcode.jar.ui.components.SettingSwitchIcon
+import com.coc.zkqcode.jar.ui.components.SettingToggleButton
 import com.coc.zkqcode.jar.ui.components.ClanGameRewardGroup
 import com.coc.zkqcode.jar.code.colorschema.colorpackage.mainbase.MainBaseClanWarColors
+import com.coc.zkqcode.jar.ui.schema.Schema
 import com.coc.zkqcode.jar.ui.schema.Schema.BUILDER_BASE_SETTINGS
 import com.coc.zkqcode.jar.ui.schema.Schema.MAIN_BASE_SETTINGS
 import com.coc.zkqcode.jar.ui.theme.AppColors
@@ -212,6 +220,7 @@ fun LazyListScope.mainBaseConfig(
             ) {
                 var presets by remember { mutableStateOf(DeployPresetManager.listPresets()) }
                 var selectedRemark by remember { mutableStateOf("") }
+                var remarkInput by remember { mutableStateOf("") }
                 var showDropdown by remember { mutableStateOf(false) }
 
                 Column {
@@ -221,7 +230,7 @@ fun LazyListScope.mainBaseConfig(
                         modifier = Modifier.padding(top = 6.dp, end = 6.dp)
                     ) {
                         Text(
-                            text = Strings.deployPreset,
+                            text = "预设",
                             textAlign = TextAlign.Center,
                             modifier = Modifier.padding(end = 10.dp),
                             style = MaterialTheme.typography.labelMedium
@@ -235,7 +244,7 @@ fun LazyListScope.mainBaseConfig(
                                 colors = ButtonDefaults.buttonColors(containerColor = AppColors.Primary)
                             ) {
                                 Text(
-                                    text = if (selectedRemark.isNotEmpty()) selectedRemark else Strings.selectDeployPreset,
+                                    text = if (selectedRemark.isNotEmpty()) selectedRemark else "选择预设",
                                     style = MaterialTheme.typography.labelMedium,
                                     maxLines = 1,
                                     overflow = TextOverflow.Ellipsis
@@ -300,7 +309,7 @@ fun LazyListScope.mainBaseConfig(
                             DeployPresetManager.savePreset(remark, armMode, armLink, depMode, depSpeed, depDensity)
                             selectedRemark = remark
                             presets = DeployPresetManager.listPresets()
-                        }, text = Strings.saveFolderName)
+                        }, text = "保存")
                         Spacer(modifier = Modifier.width(8.dp))
                         CustomButton(onClick = {
                             if (selectedRemark.isNotEmpty()) {
@@ -309,7 +318,7 @@ fun LazyListScope.mainBaseConfig(
                                 GlobalVars.configStates["${MAIN_BASE_SETTINGS.DEPLOY_REMARK.key}_c$index"]?.value = ""
                                 presets = DeployPresetManager.listPresets()
                             }
-                        }, text = Strings.deleteFolder, containerColor = Color(0xFFB71C1C))
+                        }, text = "删除", containerColor = Color(0xFFB71C1C))
                     }
 
                     // Remark — standard SettingInputRow
@@ -334,6 +343,16 @@ fun LazyListScope.mainBaseConfig(
                     AnimatedVisibility(
                         visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.DEPLOY_MODE.key}_c$index"]?.value != "0"
                     ) {
+                        Text(
+                            text = "四面下兵在国际服不生效",
+                            color = Color.Red,
+                            style = MaterialTheme.typography.labelSmall,
+                            modifier = Modifier.padding(top = 2.dp)
+                        )
+                    }
+                    AnimatedVisibility(
+                        visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.DEPLOY_MODE.key}_c$index"]?.value != "0"
+                    ) {
                         Column {
                             // Speed with +/-
                             Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(top = 6.dp)) {
@@ -353,7 +372,7 @@ fun LazyListScope.mainBaseConfig(
                                 }
                             }
 
-                            // Density with +/- (click-deploy mode only)
+                            // Density with +/-
                             AnimatedVisibility(
                                 visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.DEPLOY_MODE.key}_c$index"]?.value == "2"
                             ) {
@@ -386,14 +405,23 @@ fun LazyListScope.mainBaseConfig(
                         key = "${MAIN_BASE_SETTINGS.OCR_EXIT_TARGET_PERCENT.key}_c$index",
                         suffix = Strings.percentTargetSuffix
                     )
-                    SettingDropdown(
-                        key = "${MAIN_BASE_SETTINGS.OCR_EXIT_MODE.key}_c$index",
-                        options = Strings.unchangedDetectionOptions
-                    )
-                    SettingInputRow(
-                        key = "${MAIN_BASE_SETTINGS.OCR_EXIT_STALE_SECONDS.key}_c$index",
-                        suffix = Strings.percentStaleSuffix
-                    )
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        SettingDropdown(
+                            key = "${MAIN_BASE_SETTINGS.OCR_EXIT_MODE.key}_c$index",
+                            options = Strings.unchangedDetectionOptions,
+                            labelOverride = ""
+                        )
+                        Text(
+                            text = "不变",
+                            style = MaterialTheme.typography.labelMedium,
+                            modifier = Modifier.padding(top = 6.dp, end = 8.dp)
+                        )
+                        SettingInputRow(
+                            key = "${MAIN_BASE_SETTINGS.OCR_EXIT_STALE_SECONDS.key}_c$index",
+                            suffix = Strings.unchangedExitSuffix,
+                            labelOverride = ""
+                        )
+                    }
                 }
             }
         }
@@ -439,161 +467,6 @@ fun LazyListScope.mainBaseConfig(
                     }
                 }
             }
-            FlowRow {
-                SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.DO_CLAN_GAMES.key}_c$index")
-            }
-            AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.DO_CLAN_GAMES.key}_c$index"]?.value == "1") {
-                Column {
-                    FlowRow {
-                        SettingSwitchIcon(
-                            key = "${MAIN_BASE_SETTINGS.ACCEPT_MAIN_WORLD_NORMAL_TASK.key}_c$index", afterChange = { checked ->
-                                if (checked) {
-                                    GlobalVars.configStates["${MAIN_BASE_SETTINGS.AUTO_ATTACK.key}_c$index"]?.value = "1"
-                                }
-                            })
-                        SettingSwitchIcon(
-                            key = "${MAIN_BASE_SETTINGS.ACCEPT_MAIN_WORLD_ADVANCED_TASK.key}_c$index", afterChange = { checked ->
-                                if (checked) {
-                                    GlobalVars.configStates["${MAIN_BASE_SETTINGS.AUTO_ATTACK.key}_c$index"]?.value = "1"
-                                }
-                            })
-                        SettingSwitchIcon(
-                            key = "${MAIN_BASE_SETTINGS.ACCEPT_BUILDER_BASE_NORMAL_TASK.key}_c$index", afterChange = { checked ->
-                                if (checked) {
-                                    GlobalVars.configStates["${BUILDER_BASE_SETTINGS.NO_BUILDER_BASE.key}_c$index"]?.value = "0"
-                                    GlobalVars.configStates["${BUILDER_BASE_SETTINGS.BUILDER_BASE_FARMING.key}_c$index"]?.value = "1"
-                                }
-                            })
-                        SettingSwitchIcon(
-                            key = "${MAIN_BASE_SETTINGS.ACCEPT_BUILDER_BASE_ADVANCED_TASK.key}_c$index", afterChange = { checked ->
-                                if (checked) {
-                                    GlobalVars.configStates["${BUILDER_BASE_SETTINGS.NO_BUILDER_BASE.key}_c$index"]?.value = "0"
-                                    GlobalVars.configStates["${BUILDER_BASE_SETTINGS.BUILDER_BASE_FARMING.key}_c$index"]?.value = "1"
-                                }
-                            })
-                        SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.STOP_CLAN_GAMES_AFTER_4000_POINTS.key}_c$index")
-                    }
-                }
-            }
-
-            SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.CLAIM_CLAN_GAME_REWARDS.key}_c$index", explain = Strings.claimRewardsExplain)
-            AnimatedVisibility(
-                visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.CLAIM_CLAN_GAME_REWARDS.key}_c$index"]?.value == "1"
-            ) {
-                ClanGameRewardGroup(index)
-            }
-            FlowRow {
-                SettingSwitchIcon(
-                    key = "${MAIN_BASE_SETTINGS.PLAY_CLAN_WAR.key}_c$index", explain = Strings.clanWarExplain
-                )
-                SettingSwitchIcon(
-                    key = "${MAIN_BASE_SETTINGS.PLAY_LEAGUE.key}_c$index", explain = Strings.leagueExplain
-                )
-                SettingSwitchIcon(
-                    key = "${MAIN_BASE_SETTINGS.PLAY_LEAGUE_DONATION.key}_c$index"
-                )
-                SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.PLAY_RAID.key}_c$index")
-                SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.CONTRIBUTE_CAPITAL_COINS.key}_c$index", explain = "只支持捐到本部落，不支持偷币，不支持捐到其他部落。都城币需攒够一定数量后才会捐，币太少的话不会捐。")
-                SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.COLLECT_CAPITAL_COINS.key}_c$index")
-            }
-
-            // League donation troop config (3 groups: dropdown + count)
-            AnimatedVisibility(
-                visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.PLAY_LEAGUE_DONATION.key}_c$index"]?.value == "1"
-            ) {
-                Column {
-                    val leagueTroopOptions = MainBaseClanWarColors.leagueDonatableTroopNames
-                    val troopKey1 = "${MAIN_BASE_SETTINGS.LEAGUE_DONATION_TROOP_1.key}_c$index"
-                    val troopKey2 = "${MAIN_BASE_SETTINGS.LEAGUE_DONATION_TROOP_2.key}_c$index"
-                    val troopKey3 = "${MAIN_BASE_SETTINGS.LEAGUE_DONATION_TROOP_3.key}_c$index"
-                    // Group 1
-                    FlowRow {
-                        SettingDropdown(
-                            key = troopKey1,
-                            options = leagueTroopOptions,
-                            afterChange = { selectedIdx ->
-                                if (selectedIdx != 0) {
-                                    val idx2 = GlobalVars.configStates[troopKey2]?.value?.toIntOrNull() ?: 0
-                                    val idx3 = GlobalVars.configStates[troopKey3]?.value?.toIntOrNull() ?: 0
-                                    if (idx2 == selectedIdx) GlobalVars.configStates[troopKey2]?.value = "0"
-                                    if (idx3 == selectedIdx) GlobalVars.configStates[troopKey3]?.value = "0"
-                                }
-                            }
-                        )
-                        SettingInputRow(
-                            key = "${MAIN_BASE_SETTINGS.LEAGUE_DONATION_COUNT_1.key}_c$index",
-                            suffix = Strings.countSuffix
-                        )
-                    }
-                    // Group 2
-                    FlowRow {
-                        SettingDropdown(
-                            key = troopKey2,
-                            options = leagueTroopOptions,
-                            afterChange = { selectedIdx ->
-                                if (selectedIdx != 0) {
-                                    val idx1 = GlobalVars.configStates[troopKey1]?.value?.toIntOrNull() ?: 0
-                                    val idx3 = GlobalVars.configStates[troopKey3]?.value?.toIntOrNull() ?: 0
-                                    if (idx1 == selectedIdx) GlobalVars.configStates[troopKey1]?.value = "0"
-                                    if (idx3 == selectedIdx) GlobalVars.configStates[troopKey3]?.value = "0"
-                                }
-                            }
-                        )
-                        SettingInputRow(
-                            key = "${MAIN_BASE_SETTINGS.LEAGUE_DONATION_COUNT_2.key}_c$index",
-                            suffix = Strings.countSuffix
-                        )
-                    }
-                    // Group 3
-                    FlowRow {
-                        SettingDropdown(
-                            key = troopKey3,
-                            options = leagueTroopOptions,
-                            afterChange = { selectedIdx ->
-                                if (selectedIdx != 0) {
-                                    val idx1 = GlobalVars.configStates[troopKey1]?.value?.toIntOrNull() ?: 0
-                                    val idx2 = GlobalVars.configStates[troopKey2]?.value?.toIntOrNull() ?: 0
-                                    if (idx1 == selectedIdx) GlobalVars.configStates[troopKey1]?.value = "0"
-                                    if (idx2 == selectedIdx) GlobalVars.configStates[troopKey2]?.value = "0"
-                                }
-                            }
-                        )
-                        SettingInputRow(
-                            key = "${MAIN_BASE_SETTINGS.LEAGUE_DONATION_COUNT_3.key}_c$index",
-                            suffix = Strings.countSuffix
-                        )
-                    }
-                }
-            }
-
-            FlowRow {
-                SettingSwitchIcon(
-                    key = "${MAIN_BASE_SETTINGS.START_CLAN_WAR.key}_c$index", explain = Strings.startClanWarExplain
-                )
-                SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.START_RAID.key}_c$index")
-            }
-            AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.START_CLAN_WAR.key}_c$index"]?.value == "1") {
-                SettingDropdown(
-                    key = "${MAIN_BASE_SETTINGS.START_CLAN_WAR_METHOD.key}_c$index", options = listOf(Strings.directStart, Strings.recentOnline)
-                )
-            }
-
-            // League registration settings
-            SettingSwitchIcon(
-                key = "${MAIN_BASE_SETTINGS.START_CLAN_LEAGUE.key}_c$index", explain = Strings.startClanLeagueExplain
-            )
-            AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.START_CLAN_LEAGUE.key}_c$index"]?.value == "1") {
-                Column {
-                    SettingDropdown(
-                        key = "${MAIN_BASE_SETTINGS.START_CLAN_LEAGUE_SIZE.key}_c$index", options = listOf("11v11", "15v15", "30v30")
-                    )
-                    SettingDropdown(
-                        key = "${MAIN_BASE_SETTINGS.EVENT_LEAGUE_START_DAY.key}_c$index",
-                        options = listOf("禁用") + (11..22).map { "${it}日" }
-                    )
-                }
-            }
-
             SettingSwitchIcon(
                 key = "${MAIN_BASE_SETTINGS.AUTO_JOIN_CLAN.key}_c$index", explain = Strings.autoJoinClanExplain
             )
@@ -616,20 +489,6 @@ fun LazyListScope.mainBaseConfig(
                     SettingInputRow(key = "${MAIN_BASE_SETTINGS.INVITE_PLAYERS_ROUND_DURATION.key}_c$index")
                 }
             }
-
-            // 部落踢出成员
-            FlowRow {
-                SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.KICK_CLAN_MEMBERS.key}_c$index")
-            }
-            AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.KICK_CLAN_MEMBERS.key}_c$index"]?.value == "1") {
-                Column {
-                    SettingInputRow(
-                        key = "${MAIN_BASE_SETTINGS.KICK_CLAN_MEMBERS_INTERVAL.key}_c$index",
-                        suffix = "分钟"
-                    )
-                }
-            }
-
             // Commented out: create_consecutive_clans has no functional implementation
             // AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.CREATE_CONSECUTIVE_CLANS.key}_c$index"]?.value == "1") {
             //     Column {
@@ -638,6 +497,243 @@ fun LazyListScope.mainBaseConfig(
             //     }
             // }
 
+             // 部落踢出成员
+             FlowRow {
+                 SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.KICK_CLAN_MEMBERS.key}_c$index")
+             }
+             AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.KICK_CLAN_MEMBERS.key}_c$index"]?.value == "1") {
+                 Column {
+                     SettingInputRow(
+                         key = "${MAIN_BASE_SETTINGS.KICK_CLAN_MEMBERS_INTERVAL.key}_c$index",
+                         suffix = "分钟"
+                     )
+                 }
+             }
+
+        }
+    }
+
+    // Capital settings card
+    item {
+        SettingSection(visible = isClanExpanded) {
+            Text(
+                text = Strings.sectionCapitalSettings,
+                style = MaterialTheme.typography.titleSmall,
+                modifier = Modifier.padding(bottom = 1.dp)
+            )
+            FlowRow {
+                SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.PLAY_RAID.key}_c$index")
+                SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.START_RAID.key}_c$index")
+                SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.CONTRIBUTE_CAPITAL_COINS.key}_c$index", explain = "只支持捐到本部落，不支持偷币，不支持捐到其他部落。都城币需攒够一定数量后才会捐，币太少的话不会捐。")
+                SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.COLLECT_CAPITAL_COINS.key}_c$index")
+            }
+        }
+    }
+
+    // War & League settings card
+    item {
+        SettingSection(visible = isClanExpanded) {
+            Text(
+                text = Strings.sectionWarLeague,
+                style = MaterialTheme.typography.titleSmall,
+                modifier = Modifier.padding(bottom = 1.dp)
+            )
+            FlowRow {
+                SettingSwitchIcon(
+                    key = "${MAIN_BASE_SETTINGS.PLAY_CLAN_WAR.key}_c$index", explain = Strings.clanWarExplain
+                )
+                SettingSwitchIcon(
+                    key = "${MAIN_BASE_SETTINGS.PLAY_LEAGUE.key}_c$index", explain = Strings.leagueExplain
+                )
+                SettingSwitchIcon(
+                    key = "${MAIN_BASE_SETTINGS.PLAY_LEAGUE_DONATION.key}_c$index"
+                )
+                SettingSwitchIcon(
+                    key = "${MAIN_BASE_SETTINGS.START_CLAN_WAR.key}_c$index", explain = Strings.startClanWarExplain
+                )
+                SettingSwitchIcon(
+                    key = "${MAIN_BASE_SETTINGS.START_CLAN_LEAGUE.key}_c$index", explain = Strings.startClanLeagueExplain
+                )
+            }
+            AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.START_CLAN_WAR.key}_c$index"]?.value == "1") {
+                SettingDropdown(
+                    key = "${MAIN_BASE_SETTINGS.START_CLAN_WAR_METHOD.key}_c$index", options = listOf(Strings.directStart, Strings.recentOnline)
+                )
+            }
+            AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.START_CLAN_LEAGUE.key}_c$index"]?.value == "1") {
+                Column {
+                    HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
+                    SettingDropdown(
+                        key = "${MAIN_BASE_SETTINGS.START_CLAN_LEAGUE_SIZE.key}_c$index", options = listOf("11v11", "15v15", "30v30")
+                    )
+                    SettingDropdown(
+                        key = "${MAIN_BASE_SETTINGS.EVENT_LEAGUE_START_DAY.key}_c$index",
+                        options = listOf("禁用") + (11..22).map { "${it}日" }
+                    )
+                }
+            }
+
+            // League donation troop config
+            AnimatedVisibility(
+                visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.PLAY_LEAGUE_DONATION.key}_c$index"]?.value == "1"
+            ) {
+                Column {
+                    HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
+                    val leagueTroopOptions = MainBaseClanWarColors.leagueDonatableTroopNames
+                    val troopKey1 = "${MAIN_BASE_SETTINGS.LEAGUE_DONATION_TROOP_1.key}_c$index"
+                    val troopKey2 = "${MAIN_BASE_SETTINGS.LEAGUE_DONATION_TROOP_2.key}_c$index"
+                    val troopKey3 = "${MAIN_BASE_SETTINGS.LEAGUE_DONATION_TROOP_3.key}_c$index"
+                    FlowRow {
+                        SettingDropdown(
+                            key = troopKey1,
+                            options = leagueTroopOptions,
+                            afterChange = { selectedIdx ->
+                                if (selectedIdx != 0) {
+                                    val idx2 = GlobalVars.configStates[troopKey2]?.value?.toIntOrNull() ?: 0
+                                    val idx3 = GlobalVars.configStates[troopKey3]?.value?.toIntOrNull() ?: 0
+                                    if (idx2 == selectedIdx) GlobalVars.configStates[troopKey2]?.value = "0"
+                                    if (idx3 == selectedIdx) GlobalVars.configStates[troopKey3]?.value = "0"
+                                }
+                            }
+                        )
+                        SettingInputRow(
+                            key = "${MAIN_BASE_SETTINGS.LEAGUE_DONATION_COUNT_1.key}_c$index",
+                            suffix = Strings.countSuffix
+                        )
+                    }
+                    FlowRow {
+                        SettingDropdown(
+                            key = troopKey2,
+                            options = leagueTroopOptions,
+                            afterChange = { selectedIdx ->
+                                if (selectedIdx != 0) {
+                                    val idx1 = GlobalVars.configStates[troopKey1]?.value?.toIntOrNull() ?: 0
+                                    val idx3 = GlobalVars.configStates[troopKey3]?.value?.toIntOrNull() ?: 0
+                                    if (idx1 == selectedIdx) GlobalVars.configStates[troopKey1]?.value = "0"
+                                    if (idx3 == selectedIdx) GlobalVars.configStates[troopKey3]?.value = "0"
+                                }
+                            }
+                        )
+                        SettingInputRow(
+                            key = "${MAIN_BASE_SETTINGS.LEAGUE_DONATION_COUNT_2.key}_c$index",
+                            suffix = Strings.countSuffix
+                        )
+                    }
+                    FlowRow {
+                        SettingDropdown(
+                            key = troopKey3,
+                            options = leagueTroopOptions,
+                            afterChange = { selectedIdx ->
+                                if (selectedIdx != 0) {
+                                    val idx1 = GlobalVars.configStates[troopKey1]?.value?.toIntOrNull() ?: 0
+                                    val idx2 = GlobalVars.configStates[troopKey2]?.value?.toIntOrNull() ?: 0
+                                    if (idx1 == selectedIdx) GlobalVars.configStates[troopKey1]?.value = "0"
+                                    if (idx2 == selectedIdx) GlobalVars.configStates[troopKey2]?.value = "0"
+                                }
+                            }
+                        )
+                        SettingInputRow(
+                            key = "${MAIN_BASE_SETTINGS.LEAGUE_DONATION_COUNT_3.key}_c$index",
+                            suffix = Strings.countSuffix
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    // Clan games settings card
+    item {
+        SettingSection(visible = isClanExpanded) {
+            Text(
+                text = Strings.sectionClanGames,
+                style = MaterialTheme.typography.titleSmall,
+                modifier = Modifier.padding(bottom = 1.dp)
+            )
+            FlowRow {
+                SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.DO_CLAN_GAMES.key}_c$index")
+            }
+            AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.DO_CLAN_GAMES.key}_c$index"]?.value == "1") {
+                Column {
+                    Column {
+                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Surface(
+                            shape = RoundedCornerShape(6.dp),
+                            color = AppColors.CardBg,
+                            modifier = Modifier.weight(1f).border(0.5.dp, Color(0xFF9DB4C2), RoundedCornerShape(6.dp))
+                        ) {
+                            Column(modifier = Modifier.padding(8.dp).fillMaxWidth()) {
+                                Text(text = Strings.mainWorldLabel, style = MaterialTheme.typography.labelSmall, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center)
+                                Spacer(modifier = Modifier.height(4.dp))
+                                Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+                                    SettingToggleButton(
+                                        key = "${MAIN_BASE_SETTINGS.ACCEPT_MAIN_WORLD_NORMAL_TASK.key}_c$index",
+                                        labelOverride = Strings.normalLabel,
+                                        afterChange = { checked ->
+                                            if (checked) {
+                                                GlobalVars.configStates["${MAIN_BASE_SETTINGS.AUTO_ATTACK.key}_c$index"]?.value = "1"
+                                            }
+                                        }
+                                    )
+                                    Spacer(modifier = Modifier.width(4.dp))
+                                    SettingToggleButton(
+                                        key = "${MAIN_BASE_SETTINGS.ACCEPT_MAIN_WORLD_ADVANCED_TASK.key}_c$index",
+                                        labelOverride = Strings.advancedLabel,
+                                        afterChange = { checked ->
+                                            if (checked) {
+                                                GlobalVars.configStates["${MAIN_BASE_SETTINGS.AUTO_ATTACK.key}_c$index"]?.value = "1"
+                                            }
+                                        }
+                                    )
+                                }
+                            }
+                        }
+                        Surface(
+                            shape = RoundedCornerShape(6.dp),
+                            color = AppColors.CardBg,
+                            modifier = Modifier.weight(1f).border(0.5.dp, Color(0xFF9DB4C2), RoundedCornerShape(6.dp))
+                        ) {
+                            Column(modifier = Modifier.padding(8.dp).fillMaxWidth()) {
+                                Text(text = Strings.builderBaseTasks, style = MaterialTheme.typography.labelSmall, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center)
+                                Spacer(modifier = Modifier.height(4.dp))
+                                Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+                                    SettingToggleButton(
+                                        key = "${MAIN_BASE_SETTINGS.ACCEPT_BUILDER_BASE_NORMAL_TASK.key}_c$index",
+                                        labelOverride = Strings.normalLabel,
+                                        afterChange = { checked ->
+                                            if (checked) {
+                                                GlobalVars.configStates["${BUILDER_BASE_SETTINGS.NO_BUILDER_BASE.key}_c$index"]?.value = "0"
+                                                GlobalVars.configStates["${BUILDER_BASE_SETTINGS.BUILDER_BASE_FARMING.key}_c$index"]?.value = "1"
+                                            }
+                                        }
+                                    )
+                                    Spacer(modifier = Modifier.width(4.dp))
+                                    SettingToggleButton(
+                                        key = "${MAIN_BASE_SETTINGS.ACCEPT_BUILDER_BASE_ADVANCED_TASK.key}_c$index",
+                                        labelOverride = Strings.advancedLabel,
+                                        afterChange = { checked ->
+                                            if (checked) {
+                                                GlobalVars.configStates["${BUILDER_BASE_SETTINGS.NO_BUILDER_BASE.key}_c$index"]?.value = "0"
+                                                GlobalVars.configStates["${BUILDER_BASE_SETTINGS.BUILDER_BASE_FARMING.key}_c$index"]?.value = "1"
+                                            }
+                                        }
+                                    )
+                                }
+                            }
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(8.dp))
+                    SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.STOP_CLAN_GAMES_AFTER_4000_POINTS.key}_c$index")
+                    }
+                }
+            }
+
+            SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.CLAIM_CLAN_GAME_REWARDS.key}_c$index", explain = Strings.claimRewardsExplain)
+            AnimatedVisibility(
+                visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.CLAIM_CLAN_GAME_REWARDS.key}_c$index"]?.value == "1"
+            ) {
+                ClanGameRewardGroup(index)
+            }
         }
     }
 
