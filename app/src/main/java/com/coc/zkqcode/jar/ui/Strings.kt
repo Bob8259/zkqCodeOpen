@@ -459,5 +459,14 @@ object Strings {
     // Upgrade Time Scheduling
     val upgradeSchedulingTitle get() = if (LanguageManager.isChinese) "根据升级时间上号" else "Upgrade-based Scheduling"
     val upgradeSchedulingDesc get() = if (LanguageManager.isChinese) "监控所有建筑/英雄/实验室等升级完成时间，完成时自动切号执行" else "Monitors all upgrade timers (buildings, heroes, lab, etc.) and auto-switches on completion"
+
+    // Config Import/Export (JSON file)
+    val exportConfig get() = if (LanguageManager.isChinese) "导出配置" else "Export Config"
+    val importConfig get() = if (LanguageManager.isChinese) "导入配置" else "Import Config"
+    val configExportSuccess get() = if (LanguageManager.isChinese) "配置已导出到 zkqFiles/zkq_config_backup.json" else "Config exported to zkqFiles/zkq_config_backup.json"
+    val configImportConfirm get() = if (LanguageManager.isChinese) "确认从 zkqFiles/zkq_config_backup.json 导入配置吗？这将覆盖当前所有配置。" else "Import config from zkqFiles/zkq_config_backup.json? This will overwrite all current settings."
+    val configImportSuccess get() = if (LanguageManager.isChinese) "配置导入成功，已在线更新" else "Config imported and applied live"
+    val configImportFailed get() = if (LanguageManager.isChinese) "导入失败，请检查文件格式" else "Import failed — check file format"
+    val configFileNotExist get() = if (LanguageManager.isChinese) "配置文件不存在，请先导出" else "Config file not found — export first"
 }
 

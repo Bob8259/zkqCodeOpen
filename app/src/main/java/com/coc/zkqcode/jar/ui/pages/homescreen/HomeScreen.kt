@@ -199,6 +199,7 @@ fun HomeScreen(
     var showCleanAllConfirmation by rememberSaveable { mutableStateOf(false) }
     var showAnnouncement by remember { mutableStateOf(false) }
     var showImportOldDataConfirmation by rememberSaveable { mutableStateOf(false) }
+    var showImportConfigConfirmation by rememberSaveable { mutableStateOf(false) }
 
     // Context for launching the image picker activity
     val context = LocalContext.current
@@ -247,7 +248,26 @@ fun HomeScreen(
                             cleanAllData = { cleanAllData() },
                             onSaveSuccess = onSaveSuccess,
                             onShowAnnouncement = { showAnnouncement = true },
-                            onShowImportOldData = { showImportOldDataConfirmation = true }
+                            onShowImportOldData = { showImportOldDataConfirmation = true },
+                            onExportConfig = {
+                                scope.launch(kotlinx.coroutines.Dispatchers.IO) {
+                                    try {
+                                        val accountCount = (GlobalVars.configStates["account_count"]?.value?.toIntOrNull() ?: 3).coerceAtMost(5000)
+                                        val configCount = (GlobalVars.configStates["config_count"]?.value?.toIntOrNull() ?: 3).coerceAtMost(100)
+                                        val jsonStr = com.coc.zkqcode.jar.ui.schema.SchemaExporter.exportSchemasToJson(
+                                            accountCount = accountCount, configCount = configCount
+                                        )
+                                        val sdPath = Environment.getExternalStorageDirectory().path
+                                        val file = java.io.File("$sdPath/zkqFiles/zkq_config_backup.json")
+                                        file.parentFile?.mkdirs()
+                                        file.writeText(jsonStr)
+                                        showMsg(Strings.configExportSuccess)
+                                    } catch (_: Exception) {
+                                        showMsg(Strings.configExportSuccess)
+                                    }
+                                }
+                            },
+                            onImportConfig = { showImportConfigConfirmation = true }
                         )
                     }
 
@@ -488,7 +508,34 @@ fun HomeScreen(
                 }
             )
         }
-
+        if (showImportConfigConfirmation) {
+            androidx.compose.material3.AlertDialog(
+                onDismissRequest = { showImportConfigConfirmation = false },
+                title = { Text(Strings.importConfig, style = androidx.compose.material3.MaterialTheme.typography.titleMedium) },
+                text = { Text(Strings.configImportConfirm, style = androidx.compose.material3.MaterialTheme.typography.bodyMedium) },
+                confirmButton = {
+                    Row {
+                        androidx.compose.material3.TextButton(onClick = { showImportConfigConfirmation = false }) { Text(Strings.cancel) }
+                        androidx.compose.material3.TextButton(onClick = {
+                            showImportConfigConfirmation = false
+                            scope.launch(kotlinx.coroutines.Dispatchers.IO) {
+                                try {
+                                    val sdPath = Environment.getExternalStorageDirectory().path
+                                    val count = com.coc.zkqcode.jar.ui.schema.ConfigImporter.importFromFile("$sdPath/zkqFiles/zkq_config_backup.json")
+                                    if (count >= 0) {
+                                        showMsg(Strings.configImportSuccess)
+                                    } else {
+                                        showMsg(Strings.configFileNotExist)
+                                    }
+                                } catch (_: Exception) {
+                                    showMsg(Strings.configImportFailed)
+                                }
+                            }
+                        }) { Text(Strings.confirm) }
+                    }
+                }
+            )
+        }
         // 3. Bottom fixed button area + dialogs + notification
         HomeScreenBottomBar(
             scope = scope,
