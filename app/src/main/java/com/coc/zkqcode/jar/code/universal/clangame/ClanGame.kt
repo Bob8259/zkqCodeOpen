@@ -227,7 +227,7 @@ private suspend fun giveUpATask() {
 }
 
 private suspend fun detectAndAcceptATask(targetBaseType: BaseType): Boolean {
-    val screenshot = ScreenCaptureManager.capture(asBitmap = true) as? Bitmap
+    val screenshot = ScreenCaptureManager.captureScreenOrRestart<Bitmap>(asBitmap = true)
     if (screenshot == null) {
         accountMessage("部落竞赛截图失败，无法检测任务")
         return false

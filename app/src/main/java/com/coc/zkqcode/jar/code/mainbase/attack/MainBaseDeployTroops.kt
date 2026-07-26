@@ -174,7 +174,7 @@ private suspend fun deployHeroes() {
     )
     for (hero in heroes) {
         // Take a fresh screenshot for each hero to get the latest state of the bar
-        val screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult ?: continue
+        val screenBuffer = ScreenCaptureManager.captureScreenOrRestart<ScreenCaptureManager.CaptureResult>(asBitmap = false) ?: continue
         val found = findMultiColors(schema = hero, byteBuffer = screenBuffer)
         if (found != null) {
             // Tap the hero icon in the deployment bar to select it
@@ -192,7 +192,7 @@ private suspend fun deployHeroes() {
  * deploys all units of that type via continuous back-and-forth dragging.
  */
 private suspend fun deployIfPresent(dragSweepMs: Int, vararg schemas: ColorSchema) {
-    val screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult ?: logAndRestart("failed to take screenshot at close advertisement")
+    val screenBuffer = ScreenCaptureManager.captureScreenOrRestart<ScreenCaptureManager.CaptureResult>(asBitmap = false) ?: logAndRestart("failed to take screenshot at close advertisement")
     for (schema in schemas) {
         val troop = findMultiColors(schema = schema, byteBuffer = screenBuffer)
         if (troop != null) {
@@ -272,7 +272,7 @@ private val cnTroopSchemas = listOf(
 )
 
 private suspend fun cnScanBar(): List<DetectedTroop> {
-    val screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult
+    val screenBuffer = ScreenCaptureManager.captureScreenOrRestart<ScreenCaptureManager.CaptureResult>(asBitmap = false)
         ?: return emptyList()
 
     val results = mutableListOf<DetectedTroop>()
@@ -310,7 +310,7 @@ private suspend fun cnDeploySpells() {
 
     repeat(MAX_CN_SPELL_BATCHES) {
         // Refresh the bar after each batch so depleted spells disappear from the next snapshot.
-        val screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult
+        val screenBuffer = ScreenCaptureManager.captureScreenOrRestart<ScreenCaptureManager.CaptureResult>(asBitmap = false)
             ?: return
         val spells = mutableListOf<Pair<Int, Int>>()
         val schema = MyColors.SpellColorAtDeploymentBar

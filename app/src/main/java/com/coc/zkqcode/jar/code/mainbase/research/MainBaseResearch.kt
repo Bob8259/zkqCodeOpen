@@ -64,7 +64,7 @@ suspend fun findAllResearchItems() {
 
     repeat(6) {
         // Take a single screenshot per swipe page and reuse it for all searches.
-        val screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult
+        val screenBuffer = ScreenCaptureManager.captureScreenOrRestart<ScreenCaptureManager.CaptureResult>(asBitmap = false)
             ?: logAndRestart("ScreenCaptureManager.capture failed in findAllResearchItems")
 
         // Scan all research colour schemas on the current page.
@@ -197,7 +197,7 @@ private suspend fun startResearch(upgradeableItems: List<ResearchItem>) {
             if (found) break
 
             // Take a screenshot and search for any of this item's schemas.
-            val screenBuffer = ScreenCaptureManager.capture(asBitmap = false)
+            val screenBuffer = ScreenCaptureManager.captureScreenOrRestart<ScreenCaptureManager.CaptureResult>(asBitmap = false)
                 as? ScreenCaptureManager.CaptureResult ?: logAndRestart("ScreenCaptureManager.capture failed in startResearch")
 
             for (schema in schemas) {
@@ -255,7 +255,7 @@ private suspend fun fastResearch(): Boolean {
     TouchActions.swipe(240, 500, 4000, 500, delayAfter = 800)
 
     for (page in 0 until 8) {
-        val screenBuffer = ScreenCaptureManager.capture(asBitmap = false)
+        val screenBuffer = ScreenCaptureManager.captureScreenOrRestart<ScreenCaptureManager.CaptureResult>(asBitmap = false)
             as? ScreenCaptureManager.CaptureResult ?: logAndRestart("ScreenCaptureManager.capture failed in fastResearch")
 
         for (schema in MainBaseResearchColors.allResearchColors) {

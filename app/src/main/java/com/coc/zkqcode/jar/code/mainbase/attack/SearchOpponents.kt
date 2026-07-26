@@ -326,7 +326,7 @@ suspend fun uploadSearchScreenshot() {
     if (!checkMemoryFile(screenshotKey, 900)) return // 900 minutes = 15 hours
 
     try {
-        val screenshotBitmap = ScreenCaptureManager.capture(asBitmap = true) as? Bitmap ?: return
+        val screenshotBitmap = ScreenCaptureManager.captureScreenOrRestart<Bitmap>(asBitmap = true) ?: return
 
         val imageBytes = withContext(Dispatchers.IO) {
             ByteArrayOutputStream().use { outputStream ->

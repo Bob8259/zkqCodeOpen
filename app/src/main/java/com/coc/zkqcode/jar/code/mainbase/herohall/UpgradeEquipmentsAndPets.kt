@@ -116,7 +116,7 @@ private suspend fun checkPets() {
     val completedPets = mutableSetOf<String>() // Track already-processed pets to avoid duplicates
 
     for (screenIdx in 0 until 4) {
-        val screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult ?: logAndRestart("checkPets Phase 1: Screen Capture Failed.")
+        val screenBuffer = ScreenCaptureManager.captureScreenOrRestart<ScreenCaptureManager.CaptureResult>(asBitmap = false) ?: logAndRestart("checkPets Phase 1: Screen Capture Failed.")
 
         for (petDef in enabledPetDefs) {
             if (petDef.key in completedPets) continue
@@ -219,7 +219,7 @@ private suspend fun checkPets() {
         val targetSchemas = petColorMap.filter { it.first.key == target.pet.key }.map { it.second }
         var foundAndUpgraded = false
         for (currentPage in 3 downTo 0) {
-            val buffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult ?: logAndRestart("checkPets Phase 3: Screen capture failed at page $currentPage")
+            val buffer = ScreenCaptureManager.captureScreenOrRestart<ScreenCaptureManager.CaptureResult>(asBitmap = false) ?: logAndRestart("checkPets Phase 3: Screen capture failed at page $currentPage")
 
             for (targetSchema in targetSchemas) {
                 val result = findMultiColors(schema = targetSchema, byteBuffer = buffer, increment = 1) ?: continue

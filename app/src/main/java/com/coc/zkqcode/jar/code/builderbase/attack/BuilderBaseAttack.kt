@@ -153,7 +153,7 @@ private suspend fun realAttack(mode: String, hasBuilderBaseTask: Boolean, battle
         accountMessage("夜世界对战中，第${battleNumber}/${battleTimes}局\n若${"%.1f".format(remainingMin)}分钟内未完成对战，则强制重启")
         if (!checkReconnections()) return false
         // Capture a single screenshot and reuse it for all state checks in this iteration
-        val capturedScreen = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult
+        val capturedScreen = ScreenCaptureManager.captureScreenOrRestart<ScreenCaptureManager.CaptureResult>(asBitmap = false)
 
         val trainTroopButton = findMultiColors(byteBuffer = capturedScreen, schema = MyColors.TrainTroops)
         if (trainTroopButton != null) {

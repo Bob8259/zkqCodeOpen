@@ -1,4 +1,4 @@
-﻿package com.coc.zkqcode.jar.code.universal.buildings.upgrade
+package com.coc.zkqcode.jar.code.universal.buildings.upgrade
 
 import android.graphics.Bitmap
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
@@ -233,7 +233,7 @@ private suspend fun tryToBatchBuildWalls(x: Int, y: Int, currentBase: BaseType) 
     }
     // Locate the arrow element using the detection service.
     delayWithMultiplier(200)
-    val screenBuffer = ScreenCaptureManager.capture(asBitmap = true) as? Bitmap ?: logAndRestart("in BuilderBaseUpgradeBuildings, screen capture failed.")
+    val screenBuffer = ScreenCaptureManager.captureScreenOrRestart<Bitmap>(asBitmap = true) ?: logAndRestart("in BuilderBaseUpgradeBuildings, screen capture failed.")
     // Return early if the model weights fail to load.
     if (!AiDetector.loadWeights("walls-detect")) return
     try {

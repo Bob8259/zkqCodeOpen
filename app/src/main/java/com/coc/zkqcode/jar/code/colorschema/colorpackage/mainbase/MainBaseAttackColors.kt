@@ -296,28 +296,16 @@ object MainBaseAttackColors : IMainBaseAttackColors {
 
     // Battle speed-up button (2x speed toggle, top-right corner)
     override val BattleSpeedUp = ColorSchema.parse(
-        1193, 370, 1259, 447,
-        "81F5DB",
-        "13|0|81F5DA,26|0|81F5DA,39|0|81F5DA,52|0|81F5DB,0|39|2DC77E,13|39|2DC77E,26|39|2DC77E,39|39|2DC77E,52|39|2DC77E",
-        0, 0.9,
-        "对战加速按钮"
+        1193, 370, 1259, 447, "81F5DB", "13|0|81F5DA,26|0|81F5DA,39|0|81F5DA,52|0|81F5DB,0|39|2DC77E,13|39|2DC77E,26|39|2DC77E,39|39|2DC77E,52|39|2DC77E", 0, 0.9, "对战加速按钮"
     )
 
     // CN auto-battle button on the deploy/preparation screen
     override val AutoBattleBtn = ColorSchema.parse(
-        832, 511, 1032, 563,
-        "81F8DC",
-        "40|0|E6E6E6,80|0|81F8DC,120|0|81F8DC,160|0|81F8DC,0|26|1FBC6E,40|26|1FBD6F,80|26|1FBD6F,120|26|1FBD6F,160|26|1FBD6F",
-        0, 0.9,
-        "自动战斗按钮"
+        832, 511, 1032, 563, "81F8DC", "40|0|E6E6E6,80|0|81F8DC,120|0|81F8DC,160|0|81F8DC,0|26|1FBC6E,40|26|1FBD6F,80|26|1FBD6F,120|26|1FBD6F,160|26|1FBD6F", 0, 0.9, "自动战斗按钮"
     )
 
     // CN auto-battle button color variant 2 on the deploy/preparation screen
     override val AutoBattleBtn2 = ColorSchema.parse(
-        396, 512, 598, 563,
-        "7EF7DA",
-        "27|0|7EF6DA,81|0|7EF6DA,121|0|7EF6DA,162|0|7EF6DA,0|25|1FBC6E,41|25|1FBC6F,81|25|1FBC6F,121|25|1FBC6F,162|25|1FBC6F",
-        0, 0.9,
-        "自动战斗按钮2"
+        167, 509, 1022, 571, "FFFFFF", "9|-10|FBFBFB,12|-10|FBFBFB,12|-12|F5F5F5,6|-16|7BF6D8,2|-15|78F4D6,1|3|FFFFFF,4|1|FFFFFF,9|1|0D0D0D,15|4|21C070", 0, 0.9, "自动战斗按钮2"
     )
 }

@@ -50,7 +50,7 @@ suspend fun donateToClan(): Boolean {
             lastAdTime = System.currentTimeMillis()
         }
         // Capture a single frame buffer and reuse it for all colour checks in this iteration
-        val screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult ?: logAndRestart("in donateToClan, screen capture failed.")
+        val screenBuffer = ScreenCaptureManager.captureScreenOrRestart<ScreenCaptureManager.CaptureResult>(asBitmap = false) ?: logAndRestart("in donateToClan, screen capture failed.")
 
         val clanChat = findMultiColors(schema = MyColors.ClanChatIcon, byteBuffer = screenBuffer, increment = 1)
         if (clanChat != null) {

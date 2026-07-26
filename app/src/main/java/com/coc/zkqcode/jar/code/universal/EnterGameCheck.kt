@@ -134,7 +134,7 @@ private suspend fun sendGameEntryFailNotification(timeoutSeconds: Int) {
     val provider = GlobalVars.configStates[Schema.GLOBAL_SETTINGS.PUSH_PROVIDER.key]?.value ?: "0"
     if (provider == "3") {
         // Telegram: capture screenshot and send as photo
-        val screenshot = ScreenCaptureManager.capture(asBitmap = true) as? Bitmap
+        val screenshot = ScreenCaptureManager.captureScreenOrRestart<Bitmap>(asBitmap = true)
         if (screenshot != null) {
             val imageBytes = PixelBlockEncoder.bitmapToJpegBytes(screenshot)
             screenshot.recycle()
@@ -153,7 +153,7 @@ private suspend fun sendGameEntryFailNotification(timeoutSeconds: Int) {
     } else {
         // Other platforms: capture screenshot and generate braille art
         var brailleArt: String? = null
-        val screenshot = ScreenCaptureManager.capture(asBitmap = true) as? Bitmap
+        val screenshot = ScreenCaptureManager.captureScreenOrRestart<Bitmap>(asBitmap = true)
         if (screenshot != null) {
             brailleArt = PixelBlockEncoder.encodeBitmapToBraille(screenshot)
             screenshot.recycle()
@@ -184,7 +184,7 @@ suspend fun clickRightBottom(times: Int, delayTime: Int = 100) {
  * Checks and dismisses clan league related popups (season info, blue info icon, claim reward).
  */
 private suspend fun closeClanLeaguePopups() {
-    var screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult ?: return
+    var screenBuffer = ScreenCaptureManager.captureScreenOrRestart<ScreenCaptureManager.CaptureResult>(asBitmap = false) ?: return
     listOf(
         MyColors.ClanLeagueSeasonInfo, MyColors.SmallBlueInfoIcon, MyColors.ClaimClanLeagueReward
     ).forEach { schema ->
@@ -192,7 +192,7 @@ private suspend fun closeClanLeaguePopups() {
         if (point != null) {
             TouchActions.tap(point.x, point.y)
             // Retake the screenBuffer so the next schema check uses the updated screen
-            screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult ?: return@forEach
+            screenBuffer = ScreenCaptureManager.captureScreenOrRestart<ScreenCaptureManager.CaptureResult>(asBitmap = false) ?: return@forEach
         }
     }
 }
@@ -262,7 +262,7 @@ private suspend fun closeAdvertisements() {
         }
     }
     // 1. Capture the screen and cast safely (Use 'var' so we can update it)
-    var screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult ?: logAndRestart("failed to take screenshot at close advertisement")
+    var screenBuffer = ScreenCaptureManager.captureScreenOrRestart<ScreenCaptureManager.CaptureResult>(asBitmap = false) ?: logAndRestart("failed to take screenshot at close advertisement")
 
     // 2. Define the schemas to check against
     val homeSchemas = listOf(
@@ -312,13 +312,13 @@ private suspend fun closeAdvertisements() {
             // If found, perform the tap
             TouchActions.tap(point.x, point.y)
             // 4. Retake the screenBuffer so the next schema check uses the updated screen
-            screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult ?: return@forEach // Use return@forEach to skip to next if capture fails
+            screenBuffer = ScreenCaptureManager.captureScreenOrRestart<ScreenCaptureManager.CaptureResult>(asBitmap = false) ?: return@forEach // Use return@forEach to skip to next if capture fails
         }
     }
     // Reuse screenBuffer for remaining checks; refresh after each tap
     findMultiColors(byteBuffer = screenBuffer, schema = MyColors.UpgradeTHArrow, increment = 1)?.let {
         TouchActions.tap(it.x + 50, it.y + 100)
-        screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult ?: logAndRestart("failed to take screenshot at close advertisement")
+        screenBuffer = ScreenCaptureManager.captureScreenOrRestart<ScreenCaptureManager.CaptureResult>(asBitmap = false) ?: logAndRestart("failed to take screenshot at close advertisement")
     }
     findMultiColors(byteBuffer = screenBuffer, schema = MyColors.CollectElixirCartTutorial, increment = 1)?.let {
         TouchActions.tap(644, 377)
@@ -334,7 +334,7 @@ private suspend fun closeAdvertisements() {
     }
     findMultiColors(byteBuffer = screenBuffer, schema = MyColors.TencentChildProtection, increment = 1)?.let {
         TouchActions.tap(1010, 85)
-        screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult ?: logAndRestart("failed to take screenshot at close advertisement")
+        screenBuffer = ScreenCaptureManager.captureScreenOrRestart<ScreenCaptureManager.CaptureResult>(asBitmap = false) ?: logAndRestart("failed to take screenshot at close advertisement")
     }
     findMultiColors(byteBuffer = screenBuffer, schema = MyColors.DailyLoginReward, increment = 1)?.let {
         if (getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.CLAIM_DAILY_REWARD.key)) {
@@ -342,7 +342,7 @@ private suspend fun closeAdvertisements() {
         } else {
             TouchActions.tap(it.x, it.y)
         }
-        screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult ?: logAndRestart("failed to take screenshot at close advertisement")
+        screenBuffer = ScreenCaptureManager.captureScreenOrRestart<ScreenCaptureManager.CaptureResult>(asBitmap = false) ?: logAndRestart("failed to take screenshot at close advertisement")
     }
     findMultiColors(byteBuffer = screenBuffer, schema = MyColors.ReturnAwards, increment = 1)?.let {
         // Define the coordinate pairs in order of execution
@@ -354,12 +354,12 @@ private suspend fun closeAdvertisements() {
         tapPoints.forEach { (x, y) ->
             TouchActions.tap(x, y, delayTime = 100)
         }
-        screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult ?: logAndRestart("failed to take screenshot at close advertisement")
+        screenBuffer = ScreenCaptureManager.captureScreenOrRestart<ScreenCaptureManager.CaptureResult>(asBitmap = false) ?: logAndRestart("failed to take screenshot at close advertisement")
     }
     findMultiColors(byteBuffer = screenBuffer, schema = MyColors.CancelEditMode, increment = 1)?.let {
         TouchActions.tap(it.x, it.y)
         TouchActions.tap(788, 464)
-        screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult ?: logAndRestart("failed to take screenshot at close advertisement")
+        screenBuffer = ScreenCaptureManager.captureScreenOrRestart<ScreenCaptureManager.CaptureResult>(asBitmap = false) ?: logAndRestart("failed to take screenshot at close advertisement")
     }
     findMultiColors(byteBuffer = screenBuffer, schema = MyColors.TrainingPage, increment = 1)?.let {
         TouchActions.tap(219, 139, delayTime = 1000)//close training tap
@@ -382,7 +382,7 @@ private suspend fun closeAdvertisements() {
 
 suspend fun isInHomePage(countdownMessage: String? = null): Boolean {
     // 1. Capture the screen and cast safely
-    val screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult ?: logAndRestart("in isInHomePage, screen capture failed.")
+    val screenBuffer = ScreenCaptureManager.captureScreenOrRestart<ScreenCaptureManager.CaptureResult>(asBitmap = false) ?: logAndRestart("in isInHomePage, screen capture failed.")
 
     suspend fun homePageCheckFailed(message: String): Boolean {
         accountMessage(if (countdownMessage == null) message else "$countdownMessage，$message")

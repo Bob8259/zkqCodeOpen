@@ -1,4 +1,4 @@
-﻿package com.coc.zkqcode.jar.code.mainbase.clan
+package com.coc.zkqcode.jar.code.mainbase.clan
 
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
@@ -102,7 +102,7 @@ suspend fun clanLeague(): Boolean {
         val multiplier = GlobalVars.configStates["delay_multiplier"]?.value?.toFloat() ?: logAndRestart("Failed to get delayMultiplier")
         val duration = (10000 * multiplier).toLong()
         while (System.currentTimeMillis() - startTime < duration) {
-            val captured = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult
+            val captured = ScreenCaptureManager.captureScreenOrRestart<ScreenCaptureManager.CaptureResult>(asBitmap = false)
             // Tap each of the three dismissible colours if found
             for (schema in tappableSchemas) {
                 findMultiColors(schema, byteBuffer = captured)?.let {

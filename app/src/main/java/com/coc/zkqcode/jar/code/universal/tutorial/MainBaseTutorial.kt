@@ -30,7 +30,7 @@ suspend fun mainBaseTutorial(): Boolean {
         MyColors.MainBackToCamp
     )
 
-    val screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult ?: logAndRestart("in isInHomePage, screen capture failed.")
+    val screenBuffer = ScreenCaptureManager.captureScreenOrRestart<ScreenCaptureManager.CaptureResult>(asBitmap = false) ?: logAndRestart("in isInHomePage, screen capture failed.")
 
     // 1. Process standard priority schemas (Find -> Tap)
     prioritySchemas.forEach { schema ->

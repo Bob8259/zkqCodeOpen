@@ -94,7 +94,7 @@ suspend fun mainBaseAttack(battleNumber: Int = 1, battleTimes: Int? = null): Boo
             // Decide whether to capture one shared screenshot for speed-up and OCR
             val needScreenshot = (speedUpEnabled && !speedUpClicked) || (ocrExitEnabled && !hasMainWorldTask)
             val sharedBitmap = if (needScreenshot) {
-                ScreenCaptureManager.capture(asBitmap = true) as? Bitmap
+                ScreenCaptureManager.captureScreenOrRestart<Bitmap>(asBitmap = true)
             } else null
 
             // Battle speed-up: detect and click the 2x speed button (persistent, so click only once)

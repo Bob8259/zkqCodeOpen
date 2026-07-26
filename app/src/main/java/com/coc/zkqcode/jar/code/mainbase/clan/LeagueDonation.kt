@@ -194,7 +194,7 @@ private suspend fun donateToLeagueMember() {
         if (remainingDonations.isEmpty()) return@repeat
 
         // Capture a single screenshot for all troop searches — same as research module
-        val screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult
+        val screenBuffer = ScreenCaptureManager.captureScreenOrRestart<ScreenCaptureManager.CaptureResult>(asBitmap = false)
             ?: run {
                 showDebugInfo("联赛捐兵: 截图失败")
                 return@repeat

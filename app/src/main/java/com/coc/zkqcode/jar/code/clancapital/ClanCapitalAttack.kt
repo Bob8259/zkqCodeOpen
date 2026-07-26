@@ -1,4 +1,4 @@
-﻿package com.coc.zkqcode.jar.code.clancapital
+package com.coc.zkqcode.jar.code.clancapital
 
 import android.graphics.Bitmap
 import androidx.core.graphics.get
@@ -80,7 +80,7 @@ suspend fun findAttackTarget(): Boolean {
     }
     TouchActions.swipe(300, 500, 300, 1500, delayAfter = 400)
     // Capture a fresh screenshot to analyse which districts are available to attack.
-    val bitmap = ScreenCaptureManager.capture(asBitmap = true) as? Bitmap ?: run {
+    val bitmap = ScreenCaptureManager.captureScreenOrRestart<Bitmap>(asBitmap = true) ?: run {
         accountMessage("截图失败，无法分析都城区域")
         return false
     }

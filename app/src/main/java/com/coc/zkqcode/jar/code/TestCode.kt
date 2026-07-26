@@ -25,7 +25,7 @@ suspend fun takeScreenShotForUpgradeCost() {
         val height = endY - startY
 
         if (width > 0 && height > 0) {
-            val screenBitmap = ScreenCaptureManager.capture(asBitmap = true) as? Bitmap
+            val screenBitmap = ScreenCaptureManager.captureScreenOrRestart<Bitmap>(asBitmap = true)
             if (screenBitmap != null) {
                 if (startX + width <= screenBitmap.width && startY + height <= screenBitmap.height) {
                     val croppedBitmap = Bitmap.createBitmap(screenBitmap, startX, startY, width, height)

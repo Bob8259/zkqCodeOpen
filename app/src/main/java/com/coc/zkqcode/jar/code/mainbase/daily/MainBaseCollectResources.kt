@@ -1,4 +1,4 @@
-﻿package com.coc.zkqcode.jar.code.mainbase.daily
+package com.coc.zkqcode.jar.code.mainbase.daily
 
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.jar.code.universal.accountMessage
@@ -26,14 +26,14 @@ private suspend fun goldMineAndElixirCollector() {
             MyColors.MainBaseCollectGold1, MyColors.MainBaseCollectGold2, MyColors.MainBaseCollectElixir1, MyColors.MainBaseCollectElixir2,
         )
         // Reuse one captured frame for this pass and refresh it only after a successful collection tap.
-        var capturedScreen = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult
+        var capturedScreen = ScreenCaptureManager.captureScreenOrRestart<ScreenCaptureManager.CaptureResult>(asBitmap = false)
 
         for (schema in resourceSchemas) {
             val resource = findMultiColors(schema = schema, byteBuffer = capturedScreen)
             if (resource != null) {
                 // Use existing TouchActions implementation to interact with the resource coordinates
                 TouchActions.tap(resource.x, resource.y, delayTime = 50)
-                capturedScreen = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult
+                capturedScreen = ScreenCaptureManager.captureScreenOrRestart<ScreenCaptureManager.CaptureResult>(asBitmap = false)
             }
         }
     }

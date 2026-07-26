@@ -17,7 +17,6 @@ import com.coc.zkqcode.jar.ui.schema.Schema
 import kotlinx.coroutines.delay
 import kotlin.random.Random
 import kotlin.time.Duration.Companion.milliseconds
-import androidx.core.graphics.createBitmap
 
 private const val ANR_DIALOG_LEFT = 160
 private const val ANR_DIALOG_TOP = 120
@@ -52,13 +51,10 @@ suspend fun checkReconnections(): Boolean {
             accountMessage("检测到重连，白色像素个数$whiteCount")
 
             // Use ML Kit to detect rating/review dialogue text on the full screen.
-            // Custom preprocess: pixels with R,G,B all < 150 become black; all others become white.
-            // Then OCR with no extra preprocess/binarization inside TextRecognizer.
             val ratingOcrLeft = 0
             val ratingOcrTop = 0
-            val ratingBitmap = ScreenCaptureManager.capture(asBitmap = true) as? Bitmap
+            val ratingBitmap = ScreenCaptureManager.captureScreenOrRestart<Bitmap>(asBitmap = true)
                 ?: logAndRestart("failed to take screenshot for rating OCR")
-            val processedRatingBitmap = binarizeDarkPixelsToBlack(ratingBitmap)
             val recognizedTexts = TextRecognizer.recognize(
                 startX = ratingOcrLeft,
                 startY = ratingOcrTop,
@@ -66,7 +62,7 @@ suspend fun checkReconnections(): Boolean {
                 endY = 720,
                 useChinese = true,
                 applyPreprocess = false,
-                screenBuffer = processedRatingBitmap
+                screenBuffer = ratingBitmap
             )
             val recognizedTextString = recognizedTexts.joinToString(" ") { it.text }
             val isRatingDialog = recognizedTextString.contains("评分") || recognizedTextString.contains("反馈意见")
@@ -118,7 +114,7 @@ suspend fun checkReconnections(): Boolean {
 }
 
 private suspend fun captureOrRestart(): ScreenCaptureManager.CaptureResult =
-    ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult ?: logAndRestart("failed to take screenshot at reconnection check")
+    ScreenCaptureManager.captureScreenOrRestart<ScreenCaptureManager.CaptureResult>(asBitmap = false) ?: logAndRestart("failed to take screenshot at reconnection check")
 
 /**
  * Detects an ANR ("Application Not Responding") dialog on screen using OCR only.
@@ -164,36 +160,6 @@ private suspend fun checkAnrDialog() {
     }
 
     accountMessage("检测到游戏ANR，但未识别到等待按钮，识别文本: $recognizedTextString")
-}
-
-/**
- * Binarize for rating OCR: if R, G, and B are all below 150, set black;
- * otherwise set white. No grayscale step.
- */
-private fun binarizeDarkPixelsToBlack(src: Bitmap): Bitmap {
-    val width = src.width
-    val height = src.height
-    val pixels = IntArray(width * height)
-    src.getPixels(pixels, 0, width, 0, 0, width, height)
-
-    val black = -0x1000000 // 0xFF000000
-    val white = -0x1       // 0xFFFFFFFF
-
-    for (i in pixels.indices) {
-        val color = pixels[i]
-        val r = (color shr 16) and 0xFF
-        val g = (color shr 8) and 0xFF
-        val b = color and 0xFF
-        pixels[i] = if (r < 150 && g < 150 && b < 150) {
-            black
-        } else {
-            white
-        }
-    }
-
-    val out = createBitmap(width, height)
-    out.setPixels(pixels, 0, width, 0, 0, width, height)
-    return out
 }
 
 /**

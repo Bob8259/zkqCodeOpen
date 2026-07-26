@@ -24,7 +24,7 @@ suspend fun recognizeUpgradeResources(currentBase: BaseType): Int {
     val height = endY - startY
 
     // Capture the screen first so the number can be recognized from the cropped bitmap.
-    val screenBuffer = ScreenCaptureManager.capture(asBitmap = true) as? Bitmap ?: return 0
+    val screenBuffer = ScreenCaptureManager.captureScreenOrRestart<Bitmap>(asBitmap = true) ?: return 0
 
     // Return 0 when the crop area is invalid or outside the current screen bounds.
     if (startX < 0 || startY < 0 || endX > screenBuffer.width || endY > screenBuffer.height) {

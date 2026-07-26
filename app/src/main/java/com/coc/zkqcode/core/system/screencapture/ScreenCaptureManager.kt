@@ -481,6 +481,14 @@ object ScreenCaptureManager {
     }
 
     /**
+     * Captures the screen as the requested type and restarts the app if capture fails.
+     */
+    suspend inline fun <reified T> captureScreenOrRestart(
+        asBitmap: Boolean = true,
+        errorMessage: String = "screen capture failed"
+    ): T = capture(asBitmap) as? T ?: LogHelper.logAndRestart(errorMessage)
+
+    /**
      * Improved coroutine screenshot method.
      * Tries MediaProjection first; falls back to shell screencap -p on failure.
      *

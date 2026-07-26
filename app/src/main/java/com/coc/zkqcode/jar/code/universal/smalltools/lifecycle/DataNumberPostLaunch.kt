@@ -22,7 +22,7 @@ suspend fun launchGameAndHandleDataNumberLogin(gameVersion: GameVersion) {
 suspend fun tapDataNumberEntryButtons() {
     val startTime = System.currentTimeMillis()
     while (System.currentTimeMillis() - startTime < DATA_NUMBER_SEARCH_TIMEOUT_MS) {
-        val screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult
+        val screenBuffer = ScreenCaptureManager.captureScreenOrRestart<ScreenCaptureManager.CaptureResult>(asBitmap = false)
         if (screenBuffer == null) {
             delay(DATA_NUMBER_SEARCH_INTERVAL_MS)
             continue

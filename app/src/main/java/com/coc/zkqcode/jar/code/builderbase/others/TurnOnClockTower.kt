@@ -1,4 +1,4 @@
-﻿package com.coc.zkqcode.jar.code.builderbase.others
+package com.coc.zkqcode.jar.code.builderbase.others
 
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
@@ -43,7 +43,7 @@ suspend fun turnOnClockTower(): Boolean {
         for (detection in scan) {
             val box = detection.boundingBox
             TouchActions.tap(box.centerX().toInt(), box.centerY().toInt())
-            val screenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult ?: logAndRestart("in turnOnClockTower, screen capture failed.")
+            val screenBuffer = ScreenCaptureManager.captureScreenOrRestart<ScreenCaptureManager.CaptureResult>(asBitmap = false) ?: logAndRestart("in turnOnClockTower, screen capture failed.")
             val freeSpeedUp = findMultiColors(schema = MyColors.ClockTower, byteBuffer = screenBuffer)
             if (freeSpeedUp != null) {
                 // Search for the small gem icon above the speed-up button.
@@ -73,7 +73,7 @@ suspend fun turnOnClockTower(): Boolean {
                 TouchActions.tap(freeSpeedUp.x, freeSpeedUp.y, delayTime = 800)
 
                 // Double-check the dialogue after tapping to avoid consuming gems when free boost is unavailable.
-                val dialogScreenBuffer = ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult ?: logAndRestart("in turnOnClockTower, second screen capture failed.")
+                val dialogScreenBuffer = ScreenCaptureManager.captureScreenOrRestart<ScreenCaptureManager.CaptureResult>(asBitmap = false) ?: logAndRestart("in turnOnClockTower, second screen capture failed.")
                 val dialogWhitePixelCount = countPixelsInArea(
                     result = dialogScreenBuffer, x1 = 515, y1 = 445, x2 = 759, y2 = 510, targetColor = 0xFFFFFF
                 )

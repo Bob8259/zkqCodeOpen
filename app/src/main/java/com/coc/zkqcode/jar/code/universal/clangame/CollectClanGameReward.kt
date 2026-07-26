@@ -1,4 +1,4 @@
-﻿package com.coc.zkqcode.jar.code.universal.clangame
+package com.coc.zkqcode.jar.code.universal.clangame
 
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.jar.code.colorschema.MyColors
@@ -105,7 +105,7 @@ suspend fun collectClanGameReward(): Boolean {
 // The first visually unclaimed card marks the end of the eligible reward range.
 private suspend fun detectLastEligibleCard(): Int {
     val screenBuffer =
-        ScreenCaptureManager.capture(asBitmap = false) as? ScreenCaptureManager.CaptureResult ?: run {
+        ScreenCaptureManager.captureScreenOrRestart<ScreenCaptureManager.CaptureResult>(asBitmap = false) ?: run {
             accountMessage("截图失败，无法检测达标情况")
             return -1
         }

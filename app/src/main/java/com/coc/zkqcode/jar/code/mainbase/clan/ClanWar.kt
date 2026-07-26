@@ -156,7 +156,7 @@ suspend fun detectMyClanWarPosition(): Int {
                 val endY = position.y + 50
 
                 // Capture screen and crop to the number region, then use YOLO to detect digits
-                val screenBuffer = ScreenCaptureManager.capture(asBitmap = true) as? Bitmap
+                val screenBuffer = ScreenCaptureManager.captureScreenOrRestart<Bitmap>(asBitmap = true)
                 if (screenBuffer != null) {
                     val width = endX - startX
                     val height = endY - startY

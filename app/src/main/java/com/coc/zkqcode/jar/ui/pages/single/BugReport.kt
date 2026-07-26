@@ -120,7 +120,7 @@ fun BugReport(onClose: () -> Unit) {
                                     if (nameToSubmit.endsWith(".png")) nameToSubmit else "$nameToSubmit.png"
 
                                 val screenshotBitmap =
-                                    ScreenCaptureManager.capture(asBitmap = true) as? Bitmap
+                                    ScreenCaptureManager.captureScreenOrRestart<Bitmap>(asBitmap = true)
                                 if (screenshotBitmap == null) {
                                     statusMessage = Strings.screenshotFailed
                                     return@launch

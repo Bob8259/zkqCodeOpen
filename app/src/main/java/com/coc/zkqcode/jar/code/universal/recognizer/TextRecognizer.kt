@@ -37,7 +37,7 @@ object TextRecognizer {
         invertBinarization: Boolean = true,
         screenBuffer: Bitmap? = null
     ): List<RecognizedText> {
-        val sourceBitmap = screenBuffer ?: ScreenCaptureManager.capture(asBitmap = true) as? Bitmap
+        val sourceBitmap = screenBuffer ?: ScreenCaptureManager.captureScreenOrRestart<Bitmap>(asBitmap = true)
         ?: logAndRestart("in TextRecognizer, screen capture failed.")
 
         val width = endX - startX
