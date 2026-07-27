@@ -301,7 +301,14 @@ object MainBaseAttackColors : IMainBaseAttackColors {
 
     // CN auto-battle button on the deploy/preparation screen
     override val AutoBattleBtn = ColorSchema.parse(
-        832, 511, 1032, 563, "81F8DC", "40|0|E6E6E6,80|0|81F8DC,120|0|81F8DC,160|0|81F8DC,0|26|1FBC6E,40|26|1FBD6F,80|26|1FBD6F,120|26|1FBD6F,160|26|1FBD6F", 0, 0.9, "自动战斗按钮"
+               170,
+        506,
+        824,
+        565,
+        "FFFFFF",
+        "-2|5|FFFFFF,7|-6|F2F2F2,19|1|5EEBC3,23|11|21C071,12|14|1FBC6E,-18|7|52E2B5,-8|-5|6FF2D1,9|-6|F2F2F2,-3|5|FFFFFF",
+        0,
+        0.9, "自动战斗按钮"
     )
 
     // CN auto-battle button color variant 2 on the deploy/preparation screen
