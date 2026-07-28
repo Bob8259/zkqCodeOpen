@@ -38,6 +38,7 @@ import com.coc.zkqcode.jar.code.universal.smalltools.input.TouchActions
 import com.coc.zkqcode.jar.code.universal.smalltools.lifecycle.tapDataNumberEntryButtons
 import com.coc.zkqcode.jar.code.universal.smalltools.scheduling.checkAndCoolDown
 import com.coc.zkqcode.jar.code.universal.smalltools.scheduling.runRandomSchedulingScript
+import com.coc.zkqcode.jar.code.universal.smalltools.scheduling.runUpgradeTimeSchedulingScript
 import com.coc.zkqcode.jar.ui.schema.Schema
 import com.coc.zkqcode.statehelper.AppMode
 import com.coc.zkqcode.statehelper.AppStateManager
@@ -140,6 +141,11 @@ private suspend fun checkHotUpdateAndScheduling(): Int? {
         deferred.await()
     }
     val isRandomScheduling = getConfigOrStop(Schema.GLOBAL_SETTINGS.RANDOM_SCHEDULING.key) == "1"
+    val isUpgradeTimeScheduling = getConfigOrStop(Schema.GLOBAL_SETTINGS.UPGRADE_TIME_SCHEDULING.key) == "1"
+    if (isUpgradeTimeScheduling) {
+        runUpgradeTimeSchedulingScript()
+        return null
+    }
     if (isRandomScheduling) {
         runRandomSchedulingScript()
         return null

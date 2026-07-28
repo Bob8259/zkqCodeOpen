@@ -73,6 +73,14 @@ import kotlinx.coroutines.withContext
 
 fun LazyListScope.specialSettings() {
     item { SettingSection { BatchCreateAccount() } }
+    item {
+        SettingSection {
+            SettingSwitchIcon(
+                key = GLOBAL_SETTINGS.UPGRADE_TIME_SCHEDULING.key,
+                explain = Strings.upgradeTimeSchedulingExplain
+            )
+        }
+    }
     item { SettingSection { RandomScheduling() } }
     item {
         SettingSection {
@@ -527,7 +535,6 @@ fun LazyListScope.specialSettings() {
                 val url = getConfig(GLOBAL_SETTINGS.WEBDAV_URL.key); val username = getConfig(GLOBAL_SETTINGS.WEBDAV_USERNAME.key); val password = getConfig(GLOBAL_SETTINGS.WEBDAV_PASSWORD.key)
                 val localSaveDir = File(localSaveDirPath)
                 val stageRoot = File(context.filesDir, "webdav_stage/upload")
-                val sourceStageRoot = File(stageRoot, "source")
                 val archiveStageRoot = File(stageRoot, "archive")
                 val targets = getSelectedTargets()
                 folderSelections.value = emptyMap()
@@ -556,14 +563,13 @@ fun LazyListScope.specialSettings() {
                             val sourceDir = File(localSaveDir, n.toString())
                             if (!sourceDir.isDirectory) { fail++; continue }
                             ShowMessage("上传 $device / $ss...", isChecking = false)
-                            val sourceStageDir = File(sourceStageRoot, ss)
                             val zipFile = File(archiveStageRoot, "$ss.zip")
                             val archive = withContext(Dispatchers.IO) {
-                                if (sourceStageDir.exists()) sourceStageDir.deleteRecursively()
-                                if (zipFile.exists()) zipFile.delete()
-                                sourceDir.copyRecursively(sourceStageDir, overwrite = true)
                                 archiveStageRoot.mkdirs()
-                                zipDirectory(sourceStageDir, zipFile)
+                                if (zipFile.exists()) zipFile.delete()
+                                // Zip directly from the save directory on /sdcard/.
+                                // FUSE transparently handles access even though files are root-owned.
+                                zipDirectory(sourceDir, zipFile)
                                 zipFile.takeIf { it.isFile }
                             }
                             if (archive == null) { fail++; continue }
@@ -571,7 +577,6 @@ fun LazyListScope.specialSettings() {
                             if (e == null) suc++ else fail++
                             withContext(Dispatchers.IO) {
                                 if (zipFile.exists()) zipFile.delete()
-                                if (sourceStageDir.exists()) sourceStageDir.deleteRecursively()
                             }
                         }
                     }
@@ -634,7 +639,13 @@ fun LazyListScope.specialSettings() {
                                     extractedRemoteDir.isDirectory -> extractedRemoteDir
                                     else -> extractedStageDir.listFiles()?.firstOrNull { it.isDirectory }
                                 }
-                                sourceDir?.let { copyDirectoryToTarget(it, File(localSaveDir, ldn)) } == true
+                                if (sourceDir != null) {
+                                    val target = File(localSaveDir, ldn)
+                                    ShellHelper.runBlockingNoOutput("rm -rf \"${target.absolutePath}\"")
+                                    ShellHelper.runBlockingNoOutput("mkdir -p \"${target.absolutePath}\"")
+                                    ShellHelper.runBlockingNoOutput("cp -r \"${sourceDir.absolutePath}\"/* \"${target.absolutePath}/\"")
+                                    true
+                                } else false
                             }
                             if (copied) suc++ else fail++
                             withContext(Dispatchers.IO) {

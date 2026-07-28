@@ -67,6 +67,9 @@ object GlobalSettings {
     // ── Random Scheduling (随机上号) ──────────────────────────────────────────
     val RANDOM_SCHEDULING = SettingDef("random_scheduling", "随机上号", "Random Scheduling", 0, "GLOBAL_SETTINGS")
 
+    // ── Upgrade-time Scheduling (升级时间上号) ──────────────────────────────────
+    val UPGRADE_TIME_SCHEDULING = SettingDef("upgrade_time_scheduling", "升级时间上号", "Upgrade-time Scheduling", 0, "GLOBAL_SETTINGS")
+
     // ── Cloud Expiry Notification (云机到期通知) ────────────────────────────────
     val CLOUD_EXPIRE_NOTIFY = SettingDef("cloud_expire_notify", "云机到期通知", "Cloud Expiry Notify", 0, "GLOBAL_SETTINGS")
     val CLOUD_EXPIRE_DATE = SettingDef("cloud_expire_date", "到期日期", "Expiry Date", "", "GLOBAL_SETTINGS")
@@ -173,6 +176,7 @@ object GlobalSettings {
         TEMP_PAUSE_THRESHOLD,
         TEMP_RESUME_THRESHOLD,
         RANDOM_SCHEDULING,
+        UPGRADE_TIME_SCHEDULING,
         RS_BATTLE_RATIO_DAWN, RS_BATTLE_RATIO_MORNING, RS_BATTLE_RATIO_AFTERNOON, RS_BATTLE_RATIO_NIGHT,
         RS_STOP_PROB_DAWN, RS_STOP_PROB_MORNING, RS_STOP_PROB_AFTERNOON, RS_STOP_PROB_NIGHT,
         RS_CONTINUE_MIN_DAWN, RS_CONTINUE_MIN_MORNING, RS_CONTINUE_MIN_AFTERNOON, RS_CONTINUE_MIN_NIGHT,

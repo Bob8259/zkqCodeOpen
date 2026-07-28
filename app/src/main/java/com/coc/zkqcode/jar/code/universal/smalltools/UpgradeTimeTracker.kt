@@ -20,7 +20,7 @@ import com.google.gson.JsonObject
 import com.google.gson.reflect.TypeToken
 
 // ── Persistent schedule storage ─────────────────────────────────────────
-private data class ScheduledUpgrade(
+data class ScheduledUpgrade(
     val account: Int,
     val dataId: Int,
     val lvl: Int,
@@ -39,7 +39,7 @@ private suspend fun saveSchedule(items: List<ScheduledUpgrade>) {
 }
 
 /** Load all tracked upgrades from memory.json. */
-private suspend fun loadSchedule(): List<ScheduledUpgrade> {
+internal suspend fun loadSchedule(): List<ScheduledUpgrade> {
     val raw = readMemory(SCHEDULE_KEY)
     if (raw.isBlank()) return emptyList()
     return try {
@@ -50,7 +50,9 @@ private suspend fun loadSchedule(): List<ScheduledUpgrade> {
 // ── Called on game exit: export JSON & save completion timestamps ───────
 
 suspend fun checkUpgradeTimers() {
-    if (GlobalVars.configStates[Schema.GLOBAL_SETTINGS.SERVERCHAN_UPGRADE_NOTIFY.key]?.value != "1") return
+    val isNotifyEnabled = GlobalVars.configStates[Schema.GLOBAL_SETTINGS.SERVERCHAN_UPGRADE_NOTIFY.key]?.value == "1"
+    val isSchedulingEnabled = GlobalVars.configStates[Schema.GLOBAL_SETTINGS.UPGRADE_TIME_SCHEDULING.key]?.value == "1"
+    if (!isNotifyEnabled && !isSchedulingEnabled) return
 
     val clipboardText = copyGameJson() ?: return
     val jsonObject = try { Gson().fromJson(clipboardText.trim(), JsonObject::class.java) } catch (_: Exception) { return } ?: return
@@ -107,7 +109,9 @@ suspend fun checkUpgradeTimers() {
         }
     }
 
-    PushRouter.send(PushMessage(title = Strings.serverchanUpgradingTitle, desp = lines.joinToString("\n")))
+    if (isNotifyEnabled) {
+        PushRouter.send(PushMessage(title = Strings.serverchanUpgradingTitle, desp = lines.joinToString("\n")))
+    }
     writeMemory(sigKey, fingerprint)
 
     // Save completion timestamps for background checking
