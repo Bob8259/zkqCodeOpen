@@ -319,7 +319,9 @@ fun LazyListScope.specialSettings() {
             val folderList = remember { mutableStateOf(listOf<String>()) }
             val expandedFolders = remember { mutableStateOf(setOf<String>()) }
             val localSaveDirPath = "$sdPath/zkqFiles/zkqGlobalGameSave"
-            val localHasSaves = remember { mutableStateOf(File(localSaveDirPath).isDirectory() && File(localSaveDirPath).listFiles()?.any { it.isDirectory } == true) }
+            val localHasSaves = remember { mutableStateOf(
+                ShellHelper.runBlockingOutput("ls -d \"$localSaveDirPath\"/*/ 2>/dev/null").any { it.trim().isNotEmpty() }
+            ) }
             val folderArchiveMap = remember { mutableStateOf(mapOf<String, List<String>>()) }
             val folderRenameDrafts = remember { mutableStateOf(mapOf<String, String>()) }
             val folderEditingName = remember { mutableStateOf(setOf<String>()) }
@@ -351,52 +353,48 @@ fun LazyListScope.specialSettings() {
             }
 
             fun listLocalArchiveNumbers(localSaveDir: File): List<Int> {
-                return localSaveDir.listFiles()
-                    ?.filter { it.isDirectory }
-                    ?.mapNotNull { it.name.trim().toIntOrNull() }
-                    ?.sorted()
-                    .orEmpty()
+                val out = ShellHelper.runBlockingOutput("ls -d \"${localSaveDir.absolutePath}\"/*/ 2>/dev/null")
+                return out.mapNotNull { line ->
+                    line.trimEnd('/').substringAfterLast("/").toIntOrNull()
+                }.sorted()
             }
 
-            fun zipDirectory(sourceDir: File, targetZip: File) {
-                targetZip.parentFile?.mkdirs()
-                ZipOutputStream(FileOutputStream(targetZip)).use { zip ->
-                    sourceDir.walkTopDown().forEach { file ->
-                        val entryName = sourceDir.parentFile?.toPath()?.relativize(file.toPath())?.toString()?.replace('\\', '/') ?: return@forEach
-                        if (file.isDirectory) {
-                            val dirName = if (entryName.endsWith('/')) entryName else "$entryName/"
-                            zip.putNextEntry(ZipEntry(dirName))
-                            zip.closeEntry()
-                        } else {
-                            zip.putNextEntry(ZipEntry(entryName))
-                            file.inputStream().use { input -> input.copyTo(zip) }
-                            zip.closeEntry()
-                        }
-                    }
-                }
-            }
-
-            fun unzipToDirectory(zipFile: File, destinationDir: File): Boolean {
+            fun zipDirectory(sourceDir: File, targetZip: File): Boolean {
                 return try {
-                    destinationDir.mkdirs()
-                    ZipInputStream(zipFile.inputStream().buffered()).use { zip ->
-                        var entry = zip.nextEntry
-                        while (entry != null) {
-                            val outFile = File(destinationDir, entry.name)
-                            if (entry.isDirectory) {
-                                outFile.mkdirs()
+                    targetZip.parentFile?.mkdirs()
+                    val tempRoot = File(targetZip.parentFile, "zip_copy")
+                    val tempDir = File(tempRoot, sourceDir.name)
+                    // Root shell: copy game files to staging + make readable by our process
+                    val copied = ShellHelper.runBlocking(
+                        "rm -rf \"${tempRoot.absolutePath}\" && " +
+                        "mkdir -p \"${tempDir.parentFile.absolutePath}\" && " +
+                        "cp -rf \"${sourceDir.absolutePath}\" \"${tempDir.parentFile.absolutePath}\" && " +
+                        "chmod -R 755 \"${tempRoot.absolutePath}\""
+                    ).isSuccess
+                    if (!copied) return false
+                    // Java zip the staging copy (now readable by our process)
+                    ZipOutputStream(FileOutputStream(targetZip)).use { zip ->
+                        tempDir.walkTopDown().forEach { file ->
+                            val entryName = tempRoot.toPath().relativize(file.toPath())?.toString()?.replace('\\', '/') ?: return@forEach
+                            if (file.isDirectory) {
+                                val dirName = if (entryName.endsWith('/')) entryName else "$entryName/"
+                                zip.putNextEntry(ZipEntry(dirName)); zip.closeEntry()
                             } else {
-                                outFile.parentFile?.mkdirs()
-                                outFile.outputStream().use { out -> zip.copyTo(out) }
+                                zip.putNextEntry(ZipEntry(entryName))
+                                file.inputStream().use { input -> input.copyTo(zip) }
+                                zip.closeEntry()
                             }
-                            zip.closeEntry()
-                            entry = zip.nextEntry
                         }
                     }
                     true
-                } catch (_: Exception) {
-                    false
-                }
+                } catch (_: Exception) { false }
+                finally { ShellHelper.runBlockingNoOutput("rm -rf \"${File(targetZip.parentFile, "zip_copy").absolutePath}\"") }
+            }
+
+            fun unzipToDirectory(zipFile: File, destinationDir: File): Boolean {
+                return ShellHelper.runBlocking(
+                    "unzip -o \"${zipFile.absolutePath}\" -d \"${destinationDir.absolutePath}\""
+                ).isSuccess
             }
 
             fun extractLegacyTarGzToPrivateStage(archiveFile: File, destinationDir: File): Boolean {
@@ -406,14 +404,9 @@ fun LazyListScope.specialSettings() {
             }
 
             fun copyDirectoryToTarget(sourceDir: File, targetDir: File): Boolean {
-                return try {
-                    if (targetDir.exists()) targetDir.deleteRecursively()
-                    targetDir.parentFile?.mkdirs()
-                    sourceDir.copyRecursively(targetDir, overwrite = true)
-                    true
-                } catch (_: Exception) {
-                    false
-                }
+                return ShellHelper.runBlocking(
+                    "rm -rf \"${targetDir.absolutePath}\" && mkdir -p \"${targetDir.parentFile.absolutePath}\" && cp -rf \"${sourceDir.absolutePath}\" \"${targetDir.absolutePath}\""
+                ).isSuccess
             }
 
             fun currentSelection(folder: String): FolderSelection {
@@ -577,26 +570,25 @@ fun LazyListScope.specialSettings() {
                         for (n in upl) {
                             val sn = if (inc) { val s = seq; seq++; s } else n; val ss = sn.toString()
                             val sourceDir = File(localSaveDir, n.toString())
-                            if (!sourceDir.isDirectory) { fail++; continue }
+                            val srcExists = ShellHelper.runBlocking("test -d \"${sourceDir.absolutePath}\"").isSuccess
+                            if (!srcExists) { fail++; continue }
                             ShowMessage("上传 $device / $ss...", isChecking = false)
                             val zipFile = File(archiveStageRoot, "$ss.zip")
                             val archive = withContext(Dispatchers.IO) {
-                                archiveStageRoot.mkdirs()
-                                if (zipFile.exists()) zipFile.delete()
-                                // Zip directly from the save directory on /sdcard/.
-                                // FUSE transparently handles access even though files are root-owned.
-                                zipDirectory(sourceDir, zipFile)
-                                zipFile.takeIf { it.isFile }
+                                ShellHelper.runBlockingNoOutput("mkdir -p \"${archiveStageRoot.absolutePath}\"")
+                                ShellHelper.runBlockingNoOutput("rm -f \"${zipFile.absolutePath}\"")
+                                val zipped = zipDirectory(sourceDir, zipFile)
+                                if (zipped && ShellHelper.runBlocking("test -f \"${zipFile.absolutePath}\"").isSuccess) zipFile else null
                             }
                             if (archive == null) { fail++; continue }
                             val e = withContext(Dispatchers.IO) { com.coc.zkqcode.jar.code.universal.network.WebDAVHelper.upload(url, username, password, "zkqFiles/$device/zkqGlobalGameSave/$ss.zip", archive) }
                             if (e == null) suc++ else fail++
                             withContext(Dispatchers.IO) {
-                                if (zipFile.exists()) zipFile.delete()
+                                ShellHelper.runBlockingNoOutput("rm -f \"${zipFile.absolutePath}\"")
                             }
                         }
                     }
-                    withContext(Dispatchers.IO) { if (stageRoot.exists()) stageRoot.deleteRecursively() }
+                    withContext(Dispatchers.IO) { ShellHelper.runBlockingNoOutput("rm -rf \"${stageRoot.absolutePath}\"") }
                     ShowMessage(if (fail == 0) "一键上传完成！" else "一键上传完成 ($suc 成功, $fail 失败)", isChecking = false)
                     refreshFolderList(); isProcessing.value = false
                 }
@@ -629,9 +621,9 @@ fun LazyListScope.specialSettings() {
                             val extractedTargetDir = File(extractedStageDir, ldn)
                             val extractedRemoteDir = File(extractedStageDir, rn)
                             val extracted = withContext(Dispatchers.IO) {
-                                archiveStageRoot.mkdirs()
-                                if (extractedStageDir.exists()) extractedStageDir.deleteRecursively()
-                                if (archiveFile.exists()) archiveFile.delete()
+                                ShellHelper.runBlockingNoOutput("mkdir -p \"${archiveStageRoot.absolutePath}\"")
+                                ShellHelper.runBlockingNoOutput("rm -rf \"${extractedStageDir.absolutePath}\"")
+                                ShellHelper.runBlockingNoOutput("rm -f \"${archiveFile.absolutePath}\"")
                                 archiveFile.writeBytes(dr)
                                 if (itemId.endsWith(".zip")) {
                                     unzipToDirectory(archiveFile, extractedStageDir)
@@ -644,16 +636,19 @@ fun LazyListScope.specialSettings() {
                             if (!extracted) {
                                 fail++
                                 withContext(Dispatchers.IO) {
-                                    if (archiveFile.exists()) archiveFile.delete()
-                                    if (extractedStageDir.exists()) extractedStageDir.deleteRecursively()
+                                    ShellHelper.runBlockingNoOutput("rm -f \"${archiveFile.absolutePath}\"")
+                                    ShellHelper.runBlockingNoOutput("rm -rf \"${extractedStageDir.absolutePath}\"")
                                 }
                                 continue
                             }
                             val copied = withContext(Dispatchers.IO) {
                                 val sourceDir = when {
-                                    extractedTargetDir.isDirectory -> extractedTargetDir
-                                    extractedRemoteDir.isDirectory -> extractedRemoteDir
-                                    else -> extractedStageDir.listFiles()?.firstOrNull { it.isDirectory }
+                                    ShellHelper.runBlocking("test -d \"${extractedTargetDir.absolutePath}\"").isSuccess -> extractedTargetDir
+                                    ShellHelper.runBlocking("test -d \"${extractedRemoteDir.absolutePath}\"").isSuccess -> extractedRemoteDir
+                                    else -> {
+                                        val list = ShellHelper.runBlockingOutput("ls -d \"${extractedStageDir.absolutePath}\"/*/ 2>/dev/null")
+                                        if (list.isNotEmpty()) File(list.first().trimEnd('/')) else null
+                                    }
                                 }
                                 if (sourceDir != null) {
                                     val target = File(localSaveDir, ldn)
@@ -665,12 +660,12 @@ fun LazyListScope.specialSettings() {
                             }
                             if (copied) suc++ else fail++
                             withContext(Dispatchers.IO) {
-                                if (archiveFile.exists()) archiveFile.delete()
-                                if (extractedStageDir.exists()) extractedStageDir.deleteRecursively()
+                                ShellHelper.runBlockingNoOutput("rm -f \"${archiveFile.absolutePath}\"")
+                                ShellHelper.runBlockingNoOutput("rm -rf \"${extractedStageDir.absolutePath}\"")
                             }
                         }
                     }
-                    withContext(Dispatchers.IO) { if (stageRoot.exists()) stageRoot.deleteRecursively() }
+                    withContext(Dispatchers.IO) { ShellHelper.runBlockingNoOutput("rm -rf \"${stageRoot.absolutePath}\"") }
                     ShowMessage(if (fail == 0) "一键下载完成！" else "一键下载完成 ($suc 成功, $fail 失败)", isChecking = false)
                     refreshFolderList(); isProcessing.value = false
                 }
