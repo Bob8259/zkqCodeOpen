@@ -67,6 +67,10 @@ object GlobalSettings {
     // ── Random Scheduling (随机上号) ──────────────────────────────────────────
     val RANDOM_SCHEDULING = SettingDef("random_scheduling", "随机上号", "Random Scheduling", 0, "GLOBAL_SETTINGS")
 
+    // ── Scheduled Restart (定时重启) ───────────────────────────────────────────
+    val SCHEDULED_RESTART = SettingDef("scheduled_restart", "定时重启", "Scheduled Restart", 0, "GLOBAL_SETTINGS")
+    val RESTART_INTERVAL = SettingDef("restart_interval", "重启间隔(分钟)", "Restart Interval (min)", "60", "GLOBAL_SETTINGS")
+
     // ── Upgrade-time Scheduling (升级时间上号) ──────────────────────────────────
     val UPGRADE_TIME_SCHEDULING = SettingDef("upgrade_time_scheduling", "升级时间上号", "Upgrade-time Scheduling", 0, "GLOBAL_SETTINGS")
 
@@ -185,7 +189,8 @@ object GlobalSettings {
         RS_FULL_RES_DAWN, RS_FULL_RES_MORNING, RS_FULL_RES_AFTERNOON, RS_FULL_RES_NIGHT,
         RS_ACCOUNTS_DAWN, RS_ACCOUNTS_MORNING, RS_ACCOUNTS_AFTERNOON, RS_ACCOUNTS_NIGHT,
         CLOUD_EXPIRE_NOTIFY, CLOUD_EXPIRE_DATE, CLOUD_EXPIRE_RESET_DAYS, CLOUD_EXPIRE_ADVANCE_DAYS,
-        WEBDAV_URL, WEBDAV_USERNAME, WEBDAV_PASSWORD
+        WEBDAV_URL, WEBDAV_USERNAME, WEBDAV_PASSWORD,
+        SCHEDULED_RESTART, RESTART_INTERVAL
     )
 }
 

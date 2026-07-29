@@ -267,6 +267,15 @@ object Strings {
 
     // Explain Texts
     val disableRestartExplain get() = if (LanguageManager.isChinese) "勾选后，所有重启游戏的设定将失效，可能会导致卡界面。建议谨慎使用。" else "Disabling restart may cause stuck screens. Use with caution."
+    val scheduledRestartExplain get() = if (LanguageManager.isChinese)
+        "开启后，脚本运行指定分钟数后将自动重启设备。建议在云手机等远程设备上使用。"
+    else
+        "When enabled, the device will automatically reboot after the specified number of minutes. Recommended for cloud/remote devices."
+
+    val scheduledRebootMessage get() = if (LanguageManager.isChinese)
+        "定时重启时间已到，即将重启设备..."
+    else
+        "Scheduled reboot time reached, restarting device..."
     val batchCreateExplain get() = if (LanguageManager.isChinese) "启用批量创号后，辅助将优先检查所有游戏存档是否存在，若存档缺失则自动创建账号；若存档齐全，则按照指定序号依次运行对应账号。序号与游戏存档编号一致，且所有账号均采用配置1的设定。\n部分云手机在创号过程中可能出现异常，建议改用模拟器完成创号操作。启用批量创号时，掉线重连选项须设置为“立即重连”。" else "Batch creation checks for saves and creates missing ones. It runs accounts in order using Profile 1 settings.\nSome cloud phones may fail; emulators are recommended. Reconnect option must be set to 'Immediately'."
     val randomSchedulingExplain get() = if (LanguageManager.isChinese) "启用随机上号后，辅助将根据当前时间段，从对应组的账号中随机选取顺序依次运行。每个账号运行完毕后，根据设定的概率决定是否继续对战或直接下线，并按对战时间比例计算等待时间后再运行下一个账号。\n\n随机上号与批量创号不能同时启用。" else "Random scheduling runs accounts in random order per time group. After each run, it decides whether to continue or go offline based on probability and wait time.\n\nCannot be used with Batch Creation."
     val smartDecisionExplain get() = if (LanguageManager.isChinese) "开启后，辅助会自动检测大本营等级，并根据大本营等级跳过部分内容（例如升级装备，战宠等）从而提升运行效率。" else "Auto-detect TH level and skip irrelevant upgrades (equipment, pets, etc.) to improve efficiency."

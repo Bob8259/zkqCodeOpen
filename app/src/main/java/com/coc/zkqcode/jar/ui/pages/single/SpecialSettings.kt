@@ -123,6 +123,22 @@ fun LazyListScope.specialSettings() {
             }
         }
     }
+    // ── Scheduled Restart (定时重启) ─────────────────────────────────────────
+    item {
+        SettingSection {
+            val restartState = GlobalVars.configStates.getOrPut(GLOBAL_SETTINGS.SCHEDULED_RESTART.key) {
+                mutableStateOf("0")
+            }
+            val isRestartEnabled = restartState.value == "1"
+            SettingSwitchIcon(
+                key = GLOBAL_SETTINGS.SCHEDULED_RESTART.key,
+                explain = Strings.scheduledRestartExplain
+            )
+            if (isRestartEnabled) {
+                SettingInputRow(key = GLOBAL_SETTINGS.RESTART_INTERVAL.key)
+            }
+        }
+    }
     // ── Push Notification ─────────────────────────────────────────────────
     item {
         SettingSection {
