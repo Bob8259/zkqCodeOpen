@@ -27,4 +27,4 @@ Planning: For complex tasks, you are required to generate a development plan.
 
 Modification: If some files are changed during the chat, you should re-read them, and apply new changes based on the new file. Do not revert the changes.
 
-Build: You should try gradle debug build and fix all bugs after each task.
+Build: You should try gradle debug build and fix all bugs after every task.
