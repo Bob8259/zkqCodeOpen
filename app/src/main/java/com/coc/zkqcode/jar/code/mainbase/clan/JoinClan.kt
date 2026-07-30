@@ -25,7 +25,7 @@ suspend fun joinClan(): Boolean {
 
     // Skip if no clan tag is specified
     if (targetTAG.isBlank()) {
-        val notJoinClan = findMultiColors(schema = MyColors.NotJoinClanFlag)
+        val notJoinClan = findMultiColorsUntil(schemas = listOf(MyColors.NotJoinClanFlag, MyColors.NotJoinClanFlag2), duration = 0)
         if (notJoinClan != null) {
             TouchActions.tap(53, 42)//open profile page
             TouchActions.tap(754, 55)//join clan page

@@ -11,6 +11,7 @@ interface IMainBaseClanColors {
     val ApplyClanSetting: ColorSchema
     val SearchOptions: ColorSchema
     val NotJoinClanFlag: ColorSchema
+    val NotJoinClanFlag2: ColorSchema
     val ClanChatIcon: ColorSchema
     val DonationButton: ColorSchema
     val DonateSuperTroops: ColorSchema
@@ -70,7 +71,12 @@ object MainBaseClanColors : IMainBaseClanColors {
 
     // Flag indicating the player has not joined a clan
     override val NotJoinClanFlag = ColorSchema.parse(
-        40, 302, 63, 318, "BFD9F2", "5|0|C7DFF3,10|0|D9EFF5,14|0|0D40E3,19|0|0D4BE6,0|8|BFD9F2,5|8|C7DFF3,10|8|D9EFF5,14|8|0D40E3,19|8|0D4BE7", 0, 0.9
+        9, 270, 102, 382, "0D42E5", "-8|-2|CAE1F4,-12|-1|C4DDF3,-13|10|C3DCF3,6|8|F8FAFA,14|7|FBFCFC,8|-4|1956E4,3|-4|0D4CE7,-3|-3|0D3DE4,-12|10|C4DDF3", 0, 0.9, "未加入部落标志"
+    )
+
+    // Flag indicating the player has not joined a clan (variant 2)
+    override val NotJoinClanFlag2 = ColorSchema.parse(
+        9, 270, 102, 382, "C8DFF4", "0|-3|C8DFF4,3|-7|CDE3F4,14|-7|0D4CE3,17|0|F9FCFC,2|-19|1B08D6,0|-21|1B08DC,-2|-22|1A08DD,-2|-26|1609E4,-2|-30|130BEF", 0, 0.9, "未加入部落标志2"
     )
 
     // Clan chat icon for identifying chat window
@@ -123,9 +129,7 @@ object MainBaseClanColors : IMainBaseClanColors {
 
     // Green approve button on join request cards in clan chat
     override val ApproveJoinButton = ColorSchema.parse(
-        5, 72, 482, 652, "2EBD76",
-        "-1|-23|7DF3D8,-41|-21|78F0D3,-76|-23|7DF3D8,-76|2|30B66D,-211|2|1511DB,-203|-19|7571FF,-162|-23|807AFF,-130|-20|7573FF,-130|2|1511DB",
-        0, 0.9, "批准加入按钮"
+        5, 72, 482, 652, "2EBD76", "-1|-23|7DF3D8,-41|-21|78F0D3,-76|-23|7DF3D8,-76|2|30B66D,-211|2|1511DB,-203|-19|7571FF,-162|-23|807AFF,-130|-20|7573FF,-130|2|1511DB", 0, 0.9, "批准加入按钮"
     )
 
     override val ClanInviteLanguageButton = ColorSchema.parse(
@@ -168,28 +172,20 @@ object MainBaseClanColors : IMainBaseClanColors {
         17, 404, 83, 473, "B6B5B7", "13|0|FEFEFE,26|0|878787,39|0|FFFFFF,52|0|606464,0|35|565F66,13|35|8C8C8C,26|35|4F4F4F,39|35|9B9B9B,52|35|272727", 0, 0.9, "未加入部落标志"
     )
     override val ClanInviteRefreshButton = ColorSchema.parse(
-        566, 609, 749, 653, "7FF3D7",
-        "37|0|7FF3D7,74|0|7FF3D7,110|0|7FF3D7,147|0|7FF3D7,0|22|2EC57C,37|22|2EC57C,74|22|2EC57C,110|22|2EC57C,147|22|2EC57C",
-        0, 0.9, "部落拉人-刷新按钮"
+        566, 609, 749, 653, "7FF3D7", "37|0|7FF3D7,74|0|7FF3D7,110|0|7FF3D7,147|0|7FF3D7,0|22|2EC57C,37|22|2EC57C,74|22|2EC57C,110|22|2EC57C,147|22|2EC57C", 0, 0.9, "部落拉人-刷新按钮"
     )
     override val ClanInviteRefreshButtonAlt = ColorSchema.parse(
-        566, 609, 749, 653, "2EC57C",
-        "37|0|2EC57C,74|0|2EC57C,110|0|2EC57C,147|0|2EC57C,0|22|7FF3D7,37|22|7FF3D7,74|22|7FF3D7,110|22|7FF3D7,147|22|7FF3D7",
-        0, 0.9, "部落拉人-刷新按钮(备选)"
+        566, 609, 749, 653, "2EC57C", "37|0|2EC57C,74|0|2EC57C,110|0|2EC57C,147|0|2EC57C,0|22|7FF3D7,37|22|7FF3D7,74|22|7FF3D7,110|22|7FF3D7,147|22|7FF3D7", 0, 0.9, "部落拉人-刷新按钮(备选)"
     )
 
     // Kick clan member button on member profile
     override val ClanKickButton = ColorSchema.parse(
-        687, 632, 872, 699, "82F5DA",
-        "37|0|82F5DA,74|0|82F5DA,111|0|82F5DA,148|0|82F5DA,0|33|2FBD74,37|33|2FBD74,74|33|2FBD74,111|33|2FBD74,148|33|2FBD74",
-        0, 0.9, "踢出成员-踢出按钮"
+        687, 632, 872, 699, "82F5DA", "37|0|82F5DA,74|0|82F5DA,111|0|82F5DA,148|0|82F5DA,0|33|2FBD74,37|33|2FBD74,74|33|2FBD74,111|33|2FBD74,148|33|2FBD74", 0, 0.9, "踢出成员-踢出按钮"
     )
 
     // Confirm kick dialog button
     override val ClanKickConfirmButton = ColorSchema.parse(
-        674, 285, 916, 394, "84F8DF",
-        "49|0|84F8DE,97|0|84F8DE,145|0|84F8DE,194|0|84F8DE,0|55|1EBC6C,49|55|1FBB6C,97|55|1FBB6C,145|55|1FBB6C,194|55|1FBB6C",
-        0, 0.9, "踢出成员-确认按钮"
+        674, 285, 916, 394, "84F8DF", "49|0|84F8DE,97|0|84F8DE,145|0|84F8DE,194|0|84F8DE,0|55|1EBC6C,49|55|1FBB6C,97|55|1FBB6C,145|55|1FBB6C,194|55|1FBB6C", 0, 0.9, "踢出成员-确认按钮"
     )
 
     // Page indicator for clan member list

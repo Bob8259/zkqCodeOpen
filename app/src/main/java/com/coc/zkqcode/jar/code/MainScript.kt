@@ -1,40 +1,30 @@
 package com.coc.zkqcode.jar.code
 
 import com.coc.zkqcode.core.data.database.GlobalVars
-import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.core.util.basic.RunShell
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.basic.waitForPlay
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
-import com.coc.zkqcode.core.util.fileactions.LogHelper.showDebugInfo
 import com.coc.zkqcode.jar.code.auth.displayAds
 import com.coc.zkqcode.jar.code.auth.userAuth
 import com.coc.zkqcode.jar.code.builderbase.playBuilderBase
-import com.coc.zkqcode.jar.code.mainbase.daily.useHelpers
-import com.coc.zkqcode.jar.code.mainbase.herohall.withHeroHall
-import com.coc.zkqcode.jar.code.mainbase.others.upgradeEquipmentsAction
+import com.coc.zkqcode.jar.code.mainbase.clan.joinClan
 import com.coc.zkqcode.jar.code.mainbase.playMainBase
-import com.coc.zkqcode.jar.code.mainbase.research.findAllResearchItems
 import com.coc.zkqcode.jar.code.universal.GameVersion
 import com.coc.zkqcode.jar.code.universal.InGameVars
 import com.coc.zkqcode.jar.code.universal.accountMessage
-import com.coc.zkqcode.jar.code.universal.buildings.BaseType
-import com.coc.zkqcode.jar.code.universal.buildings.detectBuildingList
-import com.coc.zkqcode.jar.code.universal.buildings.upgrade.upgradeBuildings
-import com.coc.zkqcode.jar.code.universal.smalltools.checkScheduledUpgradeNotifications
-import com.coc.zkqcode.jar.code.universal.smalltools.checkUpgradeTimers
 import com.coc.zkqcode.jar.code.universal.cloud.checkCloudExpiry
-import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.create.batchCreateAccounts
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.preCheck
+import com.coc.zkqcode.jar.code.universal.smalltools.checkScheduledUpgradeNotifications
+import com.coc.zkqcode.jar.code.universal.smalltools.checkUpgradeTimers
 import com.coc.zkqcode.jar.code.universal.smalltools.data.StorageKeys
 import com.coc.zkqcode.jar.code.universal.smalltools.data.getConfigOrStop
 import com.coc.zkqcode.jar.code.universal.smalltools.data.readMemory
 import com.coc.zkqcode.jar.code.universal.smalltools.data.writeGameFiles
 import com.coc.zkqcode.jar.code.universal.smalltools.data.writeMemory
-import com.coc.zkqcode.jar.code.universal.smalltools.input.TouchActions
 import com.coc.zkqcode.jar.code.universal.smalltools.lifecycle.tapDataNumberEntryButtons
 import com.coc.zkqcode.jar.code.universal.smalltools.scheduling.checkAndCoolDown
 import com.coc.zkqcode.jar.code.universal.smalltools.scheduling.runRandomSchedulingScript
@@ -115,7 +105,7 @@ private fun finishDataNumberEntryOnlyRun() {
 private suspend fun runTestCode() {
     while (currentCoroutineContext().isActive) {
         ShowMessage("测试代码开始")
-        upgradeBuildings(BaseType.Builder)
+        joinClan()
         delay(2_000_000.milliseconds)
     }
 }
