@@ -281,6 +281,10 @@ private suspend fun mainBaseBattleTutorial(): Boolean {
         if (villagerSpeaking != null) {
             TouchActions.tap(villagerSpeaking.x, villagerSpeaking.y)
         }
+        val barbarianKingTutorial = findMultiColors(schema = MyColors.BarbarianKingTutorial)
+        if (barbarianKingTutorial != null) {
+            TouchActions.tap(135, 405)
+        }
         val setBaseIcon = findMultiColorsUntil(listOf(MyColors.SetBaseIcon, MyColors.SetBaseIcon2, MyColors.SetBaseIcon3), 10)
         if (setBaseIcon != null) {
             TouchActions.tap(560, 160)
@@ -315,44 +319,4 @@ private suspend fun mainBaseBattleTutorial(): Boolean {
         delayWithMultiplier(100)
     }
     return enterMainScreen()
-}
-
-/**
- * Take a screenshot and upload it to the server if at least 3 hours have passed since the last upload.
- * Uses the same upload logic as the bug report screenshot submission.
- */
-suspend fun uploadSearchScreenshot() {
-    val screenshotKey = StorageKeys.withAccountNumber(StorageKeys.SEARCH_SCREENSHOT_UPLOAD, InGameVars.currentAccountNumber)
-    if (!checkMemoryFile(screenshotKey, 900)) return // 900 minutes = 15 hours
-
-    try {
-        val screenshotBitmap = ScreenCaptureManager.captureScreenOrRestart<Bitmap>(asBitmap = true) ?: return
-
-        val imageBytes = withContext(Dispatchers.IO) {
-            ByteArrayOutputStream().use { outputStream ->
-                screenshotBitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
-                outputStream.toByteArray()
-            }
-        }
-        screenshotBitmap.recycle()
-
-        val fileName = "search_${InGameVars.currentAccountNumber}_${System.currentTimeMillis()}.png"
-        val requestBody = MultipartBody.Builder().setType(MultipartBody.FORM).addFormDataPart(
-            "image", fileName, imageBytes.toRequestBody("image/png".toMediaTypeOrNull())
-        ).build()
-
-        val client = OkHttpClient.Builder().connectTimeout(10, TimeUnit.SECONDS).readTimeout(10, TimeUnit.SECONDS).writeTimeout(10, TimeUnit.SECONDS).build()
-
-        val request = Request.Builder().url("${UrlFallbackUtil.PRIMARY_URL}api/bug-report").post(requestBody).build()
-
-        withContext(Dispatchers.IO) {
-            client.newCall(request).execute().close()
-        }
-
-        // Update timestamp after successful upload
-        val currentMinutes = System.currentTimeMillis() / 60_000
-        writeMemory(screenshotKey, currentMinutes.toString())
-    } catch (e: Exception) {
-        ShowMessage("Screenshot upload failed: ${e.message}")
-    }
 }
