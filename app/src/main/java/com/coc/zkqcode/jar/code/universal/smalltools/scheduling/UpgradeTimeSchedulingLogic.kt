@@ -75,7 +75,7 @@ suspend fun runUpgradeTimeSchedulingScript() {
                     }
                     val currentSchedule = loadSchedule()
                     ShowMessage(buildScheduleSummary(currentSchedule, enabledAccounts), isChecking = false)
-                    delay(minOf(1000L, endTime - System.currentTimeMillis()))
+                    delay(minOf(5000L, endTime - System.currentTimeMillis()))
                 }
             }
             InGameVars.currentAccountNumber = target.account
