@@ -50,7 +50,7 @@ suspend fun donateToClan(): Boolean {
             lastAdTime = System.currentTimeMillis()
         }
         // Capture a single frame buffer and reuse it for all colour checks in this iteration
-        val screenBuffer = ScreenCaptureManager.captureScreenOrRestart<ScreenCaptureManager.CaptureResult>(asBitmap = false) ?: logAndRestart("in donateToClan, screen capture failed.")
+        val screenBuffer = ScreenCaptureManager.captureScreenOrRestart<ScreenCaptureManager.CaptureResult>(asBitmap = false)
 
         val clanChat = findMultiColors(schema = MyColors.ClanChatIcon, byteBuffer = screenBuffer, increment = 1)
         if (clanChat != null) {
@@ -83,10 +83,9 @@ suspend fun donateToClan(): Boolean {
                     var found: android.graphics.Point? = null
                     outer@ for (sliceStartY in approveSearchStartY..approveSearchEndY step approveSliceHeight) {
                         val sliceEndY = (sliceStartY + approveSliceHeight).coerceAtMost(approveSearchEndY)
-                        var currentY1 = sliceStartY
-                        while (currentY1 < sliceEndY) {
+                        while (sliceStartY < sliceEndY) {
                             val sliceSchema = ColorSchema.rescope(
-                                approveBaseSchema, approveBaseSchema.x1, currentY1, approveBaseSchema.x2, sliceEndY
+                                approveBaseSchema, approveBaseSchema.x1, sliceStartY, approveBaseSchema.x2, sliceEndY
                             )
                             val candidate = findMultiColors(schema = sliceSchema, byteBuffer = screenBuffer, increment = 1) ?: break
                             found = candidate
@@ -164,8 +163,19 @@ suspend fun donateToClan(): Boolean {
                         )
                         val isApproveBtn = findMultiColors(schema = approveCheckSchema, byteBuffer = screenBuffer, increment = 1)
                         if (isApproveBtn == null) {
-                            found = candidate
-                            break@outer
+                            // Verify this is a real donation request by checking for the sword icon
+                            val swordCheckSchema = ColorSchema.rescope(
+                                MyColors.DonateSword,
+                                x1 = candidate.x - 400,
+                                y1 = candidate.y - 15,
+                                x2 = candidate.x,
+                                y2 = candidate.y + 40
+                            )
+                            val swordIcon = findMultiColors(schema = swordCheckSchema, byteBuffer = screenBuffer, increment = 1)
+                            if (swordIcon != null) {
+                                found = candidate
+                                break@outer
+                            }
                         }
                     }
 
