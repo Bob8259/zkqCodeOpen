@@ -9,6 +9,7 @@ import com.coc.zkqcode.jar.code.universal.InGameVars
 import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.jar.code.universal.smalltools.ScheduledUpgrade
 import com.coc.zkqcode.jar.code.universal.smalltools.loadSchedule
+import com.coc.zkqcode.jar.code.universal.smalltools.removeScheduleForAccount
 import com.coc.zkqcode.jar.code.universal.smalltools.data.getConfigOrStop
 import com.coc.zkqcode.jar.code.universal.smalltools.lifecycle.killApp
 import com.coc.zkqcode.jar.code.universal.smalltools.data.getStaticConfig
@@ -82,6 +83,7 @@ suspend fun runUpgradeTimeSchedulingScript() {
             InGameVars.currentGameVersion = resolveAccountGameVersion(target.account)
             ShowMessage(buildScheduleSummary(schedule, enabledAccounts, target.account, "升级完成，准备上号"), isChecking = false)
             delay(500L)
+            removeScheduleForAccount(target.account)
             runAccountStepBlock()
             lastFillAccount = 0
             fillCooldownEnd = 0L

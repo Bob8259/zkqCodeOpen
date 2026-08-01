@@ -47,6 +47,14 @@ internal suspend fun loadSchedule(): List<ScheduledUpgrade> {
     } catch (_: Exception) { emptyList() }
 }
 
+/** Remove all schedule entries for a given account. */
+suspend fun removeScheduleForAccount(account: Int) {
+    val existing = loadSchedule().toMutableList()
+    if (existing.removeAll { it.account == account }) {
+        saveSchedule(existing)
+    }
+}
+
 // ── Called on game exit: export JSON & save completion timestamps ───────
 
 suspend fun checkUpgradeTimers() {
@@ -56,6 +64,7 @@ suspend fun checkUpgradeTimers() {
 
     val clipboardText = copyGameJson() ?: return
     val jsonObject = try { Gson().fromJson(clipboardText.trim(), JsonObject::class.java) } catch (_: Exception) { return } ?: return
+    val acc = InGameVars.currentAccountNumber
     val timerItems = extractTimerItems(jsonObject)
     if (timerItems.isEmpty()) return
 
@@ -63,7 +72,6 @@ suspend fun checkUpgradeTimers() {
     val jsonTs = jsonObject.get("timestamp")?.asLong ?: nowSec
     val boosts = parseBoosts(jsonObject)
     val helpers = parseHelpers(jsonObject)
-    val acc = InGameVars.currentAccountNumber
     val advanceMin = GlobalVars.configStates[Schema.GLOBAL_SETTINGS.SERVERCHAN_UPGRADE_ADVANCE.key]?.value?.toIntOrNull() ?: 10
 
     val catLabel = mapOf(
@@ -170,11 +178,7 @@ suspend fun checkScheduledUpgradeNotifications() {
         }
     }
 
-    // Remove completed items
-    val cleaned = schedule.filter { it.completionTs > nowSec }
-    if (cleaned.size != schedule.size || changed) {
-        saveSchedule(cleaned)
-    }
+    if (changed) saveSchedule(schedule)
 }
 
 // ── Helper types & functions (private) ──────────────────────────────────
