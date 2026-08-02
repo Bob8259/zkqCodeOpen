@@ -85,6 +85,9 @@ object GlobalSettings {
     val WEBDAV_USERNAME = SettingDef("webdav_username", "WebDAV 用户名", "WebDAV Username", "", "GLOBAL_SETTINGS")
     val WEBDAV_PASSWORD = SettingDef("webdav_password", "WebDAV 密码", "WebDAV Password", "", "GLOBAL_SETTINGS")
 
+    // ── Screen Resolution (屏幕分辨率) ────────────────────────────────────────────
+    val CHANGE_RESOLUTION_RUNTIME = SettingDef("change_resolution_runtime", "运行时修改分辨率", "Change Resolution During Runtime", 0, "GLOBAL_SETTINGS")
+
     // Battle time ratio per group
     val RS_BATTLE_RATIO_DAWN = SettingDef("rs_battle_ratio_dawn", "对战时间比例", "Battle Ratio", "80", "GLOBAL_SETTINGS")
     val RS_BATTLE_RATIO_MORNING = SettingDef("rs_battle_ratio_morning", "对战时间比例", "Battle Ratio", "80", "GLOBAL_SETTINGS")
@@ -190,7 +193,8 @@ object GlobalSettings {
         RS_ACCOUNTS_DAWN, RS_ACCOUNTS_MORNING, RS_ACCOUNTS_AFTERNOON, RS_ACCOUNTS_NIGHT,
         CLOUD_EXPIRE_NOTIFY, CLOUD_EXPIRE_DATE, CLOUD_EXPIRE_RESET_DAYS, CLOUD_EXPIRE_ADVANCE_DAYS,
         WEBDAV_URL, WEBDAV_USERNAME, WEBDAV_PASSWORD,
-        SCHEDULED_RESTART, RESTART_INTERVAL
+        SCHEDULED_RESTART, RESTART_INTERVAL,
+        CHANGE_RESOLUTION_RUNTIME
     )
 }
 

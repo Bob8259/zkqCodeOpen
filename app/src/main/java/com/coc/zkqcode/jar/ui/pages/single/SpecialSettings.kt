@@ -248,6 +248,7 @@ fun LazyListScope.specialSettings(onOpenWebDavManager: () -> Unit = {}) {
             Row(modifier = Modifier.padding(bottom = 4.dp)) {
                 Text(text = Strings.screenResolutionSectionTitle, style = MaterialTheme.typography.labelMedium, color = AppColors.TextPrimary)
             }
+            SettingSwitchIcon(key = GLOBAL_SETTINGS.CHANGE_RESOLUTION_RUNTIME.key)
             Text(
                 text = Strings.screenResolutionWarning,
                 style = MaterialTheme.typography.bodySmall,
