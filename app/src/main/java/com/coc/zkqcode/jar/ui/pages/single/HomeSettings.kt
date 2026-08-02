@@ -50,7 +50,6 @@ fun LazyListScope.homeSettings(
     onSaveSuccess: () -> Unit,
     onShowAnnouncement: () -> Unit,
     onShowImportOldData: () -> Unit,
-    onExportConfig: () -> Unit = {},
     onImportConfig: () -> Unit = {}
 ) {
     item {
@@ -183,11 +182,6 @@ fun LazyListScope.homeSettings(
                 CustomButton(
                     text = Strings.syncTime,
                     onClick = { autoSyncSystemTime { msg -> showMsg(msg) } },
-                    marginTop = 6.dp
-                )
-                CustomButton(
-                    text = Strings.exportConfig,
-                    onClick = onExportConfig,
                     marginTop = 6.dp
                 )
                 CustomButton(

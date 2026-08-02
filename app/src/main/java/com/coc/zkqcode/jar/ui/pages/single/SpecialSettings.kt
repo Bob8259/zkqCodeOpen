@@ -71,7 +71,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-fun LazyListScope.specialSettings() {
+fun LazyListScope.specialSettings(onOpenWebDavManager: () -> Unit = {}) {
     item { SettingSection { BatchCreateAccount() } }
     item {
         SettingSection {
@@ -227,31 +227,6 @@ fun LazyListScope.specialSettings() {
         }
     }
     // ── Cloud Expiry Notification is now inside Push Notification section above
-    // ── WebDAV Sync ────────────────────────────────────────────────────────
-    // ── WebDAV File Manager ───────────────────────────────────────────────
-    item {
-        val showFileManager = remember { mutableStateOf(false) }
-        SettingSection {
-            Row(modifier = Modifier.padding(bottom = 4.dp)) {
-                Text(text = "📁 WebDAV 文件管理器", style = MaterialTheme.typography.labelMedium, color = AppColors.TextPrimary)
-            }
-            Text(
-                text = "上传、下载、管理国际服存档文件，支持本地与远程互传",
-                style = MaterialTheme.typography.bodySmall,
-                color = AppColors.TextPrimary.copy(alpha = 0.7f),
-                modifier = Modifier.padding(bottom = 8.dp)
-            )
-            CustomButton(text = "打开", onClick = { showFileManager.value = true })
-        }
-        if (showFileManager.value) {
-            Popup(
-                onDismissRequest = { showFileManager.value = false },
-                properties = PopupProperties(focusable = true)
-            ) {
-                WebDavFileManager(onClose = { showFileManager.value = false })
-            }
-        }
-    }
     legalDisclaimers()
     item {
         val context = LocalContext.current; val cr = rememberCoroutineScope()

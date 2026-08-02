@@ -61,6 +61,7 @@ import com.coc.zkqcode.jar.ui.pages.single.configSearchResults
 import com.coc.zkqcode.jar.ui.pages.single.gameConfig
 import com.coc.zkqcode.jar.ui.pages.single.homeSettings
 import com.coc.zkqcode.jar.ui.pages.single.specialSettings
+import com.coc.zkqcode.jar.ui.pages.single.WebDavFileManager
 import com.coc.zkqcode.jar.ui.schema.ConfigManager
 import com.coc.zkqcode.jar.ui.schema.Schema.GLOBAL_SETTINGS
 import com.coc.zkqcode.jar.ui.theme.AppColors
@@ -200,6 +201,7 @@ fun HomeScreen(
     var showAnnouncement by remember { mutableStateOf(false) }
     var showImportOldDataConfirmation by rememberSaveable { mutableStateOf(false) }
     var showImportConfigConfirmation by rememberSaveable { mutableStateOf(false) }
+    var showWebDavFileManager by rememberSaveable { mutableStateOf(false) }
 
     // Context for launching the image picker activity
     val context = LocalContext.current
@@ -249,24 +251,6 @@ fun HomeScreen(
                             onSaveSuccess = onSaveSuccess,
                             onShowAnnouncement = { showAnnouncement = true },
                             onShowImportOldData = { showImportOldDataConfirmation = true },
-                            onExportConfig = {
-                                scope.launch(kotlinx.coroutines.Dispatchers.IO) {
-                                    try {
-                                        val accountCount = (GlobalVars.configStates["account_count"]?.value?.toIntOrNull() ?: 3).coerceAtMost(5000)
-                                        val configCount = (GlobalVars.configStates["config_count"]?.value?.toIntOrNull() ?: 3).coerceAtMost(100)
-                                        val jsonStr = com.coc.zkqcode.jar.ui.schema.SchemaExporter.exportSchemasToJson(
-                                            accountCount = accountCount, configCount = configCount
-                                        )
-                                        val sdPath = Environment.getExternalStorageDirectory().path
-                                        val file = java.io.File("$sdPath/zkqFiles/zkq_config_backup.json")
-                                        file.parentFile?.mkdirs()
-                                        file.writeText(jsonStr)
-                                        showMsg(Strings.configExportSuccess)
-                                    } catch (_: Exception) {
-                                        showMsg(Strings.configExportSuccess)
-                                    }
-                                }
-                            },
                             onImportConfig = { showImportConfigConfirmation = true }
                         )
                     }
@@ -344,7 +328,7 @@ fun HomeScreen(
                     }
 
                     4 -> {
-                        specialSettings()
+                        specialSettings(onOpenWebDavManager = { showWebDavFileManager = true })
                     }
                 }
             }
@@ -473,6 +457,16 @@ fun HomeScreen(
             }
         } // End Box
 
+        // WebDAV File Manager full-screen overlay
+        if (showWebDavFileManager) {
+            Surface(
+                modifier = Modifier.fillMaxSize(),
+                color = AppColors.Background
+            ) {
+                WebDavFileManager(onBack = { showWebDavFileManager = false })
+            }
+        }
+
         // Announcement dialog
         if (showAnnouncement) {
             AnnouncementDialog(onDismiss = { showAnnouncement = false })
@@ -521,7 +515,7 @@ fun HomeScreen(
                             scope.launch(kotlinx.coroutines.Dispatchers.IO) {
                                 try {
                                     val sdPath = Environment.getExternalStorageDirectory().path
-                                    val count = com.coc.zkqcode.jar.ui.schema.ConfigImporter.importFromFile("$sdPath/zkqFiles/zkq_config_backup.json")
+                                    val count = com.coc.zkqcode.jar.ui.schema.ConfigImporter.importFromFile("$sdPath/zkqFiles/zkq_config.json")
                                     if (count >= 0) {
                                         showMsg(Strings.configImportSuccess)
                                     } else {
