@@ -448,6 +448,7 @@ object Strings {
     // WebDAV Sync
     val webdavSectionTitle get() = if (LanguageManager.isChinese) "WebDAV 文件夹管理" else "WebDAV Folder Management"
     val webdavSectionDesc get() = if (LanguageManager.isChinese) "此功能可以将国际服存档上传到自己的网盘进行备份与恢复" else "Upload global saves to your own cloud drive for backup and restore"
+    val webdavOpenFileManager get() = if (LanguageManager.isChinese) "打开文件管理器" else "Open File Manager"
     val webdavUploadGlobalSave get() = if (LanguageManager.isChinese) "上传国际服存档" else "Upload Global Save"
     val webdavDownloadGlobalSave get() = if (LanguageManager.isChinese) "下载国际服存档" else "Download Global Save"
     val webdavUploading get() = if (LanguageManager.isChinese) "正在上传..." else "Uploading..."

@@ -227,6 +227,21 @@ fun LazyListScope.specialSettings(onOpenWebDavManager: () -> Unit = {}) {
         }
     }
     // ── Cloud Expiry Notification is now inside Push Notification section above
+    // ── WebDAV File Manager ──────────────────────────────────────────────────
+    item {
+        SettingSection {
+            Row(modifier = Modifier.padding(bottom = 4.dp)) {
+                Text(text = Strings.webdavSectionTitle, style = MaterialTheme.typography.labelMedium, color = AppColors.TextPrimary)
+            }
+            Text(
+                text = Strings.webdavSectionDesc,
+                style = MaterialTheme.typography.bodySmall,
+                color = AppColors.TextPrimary.copy(alpha = 0.7f),
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
+            CustomButton(text = Strings.webdavOpenFileManager, marginTop = 6.dp, onClick = onOpenWebDavManager)
+        }
+    }
     legalDisclaimers()
     item {
         val context = LocalContext.current; val cr = rememberCoroutineScope()
