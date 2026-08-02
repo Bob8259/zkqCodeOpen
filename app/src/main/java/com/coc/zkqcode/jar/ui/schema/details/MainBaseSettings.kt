@@ -124,6 +124,7 @@ object MainBaseSettings {
     val START_LEAGUE_SETTINGS = SettingDef("start_league_settings", "发起联赛", "Start League", 0, "MAIN_BASE_SETTINGS")
     val START_CLAN_LEAGUE = SettingDef("start_clan_league", "开部落联赛", "Start Clan League", 0, "MAIN_BASE_SETTINGS")
     val START_CLAN_LEAGUE_SIZE = SettingDef("start_clan_league_size", "对战人数", "League War Size", "1", "MAIN_BASE_SETTINGS")
+    val START_CLAN_LEAGUE_NEW_SIZE = SettingDef("start_clan_league_new_size", "已开放新对战人数", "New League Size", 0, "MAIN_BASE_SETTINGS")
     val EVENT_LEAGUE_START_DAY = SettingDef("event_league_start_day", "额外联赛开放起始日", "Extra League Start Day", "0", "MAIN_BASE_SETTINGS")
     val START_CLAN_WAR_SETTINGS = SettingDef("start_clan_war_settings", "发起部落战", "Start Clan War", 0, "MAIN_BASE_SETTINGS")
     val START_CLAN_WAR = SettingDef("start_clan_war", "开部落战", "Open Clan War", 0, "MAIN_BASE_SETTINGS")
@@ -302,6 +303,7 @@ object MainBaseSettings {
         START_LEAGUE_SETTINGS,
         START_CLAN_LEAGUE,
         START_CLAN_LEAGUE_SIZE,
+        START_CLAN_LEAGUE_NEW_SIZE,
         START_CLAN_WAR_SETTINGS,
         START_CLAN_WAR,
         START_CLAN_WAR_METHOD,

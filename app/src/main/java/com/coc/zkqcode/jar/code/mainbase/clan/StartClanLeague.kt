@@ -3,7 +3,6 @@ package com.coc.zkqcode.jar.code.mainbase.clan
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.InGameVars
 import com.coc.zkqcode.jar.code.universal.accountMessage
-import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.smalltools.data.StorageKeys
@@ -18,11 +17,11 @@ import java.util.TimeZone
 
 // 11v11, 15v15, 30v30 button coordinates on the league registration screen
 private const val LEAGUE_11V11_X = 179
-private const val LEAGUE_11V11_Y = 558
+private const val LEAGUE_11V11_Y = 504
 private const val LEAGUE_15V15_X = 504
-private const val LEAGUE_15V15_Y = 558
+private const val LEAGUE_15V15_Y = 504
 private const val LEAGUE_30V30_X = 865
-private const val LEAGUE_30V30_Y = 558
+private const val LEAGUE_30V30_Y = 504
 
 // Fallback coordinate for confirm registration button (when ColorSchema not matched)
 private const val LEAGUE_CONFIRM_X = 1010
@@ -42,7 +41,7 @@ fun isInClanLeaguePeriod(): Boolean {
     val dayHour = day * 100 + hour
 
     // Normal: 1st 16:00 ~ 10th 16:00
-    if (dayHour >= 116 && dayHour < 1016) return true
+    if (dayHour in 116..<1016) return true
 
     // Event league: configurable start day (11~22), duration = 10 days
     val eventIndex = getConfigRuntime(Schema.MAIN_BASE_SETTINGS.EVENT_LEAGUE_START_DAY.key).toIntOrNull() ?: 0
@@ -50,7 +49,7 @@ fun isInClanLeaguePeriod(): Boolean {
         val startDay = eventIndex + 10  // index 1→11, 2→12, ..., 12→22
         val startDayHour = startDay * 100 + 16
         val endDayHour = (startDay + 9) * 100 + 16
-        if (dayHour >= startDayHour && dayHour < endDayHour) return true
+        if (dayHour in startDayHour..<endDayHour) return true
     }
 
     return false
@@ -69,7 +68,7 @@ fun isInLeagueRegistrationPeriod(): Boolean {
     val dayHour = day * 100 + hour
 
     // Normal: 1st 16:00 ~ 3rd 16:00
-    if (dayHour >= 116 && dayHour < 316) return true
+    if (dayHour in 116..<316) return true
 
     // Event league: configurable start day (11~22), registration = 3 days
     val eventIndex = getConfigRuntime(Schema.MAIN_BASE_SETTINGS.EVENT_LEAGUE_START_DAY.key).toIntOrNull() ?: 0
@@ -77,21 +76,10 @@ fun isInLeagueRegistrationPeriod(): Boolean {
         val startDay = eventIndex + 10
         val startDayHour = startDay * 100 + 16
         val endDayHour = (startDay + 2) * 100 + 16
-        if (dayHour >= startDayHour && dayHour < endDayHour) return true
+        if (dayHour in startDayHour..<endDayHour) return true
     }
 
     return false
-}
-
-/**
- * Check whether the clan league entry indicator is visible on the home page.
- * Used to determine whether a league is actually open for registration / participation
- * during the league time window.
- *
- * @return true if the league entry indicator is found; false otherwise.
- */
-suspend fun isClanLeagueEntryAvailable(): Boolean {
-    return findMultiColors(MyColors.ClanLeagueEntryIndicator) != null || findMultiColors(MyColors.ClanLeagueEntryIndicator2) != null
 }
 
 /**
@@ -99,13 +87,12 @@ suspend fun isClanLeagueEntryAvailable(): Boolean {
  * Steps:
  * ① Navigate to clan war entrance by detecting ClanLeagueEntryIndicator (instead of blind tap)
  * ② Find and tap "开联赛" (Start League) button via ColorSchema
- * ③ Select 11v11, 15v15 or 30v30 based on config (pure coordinate tap)
+ * ③ Select 15v15 or 30v30 based on config (pure coordinate tap)
  * ④ Find and tap confirm registration button
  */
 suspend fun startClanLeague(): Boolean {
     // 1. Check if START_CLAN_LEAGUE config is enabled
     if (!getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.START_CLAN_LEAGUE.key)) {
-        accountMessage("开部落联赛开关未开启，跳过")
         return true
     }
 
@@ -152,7 +139,9 @@ suspend fun startClanLeague(): Boolean {
         return enterMainScreen()
     }
 
-    // 6. Select war size (11v11, 15v15 or 30v30) based on config
+    // 6. Select war size based on config.
+    //    新对战人数开关开启 = 新版 3 按钮布局 (11v11/15v15/30v30)：179/504/865
+    //    新对战人数开关关闭 = 旧版 2 按钮布局 (15v15/30v30)：179/504，无第三个按钮
     //    The dropdown stores the selected index ("0", "1", "2").
     //    For backward compatibility we also accept legacy string values ("11", "15", "30").
     val leagueSize = getConfigRuntime(Schema.MAIN_BASE_SETTINGS.START_CLAN_LEAGUE_SIZE.key)
@@ -162,29 +151,43 @@ suspend fun startClanLeague(): Boolean {
         "2", "30" -> "30"
         else -> "15"
     }
-    when (normalizedSize) {
-        "11" -> {
-            accountMessage("选择 11v11 对战人数")
-            TouchActions.tap(LEAGUE_11V11_X, LEAGUE_11V11_Y)
+    if (getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.START_CLAN_LEAGUE_NEW_SIZE.key)) {
+        when (normalizedSize) {
+            "11" -> {
+                accountMessage("选择新人数对战人数")
+                TouchActions.tap(LEAGUE_11V11_X, LEAGUE_11V11_Y)
+            }
+            "15" -> {
+                accountMessage("选择 15v15 对战人数")
+                TouchActions.tap(LEAGUE_15V15_X, LEAGUE_15V15_Y)
+            }
+            "30" -> {
+                accountMessage("选择 30v30 对战人数")
+                TouchActions.tap(LEAGUE_30V30_X, LEAGUE_30V30_Y)
+            }
         }
-        "15" -> {
-            accountMessage("选择 15v15 对战人数")
-            TouchActions.tap(LEAGUE_15V15_X, LEAGUE_15V15_Y)
-        }
-        "30" -> {
-            accountMessage("选择 30v30 对战人数")
-            TouchActions.tap(LEAGUE_30V30_X, LEAGUE_30V30_Y)
+    } else {
+        // 旧版布局：15v15 用 11v11 的点位 (179)，30v30 用 15v15 的点位 (504)
+        when (normalizedSize) {
+            "30" -> {
+                accountMessage("选择 30v30 对战人数")
+                TouchActions.tap(LEAGUE_15V15_X, LEAGUE_15V15_Y)
+            }
+            else -> {
+                accountMessage("选择 15v15 对战人数")
+                TouchActions.tap(LEAGUE_11V11_X, LEAGUE_11V11_Y)
+            }
         }
     }
 
     // 7. Find and tap confirm registration button
-    val confirmButton = findMultiColorsUntil(listOf(MyColors.ConfirmClanLeagueRegistration), 3000)
+    val confirmButton = findMultiColorsUntil(listOf(MyColors.ConfirmClanLeagueRegistration), 2000)
     if (confirmButton != null) {
         TouchActions.tap(confirmButton.x, confirmButton.y)
         accountMessage("点击报名确认，联赛报名成功")
     } else {
-        // Fallback: use pure coordinate if ColorSchema is not yet provided
-        accountMessage("未找到确认按钮（图色待提供），尝试坐标点击")
+        // Final fallback: use pure coordinate if ColorSchema is not yet provided
+        accountMessage("重试后仍未找到确认按钮（图色待提供），尝试坐标点击")
         TouchActions.tap(LEAGUE_CONFIRM_X, LEAGUE_CONFIRM_Y)
     }
 

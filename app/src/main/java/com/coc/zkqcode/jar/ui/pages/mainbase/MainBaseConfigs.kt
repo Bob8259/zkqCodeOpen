@@ -555,9 +555,55 @@ fun LazyListScope.mainBaseConfig(
             AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.START_CLAN_LEAGUE.key}_c$index"]?.value == "1") {
                 Column {
                     HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
-                    SettingDropdown(
-                        key = "${MAIN_BASE_SETTINGS.START_CLAN_LEAGUE_SIZE.key}_c$index", options = listOf("11v11", "15v15", "30v30")
-                    )
+                    // 对战人数（仅开联赛专用）：新对战人数开关开启 = 3 按钮 (11v11/15v15/30v30)，关闭 = 2 按钮 (15v15/30v30)
+                    val leagueSizeKey = "${MAIN_BASE_SETTINGS.START_CLAN_LEAGUE_SIZE.key}_c$index"
+                    val leagueSizeState = GlobalVars.configStates.getOrPut(leagueSizeKey) {
+                        mutableStateOf(Schema.getDefaultValue(leagueSizeKey))
+                    }
+                    val newSizeKey = "${MAIN_BASE_SETTINGS.START_CLAN_LEAGUE_NEW_SIZE.key}_c$index"
+                    val newSizeEnabled = GlobalVars.configStates[newSizeKey]?.value == "1"
+                    val leagueSizeOptions = if (newSizeEnabled) listOf("新人数", "15v15", "30v30") else listOf("15v15", "30v30")
+                    val leagueSizeIndex = (leagueSizeState.value.toIntOrNull() ?: 0).coerceIn(0, leagueSizeOptions.lastIndex)
+                    Column(modifier = Modifier.padding(top = 6.dp)) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(
+                                text = Schema.getDisplayName(leagueSizeKey),
+                                modifier = Modifier.weight(1f),
+                                style = MaterialTheme.typography.labelMedium
+                            )
+                            SettingSwitchIcon(key = newSizeKey, textTopPadding = 0.dp)
+                        }
+                        Row(
+                            modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
+                            horizontalArrangement = Arrangement.spacedBy(6.dp)
+                        ) {
+                            leagueSizeOptions.forEachIndexed { idx, option ->
+                                val isSelected = idx == leagueSizeIndex
+                                val cardBg = if (isSelected) AppColors.Primary
+                                else AppColors.PrimaryLight.copy(alpha = 0.10f)
+                                val cardBorder = if (isSelected) AppColors.Primary
+                                else AppColors.PrimaryLight
+                                val textColor = if (isSelected) Color.White
+                                else AppColors.TextPrimary
+                                Box(
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .height(32.dp)
+                                        .background(cardBg, RoundedCornerShape(8.dp))
+                                        .border(1.dp, cardBorder, RoundedCornerShape(8.dp))
+                                        .clickable {
+                                            GlobalVars.isAutoRunEnabled = false
+                                            leagueSizeState.value = idx.toString()
+                                        },
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(
+                                        text = option, color = textColor, style = MaterialTheme.typography.labelMedium
+                                    )
+                                }
+                            }
+                        }
+                    }
                     SettingDropdown(
                         key = "${MAIN_BASE_SETTINGS.EVENT_LEAGUE_START_DAY.key}_c$index",
                         options = listOf("禁用") + (11..22).map { "${it}日" }
