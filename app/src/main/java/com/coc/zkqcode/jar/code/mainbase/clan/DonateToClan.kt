@@ -163,16 +163,26 @@ suspend fun donateToClan(): Boolean {
                         )
                         val isApproveBtn = findMultiColors(schema = approveCheckSchema, byteBuffer = screenBuffer, increment = 1)
                         if (isApproveBtn == null) {
-                            // Verify this is a real donation request by checking for the sword icon
+                            // Verify this is a real donation request by checking for the sword or human figure icon
+                            val regionX1 = candidate.x - 400
+                            val regionY1 = candidate.y - 15
+                            val regionX2 = candidate.x
+                            val regionY2 = candidate.y + 40
                             val swordCheckSchema = ColorSchema.rescope(
                                 MyColors.DonateSword,
-                                x1 = candidate.x - 400,
-                                y1 = candidate.y - 15,
-                                x2 = candidate.x,
-                                y2 = candidate.y + 40
+                                x1 = regionX1, y1 = regionY1, x2 = regionX2, y2 = regionY2
                             )
                             val swordIcon = findMultiColors(schema = swordCheckSchema, byteBuffer = screenBuffer, increment = 1)
                             if (swordIcon != null) {
+                                found = candidate
+                                break@outer
+                            }
+                            val humanFigureCheckSchema = ColorSchema.rescope(
+                                MyColors.DonateHumanFigure,
+                                x1 = regionX1, y1 = regionY1, x2 = regionX2, y2 = regionY2
+                            )
+                            val humanFigureIcon = findMultiColors(schema = humanFigureCheckSchema, byteBuffer = screenBuffer, increment = 1)
+                            if (humanFigureIcon != null) {
                                 found = candidate
                                 break@outer
                             }
