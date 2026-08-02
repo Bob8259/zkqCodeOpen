@@ -511,10 +511,6 @@ fun LazyListScope.mainBaseConfig(
              }
 
         }
-    }
-
-    // Capital settings card
-    item {
         SettingSection(visible = isClanExpanded) {
             Text(
                 text = Strings.sectionCapitalSettings,
@@ -528,10 +524,6 @@ fun LazyListScope.mainBaseConfig(
                 SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.COLLECT_CAPITAL_COINS.key}_c$index")
             }
         }
-    }
-
-    // War & League settings card
-    item {
         SettingSection(visible = isClanExpanded) {
             Text(
                 text = Strings.sectionWarLeague,
@@ -640,10 +632,6 @@ fun LazyListScope.mainBaseConfig(
                 }
             }
         }
-    }
-
-    // Clan games settings card
-    item {
         SettingSection(visible = isClanExpanded) {
             Text(
                 text = Strings.sectionClanGames,
