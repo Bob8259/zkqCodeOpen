@@ -242,6 +242,52 @@ fun LazyListScope.specialSettings(onOpenWebDavManager: () -> Unit = {}) {
             CustomButton(text = Strings.webdavOpenFileManager, marginTop = 6.dp, onClick = onOpenWebDavManager)
         }
     }
+    // ── Screen Resolution ─────────────────────────────────────────────────────
+    item {
+        SettingSection {
+            Row(modifier = Modifier.padding(bottom = 4.dp)) {
+                Text(text = Strings.screenResolutionSectionTitle, style = MaterialTheme.typography.labelMedium, color = AppColors.TextPrimary)
+            }
+            Text(
+                text = Strings.screenResolutionWarning,
+                style = MaterialTheme.typography.bodySmall,
+                color = AppColors.TextPrimary.copy(alpha = 0.7f),
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
+            val scope = rememberCoroutineScope()
+            var statusMessage by remember { mutableStateOf("") }
+            CustomButton(
+                text = Strings.screenResolutionSetBtn,
+                marginTop = 6.dp,
+                onClick = {
+                    scope.launch(Dispatchers.IO) {
+                        ShellHelper.runBlockingNoOutput("wm size 720x1280")
+                        ShellHelper.runBlockingNoOutput("wm density 320")
+                        statusMessage = Strings.screenResolutionSetSuccess
+                    }
+                }
+            )
+            CustomButton(
+                text = Strings.screenResolutionResetBtn,
+                marginTop = 6.dp,
+                onClick = {
+                    scope.launch(Dispatchers.IO) {
+                        ShellHelper.runBlockingNoOutput("wm size reset")
+                        ShellHelper.runBlockingNoOutput("wm density reset")
+                        statusMessage = Strings.screenResolutionResetSuccess
+                    }
+                }
+            )
+            if (statusMessage.isNotEmpty()) {
+                Text(
+                    text = statusMessage,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = AppColors.Success,
+                    modifier = Modifier.padding(top = 8.dp)
+                )
+            }
+        }
+    }
     legalDisclaimers()
     item {
         val context = LocalContext.current; val cr = rememberCoroutineScope()

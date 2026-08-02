@@ -515,5 +515,14 @@ object Strings {
     val configImportSuccess get() = if (LanguageManager.isChinese) "配置导入成功，已在线更新" else "Config imported and applied live"
     val configImportFailed get() = if (LanguageManager.isChinese) "导入失败，请检查文件格式" else "Import failed — check file format"
     val configFileNotExist get() = if (LanguageManager.isChinese) "配置文件不存在，请先导出" else "Config file not found — export first"
+
+    // Screen Resolution
+    val screenResolutionSectionTitle get() = if (LanguageManager.isChinese) "屏幕分辨率" else "Screen Resolution"
+    val screenResolutionSetBtn get() = if (LanguageManager.isChinese) "设置为 720*1280 (DPI 320)" else "Set to 720*1280 (DPI 320)"
+    val screenResolutionResetBtn get() = if (LanguageManager.isChinese) "重置分辨率" else "Reset Resolution"
+    val screenResolutionWarning get() = if (LanguageManager.isChinese) "此功能不适用于水滴屏或其他异形屏显示。" else "This does not work for Waterdrop Notch or other Irregular Screen Display."
+    val screenResolutionSetSuccess get() = if (LanguageManager.isChinese) "分辨率已设置为 720*1280，DPI 320" else "Resolution set to 720*1280, DPI 320"
+    val screenResolutionResetSuccess get() = if (LanguageManager.isChinese) "分辨率已重置" else "Resolution reset"
+    val screenResolutionFailed get() = if (LanguageManager.isChinese) "分辨率操作失败" else "Resolution operation failed"
 }
 
