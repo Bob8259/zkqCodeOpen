@@ -178,6 +178,19 @@ object Strings {
     val upgradeTimeTargetReady get() = if (LanguageManager.isChinese) "升级时间上号：%d 号升级已完成，正在登录..." else "Upgrade-time scheduling: Account %d upgrade complete, logging in..."
     val upgradeTimeTargetSwitching get() = if (LanguageManager.isChinese) "升级时间上号：目标号 %d 升级已完成，正在切换..." else "Upgrade-time scheduling: Target account %d upgrade complete, switching..."
     val upgradeTimeWaiting get() = if (LanguageManager.isChinese) "升级时间上号：等待 %d 号（%s Lv%d），剩余 %d 分 %d 秒" else "Upgrade-time scheduling: Waiting account %d (%s Lv%d), %d min %d sec remaining"
+    val upgradeTimeSchedulingStarted get() = if (LanguageManager.isChinese) "升级时间上号模式已启动" else "Upgrade-time scheduling started"
+    val upgradeTimeNoEnabledAccounts get() = if (LanguageManager.isChinese) "当前未开启任何账号" else "No accounts enabled"
+    val upgradeTimeBoardTitle get() = if (LanguageManager.isChinese) "等待中:" else "Waiting:"
+    val upgradeTimeBoardUpgrading get() = if (LanguageManager.isChinese) "%d号: %s Lv%d 剩余%s" else "Account %d: %s Lv%d, %s left"
+    val upgradeTimeBoardDone get() = if (LanguageManager.isChinese) "%d号: 升级完成，等待启动" else "Account %d: upgrade complete, waiting to start"
+    val upgradeTimeBoardNoData get() = if (LanguageManager.isChinese) "%d号: 无数据" else "Account %d: no data"
+    val upgradeTimeBoardPreparing get() = if (LanguageManager.isChinese) "%d号: %s" else "Account %d: %s"
+    val upgradeTimePreparingFill get() = if (LanguageManager.isChinese) "收菜中" else "Collecting"
+    val upgradeTimePreparingTarget get() = if (LanguageManager.isChinese) "升级完成，准备上号" else "Upgrade done, logging in"
+    val dayUnit get() = if (LanguageManager.isChinese) "天" else "d"
+    val hourUnit get() = if (LanguageManager.isChinese) "时" else "h"
+    val minuteUnit get() = if (LanguageManager.isChinese) "分" else "m"
+    val secondUnit get() = if (LanguageManager.isChinese) "秒" else "s"
 
     val morningGroup get() = if (LanguageManager.isChinese) "上午组  6:00 - 12:00" else "Morning 6:00 - 12:00"
     val afternoonGroup get() = if (LanguageManager.isChinese) "下午组  12:00 - 18:00" else "Afternoon 12:00 - 18:00"
@@ -394,6 +407,10 @@ object Strings {
     val serverchanLoginFailedTitle get() = if (LanguageManager.isChinese) "辅助账号登录失败" else "Login Failed - Assistant Account"
     val serverchanLoginFailedMsg get() = if (LanguageManager.isChinese) "辅助账号登录失败，请检查邮箱密码或网络连接" else "Assistant account login failed. Please check email/password or network."
     val serverchanSectionTitle get() = if (LanguageManager.isChinese) "推送通知" else "Push Notification"
+    val serverchanSectionDesc get() = if (LanguageManager.isChinese)
+        "此功能可以推送通知到选择的平台。支持账号掉线、部落战等提醒。"
+    else
+        "This feature pushes notifications to the selected platform. Supports kick-out and clan war reminders."
     val serverchanTestBtn get() = if (LanguageManager.isChinese) "发送测试" else "Send Test"
     val serverchanTestSending get() = if (LanguageManager.isChinese) "正在发送测试通知..." else "Sending test notification..."
     val serverchanTestSuccess get() = if (LanguageManager.isChinese) "测试通知已发送" else "Test notification sent"
@@ -420,6 +437,13 @@ object Strings {
     val pushProviderWxPusher get() = "WxPusher"
     val pushProviderPushPlus get() = "PushPlus"
     val pushProviderTelegram get() = "Telegram"
+    val pushProviderAstrBot get() = "AstrBot"
+    val astrbotMsgTypePrivate get() = if (LanguageManager.isChinese) "私聊" else "Private Chat"
+    val astrbotMsgTypeGroup get() = if (LanguageManager.isChinese) "群聊" else "Group Chat"
+    val astrbotHint get() = if (LanguageManager.isChinese)
+        "地址示例 http://192.168.1.100:6185；目标ID：QQ官方平台用 openid（先在 QQ 私聊机器人一条消息，在 AstrBot 控制台会话中查看），aiocqhttp 平台用 QQ 号/群号"
+    else
+        "Address e.g. http://192.168.1.100:6185; Target: openid for qq_official (chat the bot once in QQ, see sessions in AstrBot dashboard), QQ/group id for aiocqhttp"
 
     // Notification mode options
     val notifyModeManual get() = if (LanguageManager.isChinese) "手动打(只通知不打)" else "Manual (Notify Only)"
@@ -444,6 +468,13 @@ object Strings {
     fun cloudExpireResetMsg(deviceRemark: String, resetDays: Int, newExpireDate: String) =
         if (LanguageManager.isChinese) "设备备注：${deviceRemark.ifBlank { "无" }}，已过期，自动重置 $resetDays 天，新到期时间：$newExpireDate"
         else "Device: ${deviceRemark.ifBlank { "N/A" }}, expired. Auto reset $resetDays days, new expiry: $newExpireDate"
+    val cloudExpireResetBtn get() = if (LanguageManager.isChinese) "手动重置" else "Manual Reset"
+    val cloudExpireResetDone get() = if (LanguageManager.isChinese) "已重置到期日期，请重新设置" else "Expiry date reset. Please set it again"
+    val cloudExpireResetFailed get() = if (LanguageManager.isChinese) "重置失败，请重试" else "Reset failed, please retry"
+    val cloudExpireNoDateTitle get() = if (LanguageManager.isChinese) "云机到期通知未设置日期 - " else "Cloud Expiry Date Not Set - "
+    fun cloudExpireNoDateMsg(deviceRemark: String) =
+        if (LanguageManager.isChinese) "设备备注：${deviceRemark.ifBlank { "无" }}，已开启云机到期通知但尚未设置到期日期，请进入 辅助设置 → 云机到期通知 配置到期日期。"
+        else "Device: ${deviceRemark.ifBlank { "N/A" }}, cloud expiry notification is enabled but no expiry date is set. Please set it in Special Settings → Cloud Expiry Notification."
 
     // WebDAV Sync
     val webdavSectionTitle get() = if (LanguageManager.isChinese) "WebDAV 文件夹管理" else "WebDAV Folder Management"

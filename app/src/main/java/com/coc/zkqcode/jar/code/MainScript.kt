@@ -18,6 +18,8 @@ import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.jar.code.universal.cloud.checkCloudExpiry
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.create.batchCreateAccounts
+import com.coc.zkqcode.jar.code.universal.ctrl.ZkqSnapshotUploader
+import com.coc.zkqcode.jar.code.universal.ctrl.ZkqWsClient
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.preCheck
 import com.coc.zkqcode.jar.code.universal.smalltools.checkScheduledUpgradeNotifications
@@ -36,9 +38,11 @@ import com.coc.zkqcode.jar.ui.schema.Schema
 import com.coc.zkqcode.statehelper.AppMode
 import com.coc.zkqcode.statehelper.AppStateManager
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.milliseconds
 
 
@@ -48,6 +52,16 @@ suspend fun runMainScript() {
         tapDataNumberEntryButtons()
         finishDataNumberEntryOnlyRun()
         return
+    }
+    // Start the snapshot relay (doc §13.2) and the WS long connection
+    // (doc §13.3): uploads status and serves real-time queries to the ZKQ
+    // plugin while the script engine runs; both die with this coroutine's scope.
+    // Start channels only when the plugin-comm switch is on and URL is set
+    val zkqEnabled = GlobalVars.configStates[Schema.GLOBAL_SETTINGS.ZKQ_ENABLED.key]?.value != "0"
+    val zkqServerUrl = GlobalVars.configStates[Schema.GLOBAL_SETTINGS.ZKQ_SERVER_URL.key]?.value.orEmpty()
+    if (zkqEnabled && zkqServerUrl.isNotBlank()) {
+        CoroutineScope(currentCoroutineContext()).launch { ZkqSnapshotUploader.run() }
+        CoroutineScope(currentCoroutineContext()).launch { ZkqWsClient.run() }
     }
     waitForPlay()
     // setZKQInputMethod()

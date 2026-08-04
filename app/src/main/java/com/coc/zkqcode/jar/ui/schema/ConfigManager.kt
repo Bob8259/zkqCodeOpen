@@ -4,6 +4,7 @@ import android.os.Environment
 import androidx.compose.runtime.mutableStateOf
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.data.websocket.ServerActions
+import com.coc.zkqcode.jar.code.universal.cloud.clearCloudExpiryIfUserChanged
 import com.coc.zkqcode.statehelper.AppMode
 import com.coc.zkqcode.statehelper.AppStateManager
 
@@ -109,6 +110,10 @@ object ConfigManager {
             accountCount = accountCount,
             configCount = configCount
         )
+
+        // If the user changed the cloud expiry date / reset days, drop the persisted
+        // auto-reset state so the config takes effect (kept otherwise).
+        clearCloudExpiryIfUserChanged()
 
         GlobalVars.updateWindowPosition = true
         AppStateManager.setMode(AppMode.Run)

@@ -1,8 +1,10 @@
 ﻿package com.coc.zkqcode.jar.ui.pages.single
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -32,6 +34,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -44,6 +47,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupProperties
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import java.io.File
 import java.io.FileOutputStream
 import java.util.zip.ZipEntry
@@ -52,6 +56,7 @@ import java.util.zip.ZipOutputStream
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.jar.code.ShellHelper
+import com.coc.zkqcode.jar.code.universal.cloud.manualResetCloudExpiry
 import com.coc.zkqcode.jar.code.universal.push.PushMessage
 import com.coc.zkqcode.jar.code.universal.push.PushRouter
 import com.coc.zkqcode.jar.ui.LanguageManager
@@ -75,10 +80,20 @@ fun LazyListScope.specialSettings(onOpenWebDavManager: () -> Unit = {}) {
     item { SettingSection { BatchCreateAccount() } }
     item {
         SettingSection {
+            val parentState = GlobalVars.configStates.getOrPut(GLOBAL_SETTINGS.UPGRADE_TIME_SCHEDULING.key) { mutableStateOf("0") }
+            val parentEnabled = parentState.value == "1"
             SettingSwitchIcon(
                 key = GLOBAL_SETTINGS.UPGRADE_TIME_SCHEDULING.key,
-                explain = Strings.upgradeTimeSchedulingExplain
-            )
+                explain = Strings.upgradeTimeSchedulingExplain,
+                afterChange = { checked ->
+                    if (checked) {
+                        GlobalVars.configStates[GLOBAL_SETTINGS.RANDOM_SCHEDULING.key]?.value = "0"
+                    }
+                })
+            if (parentEnabled) {
+                SettingSwitchIcon(key = GLOBAL_SETTINGS.UTS_FILL_ENABLED.key)
+                SettingInputRow(key = GLOBAL_SETTINGS.UTS_WAIT_POLL_SECONDS.key, suffix = Strings.secondUnit, numericOnly = true)
+            }
         }
     }
     item { SettingSection { RandomScheduling() } }
@@ -141,92 +156,191 @@ fun LazyListScope.specialSettings(onOpenWebDavManager: () -> Unit = {}) {
     }
     // ── Push Notification ─────────────────────────────────────────────────
     item {
+        var pushSectionExpanded by remember { mutableStateOf(false) } // collapsed by default
+        // Single unified card: header row on top, content expands inside the same card
         SettingSection {
-            Row(modifier = Modifier.padding(bottom = 4.dp)) {
-                Text(text = Strings.serverchanSectionTitle, style = MaterialTheme.typography.labelMedium, color = AppColors.TextPrimary)
-            }
-            SettingDropdown(key = GLOBAL_SETTINGS.PUSH_PROVIDER.key, options = listOf(Strings.pushProviderServerChan, Strings.pushProviderWxPusher, Strings.pushProviderPushPlus, Strings.pushProviderTelegram))
-            val provider = GlobalVars.configStates[GLOBAL_SETTINGS.PUSH_PROVIDER.key]?.value ?: "0"
-            when (provider) {
-                "0" -> SettingInputRow(key = GLOBAL_SETTINGS.SERVERCHAN_SENDKEY.key)
-                "1" -> { SettingInputRow(key = GLOBAL_SETTINGS.WXPUSHER_APP_TOKEN.key); SettingInputRow(key = GLOBAL_SETTINGS.WXPUSHER_UID.key) }
-                "2" -> SettingInputRow(key = GLOBAL_SETTINGS.PUSHPLUS_TOKEN.key)
-                "3" -> { SettingInputRow(key = GLOBAL_SETTINGS.TELEGRAM_BOT_TOKEN.key); SettingInputRow(key = GLOBAL_SETTINGS.TELEGRAM_CHAT_ID.key) }
-            }
-            SettingSwitchIcon(key = GLOBAL_SETTINGS.SERVERCHAN_LOGIN_NOTIFY.key)
-            SettingSwitchIcon(key = GLOBAL_SETTINGS.SERVERCHAN_KICK_NOTIFY.key)
-            SettingSwitchIcon(key = GLOBAL_SETTINGS.SERVERCHAN_WAR_NOTIFY.key)
-            val warNotifyOn = GlobalVars.configStates.getOrPut(GLOBAL_SETTINGS.SERVERCHAN_WAR_NOTIFY.key) { mutableStateOf("0") }.value == "1"
-            if (warNotifyOn) {
-                SettingDropdown(
-                    key = GLOBAL_SETTINGS.SERVERCHAN_WAR_NOTIFY_MODE.key,
-                    options = listOf(Strings.notifyModeManual, Strings.notifyModeAuto)
-                )
-            }
-            SettingSwitchIcon(key = GLOBAL_SETTINGS.SERVERCHAN_LEAGUE_NOTIFY.key)
-            val leagueNotifyOn = GlobalVars.configStates.getOrPut(GLOBAL_SETTINGS.SERVERCHAN_LEAGUE_NOTIFY.key) { mutableStateOf("0") }.value == "1"
-            if (leagueNotifyOn) {
-                SettingDropdown(
-                    key = GLOBAL_SETTINGS.SERVERCHAN_LEAGUE_NOTIFY_MODE.key,
-                    options = listOf(Strings.notifyModeManual, Strings.notifyModeAuto)
-                )
-            }
-            SettingSwitchIcon(key = GLOBAL_SETTINGS.SERVERCHAN_UPGRADE_NOTIFY.key)
-            val scheduleState = GlobalVars.configStates.getOrPut(GLOBAL_SETTINGS.SERVERCHAN_UPGRADE_SCHEDULE_NOTIFY.key) { mutableStateOf("0") }
-            val scheduleEnabled = scheduleState.value == "1"
-            SettingSwitchIcon(key = GLOBAL_SETTINGS.SERVERCHAN_UPGRADE_SCHEDULE_NOTIFY.key)
-            if (scheduleEnabled) { SettingInputRow(key = GLOBAL_SETTINGS.SERVERCHAN_UPGRADE_ADVANCE.key) }
-            val cloudState = GlobalVars.configStates.getOrPut(GLOBAL_SETTINGS.CLOUD_EXPIRE_NOTIFY.key) { mutableStateOf("0") }
-            val cloudEnabled = cloudState.value == "1"
-            SettingSwitchIcon(key = GLOBAL_SETTINGS.CLOUD_EXPIRE_NOTIFY.key)
-            if (cloudEnabled) {
-                val dateState = GlobalVars.configStates.getOrPut(GLOBAL_SETTINGS.CLOUD_EXPIRE_DATE.key) { mutableStateOf("") }
-                val parts = dateState.value.split("-")
-                val yearSel = remember { mutableStateOf(parts.getOrNull(0)?.toIntOrNull() ?: 0) }
-                val monthSel = remember { mutableStateOf(parts.getOrNull(1)?.toIntOrNull() ?: 0) }
-                val daySel = remember { mutableStateOf(parts.getOrNull(2)?.toIntOrNull() ?: 0) }
-                fun writeDate() {
-                    if (yearSel.value > 0 && monthSel.value > 0 && daySel.value > 0)
-                        dateState.value = "${yearSel.value}-${monthSel.value.toString().padStart(2,'0')}-${daySel.value.toString().padStart(2,'0')}"
+            Column {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { pushSectionExpanded = !pushSectionExpanded },
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(text = Strings.serverchanSectionTitle, style = MaterialTheme.typography.labelMedium, color = AppColors.TextPrimary)
+                    Text(
+                        text = if (pushSectionExpanded) "▾" else "▸",
+                        fontSize = 20.sp,
+                        color = AppColors.TextPrimary.copy(alpha = 0.6f),
+                        modifier = Modifier.padding(end = 4.dp)
+                    )
                 }
-                Row(modifier = Modifier.padding(top = 6.dp), verticalAlignment = Alignment.CenterVertically) {
-                    Text(text = Schema.getDisplayName(GLOBAL_SETTINGS.CLOUD_EXPIRE_DATE.key) + "：", style = MaterialTheme.typography.labelMedium, modifier = Modifier.padding(end = 4.dp))
-                    SimpleDropdown(sel = if (yearSel.value > 0) "${yearSel.value}" else "-", opts = (2025..2040).map { it.toString() }, onSel = { yearSel.value = it.toIntOrNull() ?: yearSel.value; writeDate() })
-                    Text(text = "年", style = MaterialTheme.typography.labelSmall, modifier = Modifier.padding(horizontal = 2.dp))
-                    SimpleDropdown(sel = if (monthSel.value > 0) "${monthSel.value}" else "-", opts = (1..12).map { it.toString() }, onSel = { monthSel.value = it.toIntOrNull() ?: monthSel.value; writeDate() })
-                    Text(text = "月", style = MaterialTheme.typography.labelSmall, modifier = Modifier.padding(horizontal = 2.dp))
-                    SimpleDropdown(sel = if (daySel.value > 0) "${daySel.value}" else "-", opts = (1..31).map { it.toString() }, onSel = { daySel.value = it.toIntOrNull() ?: daySel.value; writeDate() })
-                    Text(text = "日", style = MaterialTheme.typography.labelSmall, modifier = Modifier.padding(horizontal = 2.dp))
-                }
-                SettingInputRow(key = GLOBAL_SETTINGS.CLOUD_EXPIRE_RESET_DAYS.key)
-                SettingInputRow(key = GLOBAL_SETTINGS.CLOUD_EXPIRE_ADVANCE_DAYS.key)
-            }
-            val scope = rememberCoroutineScope()
-            CustomButton(
-                text = Strings.serverchanTestBtn,
-                marginTop = 6.dp,
-                onClick = {
-                    scope.launch {
-                        ShowMessage(Strings.serverchanTestSending, isChecking = false)
-                        val error = withContext(Dispatchers.IO) {
-                            PushRouter.send(
-                                PushMessage(
-                                    title = Strings.serverchanTestBtn,
-                                    desp = if (LanguageManager.isChinese) "这是一条测试通知" else "This is a test notification"
+                Text(
+                    text = Strings.serverchanSectionDesc,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = AppColors.TextPrimary.copy(alpha = 0.7f),
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+                AnimatedVisibility(visible = pushSectionExpanded) {
+                    Column {
+                        // ── Platform credentials + test connection ──
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 4.dp)
+                                .border(1.dp, AppColors.GlassBorder, RoundedCornerShape(8.dp))
+                                .padding(horizontal = 8.dp, vertical = 6.dp)
+                        ) {
+                            Column {
+                                SettingDropdown(key = GLOBAL_SETTINGS.PUSH_PROVIDER.key, options = listOf(Strings.pushProviderServerChan, Strings.pushProviderWxPusher, Strings.pushProviderPushPlus, Strings.pushProviderTelegram, Strings.pushProviderAstrBot))
+                                val provider = GlobalVars.configStates[GLOBAL_SETTINGS.PUSH_PROVIDER.key]?.value ?: "0"
+                                when (provider) {
+                                    "0" -> SettingInputRow(key = GLOBAL_SETTINGS.SERVERCHAN_SENDKEY.key)
+                                    "1" -> { SettingInputRow(key = GLOBAL_SETTINGS.WXPUSHER_APP_TOKEN.key); SettingInputRow(key = GLOBAL_SETTINGS.WXPUSHER_UID.key) }
+                                    "2" -> SettingInputRow(key = GLOBAL_SETTINGS.PUSHPLUS_TOKEN.key)
+                                    "3" -> { SettingInputRow(key = GLOBAL_SETTINGS.TELEGRAM_BOT_TOKEN.key); SettingInputRow(key = GLOBAL_SETTINGS.TELEGRAM_CHAT_ID.key) }
+                                    "4" -> {
+                                        SettingInputRow(key = GLOBAL_SETTINGS.ASTRBOT_BASE_URL.key)
+                                        SettingInputRow(key = GLOBAL_SETTINGS.ASTRBOT_API_KEY.key)
+                                        SettingInputRow(key = GLOBAL_SETTINGS.ASTRBOT_TARGET_ID.key)
+                                        SettingDropdown(key = GLOBAL_SETTINGS.ASTRBOT_MSG_TYPE.key, options = listOf(Strings.astrbotMsgTypePrivate, Strings.astrbotMsgTypeGroup))
+                                        Text(
+                                            text = Strings.astrbotHint,
+                                            style = MaterialTheme.typography.bodySmall,
+                                            color = AppColors.TextPrimary.copy(alpha = 0.75f),
+                                            modifier = Modifier.padding(start = 4.dp, top = 4.dp)
+                                        )
+                                        // Plugin communication: App only configures connection info (§13.5)
+                                        SettingSwitchIcon(key = GLOBAL_SETTINGS.ZKQ_ENABLED.key)
+                                        if (GlobalVars.configStates[GLOBAL_SETTINGS.ZKQ_ENABLED.key]?.value != "0") {
+                                            SettingInputRow(key = GLOBAL_SETTINGS.ZKQ_SERVER_URL.key)
+                                            SettingInputRow(key = GLOBAL_SETTINGS.ZKQ_TOKEN.key)
+                                        }
+                                    }
+                                }
+                                // ── Test connection (verifies the push platform credentials are configured) ──
+                                val scope = rememberCoroutineScope()
+                                CustomButton(
+                                    text = Strings.serverchanTestBtn,
+                                    marginTop = 6.dp,
+                                    onClick = {
+                                        scope.launch {
+                                            ShowMessage(Strings.serverchanTestSending, isChecking = false)
+                                            val error = withContext(Dispatchers.IO) {
+                                                PushRouter.send(
+                                                    PushMessage(
+                                                        title = Strings.serverchanTestBtn,
+                                                        desp = if (LanguageManager.isChinese) "这是一条测试通知" else "This is a test notification"
+                                                    )
+                                                )
+                                            }
+                                            if (error == null) {
+                                                ShowMessage(Strings.serverchanTestSuccess, isChecking = false)
+                                            } else {
+                                                ShowMessage(Strings.serverchanTestFailed(error), isChecking = false)
+                                            }
+                                        }
+                                    }
                                 )
-                            )
+                            }
                         }
-                        if (error == null) {
-                            ShowMessage(Strings.serverchanTestSuccess, isChecking = false)
-                        } else {
-                            ShowMessage(Strings.serverchanTestFailed(error), isChecking = false)
+                        // ── Notification switches + cloud expiry ──
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 4.dp)
+                                .border(1.dp, AppColors.GlassBorder, RoundedCornerShape(8.dp))
+                                .padding(horizontal = 8.dp, vertical = 6.dp)
+                        ) {
+                            Column {
+                                SettingSwitchIcon(key = GLOBAL_SETTINGS.SERVERCHAN_LOGIN_NOTIFY.key)
+                                SettingSwitchIcon(key = GLOBAL_SETTINGS.SERVERCHAN_KICK_NOTIFY.key)
+                                SettingSwitchIcon(key = GLOBAL_SETTINGS.SERVERCHAN_WAR_NOTIFY.key)
+                                val warNotifyOn = GlobalVars.configStates.getOrPut(GLOBAL_SETTINGS.SERVERCHAN_WAR_NOTIFY.key) { mutableStateOf("0") }.value == "1"
+                                if (warNotifyOn) {
+                                    SettingDropdown(
+                                        key = GLOBAL_SETTINGS.SERVERCHAN_WAR_NOTIFY_MODE.key,
+                                        options = listOf(Strings.notifyModeManual, Strings.notifyModeAuto)
+                                    )
+                                }
+                                SettingSwitchIcon(key = GLOBAL_SETTINGS.SERVERCHAN_LEAGUE_NOTIFY.key)
+                                val leagueNotifyOn = GlobalVars.configStates.getOrPut(GLOBAL_SETTINGS.SERVERCHAN_LEAGUE_NOTIFY.key) { mutableStateOf("0") }.value == "1"
+                                if (leagueNotifyOn) {
+                                    SettingDropdown(
+                                        key = GLOBAL_SETTINGS.SERVERCHAN_LEAGUE_NOTIFY_MODE.key,
+                                        options = listOf(Strings.notifyModeManual, Strings.notifyModeAuto)
+                                    )
+                                }
+                                SettingSwitchIcon(key = GLOBAL_SETTINGS.SERVERCHAN_UPGRADE_NOTIFY.key)
+                                val scheduleState = GlobalVars.configStates.getOrPut(GLOBAL_SETTINGS.SERVERCHAN_UPGRADE_SCHEDULE_NOTIFY.key) { mutableStateOf("0") }
+                                val scheduleEnabled = scheduleState.value == "1"
+                                SettingSwitchIcon(key = GLOBAL_SETTINGS.SERVERCHAN_UPGRADE_SCHEDULE_NOTIFY.key)
+                                if (scheduleEnabled) { SettingInputRow(key = GLOBAL_SETTINGS.SERVERCHAN_UPGRADE_ADVANCE.key) }
+                                val cloudState = GlobalVars.configStates.getOrPut(GLOBAL_SETTINGS.CLOUD_EXPIRE_NOTIFY.key) { mutableStateOf("0") }
+                                val cloudEnabled = cloudState.value == "1"
+                                SettingSwitchIcon(key = GLOBAL_SETTINGS.CLOUD_EXPIRE_NOTIFY.key)
+                                if (cloudEnabled) {
+                                    val dateState = GlobalVars.configStates.getOrPut(GLOBAL_SETTINGS.CLOUD_EXPIRE_DATE.key) { mutableStateOf("") }
+                                    val parts = dateState.value.split("-")
+                                    val yearSel = remember { mutableStateOf(parts.getOrNull(0)?.toIntOrNull() ?: 0) }
+                                    val monthSel = remember { mutableStateOf(parts.getOrNull(1)?.toIntOrNull() ?: 0) }
+                                    val daySel = remember { mutableStateOf(parts.getOrNull(2)?.toIntOrNull() ?: 0) }
+                                    // Keep dropdowns in sync when the date changes programmatically (manual/auto reset)
+                                    LaunchedEffect(dateState.value) {
+                                        val p = dateState.value.split("-")
+                                        yearSel.value = p.getOrNull(0)?.toIntOrNull() ?: 0
+                                        monthSel.value = p.getOrNull(1)?.toIntOrNull() ?: 0
+                                        daySel.value = p.getOrNull(2)?.toIntOrNull() ?: 0
+                                    }
+                                    fun writeDate() {
+                                        if (yearSel.value > 0 && monthSel.value > 0 && daySel.value > 0)
+                                            dateState.value = "${yearSel.value}-${monthSel.value.toString().padStart(2,'0')}-${daySel.value.toString().padStart(2,'0')}"
+                                    }
+                                    Row(modifier = Modifier.padding(top = 6.dp), verticalAlignment = Alignment.CenterVertically) {
+                                        Text(text = Schema.getDisplayName(GLOBAL_SETTINGS.CLOUD_EXPIRE_DATE.key) + "：", style = MaterialTheme.typography.labelMedium, modifier = Modifier.padding(end = 4.dp))
+                                        SimpleDropdown(sel = if (yearSel.value > 0) "${yearSel.value}" else "-", opts = (2025..2040).map { it.toString() }, onSel = { yearSel.value = it.toIntOrNull() ?: yearSel.value; writeDate() })
+                                        Text(text = "年", style = MaterialTheme.typography.labelSmall, modifier = Modifier.padding(horizontal = 2.dp))
+                                        SimpleDropdown(sel = if (monthSel.value > 0) "${monthSel.value}" else "-", opts = (1..12).map { it.toString() }, onSel = { monthSel.value = it.toIntOrNull() ?: monthSel.value; writeDate() })
+                                        Text(text = "月", style = MaterialTheme.typography.labelSmall, modifier = Modifier.padding(horizontal = 2.dp))
+                                        SimpleDropdown(sel = if (daySel.value > 0) "${daySel.value}" else "-", opts = (1..31).map { it.toString() }, onSel = { daySel.value = it.toIntOrNull() ?: daySel.value; writeDate() })
+                                        Text(text = "日", style = MaterialTheme.typography.labelSmall, modifier = Modifier.padding(horizontal = 2.dp))
+                                    }
+                                    // Auto reset switch: user decides whether expired dates roll forward automatically
+                                    SettingSwitchIcon(key = GLOBAL_SETTINGS.CLOUD_EXPIRE_AUTO_RESET.key)
+                                    val autoResetOn = GlobalVars.configStates.getOrPut(GLOBAL_SETTINGS.CLOUD_EXPIRE_AUTO_RESET.key) { mutableStateOf("1") }.value == "1"
+                                    if (autoResetOn) {
+                                        // Reset days: 1-7 kept, above that only payment-cycle lengths (7/30/90/180/365)
+                                        Row(modifier = Modifier.padding(top = 6.dp), verticalAlignment = Alignment.CenterVertically) {
+                                            Text(text = Schema.getDisplayName(GLOBAL_SETTINGS.CLOUD_EXPIRE_RESET_DAYS.key) + "：", style = MaterialTheme.typography.labelMedium, modifier = Modifier.padding(end = 4.dp))
+                                            val resetDaysState = GlobalVars.configStates.getOrPut(GLOBAL_SETTINGS.CLOUD_EXPIRE_RESET_DAYS.key) { mutableStateOf("30") }
+                                            val resetOpts = (1..7).map { it.toString() } + listOf("30", "90", "180", "365")
+                                            val resetDaysSel = resetDaysState.value.takeIf { it in resetOpts } ?: "-"
+                                            SimpleDropdown(sel = resetDaysSel, opts = resetOpts, onSel = { resetDaysState.value = it })
+                                        }
+                                    }
+                                    SettingInputRow(key = GLOBAL_SETTINGS.CLOUD_EXPIRE_ADVANCE_DAYS.key, numericOnly = true)
+                                    val cloudScope = rememberCoroutineScope()
+                                    CustomButton(
+                                        text = Strings.cloudExpireResetBtn,
+                                        marginTop = 6.dp,
+                                        onClick = {
+                                            cloudScope.launch {
+                                                val ok = withContext(Dispatchers.IO) { manualResetCloudExpiry() }
+                                                ShowMessage(
+                                                    if (ok) Strings.cloudExpireResetDone else Strings.cloudExpireResetFailed,
+                                                    isChecking = false
+                                                )
+                                            }
+                                        }
+                                    )
+                                }
+                            }
                         }
                     }
                 }
-            )
+            }
         }
     }
-    // ── Cloud Expiry Notification is now inside Push Notification section above
     // ── WebDAV File Manager ──────────────────────────────────────────────────
     item {
         SettingSection {
@@ -248,7 +362,6 @@ fun LazyListScope.specialSettings(onOpenWebDavManager: () -> Unit = {}) {
             Row(modifier = Modifier.padding(bottom = 4.dp)) {
                 Text(text = Strings.screenResolutionSectionTitle, style = MaterialTheme.typography.labelMedium, color = AppColors.TextPrimary)
             }
-            SettingSwitchIcon(key = GLOBAL_SETTINGS.CHANGE_RESOLUTION_RUNTIME.key)
             Text(
                 text = Strings.screenResolutionWarning,
                 style = MaterialTheme.typography.bodySmall,

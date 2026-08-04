@@ -649,6 +649,22 @@ fun WebDavFileManager(onBack: () -> Unit) {
                     copySelectedToOtherPanel(context, activePanel, names, true, leftState, rightState, sdPath, scope, { panel, newState -> if (panel == 0) leftState = newState else rightState = newState }, ::addLog, isStopRequested = { stopRequested.value }, onResolveConflict = ::resolveConflict, onDone = { batchBusy.value = false })
                     clearSelectedFor(activePanel)
                 }
+                // Show rename when exactly one directory is selected in the active panel.
+                if (selectedFor(activePanel).size == 1) {
+                    val renameState = if (activePanel == 0) leftState else rightState
+                    val renameFiltered = getFilteredItems(renameState.items, searchQuery.value, sortMode.value)
+                    val renameSelectedName = selectedFor(activePanel).first()
+                    val renameSelectedItem = renameFiltered.find { it.name == renameSelectedName }
+                    if (renameSelectedItem != null && renameSelectedItem.isDirectory) {
+                        BottomAction(modifier = Modifier.weight(1f), icon = Icons.Default.DriveFileRenameOutline, label = "重命名") {
+                            renameItem.value = renameSelectedItem
+                            renameNewName.value = renameSelectedItem.name
+                            renameTarget.value = activePanel
+                            renameDialogVisible.value = true
+                            clearSelectedFor(activePanel)
+                        }
+                    }
+                }
                 BottomAction(modifier = Modifier.weight(1f), icon = Icons.Default.Delete, label = "删除", enabled = !batchBusy.value, tint = WebDavDanger) { deleteSelectedDialogVisible.value = true }
                 BottomAction(modifier = Modifier.weight(1f), icon = Icons.Default.ClearAll, label = "取消") {
                     clearSelectedFor(activePanel)
@@ -1339,7 +1355,10 @@ private fun createFolder(
             val url = getConfig(GLOBAL_SETTINGS_WEBDAV_URL)
             val user = getConfig(GLOBAL_SETTINGS_WEBDAV_USERNAME)
             val pass = getConfig(GLOBAL_SETTINGS_WEBDAV_PASSWORD)
-            val error = com.coc.zkqcode.jar.code.universal.network.WebDAVHelper.createDirectory(url, user, pass, remotePath)
+            // Avoid NetworkOnMainThreadException for synchronous OkHttp WebDAV call.
+            val error = withContext(Dispatchers.IO) {
+                com.coc.zkqcode.jar.code.universal.network.WebDAVHelper.createDirectory(url, user, pass, remotePath)
+            }
             if (error == null) {
                 ShowMessage("文件夹已创建", isChecking = false)
                 onLog("创建成功: $remotePath")
@@ -1386,7 +1405,10 @@ private fun performRename(
             val pass = getConfig(GLOBAL_SETTINGS_WEBDAV_PASSWORD)
             val source = "$base/${item.name}"
             val target = "$base/$newName"
-            val error = com.coc.zkqcode.jar.code.universal.network.WebDAVHelper.movePath(url, user, pass, source, target)
+            // Avoid NetworkOnMainThreadException for synchronous OkHttp WebDAV call.
+            val error = withContext(Dispatchers.IO) {
+                com.coc.zkqcode.jar.code.universal.network.WebDAVHelper.movePath(url, user, pass, source, target)
+            }
             if (error == null) {
                 ShowMessage("重命名成功", isChecking = false)
                 onLog("重命名成功: $source → $target")
@@ -1429,7 +1451,10 @@ private suspend fun deleteItem(
         val url = getConfig(GLOBAL_SETTINGS_WEBDAV_URL)
         val user = getConfig(GLOBAL_SETTINGS_WEBDAV_USERNAME)
         val pass = getConfig(GLOBAL_SETTINGS_WEBDAV_PASSWORD)
-        val error = com.coc.zkqcode.jar.code.universal.network.WebDAVHelper.deletePath(url, user, pass, remotePath)
+        // Avoid NetworkOnMainThreadException for synchronous OkHttp WebDAV call.
+        val error = withContext(Dispatchers.IO) {
+            com.coc.zkqcode.jar.code.universal.network.WebDAVHelper.deletePath(url, user, pass, remotePath)
+        }
         if (error == null) {
             onLog("删除成功: $remotePath")
             ShowMessage("删除成功", isChecking = false)

@@ -417,30 +417,59 @@ object WebDAVHelper {
         destinationPath: String,
         overwrite: Boolean = false
     ): String? {
-        val credential = Credentials.basic(username, password)
-        val sourceUrl = buildUrl(baseUrl, sourcePath)
-        val destinationUrl = buildUrl(baseUrl, destinationPath)
-        android.util.Log.d("WebDAV", "MOVE $sourcePath -> $destinationPath overwrite=$overwrite")
-        val request = Request.Builder()
-            .url(sourceUrl)
-            .method("MOVE", null)
-            .header("Authorization", credential)
-            .header("Destination", destinationUrl)
-            .header("Overwrite", if (overwrite) "T" else "F")
-            .build()
-
+        // Wrap build + execute so non-ASCII Destination headers (e.g. Chinese paths) do not crash.
         return try {
-            val response = client.newCall(request).execute()
-            if (response.isSuccessful) null
-            else "Move failed: HTTP ${response.code} ${response.message}"
+            val credential = Credentials.basic(username, password)
+            val sourceUrl = buildUrl(baseUrl, sourcePath)
+            val destinationUrl = buildUrl(baseUrl, destinationPath)
+            android.util.Log.d("WebDAV", "MOVE $sourcePath -> $destinationPath overwrite=$overwrite")
+            val request = Request.Builder()
+                .url(sourceUrl)
+                .method("MOVE", null)
+                .header("Authorization", credential)
+                .header("Destination", destinationUrl)
+                .header("Overwrite", if (overwrite) "T" else "F")
+                .build()
+
+            try {
+                val response = client.newCall(request).execute()
+                if (response.isSuccessful) null
+                else "Move failed: HTTP ${response.code} ${response.message}"
+            } catch (e: Exception) {
+                "Move error: ${e.message}"
+            }
         } catch (e: Exception) {
             "Move error: ${e.message}"
         }
     }
 
+    /**
+     * Build a full URL from a base URL and a relative path, percent-encoding
+     * each path segment so non-ASCII (e.g. Chinese) path components survive
+     * both URL usage and ASCII-only HTTP headers (e.g. Destination on MOVE).
+     */
     private fun buildUrl(baseUrl: String, path: String): String {
         val normalizedBase = baseUrl.trimEnd('/') + "/"
         val normalizedPath = path.trimStart('/')
-        return normalizedBase + normalizedPath
+        val encodedPath = normalizedPath
+            .split("/")
+            .joinToString("/") { encodePathSegment(it) }
+        return normalizedBase + encodedPath
+    }
+
+    /**
+     * Percent-encode a single path segment. Already-URL-safe ASCII segments
+     * (no non-ASCII chars, no '%') are returned untouched to avoid
+     * double-encoding; everything else is UTF-8 encoded with '+' -> "%20".
+     */
+    private fun encodePathSegment(segment: String): String {
+        if (segment.all { it.code < 128 } && !segment.contains('%')) return segment
+        return try {
+            java.net.URLEncoder.encode(segment, "UTF-8")
+                .replace("+", "%20")
+                .replace("%2F", "/")
+        } catch (e: Exception) {
+            segment
+        }
     }
 }

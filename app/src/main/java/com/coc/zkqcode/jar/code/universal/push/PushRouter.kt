@@ -19,7 +19,14 @@ object PushRouter {
             "1" -> WxPusherHelper.sendNotification(message, brailleArt)
             "2" -> PushPlusHelper.sendNotification(message, brailleArt)
             "3" -> TelegramHelper.sendNotification(message, imageBytes)
+            "4" -> AstrBotHelper.sendNotification(message, imageBytes, brailleArt)
             else -> ServerChanHelper.send(message, brailleArt)
         }
     }
+
+    /**
+     * Platforms that accept real image pushes (screenshots).
+     * Single source of truth so callers (e.g. EnterGameCheck) don't hardcode provider ids.
+     */
+    fun supportsImage(provider: String): Boolean = provider == "3" || provider == "4"
 }

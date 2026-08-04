@@ -38,6 +38,7 @@ object GlobalSettings {
     val GEM_COUNT = SettingDef("gem_count", "宝石数量", "Gems", "", "GLOBAL_SETTINGS")
     val AFTER_KICK_OPTION = SettingDef("after_kick_option", "顶号后选项", "After Kick", "1", "GLOBAL_SETTINGS")
     val DEVICE_REMARK = SettingDef("device_remark", "设备备注", "Device Remark", "", "GLOBAL_SETTINGS")
+    val LOG_RETENTION_DAYS = SettingDef("log_retention_days", "日志保留天数", "Log Retention (days)", "3", "GLOBAL_SETTINGS")
     val RUNTIME_SCREENSHOT = SettingDef("runtime_screenshot", "运行时截图", "Runtime Screenshot", 0, "GLOBAL_SETTINGS")
     val LANGUAGE = SettingDef("language", "语言", "Language", "zh", "GLOBAL_SETTINGS")
 
@@ -49,6 +50,13 @@ object GlobalSettings {
     val PUSHPLUS_TOKEN = SettingDef("pushplus_token", "PushPlus Token", "PushPlus Token", "", "GLOBAL_SETTINGS")
     val TELEGRAM_BOT_TOKEN = SettingDef("telegram_bot_token", "Telegram BotToken", "Telegram BotToken", "", "GLOBAL_SETTINGS")
     val TELEGRAM_CHAT_ID = SettingDef("telegram_chat_id", "Telegram ChatID", "Telegram ChatID", "", "GLOBAL_SETTINGS")
+    val ASTRBOT_BASE_URL = SettingDef("astrbot_base_url", "AstrBot 地址", "AstrBot Address", "", "GLOBAL_SETTINGS")
+    val ASTRBOT_API_KEY = SettingDef("astrbot_api_key", "AstrBot API Key", "AstrBot API Key", "", "GLOBAL_SETTINGS")
+    val ASTRBOT_TARGET_ID = SettingDef("astrbot_target_id", "AstrBot 目标ID", "AstrBot Target ID", "", "GLOBAL_SETTINGS")
+    val ASTRBOT_MSG_TYPE = SettingDef("astrbot_msg_type", "消息类型", "Message Type", "0", "GLOBAL_SETTINGS")
+    val ZKQ_ENABLED = SettingDef("zkq_enabled", "启用插件通讯", "Enable Plugin", "1", "GLOBAL_SETTINGS")
+    val ZKQ_SERVER_URL = SettingDef("zkq_server_url", "插件连接地址", "Plugin Server URL", "", "GLOBAL_SETTINGS")
+    val ZKQ_TOKEN = SettingDef("zkq_token", "共享密钥", "Token", "", "GLOBAL_SETTINGS")
     val SERVERCHAN_LOGIN_NOTIFY = SettingDef("serverchan_login_notify", "辅助账号掉线通知", "Kicked-out Notification", 0, "GLOBAL_SETTINGS")
     val SERVERCHAN_KICK_NOTIFY = SettingDef("serverchan_kick_notify", "进入游戏失败通知", "Kick Notification", 0, "GLOBAL_SETTINGS")
     val SERVERCHAN_WAR_NOTIFY = SettingDef("serverchan_war_notify", "部落战通知", "Clan War Notification", 0, "GLOBAL_SETTINGS")
@@ -73,9 +81,12 @@ object GlobalSettings {
 
     // ── Upgrade-time Scheduling (升级时间上号) ──────────────────────────────────
     val UPGRADE_TIME_SCHEDULING = SettingDef("upgrade_time_scheduling", "升级时间上号", "Upgrade-time Scheduling", 0, "GLOBAL_SETTINGS")
+    val UTS_WAIT_POLL_SECONDS = SettingDef("uts_wait_poll_seconds", "等待刷新间隔(秒)", "Wait Refresh (s)", "5", "GLOBAL_SETTINGS")
+    val UTS_FILL_ENABLED = SettingDef("uts_fill_enabled", "等待时填充收菜", "Fill during wait", 1, "GLOBAL_SETTINGS")
 
     // ── Cloud Expiry Notification (云机到期通知) ────────────────────────────────
     val CLOUD_EXPIRE_NOTIFY = SettingDef("cloud_expire_notify", "云机到期通知", "Cloud Expiry Notify", 0, "GLOBAL_SETTINGS")
+    val CLOUD_EXPIRE_AUTO_RESET = SettingDef("cloud_expire_auto_reset", "自动重置", "Auto Reset", 1, "GLOBAL_SETTINGS")
     val CLOUD_EXPIRE_DATE = SettingDef("cloud_expire_date", "到期日期", "Expiry Date", "", "GLOBAL_SETTINGS")
     val CLOUD_EXPIRE_RESET_DAYS = SettingDef("cloud_expire_reset_days", "自动重置(天)", "Auto Reset (Days)", "30", "GLOBAL_SETTINGS")
     val CLOUD_EXPIRE_ADVANCE_DAYS = SettingDef("cloud_expire_advance_days", "提前提醒(天)", "Advance Notice (Days)", "3", "GLOBAL_SETTINGS")
@@ -161,6 +172,7 @@ object GlobalSettings {
         GEM_COUNT,
         AFTER_KICK_OPTION,
         DEVICE_REMARK,
+        LOG_RETENTION_DAYS,
         RUNTIME_SCREENSHOT,
         LANGUAGE,
         PUSH_PROVIDER,
@@ -170,6 +182,13 @@ object GlobalSettings {
         PUSHPLUS_TOKEN,
         TELEGRAM_BOT_TOKEN,
         TELEGRAM_CHAT_ID,
+        ASTRBOT_BASE_URL,
+        ASTRBOT_API_KEY,
+        ASTRBOT_TARGET_ID,
+        ASTRBOT_MSG_TYPE,
+        ZKQ_ENABLED,
+        ZKQ_SERVER_URL,
+        ZKQ_TOKEN,
         SERVERCHAN_LOGIN_NOTIFY,
         SERVERCHAN_KICK_NOTIFY,
         SERVERCHAN_WAR_NOTIFY,
@@ -184,6 +203,7 @@ object GlobalSettings {
         TEMP_RESUME_THRESHOLD,
         RANDOM_SCHEDULING,
         UPGRADE_TIME_SCHEDULING,
+        UTS_WAIT_POLL_SECONDS, UTS_FILL_ENABLED,
         RS_BATTLE_RATIO_DAWN, RS_BATTLE_RATIO_MORNING, RS_BATTLE_RATIO_AFTERNOON, RS_BATTLE_RATIO_NIGHT,
         RS_STOP_PROB_DAWN, RS_STOP_PROB_MORNING, RS_STOP_PROB_AFTERNOON, RS_STOP_PROB_NIGHT,
         RS_CONTINUE_MIN_DAWN, RS_CONTINUE_MIN_MORNING, RS_CONTINUE_MIN_AFTERNOON, RS_CONTINUE_MIN_NIGHT,
@@ -191,7 +211,7 @@ object GlobalSettings {
         RS_NO_WORKER_DAWN, RS_NO_WORKER_MORNING, RS_NO_WORKER_AFTERNOON, RS_NO_WORKER_NIGHT,
         RS_FULL_RES_DAWN, RS_FULL_RES_MORNING, RS_FULL_RES_AFTERNOON, RS_FULL_RES_NIGHT,
         RS_ACCOUNTS_DAWN, RS_ACCOUNTS_MORNING, RS_ACCOUNTS_AFTERNOON, RS_ACCOUNTS_NIGHT,
-        CLOUD_EXPIRE_NOTIFY, CLOUD_EXPIRE_DATE, CLOUD_EXPIRE_RESET_DAYS, CLOUD_EXPIRE_ADVANCE_DAYS,
+        CLOUD_EXPIRE_NOTIFY, CLOUD_EXPIRE_AUTO_RESET, CLOUD_EXPIRE_DATE, CLOUD_EXPIRE_RESET_DAYS, CLOUD_EXPIRE_ADVANCE_DAYS,
         WEBDAV_URL, WEBDAV_USERNAME, WEBDAV_PASSWORD,
         SCHEDULED_RESTART, RESTART_INTERVAL,
         CHANGE_RESOLUTION_RUNTIME
