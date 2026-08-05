@@ -11,9 +11,11 @@ import com.coc.zkqcode.jar.code.universal.buildings.upgrade.checkContinueBuild
 import com.coc.zkqcode.jar.code.universal.clickRightBottom
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
+import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.smalltools.input.TouchActions
 import com.coc.zkqcode.jar.code.universal.tutorial.AllTutorials
 import kotlinx.coroutines.delay
+import kotlin.time.Duration.Companion.milliseconds
 
 
 /**
@@ -52,6 +54,8 @@ suspend fun enterMainBase(): Boolean {
         }
         TouchActions.tap(1160, 325)//two extra clicks
         TouchActions.tap(1160, 370)
+        if (!enterMainScreen()) return false
+
     }
     return false
 }
@@ -115,15 +119,15 @@ suspend fun enterBuilderBase(isCheck: Boolean): Boolean {
                                 AllTutorials.allBaseTutorial()
                                 break
                             }
-                            delay(20) // Tight polling for tutorial interaction
+                            delay(20.milliseconds) // Tight polling for tutorial interaction
                         }
                     }
                     // Standard delay to maintain performance and avoid high CPU usage
-                    delay(100)
+                    delay(100.milliseconds)
                 }
             } else {
                 // If no check is requested, provide a brief delay before trying next coordinate
-                delay(200)
+                delay(200.milliseconds)
             }
         }
     }
