@@ -5,6 +5,7 @@ import com.coc.zkqcode.core.util.basic.RunShell
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.GameVersion
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
+import com.coc.zkqcode.jar.code.universal.tryHandlePrivacyBtnAsUpdateBtn
 import com.coc.zkqcode.jar.code.universal.smalltools.input.TouchActions
 import kotlinx.coroutines.delay
 
@@ -27,8 +28,12 @@ suspend fun tapDataNumberEntryButtons() {
             delay(DATA_NUMBER_SEARCH_INTERVAL_MS)
             continue
         }
-        findMultiColors(byteBuffer = screenBuffer, schema = MyColors.AgreePrivacy, increment = 1)?.let {
-            TouchActions.tap(it.x, it.y, delayTime = 800)
+        findMultiColors(byteBuffer = screenBuffer, schema = MyColors.AgreePrivacy, increment = 1)?.let { privacyBtn ->
+            // Determine if this "privacy agreement" button is actually an update button (yes → entered update wait, stop further processing)
+            if (tryHandlePrivacyBtnAsUpdateBtn(privacyBtn)) {
+                return
+            }
+            TouchActions.tap(privacyBtn.x, privacyBtn.y, delayTime = 800)
             continue
         }
         findMultiColors(byteBuffer = screenBuffer, schema = MyColors.AgreeTerms, increment = 1)?.let {

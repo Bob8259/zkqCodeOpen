@@ -1,4 +1,4 @@
-﻿package com.coc.zkqcode.jar.ui.pages.single
+package com.coc.zkqcode.jar.ui.pages.single
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background

@@ -27,6 +27,12 @@ object CNApkDownloader {
 
     private const val CN_PACKAGE_NAME = "com.tencent.tmgp.supercell.clashofclans"
 
+    // Method A: Extract version number from APK direct URL (e.g., clashofclans_18.111.1.apk)
+    private val APK_VERSION_REGEX: Pattern = Pattern.compile(
+        "(\\d+\\.\\d+\\.\\d+)\\.apk",
+        Pattern.CASE_INSENSITIVE
+    )
+
     private val SOURCES: List<Source> = listOf(
         Source(
             name = "应用宝",
@@ -88,11 +94,29 @@ object CNApkDownloader {
         val apkUrl = resolveApkUrl(preferredSource)
         if (apkUrl == null) {
             showMessage(Strings.msgResolveFailed)
-            showDebugInfo("增强更新：所有来源均无法解析到 APK 直链")
+            showDebugInfo("增强更新：所有来源均无法解析到 APK 直链，本轮结束不重试")
             return false
         }
         showMessage(Strings.msgResolved)
         showDebugInfo("增强更新：已解析到 APK 直链 -> $apkUrl")
+
+        // Method A: Pre-download version verification (URL version vs installed version)
+        val installedVersion = getInstalledVersion(context)
+        val urlVersion = APK_VERSION_REGEX.matcher(apkUrl).let { if (it.find()) it.group(1) else null }
+        if (installedVersion != null && urlVersion != null) {
+            if (compareVersions(urlVersion, installedVersion) <= 0) {
+                showMessage(if (LanguageManager.isChinese)
+                    "增强更新：渠道版本 $urlVersion 不高于已装 $installedVersion，跳过下载"
+                else
+                    "Enhanced Update: channel $urlVersion <= installed $installedVersion, skip")
+                showDebugInfo("增强更新：渠道版本 $urlVersion <= 已装 $installedVersion，跳过下载，本轮结束")
+                return false
+            }
+            showDebugInfo("增强更新：渠道版本 $urlVersion > 已装 $installedVersion，开始下载")
+        } else {
+            // URL has no version or installed version unknown → verify after download
+            showDebugInfo("增强更新：URL 无法提取版本号(url=$urlVersion installed=$installedVersion)，下载后校验")
+        }
 
         val dir = File(context.filesDir, "cn_update").apply { mkdirs() }
         val apkFile = File(dir, "update.apk")
@@ -104,6 +128,24 @@ object CNApkDownloader {
         showMessage(Strings.msgDownloadDone(apkFile.length()))
         showDebugInfo("增强更新：APK 下载完成，大小 ${apkFile.length()} 字节")
 
+        // Method A fallback: If URL has no version, verify APK version after download
+        if (urlVersion == null && installedVersion != null) {
+            val apkVersion = try {
+                context.packageManager.getPackageArchiveInfo(apkFile.absolutePath, 0)?.versionName
+            } catch (e: Exception) {
+                showDebugInfo("增强更新：读取下载APK版本失败: ${e.message}")
+                null
+            }
+            if (apkVersion != null && compareVersions(apkVersion, installedVersion) <= 0) {
+                showMessage(if (LanguageManager.isChinese)
+                    "增强更新：下载APK版本 $apkVersion 不高于已装 $installedVersion，删除并跳过"
+                else
+                    "Enhanced Update: apk $apkVersion <= installed $installedVersion, discard")
+                showDebugInfo("增强更新：下载APK版本 $apkVersion <= 已装 $installedVersion，删除并跳过")
+                apkFile.delete()
+                return false
+            }
+        }
         if (!installViaRoot(apkFile)) {
             showMessage(Strings.msgInstallFailed)
             apkFile.delete()
@@ -326,6 +368,29 @@ object CNApkDownloader {
 
     private fun showMessage(text: String) {
         ShowMessage(text, false)
+    }
+
+    /** Method A: Compare version numbers segment by segment, a > b returns positive */
+    private fun compareVersions(a: String, b: String): Int {
+        val pa = a.split(".").mapNotNull { it.toIntOrNull() }
+        val pb = b.split(".").mapNotNull { it.toIntOrNull() }
+        val max = maxOf(pa.size, pb.size)
+        for (i in 0 until max) {
+            val va = pa.getOrElse(i) { 0 }
+            val vb = pb.getOrElse(i) { 0 }
+            if (va != vb) return va - vb
+        }
+        return 0
+    }
+
+    /** Method A: Get installed CN game version, returns null on failure */
+    private fun getInstalledVersion(context: Context): String? {
+        return try {
+            context.packageManager.getPackageInfo(CN_PACKAGE_NAME, 0).versionName
+        } catch (e: Exception) {
+            showDebugInfo("增强更新：获取已装版本失败: ${e.message}")
+            null
+        }
     }
 
     private object Strings {

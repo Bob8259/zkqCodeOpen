@@ -2,6 +2,7 @@ package com.coc.zkqcode.jar.code.universal
 
 import android.os.Environment
 import android.graphics.Bitmap
+import android.graphics.Point
 import com.coc.zkqcode.core.app.ZKQApplication
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.system.inputmethod.inputTextReliable
@@ -9,6 +10,7 @@ import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.core.util.basic.RunShell
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
+import com.coc.zkqcode.core.util.fileactions.LogHelper.showDebugInfo
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.mainbase.attack.mainBaseDeployTroops
 import com.coc.zkqcode.jar.code.mainbase.others.zoomSmallMainBase
@@ -18,6 +20,7 @@ import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.push.PixelBlockEncoder
 import com.coc.zkqcode.jar.code.universal.push.PushMessage
 import com.coc.zkqcode.jar.code.universal.push.PushRouter
+import com.coc.zkqcode.jar.code.universal.recognizer.TextRecognizer
 import com.coc.zkqcode.jar.code.universal.smalltools.data.getBooleanConfigRuntime
 import com.coc.zkqcode.jar.code.universal.smalltools.data.getStaticConfig
 import com.coc.zkqcode.jar.code.universal.smalltools.data.checkMemoryFile
@@ -229,6 +232,8 @@ private suspend fun installCNGameUpdateApkIfExists() {
 private suspend fun updateCNGame(maxWaitMillis: Int) {
     val startTime = System.currentTimeMillis()
     var timedOut = false
+    var sawUpdating = false        // Whether "updating" interface was detected
+    var noUpdatingBreak = false    // Never entered "updating" → go directly to enhanced update
 
     while (true) {
         val elapsedMillis = (System.currentTimeMillis() - startTime).toInt()
@@ -239,11 +244,27 @@ private suspend fun updateCNGame(maxWaitMillis: Int) {
         val remainingMinutes = ((maxWaitMillis - elapsedMillis).coerceAtLeast(0)) / 60_000.0
         accountMessage("国服更新等待剩余 ${String.format(Locale.US, "%.2f", remainingMinutes)} 分钟")
         delayWithMultiplier(3000)
-        findMultiColors(MyColors.CNGameUpdating) ?: break
+
+        val updatingHit = findMultiColors(MyColors.CNGameUpdating) != null
+        if (updatingHit) sawUpdating = true
+
+        // If update button clicked but never entered "updating" interface → go to enhanced update immediately
+        if (!sawUpdating && elapsedMillis >= 15_000) {
+            noUpdatingBreak = true
+            break
+        }
+
+        // Check if any update interface element is still visible
+        val stillUpdating = findMultiColors(MyColors.CNGameUpdate) != null ||
+            findMultiColors(MyColors.CNGameUpdate2) != null ||
+            updatingHit
+        if (!stillUpdating) break
     }
 
-    if (timedOut && getStaticConfig(Schema.GLOBAL_SETTINGS.ENHANCED_CN_UPDATE.key) == "1") {
-        accountMessage("等待超时，开始增强更新流程")
+    val needEnhanced = (timedOut || noUpdatingBreak) &&
+        getStaticConfig(Schema.GLOBAL_SETTINGS.ENHANCED_CN_UPDATE.key) == "1"
+    if (needEnhanced) {
+        accountMessage(if (noUpdatingBreak) "未检测到更新中界面，直接开始增强更新流程" else "等待超时，开始增强更新流程")
         val channelIdx = getStaticConfig(Schema.GLOBAL_SETTINGS.ENHANCED_CN_UPDATE_SOURCE.key).toIntOrNull() ?: 1
         CNApkDownloader.runEnhancedUpdate(
             ZKQApplication.appContext,
@@ -254,12 +275,40 @@ private suspend fun updateCNGame(maxWaitMillis: Int) {
     }
 }
 
+/**
+ * Determine if a "privacy agreement" style button is actually an update button.
+ * Detection method: OCR "检查更新" → is update button.
+ * @return true = was clicked as update button and entered update wait, caller should stop further privacy handling
+ */
+suspend fun tryHandlePrivacyBtnAsUpdateBtn(privacyBtn: Point): Boolean {
+    // Only OCR detection: top area recognized "检查更新" → is update button
+    val ocrHit = TextRecognizer.recognize(
+        startX = 578, startY = 8, endX = 700, endY = 88,
+        useChinese = true, threshold = 140, applyPreprocess = true, invertBinarization = true
+    ).any { it.text.contains("检查更新") }
+    if (ocrHit) {
+        accountMessage("判断为更新按钮")
+        TouchActions.tap(privacyBtn.x, privacyBtn.y)
+        updateCNGame(getCNGameUpdateMaxWaitMillis())
+        return true
+    }
+    accountMessage("判断为原处理")
+    return false
+}
+
 private suspend fun closeAdvertisements() {
     if (getStaticConfig(Schema.GLOBAL_SETTINGS.UPDATE_CN_GAME.key) == "1") {
-        val updateCNGameButton = findMultiColorsUntil(listOf(MyColors.CNGameUpdate, MyColors.CNGameUpdating), 10)
+        // ① Color detection: hit any update characteristic → go directly to update flow
+        val updateCNGameButton = findMultiColorsUntil(listOf(MyColors.CNGameUpdate, MyColors.CNGameUpdate2, MyColors.CNGameUpdating), 10)
         if (updateCNGameButton != null) {
             TouchActions.tap(updateCNGameButton.x, updateCNGameButton.y)
             updateCNGame(getCNGameUpdateMaxWaitMillis())
+            return
+        }
+
+        // ② After detecting privacy confirmation button, determine if it's an update button (shared detection logic)
+        val privacyBtn = findMultiColors(MyColors.AgreePrivacy)
+        if (privacyBtn != null && tryHandlePrivacyBtnAsUpdateBtn(privacyBtn)) {
             return
         }
     }

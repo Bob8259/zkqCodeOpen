@@ -131,6 +131,50 @@ object WebDAVHelper {
     }
 
     /**
+     * Download a remote WebDAV path directly to a local file, streaming the
+     * response body with a fixed-size buffer instead of loading it all into
+     * memory. Memory usage stays constant regardless of file size.
+     *
+     * @return null on success, error message string on failure (prefixed with "ERROR: ")
+     */
+    fun downloadToFile(
+        baseUrl: String,
+        username: String,
+        password: String,
+        remotePath: String,
+        destFile: java.io.File
+    ): String? {
+        val credential = Credentials.basic(username, password)
+        val url = buildUrl(baseUrl, remotePath)
+        val request = Request.Builder()
+            .url(url)
+            .get()
+            .header("Authorization", credential)
+            .build()
+
+        return try {
+            val response = client.newCall(request).execute()
+            if (!response.isSuccessful) {
+                return "ERROR: Download failed: HTTP ${response.code} ${response.message}"
+            }
+            destFile.parentFile?.mkdirs()
+            response.body.byteStream().use { input ->
+                java.io.FileOutputStream(destFile).use { output ->
+                    val buffer = ByteArray(DEFAULT_BUFFER_SIZE)
+                    while (true) {
+                        val read = input.read(buffer)
+                        if (read == -1) break
+                        output.write(buffer, 0, read)
+                    }
+                }
+            }
+            null
+        } catch (e: Exception) {
+            "ERROR: Download error: ${e.message}"
+        }
+    }
+
+    /**
      * Send a PROPFIND request (Depth: 1) and return parsed entries.
      *
      * @return ParsedPropfindResult on success, error string on failure
@@ -235,7 +279,7 @@ object WebDAVHelper {
                 // Check if it's a collection
                 val isCollection = collectionRegex.containsMatchIn(respXml)
                 val size = sizeRegex.find(respXml)?.groupValues?.getOrNull(1)?.trim()?.toLongOrNull() ?: 0L
-                val modified = modifiedRegex.find(respXml)?.groupValues?.getOrNull(1)?.trim().orEmpty()
+                val modified = formatRemoteModified(modifiedRegex.find(respXml)?.groupValues?.getOrNull(1)?.trim().orEmpty())
 
                 if (isCollection) {
                     directories.add(name)
@@ -448,6 +492,26 @@ object WebDAVHelper {
      * each path segment so non-ASCII (e.g. Chinese) path components survive
      * both URL usage and ASCII-only HTTP headers (e.g. Destination on MOVE).
      */
+    /**
+     * Convert a WebDAV getlastmodified value (RFC 1123, e.g.
+     * "Tue, 04 Aug 2026 13:04:56 GMT") to the same "yyyy-MM-dd HH:mm"
+     * numeric format used by the local file listing, so both panels
+     * display timestamps consistently.
+     */
+    private fun formatRemoteModified(raw: String): String {
+        if (raw.isBlank()) return raw
+        return try {
+            val parsed = java.text.SimpleDateFormat(
+                "EEE, dd MMM yyyy HH:mm:ss z",
+                java.util.Locale.US
+            ).parse(raw)
+            if (parsed == null) raw
+            else java.text.SimpleDateFormat("yyyy-MM-dd HH:mm", java.util.Locale.US).format(parsed)
+        } catch (e: Exception) {
+            raw
+        }
+    }
+
     private fun buildUrl(baseUrl: String, path: String): String {
         val normalizedBase = baseUrl.trimEnd('/') + "/"
         val normalizedPath = path.trimStart('/')

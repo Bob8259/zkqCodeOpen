@@ -26,6 +26,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.ui.input.pointer.pointerInput
@@ -48,7 +49,6 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.SelectAll
 import androidx.compose.material.icons.filled.SortByAlpha
-import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.ClearAll
 import androidx.compose.material.icons.filled.SearchOff
 import androidx.compose.material.icons.filled.MoreVert
@@ -64,6 +64,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -92,6 +93,7 @@ import com.coc.zkqcode.jar.ui.Strings
 import com.coc.zkqcode.jar.ui.theme.AppColors
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
@@ -196,6 +198,8 @@ fun WebDavFileManager(onBack: () -> Unit) {
     val batchBusy = remember { mutableStateOf(false) }
     val stopRequested = remember { mutableStateOf(false) }
     val conflictRequest = remember { mutableStateOf<ConflictRequest?>(null) }
+    val isRefreshingLeft = remember { mutableStateOf(false) }
+    val isRefreshingRight = remember { mutableStateOf(false) }
     // 0=name asc, 1=name desc, 2=size asc, 3=size desc
     val sortMode = remember { mutableIntStateOf(0) }
     val sortMenuVisible = remember { mutableStateOf(false) }
@@ -204,7 +208,41 @@ fun WebDavFileManager(onBack: () -> Unit) {
     val logMessages = remember { mutableStateListOf<String>() }
     fun addLog(msg: String) {
         val time = SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(Date())
-        logMessages.add(0, "[$time] $msg")
+        // Error messages: display in full detail
+        val errorKeywords = listOf("失败", "错误", "取消", "停止", "为空", "不存在", "Error", "error", "failed", "cancel")
+        val isError = errorKeywords.any { msg.contains(it) }
+        if (isError) {
+            logMessages.add(0, "[$time] $msg")
+        } else {
+            // Process logs: show action summary + filename, strip full path/time/size details
+            val action = when {
+                msg.contains("开始上传") -> "开始上传"
+                msg.contains("开始下载") -> "开始下载"
+                msg.contains("正在上传") -> "正在上传"
+                msg.contains("正在下载") -> "正在下载"
+                msg.contains("正在复制到临时目录") -> "正在复制到临时目录"
+                msg.contains("上传完成") -> "上传完成"
+                msg.contains("下载文件") -> "正在下载文件"
+                msg.contains("目录下载完成") -> "目录下载完成"
+                msg.contains("压缩完成") -> "压缩完成"
+                msg.contains("创建文件夹") -> "创建文件夹"
+                msg.contains("创建成功") -> "创建成功"
+                msg.contains("删除") -> "删除"
+                msg.contains("删除成功") -> "删除成功"
+                msg.contains("重命名") -> "重命名"
+                msg.contains("重命名成功") -> "重命名成功"
+                msg.contains("读取远程目录") -> "读取远程目录"
+                msg.contains("正在解压") || msg.contains("开始解压") -> "解压"
+                else -> "操作"
+            }
+            // Extract filename: content after colon, keep only last path segment, preserve "a → b" for rename
+            val fileName = if (msg.contains(":")) {
+                msg.substringAfter(": ").trim()
+                    .split(" → ")
+                    .joinToString(" → ") { it.substringAfterLast("/") }
+            } else ""
+            logMessages.add(0, "[$time] $action${if (fileName.isNotBlank()) " $fileName" else ""}")
+        }
         if (logMessages.size > 100) logMessages.removeAt(logMessages.size - 1)
     }
 
@@ -282,6 +320,7 @@ fun WebDavFileManager(onBack: () -> Unit) {
     }
 
     fun onItemClick(panel: Int, item: FileItem) {
+        activePanel = panel
         if (!item.isDirectory) return
         val state = if (panel == 0) leftState else rightState
         val newPath = buildPath(state.currentPath, item.name)
@@ -291,11 +330,24 @@ fun WebDavFileManager(onBack: () -> Unit) {
     fun canGoBack(panel: Int) = if (panel == 0) leftState.historyIndex > 0 else rightState.historyIndex > 0
     fun canGoForward(panel: Int) = if (panel == 0) leftState.historyIndex < leftState.history.size - 1 else rightState.historyIndex < rightState.history.size - 1
 
-    fun refreshPanel(panel: Int) {
+    fun refreshPanel(panel: Int, onDone: () -> Unit = {}) {
         val state = if (panel == 0) leftState else rightState
         scope.launch {
             val items = if (panel == 0) loadLocalItems(state.currentPath, sdPath) else loadRemoteItems(state.currentPath)
             if (panel == 0) leftState = state.copy(items = items) else rightState = state.copy(items = items)
+            onDone()
+        }
+    }
+
+    fun refreshPanelWithIndicator(panel: Int) {
+        if (panel == 0) isRefreshingLeft.value = true else isRefreshingRight.value = true
+        scope.launch {
+            val state = if (panel == 0) leftState else rightState
+            val items = if (panel == 0) loadLocalItems(state.currentPath, sdPath) else loadRemoteItems(state.currentPath)
+            if (panel == 0) leftState = state.copy(items = items) else rightState = state.copy(items = items)
+            // Ensure the spinner is visible for at least a short time to avoid flicker on fast refreshes
+            delay(600)
+            if (panel == 0) isRefreshingLeft.value = false else isRefreshingRight.value = false
         }
     }
 
@@ -333,8 +385,18 @@ fun WebDavFileManager(onBack: () -> Unit) {
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.weight(1f)
             )
-            TextButton(onClick = { logsVisible.value = !logsVisible.value }, modifier = Modifier.height(32.dp)) {
-                Text("日志", color = if (logsVisible.value) WebDavAccent else WebDavText, fontSize = 12.sp)
+            Text(
+                text = "日志",
+                color = if (logsVisible.value) WebDavAccent else WebDavText,
+                fontSize = 12.sp,
+                modifier = Modifier
+                    .clickable { logsVisible.value = !logsVisible.value }
+                    .padding(horizontal = 8.dp, vertical = 4.dp)
+            )
+            if (isRightConfigured) {
+                IconButton(onClick = { webdavConfigVisible.value = true }, modifier = Modifier.size(28.dp)) {
+                    Icon(Icons.Default.Settings, contentDescription = "WebDAV 配置", modifier = Modifier.size(16.dp), tint = WebDavAccent)
+                }
             }
         }
 
@@ -388,32 +450,6 @@ fun WebDavFileManager(onBack: () -> Unit) {
             }
         }
 
-        if (sortMenuVisible.value) {
-            Popup(
-                onDismissRequest = { sortMenuVisible.value = false },
-                properties = PopupProperties(focusable = true)
-            ) {
-                Surface(
-                    shape = RoundedCornerShape(8.dp),
-                    color = WebDavSurfaceAlt,
-                    shadowElevation = 4.dp
-                ) {
-                    Column(modifier = Modifier.padding(4.dp)) {
-                        listOf("名称升序", "名称降序", "大小升序", "大小降序").forEachIndexed { idx, label ->
-                            Text(
-                                text = label,
-                                style = MaterialTheme.typography.labelSmall,
-                                color = if (idx == sortMode.value) WebDavAccent else WebDavText,
-                                modifier = Modifier
-                                    .clickable { sortMode.value = idx; sortMenuVisible.value = false }
-                                    .padding(horizontal = 16.dp, vertical = 8.dp)
-                            )
-                        }
-                    }
-                }
-            }
-        }
-
         if (selectedFor(activePanel).isNotEmpty()) {
             Row(
                 modifier = Modifier
@@ -442,71 +478,93 @@ fun WebDavFileManager(onBack: () -> Unit) {
         }
 
         // Dual panels
-
-        Row(modifier = Modifier.weight(1f).fillMaxWidth()) {
-            // Left panel
-            Panel(
-                modifier = Modifier.weight(1f).fillMaxHeight(),
-                state = leftState,
-                isActive = activePanel == 0,
-                isLocal = true,
-                onTap = {
-                    if (activePanel != 0) {
+        Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
+            Row(modifier = Modifier.fillMaxSize()) {
+                // Left panel
+                Panel(
+                    modifier = Modifier.weight(1f).fillMaxHeight(),
+                    state = leftState,
+                    isActive = activePanel == 0,
+                    isLocal = true,
+                    isRefreshing = isRefreshingLeft.value,
+                    onItemClick = { onItemClick(0, it) },
+                    onItemLongPress = { item, _ ->
                         activePanel = 0
-                        clearSelectedFor(0)
-                    }
-                },
-                onItemClick = { onItemClick(0, it) },
-                onItemLongPress = { item, _ ->
-                    activePanel = 0
-                    setSelectedFor(0, setOf(item.name))
-                },
-                selectionMode = selectedFor(0).isNotEmpty(),
-                onRefresh = { refreshPanel(0) },
-                searchQuery = searchQuery.value,
-                sortMode = sortMode.value,
-                selectedItems = selectedFor(0),
-                onToggleSelect = { name ->
-                    setSelectedFor(0, if (name in selectedFor(0)) selectedFor(0) - name else selectedFor(0) + name)
-                },
-            )
+                        setSelectedFor(0, setOf(item.name))
+                    },
+                    selectionMode = selectedFor(0).isNotEmpty(),
+                    onRefresh = { refreshPanelWithIndicator(0) },
+                    searchQuery = searchQuery.value,
+                    sortMode = sortMode.value,
+                    selectedItems = selectedFor(0),
+                    onToggleSelect = { name ->
+                        setSelectedFor(0, if (name in selectedFor(0)) selectedFor(0) - name else selectedFor(0) + name)
+                    },
+                )
 
-            // Divider - changes color based on active panel
-            Box(
-                modifier = Modifier
-                    .width(2.dp)
-                    .fillMaxHeight()
-                    .background(if (activePanel == 0) WebDavAccent else WebDavAccent)
-            )
+                // Divider - changes color based on active panel
+                Box(
+                    modifier = Modifier
+                        .width(2.dp)
+                        .fillMaxHeight()
+                        .background(if (activePanel == 0) WebDavAccent else WebDavAccent)
+                )
 
-            // Right panel
-            Panel(
-                modifier = Modifier.weight(1f).fillMaxHeight(),
-                state = rightState,
-                isActive = activePanel == 1,
-                isLocal = false,
-                onTap = {
-                    if (activePanel != 1) {
+                // Right panel
+                Panel(
+                    modifier = Modifier.weight(1f).fillMaxHeight(),
+                    state = rightState,
+                    isActive = activePanel == 1,
+                    isLocal = false,
+                    isRefreshing = isRefreshingRight.value,
+                    onItemClick = { onItemClick(1, it) },
+                    onItemLongPress = { item, _ ->
                         activePanel = 1
-                        clearSelectedFor(1)
+                        setSelectedFor(1, setOf(item.name))
+                    },
+                    selectionMode = selectedFor(1).isNotEmpty(),
+                    onRefresh = { refreshPanelWithIndicator(1) },
+                    isConfigured = isRightConfigured,
+                    searchQuery = searchQuery.value,
+                    sortMode = sortMode.value,
+                    selectedItems = selectedFor(1),
+                    onToggleSelect = { name ->
+                        setSelectedFor(1, if (name in selectedFor(1)) selectedFor(1) - name else selectedFor(1) + name)
+                    },
+                )
+            }
+
+            // Sort popup: centered overlay on the active panel's half
+            if (sortMenuVisible.value) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .fillMaxWidth(if (activePanel == 0) 0.5f else 0.5f)
+                        .align(if (activePanel == 0) Alignment.CenterStart else Alignment.CenterEnd)
+                        .background(Color.Black.copy(alpha = 0.3f))
+                        .clickable { sortMenuVisible.value = false },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Surface(
+                        shape = RoundedCornerShape(8.dp),
+                        color = WebDavSurfaceAlt,
+                        shadowElevation = 4.dp
+                    ) {
+                        Column(modifier = Modifier.padding(4.dp)) {
+                            listOf("名称升序", "名称降序", "大小升序", "大小降序").forEachIndexed { idx, label ->
+                                Text(
+                                    text = label,
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = if (idx == sortMode.value) WebDavAccent else WebDavText,
+                                    modifier = Modifier
+                                        .clickable { sortMode.value = idx; sortMenuVisible.value = false }
+                                        .padding(horizontal = 16.dp, vertical = 8.dp)
+                                )
+                            }
+                        }
                     }
-                },
-                onItemClick = { onItemClick(1, it) },
-                onItemLongPress = { item, _ ->
-                    activePanel = 1
-                    setSelectedFor(1, setOf(item.name))
-                },
-                selectionMode = selectedFor(1).isNotEmpty(),
-                onRefresh = { refreshPanel(1) },
-                isConfigured = isRightConfigured,
-                onConfigure = { webdavConfigVisible.value = true },
-                searchQuery = searchQuery.value,
-                sortMode = sortMode.value,
-                selectedItems = selectedFor(1),
-                onToggleSelect = { name ->
-                    setSelectedFor(1, if (name in selectedFor(1)) selectedFor(1) - name else selectedFor(1) + name)
-                },
-            )
+                }
+            }
         }
 
         if (batchBusy.value) {
@@ -589,17 +647,13 @@ fun WebDavFileManager(onBack: () -> Unit) {
                 navigatePanel(activePanel, parentPath(current))
             }
             BottomAction(modifier = Modifier.weight(1f), icon = Icons.Default.Home, label = "主页") { navigatePanel(activePanel, "/") }
-            BottomAction(modifier = Modifier.weight(1f), icon = Icons.Default.Refresh, label = "刷新") { refreshPanel(activePanel) }
+            BottomAction(modifier = Modifier.weight(1f), icon = Icons.Default.Refresh, label = "刷新") { refreshPanelWithIndicator(activePanel) }
             BottomAction(modifier = Modifier.weight(1f), icon = Icons.Default.CreateNewFolder, label = "新建") {
                 newFolderTarget.value = activePanel
                 newFolderName.value = ""
                 newFolderDialogVisible.value = true
             }
             BottomAction(modifier = Modifier.weight(1f), icon = Icons.Default.SortByAlpha, label = "排序") { sortMenuVisible.value = true }
-            BottomAction(modifier = Modifier.weight(1f), icon = Icons.Default.Search, label = "搜索") {
-                searchVisible.value = !searchVisible.value
-                if (!searchVisible.value) searchQuery.value = ""
-            }
         }
 
         if (selectedFor(activePanel).isNotEmpty()) {
@@ -635,14 +689,14 @@ fun WebDavFileManager(onBack: () -> Unit) {
                         setSelectedFor(activePanel, filtered.filter { item -> if (matchType == "dir") item.isDirectory else !item.isDirectory && item.name.substringAfterLast('.', "") == matchType }.map { it.name }.toSet())
                     }
                 }
-                BottomAction(modifier = Modifier.weight(1f), icon = Icons.AutoMirrored.Default.ArrowForward, label = "复制", enabled = !batchBusy.value && (activePanel == 1 || isRightConfigured)) {
+                BottomAction(modifier = Modifier.weight(1f), icon = if (activePanel == 0) Icons.AutoMirrored.Default.ArrowForward else Icons.AutoMirrored.Default.ArrowBack, label = "复制", enabled = !batchBusy.value && (activePanel == 1 || isRightConfigured)) {
                     val names = selectedFor(activePanel).toSet()
                     stopRequested.value = false
                     batchBusy.value = true
                     copySelectedToOtherPanel(context, activePanel, names, false, leftState, rightState, sdPath, scope, { panel, newState -> if (panel == 0) leftState = newState else rightState = newState }, ::addLog, isStopRequested = { stopRequested.value }, onResolveConflict = ::resolveConflict, onDone = { batchBusy.value = false })
                     clearSelectedFor(activePanel)
                 }
-                BottomAction(modifier = Modifier.weight(1f), icon = Icons.AutoMirrored.Default.ArrowForward, label = "移动", enabled = !batchBusy.value && (activePanel == 1 || isRightConfigured)) {
+                BottomAction(modifier = Modifier.weight(1f), icon = if (activePanel == 0) Icons.AutoMirrored.Default.ArrowForward else Icons.AutoMirrored.Default.ArrowBack, label = "移动", enabled = !batchBusy.value && (activePanel == 1 || isRightConfigured)) {
                     val names = selectedFor(activePanel).toSet()
                     stopRequested.value = false
                     batchBusy.value = true
@@ -650,7 +704,7 @@ fun WebDavFileManager(onBack: () -> Unit) {
                     clearSelectedFor(activePanel)
                 }
                 // Show rename when exactly one directory is selected in the active panel.
-                if (selectedFor(activePanel).size == 1) {
+                if (activePanel == 1 && selectedFor(activePanel).size == 1) {
                     val renameState = if (activePanel == 0) leftState else rightState
                     val renameFiltered = getFilteredItems(renameState.items, searchQuery.value, sortMode.value)
                     val renameSelectedName = selectedFor(activePanel).first()
@@ -967,11 +1021,11 @@ private fun Panel(
     state: PanelState,
     isActive: Boolean,
     isLocal: Boolean,
-    onTap: () -> Unit,
     onItemClick: (FileItem) -> Unit,
     onItemLongPress: (FileItem, androidx.compose.ui.geometry.Offset) -> Unit,
     isConfigured: Boolean = true,
     onConfigure: () -> Unit = {},
+    isRefreshing: Boolean = false,
     onRefresh: () -> Unit = {},
     selectionMode: Boolean = false,
     searchQuery: String = "",
@@ -979,10 +1033,10 @@ private fun Panel(
     selectedItems: Set<String> = emptySet(),
     onToggleSelect: (String) -> Unit = {}
 ) {
+    val listState = rememberLazyListState()
     Column(
         modifier = modifier
             .background(if (isActive) WebDavAccent.copy(alpha = 0.05f) else Color.Transparent)
-            .clickable { onTap() }
     ) {
         Row(
             modifier = Modifier
@@ -1009,14 +1063,6 @@ private fun Panel(
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.padding(end = 4.dp)
             )
-            if (!isLocal) {
-                IconButton(onClick = onConfigure, modifier = Modifier.size(28.dp)) {
-                    Icon(Icons.Default.Settings, contentDescription = "WebDAV 配置", modifier = Modifier.size(16.dp), tint = WebDavAccent)
-                }
-            }
-            IconButton(onClick = onRefresh, modifier = Modifier.size(28.dp)) {
-                Icon(Icons.Default.Refresh, contentDescription = "刷新", modifier = Modifier.size(16.dp), tint = WebDavAccent)
-            }
         }
 
         if (isLocal || isConfigured) {
@@ -1025,29 +1071,37 @@ private fun Panel(
                     CircularProgressIndicator(modifier = Modifier.size(32.dp), color = WebDavAccent)
                 }
             } else {
-                LazyColumn(modifier = Modifier.fillMaxSize()) {
-                    if (state.currentPath != "/") {
-                        item {
+                PullToRefreshBox(
+                    isRefreshing = isRefreshing,
+                    onRefresh = {
+                        onRefresh()
+                    },
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    LazyColumn(state = listState, modifier = Modifier.fillMaxSize()) {
+                        if (state.currentPath != "/") {
+                            item {
+                                FileRow(
+                                    item = FileItem("..", isDirectory = true),
+                                    onTap = { if (!selectionMode) onItemClick(FileItem("..", isDirectory = true)) },
+                                    onLongPress = {},
+                                    showParent = true
+                                )
+                            }
+                        }
+                        val filteredItems = getFilteredItems(state.items, searchQuery, sortMode)
+                        items(filteredItems) { item ->
+                            val itemIndex = filteredItems.indexOf(item)
+                            val isItemSelected = item.name in selectedItems
                             FileRow(
-                                item = FileItem("..", isDirectory = true),
-                                onTap = { onItemClick(FileItem("..", isDirectory = true)) },
-                                onLongPress = {},
-                                showParent = true
+                                item = item,
+                                onTap = { if (selectionMode) onToggleSelect(item.name) else onItemClick(item) },
+                                onLongPress = { offset -> onItemLongPress(item, offset) },
+                                isSelected = isItemSelected,
+                                onToggleSelect = { onToggleSelect(item.name) },
+                                selectionMode = selectionMode
                             )
                         }
-                    }
-                    val filteredItems = getFilteredItems(state.items, searchQuery, sortMode)
-                    items(filteredItems) { item ->
-                        val itemIndex = filteredItems.indexOf(item)
-                        val isItemSelected = item.name in selectedItems
-                        FileRow(
-                            item = item,
-                            onTap = { if (selectionMode) onToggleSelect(item.name) else onItemClick(item) },
-                            onLongPress = { offset -> onItemLongPress(item, offset) },
-                            isSelected = isItemSelected,
-                            onToggleSelect = { onToggleSelect(item.name) },
-                            selectionMode = selectionMode
-                        )
                     }
                 }
             }
@@ -1087,13 +1141,6 @@ private fun FileRow(
             .padding(horizontal = 10.dp, vertical = 7.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        if (!showParent && selectionMode) {
-            if (isSelected) {
-                Icon(Icons.Default.CheckCircle, contentDescription = null, tint = WebDavAccent, modifier = Modifier.size(20.dp).padding(end = 2.dp))
-            } else {
-                Box(modifier = Modifier.size(20.dp).padding(end = 2.dp).border(1.dp, WebDavBorder, RoundedCornerShape(4.dp)))
-            }
-        }
         Icon(
             imageVector = if (item.isDirectory) Icons.Default.Folder else Icons.AutoMirrored.Default.InsertDriveFile,
             contentDescription = null,
@@ -1343,10 +1390,8 @@ private fun createFolder(
             val fullPath = if (inner.isBlank()) "$LOCAL_ROOT/$name" else "$LOCAL_ROOT/$inner/$name"
             val result = ShellHelper.runBlocking("mkdir -p \"$fullPath\"")
             if (result.isSuccess) {
-                ShowMessage("文件夹已创建", isChecking = false)
                 onLog("创建成功: $fullPath")
             } else {
-                ShowMessage("创建失败", isChecking = false)
                 onLog("创建失败: $fullPath")
             }
         } else {
@@ -1360,10 +1405,8 @@ private fun createFolder(
                 com.coc.zkqcode.jar.code.universal.network.WebDAVHelper.createDirectory(url, user, pass, remotePath)
             }
             if (error == null) {
-                ShowMessage("文件夹已创建", isChecking = false)
                 onLog("创建成功: $remotePath")
             } else {
-                ShowMessage("创建失败: $error", isChecking = false)
                 onLog("创建失败: $remotePath ($error)")
             }
         }
@@ -1391,10 +1434,8 @@ private fun performRename(
             val target = "$base/$newName"
             val result = ShellHelper.runBlocking("mv \"$source\" \"$target\"")
             if (result.isSuccess) {
-                ShowMessage("重命名成功", isChecking = false)
                 onLog("重命名成功: $source → $target")
             } else {
-                ShowMessage("重命名失败", isChecking = false)
                 onLog("重命名失败: $source → $target")
             }
         } else {
@@ -1410,10 +1451,8 @@ private fun performRename(
                 com.coc.zkqcode.jar.code.universal.network.WebDAVHelper.movePath(url, user, pass, source, target)
             }
             if (error == null) {
-                ShowMessage("重命名成功", isChecking = false)
                 onLog("重命名成功: $source → $target")
             } else {
-                ShowMessage("重命名失败: $error", isChecking = false)
                 onLog("重命名失败: $source → $target ($error)")
             }
         }
@@ -1438,11 +1477,9 @@ private suspend fun deleteItem(
         val result = ShellHelper.runBlocking(cmd)
         if (result.isSuccess) {
             onLog("删除成功: $fullPath")
-            ShowMessage("删除成功", isChecking = false)
             true
         } else {
             onLog("删除失败: $fullPath")
-            ShowMessage("删除失败", isChecking = false)
             false
         }
     } else {
@@ -1457,11 +1494,9 @@ private suspend fun deleteItem(
         }
         if (error == null) {
             onLog("删除成功: $remotePath")
-            ShowMessage("删除成功", isChecking = false)
             true
         } else {
             onLog("删除失败: $remotePath ($error)")
-            ShowMessage("删除失败: $error", isChecking = false)
             false
         }
     }
@@ -1554,7 +1589,7 @@ private suspend fun copyLocalToRemoteNow(
     val user = getConfig(GLOBAL_SETTINGS_WEBDAV_USERNAME)
     val pass = getConfig(GLOBAL_SETTINGS_WEBDAV_PASSWORD)
     return if (item.isDirectory) {
-        if (!ShellHelper.runBlocking("test -d \"$localFull\"").isSuccess) { ShowMessage("本地文件夹不存在", isChecking = false); false }
+        if (!ShellHelper.runBlocking("test -d \"$localFull\"").isSuccess) { onLog("本地文件夹不存在"); false }
         else {
             val stageDir = File(context.filesDir, "webdav_stage/copy")
             stageDir.mkdirs()
@@ -1571,7 +1606,6 @@ private suspend fun copyLocalToRemoteNow(
             withContext(Dispatchers.IO) { stageSource.deleteRecursively() }
             if (!zipped) {
                 onLog("压缩失败: $localFull")
-                ShowMessage("压缩文件夹失败", isChecking = false)
                 false
             } else {
                 onLog("压缩完成: ${zipFile.absolutePath}")
@@ -1580,17 +1614,15 @@ private suspend fun copyLocalToRemoteNow(
                 withContext(Dispatchers.IO) { zipFile.delete() }
                 if (error == null) {
                     onLog("上传完成: $remoteFull.zip")
-                    ShowMessage(Strings.webdavUploadSuccess, isChecking = false)
                     true
                 } else {
                     onLog("上传失败: $remoteFull.zip ($error)")
-                    ShowMessage("上传失败: $error", isChecking = false)
                     false
                 }
             }
         }
     } else {
-        if (!ShellHelper.runBlocking("test -f \"$localFull\"").isSuccess) { ShowMessage("本地文件不存在", isChecking = false); false }
+        if (!ShellHelper.runBlocking("test -f \"$localFull\"").isSuccess) { onLog("本地文件不存在"); false }
         else {
             val tempFile = File(context.filesDir, "webdav_stage/copy/$targetName")
             tempFile.parentFile?.mkdirs()
@@ -1598,7 +1630,6 @@ private suspend fun copyLocalToRemoteNow(
             val copied = ShellHelper.runBlocking("cp \"$localFull\" \"${tempFile.absolutePath}\"; chmod 777 \"${tempFile.absolutePath}\"")
             if (!copied.isSuccess) {
                 onLog("复制本地文件失败: $localFull")
-                ShowMessage("读取本地文件失败", isChecking = false)
                 false
             } else {
                 onLog("正在上传: $remoteFull")
@@ -1606,11 +1637,9 @@ private suspend fun copyLocalToRemoteNow(
                 withContext(Dispatchers.IO) { tempFile.delete() }
                 if (error == null) {
                     onLog("上传完成: $remoteFull")
-                    ShowMessage(Strings.webdavUploadSuccess, isChecking = false)
                     true
                 } else {
                     onLog("上传失败: $remoteFull ($error)")
-                    ShowMessage("上传失败: $error", isChecking = false)
                     false
                 }
             }
@@ -1653,7 +1682,6 @@ private suspend fun copyRemoteToLocalNow(
         val files = if (result is List<*>) result as List<String> else emptyList()
         if (files.isEmpty()) {
             onLog("远程目录为空: $remoteFull")
-            ShowMessage("远程文件夹为空", isChecking = false)
             false
         }
         else {
@@ -1663,11 +1691,10 @@ private suspend fun copyRemoteToLocalNow(
             withContext(Dispatchers.IO) { ShellHelper.runBlockingNoOutput("mkdir -p \"${localDir.absolutePath}\"") }
             for (fileName in files) {
                 onLog("下载文件: $remoteFull/$fileName")
-                val dr = withContext(Dispatchers.IO) { com.coc.zkqcode.jar.code.universal.network.WebDAVHelper.download(url, user, pass, "$remoteFull/$fileName") }
-                if (dr is ByteArray) {
-                    val tempFile = withContext(Dispatchers.IO) { File(context.filesDir, "webdav_dl_temp/$fileName") }
-                    tempFile.parentFile?.mkdirs()
-                    withContext(Dispatchers.IO) { tempFile.writeBytes(dr) }
+                val tempFile = withContext(Dispatchers.IO) { File(context.filesDir, "webdav_dl_temp/$fileName") }
+                tempFile.parentFile?.mkdirs()
+                val dlErr = withContext(Dispatchers.IO) { com.coc.zkqcode.jar.code.universal.network.WebDAVHelper.downloadToFile(url, user, pass, "$remoteFull/$fileName", tempFile) }
+                if (dlErr == null) {
                     if (fileName.endsWith(".zip") || fileName.endsWith(".tar.gz")) {
                         val extractCmd = if (fileName.endsWith(".zip")) ShellHelper.runBlocking("unzip -o \"${tempFile.absolutePath}\" -d \"${localDir.absolutePath}\"") else ShellHelper.runBlocking("tar -xzf \"${tempFile.absolutePath}\" -C \"${localDir.absolutePath}\"")
                         withContext(Dispatchers.IO) { tempFile.delete() }
@@ -1679,28 +1706,25 @@ private suspend fun copyRemoteToLocalNow(
                             suc++
                             if (fileName == LOCAL_CONFIG_FILE) {
                                 val count = com.coc.zkqcode.jar.ui.schema.ConfigImporter.importFromFile("${localDir.absolutePath}/$fileName")
-                                ShowMessage("配置已自动导入（$count 项）", isChecking = false)
                             }
                         } else fail++
                     }
                 } else fail++
             }
             onLog("目录下载完成: $suc 成功, $fail 失败")
-            ShowMessage("下载完成 ($suc 成功, $fail 失败)", isChecking = false)
             fail == 0
         }
     } else {
         onLog("正在下载: $remoteFull")
-        val result = withContext(Dispatchers.IO) { com.coc.zkqcode.jar.code.universal.network.WebDAVHelper.download(url, user, pass, remoteFull) }
-        if (result is ByteArray) {
-            val tempFile = withContext(Dispatchers.IO) { File(context.filesDir, "webdav_dl_temp/${item.name}") }
-            tempFile.parentFile?.mkdirs()
-            withContext(Dispatchers.IO) { tempFile.writeBytes(result) }
+        val tempFile = withContext(Dispatchers.IO) { File(context.filesDir, "webdav_dl_temp/${item.name}") }
+        tempFile.parentFile?.mkdirs()
+        val dlErr = withContext(Dispatchers.IO) { com.coc.zkqcode.jar.code.universal.network.WebDAVHelper.downloadToFile(url, user, pass, remoteFull, tempFile) }
+        if (dlErr == null) {
             val localParent = File(localFull).parentFile?.absolutePath ?: LOCAL_ROOT
             val ok = if (item.name.endsWith(".zip") || item.name.endsWith(".tar.gz")) {
                 val extractCmd = if (item.name.endsWith(".zip")) ShellHelper.runBlocking("unzip -o \"${tempFile.absolutePath}\" -d \"$localParent\"") else ShellHelper.runBlocking("tar -xzf \"${tempFile.absolutePath}\" -C \"$localParent\"")
                 withContext(Dispatchers.IO) { tempFile.delete() }
-                if (extractCmd.isSuccess) { ShowMessage("解压成功", isChecking = false); true } else { ShowMessage("解压失败", isChecking = false); false }
+                if (extractCmd.isSuccess) { onLog("解压成功"); true } else { onLog("解压失败"); false }
             } else {
                 ShellHelper.runBlockingNoOutput("mkdir -p \"$localParent\"")
                 val copied = copyTempToLocalSafely(tempFile, localFull)
@@ -1708,18 +1732,15 @@ private suspend fun copyRemoteToLocalNow(
                 if (copied) {
                     if (item.name == LOCAL_CONFIG_FILE) {
                         val count = com.coc.zkqcode.jar.ui.schema.ConfigImporter.importFromFile(localFull)
-                        ShowMessage("配置已自动导入（$count 项）", isChecking = false)
                     } else {
-                        ShowMessage(Strings.webdavDownloadSuccess, isChecking = false)
                     }
                     true
                 } else {
-                    ShowMessage("复制失败", isChecking = false)
                     false
                 }
             }
             ok
-        } else { ShowMessage("下载失败: $result", isChecking = false); false }
+        } else { onLog("下载失败: $dlErr"); false }
     }
 }
 
@@ -1763,12 +1784,9 @@ private fun deleteSelectedItems(
         val refreshed = if (panel == 0) loadLocalItems(currentState.currentPath, sdPath) else loadRemoteItems(currentState.currentPath)
         onStateUpdate(panel, currentState.copy(items = refreshed))
         val stopped = isStopRequested()
-        ShowMessage(
-            if (stopped) "删除已停止（$success 成功，$failed 失败）"
-            else if (failed == 0) "删除完成（$success 项）"
-            else "删除完成（$success 成功，$failed 失败）",
-            isChecking = false
-        )
+        onLog(if (stopped) "删除已停止（$success 成功，$failed 失败）"
+              else if (failed == 0) "删除完成（$success 项）"
+              else "删除完成（$success 成功，$failed 失败）")
         onDone()
     }
 }
@@ -1896,7 +1914,6 @@ private fun copySelectedToOtherPanel(
                 when (mode) {
                     null, ConflictMode.CANCEL -> {
                         onLog("操作已取消: $sourceDisplay → $destDisplay")
-                        ShowMessage("操作已取消", isChecking = false)
                         onDone()
                         return@launch
                     }
@@ -1932,11 +1949,8 @@ private fun copySelectedToOtherPanel(
         onStateUpdate(1, rightState.copy(items = rightItems))
         val action = if (move) "移动" else "复制"
         val stopped = isStopRequested()
-        ShowMessage(
-            if (stopped) "${action}已停止（$success 成功，$failed 失败）"
-            else "${action}完成（$success 成功，$failed 失败）",
-            isChecking = false
-        )
+        onLog(if (stopped) "${action}已停止（$success 成功，$failed 失败）"
+              else "${action}完成（$success 成功，$failed 失败）")
         onDone()
     }
 }
@@ -1970,24 +1984,23 @@ private fun extractArchive(
             } else {
                 ShellHelper.runBlocking("tar -xzf \"$archivePath\" -C \"$fullBase\"")
             }
-            if (cmd.isSuccess) ShowMessage("解压成功")
-            else ShowMessage("解压失败", isChecking = false)
+            if (cmd.isSuccess) onLog("解压成功")
+            else onLog("解压失败")
         } else {
             // Remote file - download to temp, extract to local
             val url = getConfig(GLOBAL_SETTINGS_WEBDAV_URL)
             val user = getConfig(GLOBAL_SETTINGS_WEBDAV_USERNAME)
             val pass = getConfig(GLOBAL_SETTINGS_WEBDAV_PASSWORD)
             val remotePath = "$fullBase/${item.name}"
-            val result = withContext(Dispatchers.IO) {
-                com.coc.zkqcode.jar.code.universal.network.WebDAVHelper.download(url, user, pass, remotePath)
-            }
-            if (result !is ByteArray) {
-                ShowMessage("下载失败", isChecking = false)
-                return@launch
-            }
             val tempFile = File(context.filesDir, "webdav_dl_temp/${item.name}")
             tempFile.parentFile?.mkdirs()
-            withContext(Dispatchers.IO) { tempFile.writeBytes(result) }
+            val dlErr = withContext(Dispatchers.IO) {
+                com.coc.zkqcode.jar.code.universal.network.WebDAVHelper.downloadToFile(url, user, pass, remotePath, tempFile)
+            }
+            if (dlErr != null) {
+                onLog("下载失败: $dlErr")
+                return@launch
+            }
 
             // Extract directly to local directory
             val localInner = panelState.currentPath.removePrefix("/").removePrefix(LOCAL_STORAGE_LABEL).removePrefix("/")
@@ -1998,8 +2011,8 @@ private fun extractArchive(
                 ShellHelper.runBlocking("tar -xzf \"${tempFile.absolutePath}\" -C \"$localBase\"")
             }
             withContext(Dispatchers.IO) { tempFile.delete() }
-            if (extractCmd.isSuccess) ShowMessage("解压成功")
-            else ShowMessage("解压失败", isChecking = false)
+            if (extractCmd.isSuccess) onLog("解压成功")
+            else onLog("解压失败")
         }
 
         // Refresh panel
