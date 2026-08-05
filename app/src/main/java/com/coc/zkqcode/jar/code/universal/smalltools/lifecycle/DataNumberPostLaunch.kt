@@ -8,6 +8,7 @@ import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.tryHandlePrivacyBtnAsUpdateBtn
 import com.coc.zkqcode.jar.code.universal.smalltools.input.TouchActions
 import kotlinx.coroutines.delay
+import kotlin.time.Duration.Companion.milliseconds
 
 private const val DATA_NUMBER_SEARCH_TIMEOUT_MS = 15_000L
 private const val DATA_NUMBER_SEARCH_INTERVAL_MS = 300L
@@ -24,10 +25,6 @@ suspend fun tapDataNumberEntryButtons() {
     val startTime = System.currentTimeMillis()
     while (System.currentTimeMillis() - startTime < DATA_NUMBER_SEARCH_TIMEOUT_MS) {
         val screenBuffer = ScreenCaptureManager.captureScreenOrRestart<ScreenCaptureManager.CaptureResult>(asBitmap = false)
-        if (screenBuffer == null) {
-            delay(DATA_NUMBER_SEARCH_INTERVAL_MS)
-            continue
-        }
         findMultiColors(byteBuffer = screenBuffer, schema = MyColors.AgreePrivacy, increment = 1)?.let { privacyBtn ->
             // Determine if this "privacy agreement" button is actually an update button (yes → entered update wait, stop further processing)
             if (tryHandlePrivacyBtnAsUpdateBtn(privacyBtn)) {
@@ -46,6 +43,6 @@ suspend fun tapDataNumberEntryButtons() {
             return
         }
 
-        delay(DATA_NUMBER_SEARCH_INTERVAL_MS)
+        delay(DATA_NUMBER_SEARCH_INTERVAL_MS.milliseconds)
     }
 }
