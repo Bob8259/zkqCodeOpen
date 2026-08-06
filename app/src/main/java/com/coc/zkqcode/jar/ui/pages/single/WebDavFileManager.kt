@@ -6,7 +6,9 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.ui.MotionDurationScale
@@ -111,7 +113,7 @@ private data class FileItem(
     val modified: String = ""
 )
 
-private enum class ConflictMode { OVERWRITE, INCREMENT, CANCEL }
+private enum class ConflictMode { OVERWRITE, INCREMENT, CANCEL, OVERWRITE_ALL, INCREMENT_ALL }
 
 private data class ConflictRequest(
     val sourcePath: String,
@@ -652,7 +654,7 @@ fun WebDavFileManager(onBack: () -> Unit) {
                 newFolderName.value = ""
                 newFolderDialogVisible.value = true
             }
-            BottomAction(modifier = Modifier.weight(1f), icon = Icons.Default.SortByAlpha, label = "排序") { sortMenuVisible.value = true }
+            BottomAction(modifier = Modifier.weight(1f), icon = Icons.Default.SortByAlpha, label = "排序") { sortMenuVisible.value = !sortMenuVisible.value }
         }
 
         if (selectedFor(activePanel).isNotEmpty()) {
@@ -985,19 +987,31 @@ fun WebDavFileManager(onBack: () -> Unit) {
                 )
             },
             confirmButton = {
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    TextButton(onClick = {
-                        request.result.complete(ConflictMode.OVERWRITE)
-                        conflictRequest.value = null
-                    }) { Text("覆盖") }
-                    TextButton(onClick = {
-                        request.result.complete(ConflictMode.INCREMENT)
-                        conflictRequest.value = null
-                    }) { Text("增量") }
-                    TextButton(onClick = {
-                        request.result.complete(ConflictMode.CANCEL)
-                        conflictRequest.value = null
-                    }) { Text("取消", color = WebDavDanger) }
+                Column(horizontalAlignment = Alignment.End) {
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        TextButton(onClick = {
+                            request.result.complete(ConflictMode.OVERWRITE)
+                            conflictRequest.value = null
+                        }) { Text("覆盖") }
+                        TextButton(onClick = {
+                            request.result.complete(ConflictMode.INCREMENT)
+                            conflictRequest.value = null
+                        }) { Text("增量") }
+                        TextButton(onClick = {
+                            request.result.complete(ConflictMode.CANCEL)
+                            conflictRequest.value = null
+                        }) { Text("取消", color = WebDavDanger) }
+                    }
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        TextButton(onClick = {
+                            request.result.complete(ConflictMode.OVERWRITE_ALL)
+                            conflictRequest.value = null
+                        }) { Text("此后一律覆盖", color = WebDavAccent) }
+                        TextButton(onClick = {
+                            request.result.complete(ConflictMode.INCREMENT_ALL)
+                            conflictRequest.value = null
+                        }) { Text("此后一律增量", color = WebDavAccent) }
+                    }
                 }
             }
         )
@@ -1089,6 +1103,7 @@ private fun Panel(
                             }
                         }
                         val filteredItems = getFilteredItems(state.items, searchQuery, sortMode)
+                        val saveRootLocked = isLocal && isSaveRootDir(state.currentPath)
                         items(filteredItems) { item ->
                             val itemIndex = filteredItems.indexOf(item)
                             val isItemSelected = item.name in selectedItems
@@ -1098,7 +1113,8 @@ private fun Panel(
                                 onLongPress = { offset -> onItemLongPress(item, offset) },
                                 isSelected = isItemSelected,
                                 onToggleSelect = { onToggleSelect(item.name) },
-                                selectionMode = selectionMode
+                                selectionMode = selectionMode,
+                                locked = saveRootLocked && item.isDirectory && item.name != ".." && !selectionMode
                             )
                         }
                     }
@@ -1126,7 +1142,8 @@ private fun FileRow(
     showParent: Boolean = false,
     isSelected: Boolean = false,
     onToggleSelect: () -> Unit = {},
-    selectionMode: Boolean = false
+    selectionMode: Boolean = false,
+    locked: Boolean = false
 ) {
     Row(
         modifier = Modifier
@@ -1134,8 +1151,10 @@ private fun FileRow(
             .heightIn(min = 52.dp)
             .background(if (isSelected) WebDavAccent.copy(alpha = 0.1f) else Color.Transparent)
             .combinedClickable(
-                onClick = { onTap() },
-                onLongClick = { onLongPress(androidx.compose.ui.geometry.Offset.Zero) }
+                onClick = { if (!locked) onTap() },
+                onLongClick = { onLongPress(androidx.compose.ui.geometry.Offset.Zero) },
+                indication = if (locked) null else LocalIndication.current,
+                interactionSource = remember { MutableInteractionSource() }
             )
             .padding(horizontal = 10.dp, vertical = 7.dp),
         verticalAlignment = Alignment.CenterVertically
@@ -1295,6 +1314,12 @@ private fun formatRemotePath(path: String): String {
 }
 
 // ── Local file loading ────────────────────────────────────────────────
+
+private fun isSaveRootDir(path: String): Boolean {
+    val inner = path.removePrefix("/").removePrefix(LOCAL_STORAGE_LABEL).removePrefix("/")
+    val fullPath = if (inner.isBlank()) LOCAL_ROOT else "$LOCAL_ROOT/$inner"
+    return LOCAL_ALLOWED_DIRS.any { "$LOCAL_ROOT/$it" == fullPath }
+}
 
 private suspend fun loadLocalItems(path: String, sdPath: String): List<FileItem> = withContext(Dispatchers.IO) {
     when {
@@ -1895,6 +1920,7 @@ private fun copySelectedToOtherPanel(
         var success = 0
         var failed = 0
         val moveResults = mutableMapOf<FileItem, Boolean>()
+        var autoMode: ConflictMode? = null
         for ((sourceItem, copyItem) in tasks) {
             if (isStopRequested()) {
                 onLog("操作已停止，等待当前文件完成")
@@ -1909,17 +1935,21 @@ private fun copySelectedToOtherPanel(
             if (targetExists(dstPanel, destBasePath, remoteName)) {
                 val sourceDisplay = formatOperationPath(panel, copyLocalPath, copyItem.name)
                 val destDisplay = formatOperationPath(dstPanel, destBasePath, remoteName)
-                val mode = onResolveConflict(sourceDisplay, destDisplay, if (move) "移动" else "复制")
+                val mode = autoMode ?: onResolveConflict(sourceDisplay, destDisplay, if (move) "移动" else "复制")
                 when (mode) {
                     null, ConflictMode.CANCEL -> {
                         onLog("操作已取消: $sourceDisplay → $destDisplay")
                         onDone()
                         return@launch
                     }
-                    ConflictMode.OVERWRITE -> overwriteTarget = true
-                    ConflictMode.INCREMENT -> {
+                    ConflictMode.OVERWRITE, ConflictMode.OVERWRITE_ALL -> {
+                        overwriteTarget = true
+                        if (mode == ConflictMode.OVERWRITE_ALL) autoMode = ConflictMode.OVERWRITE_ALL
+                    }
+                    ConflictMode.INCREMENT, ConflictMode.INCREMENT_ALL -> {
                         val generated = generateUniqueTargetName(dstPanel, destBasePath, remoteName)
                         targetName = if (panel == 0 && copyItem.isDirectory) generated.removeSuffix(".zip") else generated
+                        if (mode == ConflictMode.INCREMENT_ALL) autoMode = ConflictMode.INCREMENT_ALL
                     }
                 }
             }
