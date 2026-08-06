@@ -3,7 +3,6 @@ package com.coc.zkqcode.jar.code.mainbase.clan
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
-import com.coc.zkqcode.core.util.fileactions.LogHelper.showDebugInfo
 import com.coc.zkqcode.jar.code.universal.smalltools.input.TouchActions
 import com.coc.zkqcode.jar.code.universal.recognizer.TextRecognizer
 import com.coc.zkqcode.jar.code.colorschema.ColorSchema
@@ -79,40 +78,68 @@ suspend fun donateToClan(): Boolean {
                 val approveSearchStartY = 70
                 val approveSearchEndY = 630
                 val approveSliceHeight = 60
-                val approveBtn = run {
-                    var found: android.graphics.Point? = null
-                    outer@ for (sliceStartY in approveSearchStartY..approveSearchEndY step approveSliceHeight) {
-                        val sliceEndY = (sliceStartY + approveSliceHeight).coerceAtMost(approveSearchEndY)
-                        while (sliceStartY < sliceEndY) {
+                val topRegionMaxY = 138
+                val approveButtons = mutableListOf<android.graphics.Point>()
+                for (sliceStartY in (topRegionMaxY + 1)..approveSearchEndY step approveSliceHeight) {
+                    val sliceEndY = (sliceStartY + approveSliceHeight).coerceAtMost(approveSearchEndY)
+                    var currentY = sliceStartY
+                    while (currentY < sliceEndY) {
+                        val sliceSchema = ColorSchema.rescope(
+                            approveBaseSchema, approveBaseSchema.x1, currentY, approveBaseSchema.x2, sliceEndY
+                        )
+                        val candidate = findMultiColors(schema = sliceSchema, byteBuffer = screenBuffer, increment = 1) ?: break
+                        if (approveButtons.none { kotlin.math.abs(it.y - candidate.y) < 30 }) approveButtons.add(candidate)
+                        currentY = (candidate.y + 1).coerceAtLeast(currentY + 1).coerceAtMost(sliceEndY)
+                    }
+                }
+                if (approveButtons.isEmpty()) {
+                    for (sliceStartY in approveSearchStartY..topRegionMaxY step approveSliceHeight) {
+                        val sliceEndY = (sliceStartY + approveSliceHeight).coerceAtMost(topRegionMaxY)
+                        var currentY = sliceStartY
+                        while (currentY < sliceEndY) {
                             val sliceSchema = ColorSchema.rescope(
-                                approveBaseSchema, approveBaseSchema.x1, sliceStartY, approveBaseSchema.x2, sliceEndY
+                                approveBaseSchema, approveBaseSchema.x1, currentY, approveBaseSchema.x2, sliceEndY
                             )
                             val candidate = findMultiColors(schema = sliceSchema, byteBuffer = screenBuffer, increment = 1) ?: break
-                            found = candidate
-                            break@outer
+                            if (approveButtons.none { kotlin.math.abs(it.y - candidate.y) < 30 }) approveButtons.add(candidate)
+                            currentY = (candidate.y + 1).coerceAtLeast(currentY + 1).coerceAtMost(sliceEndY)
                         }
                     }
-                    found
                 }
-                if (approveBtn != null) {
+                if (approveButtons.isNotEmpty()) {
+                    val approveBtn = approveButtons.first()
                     var ocrY = approveBtn.y
+                    var swiped = false
                     if (approveBtn.x in 15..475 && approveBtn.y in 7..138) {
                         TouchActions.swipe(approveBtn.x, approveBtn.y, approveBtn.x, approveBtn.y + 273, delayTime = 200)
                         ocrY = approveBtn.y + 273
+                        swiped = true
                     }
-                    val ocrResult = TextRecognizer.recognize(
-                        startX = (approveBtn.x - 320).coerceAtLeast(20),
-                        startY = (ocrY - 108).coerceAtLeast(10),
-                        endX = (approveBtn.x + 100).coerceAtMost(480),
-                        endY = (ocrY - 48).coerceAtMost(620),
-                        useChinese = true,
-                        threshold = 140,
-                        applyPreprocess = true,
-                        invertBinarization = true
-                    )
-                    val ocrText = ocrResult.joinToString(" ") { it.text }
-                    showDebugInfo("批准检测 OCR结果: $ocrText")
-                    if (ocrText.contains(approveCode, ignoreCase = true)) {
+                    val repeatCount = 3
+                    val lineFreq = linkedMapOf<String, Int>()
+                    repeat(repeatCount) { round ->
+                        val ocrResult = TextRecognizer.recognize(
+                            startX = (approveBtn.x - 320).coerceAtLeast(20),
+                            startY = (ocrY - 108).coerceAtLeast(10),
+                            endX = (approveBtn.x + 100).coerceAtMost(480),
+                            endY = (ocrY - 48).coerceAtMost(620),
+                            useChinese = true,
+                            threshold = 130,
+                            applyPreprocess = true,
+                            invertBinarization = true
+                        )
+                        val roundText = ocrResult.joinToString(" ") { it.text }
+                        ocrResult.forEach { item -> lineFreq[item.text] = (lineFreq[item.text] ?: 0) + 1 }
+                    }
+                    val lines = lineFreq.entries.sortedWith(compareByDescending { it.value }).map { it.key }
+                    val ocrText = lines.joinToString(" ")
+                    if (swiped) TouchActions.swipe(approveBtn.x, approveBtn.y + 273, approveBtn.x, approveBtn.y, delayTime = 200)
+                    if (ocrText.isBlank()) {
+                        accountMessage("批准成员加入: OCR结果为空，跳过本次检测(不批准不拒绝)")
+                        continue
+                    }
+                    val matched = lines.any { isApproxMatch(it, approveCode) }
+                    if (matched) {
                         accountMessage("批准成员加入: 暗号匹配($approveCode), 点击批准")
                         TouchActions.tap(approveBtn.x, approveBtn.y)
                         continue
@@ -295,4 +322,34 @@ private suspend fun donateActions() {
         }
         if (foundAny) emptyLoopCount = 0 else emptyLoopCount++
     }
+}
+
+private fun levenshteinDistance(a: String, b: String): Int {
+    if (a == b) return 0
+    if (a.isEmpty()) return b.length
+    if (b.isEmpty()) return a.length
+    val dp = Array(a.length + 1) { IntArray(b.length + 1) }
+    for (i in 0..a.length) dp[i][0] = i
+    for (j in 0..b.length) dp[0][j] = j
+    for (i in 1..a.length) {
+        for (j in 1..b.length) {
+            dp[i][j] = minOf(dp[i - 1][j] + 1, dp[i][j - 1] + 1, dp[i - 1][j - 1] + if (a[i - 1] == b[j - 1]) 0 else 1)
+        }
+    }
+    return dp[a.length][b.length]
+}
+
+private fun isApproxMatch(line: String, code: String): Boolean {
+    val a = line.lowercase()
+    val b = code.lowercase()
+    if (b.isEmpty()) return false
+    if (a.contains(b)) return true
+    for (len in (b.length - 2).coerceAtLeast(1)..(b.length + 2)) {
+        if (len > a.length) continue
+        for (i in 0..(a.length - len)) {
+            val dist = levenshteinDistance(a.substring(i, i + len), b)
+            if (dist <= 1 || (1.0 - dist.toDouble() / b.length) >= 0.98) return true
+        }
+    }
+    return false
 }
