@@ -393,10 +393,8 @@ fun WebDavFileManager(onBack: () -> Unit) {
                     .clickable { logsVisible.value = !logsVisible.value }
                     .padding(horizontal = 8.dp, vertical = 4.dp)
             )
-            if (isRightConfigured) {
-                IconButton(onClick = { webdavConfigVisible.value = true }, modifier = Modifier.size(28.dp)) {
-                    Icon(Icons.Default.Settings, contentDescription = "WebDAV 配置", modifier = Modifier.size(16.dp), tint = WebDavAccent)
-                }
+            IconButton(onClick = { webdavConfigVisible.value = true }, modifier = Modifier.size(28.dp)) {
+                Icon(Icons.Default.Settings, contentDescription = "WebDAV 配置", modifier = Modifier.size(16.dp), tint = WebDavAccent)
             }
         }
 
@@ -525,6 +523,7 @@ fun WebDavFileManager(onBack: () -> Unit) {
                     selectionMode = selectedFor(1).isNotEmpty(),
                     onRefresh = { refreshPanelWithIndicator(1) },
                     isConfigured = isRightConfigured,
+                    onConfigure = { webdavConfigVisible.value = true },
                     searchQuery = searchQuery.value,
                     sortMode = sortMode.value,
                     selectedItems = selectedFor(1),
