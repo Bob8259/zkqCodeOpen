@@ -3,6 +3,7 @@ package com.coc.zkqcode.jar.code.mainbase.clan
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
+import com.coc.zkqcode.core.util.fileactions.LogHelper.showDebugInfo
 import com.coc.zkqcode.jar.code.universal.smalltools.input.TouchActions
 import com.coc.zkqcode.jar.code.universal.recognizer.TextRecognizer
 import com.coc.zkqcode.jar.code.colorschema.ColorSchema
@@ -108,6 +109,7 @@ suspend fun donateToClan(): Boolean {
                 }
                 if (approveButtons.isNotEmpty()) {
                     val approveBtn = approveButtons.first()
+                    showDebugInfo("检测到${approveButtons.size}个批准按钮，本轮处理第1个: (${approveBtn.x},${approveBtn.y})")
                     var ocrY = approveBtn.y
                     var swiped = false
                     if (approveBtn.x in 15..475 && approveBtn.y in 7..138) {
@@ -122,29 +124,48 @@ suspend fun donateToClan(): Boolean {
                             startX = (approveBtn.x - 320).coerceAtLeast(20),
                             startY = (ocrY - 108).coerceAtLeast(10),
                             endX = (approveBtn.x + 100).coerceAtMost(480),
-                            endY = (ocrY - 48).coerceAtMost(620),
+                            endY = (ocrY - 54).coerceAtMost(620),
                             useChinese = true,
                             threshold = 130,
                             applyPreprocess = true,
                             invertBinarization = true
                         )
                         val roundText = ocrResult.joinToString(" ") { it.text }
-                        ocrResult.forEach { item -> lineFreq[item.text] = (lineFreq[item.text] ?: 0) + 1 }
+                        showDebugInfo("  第${round + 1}轮OCR: [$roundText]")
+                        ocrResult.forEach { item ->
+                            lineFreq[item.text] = (lineFreq[item.text] ?: 0) + 1
+                        }
                     }
                     val lines = lineFreq.entries.sortedWith(compareByDescending { it.value }).map { it.key }
                     val ocrText = lines.joinToString(" ")
-                    if (swiped) TouchActions.swipe(approveBtn.x, approveBtn.y + 273, approveBtn.x, approveBtn.y, delayTime = 200)
+                    showDebugInfo("批准检测 OCR结果: $ocrText")
+                    // Secret-code OCR result (multi-round majority) with recognition region
+                    showDebugInfo("暗号同意 OCR识别结果(多轮取众数): [$ocrText] (识别区域 x:${(approveBtn.x - 320).coerceAtLeast(20)}-${(approveBtn.x + 100).coerceAtMost(480)}, y:${(ocrY - 108).coerceAtLeast(10)}-${(ocrY - 54).coerceAtMost(620)}, 批准按钮: (${approveBtn.x},${approveBtn.y}))")
+                    showDebugInfo("  配置暗号: [${approveCode}] (长度${approveCode.length})")
+                    lines.forEachIndexed { index, line ->
+                        showDebugInfo("  暗号OCR行${index + 1}(频次${lineFreq[line]}): \"$line\"")
+                    }
+                    // After OCR, if the top-region button was swiped down, swipe it back
+                    if (swiped) {
+                        showDebugInfo("顶部区域按钮识别完成，反向滑动回原位")
+                        TouchActions.swipe(approveBtn.x, approveBtn.y + 273, approveBtn.x, approveBtn.y, delayTime = 200)
+                    }
+                    // Skip click when OCR is empty to avoid false reject
                     if (ocrText.isBlank()) {
                         accountMessage("批准成员加入: OCR结果为空，跳过本次检测(不批准不拒绝)")
+                        showDebugInfo("【OCR空结果】跳过本轮，等待下轮检测")
                         continue
                     }
-                    val matched = lines.any { isApproxMatch(it, approveCode) }
+                    // 98% fuzzy match on the full joined OCR text (region tightened to this request only)
+                    val matched = isApproxMatch(ocrText, approveCode)
                     if (matched) {
                         accountMessage("批准成员加入: 暗号匹配($approveCode), 点击批准")
+                        showDebugInfo("暗号匹配($approveCode)，点击批准")
                         TouchActions.tap(approveBtn.x, approveBtn.y)
                         continue
                     } else {
                         accountMessage("批准成员加入: 暗号不匹配($ocrText), 点击拒绝")
+                        showDebugInfo("暗号不匹配，点击拒绝")
                         TouchActions.tap(approveBtn.x - 211, approveBtn.y + 2)
                         continue
                     }
