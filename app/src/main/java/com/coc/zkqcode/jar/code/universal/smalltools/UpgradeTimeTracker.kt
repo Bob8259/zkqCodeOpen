@@ -72,7 +72,6 @@ suspend fun checkUpgradeTimers() {
     val jsonTs = jsonObject.get("timestamp")?.asLong ?: nowSec
     val boosts = parseBoosts(jsonObject)
     val helpers = parseHelpers(jsonObject)
-    val advanceMin = GlobalVars.configStates[Schema.GLOBAL_SETTINGS.SERVERCHAN_UPGRADE_ADVANCE.key]?.value?.toIntOrNull() ?: 10
 
     val catLabel = mapOf(
         "buildings" to "主世界建筑", "heroes" to "英雄", "traps" to "陷阱",
@@ -94,7 +93,16 @@ suspend fun checkUpgradeTimers() {
     val allFpParts = allEntries.map { "${it.entry.dataId}_${it.entry.lvl}" }.sorted()
     val fingerprint = allFpParts.joinToString(",")
     val sigKey = "upgrade_timer_sig_$acc"
-    if (readMemory(sigKey) == fingerprint) return // overview unchanged
+    val prevFingerprint = readMemory(sigKey)
+    if (prevFingerprint == fingerprint) return // overview unchanged
+
+    // Diff against the previous overview to mark what changed (new / level-up / finished)
+    val prevMap = parseFingerprint(prevFingerprint)
+    val curMap = allEntries.associate { it.entry.dataId to it.entry.lvl }
+    val hasBaseline = prevFingerprint.isNotBlank()
+    val startedIds = if (hasBaseline) curMap.keys - prevMap.keys else emptySet()
+    val leveledOld = if (hasBaseline) prevMap.filter { (id, lv) -> curMap[id] != null && curMap[id] != lv } else emptyMap()
+    val finishedOld = if (hasBaseline) prevMap.filterKeys { it !in curMap } else emptyMap()
 
     // Build grouped display
     val deviceRemark = GlobalVars.configStates[Schema.GLOBAL_SETTINGS.DEVICE_REMARK.key]?.value.orEmpty()
@@ -103,17 +111,22 @@ suspend fun checkUpgradeTimers() {
     val lines = mutableListOf<String>()
     lines.add(if (LanguageManager.isChinese) "设备：${deviceRemark.ifBlank { "无" }}，账号${acc}，备注:${remarkText}" else "Device: ${deviceRemark.ifBlank { "N/A" }}, Account $acc, Remark: $remarkText")
 
-    val shortest = allEntries.minByOrNull { it.remainSec }!!
-    val advanceSec = advanceMin * 60
-
     for ((header, items) in allEntries.groupBy { "[${it.cat}]" }.toSortedMap()) {
         lines.add(header)
         for (item in items.sortedBy { it.entry.dataId }) {
             val sb = StringBuilder(" · ${item.name} (等级 ${item.entry.lvl}) 剩余 ${formatDuration(item.remainSec)}")
-            if (item.remainSec <= advanceSec && item === shortest) {
-                sb.append("  *即将在${advanceMin}分钟后完成*")
+            val id = item.entry.dataId
+            when {
+                id in startedIds -> sb.append("  【新】")
+                id in leveledOld -> sb.append("  【等级 ${leveledOld[id]}→${item.entry.lvl}】")
             }
             lines.add(sb.toString())
+        }
+    }
+    if (finishedOld.isNotEmpty()) {
+        lines.add("[已完成]")
+        for ((id, lv) in finishedOld.toSortedMap()) {
+            lines.add(" · ${getItemName(id)} (等级 $lv)")
         }
     }
 
@@ -287,6 +300,20 @@ private fun parseHelpers(j: JsonObject): Helpers {
         if (d == 93000001 || d == 124000001) l = lv
     } catch (_: Exception) {}
     return Helpers(w, l)
+}
+
+/** Parse a stored fingerprint ("id_lvl,id_lvl,...") back into dataId → lvl. */
+private fun parseFingerprint(fp: String): Map<Int, Int> {
+    if (fp.isBlank()) return emptyMap()
+    val map = HashMap<Int, Int>()
+    for (part in fp.split(",")) {
+        val idx = part.lastIndexOf('_')
+        if (idx <= 0) continue
+        val id = part.substring(0, idx).toIntOrNull() ?: continue
+        val lv = part.substring(idx + 1).toIntOrNull() ?: continue
+        map[id] = lv
+    }
+    return map
 }
 
 private fun formatDuration(s: Int): String {
