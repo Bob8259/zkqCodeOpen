@@ -10,7 +10,7 @@ suspend fun zoomSmallBuilderBase(isForBuild: Boolean = false) {
     swipe(200, 300, 950, -800)
     clickRightBottom(1)
     delayWithMultiplier(50)
-    pinchIn(140, 420, 1270, 125, 640, 365)
+    pinchIn(140, 420, 1000, 140, 640, 365)
     delayWithMultiplier(200)
     repeat(2) {
         swipe(980, 485, 0, 0, delayTime = 120)

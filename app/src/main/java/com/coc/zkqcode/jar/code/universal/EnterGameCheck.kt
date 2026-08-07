@@ -1,8 +1,8 @@
 package com.coc.zkqcode.jar.code.universal
 
-import android.os.Environment
 import android.graphics.Bitmap
 import android.graphics.Point
+import android.os.Environment
 import com.coc.zkqcode.core.app.ZKQApplication
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.system.inputmethod.inputTextReliable
@@ -10,21 +10,20 @@ import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.core.util.basic.RunShell
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
-import com.coc.zkqcode.core.util.fileactions.LogHelper.showDebugInfo
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.mainbase.attack.mainBaseDeployTroops
 import com.coc.zkqcode.jar.code.mainbase.others.zoomSmallMainBase
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
-import com.coc.zkqcode.jar.code.universal.smalltools.CNApkDownloader
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.push.PixelBlockEncoder
 import com.coc.zkqcode.jar.code.universal.push.PushMessage
 import com.coc.zkqcode.jar.code.universal.push.PushRouter
 import com.coc.zkqcode.jar.code.universal.recognizer.TextRecognizer
+import com.coc.zkqcode.jar.code.universal.smalltools.CNApkDownloader
+import com.coc.zkqcode.jar.code.universal.smalltools.data.StorageKeys
+import com.coc.zkqcode.jar.code.universal.smalltools.data.checkMemoryFile
 import com.coc.zkqcode.jar.code.universal.smalltools.data.getBooleanConfigRuntime
 import com.coc.zkqcode.jar.code.universal.smalltools.data.getStaticConfig
-import com.coc.zkqcode.jar.code.universal.smalltools.data.checkMemoryFile
-import com.coc.zkqcode.jar.code.universal.smalltools.data.StorageKeys
 import com.coc.zkqcode.jar.code.universal.smalltools.data.writeMemory
 import com.coc.zkqcode.jar.code.universal.smalltools.input.TouchActions
 import com.coc.zkqcode.jar.code.universal.smalltools.lifecycle.checkReconnections
@@ -298,7 +297,7 @@ suspend fun tryHandlePrivacyBtnAsUpdateBtn(privacyBtn: Point): Boolean {
 
 private suspend fun closeAdvertisements() {
     if (getStaticConfig(Schema.GLOBAL_SETTINGS.UPDATE_CN_GAME.key) == "1") {
-        // ① Color detection: hit any update characteristic → go directly to update flow
+        // ① Colour detection: hit any update characteristic → go directly to update flow
         val updateCNGameButton = findMultiColorsUntil(listOf(MyColors.CNGameUpdate, MyColors.CNGameUpdate2, MyColors.CNGameUpdating), 10)
         if (updateCNGameButton != null) {
             TouchActions.tap(updateCNGameButton.x, updateCNGameButton.y)
