@@ -1623,9 +1623,7 @@ private suspend fun copyLocalToRemoteNow(
             stageSource.deleteRecursively()
             onLog("正在复制到临时目录: $localFull")
             val copiedToStage = ShellHelper.runBlocking("rm -rf \"${stageSource.absolutePath}\"; cp -r \"$localFull\" \"${stageSource.absolutePath}\"; chmod -R 777 \"${stageSource.absolutePath}\"")
-            android.util.Log.d("WebDAV", "stageCopy success=${copiedToStage.isSuccess} exists=${stageSource.isDirectory} files=${stageSource.listFiles()?.size}")
             val javaZipped = withContext(Dispatchers.IO) { zipDirectory(stageSource, zipFile) }
-            android.util.Log.d("WebDAV", "javaZip success=$javaZipped size=${zipFile.length()}")
             val zipped = copiedToStage.isSuccess && stageSource.isDirectory && javaZipped
             withContext(Dispatchers.IO) { stageSource.deleteRecursively() }
             if (!zipped) {
@@ -1720,7 +1718,11 @@ private suspend fun copyRemoteToLocalNow(
                 val dlErr = withContext(Dispatchers.IO) { com.coc.zkqcode.jar.code.universal.network.WebDAVHelper.downloadToFile(url, user, pass, "$remoteFull/$fileName", tempFile) }
                 if (dlErr == null) {
                     if (fileName.endsWith(".zip") || fileName.endsWith(".tar.gz")) {
-                        val extractCmd = if (fileName.endsWith(".zip")) ShellHelper.runBlocking("unzip -o \"${tempFile.absolutePath}\" -d \"${localDir.absolutePath}\"") else ShellHelper.runBlocking("tar -xzf \"${tempFile.absolutePath}\" -C \"${localDir.absolutePath}\"")
+                        val isZip = fileName.endsWith(".zip")
+                        val slotName = fileName.removeSuffix(".zip").removeSuffix(".tar.gz")
+                        val extractDir = "${localDir.absolutePath}/$slotName"
+                        ShellHelper.runBlockingNoOutput("mkdir -p \"$extractDir\"")
+                        val extractCmd = if (isZip) ShellHelper.runBlocking("unzip -o \"${tempFile.absolutePath}\" -d \"$extractDir\"") else ShellHelper.runBlocking("tar -xzf \"${tempFile.absolutePath}\" -C \"$extractDir\"")
                         withContext(Dispatchers.IO) { tempFile.delete() }
                         if (extractCmd.isSuccess) suc++ else fail++
                     } else {
@@ -1746,9 +1748,15 @@ private suspend fun copyRemoteToLocalNow(
         if (dlErr == null) {
             val localParent = File(localFull).parentFile?.absolutePath ?: LOCAL_ROOT
             val ok = if (item.name.endsWith(".zip") || item.name.endsWith(".tar.gz")) {
-                val extractCmd = if (item.name.endsWith(".zip")) ShellHelper.runBlocking("unzip -o \"${tempFile.absolutePath}\" -d \"$localParent\"") else ShellHelper.runBlocking("tar -xzf \"${tempFile.absolutePath}\" -C \"$localParent\"")
+                val isZip = item.name.endsWith(".zip")
+                val slotName = targetName.removeSuffix(".zip").removeSuffix(".tar.gz")
+                val extractDir = "$localParent/$slotName"
+                ShellHelper.runBlockingNoOutput("mkdir -p \"$extractDir\"")
+                val extractCmd = if (isZip) ShellHelper.runBlocking("unzip -o \"${tempFile.absolutePath}\" -d \"$extractDir\"") else ShellHelper.runBlocking("tar -xzf \"${tempFile.absolutePath}\" -C \"$extractDir\"")
                 withContext(Dispatchers.IO) { tempFile.delete() }
-                if (extractCmd.isSuccess) { onLog("解压成功"); true } else { onLog("解压失败"); false }
+                if (extractCmd.isSuccess) {
+                    onLog("解压成功: $extractDir"); true
+                } else { onLog("解压失败"); false }
             } else {
                 ShellHelper.runBlockingNoOutput("mkdir -p \"$localParent\"")
                 val copied = copyTempToLocalSafely(tempFile, localFull)
@@ -1916,7 +1924,6 @@ private fun copySelectedToOtherPanel(
             }
         }
 
-        android.util.Log.d("WebDAV", "tasks=${tasks.size} names=${tasks.map { it.second.name }.take(10)}")
         var success = 0
         var failed = 0
         val moveResults = mutableMapOf<FileItem, Boolean>()
