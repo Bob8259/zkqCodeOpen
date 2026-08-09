@@ -1103,7 +1103,6 @@ private fun Panel(
                             }
                         }
                         val filteredItems = getFilteredItems(state.items, searchQuery, sortMode)
-                        val saveRootLocked = isLocal && isSaveRootDir(state.currentPath)
                         items(filteredItems) { item ->
                             val itemIndex = filteredItems.indexOf(item)
                             val isItemSelected = item.name in selectedItems
@@ -1113,8 +1112,7 @@ private fun Panel(
                                 onLongPress = { offset -> onItemLongPress(item, offset) },
                                 isSelected = isItemSelected,
                                 onToggleSelect = { onToggleSelect(item.name) },
-                                selectionMode = selectionMode,
-                                locked = saveRootLocked && item.isDirectory && item.name != ".." && !selectionMode
+                                selectionMode = selectionMode
                             )
                         }
                     }
@@ -1314,12 +1312,6 @@ private fun formatRemotePath(path: String): String {
 }
 
 // ── Local file loading ────────────────────────────────────────────────
-
-private fun isSaveRootDir(path: String): Boolean {
-    val inner = path.removePrefix("/").removePrefix(LOCAL_STORAGE_LABEL).removePrefix("/")
-    val fullPath = if (inner.isBlank()) LOCAL_ROOT else "$LOCAL_ROOT/$inner"
-    return LOCAL_ALLOWED_DIRS.any { "$LOCAL_ROOT/$it" == fullPath }
-}
 
 private suspend fun loadLocalItems(path: String, sdPath: String): List<FileItem> = withContext(Dispatchers.IO) {
     when {
@@ -1595,6 +1587,34 @@ private fun copyTempToLocalSafely(tempFile: File, finalPath: String): Boolean {
     return ShellHelper.runBlocking("mv \"$partPath\" \"$finalPath\"").isSuccess
 }
 
+/**
+ * 读取压缩包顶层条目名称（去掉尾部 '/'），
+ * 用于判断压缩包是否已含 <slot>/ 顶层目录。zip 用 ZipFile 读取，tar.gz 用 tar -tzf 读取。
+ */
+private fun archiveTopLevelNames(tempFile: File, isZip: Boolean): Set<String> {
+    val tops = mutableSetOf<String>()
+    if (isZip) {
+        try {
+            java.util.zip.ZipFile(tempFile).use { z ->
+                val it = z.entries()
+                while (it.hasMoreElements()) {
+                    val name = it.nextElement().name.trimEnd('/')
+                    if (name.isNotBlank()) tops.add(name.substringBefore('/'))
+                }
+            }
+        } catch (_: Exception) {}
+    } else {
+        val lines = com.coc.zkqcode.jar.code.ShellHelper.runBlocking(
+            "tar -tzf \"${tempFile.absolutePath}\" 2>/dev/null | head -200"
+        ).out
+        for (line in lines) {
+            val name = line.trimEnd('/')
+            if (name.isNotBlank()) tops.add(name.substringBefore('/'))
+        }
+    }
+    return tops
+}
+
 private suspend fun copyLocalToRemoteNow(
     context: android.content.Context,
     item: FileItem,
@@ -1720,9 +1740,13 @@ private suspend fun copyRemoteToLocalNow(
                     if (fileName.endsWith(".zip") || fileName.endsWith(".tar.gz")) {
                         val isZip = fileName.endsWith(".zip")
                         val slotName = fileName.removeSuffix(".zip").removeSuffix(".tar.gz")
-                        val extractDir = "${localDir.absolutePath}/$slotName"
-                        ShellHelper.runBlockingNoOutput("mkdir -p \"$extractDir\"")
+                        val topNames = archiveTopLevelNames(tempFile, isZip)
+                        val hasWrapper = topNames.isNotEmpty() && topNames == setOf(slotName)
+                        val extractDir = if (hasWrapper) localDir.absolutePath else "${localDir.absolutePath}/$slotName"
+                        android.util.Log.d("WebDAV", "  DIR slot=$slotName tops=$topNames hasWrapper=$hasWrapper extractDir=$extractDir")
+                        if (!hasWrapper) ShellHelper.runBlockingNoOutput("mkdir -p \"$extractDir\"")
                         val extractCmd = if (isZip) ShellHelper.runBlocking("unzip -o \"${tempFile.absolutePath}\" -d \"$extractDir\"") else ShellHelper.runBlocking("tar -xzf \"${tempFile.absolutePath}\" -C \"$extractDir\"")
+                        android.util.Log.d("WebDAV", "  DIR extract $fileName -> $extractDir success=${extractCmd.isSuccess}")
                         withContext(Dispatchers.IO) { tempFile.delete() }
                         if (extractCmd.isSuccess) suc++ else fail++
                     } else {
@@ -1750,9 +1774,13 @@ private suspend fun copyRemoteToLocalNow(
             val ok = if (item.name.endsWith(".zip") || item.name.endsWith(".tar.gz")) {
                 val isZip = item.name.endsWith(".zip")
                 val slotName = targetName.removeSuffix(".zip").removeSuffix(".tar.gz")
-                val extractDir = "$localParent/$slotName"
-                ShellHelper.runBlockingNoOutput("mkdir -p \"$extractDir\"")
+                val topNames = archiveTopLevelNames(tempFile, isZip)
+                val hasWrapper = topNames.isNotEmpty() && topNames == setOf(slotName)
+                val extractDir = if (hasWrapper) localParent else "$localParent/$slotName"
+                android.util.Log.d("WebDAV", "  FILE slot=$slotName tops=$topNames hasWrapper=$hasWrapper extractDir=$extractDir")
+                if (!hasWrapper) ShellHelper.runBlockingNoOutput("mkdir -p \"$extractDir\"")
                 val extractCmd = if (isZip) ShellHelper.runBlocking("unzip -o \"${tempFile.absolutePath}\" -d \"$extractDir\"") else ShellHelper.runBlocking("tar -xzf \"${tempFile.absolutePath}\" -C \"$extractDir\"")
+                android.util.Log.d("WebDAV", "  FILE unzip into $extractDir success=${extractCmd.isSuccess}")
                 withContext(Dispatchers.IO) { tempFile.delete() }
                 if (extractCmd.isSuccess) {
                     onLog("解压成功: $extractDir"); true
@@ -1939,9 +1967,17 @@ private fun copySelectedToOtherPanel(
             val copyLocalPath = if (expandedLocalRoot) buildPath(srcState.currentPath, sourceItem.name) else srcState.currentPath
             val destBasePath = if (expandedLocalRoot) buildPath(dstState.currentPath, sourceItem.name) else dstState.currentPath
             val remoteName = if (panel == 0 && copyItem.isDirectory) "${copyItem.name}.zip" else copyItem.name
-            if (targetExists(dstPanel, destBasePath, remoteName)) {
+            // 远程存档压缩包（N.zip / N.tar.gz）下载到本地时，本地若已有 N/ 槽位目录也算同名冲突
+            val remoteSlot = if (panel == 1 && !copyItem.isDirectory &&
+                (copyItem.name.endsWith(".zip") || copyItem.name.endsWith(".tar.gz")))
+                copyItem.name.removeSuffix(".zip").removeSuffix(".tar.gz")
+            else null
+            android.util.Log.d("WebDAV", "  task src=${copyItem.name} isDir=${copyItem.isDirectory} expanded=$expandedLocalRoot copyLocalPath=$copyLocalPath destBasePath=$destBasePath remoteName=$remoteName remoteSlot=$remoteSlot")
+            val literalConflict = targetExists(dstPanel, destBasePath, remoteName)
+            val slotConflict = remoteSlot != null && targetExists(dstPanel, destBasePath, remoteSlot)
+            if (literalConflict || slotConflict) {
                 val sourceDisplay = formatOperationPath(panel, copyLocalPath, copyItem.name)
-                val destDisplay = formatOperationPath(dstPanel, destBasePath, remoteName)
+                val destDisplay = formatOperationPath(dstPanel, destBasePath, if (slotConflict) remoteSlot!! else remoteName)
                 val mode = autoMode ?: onResolveConflict(sourceDisplay, destDisplay, if (move) "移动" else "复制")
                 when (mode) {
                     null, ConflictMode.CANCEL -> {
