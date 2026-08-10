@@ -169,15 +169,10 @@ object Strings {
 
     // UpgradeTimeScheduling
     val upgradeTimeSchedulingExplain get() = if (LanguageManager.isChinese)
-        "根据各账号升级完成时间自动上号，优先登录最快完成升级的账号。开启后顺序模式和随机上号将失效。等待期间会用无升级数据的账号填充收菜。"
+        "根据各账号升级完成时间自动上号，优先登录最快完成升级的账号。开启后顺序模式、随机上号和批量创号将失效。等待期间会用无升级数据的账号填充收菜。"
     else
-        "Auto-login based on upgrade completion time. Prioritizes the account with the soonest upgrade. Disables sequential and random modes. Fills idle time with accounts that have no upgrade data."
+        "Auto-login based on upgrade completion time. Prioritizes the account with the soonest upgrade. Disables sequential, random and batch-create modes. Fills idle time with accounts that have no upgrade data."
 
-    val upgradeTimeNoData get() = if (LanguageManager.isChinese) "升级时间上号：暂无升级数据，顺序运行收集数据" else "Upgrade-time scheduling: No upgrade data, running sequential to collect"
-    val upgradeTimeWaitFill get() = if (LanguageManager.isChinese) "升级时间上号：等待中，运行填充号 %d" else "Upgrade-time scheduling: Waiting, running fill account %d"
-    val upgradeTimeTargetReady get() = if (LanguageManager.isChinese) "升级时间上号：%d 号升级已完成，正在登录..." else "Upgrade-time scheduling: Account %d upgrade complete, logging in..."
-    val upgradeTimeTargetSwitching get() = if (LanguageManager.isChinese) "升级时间上号：目标号 %d 升级已完成，正在切换..." else "Upgrade-time scheduling: Target account %d upgrade complete, switching..."
-    val upgradeTimeWaiting get() = if (LanguageManager.isChinese) "升级时间上号：等待 %d 号（%s Lv%d），剩余 %d 分 %d 秒" else "Upgrade-time scheduling: Waiting account %d (%s Lv%d), %d min %d sec remaining"
     val upgradeTimeSchedulingStarted get() = if (LanguageManager.isChinese) "升级时间上号模式已启动" else "Upgrade-time scheduling started"
     val upgradeTimeNoEnabledAccounts get() = if (LanguageManager.isChinese) "当前未开启任何账号" else "No accounts enabled"
     val upgradeTimeBoardTitle get() = if (LanguageManager.isChinese) "等待中:" else "Waiting:"

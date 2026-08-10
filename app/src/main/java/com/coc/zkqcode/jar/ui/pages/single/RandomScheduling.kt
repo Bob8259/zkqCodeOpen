@@ -108,6 +108,7 @@ fun RandomScheduling() {
         afterChange = { checked ->
             if (checked) {
                 GlobalVars.configStates[GLOBAL_SETTINGS.BATCH_CREATE_ACCOUNT.key]?.value = "0"
+                GlobalVars.configStates[GLOBAL_SETTINGS.UPGRADE_TIME_SCHEDULING.key]?.value = "0"
             }
         })
 

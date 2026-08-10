@@ -466,7 +466,6 @@ object WebDAVHelper {
             val credential = Credentials.basic(username, password)
             val sourceUrl = buildUrl(baseUrl, sourcePath)
             val destinationUrl = buildUrl(baseUrl, destinationPath)
-            android.util.Log.d("WebDAV", "MOVE $sourcePath -> $destinationPath overwrite=$overwrite")
             val request = Request.Builder()
                 .url(sourceUrl)
                 .method("MOVE", null)

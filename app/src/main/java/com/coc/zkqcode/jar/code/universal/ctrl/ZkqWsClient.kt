@@ -18,10 +18,13 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeout
+import kotlinx.coroutines.TimeoutCancellationException
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
 import okhttp3.WebSocket
@@ -53,6 +56,9 @@ object ZkqWsClient {
 
     private const val NONCE_KEY = "zkq_device_nonce"
 
+    // A stuck capture pipeline must not hang the query frame forever.
+    private const val SCREENSHOT_TIMEOUT_MS = 15_000L
+
     private const val BACKOFF_INITIAL_MS = 1_000L
     private const val BACKOFF_MAX_MS = 60_000L
 
@@ -67,6 +73,12 @@ object ZkqWsClient {
         .readTimeout(0, TimeUnit.SECONDS) // WS is long-lived; pingInterval monitors liveness
         .writeTimeout(10, TimeUnit.SECONDS)
         .pingInterval(30, TimeUnit.SECONDS)
+        .build()
+
+    // File uploads are plain HTTP calls; they must not inherit the WS readTimeout(0),
+    // otherwise a stuck plugin response would hang the upload coroutine forever.
+    private val uploadClient = client.newBuilder()
+        .readTimeout(60, TimeUnit.SECONDS)
         .build()
 
     /** Runs while the script engine coroutine is active. */
@@ -160,7 +172,7 @@ object ZkqWsClient {
             if (query == "logfile") {
                 val lines = frame.optInt("lines", 0).coerceIn(0, 500_000)
                 val hours = frame.optInt("hours", 0).coerceIn(0, 720)
-                val days = frame.optInt("days", 0).coerceIn(0, 30)
+                val days = frame.optInt("days", 0).coerceIn(0, 365)
                 handleLogfile(webSocket, requestId, lines, hours, days)
                 return
             }
@@ -170,7 +182,7 @@ object ZkqWsClient {
             }
             val lines = frame.optInt("lines", 200).coerceIn(1, 100_000)
             val maxChars = frame.optInt("maxChars", 4000).coerceIn(100, 10_000_000)
-            val days = frame.optInt("days", 0).coerceIn(0, 30)
+            val days = frame.optInt("days", 0).coerceIn(0, 365)
 
             val (ok, payload) = executeQuery(query, lines, maxChars, days)
             val reply = JSONObject().apply {
@@ -192,15 +204,22 @@ object ZkqWsClient {
     private suspend fun handleScreenshot(webSocket: WebSocket, requestId: Long) {
         val reply = JSONObject().apply { put("requestId", requestId) }
         try {
-            val bitmap = ScreenCaptureManager.capture(asBitmap = true) as? Bitmap
-                ?: throw IllegalStateException("截图失败（无画面帧）")
-            val png = encodePng(bitmap)
-            val filename = uploadScreenshot(png, requestId)
+            // Bounded so a stuck capture pipeline answers an explicit error
+            // instead of hanging until the plugin-side query timeout.
+            val filename = withTimeout(SCREENSHOT_TIMEOUT_MS) {
+                val bitmap = ScreenCaptureManager.capture(asBitmap = true) as? Bitmap
+                    ?: throw IllegalStateException("截图失败（无画面帧）")
+                val png = encodePng(bitmap)
+                uploadScreenshot(png, requestId)
+            }
             if (filename == null) {
                 reply.put("ok", false).put("error", "截图上传失败")
             } else {
                 reply.put("ok", true).put("data", filename)
             }
+        } catch (e: TimeoutCancellationException) {
+            android.util.Log.w("ZkqWs", "screenshot timed out")
+            reply.put("ok", false).put("error", "截图超时")
         } catch (e: Exception) {
             android.util.Log.w("ZkqWs", "screenshot error: ${e.message}")
             reply.put("ok", false).put("error", e.message ?: "截图失败")
@@ -231,12 +250,15 @@ object ZkqWsClient {
     }
 
     /**
-     * Packs log lines into a zip archive. Range rules:
+     * Packs log lines into a zip archive, streaming line-by-line to a temp file
+     * so a full retention window (e.g. a year of logs) never buffers in memory.
+     * Range rules:
      *  - lines > 0: last N lines across the per-day files
      *  - otherwise hours/days > 0: lines whose timestamp falls in the window
      *  - otherwise: everything (full retention window)
+     * Returns a temp zip File (caller deletes after upload), or null when empty.
      */
-    private fun packLogsToZip(lines: Int, hours: Int, days: Int): ByteArray? {
+    private fun packLogsToZip(lines: Int, hours: Int, days: Int): File? {
         val logDir = File(ZKQApplication.appContext.filesDir, "logs")
         if (!logDir.exists()) return null
         val files = logDir.listFiles { f ->
@@ -245,79 +267,92 @@ object ZkqWsClient {
             ?: emptyList()
         if (files.isEmpty()) return null
 
-        val collected = mutableListOf<String>()
-        if (lines > 0) {
-            var remaining = lines
-            for (f in files) {
-                if (remaining <= 0) break
-                val fileLines = try {
-                    f.readLines()
-                } catch (e: Exception) {
-                    continue
-                }
-                val take = minOf(remaining, fileLines.size)
-                collected.addAll(0, fileLines.takeLast(take))
-                remaining -= take
-            }
-        } else {
-            val cutoff = when {
-                days > 0 -> System.currentTimeMillis() - days * 86_400_000L
-                hours > 0 -> System.currentTimeMillis() - hours * 3_600_000L
-                else -> 0L
-            }
-            val dayCutoff = if (cutoff > 0) {
-                SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date(cutoff))
-            } else {
-                ""
-            }
-            for (f in files) {
-                val fileLines = try {
-                    f.readLines()
-                } catch (e: Exception) {
-                    continue
-                }
-                if (dayCutoff.isEmpty()) {
-                    collected.addAll(0, fileLines)
-                } else {
-                    collected.addAll(0, fileLines.filter { it.length >= 10 && it.substring(0, 10) >= dayCutoff })
-                }
-            }
-        }
-        if (collected.isEmpty()) return null
-
-        val bos = ByteArrayOutputStream()
+        val tmp = File(ZKQApplication.appContext.cacheDir, "zkq_logs_${System.currentTimeMillis()}.zip")
         try {
-            java.util.zip.ZipOutputStream(bos).use { zos ->
+            java.util.zip.ZipOutputStream(tmp.outputStream()).use { zos ->
                 val stamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
                 zos.putNextEntry(java.util.zip.ZipEntry("logs_$stamp.txt"))
-                zos.write(collected.joinToString("\n").toByteArray(Charsets.UTF_8))
+                fun emit(line: String) {
+                    zos.write(line.toByteArray(Charsets.UTF_8))
+                    zos.write('\n'.code)
+                }
+                if (lines > 0) {
+                    // Tail: newest files first, stop once the quota is filled. Each
+                    // file is streamed through a bounded buffer so memory stays O(lines).
+                    val result = ArrayDeque<String>()
+                    var remaining = lines
+                    for (f in files) {
+                        if (remaining <= 0) break
+                        val fileTail = ArrayDeque<String>()
+                        try {
+                            f.forEachLine { line ->
+                                if (fileTail.size == remaining) fileTail.removeFirst()
+                                fileTail.addLast(line)
+                            }
+                        } catch (e: Exception) {
+                            continue
+                        }
+                        if (fileTail.isEmpty()) continue
+                        val take = minOf(remaining, fileTail.size)
+                        result.addAll(0, fileTail.takeLast(take))
+                        remaining -= take
+                    }
+                    result.forEach { emit(it) }
+                } else {
+                    val cutoff = when {
+                        days > 0 -> System.currentTimeMillis() - days * 86_400_000L
+                        hours > 0 -> System.currentTimeMillis() - hours * 3_600_000L
+                        else -> 0L
+                    }
+                    val dayCutoff = if (cutoff > 0) {
+                        SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date(cutoff))
+                    } else {
+                        ""
+                    }
+                    for (f in files.reversed()) {  // oldest -> newest, chronological
+                        try {
+                            f.forEachLine { line ->
+                                if (dayCutoff.isEmpty() || (line.length >= 10 && line.substring(0, 10) >= dayCutoff)) {
+                                    emit(line)
+                                }
+                            }
+                        } catch (e: Exception) {
+                            // skip unreadable file
+                        }
+                    }
+                }
                 zos.closeEntry()
             }
-            return bos.toByteArray()
         } catch (e: Exception) {
             android.util.Log.w("ZkqWs", "pack logs error: ${e.message}")
+            tmp.delete()
             return null
         }
+        if (tmp.length() == 0L) {
+            tmp.delete()
+            return null
+        }
+        return tmp
     }
 
     /** Uploads the log archive to the plugin's /zkq_logfile endpoint. */
-    private suspend fun uploadLogfile(zip: ByteArray, requestId: Long): String? {
+    private suspend fun uploadLogfile(zip: File, requestId: Long): String? {
         val base = serverBase() ?: return null
         val deviceId = StatusSnapshot.deviceId()
         val nonce = getOrCreateNonce()
         val url = "$base/zkq_logfile?deviceId=${URLEncoder.encode(deviceId, "UTF-8")}" +
-            "&nonce=$nonce&requestId=$requestId"
+            "&nonce=$nonce&requestId=$requestId" + buildTokenQueryParam()
         return withContext(Dispatchers.IO) {
             try {
                 val multipart = MultipartBody.Builder()
                     .setType(MultipartBody.FORM)
-                    .addFormDataPart("file", "logs.zip", zip.toRequestBody("application/zip".toMediaTypeOrNull()))
+                    .addFormDataPart("file", "logs.zip", zip.asRequestBody("application/zip".toMediaTypeOrNull()))
                     .build()
                 val request = Request.Builder()
                     .url(url)
                     .post(multipart)
                     .build()
-                client.newCall(request).execute().use { response ->
+                uploadClient.newCall(request).execute().use { response ->
                     if (!response.isSuccessful) return@use null
                     val json = try {
                         JSONObject(response.body.string())
@@ -333,6 +368,8 @@ object ZkqWsClient {
             } catch (e: Exception) {
                 android.util.Log.w("ZkqWs", "upload logfile error: ${e.message}")
                 null
+            } finally {
+                zip.delete()
             }
         }
     }
@@ -377,7 +414,7 @@ object ZkqWsClient {
         val deviceId = StatusSnapshot.deviceId()
         val nonce = getOrCreateNonce()
         val url = "$base/zkq_screenshot?deviceId=${URLEncoder.encode(deviceId, "UTF-8")}" +
-            "&nonce=$nonce&requestId=$requestId"
+            "&nonce=$nonce&requestId=$requestId" + buildTokenQueryParam()
         return withContext(Dispatchers.IO) {
             try {
                 val multipart = MultipartBody.Builder()
@@ -388,7 +425,7 @@ object ZkqWsClient {
                     .url(url)
                     .post(multipart)
                     .build()
-                client.newCall(request).execute().use { response ->
+                uploadClient.newCall(request).execute().use { response ->
                     if (!response.isSuccessful) return@use null
                     val json = try {
                         JSONObject(response.body.string())
@@ -474,25 +511,26 @@ object ZkqWsClient {
             0L
         }
         val dayCutoff = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date(cutoff))
-        val collected = mutableListOf<String>()
-        var remaining = lines
-        for (f in files) {
-            if (remaining <= 0) break
-            val fileLines = try {
-                f.readLines()
+        // Stream through a bounded deque so memory stays O(lines) even when the
+        // retention window spans many large per-day files. Files are sorted
+        // newest-first; iterate oldest-first so the deque keeps the newest
+        // `lines` lines in chronological order (same result as the old
+        // readLines()+takeLast approach, without materialising whole files).
+        val kept = ArrayDeque<String>()
+        for (f in files.asReversed()) {
+            try {
+                f.useLines { seq ->
+                    for (line in seq) {
+                        if (days > 0 && (line.length < 10 || line.substring(0, 10) < dayCutoff)) continue
+                        if (lines > 0 && kept.size == lines) kept.removeFirst()
+                        kept.addLast(line)
+                    }
+                }
             } catch (e: Exception) {
                 continue
             }
-            val filtered = if (days > 0) {
-                // line format: "yyyy-MM-dd HH:mm:ss.SSS [tag] msg" - lexicographic compare works
-                fileLines.filter { it.length >= 10 && it.substring(0, 10) >= dayCutoff }
-            } else {
-                fileLines
-            }
-            val take = minOf(remaining, filtered.size)
-            collected.addAll(0, filtered.takeLast(take))
-            remaining -= take
         }
+        val collected = kept.toList()
         val sampled = sampleForLlm(collected)
         val text = sampled.joinToString("\n")
         val masked = maskSecrets(text)
@@ -554,6 +592,11 @@ object ZkqWsClient {
             "ws://" + base.removePrefix("http://")
         }
         return "$wsBase/zkq_ws"
+    }
+
+    private fun buildTokenQueryParam(): String {
+        val token = GlobalVars.configStates[GLOBAL_SETTINGS.ZKQ_TOKEN.key]?.value.orEmpty()
+        return if (token.isNotBlank()) "&token=" + URLEncoder.encode(token, "UTF-8") else ""
     }
 
     private suspend fun buildHandshakeQuery(deviceId: String): String {

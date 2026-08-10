@@ -32,6 +32,8 @@ fun BatchCreateAccount() {
                 GlobalVars.configStates[GLOBAL_SETTINGS.AFTER_KICK_OPTION.key]?.value = "0"
                 // Mutual exclusion: disable random scheduling when batch create is enabled
                 GlobalVars.configStates[GLOBAL_SETTINGS.RANDOM_SCHEDULING.key]?.value = "0"
+                // Mutual exclusion: disable upgrade-time scheduling too (ADR-0001 §2.3)
+                GlobalVars.configStates[GLOBAL_SETTINGS.UPGRADE_TIME_SCHEDULING.key]?.value = "0"
             }
         })
 

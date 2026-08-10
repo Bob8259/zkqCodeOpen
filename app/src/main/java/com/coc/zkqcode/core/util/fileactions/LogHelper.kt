@@ -5,9 +5,11 @@ import android.content.Context
 import android.util.Log
 import com.coc.zkqcode.BuildConfig
 import com.coc.zkqcode.core.app.ZKQApplication
+import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.util.basic.RunShell
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.exit.AppExitHelper
+import com.coc.zkqcode.jar.ui.schema.Schema.GLOBAL_SETTINGS
 import timber.log.Timber
 import java.io.File
 import java.io.FileOutputStream
@@ -26,6 +28,9 @@ object LogHelper {
         if (!timberInitialized.compareAndSet(false, true)) return
         if (BuildConfig.DEBUG) {
             Timber.plant(Timber.DebugTree())
+            // TODO(临时开放): DEBUG 构建也写文件日志（filesDir/logs/info.log），
+            //  便于 QQ 日志查询调试。用户说恢复后删除本行，恢复为只 DebugTree。
+            Timber.plant(FileLoggingTree(context))
         } else {
             Timber.plant(FileLoggingTree(context))
         }
@@ -128,34 +133,54 @@ object LogHelper {
     }
 
     class FileLoggingTree(private val context: Context) : Timber.Tree() {
+        // Only run the retention cleanup once per day (logging is hot path).
+        private var lastCleanupDay = ""
+
         @SuppressLint("LogNotTimber")
         override fun log(priority: Int, tag: String?, message: String, t: Throwable?) {
             val logDir = File(context.filesDir, "logs")
             if (!logDir.exists()) logDir.mkdirs()
 
-            val fileName = if (priority >= Log.ERROR) "error.log" else "info.log"
+            // Per-day rolling files: info-20260803.log / error-20260803.log,
+            // retained by LOG_RETENTION_DAYS instead of a line cap.
+            val day = SimpleDateFormat("yyyyMMdd", Locale.getDefault()).format(Date())
+            val fileName = if (priority >= Log.ERROR) "error-$day.log" else "info-$day.log"
             val logFile = File(logDir, fileName)
 
             val timestamp = SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.getDefault()).format(Date())
             val logEntry = "$timestamp [$tag] $message\n"
 
             try {
-                // Append log entry
                 FileOutputStream(logFile, true).use { fos ->
                     fos.write(logEntry.toByteArray())
                 }
-
-                // Maintain 500 lines limit for each file
-                synchronized(this) {
-                    val lines = logFile.readLines()
-                    if (lines.size > 500) {
-                        val trimmedLines = lines.takeLast(500)
-                        logFile.writeText(trimmedLines.joinToString("\n") + "\n")
-                    }
-                }
+                cleanupOldLogs(logDir)
             } catch (e: Exception) {
                 // Use standard Log to avoid infinite recursion if Timber fails
                 Log.e("FileLoggingTree", "Error writing to $fileName", e)
+            }
+        }
+
+        /** Deletes log files older than the configured retention (once per day).
+         *  Retention is pushed by the ZKQ plugin; the local setting is a fallback. */
+        private fun cleanupOldLogs(logDir: File) {
+            val today = SimpleDateFormat("yyyyMMdd", Locale.getDefault()).format(Date())
+            if (lastCleanupDay == today) return
+            lastCleanupDay = today
+            val pushed = com.coc.zkqcode.jar.code.universal.ctrl.ZkqSnapshotUploader.logRetentionDays
+            val days = when {
+                pushed > 0 -> pushed
+                else -> GlobalVars.configStates[GLOBAL_SETTINGS.LOG_RETENTION_DAYS.key]
+                    ?.value?.toIntOrNull() ?: 3
+            }
+            if (days <= 0) return  // 0/negative = keep forever
+            val cutoff = System.currentTimeMillis() - days * 86_400_000L
+            logDir.listFiles()?.forEach { f ->
+                val isLogFile = f.isFile && f.name.endsWith(".log") &&
+                    (f.name.startsWith("info") || f.name.startsWith("error"))
+                if (isLogFile && f.lastModified() < cutoff) {
+                    f.delete()
+                }
             }
         }
     }

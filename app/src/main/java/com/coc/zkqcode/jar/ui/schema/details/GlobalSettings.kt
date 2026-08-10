@@ -82,7 +82,6 @@ object GlobalSettings {
     // ── Upgrade-time Scheduling (升级时间上号) ──────────────────────────────────
     val UPGRADE_TIME_SCHEDULING = SettingDef("upgrade_time_scheduling", "升级时间上号", "Upgrade-time Scheduling", 0, "GLOBAL_SETTINGS")
     val UTS_WAIT_POLL_SECONDS = SettingDef("uts_wait_poll_seconds", "等待刷新间隔(秒)", "Wait Refresh (s)", "5", "GLOBAL_SETTINGS")
-    val UTS_FILL_ENABLED = SettingDef("uts_fill_enabled", "等待时填充收菜", "Fill during wait", 1, "GLOBAL_SETTINGS")
 
     // ── Cloud Expiry Notification (云机到期通知) ────────────────────────────────
     val CLOUD_EXPIRE_NOTIFY = SettingDef("cloud_expire_notify", "云机到期通知", "Cloud Expiry Notify", 0, "GLOBAL_SETTINGS")
@@ -203,7 +202,7 @@ object GlobalSettings {
         TEMP_RESUME_THRESHOLD,
         RANDOM_SCHEDULING,
         UPGRADE_TIME_SCHEDULING,
-        UTS_WAIT_POLL_SECONDS, UTS_FILL_ENABLED,
+        UTS_WAIT_POLL_SECONDS,
         RS_BATTLE_RATIO_DAWN, RS_BATTLE_RATIO_MORNING, RS_BATTLE_RATIO_AFTERNOON, RS_BATTLE_RATIO_NIGHT,
         RS_STOP_PROB_DAWN, RS_STOP_PROB_MORNING, RS_STOP_PROB_AFTERNOON, RS_STOP_PROB_NIGHT,
         RS_CONTINUE_MIN_DAWN, RS_CONTINUE_MIN_MORNING, RS_CONTINUE_MIN_AFTERNOON, RS_CONTINUE_MIN_NIGHT,

@@ -16,7 +16,11 @@ object PushRouter {
     ): String? {
         val provider = GlobalVars.configStates[GLOBAL_SETTINGS.PUSH_PROVIDER.key]?.value ?: "0"
         return when (provider) {
-            "1" -> WxPusherHelper.sendNotification(message, brailleArt)
+            "1" -> if (imageBytes != null) {
+                WxPusherHelper.sendNotification(message, imageBytes)
+            } else {
+                WxPusherHelper.sendNotification(message)
+            }
             "2" -> PushPlusHelper.sendNotification(message, brailleArt)
             "3" -> TelegramHelper.sendNotification(message, imageBytes)
             "4" -> AstrBotHelper.sendNotification(message, imageBytes, brailleArt)

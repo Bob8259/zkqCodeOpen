@@ -3,6 +3,7 @@ package com.coc.zkqcode.jar.code.universal.push
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Color
+import android.util.Base64
 import java.io.ByteArrayOutputStream
 
 /**
@@ -98,5 +99,29 @@ object PixelBlockEncoder {
         val stream = ByteArrayOutputStream()
         bitmap.compress(Bitmap.CompressFormat.JPEG, 85, stream)
         return stream.toByteArray()
+    }
+
+    /**
+     * Scales the bitmap to a fixed orientation-aware target (colors preserved)
+     * and encodes it as a base64 JPEG data URI for HTML pushes.
+     *
+     * Landscape sources are stretched to 640x360; portrait sources to 360x640,
+     * keeping both aspect ratios intact (no distortion). Compression quality 20
+     * keeps the payload well under WxPusher's 40000-char content limit.
+     *
+     * @return "data:image/jpeg;base64,..." string, or null on failure.
+     */
+    fun encodeJpegBase64(bitmap: Bitmap, quality: Int = 20): String? {
+        val target = if (bitmap.width >= bitmap.height) 640 to 360 else 360 to 640
+        val scaled = Bitmap.createScaledBitmap(bitmap, target.first, target.second, true)
+
+        val stream = ByteArrayOutputStream()
+        if (!scaled.compress(Bitmap.CompressFormat.JPEG, quality, stream)) {
+            scaled.recycle()
+            return null
+        }
+        scaled.recycle()
+        val base64 = Base64.encodeToString(stream.toByteArray(), Base64.NO_WRAP)
+        return "data:image/jpeg;base64,$base64"
     }
 }

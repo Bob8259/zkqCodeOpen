@@ -68,9 +68,13 @@ object StatusSnapshot {
      */
     suspend fun bumpDeviceIdOnConflict() {
         val current = deviceId()
-        val m = Regex("-(\\d+)$").find(current)
+        val remark = GlobalVars.configStates[GLOBAL_SETTINGS.DEVICE_REMARK.key]?.value.orEmpty()
+        // When the name is the user's own remark, keep it whole ("手机-2" -> "手机-2-2");
+        // only strip the "-N" suffix when the name is one of our own conflict renames.
+        val fromRemark = remark.isNotBlank() && current == remark
+        val m = if (fromRemark) null else Regex("-(\\d+)$").find(current)
         val base = if (m != null) current.substring(0, m.range.first) else current
-        val nextSuffix = (m?.groupValues?.get(1)?.toIntOrNull() ?: 1) + 1
+        val nextSuffix = if (m != null) ((m.groupValues[1].toIntOrNull() ?: 1) + 1) else 1
         writeMemory(DEVICE_ID_OVERRIDE_KEY, "$base-$nextSuffix")
     }
 

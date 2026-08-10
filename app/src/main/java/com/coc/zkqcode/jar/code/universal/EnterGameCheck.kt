@@ -140,8 +140,8 @@ private suspend fun sendGameEntryFailNotification(timeoutSeconds: Int) {
 
     // Check push provider: image-capable platforms get a screenshot, others get braille art
     val provider = GlobalVars.configStates[Schema.GLOBAL_SETTINGS.PUSH_PROVIDER.key]?.value ?: "0"
-    if (PushRouter.supportsImage(provider)) {
-        // Telegram: capture screenshot and send as photo
+    if (provider == "1" || PushRouter.supportsImage(provider)) {
+        // Image platforms (incl. WxPusher): capture screenshot and send as image bytes
         val screenshot = ScreenCaptureManager.captureScreenOrRestart<Bitmap>(asBitmap = true)
         val imageBytes = PixelBlockEncoder.bitmapToJpegBytes(screenshot)
         screenshot.recycle()

@@ -55,6 +55,16 @@ suspend fun removeScheduleForAccount(account: Int) {
     }
 }
 
+/** Remove only expired (already completed) schedule entries for an account.
+ *  Keeps future upgrades so they remain tracked. */
+suspend fun removeExpiredScheduleForAccount(account: Int) {
+    val nowSec = System.currentTimeMillis() / 1000L
+    val existing = loadSchedule().toMutableList()
+    if (existing.removeAll { it.account == account && it.completionTs <= nowSec }) {
+        saveSchedule(existing)
+    }
+}
+
 // ── Called on game exit: export JSON & save completion timestamps ───────
 
 suspend fun checkUpgradeTimers() {
@@ -66,7 +76,14 @@ suspend fun checkUpgradeTimers() {
     val jsonObject = try { Gson().fromJson(clipboardText.trim(), JsonObject::class.java) } catch (_: Exception) { return } ?: return
     val acc = InGameVars.currentAccountNumber
     val timerItems = extractTimerItems(jsonObject)
-    if (timerItems.isEmpty()) return
+    if (timerItems.isEmpty()) {
+        // Collection succeeded but this account has no in-progress upgrades.
+        // Drop its stale schedule entries so it becomes a no-data account
+        // (fill candidate) instead of being repeatedly re-selected as target
+        // by its already-completed records.
+        removeScheduleForAccount(acc)
+        return
+    }
 
     val nowSec = System.currentTimeMillis() / 1000L
     val jsonTs = jsonObject.get("timestamp")?.asLong ?: nowSec

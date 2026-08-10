@@ -1743,10 +1743,8 @@ private suspend fun copyRemoteToLocalNow(
                         val topNames = archiveTopLevelNames(tempFile, isZip)
                         val hasWrapper = topNames.isNotEmpty() && topNames == setOf(slotName)
                         val extractDir = if (hasWrapper) localDir.absolutePath else "${localDir.absolutePath}/$slotName"
-                        android.util.Log.d("WebDAV", "  DIR slot=$slotName tops=$topNames hasWrapper=$hasWrapper extractDir=$extractDir")
                         if (!hasWrapper) ShellHelper.runBlockingNoOutput("mkdir -p \"$extractDir\"")
                         val extractCmd = if (isZip) ShellHelper.runBlocking("unzip -o \"${tempFile.absolutePath}\" -d \"$extractDir\"") else ShellHelper.runBlocking("tar -xzf \"${tempFile.absolutePath}\" -C \"$extractDir\"")
-                        android.util.Log.d("WebDAV", "  DIR extract $fileName -> $extractDir success=${extractCmd.isSuccess}")
                         withContext(Dispatchers.IO) { tempFile.delete() }
                         if (extractCmd.isSuccess) suc++ else fail++
                     } else {
@@ -1777,10 +1775,8 @@ private suspend fun copyRemoteToLocalNow(
                 val topNames = archiveTopLevelNames(tempFile, isZip)
                 val hasWrapper = topNames.isNotEmpty() && topNames == setOf(slotName)
                 val extractDir = if (hasWrapper) localParent else "$localParent/$slotName"
-                android.util.Log.d("WebDAV", "  FILE slot=$slotName tops=$topNames hasWrapper=$hasWrapper extractDir=$extractDir")
                 if (!hasWrapper) ShellHelper.runBlockingNoOutput("mkdir -p \"$extractDir\"")
                 val extractCmd = if (isZip) ShellHelper.runBlocking("unzip -o \"${tempFile.absolutePath}\" -d \"$extractDir\"") else ShellHelper.runBlocking("tar -xzf \"${tempFile.absolutePath}\" -C \"$extractDir\"")
-                android.util.Log.d("WebDAV", "  FILE unzip into $extractDir success=${extractCmd.isSuccess}")
                 withContext(Dispatchers.IO) { tempFile.delete() }
                 if (extractCmd.isSuccess) {
                     onLog("解压成功: $extractDir"); true
@@ -1972,7 +1968,6 @@ private fun copySelectedToOtherPanel(
                 (copyItem.name.endsWith(".zip") || copyItem.name.endsWith(".tar.gz")))
                 copyItem.name.removeSuffix(".zip").removeSuffix(".tar.gz")
             else null
-            android.util.Log.d("WebDAV", "  task src=${copyItem.name} isDir=${copyItem.isDirectory} expanded=$expandedLocalRoot copyLocalPath=$copyLocalPath destBasePath=$destBasePath remoteName=$remoteName remoteSlot=$remoteSlot")
             val literalConflict = targetExists(dstPanel, destBasePath, remoteName)
             val slotConflict = remoteSlot != null && targetExists(dstPanel, destBasePath, remoteSlot)
             if (literalConflict || slotConflict) {

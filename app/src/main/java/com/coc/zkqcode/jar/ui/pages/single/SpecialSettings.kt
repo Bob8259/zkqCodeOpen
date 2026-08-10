@@ -88,10 +88,10 @@ fun LazyListScope.specialSettings(onOpenWebDavManager: () -> Unit = {}) {
                 afterChange = { checked ->
                     if (checked) {
                         GlobalVars.configStates[GLOBAL_SETTINGS.RANDOM_SCHEDULING.key]?.value = "0"
+                        GlobalVars.configStates[GLOBAL_SETTINGS.BATCH_CREATE_ACCOUNT.key]?.value = "0"
                     }
                 })
             if (parentEnabled) {
-                SettingSwitchIcon(key = GLOBAL_SETTINGS.UTS_FILL_ENABLED.key)
                 SettingInputRow(key = GLOBAL_SETTINGS.UTS_WAIT_POLL_SECONDS.key, suffix = Strings.secondUnit, numericOnly = true)
             }
         }
