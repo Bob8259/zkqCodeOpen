@@ -117,9 +117,13 @@ object ZkqWsClient {
         val closed = CompletableDeferred<Reason>()
         val deviceId = StatusSnapshot.deviceId()
         val query = buildHandshakeQuery(deviceId)
+        val token = zkqToken()
 
+        // Shared secret travels in a request header (not the URL) so it stays
+        // out of gateway access logs.
         val request = Request.Builder()
             .url("$url?$query")
+            .apply { if (token.isNotBlank()) addHeader("X-Zkq-Token", token) }
             .build()
 
         val scope = CoroutineScope(currentCoroutineContext())
@@ -348,8 +352,10 @@ object ZkqWsClient {
                     .setType(MultipartBody.FORM)
                     .addFormDataPart("file", "logs.zip", zip.asRequestBody("application/zip".toMediaTypeOrNull()))
                     .build()
+                val token = zkqToken()
                 val request = Request.Builder()
                     .url(url)
+                    .apply { if (token.isNotBlank()) addHeader("X-Zkq-Token", token) }
                     .post(multipart)
                     .build()
                 uploadClient.newCall(request).execute().use { response ->
@@ -421,8 +427,10 @@ object ZkqWsClient {
                     .setType(MultipartBody.FORM)
                     .addFormDataPart("file", "screenshot.png", png.toRequestBody("image/png".toMediaTypeOrNull()))
                     .build()
+                val token = zkqToken()
                 val request = Request.Builder()
                     .url(url)
+                    .apply { if (token.isNotBlank()) addHeader("X-Zkq-Token", token) }
                     .post(multipart)
                     .build()
                 uploadClient.newCall(request).execute().use { response ->
@@ -604,10 +612,12 @@ object ZkqWsClient {
             "deviceId=" + URLEncoder.encode(deviceId, "UTF-8"),
             "nonce=" + getOrCreateNonce(),
         )
-        val token = GlobalVars.configStates[GLOBAL_SETTINGS.ZKQ_TOKEN.key]?.value.orEmpty()
-        if (token.isNotBlank()) params.add("token=" + URLEncoder.encode(token, "UTF-8"))
         return params.joinToString("&")
     }
+
+    /** The shared comm secret; blank when not configured. */
+    private fun zkqToken(): String =
+        GlobalVars.configStates[GLOBAL_SETTINGS.ZKQ_TOKEN.key]?.value.orEmpty()
 
     private suspend fun getOrCreateNonce(): String {
         val existing = readMemory(NONCE_KEY)

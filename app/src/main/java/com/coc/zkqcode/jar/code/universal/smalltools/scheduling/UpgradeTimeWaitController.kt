@@ -4,6 +4,7 @@ import com.coc.zkqcode.core.util.basic.RunShell
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.jar.code.universal.InGameVars
 import com.coc.zkqcode.jar.code.universal.smalltools.ScheduledUpgrade
+import com.coc.zkqcode.jar.code.universal.smalltools.checkScheduledUpgradeNotifications
 import com.coc.zkqcode.jar.code.universal.smalltools.data.getStaticConfig
 import com.coc.zkqcode.jar.code.universal.smalltools.lifecycle.killApp
 import com.coc.zkqcode.jar.code.universal.smalltools.loadSchedule
@@ -44,6 +45,12 @@ class UpgradeTimeWaitController {
         val nowSec = System.currentTimeMillis() / 1000L
         val waitMs = ((target.completionTs - nowSec) * 1000L).coerceAtLeast(0L)
         val endTime = System.currentTimeMillis() + waitMs
+        // Guard against a tight loop: if the fallback "waiting" target is
+        // already due (e.g. a stale >=MAX retry count made plan() skip it), at
+        // least pause before re-planning so we never spin with zero delay.
+        if (waitMs <= 0L) {
+            delay(pollMs)
+        }
         while (System.currentTimeMillis() < endTime) {
             if (!currentCoroutineContext().isActive) return UpgradeTimeWaitResult.STOPPED
             val remainingMs = endTime - System.currentTimeMillis()
@@ -51,7 +58,14 @@ class UpgradeTimeWaitController {
                 return UpgradeTimeWaitResult.FILL_READY
             }
             val schedule = loadSchedule()
-            ShowMessage(UpgradeTimeStatusBoard.build(schedule, enabledAccounts), isChecking = false)
+            val retryCounts = loadTargetRetryCounts()
+            ShowMessage(
+                UpgradeTimeStatusBoard.build(schedule, enabledAccounts, retryCounts = retryCounts),
+                isChecking = false
+            )
+            // Keep advance-completion notifications alive while waiting (the
+            // sequential main loop never runs in this mode).
+            checkScheduledUpgradeNotifications()
             delay(minOf(pollMs, remainingMs.coerceAtLeast(0L)))
         }
         return UpgradeTimeWaitResult.TARGET_DUE

@@ -179,8 +179,10 @@ suspend fun checkScheduledUpgradeNotifications() {
     for (item in schedule) {
         if (item.notified) continue
         if (item.completionTs <= nowSec) {
-            // Already completed — remove from tracking
-            changed = true
+            // Already completed — skip notification but keep the entry in the
+            // schedule (the scheduler still needs it as a due target). Do NOT
+            // mark changed: nothing is modified, so we avoid re-saving the
+            // schedule on every 5s wait tick.
             continue
         }
         if (item.completionTs - nowSec <= advanceSec) {

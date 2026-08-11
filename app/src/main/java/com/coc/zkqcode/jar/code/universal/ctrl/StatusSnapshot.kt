@@ -5,6 +5,7 @@ import com.coc.zkqcode.jar.code.universal.InGameVars
 import com.coc.zkqcode.jar.code.universal.smalltools.loadSchedule
 import com.coc.zkqcode.jar.code.universal.smalltools.data.readMemory
 import com.coc.zkqcode.jar.code.universal.smalltools.data.writeMemory
+import com.coc.zkqcode.jar.code.universal.smalltools.scheduling.resolveEnabledAccountIds
 import com.coc.zkqcode.jar.ui.schema.Schema.GLOBAL_SETTINGS
 import org.json.JSONObject
 import java.util.UUID
@@ -84,7 +85,8 @@ object StatusSnapshot {
      */
     suspend fun build(lastEvent: String?): JSONObject {
         val schedule = loadSchedule()
-        val earliest = schedule.minByOrNull { it.completionTs }
+        val enabled = resolveEnabledAccountIds()
+        val earliest = schedule.filter { it.account in enabled }.minByOrNull { it.completionTs }
         val accountRemark = GlobalVars.configStates["remark${InGameVars.currentAccountNumber}"]?.value.orEmpty()
         return JSONObject().apply {
             put("mode", mode())

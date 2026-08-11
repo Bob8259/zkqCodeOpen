@@ -87,16 +87,18 @@ object ZkqSnapshotUploader {
         }
 
         val body = JSONObject().apply {
-            val token = GlobalVars.configStates[GLOBAL_SETTINGS.ZKQ_TOKEN.key]?.value.orEmpty()
-            if (token.isNotBlank()) put("token", token)
             put("deviceId", StatusSnapshot.deviceId())
             put("nonce", getOrCreateNonce())
             put("snapshot", StatusSnapshot.build(lastEvent))
             put("ts", System.currentTimeMillis() / 1000)
         }
 
+        // Shared secret travels in a request header (not the URL/body) so it
+        // stays out of gateway access logs.
+        val token = GlobalVars.configStates[GLOBAL_SETTINGS.ZKQ_TOKEN.key]?.value.orEmpty()
         val request = Request.Builder()
             .url(url)
+            .apply { if (token.isNotBlank()) addHeader("X-Zkq-Token", token) }
             .post(body.toString().toRequestBody(MEDIA_TYPE_JSON))
             .build()
 

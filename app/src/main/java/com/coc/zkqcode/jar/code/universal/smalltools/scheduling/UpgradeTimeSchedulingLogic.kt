@@ -4,9 +4,11 @@ import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.jar.code.runAccountStepBlock
 import com.coc.zkqcode.jar.code.universal.InGameVars
 import com.coc.zkqcode.jar.code.universal.smalltools.ScheduledUpgrade
+import com.coc.zkqcode.jar.code.universal.smalltools.checkScheduledUpgradeNotifications
 import com.coc.zkqcode.jar.code.universal.smalltools.data.getStaticConfig
 import com.coc.zkqcode.jar.code.universal.smalltools.loadSchedule
 import com.coc.zkqcode.jar.code.universal.smalltools.removeExpiredScheduleForAccount
+import com.coc.zkqcode.jar.code.universal.smalltools.removeScheduleForAccount
 import com.coc.zkqcode.jar.ui.Strings
 import com.coc.zkqcode.jar.ui.schema.Schema.GLOBAL_SETTINGS
 import kotlinx.coroutines.currentCoroutineContext
@@ -38,8 +40,13 @@ suspend fun runUpgradeTimeSchedulingScript() {
     var fillCooldownEnd = 0L
 
     while (currentCoroutineContext().isActive) {
+        // Advance-completion notifications run in the sequential loop; re-run
+        // them here so they keep firing while upgrade-time scheduling owns the
+        // main loop (ServerChan "upgrade completing soon" alert).
+        checkScheduledUpgradeNotifications()
         val schedule = loadSchedule()
-        val plan = planner.plan(schedule)
+        val retryCounts = loadTargetRetryCounts()
+        val plan = planner.plan(schedule, retryCounts)
 
         // No enabled accounts: prompt and re-check later.
         if (plan.enabledAccounts.isEmpty()) {
@@ -55,7 +62,15 @@ suspend fun runUpgradeTimeSchedulingScript() {
         //    exhausted (nextFillAccount returns null). The cooldown is cleared
         //    so filling may resume normally after the target flow.
         if (plan.target != null && plan.due) {
-            logInTarget(plan.target, plan.enabledAccounts, schedule, planner)
+            val ok = logInTarget(plan.target, plan.enabledAccounts, schedule, planner)
+            if (ok) {
+                clearTargetRetryCount(plan.target.account)
+            } else if (recordTargetLoginFailure(plan.target.account)) {
+                // Exceeded the retry budget -> demote to a no-data account so
+                // it stops blocking the target queue; it is picked up again by
+                // the fill round and recovers once its upgrade state changes.
+                removeScheduleForAccount(plan.target.account)
+            }
             fillCooldownEnd = 0L
             continue
         }
@@ -90,11 +105,6 @@ suspend fun runUpgradeTimeSchedulingScript() {
         // 3) No target at all (no upgrade data): every enabled account goes
         //    through the fill flow to collect, restarting the round immediately
         //    when exhausted (no cooldown).
-        if (candidates.isEmpty()) {
-            ShowMessage(UpgradeTimeStatusBoard.build(schedule, plan.enabledAccounts), isChecking = false)
-            delay(UPGRADE_TIME_NO_ACCOUNTS_WAIT_MS)
-            continue
-        }
         val nextFill = planner.nextFillAccount(candidates)
         if (nextFill != null) {
             logInFill(nextFill, plan.enabledAccounts, schedule, planner)
@@ -104,13 +114,14 @@ suspend fun runUpgradeTimeSchedulingScript() {
     }
 }
 
-/** Runs the full flow on the due target and protects old schedule data. */
+/** Runs the full flow on the due target and protects old schedule data.
+ *  @return true when new data was collected, false on a failed/interrupted login. */
 private suspend fun logInTarget(
     target: ScheduledUpgrade,
     enabledAccounts: List<Int>,
     schedule: List<ScheduledUpgrade>,
     planner: UpgradeTimePlanner
-) {
+): Boolean {
     val before = schedule.filter { it.account == target.account }
     InGameVars.currentAccountNumber = target.account
     InGameVars.currentGameVersion = planner.resolveAccountGameVersion(target.account)
@@ -123,8 +134,11 @@ private suspend fun logInTarget(
     // Old-data guard: only clear expired entries when new data was actually
     // collected; otherwise keep the old records so a failed login loses nothing.
     val after = loadSchedule().filter { it.account == target.account }
-    if (before != after) {
+    return if (before != after) {
         removeExpiredScheduleForAccount(target.account)
+        true
+    } else {
+        false
     }
 }
 

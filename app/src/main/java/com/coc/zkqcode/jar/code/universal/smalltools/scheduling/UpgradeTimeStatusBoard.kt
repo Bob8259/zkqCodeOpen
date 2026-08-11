@@ -14,7 +14,8 @@ object UpgradeTimeStatusBoard {
         schedule: List<ScheduledUpgrade>,
         enabledAccounts: List<Int>,
         preparingAccount: Int = 0,
-        preparingLabel: String = ""
+        preparingLabel: String = "",
+        retryCounts: Map<Int, Int> = emptyMap()
     ): String {
         val nowSec = System.currentTimeMillis() / 1000L
         val sb = StringBuilder(Strings.upgradeTimeBoardTitle + "\n")
@@ -28,14 +29,19 @@ object UpgradeTimeStatusBoard {
             if (account == preparingAccount) {
                 sb.appendLine(Strings.upgradeTimeBoardPreparing.format(account, preparingLabel))
             } else {
-                val earliest = items.minBy { it.completionTs }
-                val remaining = (earliest.completionTs - nowSec).coerceAtLeast(0)
-                if (remaining == 0L) {
-                    sb.appendLine(Strings.upgradeTimeBoardDone.format(account))
+                val retries = retryCounts[account] ?: 0
+                if (retries in 1 until UPGRADE_TIME_MAX_TARGET_RETRIES) {
+                    sb.appendLine(Strings.upgradeTimeBoardRetrying.format(account, retries))
                 } else {
-                    sb.appendLine(
-                        Strings.upgradeTimeBoardUpgrading.format(account, earliest.name, earliest.lvl, formatDuration(remaining))
-                    )
+                    val earliest = items.minBy { it.completionTs }
+                    val remaining = (earliest.completionTs - nowSec).coerceAtLeast(0)
+                    if (remaining == 0L) {
+                        sb.appendLine(Strings.upgradeTimeBoardDone.format(account))
+                    } else {
+                        sb.appendLine(
+                            Strings.upgradeTimeBoardUpgrading.format(account, earliest.name, earliest.lvl, formatDuration(remaining))
+                        )
+                    }
                 }
             }
         }
