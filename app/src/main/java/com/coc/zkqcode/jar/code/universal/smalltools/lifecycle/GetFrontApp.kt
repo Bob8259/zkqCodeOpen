@@ -1,7 +1,6 @@
 package com.coc.zkqcode.jar.code.universal.smalltools.lifecycle
 
 import com.coc.zkqcode.core.util.basic.RunShell
-import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.jar.code.universal.InGameVars
 
 suspend fun isGameAtFront(): Boolean {
@@ -15,12 +14,7 @@ suspend fun isGameAtFront(): Boolean {
         """([a-zA-Z0-9._]+/[a-zA-Z0-9._$ ]+)""".toRegex().find(rawResult)?.value?.trim() ?: "None"
 
     // Check if the front app matches the expected package for the current game version
-    if (frontApp.contains(InGameVars.currentGameVersion.packageName)) {
-        return true
-    } else {
-        accountMessage("当前前台应用${frontApp}")
-        return false
-    }
+    return frontApp.contains(InGameVars.currentGameVersion.packageName)
 }
 
 

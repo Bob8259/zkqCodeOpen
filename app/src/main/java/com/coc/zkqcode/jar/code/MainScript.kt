@@ -196,8 +196,10 @@ private fun resolveGameVersion(isBatchCreate: Boolean): GameVersion {
  * Shared account step block used by both sequential and random scheduling modes.
  * Kills background apps, returns to home screen, then runs the full flow:
  * writeGameFiles → enterMainScreen → playBuilderBase → playMainBase.
+ *
+ * @return true if the full flow completed, false if any step failed early.
  */
-suspend fun runAccountStepBlock() {
+suspend fun runAccountStepBlock(): Boolean {
     checkAndCoolDown()
     cleanUp()
     displayAds()
@@ -205,23 +207,24 @@ suspend fun runAccountStepBlock() {
     RunShell.runNoOutput("am kill-all")
     if (!writeGameFiles()) {
         delayWithMultiplier(2000)
-        return
+        return false
     }
     if (!enterMainScreen(true)) {
         accountMessage("进入游戏失败")
-        return
+        return false
     }
     if (!preCheck()) {
-        return
+        return false
     }
     if (!playBuilderBase()) {
-        return
+        return false
     }
     if (!playMainBase()) {
-        return
+        return false
     }
     // Check upgrade timers and send notification if needed (before exiting the game)
     checkUpgradeTimers()
+    return true
 }
 
 

@@ -195,7 +195,8 @@ suspend fun runRandomSchedulingScript() {
                     && currentCoroutineContext().isActive
                 ) {
                     InGameVars.isEarlyOffline = false
-                    runAccountStepBlock()
+                    // Break out of extra battle loop if the step block failed
+                    if (!runAccountStepBlock()) break
                     // Break out of extra battle loop if early-offline triggered
                     if (InGameVars.isEarlyOffline) break
                 }
