@@ -249,14 +249,8 @@ private suspend fun tryAutoBattleOrDeploy() {
         }
         accountMessage("未检测到自动战斗按钮，使用原有下兵方式兜底")
     }
-    // Fallback: Mode "0" = original single-side deploy; otherwise 4-side deploy
-    if (getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.MANUAL_TRAINING.key) &&
-        getConfigRuntime(Schema.MAIN_BASE_SETTINGS.DEPLOY_MODE.key) != "0"
-    ) {
-        cnMainBaseDeployTroops()
-    } else {
-        mainBaseDeployTroops()
-    }
+    // Fallback: deploy troops honoring the configured deploy mode
+    deployTroopsByConfig()
 }
 
 private suspend fun mainBaseBattleTutorial(): Boolean {

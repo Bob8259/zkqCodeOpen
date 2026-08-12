@@ -54,7 +54,7 @@ suspend fun playTournament(): Boolean {
         val endBattle = findMultiColors(schema = MyColors.EndBattle)
         if (endBattle != null) {
             accountMessage("已进入对战")
-            mainBaseDeployTroops()
+            deployTroopsByConfig()
             killGame()
             runGame()
             break

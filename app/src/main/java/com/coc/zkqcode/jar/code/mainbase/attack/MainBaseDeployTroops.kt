@@ -61,6 +61,20 @@ suspend fun mainBaseDeployTroops() {
 }
 
 /**
+ * Deploys troops honoring the configured deploy mode:
+ * Mode "0" (default) = single-side deploy; otherwise 4-side deploy (四面下兵).
+ */
+suspend fun deployTroopsByConfig() {
+    if (getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.MANUAL_TRAINING.key) &&
+        getConfigRuntime(Schema.MAIN_BASE_SETTINGS.DEPLOY_MODE.key) != "0"
+    ) {
+        cnMainBaseDeployTroops()
+    } else {
+        mainBaseDeployTroops()
+    }
+}
+
+/**
  * Deploys the siege machine (high TH) and/or clan-castle reinforcements.
  *
  * At high Town Hall levels (TH10+), the siege machine slot exists in the deployment

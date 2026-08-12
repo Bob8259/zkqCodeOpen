@@ -4,7 +4,7 @@ import android.graphics.Bitmap
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.jar.code.colorschema.MyColors
-import com.coc.zkqcode.jar.code.mainbase.attack.mainBaseDeployTroops
+import com.coc.zkqcode.jar.code.mainbase.attack.deployTroopsByConfig
 import com.coc.zkqcode.jar.code.universal.InGameVars
 import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.jar.code.universal.aidetection.AiDetector
@@ -138,7 +138,7 @@ suspend fun executeClanWarAttack(attackX: Int, attackY: Int) {
         accountMessage("进入部落战失败")
         return
     }
-    mainBaseDeployTroops()
+    deployTroopsByConfig()
     killGame()
 }
 

@@ -3,16 +3,15 @@ package com.coc.zkqcode.jar.code.universal.tutorial
 import com.coc.zkqcode.core.system.inputmethod.inputTextReliable
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.core.util.basic.RunShell
-import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
-import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
-import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
-import com.coc.zkqcode.jar.code.universal.smalltools.input.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.InGameVars
+import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.jar.code.universal.clickRightBottom
+import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.smalltools.data.getStaticConfig
+import com.coc.zkqcode.jar.code.universal.smalltools.input.TouchActions
 import com.coc.zkqcode.jar.code.universal.smalltools.lifecycle.reExtractGameSavings
 import com.coc.zkqcode.jar.ui.schema.Schema
 
@@ -30,7 +29,7 @@ suspend fun mainBaseTutorial(): Boolean {
         MyColors.MainBackToCamp
     )
 
-    val screenBuffer = ScreenCaptureManager.captureScreenOrRestart<ScreenCaptureManager.CaptureResult>(asBitmap = false) ?: logAndRestart("in isInHomePage, screen capture failed.")
+    val screenBuffer = ScreenCaptureManager.captureScreenOrRestart<ScreenCaptureManager.CaptureResult>(asBitmap = false)
 
     // 1. Process standard priority schemas (Find -> Tap)
     prioritySchemas.forEach { schema ->
@@ -99,9 +98,8 @@ suspend fun mainBaseTutorial(): Boolean {
     }
 
     // Dynamic Offset for Inner Shop
-    findMultiColors(schema = MyColors.ShopInnerArrow, increment = 1)?.let {
+    findMultiColorsUntil(schemas = listOf(MyColors.ShopInnerArrow, MyColors.ShopInnerArrow2), duration = 50, increment = 1)?.let {
         TouchActions.tap(it.x - 100, it.y + 50)
-
     }
 
     // Wizard Attack / Blue Troop anti-stuck (Restart App)
