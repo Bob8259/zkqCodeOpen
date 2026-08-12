@@ -109,7 +109,16 @@ suspend fun checkReconnections(): Boolean {
         }
     }
 
-    delayWithMultiplier(400)
+    // Detect a third-party software / permanent ban dialog.
+    // If both "第三方" (third-party) and "永久" (permanent) are recognized at the same time,
+    // the account is being banned, so signal the caller to switch accounts.
+    // OCR is throttled to run at most every 10 seconds (detection interval) so it does not
+    // tax the screen capture pipeline on every reconnection check.
+    if (checkThirdPartyPermanentBan()) {
+        // Signal the caller to switch accounts.
+        return false
+    }
+
     return !needReturnFalse
 }
 
@@ -189,6 +198,48 @@ private suspend fun checkPrivacy() {
         TouchActions.tap(point.x, point.y, delayTime = 200)
         reExtractGameSavings()
     }
+}
+
+/**
+ * Detects a third-party software / permanent ban dialog using OCR.
+ * Returns true if both "第三方" and "永久" are recognized at the same time.
+ * Detection area: (320, 160) → (960, 550).
+ */
+/** Detection interval for the third-party / permanent-ban OCR check. */
+private const val THIRD_PARTY_CHECK_INTERVAL_MILLIS = 10_000L
+
+/** Timestamp of the last third-party / permanent-ban OCR check. */
+private var lastThirdPartyCheckTime = 0L
+
+/**
+ * Detects a third-party software / permanent ban dialog using OCR.
+ * Returns true if both "第三方" and "永久" are recognized at the same time.
+ *
+ * OCR is throttled so it runs at most every 10 seconds (detection interval)
+ * to avoid competing with other screen captures and slowing down other functions.
+ * Detection area: (320, 160) → (960, 550).
+ */
+private suspend fun checkThirdPartyPermanentBan(): Boolean {
+    val currentTime = System.currentTimeMillis()
+    if (currentTime - lastThirdPartyCheckTime < THIRD_PARTY_CHECK_INTERVAL_MILLIS) return false
+    lastThirdPartyCheckTime = currentTime
+
+    val recognizedTexts = TextRecognizer.recognize(
+        startX = 320,
+        startY = 160,
+        endX = 960,
+        endY = 550,
+        useChinese = true,
+        applyPreprocess = false
+    )
+    val recognizedTextString = recognizedTexts.joinToString(" ") { it.text }
+    val hasThirdParty = recognizedTextString.contains("第三方")
+    val hasPermanent = recognizedTextString.contains("永久")
+    if (hasThirdParty && hasPermanent) {
+        accountMessage("检测到第三方软件/永久封禁提示，识别文本: $recognizedTextString")
+        return true
+    }
+    return false
 }
 
 suspend fun reExtractGameSavings() {
