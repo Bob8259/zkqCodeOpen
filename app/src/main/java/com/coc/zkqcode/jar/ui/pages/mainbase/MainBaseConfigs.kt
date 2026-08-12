@@ -343,16 +343,6 @@ fun LazyListScope.mainBaseConfig(
                     AnimatedVisibility(
                         visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.DEPLOY_MODE.key}_c$index"]?.value != "0"
                     ) {
-                        Text(
-                            text = "四面下兵在国际服不生效",
-                            color = Color.Red,
-                            style = MaterialTheme.typography.labelSmall,
-                            modifier = Modifier.padding(top = 2.dp)
-                        )
-                    }
-                    AnimatedVisibility(
-                        visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.DEPLOY_MODE.key}_c$index"]?.value != "0"
-                    ) {
                         Column {
                             // Speed with +/-
                             Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(top = 6.dp)) {
