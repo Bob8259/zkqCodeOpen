@@ -58,7 +58,11 @@ suspend fun mainBaseAttack(battleNumber: Int = 1, battleTimes: Int? = null): Boo
     val startTime = System.currentTimeMillis()
     val isRestartGame = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.RESTART_GAME.key)
     val hasMainWorldTask = readClanGameAcceptedTaskBase() == CLAN_GAME_TASK_BASE_MAIN_WORLD
-    if (isRestartGame) {
+    // CN auto-battle deploys troops progressively on the client; restarting right after clicking
+    // the button would cut deployment short, so keep watching the battle instead.
+    val restartAfterDeploy = isRestartGame && !lastAutoBattleUsed
+    if (lastAutoBattleUsed && isRestartGame) accountMessage("已启用自动战斗，跳过部署后重启")
+    if (restartAfterDeploy) {
         accountMessage("部署完成，准备重启游戏")
         killGame()
         delayWithMultiplier(1000)
@@ -185,7 +189,7 @@ suspend fun mainBaseAttack(battleNumber: Int = 1, battleTimes: Int? = null): Boo
             delayWithMultiplier(500) // Poll every 500ms
         }
     }
-    return enterMainScreen(isRestartGame)
+    return enterMainScreen(restartAfterDeploy)
 }
 
 private suspend fun getMainBaseBattleTimes(): Int {

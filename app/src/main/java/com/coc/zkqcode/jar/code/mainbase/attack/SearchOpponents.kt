@@ -31,7 +31,13 @@ private const val GOLD_FULL_X_THRESHOLD = 1017
 private const val ELIXIR_FULL_X_THRESHOLD = 1017
 private const val DARK_ELIXIR_FULL_X_THRESHOLD = 1080
 
+// Tracks whether the most recent searchOpponentsAndDeployTroops activated the CN auto-battle
+// button. mainBaseAttack reads this to skip restart-after-deploy, which would cut the
+// auto-battle's progressive troop deployment short.
+var lastAutoBattleUsed = false
+
 suspend fun searchOpponentsAndDeployTroops(battleNumber: Int = 1, battleTimes: Int = 1): Boolean {
+    lastAutoBattleUsed = false
 
     var targetGold = getConfigRuntime(Schema.MAIN_BASE_SETTINGS.GOLD_REQUIREMENT.key).toIntOrNull() ?: logAndRestart("${Schema.MAIN_BASE_SETTINGS.GOLD_REQUIREMENT.displayName} 必须是数字，请检查配置")
     var targetElixir = getConfigRuntime(Schema.MAIN_BASE_SETTINGS.ELIXIR_REQUIREMENT.key).toIntOrNull() ?: logAndRestart("${Schema.MAIN_BASE_SETTINGS.ELIXIR_REQUIREMENT.displayName} 必须是数字，请检查配置")
@@ -245,6 +251,7 @@ private suspend fun tryAutoBattleOrDeploy() {
         if (autoBtn != null) {
             TouchActions.tap(autoBtn.x, autoBtn.y)
             accountMessage("检测到自动战斗按钮，已点击启用")
+            lastAutoBattleUsed = true
             return
         }
         accountMessage("未检测到自动战斗按钮，使用原有下兵方式兜底")
