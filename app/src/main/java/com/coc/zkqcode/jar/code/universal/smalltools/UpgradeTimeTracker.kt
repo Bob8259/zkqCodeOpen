@@ -75,6 +75,12 @@ suspend fun checkUpgradeTimers() {
     val clipboardText = copyGameJson() ?: return
     val jsonObject = try { Gson().fromJson(clipboardText.trim(), JsonObject::class.java) } catch (_: Exception) { return } ?: return
     val acc = InGameVars.currentAccountNumber
+
+    // Classify-on-read: only after a successful copy is this account's data written into its own
+    // slot, and push reads only its own account's slot. This prevents "labeled as account X,
+    // content is account Y" mix-ups. Copy/parse failures already returned above, so no update.
+    writeMemory("game_data_$acc", clipboardText.trim())
+
     val timerItems = extractTimerItems(jsonObject)
     if (timerItems.isEmpty()) {
         // Collection succeeded but this account has no in-progress upgrades.
