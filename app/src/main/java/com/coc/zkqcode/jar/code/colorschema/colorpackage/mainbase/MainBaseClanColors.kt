@@ -88,7 +88,7 @@ object MainBaseClanColors : IMainBaseClanColors {
 
     // Donation button in clan chat
     override val DonationButton = ColorSchema.parse(
-        409, 79, 430, 642, "69E9C1", "3|0|69E9C1,5|0|69E9C1,7|0|69E9C1,10|0|69E9C1,0|10|2CCD84,3|10|2CCD84,5|10|2CCD84,7|10|2CCD84,10|10|2CCD84", 0, 0.9, "增援按钮"
+        410, 80, 430, 640, "69E9C1", "3|0|69E9C1,5|0|69E9C1,7|0|69E9C1,10|0|69E9C1,0|10|2CCD84,3|10|2CCD84,5|10|2CCD84,7|10|2CCD84,10|10|2CCD84", 0, 0.9,
     )
 
     // Donate super troops tab
@@ -111,12 +111,12 @@ object MainBaseClanColors : IMainBaseClanColors {
         500, 50, 1180, 690, "C1476F", "-38|-5|C1476F,-38|-8|C1476F,-38|-10|C1476F,-38|-12|C1476F,36|-6|C1476F,36|-9|C1476F,36|-10|C1476F,36|-12|C1476F,36|-14|C1476F", 1, 0.97, "捐法术"
     )
 
-    // Donate sword icon in donation dialog
+    // Donate sword icon in donation dialogue
     override val DonateSword = ColorSchema.parse(
-       0,0,0,0, "EFE2DF", "-2|-2|AF8870,-4|-4|B08971,-1|1|C1977B,2|4|C9B3AA,4|7|D6C5C4,5|10|2D79A8,6|12|1A3C68,7|14|1D3E68,9|16|317398", 0, 0.9, "捐赠的剑"
+        0, 0, 0, 0, "EFE2DF", "-2|-2|AF8870,-4|-4|B08971,-1|1|C1977B,2|4|C9B3AA,4|7|D6C5C4,5|10|2D79A8,6|12|1A3C68,7|14|1D3E68,9|16|317398", 0, 0.9, "捐赠的剑"
     )
 
-    // Donate human figure icon in donation dialog
+    // Donate human figure icon in donation dialogue
     override val DonateHumanFigure = ColorSchema.parse(
         0, 0, 0, 0, "000000", "0|3|000000,1|10|000000,2|10|000000,2|23|B8733F,-7|21|A36540,11|21|CF8953,8|2|000000,-2|2|000000,0|-1|000000", 0, 0.9, "捐赠人影"
     )
@@ -195,7 +195,7 @@ object MainBaseClanColors : IMainBaseClanColors {
         687, 632, 872, 699, "82F5DA", "37|0|82F5DA,74|0|82F5DA,111|0|82F5DA,148|0|82F5DA,0|33|2FBD74,37|33|2FBD74,74|33|2FBD74,111|33|2FBD74,148|33|2FBD74", 0, 0.9, "踢出成员-踢出按钮"
     )
 
-    // Confirm kick dialog button
+    // Confirm kick dialogue button
     override val ClanKickConfirmButton = ColorSchema.parse(
         674, 285, 916, 394, "84F8DF", "49|0|84F8DE,97|0|84F8DE,145|0|84F8DE,194|0|84F8DE,0|55|1EBC6C,49|55|1FBB6C,97|55|1FBB6C,145|55|1FBB6C,194|55|1FBB6C", 0, 0.9, "踢出成员-确认按钮"
     )

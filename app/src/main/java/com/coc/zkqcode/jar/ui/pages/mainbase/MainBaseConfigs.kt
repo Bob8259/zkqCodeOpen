@@ -7,30 +7,28 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Remove
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -41,18 +39,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupProperties
 import com.coc.zkqcode.core.data.database.GlobalVars
+import com.coc.zkqcode.jar.code.colorschema.colorpackage.mainbase.MainBaseClanWarColors
 import com.coc.zkqcode.jar.code.universal.smalltools.data.DeployPresetManager
 import com.coc.zkqcode.jar.ui.Strings
 import com.coc.zkqcode.jar.ui.components.BelowAnchorPositionProvider
+import com.coc.zkqcode.jar.ui.components.ClanGameRewardGroup
 import com.coc.zkqcode.jar.ui.components.CustomButton
 import com.coc.zkqcode.jar.ui.components.InputRowWithCheckBox
 import com.coc.zkqcode.jar.ui.components.SectionBanner
@@ -61,8 +59,6 @@ import com.coc.zkqcode.jar.ui.components.SettingInputRow
 import com.coc.zkqcode.jar.ui.components.SettingSection
 import com.coc.zkqcode.jar.ui.components.SettingSwitchIcon
 import com.coc.zkqcode.jar.ui.components.SettingToggleButton
-import com.coc.zkqcode.jar.ui.components.ClanGameRewardGroup
-import com.coc.zkqcode.jar.code.colorschema.colorpackage.mainbase.MainBaseClanWarColors
 import com.coc.zkqcode.jar.ui.schema.Schema
 import com.coc.zkqcode.jar.ui.schema.Schema.BUILDER_BASE_SETTINGS
 import com.coc.zkqcode.jar.ui.schema.Schema.MAIN_BASE_SETTINGS
@@ -151,8 +147,7 @@ fun LazyListScope.mainBaseConfig(
                 }
                 SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.SWITCH_ACCOUNT_AFTER_BATTLE.key}_c$index")
                 SettingSwitchIcon(
-                    key = "${MAIN_BASE_SETTINGS.AUTO_BATTLE_CN.key}_c$index",
-                    explain = Strings.autoBattleCnExplain
+                    key = "${MAIN_BASE_SETTINGS.AUTO_BATTLE_CN.key}_c$index", explain = Strings.autoBattleCnExplain
                 )
             }
             SettingInputRow(key = "${MAIN_BASE_SETTINGS.BATTLE_TIMES.key}_c$index")
@@ -179,8 +174,7 @@ fun LazyListScope.mainBaseConfig(
                 )
                 SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.STOP_BATTLE_AFTER_FULL_RESOURCES.key}_c$index")
                 SettingSwitchIcon(
-                    key = "${MAIN_BASE_SETTINGS.STOP_BATTLE_WHEN_NO_STAR.key}_c$index",
-                    explain = Strings.stopBattleWhenNoStarExplain
+                    key = "${MAIN_BASE_SETTINGS.STOP_BATTLE_WHEN_NO_STAR.key}_c$index", explain = Strings.stopBattleWhenNoStarExplain
                 )
             }
         }
@@ -203,16 +197,13 @@ fun LazyListScope.mainBaseConfig(
                     key = "${MAIN_BASE_SETTINGS.MANUAL_TRAINING.key}_c$index", explain = Strings.manualTrainingExplain
                 )
                 SettingSwitchIcon(
-                    key = "${MAIN_BASE_SETTINGS.EXIT_ON_ONE_STAR_MAIN.key}_c$index",
-                    explain = Strings.exitOnOneStarExplain
+                    key = "${MAIN_BASE_SETTINGS.EXIT_ON_ONE_STAR_MAIN.key}_c$index", explain = Strings.exitOnOneStarExplain
                 )
                 SettingSwitchIcon(
-                    key = "${MAIN_BASE_SETTINGS.OCR_EXIT_ENABLED.key}_c$index",
-                    explain = Strings.ocrExitExplain
+                    key = "${MAIN_BASE_SETTINGS.OCR_EXIT_ENABLED.key}_c$index", explain = Strings.ocrExitExplain
                 )
                 SettingSwitchIcon(
-                    key = "${MAIN_BASE_SETTINGS.BATTLE_SPEEDUP.key}_c$index",
-                    explain = Strings.battleSpeedupExplain
+                    key = "${MAIN_BASE_SETTINGS.BATTLE_SPEEDUP.key}_c$index", explain = Strings.battleSpeedupExplain
                 )
             }
             AnimatedVisibility(
@@ -220,20 +211,15 @@ fun LazyListScope.mainBaseConfig(
             ) {
                 var presets by remember { mutableStateOf(DeployPresetManager.listPresets()) }
                 var selectedRemark by remember { mutableStateOf("") }
-                var remarkInput by remember { mutableStateOf("") }
                 var showDropdown by remember { mutableStateOf(false) }
 
                 Column {
                     // Preset bar: matching project dropdown style
                     Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.padding(top = 6.dp, end = 6.dp)
+                        verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(top = 6.dp, end = 6.dp)
                     ) {
                         Text(
-                            text = "预设",
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier.padding(end = 10.dp),
-                            style = MaterialTheme.typography.labelMedium
+                            text = "预设", textAlign = TextAlign.Center, modifier = Modifier.padding(end = 10.dp), style = MaterialTheme.typography.labelMedium
                         )
                         Box(modifier = Modifier.wrapContentSize(Alignment.TopStart)) {
                             Button(
@@ -244,28 +230,22 @@ fun LazyListScope.mainBaseConfig(
                                 colors = ButtonDefaults.buttonColors(containerColor = AppColors.Primary)
                             ) {
                                 Text(
-                                    text = if (selectedRemark.isNotEmpty()) selectedRemark else "选择预设",
-                                    style = MaterialTheme.typography.labelMedium,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis
+                                    text = selectedRemark.ifEmpty { "选择预设" }, style = MaterialTheme.typography.labelMedium, maxLines = 1, overflow = TextOverflow.Ellipsis
                                 )
                                 Icon(Icons.Default.ArrowDropDown, contentDescription = null)
                             }
                             if (showDropdown) {
                                 Popup(
-                                    popupPositionProvider = BelowAnchorPositionProvider(),
-                                    onDismissRequest = { showDropdown = false },
-                                    properties = PopupProperties(focusable = true)
+                                    popupPositionProvider = BelowAnchorPositionProvider(), onDismissRequest = { showDropdown = false }, properties = PopupProperties(focusable = true)
                                 ) {
                                     Surface(
-                                        shape = RoundedCornerShape(12.dp),
-                                        color = AppColors.CardBg,
-                                        shadowElevation = 8.dp,
-                                        modifier = Modifier.padding(4.dp)
+                                        shape = RoundedCornerShape(12.dp), color = AppColors.CardBg, shadowElevation = 8.dp, modifier = Modifier.padding(4.dp)
                                     ) {
                                         Column(
-                                            modifier = Modifier.padding(8.dp).heightIn(max = 320.dp).verticalScroll(rememberScrollState()),
-                                            verticalArrangement = Arrangement.spacedBy(6.dp)
+                                            modifier = Modifier
+                                                .padding(8.dp)
+                                                .heightIn(max = 320.dp)
+                                                .verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(6.dp)
                                         ) {
                                             presets.forEach { preset ->
                                                 val isSelected = preset.remark == selectedRemark
@@ -283,12 +263,9 @@ fun LazyListScope.mainBaseConfig(
                                                             GlobalVars.configStates["${MAIN_BASE_SETTINGS.DEPLOY_CLICK_DENSITY.key}_c$index"]?.value = preset.clickDensity
                                                             showDropdown = false
                                                         }
-                                                        .padding(horizontal = 16.dp, vertical = 8.dp)
-                                                ) {
+                                                        .padding(horizontal = 16.dp, vertical = 8.dp)) {
                                                     Text(
-                                                        text = preset.remark,
-                                                        color = if (isSelected) Color.White else AppColors.TextPrimary,
-                                                        style = MaterialTheme.typography.labelMedium
+                                                        text = preset.remark, color = if (isSelected) Color.White else AppColors.TextPrimary, style = MaterialTheme.typography.labelMedium
                                                     )
                                                 }
                                             }
@@ -326,8 +303,7 @@ fun LazyListScope.mainBaseConfig(
 
                     // Army config
                     SettingDropdown(
-                        key = "${MAIN_BASE_SETTINGS.ARMY_CONFIG_MODE.key}_c$index",
-                        options = listOf(Strings.armyConfigModeLink, Strings.armyConfigModeManual)
+                        key = "${MAIN_BASE_SETTINGS.ARMY_CONFIG_MODE.key}_c$index", options = listOf(Strings.armyConfigModeLink, Strings.armyConfigModeManual)
                     )
                     AnimatedVisibility(
                         visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.ARMY_CONFIG_MODE.key}_c$index"]?.value == "0"
@@ -337,8 +313,7 @@ fun LazyListScope.mainBaseConfig(
 
                     // Deploy mode
                     SettingDropdown(
-                        key = "${MAIN_BASE_SETTINGS.DEPLOY_MODE.key}_c$index",
-                        options = listOf(Strings.deployModeOriginal, Strings.deployModeSlider, Strings.deployModeFast)
+                        key = "${MAIN_BASE_SETTINGS.DEPLOY_MODE.key}_c$index", options = listOf(Strings.deployModeOriginal, Strings.deployModeSlider, Strings.deployModeFast)
                     )
                     AnimatedVisibility(
                         visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.DEPLOY_MODE.key}_c$index"]?.value != "0"
@@ -348,16 +323,33 @@ fun LazyListScope.mainBaseConfig(
                             Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(top = 6.dp)) {
                                 SettingInputRow(key = "${MAIN_BASE_SETTINGS.DEPLOY_DRAG_SPEED.key}_c$index", topPadding = 0.dp)
                                 val speedK = "${MAIN_BASE_SETTINGS.DEPLOY_DRAG_SPEED.key}_c$index"
-                                Button(onClick = {
-                                    val v = (GlobalVars.configStates[speedK]?.value?.toIntOrNull() ?: 600) - 1
-                                    if (v >= 1) GlobalVars.configStates[speedK]?.value = v.toString()
-                                }, shape = RoundedCornerShape(8.dp), modifier = Modifier.width(25.dp).height(25.dp).padding(end = 1.dp), contentPadding = PaddingValues(0.dp), colors = ButtonDefaults.buttonColors(containerColor = AppColors.Primary)) {
+                                Button(
+                                    onClick = {
+                                        val v = (GlobalVars.configStates[speedK]?.value?.toIntOrNull() ?: 600) - 1
+                                        if (v >= 1) GlobalVars.configStates[speedK]?.value = v.toString()
+                                    },
+                                    shape = RoundedCornerShape(8.dp),
+                                    modifier = Modifier
+                                        .width(25.dp)
+                                        .height(25.dp)
+                                        .padding(end = 1.dp),
+                                    contentPadding = PaddingValues(0.dp),
+                                    colors = ButtonDefaults.buttonColors(containerColor = AppColors.Primary)
+                                ) {
                                     Icon(Icons.Default.Remove, "-", modifier = Modifier.size(18.dp))
                                 }
-                                Button(onClick = {
-                                    val v = (GlobalVars.configStates[speedK]?.value?.toIntOrNull() ?: 600) + 1
-                                    GlobalVars.configStates[speedK]?.value = v.toString()
-                                }, shape = RoundedCornerShape(8.dp), modifier = Modifier.width(25.dp).height(25.dp), contentPadding = PaddingValues(0.dp), colors = ButtonDefaults.buttonColors(containerColor = AppColors.Primary)) {
+                                Button(
+                                    onClick = {
+                                        val v = (GlobalVars.configStates[speedK]?.value?.toIntOrNull() ?: 600) + 1
+                                        GlobalVars.configStates[speedK]?.value = v.toString()
+                                    },
+                                    shape = RoundedCornerShape(8.dp),
+                                    modifier = Modifier
+                                        .width(25.dp)
+                                        .height(25.dp),
+                                    contentPadding = PaddingValues(0.dp),
+                                    colors = ButtonDefaults.buttonColors(containerColor = AppColors.Primary)
+                                ) {
                                     Icon(Icons.Default.Add, "+", modifier = Modifier.size(18.dp))
                                 }
                             }
@@ -369,16 +361,33 @@ fun LazyListScope.mainBaseConfig(
                                 Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(top = 6.dp)) {
                                     SettingInputRow(key = "${MAIN_BASE_SETTINGS.DEPLOY_CLICK_DENSITY.key}_c$index", topPadding = 0.dp)
                                     val densityK = "${MAIN_BASE_SETTINGS.DEPLOY_CLICK_DENSITY.key}_c$index"
-                                    Button(onClick = {
-                                        val v = (GlobalVars.configStates[densityK]?.value?.toIntOrNull() ?: 50) - 1
-                                        if (v >= 1) GlobalVars.configStates[densityK]?.value = v.toString()
-                                    }, shape = RoundedCornerShape(8.dp), modifier = Modifier.width(25.dp).height(25.dp).padding(end = 1.dp), contentPadding = PaddingValues(0.dp), colors = ButtonDefaults.buttonColors(containerColor = AppColors.Primary)) {
+                                    Button(
+                                        onClick = {
+                                            val v = (GlobalVars.configStates[densityK]?.value?.toIntOrNull() ?: 50) - 1
+                                            if (v >= 1) GlobalVars.configStates[densityK]?.value = v.toString()
+                                        },
+                                        shape = RoundedCornerShape(8.dp),
+                                        modifier = Modifier
+                                            .width(25.dp)
+                                            .height(25.dp)
+                                            .padding(end = 1.dp),
+                                        contentPadding = PaddingValues(0.dp),
+                                        colors = ButtonDefaults.buttonColors(containerColor = AppColors.Primary)
+                                    ) {
                                         Icon(Icons.Default.Remove, "-", modifier = Modifier.size(18.dp))
                                     }
-                                    Button(onClick = {
-                                        val v = (GlobalVars.configStates[densityK]?.value?.toIntOrNull() ?: 50) + 1
-                                        GlobalVars.configStates[densityK]?.value = v.toString()
-                                    }, shape = RoundedCornerShape(8.dp), modifier = Modifier.width(25.dp).height(25.dp), contentPadding = PaddingValues(0.dp), colors = ButtonDefaults.buttonColors(containerColor = AppColors.Primary)) {
+                                    Button(
+                                        onClick = {
+                                            val v = (GlobalVars.configStates[densityK]?.value?.toIntOrNull() ?: 50) + 1
+                                            GlobalVars.configStates[densityK]?.value = v.toString()
+                                        },
+                                        shape = RoundedCornerShape(8.dp),
+                                        modifier = Modifier
+                                            .width(25.dp)
+                                            .height(25.dp),
+                                        contentPadding = PaddingValues(0.dp),
+                                        colors = ButtonDefaults.buttonColors(containerColor = AppColors.Primary)
+                                    ) {
                                         Icon(Icons.Default.Add, "+", modifier = Modifier.size(18.dp))
                                     }
                                 }
@@ -392,24 +401,17 @@ fun LazyListScope.mainBaseConfig(
             ) {
                 FlowRow {
                     SettingInputRow(
-                        key = "${MAIN_BASE_SETTINGS.OCR_EXIT_TARGET_PERCENT.key}_c$index",
-                        suffix = Strings.percentTargetSuffix
+                        key = "${MAIN_BASE_SETTINGS.OCR_EXIT_TARGET_PERCENT.key}_c$index", suffix = Strings.percentTargetSuffix
                     )
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         SettingDropdown(
-                            key = "${MAIN_BASE_SETTINGS.OCR_EXIT_MODE.key}_c$index",
-                            options = Strings.unchangedDetectionOptions,
-                            labelOverride = ""
+                            key = "${MAIN_BASE_SETTINGS.OCR_EXIT_MODE.key}_c$index", options = Strings.unchangedDetectionOptions, labelOverride = ""
                         )
                         Text(
-                            text = "不变",
-                            style = MaterialTheme.typography.labelMedium,
-                            modifier = Modifier.padding(top = 6.dp, end = 8.dp)
+                            text = "不变", style = MaterialTheme.typography.labelMedium, modifier = Modifier.padding(top = 6.dp, end = 8.dp)
                         )
                         SettingInputRow(
-                            key = "${MAIN_BASE_SETTINGS.OCR_EXIT_STALE_SECONDS.key}_c$index",
-                            suffix = Strings.unchangedExitSuffix,
-                            labelOverride = ""
+                            key = "${MAIN_BASE_SETTINGS.OCR_EXIT_STALE_SECONDS.key}_c$index", suffix = Strings.unchangedExitSuffix, labelOverride = ""
                         )
                     }
                 }
@@ -447,8 +449,7 @@ fun LazyListScope.mainBaseConfig(
                     }
                     FlowRow {
                         SettingSwitchIcon(
-                            key = "${MAIN_BASE_SETTINGS.APPROVE_MEMBER_SETTING.key}_c$index",
-                            explain = Strings.approveCodeExplain
+                            key = "${MAIN_BASE_SETTINGS.APPROVE_MEMBER_SETTING.key}_c$index", explain = Strings.approveCodeExplain
                         )
                     }
                     AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.APPROVE_MEMBER_SETTING.key}_c$index"]?.value == "1") {
@@ -486,25 +487,22 @@ fun LazyListScope.mainBaseConfig(
             //     }
             // }
 
-             // 部落踢出成员
-             FlowRow {
-                 SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.KICK_CLAN_MEMBERS.key}_c$index")
-             }
-             AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.KICK_CLAN_MEMBERS.key}_c$index"]?.value == "1") {
-                 Column {
-                     SettingInputRow(
-                         key = "${MAIN_BASE_SETTINGS.KICK_CLAN_MEMBERS_INTERVAL.key}_c$index",
-                         suffix = "分钟"
-                     )
-                 }
-             }
+            // 部落踢出成员
+            FlowRow {
+                SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.KICK_CLAN_MEMBERS.key}_c$index")
+            }
+            AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.KICK_CLAN_MEMBERS.key}_c$index"]?.value == "1") {
+                Column {
+                    SettingInputRow(
+                        key = "${MAIN_BASE_SETTINGS.KICK_CLAN_MEMBERS_INTERVAL.key}_c$index", suffix = "分钟"
+                    )
+                }
+            }
 
         }
         SettingSection(visible = isClanExpanded) {
             Text(
-                text = Strings.sectionCapitalSettings,
-                style = MaterialTheme.typography.titleSmall,
-                modifier = Modifier.padding(bottom = 1.dp)
+                text = Strings.sectionCapitalSettings, style = MaterialTheme.typography.titleSmall, modifier = Modifier.padding(bottom = 1.dp)
             )
             FlowRow {
                 SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.PLAY_RAID.key}_c$index")
@@ -515,9 +513,7 @@ fun LazyListScope.mainBaseConfig(
         }
         SettingSection(visible = isClanExpanded) {
             Text(
-                text = Strings.sectionWarLeague,
-                style = MaterialTheme.typography.titleSmall,
-                modifier = Modifier.padding(bottom = 1.dp)
+                text = Strings.sectionWarLeague, style = MaterialTheme.typography.titleSmall, modifier = Modifier.padding(bottom = 1.dp)
             )
             FlowRow {
                 SettingSwitchIcon(
@@ -526,14 +522,15 @@ fun LazyListScope.mainBaseConfig(
                 SettingSwitchIcon(
                     key = "${MAIN_BASE_SETTINGS.PLAY_LEAGUE.key}_c$index", explain = Strings.leagueExplain
                 )
-                SettingSwitchIcon(
-                    key = "${MAIN_BASE_SETTINGS.PLAY_LEAGUE_DONATION.key}_c$index"
-                )
+
+            }
+            FlowRow {
                 SettingSwitchIcon(
                     key = "${MAIN_BASE_SETTINGS.START_CLAN_WAR.key}_c$index", explain = Strings.startClanWarExplain
                 )
                 SettingSwitchIcon(
-                    key = "${MAIN_BASE_SETTINGS.START_CLAN_LEAGUE.key}_c$index", explain = Strings.startClanLeagueExplain
+                    key = "${MAIN_BASE_SETTINGS.DISTRIBUTE_CLAN_LEAGUE_REWARDS.key}_c$index",
+                    explain = Strings.distributeClanLeagueRewardsExplain
                 )
             }
             AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.START_CLAN_WAR.key}_c$index"]?.value == "1") {
@@ -541,13 +538,19 @@ fun LazyListScope.mainBaseConfig(
                     key = "${MAIN_BASE_SETTINGS.START_CLAN_WAR_METHOD.key}_c$index", options = listOf(Strings.directStart, Strings.recentOnline)
                 )
             }
+            SettingSwitchIcon(
+                key = "${MAIN_BASE_SETTINGS.START_CLAN_LEAGUE.key}_c$index", explain = Strings.startClanLeagueExplain
+            )
             AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.START_CLAN_LEAGUE.key}_c$index"]?.value == "1") {
                 Column {
                     HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
                     // 对战人数（仅开联赛专用）：新对战人数开关开启 = 3 按钮 (11v11/15v15/30v30)，关闭 = 2 按钮 (15v15/30v30)
                     val leagueSizeKey = "${MAIN_BASE_SETTINGS.START_CLAN_LEAGUE_SIZE.key}_c$index"
-                    val leagueSizeState = GlobalVars.configStates.getOrPut(leagueSizeKey) {
-                        mutableStateOf(Schema.getDefaultValue(leagueSizeKey))
+                    // Cache the state lookup in composition; getOrPut only runs when the key changes
+                    val leagueSizeState = remember(leagueSizeKey) {
+                        GlobalVars.configStates.getOrPut(leagueSizeKey) {
+                            mutableStateOf(Schema.getDefaultValue(leagueSizeKey))
+                        }
                     }
                     val newSizeKey = "${MAIN_BASE_SETTINGS.START_CLAN_LEAGUE_NEW_SIZE.key}_c$index"
                     val newSizeEnabled = GlobalVars.configStates[newSizeKey]?.value == "1"
@@ -556,15 +559,14 @@ fun LazyListScope.mainBaseConfig(
                     Column(modifier = Modifier.padding(top = 6.dp)) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Text(
-                                text = Schema.getDisplayName(leagueSizeKey),
-                                modifier = Modifier.weight(1f),
-                                style = MaterialTheme.typography.labelMedium
+                                text = Schema.getDisplayName(leagueSizeKey), modifier = Modifier.weight(1f), style = MaterialTheme.typography.labelMedium
                             )
                             SettingSwitchIcon(key = newSizeKey, textTopPadding = 0.dp)
                         }
                         Row(
-                            modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
-                            horizontalArrangement = Arrangement.spacedBy(6.dp)
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 4.dp), horizontalArrangement = Arrangement.spacedBy(6.dp)
                         ) {
                             leagueSizeOptions.forEachIndexed { idx, option ->
                                 val isSelected = idx == leagueSizeIndex
@@ -583,8 +585,7 @@ fun LazyListScope.mainBaseConfig(
                                         .clickable {
                                             GlobalVars.isAutoRunEnabled = false
                                             leagueSizeState.value = idx.toString()
-                                        },
-                                    contentAlignment = Alignment.Center
+                                        }, contentAlignment = Alignment.Center
                                 ) {
                                     Text(
                                         text = option, color = textColor, style = MaterialTheme.typography.labelMedium
@@ -594,12 +595,12 @@ fun LazyListScope.mainBaseConfig(
                         }
                     }
                     SettingDropdown(
-                        key = "${MAIN_BASE_SETTINGS.EVENT_LEAGUE_START_DAY.key}_c$index",
-                        options = listOf("禁用") + (11..22).map { "${it}日" }
-                    )
+                        key = "${MAIN_BASE_SETTINGS.EVENT_LEAGUE_START_DAY.key}_c$index", options = listOf("禁用") + (11..22).map { "${it}日" })
                 }
             }
-
+            SettingSwitchIcon(
+                key = "${MAIN_BASE_SETTINGS.PLAY_LEAGUE_DONATION.key}_c$index"
+            )
             // League donation troop config
             AnimatedVisibility(
                 visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.PLAY_LEAGUE_DONATION.key}_c$index"]?.value == "1"
@@ -612,56 +613,44 @@ fun LazyListScope.mainBaseConfig(
                     val troopKey3 = "${MAIN_BASE_SETTINGS.LEAGUE_DONATION_TROOP_3.key}_c$index"
                     FlowRow {
                         SettingDropdown(
-                            key = troopKey1,
-                            options = leagueTroopOptions,
-                            afterChange = { selectedIdx ->
+                            key = troopKey1, options = leagueTroopOptions, afterChange = { selectedIdx ->
                                 if (selectedIdx != 0) {
                                     val idx2 = GlobalVars.configStates[troopKey2]?.value?.toIntOrNull() ?: 0
                                     val idx3 = GlobalVars.configStates[troopKey3]?.value?.toIntOrNull() ?: 0
                                     if (idx2 == selectedIdx) GlobalVars.configStates[troopKey2]?.value = "0"
                                     if (idx3 == selectedIdx) GlobalVars.configStates[troopKey3]?.value = "0"
                                 }
-                            }
-                        )
+                            })
                         SettingInputRow(
-                            key = "${MAIN_BASE_SETTINGS.LEAGUE_DONATION_COUNT_1.key}_c$index",
-                            suffix = Strings.countSuffix
+                            key = "${MAIN_BASE_SETTINGS.LEAGUE_DONATION_COUNT_1.key}_c$index", suffix = Strings.countSuffix
                         )
                     }
                     FlowRow {
                         SettingDropdown(
-                            key = troopKey2,
-                            options = leagueTroopOptions,
-                            afterChange = { selectedIdx ->
+                            key = troopKey2, options = leagueTroopOptions, afterChange = { selectedIdx ->
                                 if (selectedIdx != 0) {
                                     val idx1 = GlobalVars.configStates[troopKey1]?.value?.toIntOrNull() ?: 0
                                     val idx3 = GlobalVars.configStates[troopKey3]?.value?.toIntOrNull() ?: 0
                                     if (idx1 == selectedIdx) GlobalVars.configStates[troopKey1]?.value = "0"
                                     if (idx3 == selectedIdx) GlobalVars.configStates[troopKey3]?.value = "0"
                                 }
-                            }
-                        )
+                            })
                         SettingInputRow(
-                            key = "${MAIN_BASE_SETTINGS.LEAGUE_DONATION_COUNT_2.key}_c$index",
-                            suffix = Strings.countSuffix
+                            key = "${MAIN_BASE_SETTINGS.LEAGUE_DONATION_COUNT_2.key}_c$index", suffix = Strings.countSuffix
                         )
                     }
                     FlowRow {
                         SettingDropdown(
-                            key = troopKey3,
-                            options = leagueTroopOptions,
-                            afterChange = { selectedIdx ->
+                            key = troopKey3, options = leagueTroopOptions, afterChange = { selectedIdx ->
                                 if (selectedIdx != 0) {
                                     val idx1 = GlobalVars.configStates[troopKey1]?.value?.toIntOrNull() ?: 0
                                     val idx2 = GlobalVars.configStates[troopKey2]?.value?.toIntOrNull() ?: 0
                                     if (idx1 == selectedIdx) GlobalVars.configStates[troopKey1]?.value = "0"
                                     if (idx2 == selectedIdx) GlobalVars.configStates[troopKey2]?.value = "0"
                                 }
-                            }
-                        )
+                            })
                         SettingInputRow(
-                            key = "${MAIN_BASE_SETTINGS.LEAGUE_DONATION_COUNT_3.key}_c$index",
-                            suffix = Strings.countSuffix
+                            key = "${MAIN_BASE_SETTINGS.LEAGUE_DONATION_COUNT_3.key}_c$index", suffix = Strings.countSuffix
                         )
                     }
                 }
@@ -669,9 +658,7 @@ fun LazyListScope.mainBaseConfig(
         }
         SettingSection(visible = isClanExpanded) {
             Text(
-                text = Strings.sectionClanGames,
-                style = MaterialTheme.typography.titleSmall,
-                modifier = Modifier.padding(bottom = 1.dp)
+                text = Strings.sectionClanGames, style = MaterialTheme.typography.titleSmall, modifier = Modifier.padding(bottom = 1.dp)
             )
             FlowRow {
                 SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.DO_CLAN_GAMES.key}_c$index")
@@ -679,74 +666,70 @@ fun LazyListScope.mainBaseConfig(
             AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.DO_CLAN_GAMES.key}_c$index"]?.value == "1") {
                 Column {
                     Column {
-                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Surface(
-                            shape = RoundedCornerShape(6.dp),
-                            color = AppColors.CardBg,
-                            modifier = Modifier.weight(1f).border(0.5.dp, Color(0xFF9DB4C2), RoundedCornerShape(6.dp))
-                        ) {
-                            Column(modifier = Modifier.padding(8.dp).fillMaxWidth()) {
-                                Text(text = Strings.mainWorldLabel, style = MaterialTheme.typography.labelSmall, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center)
-                                Spacer(modifier = Modifier.height(4.dp))
-                                Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
-                                    SettingToggleButton(
-                                        key = "${MAIN_BASE_SETTINGS.ACCEPT_MAIN_WORLD_NORMAL_TASK.key}_c$index",
-                                        labelOverride = Strings.normalLabel,
-                                        afterChange = { checked ->
-                                            if (checked) {
-                                                GlobalVars.configStates["${MAIN_BASE_SETTINGS.AUTO_ATTACK.key}_c$index"]?.value = "1"
-                                            }
-                                        }
-                                    )
-                                    Spacer(modifier = Modifier.width(4.dp))
-                                    SettingToggleButton(
-                                        key = "${MAIN_BASE_SETTINGS.ACCEPT_MAIN_WORLD_ADVANCED_TASK.key}_c$index",
-                                        labelOverride = Strings.advancedLabel,
-                                        afterChange = { checked ->
-                                            if (checked) {
-                                                GlobalVars.configStates["${MAIN_BASE_SETTINGS.AUTO_ATTACK.key}_c$index"]?.value = "1"
-                                            }
-                                        }
-                                    )
+                        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            Surface(
+                                shape = RoundedCornerShape(6.dp), color = AppColors.CardBg, modifier = Modifier
+                                    .weight(1f)
+                                    .border(0.5.dp, Color(0xFF9DB4C2), RoundedCornerShape(6.dp))
+                            ) {
+                                Column(
+                                    modifier = Modifier
+                                        .padding(8.dp)
+                                        .fillMaxWidth()
+                                ) {
+                                    Text(text = Strings.mainWorldLabel, style = MaterialTheme.typography.labelSmall, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center)
+                                    Spacer(modifier = Modifier.height(4.dp))
+                                    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+                                        SettingToggleButton(
+                                            key = "${MAIN_BASE_SETTINGS.ACCEPT_MAIN_WORLD_NORMAL_TASK.key}_c$index", labelOverride = Strings.normalLabel, afterChange = { checked ->
+                                                if (checked) {
+                                                    GlobalVars.configStates["${MAIN_BASE_SETTINGS.AUTO_ATTACK.key}_c$index"]?.value = "1"
+                                                }
+                                            })
+                                        Spacer(modifier = Modifier.width(4.dp))
+                                        SettingToggleButton(
+                                            key = "${MAIN_BASE_SETTINGS.ACCEPT_MAIN_WORLD_ADVANCED_TASK.key}_c$index", labelOverride = Strings.advancedLabel, afterChange = { checked ->
+                                                if (checked) {
+                                                    GlobalVars.configStates["${MAIN_BASE_SETTINGS.AUTO_ATTACK.key}_c$index"]?.value = "1"
+                                                }
+                                            })
+                                    }
+                                }
+                            }
+                            Surface(
+                                shape = RoundedCornerShape(6.dp), color = AppColors.CardBg, modifier = Modifier
+                                    .weight(1f)
+                                    .border(0.5.dp, Color(0xFF9DB4C2), RoundedCornerShape(6.dp))
+                            ) {
+                                Column(
+                                    modifier = Modifier
+                                        .padding(8.dp)
+                                        .fillMaxWidth()
+                                ) {
+                                    Text(text = Strings.builderBaseTasks, style = MaterialTheme.typography.labelSmall, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center)
+                                    Spacer(modifier = Modifier.height(4.dp))
+                                    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+                                        SettingToggleButton(
+                                            key = "${MAIN_BASE_SETTINGS.ACCEPT_BUILDER_BASE_NORMAL_TASK.key}_c$index", labelOverride = Strings.normalLabel, afterChange = { checked ->
+                                                if (checked) {
+                                                    GlobalVars.configStates["${BUILDER_BASE_SETTINGS.NO_BUILDER_BASE.key}_c$index"]?.value = "0"
+                                                    GlobalVars.configStates["${BUILDER_BASE_SETTINGS.BUILDER_BASE_FARMING.key}_c$index"]?.value = "1"
+                                                }
+                                            })
+                                        Spacer(modifier = Modifier.width(4.dp))
+                                        SettingToggleButton(
+                                            key = "${MAIN_BASE_SETTINGS.ACCEPT_BUILDER_BASE_ADVANCED_TASK.key}_c$index", labelOverride = Strings.advancedLabel, afterChange = { checked ->
+                                                if (checked) {
+                                                    GlobalVars.configStates["${BUILDER_BASE_SETTINGS.NO_BUILDER_BASE.key}_c$index"]?.value = "0"
+                                                    GlobalVars.configStates["${BUILDER_BASE_SETTINGS.BUILDER_BASE_FARMING.key}_c$index"]?.value = "1"
+                                                }
+                                            })
+                                    }
                                 }
                             }
                         }
-                        Surface(
-                            shape = RoundedCornerShape(6.dp),
-                            color = AppColors.CardBg,
-                            modifier = Modifier.weight(1f).border(0.5.dp, Color(0xFF9DB4C2), RoundedCornerShape(6.dp))
-                        ) {
-                            Column(modifier = Modifier.padding(8.dp).fillMaxWidth()) {
-                                Text(text = Strings.builderBaseTasks, style = MaterialTheme.typography.labelSmall, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center)
-                                Spacer(modifier = Modifier.height(4.dp))
-                                Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
-                                    SettingToggleButton(
-                                        key = "${MAIN_BASE_SETTINGS.ACCEPT_BUILDER_BASE_NORMAL_TASK.key}_c$index",
-                                        labelOverride = Strings.normalLabel,
-                                        afterChange = { checked ->
-                                            if (checked) {
-                                                GlobalVars.configStates["${BUILDER_BASE_SETTINGS.NO_BUILDER_BASE.key}_c$index"]?.value = "0"
-                                                GlobalVars.configStates["${BUILDER_BASE_SETTINGS.BUILDER_BASE_FARMING.key}_c$index"]?.value = "1"
-                                            }
-                                        }
-                                    )
-                                    Spacer(modifier = Modifier.width(4.dp))
-                                    SettingToggleButton(
-                                        key = "${MAIN_BASE_SETTINGS.ACCEPT_BUILDER_BASE_ADVANCED_TASK.key}_c$index",
-                                        labelOverride = Strings.advancedLabel,
-                                        afterChange = { checked ->
-                                            if (checked) {
-                                                GlobalVars.configStates["${BUILDER_BASE_SETTINGS.NO_BUILDER_BASE.key}_c$index"]?.value = "0"
-                                                GlobalVars.configStates["${BUILDER_BASE_SETTINGS.BUILDER_BASE_FARMING.key}_c$index"]?.value = "1"
-                                            }
-                                        }
-                                    )
-                                }
-                            }
-                        }
-                    }
-                    Spacer(modifier = Modifier.height(8.dp))
-                    SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.STOP_CLAN_GAMES_AFTER_4000_POINTS.key}_c$index")
+                        Spacer(modifier = Modifier.height(8.dp))
+                        SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.STOP_CLAN_GAMES_AFTER_4000_POINTS.key}_c$index")
                     }
                 }
             }
@@ -778,22 +761,16 @@ fun LazyListScope.mainBaseConfig(
                 AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.RESEARCH_SETTING.key}_c$index"]?.value == "1") {
                     Column {
                         CustomButton(
-                            onClick = { onNavigateResearchPriority(index) },
-                            text = Strings.adjustMainBaseResearchPriority,
-                            containerColor = AppColors.Teal
+                            onClick = { onNavigateResearchPriority(index) }, text = Strings.adjustMainBaseResearchPriority, containerColor = AppColors.Teal
                         )
                         SettingDropdown(
-                            key = "${MAIN_BASE_SETTINGS.RESEARCH_LEVEL.key}_c${index}",
-                            options = listOf(Strings.maxLevel, Strings.maxLevelMinus1, Strings.maxLevelMinus2),
-                            afterChange = { selectedIdx ->
+                            key = "${MAIN_BASE_SETTINGS.RESEARCH_LEVEL.key}_c${index}", options = listOf(Strings.maxLevel, Strings.maxLevelMinus1, Strings.maxLevelMinus2), afterChange = { selectedIdx ->
                                 if (selectedIdx > 0) {
                                     GlobalVars.configStates["${MAIN_BASE_SETTINGS.SMART_DECISION.key}_c$index"]?.value = "1"
                                 }
-                            }
-                        )
+                            })
                         InputRowWithCheckBox(
-                            checkBoxKey = "${MAIN_BASE_SETTINGS.RESEARCH_AFTER_CONSECUTIVE_FAILURES.key}_c$index",
-                            inputKey = "${MAIN_BASE_SETTINGS.RESEARCH_AFTER_CONSECUTIVE_FAILURES_THRESHOLD.key}_c$index"
+                            checkBoxKey = "${MAIN_BASE_SETTINGS.RESEARCH_AFTER_CONSECUTIVE_FAILURES.key}_c$index", inputKey = "${MAIN_BASE_SETTINGS.RESEARCH_AFTER_CONSECUTIVE_FAILURES_THRESHOLD.key}_c$index"
                         )
                     }
                 }
@@ -873,22 +850,18 @@ fun LazyListScope.mainBaseConfig(
 
             AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.UPGRADE_PETS.key}_c$index"]?.value == "1") {
                 CustomButton(
-                    onClick = { onNavigatePetPriority(index) },
-                    text = Strings.adjustMainBasePetPriority,
-                    containerColor = AppColors.Teal
+                    onClick = { onNavigatePetPriority(index) }, text = Strings.adjustMainBasePetPriority, containerColor = AppColors.Teal
                 )
             }
             // Equipment upgrade master switch with equipped-equipments toggle in the same row
             FlowRow {
                 SettingSwitchIcon(
-                    key = "${MAIN_BASE_SETTINGS.UPGRADE_EQUIPMENTS.key}_c$index",
-                    explain = Strings.upgradeEquipmentsExplain
+                    key = "${MAIN_BASE_SETTINGS.UPGRADE_EQUIPMENTS.key}_c$index", explain = Strings.upgradeEquipmentsExplain
                 )
                 // Only visible when Upgrade Equipments is enabled
                 AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.UPGRADE_EQUIPMENTS.key}_c$index"]?.value == "1") {
                     SettingSwitchIcon(
-                        key = "${MAIN_BASE_SETTINGS.UPGRADE_EQUIPED_EQUIPMENTS.key}_c$index",
-                        explain = Strings.upgradeEquipedEquipmentsExplain
+                        key = "${MAIN_BASE_SETTINGS.UPGRADE_EQUIPED_EQUIPMENTS.key}_c$index", explain = Strings.upgradeEquipedEquipmentsExplain
                     )
                 }
             }
@@ -949,8 +922,7 @@ fun LazyListScope.mainBaseConfig(
             }
             // Badge event reward parent switch.
             SettingSwitchIcon(
-                key = "${MAIN_BASE_SETTINGS.CLAIM_BADGE_EVENT_REWARDS.key}_c$index",
-                explain = Strings.claimBadgeEventRewardsExplain
+                key = "${MAIN_BASE_SETTINGS.CLAIM_BADGE_EVENT_REWARDS.key}_c$index", explain = Strings.claimBadgeEventRewardsExplain
             )
             // Event Shop reward child switch, visible only when badge event rewards are enabled.
             AnimatedVisibility(

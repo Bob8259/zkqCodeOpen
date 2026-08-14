@@ -128,6 +128,9 @@ object MainBaseSettings {
     val EVENT_LEAGUE_START_DAY = SettingDef("event_league_start_day", "额外联赛开放起始日", "Extra League Start Day", "0", "MAIN_BASE_SETTINGS")
     val START_CLAN_WAR_SETTINGS = SettingDef("start_clan_war_settings", "发起部落战", "Start Clan War", 0, "MAIN_BASE_SETTINGS")
     val START_CLAN_WAR = SettingDef("start_clan_war", "开部落战", "Open Clan War", 0, "MAIN_BASE_SETTINGS")
+    val DISTRIBUTE_CLAN_LEAGUE_REWARDS = SettingDef(
+        "distribute_clan_league_rewards", "分配部落联赛奖励", "Distribute Clan League Rewards", 0, "MAIN_BASE_SETTINGS"
+    )
     val START_CLAN_WAR_METHOD = SettingDef("start_clan_war_method", "开启方式", "Start Method", "0", "MAIN_BASE_SETTINGS")
     val START_RAID = SettingDef("start_raid", "发起都城突袭", "Start Raid", 0, "MAIN_BASE_SETTINGS")
 
@@ -306,6 +309,7 @@ object MainBaseSettings {
         START_CLAN_LEAGUE_NEW_SIZE,
         START_CLAN_WAR_SETTINGS,
         START_CLAN_WAR,
+        DISTRIBUTE_CLAN_LEAGUE_REWARDS,
         START_CLAN_WAR_METHOD,
         START_RAID,
         BUY_GOLD_ORE_WITH_RAID_MEDAL,
