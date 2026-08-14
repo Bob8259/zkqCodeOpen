@@ -144,7 +144,7 @@ object AiDetector {
         // /data/local/tmp without the correct SELinux context, but streaming avoids both issues.
         val size = apkFile.length()
         val installResult = RunShell.run(
-            "cat \"${apkFile.absolutePath}\" | pm install -S $size",
+            "cat \"${apkFile.absolutePath}\" | pm install -r -S $size",
             checkIsPlaying = false
         )
         if (installResult.any { it.contains("Success", ignoreCase = true) }) {

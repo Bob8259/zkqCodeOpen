@@ -12,11 +12,12 @@ import com.coc.zkqcode.statehelper.AppMode
 import com.coc.zkqcode.statehelper.AppStateManager
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
-import kotlinx.coroutines.withTimeout
+import kotlinx.coroutines.withTimeoutOrNull
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -54,6 +55,9 @@ object HotUpdateManager {
      * in a long-lived coroutine scope (e.g. the service scope).
      * Automatically restarts on non-cancellation errors so the listener
      * is never permanently killed by a transient failure.
+     * TimeoutCancellationException is caught explicitly (before the generic
+     * CancellationException branch) because it subclasses CancellationException:
+     * a leaked update timeout must skip that update, never kill the listener.
      */
     suspend fun listenForSignal(context: Context) {
         while (true) {
@@ -69,6 +73,10 @@ object HotUpdateManager {
                         deferred.complete(Unit)
                     }
                 }
+            } catch (e: TimeoutCancellationException) {
+                // A leaked update timeout: skip this update and keep listening
+                LogHelper.showDebugInfo("HotUpdateManager: Signal listener hit update timeout, skipping update and continuing: ${e.message}")
+                delay(SIGNAL_LISTENER_RESTART_DELAY_MS.milliseconds)
             } catch (e: CancellationException) {
                 throw e // Respect coroutine cancellation
             } catch (e: Exception) {
@@ -83,7 +91,9 @@ object HotUpdateManager {
      * signal has been received from the JAR side for 8 hours. This handles
      * the case where the JAR code is stuck or broken.
      * Each iteration is individually guarded so a single failure never kills
-     * the watchdog loop.
+     * the watchdog loop. TimeoutCancellationException is caught explicitly
+     * (before the generic CancellationException branch) so a leaked update
+     * timeout skips that update instead of killing the watchdog.
      */
     suspend fun startWatchdog(context: Context) {
         while (true) {
@@ -98,6 +108,9 @@ object HotUpdateManager {
                     }
                     lastSignalTime = System.currentTimeMillis()
                 }
+            } catch (e: TimeoutCancellationException) {
+                // A leaked update timeout: skip this forced check and keep watching
+                LogHelper.showDebugInfo("HotUpdateManager: Watchdog hit update timeout, skipping update and continuing: ${e.message}")
             } catch (e: CancellationException) {
                 throw e // Respect coroutine cancellation
             } catch (e: Exception) {
@@ -106,7 +119,22 @@ object HotUpdateManager {
         }
     }
 
-    private suspend fun checkAndUpdate(context: Context) = withTimeout(UPDATE_TIMEOUT_MS.milliseconds) {
+    /**
+     * Runs one update check. The whole attempt is capped at UPDATE_TIMEOUT_MS;
+     * on timeout the update is skipped (with a user notice) instead of throwing,
+     * so a slow network can never kill the signal listener or the watchdog.
+     */
+    private suspend fun checkAndUpdate(context: Context) {
+        val result = withTimeoutOrNull(UPDATE_TIMEOUT_MS.milliseconds) {
+            checkAndUpdateInner(context)
+        }
+        if (result == null) {
+            ShowMessage("更新检查超时(${UPDATE_TIMEOUT_MS / 60_000L}分钟)，已跳过本次更新\n若反复出现，请检查网络后重试")
+            LogHelper.showDebugInfo("HotUpdateManager: Update timed out after ${UPDATE_TIMEOUT_MS}ms, skipping this update")
+        }
+    }
+
+    private suspend fun checkAndUpdateInner(context: Context) {
         ShowMessage("准备检查新版本")
         val assetsDir = File(context.filesDir, "assets")
         // Ensure assets directory exists (e.g. on fresh installation)
@@ -132,12 +160,12 @@ object HotUpdateManager {
             throw e // Respect coroutine cancellation
         } catch (e: Exception) {
             LogHelper.showDebugInfo("HotUpdateManager: Version check error: ${e.message}")
-            return@withTimeout
+            return
         }
 
         if (serverVersion <= localVersion) {
             ShowMessage("当前已是最新版本 (服务器版本号=$serverVersion, 本地版本号=$localVersion)")
-            return@withTimeout
+            return
         }
 
         // --- Step C: Download with PoW authentication, retry up to MAX_RETRY times ---
@@ -148,7 +176,7 @@ object HotUpdateManager {
                 ShowMessage("请登录账号后，再使用自动更新\n(自动更新可免费使用，仅需登录即可)")
                 delay(2000.milliseconds)
             }
-            return@withTimeout
+            return
         }
 
         val targetFile = File(assetsDir, serverFileName)
@@ -251,7 +279,7 @@ object HotUpdateManager {
 
         if (!downloadSuccess) {
             ShowMessage("已尝试 $MAX_RETRY 此，但依然更新失败\n即将停止自动更新")
-            return@withTimeout
+            return
         }
 
         // --- Step D: Clean up old JARs and reload ---

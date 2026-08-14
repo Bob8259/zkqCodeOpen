@@ -5,6 +5,7 @@ import com.coc.zkqcode.core.util.basic.RunShell
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.basic.waitForPlay
+import com.coc.zkqcode.core.util.fileactions.LogHelper
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
 import com.coc.zkqcode.jar.code.auth.displayAds
 import com.coc.zkqcode.jar.code.auth.userAuth
@@ -43,7 +44,14 @@ import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeoutOrNull
 import kotlin.time.Duration.Companion.milliseconds
+
+// Hot-update signal handshake bounds: the host caps one update at 10 minutes,
+// so waiting longer than 15 minutes means the host is gone — skip and keep running.
+private const val UPDATE_SIGNAL_EMIT_RETRIES = 3
+private const val UPDATE_SIGNAL_EMIT_RETRY_DELAY_MS = 5000L
+private const val UPDATE_SIGNAL_AWAIT_TIMEOUT_MS = 15 * 60_000L
 
 
 suspend fun runMainScript() {
@@ -96,9 +104,7 @@ suspend fun runMainScript() {
         // Circularly search for the next enabled account, wrapping back to currentAccountNumber (inclusive)
         // Emit hot update signal at safe point, throttled to once every 2-3 hours randomly
         if (updateOption == 2 && System.currentTimeMillis() - lastUpdateCheckTime >= nextUpdateInterval) {
-            val deferred = CompletableDeferred<Unit>()
-            GlobalVars.updateCheckSignal.tryEmit(deferred)
-            deferred.await()
+            requestHotUpdateCheck()
             lastUpdateCheckTime = System.currentTimeMillis()
             nextUpdateInterval = (3600_000L) + (Math.random() * 7200_000L).toLong()
         }
@@ -140,14 +146,43 @@ private suspend fun cleanUp() {
     }
 }
 
+/**
+ * Emits the hot-update signal and waits (bounded) for the host to finish.
+ * Never hangs the main loop: retries a failed tryEmit (buffer full),
+ * self-completes the deferred when no listener consumes the signal, and
+ * skips the check on timeout so the bot keeps running.
+ */
+private suspend fun requestHotUpdateCheck() {
+    val deferred = CompletableDeferred<Unit>()
+    var emitted = false
+    for (attempt in 1..UPDATE_SIGNAL_EMIT_RETRIES) {
+        if (GlobalVars.updateCheckSignal.tryEmit(deferred)) {
+            emitted = true
+            break
+        }
+        LogHelper.showDebugInfo("MainScript: update signal emit failed (attempt $attempt/$UPDATE_SIGNAL_EMIT_RETRIES), buffer full")
+        if (attempt < UPDATE_SIGNAL_EMIT_RETRIES) delay(UPDATE_SIGNAL_EMIT_RETRY_DELAY_MS.milliseconds)
+    }
+    if (!emitted) {
+        // Host listener not consuming the flow: unblock ourselves and skip this check
+        deferred.complete(Unit)
+        LogHelper.showDebugInfo("MainScript: no hot-update listener consumed the signal, skipping this update check")
+        return
+    }
+    val finished = withTimeoutOrNull(UPDATE_SIGNAL_AWAIT_TIMEOUT_MS.milliseconds) { deferred.await() }
+    if (finished == null) {
+        // Host did not complete in time: skip this check and keep the main loop alive
+        deferred.complete(Unit)
+        LogHelper.showDebugInfo("MainScript: hot-update check timed out after ${UPDATE_SIGNAL_AWAIT_TIMEOUT_MS / 60_000L} minutes, skipping")
+    }
+}
+
 /** Handles hot-update signal on start and random-scheduling gate.
  *  Returns updateOption, or null if random scheduling took over. */
 private suspend fun checkHotUpdateAndScheduling(): Int? {
     val updateOption = getConfigOrStop(Schema.GLOBAL_SETTINGS.AUTO_UPDATE.key).toIntOrNull() ?: logAndRestart("${Schema.GLOBAL_SETTINGS.AUTO_UPDATE.displayName} 必须是数字，请检查配置")
     if (updateOption == 1 || updateOption == 2) {
-        val deferred = CompletableDeferred<Unit>()
-        GlobalVars.updateCheckSignal.tryEmit(deferred)
-        deferred.await()
+        requestHotUpdateCheck()
     }
     val isRandomScheduling = getConfigOrStop(Schema.GLOBAL_SETTINGS.RANDOM_SCHEDULING.key) == "1"
     val isUpgradeTimeScheduling = getConfigOrStop(Schema.GLOBAL_SETTINGS.UPGRADE_TIME_SCHEDULING.key) == "1"

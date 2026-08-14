@@ -209,7 +209,7 @@ object AppUpdateChecker {
             val apkPath = apkFile.absolutePath
             val apkSize = apkFile.length()
             val cmd = "setsid sh -c '" +
-                "cat \"$apkPath\" | pm install -S $apkSize; " +
+                "cat \"$apkPath\" | pm install -r -S $apkSize; " +
                 "rm -f \"$apkPath\"; " +
                 "sleep 1; " +
                 "am start -n com.coc.zkqcode/.MainActivity" +
