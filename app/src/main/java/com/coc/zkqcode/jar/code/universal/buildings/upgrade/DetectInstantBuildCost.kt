@@ -32,7 +32,6 @@ suspend fun detectInstantBuildCost(): Int? {
 
     // Capture the screen and extract the region containing the cost number
     val screenBuffer = ScreenCaptureManager.captureScreenOrRestart<Bitmap>(asBitmap = true)
-        ?: return null
 
     // Validate that the crop region is within screen bounds
     if (startX < 0 || startY < 0 || endX > screenBuffer.width || endY > screenBuffer.height) {

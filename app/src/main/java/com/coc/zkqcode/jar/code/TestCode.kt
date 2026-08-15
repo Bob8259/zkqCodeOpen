@@ -3,15 +3,10 @@ package com.coc.zkqcode.jar.code
 import android.graphics.Bitmap
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
-import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
-import com.coc.zkqcode.jar.code.colorschema.ColorSchema
 import com.coc.zkqcode.jar.code.colorschema.MyColors
-import com.coc.zkqcode.jar.code.colorschema.colorpackage.mainbase.MainBaseResearchColors
-import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import java.io.File
 import java.io.FileOutputStream
-import kotlin.reflect.full.memberProperties
 
 //These code are for test only.
 suspend fun takeScreenShotForUpgradeCost() {
