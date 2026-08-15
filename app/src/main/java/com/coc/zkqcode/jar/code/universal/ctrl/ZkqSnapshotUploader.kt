@@ -35,13 +35,6 @@ object ZkqSnapshotUploader {
     @Volatile
     private var cachedIntervalMs: Long = DEFAULT_INTERVAL_MS
 
-    /**
-     * Log retention days pushed by the plugin (doc §13.2 extension).
-     * Consumed by LogHelper.FileLoggingTree; 0 = not yet received.
-     */
-    @Volatile
-    var logRetentionDays: Int = 0
-
     @Volatile
     private var lastAccount: Int = -1
 
@@ -116,7 +109,7 @@ object ZkqSnapshotUploader {
                         val interval = json.optLong("recommended_interval")
                         if (interval > 0) cachedIntervalMs = interval * 1000
                         val retention = json.optInt("log_retention_days", 0)
-                        if (retention > 0) logRetentionDays = retention
+                        if (retention > 0) GlobalVars.logRetentionDays = retention
                     } else if (json != null && json.optString("code") == "device_conflict") {
                         // Name conflict with a genuinely different device (doc §13.1):
                         // auto-rename ("<name>-2", ...) and retry next cycle.

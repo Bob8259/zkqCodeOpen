@@ -41,6 +41,9 @@ object GlobalVars {
     var isAdPlaying: Boolean = false
     var isShowAd: Boolean = true
 
+    @Volatile
+    var logRetentionDays: Int = 0
+
     // Hot update signal: JAR emits a CompletableDeferred so it can await completion
     val updateCheckSignal = MutableSharedFlow<CompletableDeferred<Unit>>(extraBufferCapacity = 1)
 
