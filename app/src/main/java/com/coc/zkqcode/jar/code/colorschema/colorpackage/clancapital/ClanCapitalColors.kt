@@ -8,6 +8,7 @@ interface IClanCapitalColors {
     val CapitalBarbarian: ColorSchema
     val CapitalBarbarian2: ColorSchema
     val CapitalCoin: ColorSchema
+    val CapitalCoin2: ColorSchema
     val ZeroAttackTimes: ColorSchema
     val RaidInformation: ColorSchema
     val RaidMap: ColorSchema
@@ -40,6 +41,11 @@ object ClanCapitalColors : IClanCapitalColors {
     // Capital coin resource indicator
     override val CapitalCoin = ColorSchema.parse(
         1190, 18, 1264, 72, "E418BB", "-5|0|FF55F0,1|0|E418BB,5|0|D42FA6,3|-2|FB93DA,-9|-10|6CFFFF,-5|-9|68F4FF,3|-8|1BBDFA,-9|13|C53497,-20|8|0DD9FF", 0, 0.9, "都城币"
+    )
+
+    // Capital coin resource indicator (variant 2)
+    override val CapitalCoin2 = ColorSchema.parse(
+        1218, 22, 1258, 64, "E315BA", "3|0|E019B7,5|0|E019B7,7|0|E019B7,10|0|DB21B2,0|9|E20EB8,3|9|DB11B2,5|9|DB11B1,7|9|DB11B2,10|9|BA2580", 0, 0.9, "都城币2"
     )
 
     // Zero attack times remaining indicator

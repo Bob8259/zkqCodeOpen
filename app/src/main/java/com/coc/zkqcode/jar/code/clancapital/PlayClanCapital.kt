@@ -19,7 +19,7 @@ suspend fun playClanCapital(): Boolean {
 
 
 suspend fun enterClanCapital(): Boolean {
-    if (findMultiColors(MyColors.CapitalCoin) != null) return true
+    if (findMultiColors(MyColors.CapitalCoin) != null || findMultiColors(MyColors.CapitalCoin2) != null) return true
     zoomSmallMainBase()
     clickRightBottom(1)
     TouchActions.tap(495, 560, delayTime = 10)
