@@ -25,14 +25,6 @@ suspend fun upgradeWalls(currentBase: BaseType): Boolean {
     if (!getBooleanConfigRuntime(wallUpgradeKey)) {
         return true
     }
-    // If smart decision is enabled and current base has no walls, skip wall upgrade
-    if (getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.SMART_DECISION.key)) {
-        val hasWalls = when (currentBase) {
-            BaseType.Main -> InGameVars.mainBaseWallsNeedUpgrade
-            BaseType.Builder -> InGameVars.builderBaseWallsNeedUpgrade
-        }
-        if (!hasWalls) return true
-    }
     val workerNumber = WorkerAndResearch.detectWorkerNumber(currentBase)
     val hasNoUsableWorker = workerNumber.available < 1 || workerNumber.total < 1
     if (hasNoUsableWorker) {
@@ -75,12 +67,6 @@ suspend fun upgradeWalls(currentBase: BaseType): Boolean {
         accountMessage("当前圣水百分比${currentResourcePercentage.elixir}\n设置阈值${thresholds}")
 
         if (currentResourcePercentage.elixir < thresholds) break
-        // Skip elixir upgrades when walls are already complete for the given base.
-        val skipElixir = when (currentBase) {
-            BaseType.Builder -> !InGameVars.builderBaseWallsNeedUpgrade
-            BaseType.Main -> !InGameVars.mainBaseWallsNeedUpgrade
-        }
-        if (skipElixir && getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.SMART_DECISION.key)) break
         when (upgradeAllExistingBuildings(listOf("城墙"), currentBase, skipOrdering = true, WallType.Elixir)) {
             UpgradeResult.Failure -> return false
             UpgradeResult.StopLoop -> break

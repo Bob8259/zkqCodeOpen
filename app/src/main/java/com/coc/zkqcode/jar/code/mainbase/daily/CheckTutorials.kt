@@ -17,8 +17,8 @@ import com.coc.zkqcode.jar.code.universal.smalltools.data.writeMemory
 
 suspend fun mainBaseCheckTutorials(): Boolean {
     val storageKey = StorageKeys.withAccountNumber(StorageKeys.MAIN_BASE_CHECK_TUTORIALS, InGameVars.currentAccountNumber)
-    if (!checkMemoryFile(storageKey, 360)) {
-        accountMessage("6小时内已检查常见教程")
+    if (!checkMemoryFile(storageKey, 240)) {
+        accountMessage("4小时内已检查常见教程")
         return true
     }
 

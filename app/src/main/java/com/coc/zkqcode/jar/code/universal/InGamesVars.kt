@@ -58,10 +58,6 @@ object InGameVars {
     @Volatile
     var clockTowerCooldown: Int = 0
 
-    // True means there are upgradable or unbuilt walls; false means walls are complete (full quantity and all at max level).
-    @Volatile
-    var mainBaseWallsNeedUpgrade: Boolean = false
-
     // ── Pet upgrade level detection ──
     @Volatile
     var petHouseLevel: Int = 0   // 战宠小屋 (data ID 1000068) level, 0 = unknown
@@ -71,10 +67,6 @@ object InGameVars {
     var petLevels: Map<String, Int> = emptyMap()
 
 
-
-    // True means there are upgradable or unbuilt builder base walls; false means builder base walls are complete.
-    @Volatile
-    var builderBaseWallsNeedUpgrade: Boolean = false
 
     // Compose-reactive auto-run timer (observed by UI for recomposition)
     var autoRunTimer by mutableIntStateOf(30)

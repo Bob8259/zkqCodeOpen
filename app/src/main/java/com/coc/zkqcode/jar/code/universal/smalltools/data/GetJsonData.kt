@@ -172,45 +172,6 @@ private const val BB_RAGED_BARBARIAN_DATA_ID = 4000031   // 狂暴野蛮人
         0
     }
 
-    // Determine whether the main base still has upgradable or unbuilt walls (data == 1000010 in "buildings").
-    // Walls are considered complete (false) only when the count of walls already at the town hall's
-    // max wall level meets or exceeds the town hall's wall quantity.
-    // e.g. TH 18/19 require 200 walls at level 19 — if fewer than 200 level-19 walls exist, upgrade is needed.
-    InGameVars.mainBaseWallsNeedUpgrade = try {
-        val (wallQuantity, maxWallLevel) = wallRequirementForTownHall(firstBuildingLvl)
-        val wallEntries = buildings.filter { it.asJsonObject.get("data").asInt == 1000010 }
-        // Count only the walls that have already reached the max wall level for this TH.
-        val wallsAtMaxLevel = wallEntries
-            .filter { it.asJsonObject.get("lvl").asInt >= maxWallLevel }
-            .sumOf { it.asJsonObject.get("cnt")?.asInt ?: 1 }
-        val isComplete = wallsAtMaxLevel >= wallQuantity
-        // Town halls with no walls (quantity 0) are always complete.
-        wallQuantity > 0 && !isComplete
-    } catch (_: Exception) {
-        false
-    }
-
-    // Determine whether the builder base still has upgradable or unbuilt walls (data == 1000033 in "buildings2").
-    InGameVars.builderBaseWallsNeedUpgrade = try {
-        val buildings2 = jsonObject.getAsJsonArray("buildings2")
-        if (buildings2 != null && buildings2.size() > 0) {
-            // Builder hall is identified by data == 1000046 in "buildings2"
-            val builderHallLevel = buildings2.firstOrNull {
-                it.asJsonObject.get("data").asInt == 1000046
-            }?.asJsonObject?.get("lvl")?.asInt ?: 0
-            val (wallQuantity, maxWallLevel) = wallRequirementForBuilderHall(builderHallLevel)
-            val wallEntries = buildings2.filter { it.asJsonObject.get("data").asInt == 1000033 }
-            val builtWallCount = wallEntries.sumOf { it.asJsonObject.get("cnt")?.asInt ?: 1 }
-            val allAtMaxLevel = wallEntries.all { it.asJsonObject.get("lvl").asInt >= maxWallLevel }
-            val isComplete = builtWallCount >= wallQuantity && allAtMaxLevel
-            wallQuantity > 0 && !isComplete
-        } else {
-            false
-        }
-    } catch (_: Exception) {
-        false
-    }
-
     clickRightBottom(1, delayTime = 200)
     return enterMainScreen()
 }
@@ -243,33 +204,6 @@ private fun parseResearchItemLevels(jsonObject: JsonObject) {
         extractLevels("siege_machines")
     } catch (_: Exception) { /* ignore parse errors */ }
     InGameVars.researchItemLevels = nameToLevel
-}
-
-/**
- * Wall quantity (number of walls) and max wall level for a given town hall level.
- * Returns Pair(wallQuantity, maxWallLevel). Unknown levels fall back to (0, 0).
- */
-private fun wallRequirementForTownHall(townHallLevel: Int): Pair<Int, Int> = when (townHallLevel) {
-    1 -> 0 to 0
-    2 -> 25 to 2
-    3 -> 50 to 3
-    4 -> 75 to 4
-    5 -> 100 to 5
-    6 -> 125 to 6
-    7 -> 175 to 7
-    8 -> 225 to 8
-    9 -> 250 to 10
-    10 -> 275 to 11
-    11 -> 300 to 12
-    12 -> 300 to 13
-    13 -> 300 to 14
-    14 -> 325 to 15
-    15 -> 325 to 16
-    16 -> 325 to 17
-    17 -> 325 to 18
-    18 -> 200 to 19
-    19 -> 200 to 19
-    else -> 0 to 0
 }
 
 /**
@@ -418,20 +352,3 @@ private fun parseSpeedSixBuilderLevels(jsonObject: JsonObject) {
     } catch (_: Exception) { /* ignore */ }
 }
 
-/**
- * Wall quantity (number of walls) and max wall level for a given builder hall level.
- * Returns Pair(wallQuantity, maxWallLevel). Unknown levels fall back to (0, 0).
- */
-private fun wallRequirementForBuilderHall(builderHallLevel: Int): Pair<Int, Int> = when (builderHallLevel) {
-    1 -> 10 to 1
-    2 -> 20 to 1
-    3 -> 50 to 3
-    4 -> 75 to 4
-    5 -> 100 to 5
-    6 -> 120 to 6
-    7 -> 140 to 7
-    8 -> 160 to 8
-    9 -> 180 to 9
-    10 -> 180 to 10
-    else -> 0 to 0
-}

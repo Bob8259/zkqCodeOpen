@@ -21,7 +21,6 @@ import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.smalltools.data.getBooleanConfigRuntime
 import com.coc.zkqcode.jar.code.universal.smalltools.data.getConfigRuntime
-import com.coc.zkqcode.jar.code.universal.InGameVars
 import com.coc.zkqcode.jar.ui.schema.Schema
 import kotlin.math.sqrt
 
@@ -116,17 +115,8 @@ suspend fun checkContinueBuild(currentBase: BaseType, isWallUpgrade: Boolean = f
     // 3. Evaluate the exit condition:
     // No workers available OR exactly one worker available while "Save Worker" config is enabled.
     // When isWallUpgrade is true, skip the save-worker check since the saved worker is reserved for walls.
-    // If smart decision detects no walls and "build after wall full" is enabled, release the saved worker.
-    val buildAfterWallFullKey = if (isBuilder) {
-        Schema.BUILDER_BASE_SETTINGS.BUILDER_BASE_SAVE_WORKER_BUILD_AFTER_WALL_FULL.key
-    } else {
-        Schema.MAIN_BASE_SETTINGS.SAVE_WORKER_BUILD_AFTER_WALL_FULL.key
-    }
-    val hasWalls = if (isBuilder) InGameVars.builderBaseWallsNeedUpgrade else InGameVars.mainBaseWallsNeedUpgrade
-    val shouldReleaseSavedWorker = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.SMART_DECISION.key) && getBooleanConfigRuntime(buildAfterWallFullKey) && !hasWalls
-
     val isNoWorkerAvailable = workerNumber.available == 0
-    val isSavingLastWorker = !isWallUpgrade && workerNumber.available == 1 && getBooleanConfigRuntime(configKey) && !shouldReleaseSavedWorker
+    val isSavingLastWorker = !isWallUpgrade && workerNumber.available == 1 && getBooleanConfigRuntime(configKey)
     return !(isNoWorkerAvailable || isSavingLastWorker)
 }
 
