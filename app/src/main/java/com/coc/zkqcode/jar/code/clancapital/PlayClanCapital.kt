@@ -1,11 +1,10 @@
 ﻿package com.coc.zkqcode.jar.code.clancapital
 
-import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.mainbase.others.zoomSmallMainBase
+import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.jar.code.universal.clickRightBottom
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
-import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.smalltools.input.TouchActions
 
@@ -29,9 +28,8 @@ suspend fun enterClanCapital(): Boolean {
     if (nextRaid != null) {
         TouchActions.tap(nextRaid.x, nextRaid.y)
     }
-    if (findMultiColorsUntil(schemas = listOf(MyColors.CapitalCoin), duration = 500) != null) return true
+    if (findMultiColorsUntil(schemas = listOf(MyColors.CapitalCoin, MyColors.CapitalCoin2), duration = 1500) != null) return true
 
     accountMessage("进入都城失败")
-    delayWithMultiplier(1000)
     return false
 }

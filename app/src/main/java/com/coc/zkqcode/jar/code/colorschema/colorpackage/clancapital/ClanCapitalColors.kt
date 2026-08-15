@@ -45,7 +45,7 @@ object ClanCapitalColors : IClanCapitalColors {
 
     // Capital coin resource indicator (variant 2)
     override val CapitalCoin2 = ColorSchema.parse(
-        1218, 22, 1258, 64, "E315BA", "3|0|E019B7,5|0|E019B7,7|0|E019B7,10|0|DB21B2,0|9|E20EB8,3|9|DB11B2,5|9|DB11B1,7|9|DB11B2,10|9|BA2580", 0, 0.9, "都城币2"
+        1212, 17, 1268, 72, "FF77EB", "4|0|E711C4,8|0|DE21B6,10|10|DB19B2,4|4|E019B7,0|14|CA2D99,-2|4|EE1ED8,8|13|DB11B2,8|16|CA1196,12|6|DB1AB2", 0, 0.9, "都城币2"
     )
 
     // Zero attack times remaining indicator

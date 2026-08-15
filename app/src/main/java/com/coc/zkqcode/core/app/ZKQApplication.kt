@@ -12,7 +12,7 @@ class ZKQApplication : Application() {
         super.onCreate()
         appContext = this
         // Initialize Timber as early as possible so logging is available before any crash
-        LogHelper.initTimber(this)
+        LogHelper.initTimber()
         // Install a global uncaught exception handler to log all crashes
         installGlobalExceptionHandler()
         // Initialize libsu as soon as the process starts so every component
