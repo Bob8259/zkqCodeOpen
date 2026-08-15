@@ -73,7 +73,7 @@ object MainBaseSettings {
     val REVERSE_UPGRADE = SettingDef("reverse_upgrade", "反向升级", "Reverse Upgrade", 0, "MAIN_BASE_SETTINGS")
     val BATCH_WALL_UPGRADE_SETTINGS = SettingDef("batch_wall_upgrade_settings", "批量升级城墙", "Batch Upgrade Walls", 1, "MAIN_BASE_SETTINGS")
     val SAVE_WORKER = SettingDef("save_worker", "留1工人", "Save 1 Builder", 0, "MAIN_BASE_SETTINGS")
-    val SAVE_WORKER_BUILD_AFTER_WALL_FULL = SettingDef("save_worker_build_after_wall_full", "城墙全满后，将保留的工人用于建造", "Use saved builder after walls full", 0, "MAIN_BASE_SETTINGS")
+    val SAVE_WORKER_BUILD_AFTER_WALL_FULL = SettingDef("save_worker_build_after_wall_full", "智能调用工人", "Smart Release Worker", 0, "MAIN_BASE_SETTINGS")
     val GEAR_UP_SETTINGS = SettingDef("gear_up_settings", "改装建筑", "Gear Up", 0, "MAIN_BASE_SETTINGS")
     val SPEED_SIX_BUILDER = SettingDef("speed_six_builder", "快速解锁第6工人", "Speed 6 Builder", 0, "MAIN_BASE_SETTINGS")
     val UPGRADE_AFTER_FAIL_WALL_UPGRADE = SettingDef("upgrade_after_fail_wall_upgrade", "升级城墙失败后建造", "Build if wall upgrade fails", 0, "MAIN_BASE_SETTINGS")

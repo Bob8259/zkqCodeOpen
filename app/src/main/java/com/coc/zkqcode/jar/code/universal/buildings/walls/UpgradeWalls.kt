@@ -46,6 +46,12 @@ suspend fun upgradeWalls(currentBase: BaseType): Boolean {
     val startTime = System.currentTimeMillis()
     val timeoutMs = 5 * 60 * 1000L // 5 minutes
 
+    // Outcome of one wall-upgrade loop: NotRun = resources below threshold (loop never
+    // searched), NoWalls = searched but no upgradable wall found (StopLoop), Found = at
+    // least one wall was found/upgraded (Success).
+    var goldOutcome = WallSearchOutcome.NotRun
+    var elixirOutcome = WallSearchOutcome.NotRun
+
     // 1. Gold Upgrade Loop
     while (System.currentTimeMillis() - startTime < timeoutMs) {
         val currentResourcePercentage = calculateResourcesPercentage(currentBase)
@@ -55,8 +61,11 @@ suspend fun upgradeWalls(currentBase: BaseType): Boolean {
 
         when (upgradeAllExistingBuildings(listOf("城墙"), currentBase, skipOrdering = true, WallType.Gold)) {
             UpgradeResult.Failure -> return false
-            UpgradeResult.StopLoop -> break
-            UpgradeResult.Success -> {}
+            UpgradeResult.StopLoop -> {
+                goldOutcome = WallSearchOutcome.NoWalls
+                break
+            }
+            UpgradeResult.Success -> goldOutcome = WallSearchOutcome.Found
         }
         delayWithMultiplier(300)
     }
@@ -69,12 +78,35 @@ suspend fun upgradeWalls(currentBase: BaseType): Boolean {
         if (currentResourcePercentage.elixir < thresholds) break
         when (upgradeAllExistingBuildings(listOf("城墙"), currentBase, skipOrdering = true, WallType.Elixir)) {
             UpgradeResult.Failure -> return false
-            UpgradeResult.StopLoop -> break
-            UpgradeResult.Success -> {}
+            UpgradeResult.StopLoop -> {
+                elixirOutcome = WallSearchOutcome.NoWalls
+                break
+            }
+            UpgradeResult.Success -> elixirOutcome = WallSearchOutcome.Found
         }
         delayWithMultiplier(300)
     }
+
+    // Update wall-completeness state for the current account:
+    // - both loops searched with sufficient resources and found no walls -> walls complete,
+    //   checkContinueBuild may release the saved worker ("build after wall full" setting).
+    // - any loop found a wall -> walls incomplete again (e.g. after a town hall upgrade).
+    // - any loop never ran (resources below threshold) -> keep previous state, never release.
+    when {
+        goldOutcome == WallSearchOutcome.NoWalls && elixirOutcome == WallSearchOutcome.NoWalls -> {
+            InGameVars.wallsCompleteBases.add(currentBase)
+            accountMessage("城墙已全部升满，本账号将释放保留的工人")
+        }
+        goldOutcome == WallSearchOutcome.Found || elixirOutcome == WallSearchOutcome.Found -> {
+            InGameVars.wallsCompleteBases.remove(currentBase)
+        }
+    }
     return true
+}
+
+// Outcome of a single resource-type wall-upgrade loop inside upgradeWalls
+private enum class WallSearchOutcome {
+    NotRun, NoWalls, Found
 }
 
 data class ResourcesPercentage(

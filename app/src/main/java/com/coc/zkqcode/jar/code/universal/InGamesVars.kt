@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.setValue
 import com.coc.zkqcode.core.util.basic.ShowMessage
 import com.coc.zkqcode.jar.code.universal.buildings.BaseType
+import java.util.concurrent.ConcurrentHashMap
 
 /**
  * Represents the target game version/server type, carrying all package and launch metadata.
@@ -51,6 +52,12 @@ object InGameVars {
 
     @Volatile
     var wallUpgradeNoWorkerBase: BaseType? = null
+
+    // Bases of the CURRENT account whose walls are complete (both gold & elixir wall-upgrade
+    // loops searched with sufficient resources and found no upgradable walls). Used by
+    // checkContinueBuild to release the saved worker when "build after wall full" is enabled.
+    // Cleared at the start of each runAccountStepBlock() so it never leaks across accounts.
+    val wallsCompleteBases: MutableSet<BaseType> = ConcurrentHashMap.newKeySet()
 
     @Volatile
     var townHallLevel: Int = 20

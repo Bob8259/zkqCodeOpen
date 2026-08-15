@@ -161,12 +161,7 @@ fun LazyListScope.builderBaseConfig(
                 SettingSwitchIcon(key = "${BUILDER_BASE_SETTINGS.BUILDER_BASE_SAVE_WORKER.key}_c${index}")
                 SettingSwitchIcon(
                     key = "${BUILDER_BASE_SETTINGS.BUILDER_BASE_SAVE_WORKER_BUILD_AFTER_WALL_FULL.key}_c${index}",
-                    explain = Strings.builderBaseSaveWorkerBuildExplain,
-                    afterChange = { checked ->
-                        if (checked) {
-                            GlobalVars.configStates["${MAIN_BASE_SETTINGS.SMART_DECISION.key}_c$index"]?.value = "1"
-                        }
-                    }
+                    explain = Strings.saveWorkerBuildExplain
                 )
                 SettingSwitchIcon(key = "${BUILDER_BASE_SETTINGS.BUILDER_BASE_ENABLE_CLOCK_TOWER.key}_c${index}")
             }

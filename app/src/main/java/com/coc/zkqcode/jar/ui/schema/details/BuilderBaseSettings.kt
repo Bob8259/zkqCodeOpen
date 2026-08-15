@@ -27,7 +27,7 @@ object BuilderBaseSettings {
     val BUILDER_BASE_REMOVE_OBSTACLES = SettingDef("builder_base_remove_obstacles", "移除障碍物", "Remove Obstacles", 0, "BUILDER_BASE_SETTINGS")
     val BUILDER_BASE_CONTINUOUS_REMOVE_OBSTACLES = SettingDef("builder_base_continuous_remove_obstacles", "连续移除障碍物", "Continuous Removal", 0, "BUILDER_BASE_SETTINGS")
     val BUILDER_BASE_SAVE_WORKER = SettingDef("builder_base_save_worker", "留1工人", "Save 1 Builder", 0, "BUILDER_BASE_SETTINGS")
-    val BUILDER_BASE_SAVE_WORKER_BUILD_AFTER_WALL_FULL = SettingDef("builder_base_save_worker_build_after_wall_full", "城墙全满后，将保留的工人用于建造", "Use saved builder after walls full", 0, "BUILDER_BASE_SETTINGS")
+    val BUILDER_BASE_SAVE_WORKER_BUILD_AFTER_WALL_FULL = SettingDef("builder_base_save_worker_build_after_wall_full", "智能调用工人", "Smart Release Worker", 0, "BUILDER_BASE_SETTINGS")
     val BUILDER_BASE_ENABLE_CLOCK_TOWER = SettingDef("builder_base_enable_clock_tower", "开启时光钟楼", "Enable Clock Tower", 1, "BUILDER_BASE_SETTINGS")
     val BUILDER_BASE_STOP_BATTLE_WHEN_NO_STAR = SettingDef("builder_base_stop_battle_when_no_star", "无胜利之星后停止对战", "Stop if no stars", 0, "BUILDER_BASE_SETTINGS")
     val EXIT_ON_ONE_STAR_BUILDER = SettingDef("exit_on_one_star_builder", "一星退出", "Exit on 1-star", 0, "BUILDER_BASE_SETTINGS")

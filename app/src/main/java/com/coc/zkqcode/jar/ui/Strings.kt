@@ -314,7 +314,7 @@ object Strings {
     val autoJoinClanExplain get() = if (LanguageManager.isChinese) "启用后，辅助将自动申请加入部落。若未指定部落标签，仅在当前无部落时执行加入操作；若已指定标签，则每日检测一次是否已加入目标部落。注意：使用此功能前需先建造部落城堡。" else "Auto-join clan. If no tag, joins only if clanless. If tag set, checks daily. Requires Clan Castle."
     val buildSettingExplain get() = if (LanguageManager.isChinese) "建造时会忽略可改装的建筑，并且会优先建造新建筑和新的建筑工人小屋。" else "Ignores gear-up buildings. Prioritizes new buildings and builder huts."
     val gearUpExplain get() = if (LanguageManager.isChinese) "改装建筑属于主世界功能，即使关闭夜世界，也依然会生效。" else "Gear-up is a main base feature and works even if Builder Base is disabled."
-    val saveWorkerBuildExplain get() = if (LanguageManager.isChinese) "本功能依赖智能决策，启用本功能后会自动开启智能决策。" else "Requires Smart Decision to be enabled."
+    val saveWorkerBuildExplain get() = if (LanguageManager.isChinese) "仅当资源充足且已无城墙可升级时，才会释放保留的工人用于建造；若资源不足，工人将继续保留。" else "The saved builder is only released when resources are sufficient and no walls can be upgraded. If resources are insufficient, the builder stays saved."
     val batchWallExplain get() = if (LanguageManager.isChinese) "此功能对已开启月卡（黄金令牌）的账号不生效。" else "Does not apply to Gold Pass accounts."
     val reverseUpgradeExplain get() = if (LanguageManager.isChinese) "启用后，辅助将从下到上升级建筑。" else "When enabled, the script will upgrade buildings from the bottom to the top."
 
@@ -356,7 +356,6 @@ object Strings {
     val elixirCartExplain get() = if (LanguageManager.isChinese) "启用后，夜世界对战中部署兵种后将立即投降，因此几乎无法获取金币，请谨慎启用。此选项不可与“上分模式”同时开启。" else "Deploy then surrender for elixir. Gold gain will be near zero. Cannot be used with Trophy Pushing."
     val builderBaseRemoveObstaclesExplain get() = if (LanguageManager.isChinese) "若尚未解锁第二区域，当金币或圣水超过30万时生效；\n若已解锁第二区域，当金币或圣水超过60万时生效。\n注意：此功能会移除野蛮人雕像，请谨慎使用。" else "Active at 300k gold/elixir (Area 1) or 600k (Area 2). Remark: May remove Barbarian Statue."
     val builderBaseContinuousRemoveExplain get() = if (LanguageManager.isChinese) "启用后，辅助将不再记录移除时间，每次运行都会尝试移除障碍物，实现连续移除。" else "Remove obstacles every run without tracking time."
-    val builderBaseSaveWorkerBuildExplain get() = if (LanguageManager.isChinese) "本功能依赖智能决策，启用本功能后会自动开启智能决策。" else "Requires Smart Decision to be enabled."
 
     // Stop battle conditions & one-star exit
     val stopBattleWhenNoStarExplain

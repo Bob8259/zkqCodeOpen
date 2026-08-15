@@ -235,6 +235,8 @@ private fun resolveGameVersion(isBatchCreate: Boolean): GameVersion {
  * @return true if the full flow completed, false if any step failed early.
  */
 suspend fun runAccountStepBlock(): Boolean {
+    // Reset per-run wall-completeness state so it never leaks across accounts
+    InGameVars.wallsCompleteBases.clear()
     checkAndCoolDown()
     cleanUp()
     displayAds()
