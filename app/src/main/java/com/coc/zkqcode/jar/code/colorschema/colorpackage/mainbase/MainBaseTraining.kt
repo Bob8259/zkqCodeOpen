@@ -22,6 +22,8 @@ interface IMainBaseTraining {
     val GrayBarbarian: ColorSchema
     val TrainLighteningSpell: ColorSchema
     val TrainSiegeMachine: ColorSchema
+    val CloneSpell: ColorSchema
+    val RageSpell: ColorSchema
 
     // CopyArmy link post-processing buttons — placeholder schemas, replace with actual colors later
     val SaveArmyButton: ColorSchema
@@ -81,6 +83,12 @@ object MainBaseTraining : IMainBaseTraining {
     )
     override val TrainSiegeMachine = ColorSchema.parse(
         82, 509, 198, 567, "2B2D7F", "23|0|292E8C,46|0|404BBD,69|0|254687,92|0|111243,0|29|212053,23|29|191E68,46|29|181A4B,69|29|2C57A9,92|29|325595", 0, 0.9, "训练攻城机器"
+    )
+    override val CloneSpell = ColorSchema.parse(
+        30, 425, 1260, 670, "E3E32B", "13|6|E4F221,24|2|EBF92C,12|10|E1F021,-3|12|E3E027,2|0|E5E82E,17|0|F3FE63,30|-4|EFF754,34|-8|FFFFFF,19|-2|EEFB42", 0, 0.9, "克隆法术"
+    )
+    override val RageSpell = ColorSchema.parse(
+        30, 425, 1260, 670, "E73991", "-7|1|AC226D,-21|-8|A34382,-19|-19|793450,-5|-10|A2286F,4|-10|D642B5,7|-16|C03377,2|-20|BB336D,-10|-16|882B4F,-15|-42|BB8C95", 0, 0.9, "狂暴法术"
     )
 
     // CopyArmy link post-processing buttons

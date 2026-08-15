@@ -75,33 +75,4 @@ object MyColors : IUIColors by UIColors, IFeatureColors by FeatureColors, IClanG
     IClanCapitalTutorialColors by ClanCapitalTutorialColors, IMainBaseAttackColors by MainBaseAttackColors, IMainBaseClanColors by MainBaseClanColors, IMainBaseClanWarColors by MainBaseClanWarColors,
     IMainBaseHelperColors by MainBaseHelperColors, IMainBaseHeroHallColors by MainBaseHeroHallColors, IMainBaseEquipmentColors by MainBaseEquipmentColors, IMainBaseSmallTutorialColors by MainBaseSmallTutorialColors,
     IMainBaseMagicItemColors by MainBaseMagicItemColors, IClanCapitalColors by ClanCapitalColors, IMainBaseShopColors by MainBaseShopColors, IMainBaseTournamentColors by MainBaseTournamentColors,
-    IMainBasePassRewardColors by MainBasePassRewardColors, IGameUpdateColors by GameUpdateColors, IEventColors by EventColors {
-    //UI Colour
-    val ContributionActivity = ColorSchema.parse(
-        1198, 66, 1255, 121, "FFFFFF", "3|4|FFFFFF,-13|-9|8D8FF3,-7|-13|8D8FF3,16|-11|8D8FF3,19|9|2722F0,14|18|2520DE,-2|18|2520DE,-10|18|2520DE,-12|8|2722F0", 0, 0.9, "捐赠活动"
-    )
-
-    //Upgrade Equipment Colors
-    val EquipmentUpgradeArrow = ColorSchema.parse(
-        110, 269, 1173, 303, "4FF3B6", "0|2|41E19E,-2|3|3BD892,2|3|3BD892,2|5|31CB80,2|8|2FC87D,-1|9|2FC87D,-1|9|2FC87D,0|6|2FC87D,1|3|3BD892", 0, 0.9, "升级装备箭头"
-    )
-    val NewEquipment = ColorSchema.parse(
-        88, 420, 1232, 610, "31D197", "-7|0|31D197,-4|-4|2AC788,-5|3|44EFC1,18|4|46F0C5,15|3|44EFC1,18|-4|2AC788,20|-4|2AC788,22|0|31D197,21|3|44EFC1", 0, 0.9, "新装备"
-    )
-
-    //Main base training colours
-    val CloneSpell = ColorSchema.parse(
-        30, 425, 1260, 670, "E3E32B", "13|6|E4F221,24|2|EBF92C,12|10|E1F021,-3|12|E3E027,2|0|E5E82E,17|0|F3FE63,30|-4|EFF754,34|-8|FFFFFF,19|-2|EEFB42", 0, 0.9, "克隆法术"
-    )
-    val RageSpell = ColorSchema.parse(
-        30, 425, 1260, 670, "E73991", "-7|1|AC226D,-21|-8|A34382,-19|-19|793450,-5|-10|A2286F,4|-10|D642B5,7|-16|C03377,2|-20|BB336D,-10|-16|882B4F,-15|-42|BB8C95", 0, 0.9, "狂暴法术"
-    )
-
-    //Clan League Colours
-    val DistributeClanLeagueRewards = ColorSchema.parse(
-        522, 622, 794, 699, "FFD9A7", "18|-2|FFDBAB,67|-1|FFDBAA,88|0|FFD9A7,118|0|FFD9A7,169|20|69FCFF,181|20|7FE6FD,110|48|D47636,58|45|D47636,36|44|D47636", 0, 0.9, "发放联赛奖励"
-    )
-    val SelectPlayerButton = ColorSchema.parse(
-        1006, 304, 1143, 614, "E5C286", "30|-1|E5C286,65|-1|E5C286,83|7|E2BA78,78|22|CF922E,68|22|CF922E,19|24|CD912D,11|23|CE922E,4|18|CF932F,4|1|E5C286", 0, 0.9, "选择玩家"
-    )
-}
+    IMainBasePassRewardColors by MainBasePassRewardColors, IGameUpdateColors by GameUpdateColors, IEventColors by EventColors

@@ -59,6 +59,10 @@ interface IMainBaseEquipmentColors {
     val DragonDukeStunBlaster: ColorSchema
     val DragonDukeElectroFangs: ColorSchema
     val DragonDukeRocketBackpack: ColorSchema
+
+    // Equipment upgrade flow indicators
+    val EquipmentUpgradeArrow: ColorSchema
+    val NewEquipment: ColorSchema
 }
 
 object MainBaseEquipmentColors : IMainBaseEquipmentColors {
@@ -195,5 +199,15 @@ object MainBaseEquipmentColors : IMainBaseEquipmentColors {
     )
     override val DragonDukeRocketBackpack = ColorSchema.parse(
         65, 275, 1235, 615, "214C46", "-8|0|5EA6ED,-15|2|F5F2FF,-22|-3|B5B4B5,-7|3|EDEFFF,0|14|679BA7,5|15|81B1B8,5|-4|3D8DF0,15|6|5F5C4C,21|20|CB35C1", 0, 0.9, "火箭背包"
+    )
+
+    // Upgrade arrow shown next to an equipment that can be upgraded
+    override val EquipmentUpgradeArrow = ColorSchema.parse(
+        110, 269, 1173, 303, "4FF3B6", "0|2|41E19E,-2|3|3BD892,2|3|3BD892,2|5|31CB80,2|8|2FC87D,-1|9|2FC87D,-1|9|2FC87D,0|6|2FC87D,1|3|3BD892", 0, 0.9, "升级装备箭头"
+    )
+
+    // New equipment marker badge
+    override val NewEquipment = ColorSchema.parse(
+        88, 420, 1232, 610, "31D197", "-7|0|31D197,-4|-4|2AC788,-5|3|44EFC1,18|4|46F0C5,15|3|44EFC1,18|-4|2AC788,20|-4|2AC788,22|0|31D197,21|3|44EFC1", 0, 0.9, "新装备"
     )
 }

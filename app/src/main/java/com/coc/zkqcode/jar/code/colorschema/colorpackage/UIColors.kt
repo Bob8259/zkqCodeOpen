@@ -59,6 +59,7 @@ interface IUIColors {
     val ClanLeagueReturnCamp: ColorSchema
     val UpgradeNotification: ColorSchema
     val GameSettings: ColorSchema
+    val ContributionActivity: ColorSchema
 
     // Clan war UI indicators
     val ClanWarTutorialArrow: ColorSchema
@@ -288,5 +289,10 @@ object UIColors : IUIColors {
     // Top right clan war info indicator
     override val TopRightClanWarInfo = ColorSchema.parse(
         1216, 22, 1252, 57, "FED398", "7|0|FEE5B3,14|0|FFFFFF,21|0|FFE6B8,28|0|FCCA8E,0|17|E38B39,7|17|E79D4B,14|17|FFFFFF,21|17|E49C59,28|17|995A11", 0, 0.9, "右上角部落战信息"
+    )
+
+    // Contribution activity indicator (donation event)
+    override val ContributionActivity = ColorSchema.parse(
+        1198, 66, 1255, 121, "FFFFFF", "3|4|FFFFFF,-13|-9|8D8FF3,-7|-13|8D8FF3,16|-11|8D8FF3,19|9|2722F0,14|18|2520DE,-2|18|2520DE,-10|18|2520DE,-12|8|2722F0", 0, 0.9, "捐赠活动"
     )
 }

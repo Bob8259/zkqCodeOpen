@@ -42,6 +42,10 @@ interface IMainBaseClanWarColors {
     val ArcherDonatableTroop: ColorSchema
     val FlameFlingerDonatableTroop: ColorSchema
     val LeagueFirstMemberIndicator: ColorSchema
+
+    // Clan league reward distribution
+    val DistributeClanLeagueRewards: ColorSchema
+    val SelectPlayerButton: ColorSchema
 }
 
 object MainBaseClanWarColors : IMainBaseClanWarColors {
@@ -184,6 +188,16 @@ object MainBaseClanWarColors : IMainBaseClanWarColors {
 
     override val LeagueFirstMemberIndicator = ColorSchema.parse(
         925, 543, 958, 597, "5FA7FF", "7|0|57C2FF,14|0|57C1FF,20|0|57C1FF,27|0|57C1FF,0|27|468CFF,7|27|4793FF,14|27|4991FF,20|27|4990FF,27|27|4792FF", 0, 0.9, "联赛第一个成员指示器"
+    )
+
+    // Distribute clan league rewards button
+    override val DistributeClanLeagueRewards = ColorSchema.parse(
+        522, 622, 794, 699, "FFD9A7", "18|-2|FFDBAB,67|-1|FFDBAA,88|0|FFD9A7,118|0|FFD9A7,169|20|69FCFF,181|20|7FE6FD,110|48|D47636,58|45|D47636,36|44|D47636", 0, 0.9, "发放联赛奖励"
+    )
+
+    // Select player button in the reward distribution dialogue
+    override val SelectPlayerButton = ColorSchema.parse(
+        1006, 304, 1143, 614, "E5C286", "30|-1|E5C286,65|-1|E5C286,83|7|E2BA78,78|22|CF922E,68|22|CF922E,19|24|CD912D,11|23|CE922E,4|18|CF932F,4|1|E5C286", 0, 0.9, "选择玩家"
     )
 
     // League donatable troop list: pairs of display name -> ColorSchema.
