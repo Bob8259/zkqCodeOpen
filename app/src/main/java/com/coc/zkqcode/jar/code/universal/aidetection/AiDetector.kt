@@ -6,7 +6,9 @@ import android.os.Handler
 import android.os.Looper
 import com.coc.zkqcode.core.app.ZKQApplication
 import com.coc.zkqcode.core.util.basic.RunShell
+import com.coc.zkqcode.core.util.fileactions.LogHelper.showDebugInfo
 import com.coc.zkqcode.jar.code.universal.accountMessage
+import com.coc.zkqcode.jar.code.universal.archive.ArchiveUtils
 import com.coc.zkqcode.jar.code.universal.smalltools.lifecycle.runGame
 import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
@@ -18,6 +20,7 @@ import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.ByteArrayOutputStream
 import java.io.File
+import java.io.FileOutputStream
 import java.util.Locale
 import java.util.concurrent.TimeUnit
 
@@ -33,10 +36,16 @@ object AiDetector {
     private const val SERVICE_START_CMD =
         "am start-foreground-service -n $PLUGIN_PACKAGE/.service.DetectorService"
     private const val MAIN_ACTIVITY_CMD = "am start -n $PLUGIN_PACKAGE/.MainActivity"
-    private const val PLUGIN_DOWNLOAD_URL =
-        "https://gitee.com/azikaban/building_plugin/releases/download/plugin/app-release.apk"
+    // The plugin APK is published as a split zip archive (two parts). The parts are
+    // downloaded in order and appended into a single zip file, which is then extracted.
+    private val PLUGIN_DOWNLOAD_URLS = listOf(
+        "https://gitee.com/azikaban/building_plugin/releases/download/split/app-release.zip.001",
+        "https://gitee.com/azikaban/building_plugin/releases/download/split/app-release.zip.002"
+    )
     private const val PLUGIN_DOWNLOAD_DIR = "plugin"
-    private const val PLUGIN_APK_NAME = "app-release.apk"
+    private const val PLUGIN_ZIP_NAME = "app-release.zip"
+    private const val PLUGIN_EXTRACT_DIR_NAME = "extracted"
+    private const val PREFERRED_APK_NAME = "app-release.apk"
     private const val READY_TIMEOUT_MS = 10_000L
     private const val POLL_INTERVAL_MS = 1000L
     private const val DOWNLOAD_PROGRESS_INTERVAL_MS = 500L
@@ -64,16 +73,17 @@ object AiDetector {
 
     /**
      * The jar side does not own a Context directly, so it reuses the application Context
-     * previously stored by ShowMessage and writes the temporary APK into private storage.
+     * previously stored by ShowMessage and writes the temporary zip/apk files into private storage.
+     * @return the plugin download directory, or null if it cannot be created.
      */
-    private fun getPluginApkFile(): File? {
+    private fun getPluginDownloadDir(): File? {
         val context = ZKQApplication.appContext
         val downloadDir = File(context.filesDir, PLUGIN_DOWNLOAD_DIR)
         if (!downloadDir.exists() && !downloadDir.mkdirs()) {
             accountMessage("建筑插件安装失败：无法创建下载目录")
             return null
         }
-        return File(downloadDir, PLUGIN_APK_NAME)
+        return downloadDir
     }
 
     private fun postMessage(text: String) {
@@ -84,58 +94,124 @@ object AiDetector {
 
     /**
      * Progress updates are throttled to avoid overwhelming the floating message overlay.
+     * @param partIndex 1-based index of the current split part
+     * @param partCount total number of split parts
      */
-    private fun formatDownloadProgress(downloaded: Long, total: Long): String {
+    private fun formatDownloadProgress(downloaded: Long, total: Long, partIndex: Int, partCount: Int): String {
         val downloadedMb = downloaded / 1024.0 / 1024.0
         if (total > 0) {
             val totalMb = total / 1024.0 / 1024.0
             val percent = (downloaded * 100 / total).coerceAtMost(100)
-            return "建筑插件下载中：$percent% (${String.format(Locale.US, "%.2f", downloadedMb)}MB/${String.format(Locale.US, "%.2f", totalMb)}MB)"
+            return "建筑插件下载中($partIndex/$partCount)：$percent% (${String.format(Locale.US, "%.2f", downloadedMb)}MB/${String.format(Locale.US, "%.2f", totalMb)}MB)"
         }
-        return "建筑插件下载中：${String.format(Locale.US, "%.2f", downloadedMb)}MB"
+        return "建筑插件下载中($partIndex/$partCount)：${String.format(Locale.US, "%.2f", downloadedMb)}MB"
     }
 
-    private suspend fun downloadPluginApk(targetFile: File): Boolean = withContext(Dispatchers.IO) {
-        try {
-            if (targetFile.exists()) {
-                targetFile.delete()
-            }
-            val request = Request.Builder().url(PLUGIN_DOWNLOAD_URL).get().build()
-            downloadClient.newCall(request).execute().use { response ->
-                if (!response.isSuccessful) {
-                    postMessage("建筑插件下载失败：HTTP ${response.code}")
-                    return@withContext false
-                }
-                val body = response.body
-                val totalBytes = body.contentLength()
-                body.byteStream().use { input ->
-                    targetFile.outputStream().use { output ->
-                        val buffer = ByteArray(8192)
-                        var totalBytesRead = 0L
-                        var lastProgressTime = 0L
-                        var bytesRead: Int
-                        while (input.read(buffer).also { bytesRead = it } != -1) {
-                            output.write(buffer, 0, bytesRead)
-                            totalBytesRead += bytesRead
-                            val now = System.currentTimeMillis()
-                            if (now - lastProgressTime >= DOWNLOAD_PROGRESS_INTERVAL_MS) {
-                                lastProgressTime = now
-                                postMessage(formatDownloadProgress(totalBytesRead, totalBytes))
+    /**
+     * Downloads all split parts in order and appends them into a single zip file.
+     * Any failure deletes the partial zip so a later retry starts clean.
+     */
+    private suspend fun downloadPluginZip(targetFile: File): Boolean = withContext(Dispatchers.IO) {
+        if (targetFile.exists()) {
+            targetFile.delete()
+        }
+        val partCount = PLUGIN_DOWNLOAD_URLS.size
+        PLUGIN_DOWNLOAD_URLS.forEachIndexed { index, url ->
+            val partIndex = index + 1
+            try {
+                val request = Request.Builder().url(url).get().build()
+                downloadClient.newCall(request).execute().use { response ->
+                    if (!response.isSuccessful) {
+                        postMessage("建筑插件下载失败(第${partIndex}部分)：HTTP ${response.code}")
+                        targetFile.delete()
+                        return@withContext false
+                    }
+                    val body = response.body
+                    val totalBytes = body.contentLength()
+                    // Append mode: split parts are concatenated into one archive.
+                    body.byteStream().use { input ->
+                        FileOutputStream(targetFile, partIndex > 1).use { output ->
+                            val buffer = ByteArray(8192)
+                            var totalBytesRead = 0L
+                            var lastProgressTime = 0L
+                            var bytesRead: Int
+                            while (input.read(buffer).also { bytesRead = it } != -1) {
+                                output.write(buffer, 0, bytesRead)
+                                totalBytesRead += bytesRead
+                                val now = System.currentTimeMillis()
+                                if (now - lastProgressTime >= DOWNLOAD_PROGRESS_INTERVAL_MS) {
+                                    lastProgressTime = now
+                                    postMessage(formatDownloadProgress(totalBytesRead, totalBytes, partIndex, partCount))
+                                }
                             }
+                            output.flush()
+                            postMessage(formatDownloadProgress(totalBytesRead, totalBytes, partIndex, partCount))
                         }
-                        output.flush()
-                        postMessage(formatDownloadProgress(totalBytesRead, totalBytes))
                     }
                 }
-            }
-            true
-        } catch (e: Exception) {
-            if (targetFile.exists()) {
+                showDebugInfo("建筑插件：第${partIndex}/${partCount}部分下载完成，累计 ${targetFile.length()} 字节")
+            } catch (e: Exception) {
                 targetFile.delete()
+                postMessage("建筑插件下载失败(第${partIndex}部分)：${e.message}")
+                return@withContext false
             }
-            postMessage("建筑插件下载失败：${e.message}")
-            false
         }
+        true
+    }
+
+    /**
+     * Extracts the downloaded zip and locates the APK inside it.
+     * The archive layout is not guaranteed, so the preferred name is tried first
+     * and any other *.apk found in the tree is accepted as a fallback.
+     */
+    private suspend fun extractPluginApk(zipFile: File, extractDir: File): File? =
+        withContext(Dispatchers.IO) {
+            // deleteRecursively is a no-op when the directory is absent.
+            extractDir.deleteRecursively()
+            if (!extractDir.mkdirs()) {
+                postMessage("建筑插件解压失败：无法创建解压目录")
+                return@withContext null
+            }
+            val ok = ArchiveUtils.unzipToDirectory(zipFile, extractDir)
+            if (!ok) {
+                postMessage("建筑插件解压失败：压缩包损坏或格式错误")
+                showDebugInfo("建筑插件：解压失败 zip=${zipFile.absolutePath} size=${zipFile.length()}")
+                return@withContext null
+            }
+            val apk = findApkInDir(extractDir)
+            if (apk == null) {
+                postMessage("建筑插件解压失败：压缩包内未找到 APK")
+                showDebugInfo("建筑插件：解压完成但未找到 APK，dir=${extractDir.absolutePath}")
+            } else {
+                showDebugInfo("建筑插件：解压完成，APK=${apk.absolutePath} size=${apk.length()}")
+            }
+            apk
+        }
+
+    /** Searches the extracted tree for the APK, preferring the canonical plugin name. */
+    private fun findApkInDir(dir: File): File? {
+        val allApks = dir.walkTopDown().filter { it.isFile && it.name.endsWith(".apk", ignoreCase = true) }.toList()
+        return allApks.firstOrNull { it.name.equals(PREFERRED_APK_NAME, ignoreCase = true) }
+            ?: allApks.firstOrNull()
+    }
+
+    /**
+     * Runs a shell command and classifies its output via [hasFailed].
+     * On failure, joins the output lines into a user-facing message prefixed with [failPrefix].
+     */
+    private suspend fun runShellChecked(
+        cmd: String,
+        failPrefix: String,
+        blankMessage: String,
+        hasFailed: (List<String>) -> Boolean
+    ): Boolean {
+        val output = RunShell.run(cmd, checkIsPlaying = false)
+        if (hasFailed(output)) {
+            val errorMessage = output.joinToString("\n").ifBlank { blankMessage }
+            accountMessage("$failPrefix$errorMessage")
+            return false
+        }
+        return true
     }
 
     private suspend fun installPlugin(apkFile: File): Boolean {
@@ -143,75 +219,87 @@ object AiDetector {
         // The PackageManagerService cannot read files from the app's private storage or
         // /data/local/tmp without the correct SELinux context, but streaming avoids both issues.
         val size = apkFile.length()
-        val installResult = RunShell.run(
-            "cat \"${apkFile.absolutePath}\" | pm install -r -S $size",
-            checkIsPlaying = false
+        return runShellChecked(
+            cmd = "cat \"${apkFile.absolutePath}\" | pm install -r -S $size",
+            failPrefix = "建筑插件安装失败：",
+            blankMessage = "未返回安装结果",
+            // pm install reports success only through the "Success" keyword.
+            hasFailed = { lines -> lines.none { it.contains("Success", ignoreCase = true) } }
         )
-        if (installResult.any { it.contains("Success", ignoreCase = true) }) {
-            return true
-        }
-        val errorMessage = installResult.joinToString("\n").ifBlank { "未返回安装结果" }
-        accountMessage("建筑插件安装失败：$errorMessage")
-        return false
     }
 
-    private suspend fun launchPluginMainActivity(): Boolean {
-        val launchResult = RunShell.run(MAIN_ACTIVITY_CMD, checkIsPlaying = false)
-        val hasError = launchResult.any {
-            it.contains("Error", ignoreCase = true) || it.contains("Exception", ignoreCase = true)
+    private suspend fun launchPluginMainActivity(): Boolean = runShellChecked(
+        cmd = MAIN_ACTIVITY_CMD,
+        failPrefix = "建筑插件启动失败：",
+        blankMessage = "未返回启动结果",
+        // am start reports problems through Error/Exception lines in its output.
+        hasFailed = { lines ->
+            lines.any {
+                it.contains("Error", ignoreCase = true) || it.contains("Exception", ignoreCase = true)
+            }
         }
-        if (hasError) {
-            val errorMessage = launchResult.joinToString("\n").ifBlank { "未返回启动结果" }
-            accountMessage("建筑插件启动失败：$errorMessage")
-            return false
-        }
-        return true
-    }
+    )
 
     /**
      * Launches the plugin's MainActivity to trigger its initialization,
      * waits for it to complete, then returns to the game.
-     * Used as a recovery mechanism when the background service fails to start.
+     * Used as a recovery mechanism when the background service fails to start,
+     * and after a fresh install/upgrade to finish plugin initialization.
+     *
+     * @param requireSuccess when true, aborts without waiting or returning to the game
+     *   if the launch command reports an error; when false both always run.
+     * @return true if the launch command reported no error.
      */
-    private suspend fun launchPluginAndReturnToGame() {
-        launchPluginMainActivity()
+    private suspend fun launchPluginAndReturnToGame(requireSuccess: Boolean = false): Boolean {
+        val launched = launchPluginMainActivity()
+        if (!launched && requireSuccess) {
+            return false
+        }
         delay(PLUGIN_LAUNCH_WAIT_MS)
         runGame()
-    }
-
-    private suspend fun deletePluginApk(targetFile: File) = withContext(Dispatchers.IO) {
-        if (targetFile.exists()) {
-            targetFile.delete()
-        }
+        return launched
     }
 
     /**
-     * Downloads from gitee, installs, and launches the plugin.
+     * Restarts the detector foreground service and waits one poll interval.
+     */
+    private suspend fun restartDetectorService() {
+        RunShell.runNoOutput(SERVICE_START_CMD, checkIsPlaying = false)
+        delay(POLL_INTERVAL_MS)
+    }
+
+    /** Deletes the temporary zip archive and extraction directory; missing files are ignored. */
+    private suspend fun deletePluginFiles(zipFile: File, extractDir: File) = withContext(Dispatchers.IO) {
+        zipFile.delete()
+        extractDir.deleteRecursively()
+    }
+
+    /**
+     * Downloads the split archive from gitee, extracts the APK, installs, and launches the plugin.
      * Used both on first install and for forced version upgrades.
      * The plugin needs one foreground launch so its app-side initialization can complete
      * before the detector returns to the game and polls the local server again.
      */
     private suspend fun downloadAndInstallPlugin(): Boolean {
-        val apkFile = getPluginApkFile() ?: return false
+        val downloadDir = getPluginDownloadDir() ?: return false
+        val zipFile = File(downloadDir, PLUGIN_ZIP_NAME)
+        val extractDir = File(downloadDir, PLUGIN_EXTRACT_DIR_NAME)
         try {
             // Uninstall legacy plugin package before downloading the new one
             RunShell.runNoOutput("pm uninstall com.coc.zkqyolo", checkIsPlaying = false)
-            if (!downloadPluginApk(apkFile)) {
+            if (!downloadPluginZip(zipFile)) {
                 return false
             }
-            accountMessage("建筑插件下载完成，开始安装")
+            accountMessage("建筑插件下载完成，正在解压")
+            val apkFile = extractPluginApk(zipFile, extractDir) ?: return false
+            accountMessage("建筑插件解压完成，开始安装")
             if (!installPlugin(apkFile)) {
                 return false
             }
             accountMessage("建筑插件安装成功，正在启动插件")
-            if (!launchPluginMainActivity()) {
-                return false
-            }
-            delay(PLUGIN_LAUNCH_WAIT_MS)
-            runGame()
-            return true
+            return launchPluginAndReturnToGame(requireSuccess = true)
         } finally {
-            deletePluginApk(apkFile)
+            deletePluginFiles(zipFile, extractDir)
         }
     }
 
@@ -269,8 +357,7 @@ object AiDetector {
                     continue
                 }
                 // If the service is unreachable, try starting it again and wait briefly.
-                RunShell.runNoOutput(SERVICE_START_CMD, checkIsPlaying = false)
-                delay(POLL_INTERVAL_MS)
+                restartDetectorService()
                 continue
             }
 
@@ -288,8 +375,7 @@ object AiDetector {
                 }
                 // Reset the polling timer so the full window is available after the update.
                 startTime = System.currentTimeMillis()
-                RunShell.runNoOutput(SERVICE_START_CMD, checkIsPlaying = false)
-                delay(POLL_INTERVAL_MS)
+                restartDetectorService()
             }
         }
         accountMessage("建筑插件启动失败，请检查插件是否安装成功并已正常启动")
