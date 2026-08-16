@@ -43,7 +43,7 @@ suspend fun turnOnClockTower(): Boolean {
             val box = detection.boundingBox
             TouchActions.tap(box.centerX().toInt(), box.centerY().toInt())
             val screenBuffer = ScreenCaptureManager.captureScreenOrRestart<ScreenCaptureManager.CaptureResult>(asBitmap = false)
-            val freeSpeedUp = findMultiColors(schema = MyColors.ClockTower, byteBuffer = screenBuffer)
+            val freeSpeedUp = findMultiColorsUntil(schemas = listOf(MyColors.ClockTower, MyColors.ClockTower2), duration = 10, byteBuffer = screenBuffer)
             if (freeSpeedUp != null) {
                 // Search for the small gem icon above the speed-up button.
                 // Its presence means the boost costs gems — no free opportunity available.

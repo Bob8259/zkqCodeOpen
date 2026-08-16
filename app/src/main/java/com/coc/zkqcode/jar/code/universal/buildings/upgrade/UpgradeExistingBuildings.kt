@@ -295,7 +295,7 @@ private suspend fun upgradeWalls(currentBase: BaseType, wallType: WallType): Loo
             }
             accountMessage("升级单个城墙花费：$wallCost\n当前资源数量：${currentResource}，当前资源百分比：${currentPercent}\n可升级数量：$upgradableNumber")
             tapGoldBar()
-            val upgradeCrossMark = findMultiColorsUntil(schemas = listOf(MyColors.UpgradeWallCrossMark), duration = 1000)
+            val upgradeCrossMark = findMultiColorsUntil(schemas = listOf(MyColors.UpgradeWallCrossMark, MyColors.UpgradeWallCrossMark2), duration = 1000)
             if (upgradeCrossMark != null) {
                 TouchActions.tap(upgradeCrossMark.x, upgradeCrossMark.y)
                 val upgrade10WallsGreenCrossMark = findMultiColorsUntil(schemas = listOf(MyColors.Upgrade10WallsGreenCrossMark), duration = 1000)

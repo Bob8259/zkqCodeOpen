@@ -9,6 +9,7 @@ interface IUniversalUpgradeColors {
     val UpgradeGemIcon2: ColorSchema
     val UpgradeGemIcon3: ColorSchema
     val UpgradeWallCrossMark: ColorSchema
+    val UpgradeWallCrossMark2: ColorSchema
     val UpgradeWallGreenCrossMark: ColorSchema
     val Upgrade10WallsGreenCrossMark: ColorSchema
     val DoubleHammer: ColorSchema
@@ -33,6 +34,9 @@ object UniversalUpgradeColors : IUniversalUpgradeColors {
     // Wall upgrade cross mark indicators
     override val UpgradeWallCrossMark = ColorSchema.parse(
         208, 503, 1130, 627, "FFFFFF", "-8|-5|0D0D0D,11|-5|0D0D0D,11|6|0D0D0D,-10|6|0D0D0D,-7|0|FFFFFF,-1|12|FFFFFF,10|0|FFFFFF,-1|-11|FFFFFF,2|-11|FFFFFF", 0, 0.9,
+    )
+    override val UpgradeWallCrossMark2 = ColorSchema.parse(
+        147, 491, 1131, 632, "FFFFFF", "-15|0|0D0D0D,-15|3|0D0D0D,1|14|FFFFFF,2|14|FFFFFF,12|4|FFFFFF,12|2|FFFFFF,-12|0|FFFFFF,-12|2|FFFFFF,1|-12|FFFFFF", 0, 0.9,
     )
     override val UpgradeWallGreenCrossMark = ColorSchema.parse(
         350, 495, 1100, 630, "12E98F", "-3|-3|12E98F,-3|-8|12E98F,-2|-11|12E98F,-2|-9|12E98F,-10|-6|12E98F,-15|-6|12E98F,-13|-3|12E98F,-13|-6|12E98F,-13|-11|12E98F", 0, 0.9,
