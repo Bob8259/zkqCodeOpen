@@ -18,6 +18,7 @@ interface IMainBaseMagicItemColors {
     val ResourcePotion: ColorSchema
     val WallRings: ColorSchema
     val ClockTowerPotion: ColorSchema
+    val ShovelOfObstacles: ColorSchema
 
     // Action buttons inside the magic item use dialog
     val UsePotionButton: ColorSchema
@@ -71,6 +72,11 @@ object MainBaseMagicItemColors : IMainBaseMagicItemColors {
     // Clock tower potion detected by its pink/white icon in the magic item list
     override val ClockTowerPotion = ColorSchema.parse(
         280, 170, 1000, 520, "FBCAE1", "-8|-2|FFDBE8,-14|-19|FFDAE7,-6|-19|FDCFE3,4|-6|F9C3DE,33|-15|8DEDFF,36|-9|7AD6F5,28|-13|3F5B7C,4|-56|94CFFF,12|-62|9AD7FF", 0, 0.9, "钟楼药水"
+    )
+
+    // Shovel of obstacles detected by its blue icon in the magic item list
+    override val ShovelOfObstacles = ColorSchema.parse(
+        275, 166, 1004, 581, "609DD6", "-12|16|394D70,-20|1|948AA1,-12|-7|ADFFFF,8|-10|7EC8E7,18|3|65505D,11|16|385074,0|-30|5A88C2,0|-44|8B778C,-6|-48|46363E", 0, 0.9, "魔法铲子"
     )
 
     // Green confirm button shown in the magic item use dialog

@@ -25,7 +25,8 @@ suspend fun useMagicItems(): Boolean {
         Schema.MAIN_BASE_SETTINGS.USE_BUILDER_POTION.key,
         Schema.MAIN_BASE_SETTINGS.SELL_CLOCK_TOWER_POTION.key,
         Schema.MAIN_BASE_SETTINGS.SELL_RESOURCE_POTION.key,
-        Schema.MAIN_BASE_SETTINGS.SELL_RING_OF_WALL.key
+        Schema.MAIN_BASE_SETTINGS.SELL_RING_OF_WALL.key,
+        Schema.MAIN_BASE_SETTINGS.SELL_SHOVEL_OF_OBSTACLES.key
     ).any { configKey ->
         getBooleanConfigRuntime(configKey)
     }
@@ -100,6 +101,9 @@ private suspend fun checkMagicItems() {
             sellPotion()
         }
         handleMagicItem(Schema.MAIN_BASE_SETTINGS.SELL_RING_OF_WALL.key, MyColors.WallRings) {
+            sellPotion()
+        }
+        handleMagicItem(Schema.MAIN_BASE_SETTINGS.SELL_SHOVEL_OF_OBSTACLES.key, MyColors.ShovelOfObstacles) {
             sellPotion()
         }
     }

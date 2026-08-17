@@ -172,6 +172,7 @@ object MainBaseSettings {
     val SELL_CLOCK_TOWER_POTION = SettingDef("sell_clock_tower_potion", "卖钟楼药水", "Sell Clock Potion", 0, "MAIN_BASE_SETTINGS")
     val USE_BUILDER_POTION = SettingDef("use_builder_potion", "用工人药水", "Use Builder Potion", 0, "MAIN_BASE_SETTINGS")
     val SELL_RING_OF_WALL = SettingDef("sell_ring_of_wall", "卖壁垒之戒", "Sell Wall Ring", 0, "MAIN_BASE_SETTINGS")
+    val SELL_SHOVEL_OF_OBSTACLES = SettingDef("sell_shovel_of_obstacles", "卖魔法铲子", "Sell Shovel of Obstacles", 0, "MAIN_BASE_SETTINGS")
 
     //////////////
     val UPGRADE_EQUIPMENTS = SettingDef("upgrade_equipments", "升级装备", "Upgrade Equipment", 1, "MAIN_BASE_SETTINGS")
@@ -330,6 +331,7 @@ object MainBaseSettings {
         SELL_CLOCK_TOWER_POTION,
         USE_BUILDER_POTION,
         SELL_RING_OF_WALL,
+        SELL_SHOVEL_OF_OBSTACLES,
         UPGRADE_EQUIPMENTS,
         UPGRADE_EQUIPED_EQUIPMENTS,
         REMOVE_OBSTACLES,
