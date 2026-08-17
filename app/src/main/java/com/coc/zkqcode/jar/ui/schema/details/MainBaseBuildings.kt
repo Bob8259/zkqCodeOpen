@@ -39,6 +39,7 @@ object MainBaseBuildings {
     val HIDDEN_TESLA = SettingDef("hidden_tesla", "特斯拉电磁塔", "Hidden Tesla", 1, "MAIN_BASE_BUILDINGS")
     val BOMB_TOWER = SettingDef("bomb_tower", "炸弹塔", "Bomb Tower", 1, "MAIN_BASE_BUILDINGS")
     val INFERNO_TOWER = SettingDef("inferno_tower", "地狱之塔", "Inferno Tower", 1, "MAIN_BASE_BUILDINGS")
+    val INFERNO_ARTILLERY = SettingDef("inferno_artillery", "地狱火炮", "Inferno Artillery", 1, "MAIN_BASE_BUILDINGS")
     val RICOCHET_CANNON = SettingDef("ricochet_cannon", "跳弹加农炮", "Ricochet Cannon", 1, "MAIN_BASE_BUILDINGS")
     val MULTI_ARCHER_TOWER = SettingDef("multi_archer_tower", "多人箭塔", "Multi-Archer Tower", 1, "MAIN_BASE_BUILDINGS")
     val FIRESPITTER = SettingDef("firespitter", "火焰喷射器", "Firespitter", 1, "MAIN_BASE_BUILDINGS")
@@ -94,6 +95,7 @@ object MainBaseBuildings {
         HIDDEN_TESLA,
         BOMB_TOWER,
         INFERNO_TOWER,
+        INFERNO_ARTILLERY,
         RICOCHET_CANNON,
         MULTI_ARCHER_TOWER,
         FIRESPITTER,
@@ -154,6 +156,7 @@ object MainBaseBuildingPriorities {
     val HIDDEN_TESLA_PRIORITY = SettingDef("hidden_tesla_priority", "特斯拉电磁塔", "Hidden Tesla", 33, "MAIN_BASE_BUILDING_PRIORITIES")
     val BOMB_TOWER_PRIORITY = SettingDef("bomb_tower_priority", "炸弹塔", "Bomb Tower", 34, "MAIN_BASE_BUILDING_PRIORITIES")
     val INFERNO_TOWER_PRIORITY = SettingDef("inferno_tower_priority", "地狱之塔", "Inferno Tower", 35, "MAIN_BASE_BUILDING_PRIORITIES")
+    val INFERNO_ARTILLERY_PRIORITY = SettingDef("inferno_artillery_priority", "地狱火炮", "Inferno Artillery", 35, "MAIN_BASE_BUILDING_PRIORITIES")
     val RICOCHET_CANNON_PRIORITY = SettingDef("ricochet_cannon_priority", "跳弹加农炮", "Ricochet Cannon", 36, "MAIN_BASE_BUILDING_PRIORITIES")
     val MULTI_ARCHER_TOWER_PRIORITY = SettingDef("multi_archer_tower_priority", "多人箭塔", "Multi-Archer Tower", 37, "MAIN_BASE_BUILDING_PRIORITIES")
     val FIRESPITTER_PRIORITY = SettingDef("firespitter_priority", "火焰喷射器", "Firespitter", 38, "MAIN_BASE_BUILDING_PRIORITIES")
@@ -207,6 +210,7 @@ object MainBaseBuildingPriorities {
         HIDDEN_TESLA_PRIORITY,
         BOMB_TOWER_PRIORITY,
         INFERNO_TOWER_PRIORITY,
+        INFERNO_ARTILLERY_PRIORITY,
         RICOCHET_CANNON_PRIORITY,
         MULTI_ARCHER_TOWER_PRIORITY,
         FIRESPITTER_PRIORITY,

@@ -198,7 +198,11 @@ fun cleanBuildingName(raw: String, candidateBuildings: List<String> = ALL_BUILDI
         ":" to "",
         "：" to "",
         "十字连違弩" to "十字连弩",
-        "加衣炮" to "加农炮"
+        "加衣炮" to "加农炮",
+        "地狱火砲" to "地狱火炮",
+        "地狱火炮" to "地狱火炮",
+        "地狱之塔" to "地狱之塔",
+        "地狱塔" to "地狱之塔"
     )
 
     // Apply all string replacements
@@ -234,6 +238,10 @@ fun cleanBuildingName(raw: String, candidateBuildings: List<String> = ALL_BUILDI
     // Falls through to fuzzy match when this layer does not match.
     matchDarkElixirBuilding(chineseOnly, candidateBuildings)?.let { return prefix + it }
 
+    // Extra layer: disambiguate Inferno Artillery vs Inferno Tower.
+    // Both names share 地狱 and are 4 characters, so fuzzy match can confuse them.
+    matchInfernoBuilding(chineseOnly, candidateBuildings)?.let { return prefix + it }
+
     // Match building names last to avoid treating section labels as real buildings.
     findBestFuzzyMatch(chineseOnly, candidateBuildings)?.let { return prefix + it }
 
@@ -250,6 +258,27 @@ private fun matchDarkElixirBuilding(name: String, candidates: List<String>): Str
 
     val hasDrillHint = '钻' in name || '井' in name
     val target = if (hasDrillHint) "暗黑重油钻井" else "暗黑重油罐"
+
+    return target.takeIf { it in candidates }
+}
+
+/**
+ * Keyword disambiguation for Inferno Artillery vs Inferno Tower.
+ * OCR often confuses 地狱火炮 with 地狱之塔 because they share 地狱 and have the same length.
+ * Returns null when this layer does not apply so fuzzy match can run as usual.
+ * Logic treats Inferno Artillery the same way as Inferno Tower once the name is resolved.
+ */
+private fun matchInfernoBuilding(name: String, candidates: List<String>): String? {
+    if ("地狱" !in name) return null
+
+    val hasArtilleryHint = '炮' in name || '砲' in name
+    val hasTowerHint = '塔' in name
+
+    val target = when {
+        hasArtilleryHint && !hasTowerHint -> "地狱火炮"
+        hasTowerHint && !hasArtilleryHint -> "地狱之塔"
+        else -> return null
+    }
 
     return target.takeIf { it in candidates }
 }
@@ -277,8 +306,13 @@ private fun findBestFuzzyMatch(name: String, candidates: List<String>): String? 
         val maxLength = max(name.length, candidate.length)
         val maxAllowedDistance = (maxLength * 2.0 / 3.0).toInt()
 
-        // "英雄殿堂" and "建议升级" require a stricter match because OCR often confuses them with other labels.
-        val effectiveMaxDistance = if (candidate == "英雄殿堂" || candidate == "建议升级") 1 else maxAllowedDistance
+        // These labels require a stricter match because OCR often confuses them with similar names.
+        val effectiveMaxDistance = if (
+            candidate == "英雄殿堂" ||
+            candidate == "建议升级" ||
+            candidate == "地狱之塔" ||
+            candidate == "地狱火炮"
+        ) 1 else maxAllowedDistance
         minDistance <= effectiveMaxDistance
     }
 }
