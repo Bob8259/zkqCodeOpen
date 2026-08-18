@@ -5,7 +5,7 @@ package com.coc.zkqcode.jar.code.colorschema.colorpackage.mainbase
 import com.coc.zkqcode.jar.code.colorschema.ColorSchema
 
 interface IMainBaseMagicItemColors {
-    // Magic item type detection icons shown in the magic item dialog
+    // Magic item type detection icons shown in the magic item dialogue
     val MagicItemIcon: ColorSchema
     val MagicItemIcon2: ColorSchema
     val MagicItemIcon3: ColorSchema
@@ -20,23 +20,23 @@ interface IMainBaseMagicItemColors {
     val ClockTowerPotion: ColorSchema
     val ShovelOfObstacles: ColorSchema
 
-    // Action buttons inside the magic item use dialog
+    // Action buttons inside the magic item use dialogue
     val UsePotionButton: ColorSchema
     val SellPotionButton: ColorSchema
 }
 
 object MainBaseMagicItemColors : IMainBaseMagicItemColors {
-    // Magic item dialog header icon variant 1
+    // Magic item dialogue header icon variant 1
     override val MagicItemIcon = ColorSchema.parse(
         167, 502, 1124, 628, "2B2E66", "13|0|6FA7D9,26|0|89BEEB,38|0|B8D7D3,51|0|BEDDD8,0|21|282C60,13|21|9BD5FF,26|21|89BDEA,38|21|DF8442,51|21|FBA05D", 0, 0.9, "魔法道具图标"
     )
 
-    // Magic item dialog header icon variant 2
+    // Magic item dialogue header icon variant 2
     override val MagicItemIcon2 = ColorSchema.parse(
         190, 513, 1106, 631, "2E316C", "13|0|76ADDF,27|0|90C7F4,41|0|C1DEDB,54|0|868684,0|17|2E3163,13|17|93CFFC,27|17|8DC3F0,41|17|EF9553,54|17|FA9B56", 0, 0.9, "魔法物品按钮7按钮"
     )
 
-    // Magic item dialog header icon variant 3
+    // Magic item dialogue header icon variant 3
     override val MagicItemIcon3 = ColorSchema.parse(
         179, 525, 1104, 631, "2B37BA", "10|0|9AD3FF,20|0|719BC5,29|0|BBD5D2,39|0|B3A8A3,0|17|2531B4,10|17|99D2FE,20|17|5A7BA3,29|17|D17028,39|17|FDA362", 0, 0.9, "魔法物品按钮8按钮"
     )
@@ -44,7 +44,7 @@ object MainBaseMagicItemColors : IMainBaseMagicItemColors {
         179, 557, 1105, 630, "2934B7", "7|3|98D0FD,0|13|2F3ABF,-4|4|1E345A,6|5|9AD3FF,20|13|CB6A23,25|9|FCA362,28|8|FCA05C,25|7|FFAD70,12|6|89BDE9", 0, 0.9, "魔法道具12按钮"
     )
 
-    // Magic item dialog header icon variant 5
+    // Magic item dialogue header icon variant 5
     override val MagicItemIcon5 = ColorSchema.parse(
         178, 542, 1093, 631, "9AD5FF", "-10|-12|252657,5|-16|A7E6FF,8|-7|8DC2EF,11|2|8DC4EF,30|7|F3924B,31|0|FB9E5A,25|-2|FFB57D,20|5|C4631C,2|7|9AD4FF", 0, 0.9, "魔法物品10按钮"
     )
@@ -79,12 +79,12 @@ object MainBaseMagicItemColors : IMainBaseMagicItemColors {
         275, 166, 1004, 581, "609DD6", "-12|16|394D70,-20|1|948AA1,-12|-7|ADFFFF,8|-10|7EC8E7,18|3|65505D,11|16|385074,0|-30|5A88C2,0|-44|8B778C,-6|-48|46363E", 0, 0.9, "魔法铲子"
     )
 
-    // Green confirm button shown in the magic item use dialog
+    // Green confirm button shown in the magic item use dialogue
     override val UsePotionButton = ColorSchema.parse(
         750, 546, 978, 623, "75E4AF", "45|0|75E4AF,91|0|75E4AF,137|0|75E4AF,182|0|75E4AF,0|39|3AD48B,45|39|3AD48B,91|39|3AD48B,137|39|3AD48B,182|39|3AD48B", 0, 0.9
     )
 
-    // Blue sell button shown in the magic item use dialog
+    // Blue sell button shown in the magic item use dialogue
     override val SellPotionButton = ColorSchema.parse(
         299, 548, 530, 623, "221EF7", "46|0|221EF7,93|0|221EF7,139|0|221EF7,185|0|221EF7,0|37|221EF7,46|37|221EF7,93|37|221EF7,139|37|221EF7,185|37|221EF7", 0, 0.9
     )

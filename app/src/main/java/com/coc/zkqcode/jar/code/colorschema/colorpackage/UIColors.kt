@@ -64,6 +64,9 @@ interface IUIColors {
     // Clan war UI indicators
     val ClanWarTutorialArrow: ColorSchema
     val TopRightClanWarInfo: ColorSchema
+
+    // CN Cultivation (修仙) advertisement indicator
+    val CNCultivationAd: ColorSchema
 }
 
 object UIColors : IUIColors {
@@ -294,5 +297,10 @@ object UIColors : IUIColors {
     // Contribution activity indicator (donation event)
     override val ContributionActivity = ColorSchema.parse(
         1198, 66, 1255, 121, "FFFFFF", "3|4|FFFFFF,-13|-9|8D8FF3,-7|-13|8D8FF3,16|-11|8D8FF3,19|9|2722F0,14|18|2520DE,-2|18|2520DE,-10|18|2520DE,-12|8|2722F0", 0, 0.9, "捐赠活动"
+    )
+
+    // CN Cultivation (修仙) advertisement indicator
+    override val CNCultivationAd = ColorSchema.parse(
+        930, 126, 988, 186, "FFFFFF", "-12|2|7C75FF,-14|-10|948CFF,16|-10|968BFF,16|2|7C74FF,16|16|1313E4,0|19|1710DA,-12|19|1611D8,-5|9|F7F7F7,1|6|F6F6F6", 0, 0.9, "国服修仙广告"
     )
 }
