@@ -16,7 +16,6 @@ import com.coc.zkqcode.jar.ui.schema.Schema
 private data class BadgeEventTap(val x: Int, val y: Int)
 
 private val badgeEventEntryTap = BadgeEventTap(315, 663)
-private val badgeEventEnterTap = BadgeEventTap(948, 370)
 private val badgeEventLeftTabTap = BadgeEventTap(200, 418)
 private val badgeEventRightTabTap = BadgeEventTap(1087, 416)
 
@@ -34,14 +33,20 @@ suspend fun collectBadgeEventRewards(): Boolean {
     val storageKey = StorageKeys.withAccountNumber(
         StorageKeys.CLAIM_BADGE_EVENT_REWARDS, InGameVars.currentAccountNumber
     )
-    if (!checkMemoryFile(storageKey, 1440)) {
-        accountMessage("24小时内已检查过奖章活动奖励，跳过本次领取")
+    if (!checkMemoryFile(storageKey, 720)) {
+        accountMessage("12小时内已检查过奖章活动奖励，跳过本次领取")
         return true
     }
 
     accountMessage("准备领取奖章活动奖励")
     TouchActions.tap(badgeEventEntryTap.x, badgeEventEntryTap.y, delayTime = 1500)
-    TouchActions.tap(badgeEventEnterTap.x, badgeEventEnterTap.y, delayTime = 1000)
+    val enterButton = findMultiColorsUntil(listOf(MyColors.BadgeEventEnterButton), 2000)
+    if (enterButton == null) {
+        accountMessage("未检测到进入活动按钮")
+        return enterMainScreen()
+    }
+    accountMessage("检测到进入活动按钮，点击进入")
+    TouchActions.tap(enterButton.x, enterButton.y, delayTime = 1000)
 
     val continueButton = findMultiColorsUntil(listOf(MyColors.BadgeEventContinueButton), 1000)
     if (continueButton != null) {
@@ -99,7 +104,9 @@ private suspend fun finishBadgeEventRewardCheck(storageKey: String): Boolean {
 private suspend fun claimBadgeReward(tabTap: BadgeEventTap): Boolean {
     TouchActions.tap(tabTap.x, tabTap.y, delayTime = 500)
     val claimButton = findMultiColorsUntil(listOf(MyColors.BadgeEventClaimReward), 1000) ?: return false
-    TouchActions.tap(claimButton.x, claimButton.y, delayTime = 1000)
+    repeat(5) {
+        TouchActions.tap(claimButton.x, claimButton.y, delayTime = 100)
+    }
     return true
 }
 
