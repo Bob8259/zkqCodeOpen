@@ -5,6 +5,7 @@ import com.coc.zkqcode.jar.code.colorschema.ColorSchema
 interface IBuilderBaseTrainingColors {
     val RedCleanButton: ColorSchema
     val TrainNightWitch: ColorSchema
+    val TrainNightWitch2: ColorSchema
 }
 
 object BuilderBaseTrainingColors : IBuilderBaseTrainingColors {
@@ -13,5 +14,8 @@ object BuilderBaseTrainingColors : IBuilderBaseTrainingColors {
     )
     override val TrainNightWitch = ColorSchema.parse(
         540, 547, 635, 644, "605667", "10|3|0D0D0D,18|15|34303E,1|20|252430,-9|2|5A515F,-23|-10|121212,-24|-19|2A2628,-8|-25|222120,12|-17|FAE238,-15|-13|F9DF35", 0, 0.9, "训练暗夜女巫"
+    )
+    override val TrainNightWitch2 = ColorSchema.parse(
+        124, 444, 894, 649, "F4D39F", "10|0|2A2925,20|0|252423,30|0|36393E,40|0|394044,0|21|EBC372,10|21|0F0F11,20|21|625867,30|21|2B3030,40|21|9FA1D1", 0, 0.9, "训练暗夜女巫2"
     )
 }

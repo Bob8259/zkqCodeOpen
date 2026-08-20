@@ -380,7 +380,7 @@ private suspend fun builderBaseTrainTroops() {
     }
 
     // Identify troop type and train
-    val trainNightWitch = findMultiColors(schema = MyColors.TrainNightWitch)
+    val trainNightWitch = findMultiColorsUntil(schemas = listOf(MyColors.TrainNightWitch, MyColors.TrainNightWitch2), duration = 200)
     if (trainNightWitch != null) {
         // Train Night Witches based on detected location
         accountMessage("练暗夜女巫")

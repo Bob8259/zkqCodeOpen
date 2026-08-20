@@ -105,7 +105,8 @@ private suspend fun claimBadgeReward(tabTap: BadgeEventTap): Boolean {
     TouchActions.tap(tabTap.x, tabTap.y, delayTime = 500)
     val claimButton = findMultiColorsUntil(listOf(MyColors.BadgeEventClaimReward), 1000) ?: return false
     repeat(5) {
-        TouchActions.tap(claimButton.x, claimButton.y, delayTime = 100)
+        TouchActions.tap(claimButton.x, claimButton.y, delayTime = 300)
+        TouchActions.tap(720, 500, delayTime = 100)//Convert to gem
     }
     return true
 }
