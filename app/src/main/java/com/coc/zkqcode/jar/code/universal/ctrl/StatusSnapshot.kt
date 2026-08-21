@@ -5,8 +5,9 @@ import com.coc.zkqcode.jar.code.universal.InGameVars
 import com.coc.zkqcode.jar.code.universal.smalltools.loadSchedule
 import com.coc.zkqcode.jar.code.universal.smalltools.data.readMemory
 import com.coc.zkqcode.jar.code.universal.smalltools.data.writeMemory
-import com.coc.zkqcode.jar.code.universal.smalltools.scheduling.resolveEnabledAccountIds
 import com.coc.zkqcode.jar.ui.schema.Schema.GLOBAL_SETTINGS
+import com.coc.zkqcode.statehelper.AppMode
+import com.coc.zkqcode.statehelper.AppStateManager
 import org.json.JSONObject
 import java.util.UUID
 
@@ -85,12 +86,16 @@ object StatusSnapshot {
      */
     suspend fun build(lastEvent: String?): JSONObject {
         val schedule = loadSchedule()
-        val enabled = resolveEnabledAccountIds()
-        val earliest = schedule.filter { it.account in enabled }.minByOrNull { it.completionTs }
-        val accountRemark = GlobalVars.configStates["remark${InGameVars.currentAccountNumber}"]?.value.orEmpty()
+        val earliest = schedule.minByOrNull { it.completionTs }
+        val isRunning = AppStateManager.currentMode == AppMode.Run
+        val currentAccount = if (isRunning) InGameVars.currentAccountNumber else -1
+        val accountRemark = if (currentAccount > 0) {
+            GlobalVars.configStates["remark$currentAccount"]?.value.orEmpty()
+        } else ""
+        val displayEvent = lastEvent ?: if (isRunning) "运行中" else "空闲待机中"
         return JSONObject().apply {
             put("mode", mode())
-            put("running", GlobalVars.isAutoRunEnabled)
+            put("running", isRunning)
             put("currentAccount", InGameVars.currentAccountNumber)
             if (accountRemark.isNotBlank()) put("currentAccountRemark", accountRemark)
             if (earliest != null) {
@@ -102,7 +107,7 @@ object StatusSnapshot {
                 put("nextUpgrade", JSONObject.NULL)
             }
             put("scheduleCount", schedule.size)
-            if (!lastEvent.isNullOrBlank()) put("lastEvent", lastEvent)
+            put("lastEvent", displayEvent)
         }
     }
 }

@@ -19,7 +19,6 @@ import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.jar.code.universal.cloud.checkCloudExpiry
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.create.batchCreateAccounts
-import com.coc.zkqcode.jar.code.universal.ctrl.ZkqSnapshotUploader
 import com.coc.zkqcode.jar.code.universal.ctrl.ZkqWsClient
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.preCheck
@@ -61,16 +60,7 @@ suspend fun runMainScript() {
         finishDataNumberEntryOnlyRun()
         return
     }
-    // Start the snapshot relay (doc §13.2) and the WS long connection
-    // (doc §13.3): uploads status and serves real-time queries to the ZKQ
-    // plugin while the script engine runs; both die with this coroutine's scope.
-    // Start channels only when the plugin-comm switch is on and URL is set
-    val zkqEnabled = GlobalVars.configStates[Schema.GLOBAL_SETTINGS.ZKQ_ENABLED.key]?.value != "0"
-    val zkqServerUrl = GlobalVars.configStates[Schema.GLOBAL_SETTINGS.ZKQ_SERVER_URL.key]?.value.orEmpty()
-    if (zkqEnabled && zkqServerUrl.isNotBlank()) {
-        CoroutineScope(currentCoroutineContext()).launch { ZkqSnapshotUploader.run() }
-        CoroutineScope(currentCoroutineContext()).launch { ZkqWsClient.run() }
-    }
+
     waitForPlay()
     // setZKQInputMethod()
     accountMessage("检测到设置已更新\n即将重新运行")
@@ -88,6 +78,7 @@ suspend fun runMainScript() {
     val activeAccount = findAndActivateAccount(initialSearchOrder, isBatchCreate) ?: return
     // 3. Execute main logic loop
     InGameVars.currentAccountNumber = activeAccount
+    ZkqWsClient.notifyStateChanged("上号 #$activeAccount 成功")
     InGameVars.currentGameVersion = resolveGameVersion(isBatchCreate)
     InGameVars.adTime = (accountTotal * 5).coerceIn(10, 30)
     batchCreateAccounts()//Create all needed accounts first.
@@ -112,6 +103,7 @@ suspend fun runMainScript() {
         val nextAccount = findAndActivateAccount(searchOrder, isBatchCreate) ?: return
 
         InGameVars.currentAccountNumber = nextAccount
+        ZkqWsClient.notifyStateChanged("上号 #$nextAccount 成功")
         writeMemory(StorageKeys.ACCOUNT_NUMBER, nextAccount.toString())
         InGameVars.currentGameVersion = resolveGameVersion(isBatchCreate)
         checkScheduledReboot(scriptStartTime)

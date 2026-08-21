@@ -208,8 +208,11 @@ fun LazyListScope.mainBaseConfig(
                 visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.MANUAL_TRAINING.key}_c$index"]?.value == "1"
             ) {
                 var presets by remember { mutableStateOf(DeployPresetManager.listPresets()) }
-                var selectedRemark by remember { mutableStateOf("") }
                 var showDropdown by remember { mutableStateOf(false) }
+                val remarkKey = "${MAIN_BASE_SETTINGS.DEPLOY_REMARK.key}_c$index"
+                val remarkState = GlobalVars.configStates.getOrPut(remarkKey) {
+                    mutableStateOf(Schema.getDefaultValue(remarkKey))
+                }
 
                 Column {
                     // Preset bar: matching project dropdown style
@@ -217,18 +220,21 @@ fun LazyListScope.mainBaseConfig(
                         verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(top = 6.dp, end = 6.dp)
                     ) {
                         Text(
-                            text = "预设", textAlign = TextAlign.Center, modifier = Modifier.padding(end = 10.dp), style = MaterialTheme.typography.labelMedium
+                            text = Strings.deployPreset, textAlign = TextAlign.Center, modifier = Modifier.padding(end = 10.dp), style = MaterialTheme.typography.labelMedium
                         )
                         Box(modifier = Modifier.wrapContentSize(Alignment.TopStart)) {
                             Button(
-                                onClick = { showDropdown = true },
+                                onClick = {
+                                    GlobalVars.isAutoRunEnabled = false
+                                    showDropdown = true
+                                },
                                 shape = RoundedCornerShape(8.dp),
                                 modifier = Modifier.height(30.dp),
                                 contentPadding = PaddingValues(horizontal = 12.dp, vertical = 0.dp),
                                 colors = ButtonDefaults.buttonColors(containerColor = AppColors.Primary)
                             ) {
                                 Text(
-                                    text = selectedRemark.ifEmpty { "选择预设" }, style = MaterialTheme.typography.labelMedium, maxLines = 1, overflow = TextOverflow.Ellipsis
+                                    text = if (remarkState.value.isNotEmpty()) remarkState.value else Strings.selectDeployPreset, style = MaterialTheme.typography.labelMedium, maxLines = 1, overflow = TextOverflow.Ellipsis
                                 )
                                 Icon(Icons.Default.ArrowDropDown, contentDescription = null)
                             }
@@ -246,14 +252,14 @@ fun LazyListScope.mainBaseConfig(
                                                 .verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(6.dp)
                                         ) {
                                             presets.forEach { preset ->
-                                                val isSelected = preset.remark == selectedRemark
+                                                val isSelected = preset.remark == remarkState.value
                                                 Box(
                                                     modifier = Modifier
                                                         .background(if (isSelected) AppColors.Primary else AppColors.PrimaryLight.copy(alpha = 0.10f), RoundedCornerShape(8.dp))
                                                         .border(1.dp, if (isSelected) AppColors.Primary else AppColors.PrimaryLight, RoundedCornerShape(8.dp))
                                                         .clickable {
-                                                            selectedRemark = preset.remark
-                                                            GlobalVars.configStates["${MAIN_BASE_SETTINGS.DEPLOY_REMARK.key}_c$index"]?.value = preset.remark
+                                                            GlobalVars.isAutoRunEnabled = false
+                                                            remarkState.value = preset.remark
                                                             GlobalVars.configStates["${MAIN_BASE_SETTINGS.ARMY_CONFIG_MODE.key}_c$index"]?.value = preset.armyConfigMode
                                                             GlobalVars.configStates["${MAIN_BASE_SETTINGS.ARMY_LINK.key}_c$index"]?.value = preset.armyLink
                                                             GlobalVars.configStates["${MAIN_BASE_SETTINGS.DEPLOY_MODE.key}_c$index"]?.value = preset.deployMode
@@ -274,7 +280,7 @@ fun LazyListScope.mainBaseConfig(
                         }
                         Spacer(modifier = Modifier.width(8.dp))
                         CustomButton(onClick = {
-                            val remark = GlobalVars.configStates["${MAIN_BASE_SETTINGS.DEPLOY_REMARK.key}_c$index"]?.value ?: ""
+                            val remark = remarkState.value
                             if (remark.isBlank()) return@CustomButton
                             val armMode = GlobalVars.configStates["${MAIN_BASE_SETTINGS.ARMY_CONFIG_MODE.key}_c$index"]?.value ?: "0"
                             val armLink = GlobalVars.configStates["${MAIN_BASE_SETTINGS.ARMY_LINK.key}_c$index"]?.value ?: ""
@@ -282,22 +288,22 @@ fun LazyListScope.mainBaseConfig(
                             val depSpeed = GlobalVars.configStates["${MAIN_BASE_SETTINGS.DEPLOY_DRAG_SPEED.key}_c$index"]?.value ?: "600"
                             val depDensity = GlobalVars.configStates["${MAIN_BASE_SETTINGS.DEPLOY_CLICK_DENSITY.key}_c$index"]?.value ?: "50"
                             DeployPresetManager.savePreset(remark, armMode, armLink, depMode, depSpeed, depDensity)
-                            selectedRemark = remark
                             presets = DeployPresetManager.listPresets()
                         }, text = "保存")
                         Spacer(modifier = Modifier.width(8.dp))
                         CustomButton(onClick = {
-                            if (selectedRemark.isNotEmpty()) {
-                                DeployPresetManager.deletePreset(selectedRemark)
-                                selectedRemark = ""
-                                GlobalVars.configStates["${MAIN_BASE_SETTINGS.DEPLOY_REMARK.key}_c$index"]?.value = ""
+                            val remark = remarkState.value
+                            if (remark.isNotEmpty()) {
+                                GlobalVars.isAutoRunEnabled = false
+                                DeployPresetManager.deletePreset(remark)
+                                remarkState.value = ""
                                 presets = DeployPresetManager.listPresets()
                             }
                         }, text = "删除", containerColor = Color(0xFFB71C1C))
                     }
 
                     // Remark — standard SettingInputRow
-                    SettingInputRow(key = "${MAIN_BASE_SETTINGS.DEPLOY_REMARK.key}_c$index")
+                    SettingInputRow(key = remarkKey)
 
                     // Army config
                     SettingDropdown(
@@ -323,6 +329,7 @@ fun LazyListScope.mainBaseConfig(
                                 val speedK = "${MAIN_BASE_SETTINGS.DEPLOY_DRAG_SPEED.key}_c$index"
                                 Button(
                                     onClick = {
+                                        GlobalVars.isAutoRunEnabled = false
                                         val v = (GlobalVars.configStates[speedK]?.value?.toIntOrNull() ?: 600) - 1
                                         if (v >= 1) GlobalVars.configStates[speedK]?.value = v.toString()
                                     },
@@ -338,6 +345,7 @@ fun LazyListScope.mainBaseConfig(
                                 }
                                 Button(
                                     onClick = {
+                                        GlobalVars.isAutoRunEnabled = false
                                         val v = (GlobalVars.configStates[speedK]?.value?.toIntOrNull() ?: 600) + 1
                                         GlobalVars.configStates[speedK]?.value = v.toString()
                                     },
@@ -361,6 +369,7 @@ fun LazyListScope.mainBaseConfig(
                                     val densityK = "${MAIN_BASE_SETTINGS.DEPLOY_CLICK_DENSITY.key}_c$index"
                                     Button(
                                         onClick = {
+                                            GlobalVars.isAutoRunEnabled = false
                                             val v = (GlobalVars.configStates[densityK]?.value?.toIntOrNull() ?: 50) - 1
                                             if (v >= 1) GlobalVars.configStates[densityK]?.value = v.toString()
                                         },
@@ -376,6 +385,7 @@ fun LazyListScope.mainBaseConfig(
                                     }
                                     Button(
                                         onClick = {
+                                            GlobalVars.isAutoRunEnabled = false
                                             val v = (GlobalVars.configStates[densityK]?.value?.toIntOrNull() ?: 50) + 1
                                             GlobalVars.configStates[densityK]?.value = v.toString()
                                         },

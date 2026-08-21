@@ -40,6 +40,7 @@ import com.coc.zkqcode.jar.ui.Strings
 import com.coc.zkqcode.core.util.basic.RunShell
 import com.coc.zkqcode.interfaces.MainCode
 import com.coc.zkqcode.jar.code.runMainScript
+import com.coc.zkqcode.jar.code.universal.ctrl.ZkqDaemon
 import com.coc.zkqcode.jar.ui.pages.homescreen.BackgroundImage
 import com.coc.zkqcode.jar.ui.components.CustomButton
 import com.coc.zkqcode.jar.ui.pages.builderbase.BuilderBaseResearchPriority
@@ -74,6 +75,7 @@ class EnterMainCode : MainCode {
                 // Re-apply the language value so reopened UI keeps the user's current choice.
                 LanguageManager.syncWithConfig()
                 isConfigInitialized = true
+                ZkqDaemon.start()
                 return@LaunchedEffect
             }
 
@@ -90,6 +92,7 @@ class EnterMainCode : MainCode {
             LanguageManager.syncWithConfig()
             isConfigInitialized = true
             GlobalVars.isConfigLoaded = true
+            ZkqDaemon.start()
         }
         if (!isConfigInitialized) {
             ConfigLoadingScreen()
