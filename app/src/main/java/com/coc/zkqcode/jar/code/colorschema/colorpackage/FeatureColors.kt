@@ -6,6 +6,8 @@ import com.coc.zkqcode.jar.code.colorschema.ColorSchema
 
 interface IFeatureColors {
     val TrainTroops: ColorSchema
+    val TrainTroops2: ColorSchema
+    val TrainTroops3: ColorSchema
     val RebuildBuilderBase: ColorSchema
     val UpgradeToTH6: ColorSchema
     val UpgradeToTH6_2: ColorSchema
@@ -25,6 +27,12 @@ interface IFeatureColors {
 object FeatureColors : IFeatureColors {
     override val TrainTroops = ColorSchema.parse(
         17, 483, 88, 559, "A2BFF1", "-7|15|D3DFFF,-13|7|87FFFF,-13|-5|60F8FF,-10|-11|5CF2FF,-3|-11|4CD3FF,10|-10|C9AC97,17|-14|FFFFFF,17|-3|FAFF78,15|0|F9FF6E", 0, 0.9
+    )
+    override val TrainTroops2 = ColorSchema.parse(
+        17, 483, 88, 559, "57F8FF", "33|13|E4DF1E,31|9|DBD815,11|0|57E8FF,14|0|50DEFF,0|17|E2CDEC,3|17|AF9EAF,7|17|ECDDF4,11|17|E3C7E3,14|17|35576E", 0, 0.9
+    )
+    override val TrainTroops3 = ColorSchema.parse(
+        12, 487, 97, 564, "664812", "4|2|C1CBFF,8|7|61F6FF,4|15|C8D3FF,-4|13|47B3EB,-4|1|FFFEF0,-1|-9|61FBFF,5|-9|5BF2FF,14|-12|48BFFA,14|4|87A9FF", 0, 0.9
     )
     override val RebuildBuilderBase = ColorSchema.parse(
         580, 501, 706, 625, "DAE4F3", "4|-10|E2E1ED,12|-16|D3D2E1,14|-18|D2D1E0,10|-3|DCEAFF,23|2|5684F0,24|2|5583F2,32|5|365AA7,38|13|6187F0,42|15|6D88EB", 0, 0.9, "重建夜世界帆船"

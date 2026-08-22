@@ -442,7 +442,7 @@ suspend fun isInHomePage(countdownMessage: String? = null): Boolean {
     }
 
     // 2. Check for the training button presence
-    if (findMultiColors(byteBuffer = screenBuffer, schema = MyColors.TrainTroops, increment = 1) == null) {
+    if (findMultiColorsUntil(schemas = listOf(MyColors.TrainTroops, MyColors.TrainTroops2, MyColors.TrainTroops3), duration = 10, byteBuffer = screenBuffer, increment = 1) == null) {
         return homePageCheckFailed("未找到练兵按钮")
     }
     if (findMultiColors(byteBuffer = screenBuffer, schema = MyColors.ShopButton, increment = 1) == null) {

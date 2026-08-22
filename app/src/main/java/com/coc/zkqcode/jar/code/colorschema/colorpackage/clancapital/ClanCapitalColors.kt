@@ -17,7 +17,6 @@ interface IClanCapitalColors {
     val CapitalMiner: ColorSchema
     val CapitalTrainTroopPage: ColorSchema
     val CapitalTrainTroopPage2: ColorSchema
-    val TrainTroops2: ColorSchema
     val StartRaid: ColorSchema
     val CapitalDistrictLocked: ColorSchema
     val CollectCapitalCoins: ColorSchema
@@ -86,11 +85,6 @@ object ClanCapitalColors : IClanCapitalColors {
     // Capital train troop page confirm and cancel (variant 2)
     override val CapitalTrainTroopPage2 = ColorSchema.parse(
         478, 278, 532, 332, "8D88FF", "13|-3|928DFF,22|-3|928DFF,37|-1|8F8AFF,42|10|7772FF,40|38|1915E0,27|48|1F1FBE,12|48|1F1FBE,13|8|FFFFFF,20|7|FFFFFF", 0, 0.9, "练兵界面确认和取消2"
-    )
-
-    // Capital train troops button (variant 2)
-    override val TrainTroops2 = ColorSchema.parse(
-        17, 483, 88, 559, "57F8FF", "33|13|E4DF1E,31|9|DBD815,11|0|57E8FF,14|0|50DEFF,0|17|E2CDEC,3|17|AF9EAF,7|17|ECDDF4,11|17|E3C7E3,14|17|35576E", 0, 0.9, "都城练兵按钮2"
     )
 
     // Start raid button
