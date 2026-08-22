@@ -9,14 +9,14 @@ import com.coc.zkqcode.jar.code.universal.buildings.BaseType
 import com.coc.zkqcode.jar.code.universal.buildings.upgrade.BuildButtonType
 import com.coc.zkqcode.jar.code.universal.buildings.upgrade.tryToFindBuildPosition
 import com.coc.zkqcode.jar.code.universal.clickRightBottom
-import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
+import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.smalltools.input.TouchActions
 
 suspend fun checkItemsToBePlaced(): Boolean {
     clickRightBottom(1)
     delayWithMultiplier(200)
-    val items = findMultiColors(MyColors.ItemsToBePlaced)
+    val items = findMultiColorsUntil(listOf(MyColors.ItemsToBePlaced, MyColors.ItemsToBePlaced2), 100)
     if (items != null) {
         accountMessage("准备放置物品")
         zoomSmallMainBase(isForBuild = true)

@@ -13,6 +13,7 @@ interface IEventColors {
     val EventShopConfirmBuy: ColorSchema
     val ExtraReward: ColorSchema
     val BadgeEventEnterButton: ColorSchema
+    val BadgeEventEnterButton2: ColorSchema
 }
 
 object EventColors : IEventColors {
@@ -48,5 +49,9 @@ object EventColors : IEventColors {
 
     override val BadgeEventEnterButton = ColorSchema.parse(
         829, 134, 1058, 676, "80F4DA", "29|1|80F4D9,69|5|7CF3D5,108|8|79F2D2,102|32|2ECE86,79|41|2FBD74,131|-7|2615E8,131|-11|2216F3,147|-5|2815E3,145|-10|2216F1", 0, 0.9, "进入活动按钮"
+    )
+
+    override val BadgeEventEnterButton2 = ColorSchema.parse(
+        829, 134, 1058, 676, "7EF3D7", "37|-5|82F5DB,85|-6|83F5DC,115|8|73EFCC,109|42|31B46B,138|-24|1818FF,140|-24|1818FF,141|-24|1818FF,142|-24|1818FF,143|-24|1818FF", 0, 0.9, "进入活动按钮2"
     )
 }

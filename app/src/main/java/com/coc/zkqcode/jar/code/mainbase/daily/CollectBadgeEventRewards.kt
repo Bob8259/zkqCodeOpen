@@ -40,7 +40,7 @@ suspend fun collectBadgeEventRewards(): Boolean {
 
     accountMessage("准备领取奖章活动奖励")
     TouchActions.tap(badgeEventEntryTap.x, badgeEventEntryTap.y, delayTime = 1500)
-    val enterButton = findMultiColorsUntil(listOf(MyColors.BadgeEventEnterButton), 2000)
+    val enterButton = findMultiColorsUntil(listOf(MyColors.BadgeEventEnterButton, MyColors.BadgeEventEnterButton2), 2000)
     if (enterButton == null) {
         accountMessage("未检测到进入活动按钮")
         return enterMainScreen()
