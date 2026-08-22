@@ -1,6 +1,7 @@
 package com.coc.zkqcode.jar.code.universal.ctrl
 
 import android.graphics.Bitmap
+import android.provider.Settings
 import com.coc.zkqcode.core.app.ZKQApplication
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
@@ -710,7 +711,18 @@ object ZkqWsClient {
     private suspend fun getOrCreateNonce(): String {
         val existing = readMemory(NONCE_KEY)
         if (existing.isNotBlank()) return existing
-        val generated = UUID.randomUUID().toString().replace("-", "").substring(0, 16)
+        // Bind the nonce prefix to ANDROID_ID so re-installs keep the same
+        // session and never trigger a 409 conflict with AstrBot.
+        val androidId = try {
+            Settings.Secure.getString(ZKQApplication.appContext.contentResolver, Settings.Secure.ANDROID_ID).orEmpty()
+        } catch (e: Exception) {
+            ""
+        }
+        val generated = if (androidId.isNotBlank()) {
+            androidId.take(16)
+        } else {
+            UUID.randomUUID().toString().replace("-", "").substring(0, 16)
+        }
         writeMemory(NONCE_KEY, generated)
         return generated
     }

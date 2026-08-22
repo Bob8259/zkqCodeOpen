@@ -1,5 +1,7 @@
 package com.coc.zkqcode.jar.code.universal.ctrl
 
+import android.provider.Settings
+import com.coc.zkqcode.core.app.ZKQApplication
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.jar.code.universal.InGameVars
 import com.coc.zkqcode.jar.code.universal.smalltools.loadSchedule
@@ -59,7 +61,19 @@ object StatusSnapshot {
         }
         val stored = readMemory(DEVICE_ID_KEY)
         if (stored.isNotBlank()) return stored
-        val generated = "device-" + UUID.randomUUID().toString().replace("-", "").substring(0, 12)
+        // Stable fallback: bind the device id to hardware ANDROID_ID + model so
+        // re-installs never generate a brand new device (no zombie devices).
+        val androidId = try {
+            Settings.Secure.getString(ZKQApplication.appContext.contentResolver, Settings.Secure.ANDROID_ID).orEmpty()
+        } catch (e: Exception) {
+            ""
+        }
+        val model = android.os.Build.MODEL?.trim()?.replace(Regex("[^a-zA-Z0-9_\\-\\u4e00-\\u9fa5]"), "_").orEmpty()
+        val generated = when {
+            model.isNotBlank() && androidId.isNotBlank() -> "${model}_${androidId.take(6)}"
+            androidId.isNotBlank() -> "device-${androidId.take(12)}"
+            else -> "device-" + UUID.randomUUID().toString().replace("-", "").substring(0, 12)
+        }
         writeMemory(DEVICE_ID_KEY, generated)
         return generated
     }
