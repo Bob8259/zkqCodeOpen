@@ -22,11 +22,13 @@ object LogHelper {
     // Guard against planting Timber trees more than once (e.g. multiple Activity instances)
     private val timberInitialized = AtomicBoolean(false)
 
-    fun initTimber() {
+    fun initTimber(context: Context) {
         if (!timberInitialized.compareAndSet(false, true)) return
         if (BuildConfig.DEBUG) {
             Timber.plant(Timber.DebugTree())
         }
+        // Keep file logging enabled in every build so remote log queries have local data.
+        Timber.plant(FileLoggingTree(context.applicationContext))
     }
 
     fun logAndRestart(message: String, isShow: Boolean = true): Nothing {
@@ -122,6 +124,42 @@ object LogHelper {
             }
         } catch (e: Exception) {
             Log.e("LogHelper", "Failed to write crash log", e)
+        }
+    }
+
+    /**
+     * Persists Timber messages in the app-private logs directory.
+     * Normal messages go to info.log and error-level messages go to error.log.
+     */
+    class FileLoggingTree(private val context: Context) : Timber.Tree() {
+        @SuppressLint("LogNotTimber")
+        override fun log(priority: Int, tag: String?, message: String, t: Throwable?) {
+            val fileName = if (priority >= Log.ERROR) "error.log" else "info.log"
+            val timestamp = SimpleDateFormat(
+                "yyyy-MM-dd HH:mm:ss.SSS",
+                Locale.getDefault()
+            ).format(Date())
+            val logEntry = "$timestamp [$tag] $message\n"
+
+            try {
+                synchronized(this) {
+                    val logDir = File(context.filesDir, "logs")
+                    if (!logDir.exists()) logDir.mkdirs()
+                    val logFile = File(logDir, fileName)
+                    FileOutputStream(logFile, true).use { fos ->
+                        fos.write(logEntry.toByteArray())
+                    }
+
+                    // Keep each log file bounded while retaining the newest entries.
+                    val lines = logFile.readLines()
+                    if (lines.size > 500) {
+                        logFile.writeText(lines.takeLast(500).joinToString("\n") + "\n")
+                    }
+                }
+            } catch (e: Exception) {
+                // Use standard Log to avoid recursive Timber logging if file output fails.
+                Log.e("FileLoggingTree", "Error writing to $fileName", e)
+            }
         }
     }
 
