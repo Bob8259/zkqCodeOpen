@@ -31,14 +31,12 @@ private const val GOLD_FULL_X_THRESHOLD = 1017
 private const val ELIXIR_FULL_X_THRESHOLD = 1017
 private const val DARK_ELIXIR_FULL_X_THRESHOLD = 1080
 
-// Tracks whether the most recent searchOpponentsAndDeployTroops activated the CN auto-battle
-// button. mainBaseAttack reads this to skip restart-after-deploy, which would cut the
-// auto-battle's progressive troop deployment short.
-var lastAutoBattleUsed = false
+data class BattleSearchResult(
+    val started: Boolean,
+    val autoBattleUsed: Boolean = false
+)
 
-suspend fun searchOpponentsAndDeployTroops(battleNumber: Int = 1, battleTimes: Int = 1): Boolean {
-    lastAutoBattleUsed = false
-
+suspend fun searchOpponentsAndDeployTroops(battleNumber: Int = 1, battleTimes: Int = 1): BattleSearchResult {
     var targetGold = getConfigRuntime(Schema.MAIN_BASE_SETTINGS.GOLD_REQUIREMENT.key).toIntOrNull() ?: logAndRestart("${Schema.MAIN_BASE_SETTINGS.GOLD_REQUIREMENT.displayName} 必须是数字，请检查配置")
     var targetElixir = getConfigRuntime(Schema.MAIN_BASE_SETTINGS.ELIXIR_REQUIREMENT.key).toIntOrNull() ?: logAndRestart("${Schema.MAIN_BASE_SETTINGS.ELIXIR_REQUIREMENT.displayName} 必须是数字，请检查配置")
     var targetDarkElixir = getConfigRuntime(Schema.MAIN_BASE_SETTINGS.DARK_ELIXIR_REQUIREMENT.key).toIntOrNull() ?: logAndRestart("${Schema.MAIN_BASE_SETTINGS.DARK_ELIXIR_REQUIREMENT.displayName} 必须是数字，请检查配置")
@@ -123,7 +121,7 @@ suspend fun searchOpponentsAndDeployTroops(battleNumber: Int = 1, battleTimes: I
         if (shouldStopResources) reasons.add("资源已满")
         if (shouldStopNoStars) reasons.add("无胜利之星")
         accountMessage("${reasons.joinToString("，")}，停止对战")
-        return false
+        return BattleSearchResult(started = false)
     }
     var searchTimes = 0
     var battleStarted = false
@@ -141,17 +139,19 @@ suspend fun searchOpponentsAndDeployTroops(battleNumber: Int = 1, battleTimes: I
                 accountMessage("进攻需等待冷却")
                 val shouldWaitForBattle = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.WAIT_FOR_BATTLE.key)
                 val shouldWaitAfterMainWorldTask = hasMainWorldTask && getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.WAIT_FOR_BATTLE_AFTER_ACCEPT_MAIN_WORLD_TASK.key)
-                if (!shouldWaitForBattle && !shouldWaitAfterMainWorldTask) return false
+                if (!shouldWaitForBattle && !shouldWaitAfterMainWorldTask) {
+                    return BattleSearchResult(started = false)
+                }
             }
         }
         val canNotAttack = findMultiColorsUntil(schemas = listOf(MyColors.CanNotAttack, MyColors.CanNotAttack2, MyColors.CanNotAttack3), duration = 10)
         if (canNotAttack != null) {
-            return false
+            return BattleSearchResult(started = false)
         }
         val villagerSpeaking = findMultiColors(schema = MyColors.SpeakingVillager)
 
         if (villagerSpeaking != null) {
-            if (!mainBaseBattleTutorial()) return false
+            if (!mainBaseBattleTutorial()) return BattleSearchResult(started = false)
         }
         listOf(MyColors.SearchOpponents, MyColors.AttackButton, MyColors.IncreaseRank, MyColors.EnterLeague).forEach { schema ->
             findMultiColors(schema = schema)?.let { TouchActions.tap(it.x, it.y) }
@@ -166,7 +166,9 @@ suspend fun searchOpponentsAndDeployTroops(battleNumber: Int = 1, battleTimes: I
             // Fast path: all targets below 10 → attack immediately without OCR
             if (targetGold < 10 && targetElixir < 10 && targetDarkElixir < 10) {
                 battleStarted = true
-                tryAutoBattleOrDeploy()
+                if (tryAutoBattleOrDeploy(hasMainWorldTask)) {
+                    return BattleSearchResult(started = true, autoBattleUsed = true)
+                }
                 break
             }
 
@@ -220,7 +222,9 @@ suspend fun searchOpponentsAndDeployTroops(battleNumber: Int = 1, battleTimes: I
                 }
 
                 battleStarted = true
-                tryAutoBattleOrDeploy()
+                if (tryAutoBattleOrDeploy(hasMainWorldTask)) {
+                    return BattleSearchResult(started = true, autoBattleUsed = true)
+                }
                 break
             } else {
                 TouchActions.tap(nextOpponent.x, nextOpponent.y, delayTime = 2000)
@@ -228,19 +232,19 @@ suspend fun searchOpponentsAndDeployTroops(battleNumber: Int = 1, battleTimes: I
         }
         val remainingMinutes = (SEARCH_TIMEOUT_MS - (System.currentTimeMillis() - battleStartTime)) / 60000.0
         accountMessage("主世界搜索中... 第${battleNumber}/${battleTimes}局\n${"%.1f".format(remainingMinutes)}分钟后强制退出")
-        if (!checkReconnections()) return false
+        if (!checkReconnections()) return BattleSearchResult(started = false)
         delayWithMultiplier(200)
     }
-    return battleStarted
+    return BattleSearchResult(started = battleStarted)
 }
 
 /**
  * If AUTO_BATTLE_CN is enabled (CN version only), tries to detect the auto-battle
  * button on the deploy preparation screen. If the button is found, clicks it and
- * uses the game's built-in auto-battle feature. Otherwise, falls back to the
+ * enters the shared battle monitor before returning. Otherwise, falls back to the
  * standard troop deployment logic.
  */
-private suspend fun tryAutoBattleOrDeploy() {
+private suspend fun tryAutoBattleOrDeploy(hasMainWorldTask: Boolean): Boolean {
     val autoBattleEnabled = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.AUTO_BATTLE_CN.key)
     // Auto-battle is CN-exclusive; skip detection for global version
     if (autoBattleEnabled && InGameVars.currentGameVersion == GameVersion.CN) {
@@ -251,13 +255,20 @@ private suspend fun tryAutoBattleOrDeploy() {
         if (autoBtn != null) {
             TouchActions.tap(autoBtn.x, autoBtn.y)
             accountMessage("检测到自动战斗按钮，已点击启用")
-            lastAutoBattleUsed = true
-            return
+            // Monitor the battle immediately so the search loop never returns before
+            // the auto-battle session reaches its end condition or timeout.
+            monitorMainBaseBattle(
+                startTime = System.currentTimeMillis(),
+                hasMainWorldTask = hasMainWorldTask,
+                keepGameOnTimeout = true
+            )
+            return true
         }
         accountMessage("未检测到自动战斗按钮，使用原有下兵方式兜底")
     }
-    // Fallback: deploy troops honoring the configured deploy mode
+    // Fallback: deploy troops honouring the configured deploy mode
     deployTroopsByConfig()
+    return false
 }
 
 private suspend fun mainBaseBattleTutorial(): Boolean {
