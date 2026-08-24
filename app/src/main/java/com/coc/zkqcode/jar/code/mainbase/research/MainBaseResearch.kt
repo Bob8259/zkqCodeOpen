@@ -65,7 +65,6 @@ suspend fun findAllResearchItems() {
     repeat(6) {
         // Take a single screenshot per swipe page and reuse it for all searches.
         val screenBuffer = ScreenCaptureManager.captureScreenOrRestart<ScreenCaptureManager.CaptureResult>(asBitmap = false)
-            ?: logAndRestart("ScreenCaptureManager.capture failed in findAllResearchItems")
 
         // Scan all research colour schemas on the current page.
         for (schema in MainBaseResearchColors.allResearchColors) {

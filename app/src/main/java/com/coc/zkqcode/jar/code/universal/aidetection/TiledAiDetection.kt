@@ -27,7 +27,6 @@ suspend fun tiledAiDetect(
     xRange: ClosedFloatingPointRange<Float> = 100f..1180f
 ): List<DetectionResult> {
     val screenBuffer = ScreenCaptureManager.captureScreenOrRestart<Bitmap>(asBitmap = true)
-        ?: logAndRestart("in $callerTag, screen capture failed.")
 
     if (screenBuffer.width != 1280 || screenBuffer.height != 720) {
         return emptyList()

@@ -90,9 +90,10 @@ suspend fun findMultiColors(
 
         } else {
             // Fallback or explicit Bitmap provided
-            // Use the original native function for Bitmap
-            val useBmp = bitmap ?: (resultAny as? Bitmap)
-            if (useBmp != null) {
+            // Use the original native function for Bitmap.
+            // The auto-capture path yields a CaptureResult (handled above), so the
+            // search here can only run on an explicitly passed bitmap.
+            bitmap?.let { useBmp ->
                 val result = RustTools.findMultiColors(
                     useBmp, schema.x1, schema.y1, schema.x2, schema.y2, schema.mainColor, schema.threshold, offsetsArray, schema.direction, increment
                 )

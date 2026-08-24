@@ -80,10 +80,7 @@ suspend fun findAttackTarget(): Boolean {
     }
     TouchActions.swipe(300, 500, 300, 1500, delayAfter = 400)
     // Capture a fresh screenshot to analyse which districts are available to attack.
-    val bitmap = ScreenCaptureManager.captureScreenOrRestart<Bitmap>(asBitmap = true) ?: run {
-        accountMessage("截图失败，无法分析都城区域")
-        return false
-    }
+    val bitmap = ScreenCaptureManager.captureScreenOrRestart<Bitmap>(asBitmap = true)
 
     // Iterate districts in order and tap the first one whose white-pixel count is below the
     // threshold, which indicates the district still has open territory to attack.

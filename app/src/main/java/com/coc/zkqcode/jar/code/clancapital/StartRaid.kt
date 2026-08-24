@@ -23,7 +23,7 @@ suspend fun startRaid(): Boolean {
         accountMessage("3天内已发起过突袭，跳过")
         return true
     }
-
+    accountMessage("准备开启突袭")
     if (!enterClanCapital()) return enterMainScreen()
     val startRaidButton = findMultiColorsUntil(listOf(MyColors.StartRaid), 3000)
     if (startRaidButton != null) {

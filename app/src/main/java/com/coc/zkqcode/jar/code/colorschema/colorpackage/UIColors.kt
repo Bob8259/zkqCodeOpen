@@ -48,6 +48,8 @@ interface IUIColors {
     val AgreeTerms: ColorSchema
     val AgreePrivacy: ColorSchema
     val LogIn: ColorSchema
+    val QrLinkEntryButton: ColorSchema
+    val QrLinkEntryButton2: ColorSchema
     val SkinAd: ColorSchema
     val CapitalBackToCamp: ColorSchema
     val CapitalBackToCamp2: ColorSchema
@@ -59,13 +61,9 @@ interface IUIColors {
     val ClanLeagueReturnCamp: ColorSchema
     val UpgradeNotification: ColorSchema
     val GameSettings: ColorSchema
-    val ContributionActivity: ColorSchema
-
-    // Clan war UI indicators
     val ClanWarTutorialArrow: ColorSchema
     val TopRightClanWarInfo: ColorSchema
-
-    // CN Cultivation (修仙) advertisement indicator
+    val ContributionActivity: ColorSchema
     val CNCultivationAd: ColorSchema
 }
 
@@ -229,6 +227,20 @@ object UIColors : IUIColors {
     // Log in button
     override val LogIn = ColorSchema.parse(
         663, 406, 879, 451, "FFFFFF", "-4|-8|261CE8,-1|-28|000000,27|-23|EDCD62,57|-16|E4C357,60|7|A77019,164|-23|EDCD62,182|-17|E6C459,178|4|B3791C,155|2|BB7E1E", 0, 0.9, "登录"
+    )
+
+    // ── 扫码提取（ADR-0003）：链接设备二维码界面的入口按钮 ──
+    // QrLinkEntryButton 已按国服实际界面校准（用户提供）：点完登录条款后、
+    // 点它才出现登录方式选择界面的那个按钮（右上角）。
+    // QrLinkEntryButton2 是同一按钮的另一种界面样式（白色主色 + 下沿 D9AF97 暖色），
+    // 检测时两个都试，任一命中即点击（实测按钮样式不稳定，见 ADR-0003）。
+    // 注：二维码界面本身不用图色 schema 检测（内容每次刷新不同），
+    // 由 QrLinkFlow 用"中央区域黑色像素占比"判定（见 QrLinkFlow.kt）。
+    override val QrLinkEntryButton = ColorSchema.parse(
+        1212, 360, 1256, 404, "ACACAC", "9|0|FFFFFF,18|0|FFFFFF,27|0|FFFFFF,36|0|ACACAC,0|22|ACACAC,9|22|FFFFFF,18|22|FFFFFF,27|22|FFFFFF,36|22|ACACAC", 0, 0.9, "扫码入口按钮"
+    )
+    override val QrLinkEntryButton2 = ColorSchema.parse(
+        1211, 360, 1255, 405, "FFFFFF", "9|0|FFFFFF,18|0|FFFFFF,27|0|FFFFFF,36|0|D9AF97,0|23|FFFFFF,9|23|FFFFFF,18|23|FFFFFF,27|23|FFFFFF,36|23|D9AF97", 0, 0.9, "扫码入口按钮2"
     )
 
     // Skin advertisement popup

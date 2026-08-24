@@ -233,7 +233,7 @@ private suspend fun tryToBatchBuildWalls(x: Int, y: Int, currentBase: BaseType) 
     }
     // Locate the arrow element using the detection service.
     delayWithMultiplier(200)
-    val screenBuffer = ScreenCaptureManager.captureScreenOrRestart<Bitmap>(asBitmap = true) ?: logAndRestart("in BuilderBaseUpgradeBuildings, screen capture failed.")
+    val screenBuffer = ScreenCaptureManager.captureScreenOrRestart<Bitmap>(asBitmap = true)
     // Return early if the model weights fail to load.
     if (!AiDetector.loadWeights("walls-detect")) return
     try {

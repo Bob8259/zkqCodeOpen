@@ -1,5 +1,7 @@
 package com.coc.zkqcode.jar.code.universal
 
+import com.coc.zkqcode.jar.code.universal.smalltools.qrlink.QrFlowCoroutineContext
+
 import android.graphics.Bitmap
 import android.graphics.Point
 import android.os.Environment
@@ -436,7 +438,7 @@ suspend fun isInHomePage(countdownMessage: String? = null): Boolean {
     val screenBuffer = ScreenCaptureManager.captureScreenOrRestart<ScreenCaptureManager.CaptureResult>(asBitmap = false)
 
     suspend fun homePageCheckFailed(message: String): Boolean {
-        accountMessage(if (countdownMessage == null) message else "$countdownMessage，$message")
+        accountMessage(if (countdownMessage == null) message else "$countdownMessage，$message，请检查设备分辨率")
         delayWithMultiplier(500)
         return false
     }

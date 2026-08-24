@@ -55,7 +55,6 @@ suspend fun builderBaseCheckAllResearch() {
 
     // ========== Phase 1: Single capture, scan all grid positions ==========
     val screenBuffer = ScreenCaptureManager.captureScreenOrRestart<ScreenCaptureManager.CaptureResult>(asBitmap = false)
-        ?: return
 
     val upgradeableItems = mutableListOf<BuilderUpgradableItem>()
     val insufficientItems = mutableListOf<String>()

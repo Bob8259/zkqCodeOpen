@@ -376,9 +376,10 @@ class WebDavArchiveManager(private val context: Context) {
             // Copy game files to staging via root shell + chmod, then Java zip
             val tempRoot = File(stageRoot, "zip_copy")
             val tempDir = File(tempRoot, sourceDir.name)
+            val tempParent = tempDir.parentFile ?: return false.also { Log.w(TAG, "  no staging parent dir") }
             val copied = ShellHelper.runBlocking(
-                "rm -rf \"${tempRoot.absolutePath}\" && mkdir -p \"${tempDir.parentFile.absolutePath}\" && " +
-                "cp -rf \"${sourceDir.absolutePath}\" \"${tempDir.parentFile.absolutePath}\" && " +
+                "rm -rf \"${tempRoot.absolutePath}\" && mkdir -p \"${tempParent.absolutePath}\" && " +
+                "cp -rf \"${sourceDir.absolutePath}\" \"${tempParent.absolutePath}\" && " +
                 "chmod -R 755 \"${tempRoot.absolutePath}\""
             ).isSuccess
             if (!copied) return false.also { Log.w(TAG, "  shell cp failed") }
@@ -523,8 +524,9 @@ class WebDavArchiveManager(private val context: Context) {
                 ?: return false
 
             val targetDir = File(localSaveDir, localName)
+            val targetParent = targetDir.parentFile ?: return false.also { Log.w(TAG, "  no target parent dir") }
             val copyOk = ShellHelper.runBlocking(
-                "mkdir -p \"${targetDir.parentFile.absolutePath}\" && cp -rf \"${extractedDir.absolutePath}\" \"${targetDir.absolutePath}\""
+                "mkdir -p \"${targetParent.absolutePath}\" && cp -rf \"${extractedDir.absolutePath}\" \"${targetDir.absolutePath}\""
             ).isSuccess
             return copyOk
         } finally {

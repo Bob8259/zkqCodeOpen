@@ -121,10 +121,6 @@ fun BugReport(onClose: () -> Unit) {
 
                                 val screenshotBitmap =
                                     ScreenCaptureManager.captureScreenOrRestart<Bitmap>(asBitmap = true)
-                                if (screenshotBitmap == null) {
-                                    statusMessage = Strings.screenshotFailed
-                                    return@launch
-                                }
 
                                 // Encode the captured bitmap in the app process so upload does not
                                 // depend on a root-created file inside private storage.

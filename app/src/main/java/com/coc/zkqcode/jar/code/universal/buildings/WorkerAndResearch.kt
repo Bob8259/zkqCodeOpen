@@ -134,7 +134,7 @@ object WorkerAndResearch {
         keepBottom: Int,
         saveImage: Boolean = false,
     ): List<RecognizedText> {
-        val screenBuffer = ScreenCaptureManager.captureScreenOrRestart<Bitmap>(asBitmap = true) ?: return emptyList()
+        val screenBuffer = ScreenCaptureManager.captureScreenOrRestart<Bitmap>(asBitmap = true)
         val width = endX - startX
         val height = endY - startY
         if (width <= 0 || height <= 0) return emptyList()
@@ -204,7 +204,7 @@ object WorkerAndResearch {
     private suspend fun detectWorkerByColorMatch(
         startX: Int, startY: Int, endX: Int, endY: Int
     ): WorkerInfo {
-        val screenBuffer = ScreenCaptureManager.captureScreenOrRestart<Bitmap>(asBitmap = true) ?: return WorkerInfo(0, 0)
+        val screenBuffer = ScreenCaptureManager.captureScreenOrRestart<Bitmap>(asBitmap = true)
 
         val cropWidth = endX - startX
         val cropHeight = endY - startY

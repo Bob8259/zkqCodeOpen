@@ -12,6 +12,7 @@ import com.coc.zkqcode.jar.code.universal.GameVersion
 import com.coc.zkqcode.jar.code.universal.InGameVars
 import com.coc.zkqcode.jar.code.universal.smalltools.lifecycle.killGame
 import com.coc.zkqcode.jar.code.universal.smalltools.lifecycle.launchGameAndHandleDataNumberLogin
+import com.coc.zkqcode.jar.code.universal.smalltools.qrlink.QrLinkState
 import com.coc.zkqcode.jar.ui.schema.Schema
 import com.coc.zkqcode.jar.ui.schema.Schema.ACCOUNT_SETTINGS
 // Helper function: quickly get config value, trigger logAndRestart if empty
@@ -172,4 +173,63 @@ suspend fun writeGameFiles(): Boolean {
         2 -> writeCurrentAccountDataNumberFile()
         else -> logAndRestart("${ACCOUNT_SETTINGS.START_METHOD.displayName} 配置错误：$startMethod")
     }
+}
+
+/**
+ * 提取存档（扫码提取流程用，ADR-0003）：把游戏内当前账号的数据原样复制到
+ * SD 卡槽位目录（/sdcard/zkqFiles/{folderName}/{slot}/）。
+ *
+ * 采用"暂存 → 校验 → 换入"三步，避免覆盖中途失败留下半个槽位：
+ * 先把数据复制到 <slot>.tmp 暂存目录，校验确有文件后再删旧槽位、把暂存目录
+ * 原子改名换入（同盘 mv）。复制失败、或用户在提取中被取消时只删暂存目录，
+ * 旧槽位保持原样，绝不出现"旧档已删、新档没拷完"的不可恢复状态。
+ * 目标槽位本身仍无条件覆盖（用户确定的策略——覆盖错了重新登录再提取即可）。
+ */
+@SuppressLint("SdCardPath")
+suspend fun extractGameSave(version: GameVersion, slot: String): Boolean {
+    val sdPath = Environment.getExternalStorageDirectory().path
+    val gameRootDir = "$sdPath/zkqFiles/${version.folderName}"
+    val targetSaveDir = "$gameRootDir/$slot"
+    val stagingDir = "$targetSaveDir.tmp"
+
+    if (QrLinkState.isCancelRequested()) return false
+
+    // 清掉上次中断残留的暂存目录
+    RunShell.runNoOutput("rm -rf \"$stagingDir\"", checkIsPlaying = false)
+    RunShell.runNoOutput("mkdir -p \"$gameRootDir\"", checkIsPlaying = false)
+    RunShell.runNoOutput("mkdir -p \"$stagingDir\"", checkIsPlaying = false)
+
+    for (dir in version.subDirs) {
+        if (QrLinkState.isCancelRequested()) {
+            RunShell.runNoOutput("rm -rf \"$stagingDir\"", checkIsPlaying = false)
+            return false
+        }
+        val destPath = "$stagingDir/$dir"
+        RunShell.runNoOutput("mkdir -p \"$destPath\"", checkIsPlaying = false)
+        RunShell.runNoOutput("cp -r /data/data/${version.packageName}/$dir/* \"$destPath\"", checkIsPlaying = false)
+    }
+
+    // 提取中途被取消：只删暂存，不动旧槽位
+    if (QrLinkState.isCancelRequested()) {
+        RunShell.runNoOutput("rm -rf \"$stagingDir\"", checkIsPlaying = false)
+        return false
+    }
+
+    // 校验确有文件被复制，否则视为失败（绝不删旧档、绝不上报成功）
+    val fileCount = RunShell.runAndGetFirst(
+        "find \"$stagingDir\" -type f | wc -l", false
+    ).trim().toIntOrNull() ?: 0
+    if (fileCount <= 0) {
+        RunShell.runNoOutput("rm -rf \"$stagingDir\"", checkIsPlaying = false)
+        return false
+    }
+
+    // 换入：删旧槽位后把暂存目录原子改名（staging 与目标同盘）
+    if (QrLinkState.isCancelRequested()) {
+        RunShell.runNoOutput("rm -rf \"$stagingDir\"", checkIsPlaying = false)
+        return false
+    }
+    RunShell.runNoOutput("[ -d \"$targetSaveDir\" ] && rm -rf \"$targetSaveDir\"", checkIsPlaying = false)
+    RunShell.runNoOutput("mv \"$stagingDir\" \"$targetSaveDir\"", checkIsPlaying = false)
+    return true
 }

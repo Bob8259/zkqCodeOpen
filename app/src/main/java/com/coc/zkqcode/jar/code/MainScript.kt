@@ -86,6 +86,10 @@ suspend fun runMainScript() {
     var lastUpdateCheckTime = System.currentTimeMillis()
     var nextUpdateInterval = (3600_000L) + (Math.random() * 7200_000L).toLong()
     while (currentCoroutineContext().isActive) {
+        if (InGameVars.qrLinkFlowActiveCount > 0) {
+            delay(1000)
+            continue
+        }
 //        runTestCode()
         runAccountStepBlock()
         // Check scheduled upgrade notifications every cycle (runs in background)
@@ -227,6 +231,7 @@ private fun resolveGameVersion(isBatchCreate: Boolean): GameVersion {
  * @return true if the full flow completed, false if any step failed early.
  */
 suspend fun runAccountStepBlock(): Boolean {
+    if (InGameVars.qrLinkFlowActiveCount > 0) return false
     // Reset per-run wall-completeness state so it never leaks across accounts
     InGameVars.wallsCompleteBases.clear()
     checkAndCoolDown()

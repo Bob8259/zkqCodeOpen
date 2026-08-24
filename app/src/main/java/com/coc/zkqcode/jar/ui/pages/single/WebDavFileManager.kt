@@ -1972,7 +1972,8 @@ private fun copySelectedToOtherPanel(
             val slotConflict = remoteSlot != null && targetExists(dstPanel, destBasePath, remoteSlot)
             if (literalConflict || slotConflict) {
                 val sourceDisplay = formatOperationPath(panel, copyLocalPath, copyItem.name)
-                val destDisplay = formatOperationPath(dstPanel, destBasePath, if (slotConflict) remoteSlot!! else remoteName)
+                // slotConflict already implies remoteSlot != null
+                val destDisplay = formatOperationPath(dstPanel, destBasePath, if (slotConflict) remoteSlot else remoteName)
                 val mode = autoMode ?: onResolveConflict(sourceDisplay, destDisplay, if (move) "移动" else "复制")
                 when (mode) {
                     null, ConflictMode.CANCEL -> {

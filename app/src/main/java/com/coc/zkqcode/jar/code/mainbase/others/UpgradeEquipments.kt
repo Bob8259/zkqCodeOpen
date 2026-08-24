@@ -143,7 +143,6 @@ private suspend fun clearNewEquipments() {
 private suspend fun tryUpgradeEnabledEquipment() {
     clearNewEquipments()
     val screenBuffer = ScreenCaptureManager.captureScreenOrRestart<ScreenCaptureManager.CaptureResult>(asBitmap = false)
-        ?: logAndRestart("tryUpgradeEnabledEquipment: Screen Capture Failed.")
 
     for (hero in HERO_ENTRIES) {
         for ((key, colorSchema) in hero.equipments) {

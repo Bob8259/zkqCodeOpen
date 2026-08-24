@@ -52,7 +52,7 @@ suspend fun detectBuildingList(baseType: BaseType, excludeNewBuildings: Boolean 
     // Keep the debug message short so it stays readable in logs.
     accountMessage("原始检测结果：\n${rawSummary.take(150)}")
     // Take a screenshot for colour checking (needed for post-process and later filtering)
-    val screenBuffer = ScreenCaptureManager.captureScreenOrRestart<ScreenCaptureManager.CaptureResult>(asBitmap = false) ?: logAndRestart("failed to take screenshot at building detection")
+    val screenBuffer = ScreenCaptureManager.captureScreenOrRestart<ScreenCaptureManager.CaptureResult>(asBitmap = false)
 
     // Post-process: Check for green indicator (new building marker) and gear-up icon
     // If green pixels > 20 in area (x-15, y-3, x, y+20), add "新" prefix
@@ -188,7 +188,7 @@ private suspend fun recognizeBuildingListWithGreenMask(
     threshold: Int,
     saveImage: Boolean = false,
 ): List<RecognizedText> {
-    val screenBuffer = ScreenCaptureManager.captureScreenOrRestart<Bitmap>(asBitmap = true) ?: logAndRestart("in building list recognition, screen capture failed.")
+    val screenBuffer = ScreenCaptureManager.captureScreenOrRestart<Bitmap>(asBitmap = true)
     val width = endX - startX
     val height = endY - startY
 

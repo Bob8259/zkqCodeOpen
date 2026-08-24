@@ -105,10 +105,7 @@ suspend fun collectClanGameReward(): Boolean {
 // The first visually unclaimed card marks the end of the eligible reward range.
 private suspend fun detectLastEligibleCard(): Int {
     val screenBuffer =
-        ScreenCaptureManager.captureScreenOrRestart<ScreenCaptureManager.CaptureResult>(asBitmap = false) ?: run {
-            accountMessage("截图失败，无法检测达标情况")
-            return -1
-        }
+        ScreenCaptureManager.captureScreenOrRestart<ScreenCaptureManager.CaptureResult>(asBitmap = false)
     val unclaimedSchemas = listOf(
         MyColors.UnclaimedReward1,
         MyColors.UnclaimedReward2,

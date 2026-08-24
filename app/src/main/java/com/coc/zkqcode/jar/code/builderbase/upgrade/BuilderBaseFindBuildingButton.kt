@@ -82,7 +82,7 @@ suspend fun builderBaseFindBuildButton(duration: Int = 500, type: BuildButtonTyp
     }
 
     while (System.currentTimeMillis() - startTime < duration) {
-        val screenBuffer = ScreenCaptureManager.captureScreenOrRestart<ScreenCaptureManager.CaptureResult>(asBitmap = false) ?: logAndRestart("failed to take screenshot at close advertisement")
+        val screenBuffer = ScreenCaptureManager.captureScreenOrRestart<ScreenCaptureManager.CaptureResult>(asBitmap = false)
         for (schema in targetSchemas) {
             val point = findMultiColors(schema = schema, byteBuffer = screenBuffer)
             if (point != null) return point

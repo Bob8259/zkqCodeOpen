@@ -255,7 +255,7 @@ class WebDavClient(
 
         val dirError = ensureRemotePath(remotePath)
         if (dirError != null) {
-            cont.resume(WebDavResult.Error(0, dirError), null)
+            cont.resume(WebDavResult.Error(0, dirError))
             return@suspendCancellableCoroutine
         }
 
@@ -276,14 +276,13 @@ class WebDavClient(
             val response = call.execute()
             cont.resume(
                 if (response.isSuccessful) WebDavResult.Success(Unit)
-                else errorFromResponse(response),
-                null
+                else errorFromResponse(response)
             )
         } catch (e: Exception) {
             if (call.isCanceled()) {
-                cont.resume(WebDavResult.Failure(CancellationException("Upload cancelled")), null)
+                cont.resume(WebDavResult.Failure(CancellationException("Upload cancelled")))
             } else {
-                cont.resume(WebDavResult.Failure(e), null)
+                cont.resume(WebDavResult.Failure(e))
             }
         }
     }
@@ -378,7 +377,7 @@ class WebDavClient(
         try {
             val response = call.execute()
             if (!response.isSuccessful) {
-                cont.resume(errorFromResponse(response), null)
+                cont.resume(errorFromResponse(response))
                 return@suspendCancellableCoroutine
             }
             targetFile.parentFile?.mkdirs()
@@ -391,12 +390,12 @@ class WebDavClient(
                 }
                 output.use { out -> input.copyTo(out) }
             }
-            cont.resume(WebDavResult.Success(Unit), null)
+            cont.resume(WebDavResult.Success(Unit))
         } catch (e: Exception) {
             if (call.isCanceled()) {
-                cont.resume(WebDavResult.Failure(CancellationException("Download cancelled")), null)
+                cont.resume(WebDavResult.Failure(CancellationException("Download cancelled")))
             } else {
-                cont.resume(WebDavResult.Failure(e), null)
+                cont.resume(WebDavResult.Failure(e))
             }
         }
     }
@@ -521,7 +520,7 @@ class WebDavClient(
     /** 从失败响应构造带 body 详情的 Error，参考 OpenList 读取错误响应体的设计 */
     private fun errorFromResponse(response: Response): WebDavResult.Error {
         val bodySnippet = try {
-            response.body?.string()?.take(300)?.trim()?.takeIf { it.isNotBlank() }
+            response.body.string().take(300).trim().takeIf { it.isNotBlank() }
         } catch (_: Exception) { null }
         val detail = if (bodySnippet != null) " | $bodySnippet" else ""
         return WebDavResult.Error(response.code, response.message + detail, httpCodeToErrorType(response.code))

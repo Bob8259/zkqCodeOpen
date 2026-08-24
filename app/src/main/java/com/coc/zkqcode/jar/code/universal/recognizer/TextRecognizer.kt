@@ -38,7 +38,6 @@ object TextRecognizer {
         screenBuffer: Bitmap? = null
     ): List<RecognizedText> {
         val sourceBitmap = screenBuffer ?: ScreenCaptureManager.captureScreenOrRestart<Bitmap>(asBitmap = true)
-        ?: logAndRestart("in TextRecognizer, screen capture failed.")
 
         val width = endX - startX
         val height = endY - startY

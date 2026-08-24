@@ -44,6 +44,9 @@ object InGameVars {
     var currentGameVersion: GameVersion = GameVersion.CN
 
     @Volatile
+    var qrLinkFlowActiveCount: Int = 0
+
+    @Volatile
     var adTime: Int = 15
 
     // Set by checkRandomSchedule; read by RandomSchedulingLogic after stepBlock.

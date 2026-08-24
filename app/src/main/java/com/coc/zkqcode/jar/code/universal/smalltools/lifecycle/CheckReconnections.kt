@@ -54,7 +54,6 @@ suspend fun checkReconnections(): Boolean {
             val ratingOcrLeft = 0
             val ratingOcrTop = 0
             val ratingBitmap = ScreenCaptureManager.captureScreenOrRestart<Bitmap>(asBitmap = true)
-                ?: logAndRestart("failed to take screenshot for rating OCR")
             val recognizedTexts = TextRecognizer.recognize(
                 startX = ratingOcrLeft,
                 startY = ratingOcrTop,
@@ -123,7 +122,7 @@ suspend fun checkReconnections(): Boolean {
 }
 
 private suspend fun captureOrRestart(): ScreenCaptureManager.CaptureResult =
-    ScreenCaptureManager.captureScreenOrRestart<ScreenCaptureManager.CaptureResult>(asBitmap = false) ?: logAndRestart("failed to take screenshot at reconnection check")
+    ScreenCaptureManager.captureScreenOrRestart<ScreenCaptureManager.CaptureResult>(asBitmap = false)
 
 /**
  * Detects an ANR ("Application Not Responding") dialog on screen using OCR only.
