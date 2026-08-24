@@ -445,10 +445,10 @@ suspend fun isInHomePage(countdownMessage: String? = null): Boolean {
 
     // 2. Check for the training button presence
     if (findMultiColorsUntil(schemas = listOf(MyColors.TrainTroops, MyColors.TrainTroops2, MyColors.TrainTroops3), duration = 10, byteBuffer = screenBuffer, increment = 1) == null) {
-        return homePageCheckFailed("寻找练兵按钮中...\n当前正在等待进入游戏首页，提示该信息是正常情况。\n若进入游戏首页后仍提示该信息，则请检查设备分辨率。")
+        return homePageCheckFailed("寻找练兵按钮中...")
     }
     if (findMultiColors(byteBuffer = screenBuffer, schema = MyColors.ShopButton, increment = 1) == null) {
-        return homePageCheckFailed("寻找商店按钮中...\n当前正在等待进入游戏首页，提示该信息是正常情况。\n若进入游戏首页后仍提示该信息，则请检查设备分辨率。")
+        return homePageCheckFailed("寻找商店按钮中...")
     }
 
     // 3. Check for any of the worker icons (Main base, Goblin workers, or Builder base)
@@ -457,7 +457,7 @@ suspend fun isInHomePage(countdownMessage: String? = null): Boolean {
 
     val hasWorker = workerSchemas.any { findMultiColors(byteBuffer = screenBuffer, schema = it, increment = 1) != null }
     if (!hasWorker) {
-        return homePageCheckFailed("寻找工人按钮中...\n当前正在等待进入游戏首页，提示该信息是正常情况。\n若进入游戏首页后仍提示该信息，则请检查设备分辨率。")
+        return homePageCheckFailed("寻找工人按钮中...")
     }
     return true
 }
