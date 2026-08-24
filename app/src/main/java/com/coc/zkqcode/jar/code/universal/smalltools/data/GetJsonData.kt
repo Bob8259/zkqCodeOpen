@@ -133,9 +133,11 @@ private const val BB_RAGED_BARBARIAN_DATA_ID = 4000031   // 狂暴野蛮人
         return enterMainScreen()
     }
     val targetLevel = getConfigRuntime(Schema.MAIN_BASE_SETTINGS.SKIP_TH_LEVEL.key).toIntOrNull() ?: logAndRestart("${Schema.MAIN_BASE_SETTINGS.SKIP_TH_LEVEL.displayName} 必须是数字，请检查配置")
-    val thLevelInfo = "大本营等级: $firstBuildingLvl\n设定目标等级：$targetLevel"
+    val thLevelInfo = "大本营等级: $firstBuildingLvl，设定目标等级：$targetLevel\n大本营等级已达标，即将跳过！"
     if (firstBuildingLvl >= targetLevel) {
         accountMessage(thLevelInfo)
+        // Give the user time to read the message before force switching account
+        delayWithMultiplier(2000)
         return false//force switch account
     }
     InGameVars.townHallLevel = firstBuildingLvl
