@@ -438,14 +438,14 @@ suspend fun isInHomePage(countdownMessage: String? = null): Boolean {
     val screenBuffer = ScreenCaptureManager.captureScreenOrRestart<ScreenCaptureManager.CaptureResult>(asBitmap = false)
 
     suspend fun homePageCheckFailed(message: String): Boolean {
-        accountMessage(if (countdownMessage == null) message else "$countdownMessage，$message，请检查设备分辨率")
+        accountMessage(if (countdownMessage == null) message else "$countdownMessage，$message")
         delayWithMultiplier(500)
         return false
     }
 
     // 2. Check for the training button presence
     if (findMultiColorsUntil(schemas = listOf(MyColors.TrainTroops, MyColors.TrainTroops2, MyColors.TrainTroops3), duration = 10, byteBuffer = screenBuffer, increment = 1) == null) {
-        return homePageCheckFailed("未找到练兵按钮")
+        return homePageCheckFailed("寻找练兵按钮中...\n若进入游戏后仍未找到，则请检查设备分辨率。")
     }
     if (findMultiColors(byteBuffer = screenBuffer, schema = MyColors.ShopButton, increment = 1) == null) {
         return homePageCheckFailed("未找到商店按钮")
