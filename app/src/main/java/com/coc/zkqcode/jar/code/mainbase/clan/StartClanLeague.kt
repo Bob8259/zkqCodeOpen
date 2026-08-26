@@ -90,6 +90,7 @@ fun isInLeagueRegistrationPeriod(): Boolean {
  * ③ Select 15v15 or 30v30 based on config (pure coordinate tap)
  * ④ Find and tap confirm registration button
  */
+
 suspend fun startClanLeague(): Boolean {
     // 1. Check if START_CLAN_LEAGUE config is enabled
     if (!getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.START_CLAN_LEAGUE.key)) {

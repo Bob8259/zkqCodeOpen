@@ -31,6 +31,7 @@ object StorageKeys {
     const val CONTRIBUTE_CAPITAL_COINS = "ContributeCapitalCoins"
     const val START_CLAN_WAR = "StartClanWar"
     const val START_CLAN_LEAGUE = "StartClanLeague"
+    const val DISTRIBUTE_CLAN_LEAGUE_REWARDS = "DistributeClanLeagueRewards"
     const val CLAN_WAR_ATTACK = "ClanWarAttack"
     const val CLAN_LEAGUE_ATTACK = "ClanLeagueAttack"
     const val CLAN_WAR_LAST_STRATEGY = "ClanWarLastStrategy"

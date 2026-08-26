@@ -6,6 +6,7 @@ import com.coc.zkqcode.jar.code.colorschema.ColorSchema
 
 interface IMainBaseClanWarColors {
     val ClanWarInfo: ColorSchema
+    val ClanWarPageIcon: ColorSchema
     val OurTeam: ColorSchema
     val MyPositionGreen: ColorSchema
     val ClanWarSwordIcon: ColorSchema
@@ -18,6 +19,7 @@ interface IMainBaseClanWarColors {
     val ClanLeagueSeasonInfo: ColorSchema
     val SmallBlueInfoIcon: ColorSchema
     val ClaimClanLeagueReward: ColorSchema
+    val ClanWarPageKingAndQueen: ColorSchema
 
     // Clan war start and join buttons
     val StartClanWar: ColorSchema
@@ -49,6 +51,11 @@ interface IMainBaseClanWarColors {
 }
 
 object MainBaseClanWarColors : IMainBaseClanWarColors {
+    // Clan war page icon
+    override val ClanWarPageIcon = ColorSchema.parse(
+        28, 414, 55, 465, "15171B", "5|0|AAD1F4,11|0|F8FFFF,16|0|FFFFFF,21|0|3A67C2,0|25|0D0D0D,5|25|467FB7,11|25|5E9BD8,16|25|0F1113,21|25|233A68", 0, 0.9, "部落战标志"
+    )
+
     // Clan war detail info panel
     override val ClanWarInfo = ColorSchema.parse(
         1150, 581, 1244, 667, "EBFDFE", "30|-9|EBFDFE,15|-20|FFFFFF,5|-31|FFFFFF,-6|-43|FFFFFF,-22|-40|FFFFFF,-13|-27|FFFFFF,7|-33|FFFFFF,-17|-10|EBFDFE,24|-22|FFFFFF", 0, 0.9, "对战详细信息"
@@ -108,6 +115,11 @@ object MainBaseClanWarColors : IMainBaseClanWarColors {
     // Claim clan league reward tutorial button
     override val ClaimClanLeagueReward = ColorSchema.parse(
         369, 383, 583, 496, "7BF7DA", "18|-3|81F7DD,37|0|7BF7DA,76|0|7BF7DA,131|5|70F3D2,-20|-43|FFFFFF,27|-43|FFFFFF,79|-41|FFFFFF,121|-41|FFFFFF,193|-49|FFFFFF", 0, 0.98, "领取部落联赛奖励教程"
+    )
+
+    // Clan war page indicator showing the King and Queen
+    override val ClanWarPageKingAndQueen = ColorSchema.parse(
+        373, 75, 973, 285, "789AEE", "-7|12|6B89DB,-48|17|191E64,30|24|6B86CC,57|27|536AA9,245|26|254F37,222|21|3D512F,215|5|15272F,223|-45|869DF1,230|-72|9C4966", 0, 0.9, "部落站界面蛮王女王"
     )
 
     // Clan war start button
