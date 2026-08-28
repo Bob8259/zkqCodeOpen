@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit
  */
 object UrlFallbackUtil {
 
-    const val PRIMARY_URL = "https://zkqcoc.store/"
+    const val PRIMARY_URL = "https://zkqcoc.shop/"
     const val BACKUP_URL = "http://103.85.226.101/"
 
     private val httpClient = OkHttpClient.Builder()

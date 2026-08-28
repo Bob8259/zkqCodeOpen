@@ -77,9 +77,9 @@ private suspend fun fetchTimestampFromSuning(): Long? = withContext(Dispatchers.
     }
 }
 
-// Fetch epoch millis from zkqcoc.store HTTP Date header
+// Fetch epoch millis from zkqcoc.shop HTTP Date header
 private suspend fun fetchTimestampFromZkqcoc(): Long? = withContext(Dispatchers.IO) {
-    val request = Request.Builder().url("https://zkqcoc.store/").head().build()
+    val request = Request.Builder().url("https://zkqcoc.shop/").head().build()
     timeClient.newCall(request).execute().use { response ->
         if (!response.isSuccessful) return@withContext null
         val dateStr = response.header("Date") ?: return@withContext null
@@ -93,7 +93,7 @@ private suspend fun fetchTimestampFromZkqcoc(): Long? = withContext(Dispatchers.
  * Cascading network timestamp retrieval (epoch millis):
  * 1. QQ checktime API
  * 2. Suning time API
- * 3. zkqcoc.store HTTP Date header
+ * 3. zkqcoc.shop HTTP Date header
  * 4. Local system time (fallback)
  */
 suspend fun getNetworkTimestamp(): Long {

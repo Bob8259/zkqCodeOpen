@@ -62,7 +62,7 @@ sealed class AppUpdateState {
  */
 object AppUpdateChecker {
 
-    private const val PRIMARY_URL = "https://zkqcoc.store/"
+    private const val PRIMARY_URL = "https://zkqcoc.shop/"
     private const val BACKUP_URL = "http://103.85.226.101/"
     private const val ENDPOINT = "api/get-new-version"
 
