@@ -140,6 +140,8 @@ suspend fun builderBaseAttack(): Boolean {
 private suspend fun realAttack(mode: String, hasBuilderBaseTask: Boolean, battleNumber: Int = 1, battleTimes: Int): Boolean {
     val startTime = System.currentTimeMillis()
     val exitOnOneStar = getBooleanConfigRuntime(Schema.BUILDER_BASE_SETTINGS.EXIT_ON_ONE_STAR_BUILDER.key)
+    val speedUpEnabled = getBooleanConfigRuntime(Schema.BUILDER_BASE_SETTINGS.BUILDER_BASE_BATTLE_SPEEDUP.key)
+    var speedUpClicked = false // 2x button persists within one area; reset when entering the 2nd area
     var troopsDeployed = false
     // Track first detection of SwitchTroopButton for shorter initial delay
     var isFirstSwitchTroop = true
@@ -213,6 +215,8 @@ private suspend fun realAttack(mode: String, hasBuilderBaseTask: Boolean, battle
             } else {
                 accountMessage("已进入第二区域")
                 delayWithMultiplier(2000)
+                // 第二区域有独立的加速按钮（速度会重置），重置标记以允许再次点击
+                speedUpClicked = false
             }
             // Last round + trophy pushing not enabled: battle, kill & restart game, then return
             if (battleNumber == battleTimes && !getBooleanConfigRuntime(Schema.BUILDER_BASE_SETTINGS.TROPHY_PUSHING_MODE.key)) {
@@ -231,6 +235,19 @@ private suspend fun realAttack(mode: String, hasBuilderBaseTask: Boolean, battle
             }
             troopsDeployed = true
             continue
+        }
+
+        // Night world battle speed-up: click the 2x button once per battle area after troops deployed.
+        // Only in trophy-pushing (gold) mode or clan-game task battles —
+        // exile (elixir-cart) mode exits right after deploy, no playback to speed up.
+        if (speedUpEnabled && !speedUpClicked && troopsDeployed && (mode == "gold" || hasBuilderBaseTask)) {
+            val speedUpBtn = findMultiColors(schema = MyColors.BuilderBaseBattleSpeedUp, byteBuffer = capturedScreen)
+            if (speedUpBtn != null) {
+                accountMessage("检测到夜世界加速按钮，坐标：${speedUpBtn.x}, ${speedUpBtn.y}")
+                TouchActions.tap(speedUpBtn.x, speedUpBtn.y)
+                accountMessage("夜世界对战已加速")
+                speedUpClicked = true
+            }
         }
 
         val machineSkills = findMultiColors(byteBuffer = capturedScreen, schema = MyColors.MachineSkills)

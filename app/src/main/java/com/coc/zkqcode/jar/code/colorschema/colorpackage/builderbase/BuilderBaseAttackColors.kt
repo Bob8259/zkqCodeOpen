@@ -22,6 +22,9 @@ interface IBuilderBaseAttackColors {
     val BuilderBaseStarsAvailable: ColorSchema
     val BuilderBaseOneStar1: ColorSchema
     val BuilderBaseOneStar2: ColorSchema
+
+    // Night world 2x battle speed-up button (appears after troops deployed)
+    val BuilderBaseBattleSpeedUp: ColorSchema
 }
 
 object BuilderBaseAttackColors : IBuilderBaseAttackColors {
@@ -73,5 +76,9 @@ object BuilderBaseAttackColors : IBuilderBaseAttackColors {
     )
     override val BuilderBaseOneStar2 = ColorSchema.parse(
         1068, 521, 1102, 557, "DFFFFF", "-5|19|1167C5,4|20|002098,4|13|2C9EEA,-1|10|58D0FF,-3|8|74E9FF,-9|10|003BAB,4|21|011B93,10|9|207FD5,-5|5|BDF6FF", 0, 0.9, "夜世界一星2"
+    )
+
+    override val BuilderBaseBattleSpeedUp = ColorSchema.parse(
+        1197, 374, 1263, 446, "7FF4D8", "13|0|7FF4D8,26|0|7FF4D8,39|0|7FF4D8,52|0|7FF4D8,0|36|2DC77E,13|36|2DC77E,26|36|2DC77E,39|36|2DC77E,52|36|2DC77E", 0, 0.9, "夜世界对战加速按钮"
     )
 }

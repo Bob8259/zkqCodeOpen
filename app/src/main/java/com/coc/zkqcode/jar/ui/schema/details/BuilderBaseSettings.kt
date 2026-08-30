@@ -31,6 +31,7 @@ object BuilderBaseSettings {
     val BUILDER_BASE_ENABLE_CLOCK_TOWER = SettingDef("builder_base_enable_clock_tower", "开启时光钟楼", "Enable Clock Tower", 1, "BUILDER_BASE_SETTINGS")
     val BUILDER_BASE_STOP_BATTLE_WHEN_NO_STAR = SettingDef("builder_base_stop_battle_when_no_star", "无胜利之星后停止对战", "Stop if no stars", 0, "BUILDER_BASE_SETTINGS")
     val EXIT_ON_ONE_STAR_BUILDER = SettingDef("exit_on_one_star_builder", "一星退出", "Exit on 1-star", 0, "BUILDER_BASE_SETTINGS")
+    val BUILDER_BASE_BATTLE_SPEEDUP = SettingDef("builder_base_battle_speedup", "对战加速", "Battle Speed-up", 0, "BUILDER_BASE_SETTINGS")
 
     val all = listOf(
         NO_BUILDER_BASE,
@@ -52,6 +53,7 @@ object BuilderBaseSettings {
         BUILDER_BASE_ENABLE_CLOCK_TOWER,
         BUILDER_BASE_BATTLE_TIMES_WITH_TASKS,
         BUILDER_BASE_STOP_BATTLE_WHEN_NO_STAR,
-        EXIT_ON_ONE_STAR_BUILDER
+        EXIT_ON_ONE_STAR_BUILDER,
+        BUILDER_BASE_BATTLE_SPEEDUP
     )
 }

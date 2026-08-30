@@ -112,6 +112,12 @@ fun LazyListScope.builderBaseConfig(
                     key = "${BUILDER_BASE_SETTINGS.EXIT_ON_ONE_STAR_BUILDER.key}_c${index}"
                 )
             }
+            Row {
+                SettingSwitchIcon(
+                    key = "${BUILDER_BASE_SETTINGS.BUILDER_BASE_BATTLE_SPEEDUP.key}_c${index}",
+                    explain = Strings.builderBaseBattleSpeedupExplain
+                )
+            }
         }
     }
 

@@ -384,6 +384,12 @@ object Strings {
             "启用后，战斗中检测右上角加速按钮并自动点击 1 次加速。"
         else "Detect and click the 2x speed button once during battle."
 
+    // Builder Base battle speed-up button
+    val builderBaseBattleSpeedupExplain
+        get() = if (LanguageManager.isChinese)
+            "启用后，夜世界对战（上分模式/竞赛任务局）检测加速按钮并自动点击 1 次加速；刷圣水车模式不生效。"
+        else "Detect and click the 2x speed button once during Builder Base battles (trophy-pushing / task battles only; not in elixir-cart mode)."
+
     // CN auto battle
     val autoBattleCn get() = if (LanguageManager.isChinese) "自动战斗" else "Auto Battle (CN)"
     val autoBattleCnExplain
