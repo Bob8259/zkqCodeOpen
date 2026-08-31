@@ -161,7 +161,10 @@ suspend fun searchOpponentsAndDeployTroops(battleNumber: Int = 1, battleTimes: I
             break
         }
 
-        val nextOpponent = findMultiColors(schema = MyColors.NextOpponent)
+        val nextOpponent = findMultiColorsUntil(
+            schemas = listOf(MyColors.NextOpponent, MyColors.NextOpponent2),
+            duration = 0
+        )
         if (nextOpponent != null) {
             // Fast path: all targets below 10 → attack immediately without OCR
             if (targetGold < 10 && targetElixir < 10 && targetDarkElixir < 10) {

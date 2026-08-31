@@ -10,6 +10,7 @@ interface IMainBaseAttackColors {
     val SearchOpponents: ColorSchema
     val AttackButton: ColorSchema
     val NextOpponent: ColorSchema
+    val NextOpponent2: ColorSchema
     val GoldColor: ColorSchema
     val ElixirColor: ColorSchema
     val DarkElixirColor: ColorSchema
@@ -97,6 +98,9 @@ object MainBaseAttackColors : IMainBaseAttackColors {
     )
     override val NextOpponent = ColorSchema.parse(
         1072, 472, 1265, 560, "36BFFD", "18|0|36BFFD,38|0|36BFFD,44|0|36BFFD,72|1|36BFFD,-56|53|0D59E8,-53|57|0D55E6,-47|58|0D54E6,-32|68|0D50E4,-27|72|0D50E4", 0, 0.95
+    )
+    override val NextOpponent2 = ColorSchema.parse(
+        1065, 470, 1270, 565, "4CCBFF", "-96|-4|4CCBFF,-100|7|4CCBFF,-101|14|4CCBFF,-156|41|2676F5,-156|46|2676F5,-153|48|2676F5,-147|48|2676F5,-143|48|2676F5,-135|49|2676F5", 0, 0.9
     )
     override val GoldColor = ColorSchema.parse(
         998, 19, 1215, 136, "0DC0E7", "0|1|0DC0E7,0|2|0DC0E7,0|3|0DC0E7,0|4|0DC0E7,0|5|0DC0E7,0|6|0DC0E7,0|7|0DC0E7", 0, 0.97,
