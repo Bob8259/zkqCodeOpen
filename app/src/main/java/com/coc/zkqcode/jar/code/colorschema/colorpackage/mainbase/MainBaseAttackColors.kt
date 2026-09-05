@@ -70,6 +70,8 @@ interface IMainBaseAttackColors {
     val MainBaseStarsAvailable2: ColorSchema
     val MainBaseOneStar1: ColorSchema
     val MainBaseOneStar2: ColorSchema
+    val MainBaseOneStar3: ColorSchema
+    val MainBaseOneStar4: ColorSchema
 
     /** Screen crop bounds for OCR of destruction % (top-center HUD, 1280x720). */
     val BattleDestructionPercentOcrRegion: ColorSchema
@@ -82,6 +84,12 @@ interface IMainBaseAttackColors {
 
     /** CN auto-battle button color variant 2 on the deploy/preparation screen. */
     val AutoBattleBtn2: ColorSchema
+
+    /** Main-world battle modal that asks the player to select one of three rewards. */
+    val BattleRewardChoiceDialog: ColorSchema
+
+    /** Indicates that all three reward cards are fully rendered and can be clicked. */
+    val BattleRewardChoiceReady: ColorSchema
 }
 
 object MainBaseAttackColors : IMainBaseAttackColors {
@@ -297,6 +305,20 @@ object MainBaseAttackColors : IMainBaseAttackColors {
         1069, 522, 1105, 558, "EFF3F0", "-6|9|C5CBC6,-5|16|CED3CE,5|16|D3D6D3,7|7|D6DBD6,4|13|CBCFCE,-3|11|C3C9C3,2|10|C6C8C6,0|4|E4E6E5,-3|7|C9CEC9", 0, 0.9, "主世界一星2"
     )
 
+    override val MainBaseOneStar3 = ColorSchema.parse(
+        598, 322, 685, 405,
+        "F2E9E2",
+        "17|0|F7F1EA,35|0|EEE4DD,52|0|EADFD8,69|0|E8D7D0,0|41|E5D8CE,17|41|E8DCD3,35|41|DDCCBF,52|41|D6C2B6,69|41|DCC7BD",
+        0, 0.9, "主世界一星3"
+    )
+
+    override val MainBaseOneStar4 = ColorSchema.parse(
+        1070, 520, 1105, 556,
+        "EAE0D9",
+        "0|-6|FEF9F6,6|-2|E8D7D0,6|8|DAC2BB,3|5|D5C0B4,-5|6|E7D9D0,-9|-2|FEFDF9,-5|-3|FBF5ED,-10|-2|FFFFFC,1|-5|FEFDF8",
+        0, 0.9, "主世界一星4"
+    )
+
     // OCR crop for battle destruction percentage (bounds only; color match not used for OCR)
     override val BattleDestructionPercentOcrRegion = ColorSchema.parse(
         1177, 526, 1261, 560, "FFFFFF", "0|0|FFFFFF", 0, 0.5, "主世界破坏百分比OCR区域"
@@ -322,5 +344,21 @@ object MainBaseAttackColors : IMainBaseAttackColors {
     // CN auto-battle button color variant 2 on the deploy/preparation screen
     override val AutoBattleBtn2 = ColorSchema.parse(
         167, 509, 1022, 571, "FFFFFF", "9|-10|FBFBFB,12|-10|FBFBFB,12|-12|F5F5F5,6|-16|7BF6D8,2|-15|78F4D6,1|3|FFFFFF,4|1|FFFFFF,9|1|0D0D0D,15|4|21C070", 0, 0.9, "自动战斗按钮2"
+    )
+
+    // The title ribbon is stable across the captured 1280x720 reward dialog frames.
+    override val BattleRewardChoiceDialog = ColorSchema.parse(
+        820, 88, 900, 120,
+        "3333AE",
+        "-10|0|3535B8,10|0|3030A6,0|10|2C2C9F,0|-12|292999,-24|0|3434B4,24|0|1E1E70",
+        0, 0.9
+    )
+
+    // This pattern requires all three reward-card frames to be fully rendered.
+    override val BattleRewardChoiceReady = ColorSchema.parse(
+        290, 210, 400, 230,
+        "FFF3E3",
+        "50|0|FFF3E3,100|0|FFF3E3,250|0|FFF3E3,300|0|FFF3E3,500|0|FFF3E3,550|0|FFF3E3,0|12|1B0B08,250|12|1B0B08,550|12|1B0B08",
+        0, 0.9
     )
 }

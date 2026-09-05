@@ -33,7 +33,15 @@ private const val DARK_ELIXIR_FULL_X_THRESHOLD = 1080
 
 data class BattleSearchResult(
     val started: Boolean,
-    val autoBattleUsed: Boolean = false
+    val autoBattleUsed: Boolean = false,
+    val rewardChoiceFailed: Boolean = false,
+    val oneStarExitPending: Boolean = false
+)
+
+private data class BattleLaunchResult(
+    val autoBattleUsed: Boolean = false,
+    val rewardChoiceFailed: Boolean = false,
+    val oneStarExitPending: Boolean = false
 )
 
 suspend fun searchOpponentsAndDeployTroops(battleNumber: Int = 1, battleTimes: Int = 1): BattleSearchResult {
@@ -169,8 +177,14 @@ suspend fun searchOpponentsAndDeployTroops(battleNumber: Int = 1, battleTimes: I
             // Fast path: all targets below 10 → attack immediately without OCR
             if (targetGold < 10 && targetElixir < 10 && targetDarkElixir < 10) {
                 battleStarted = true
-                if (tryAutoBattleOrDeploy(hasMainWorldTask)) {
-                    return BattleSearchResult(started = true, autoBattleUsed = true)
+                val launchResult = tryAutoBattleOrDeploy(hasMainWorldTask)
+                if (launchResult.autoBattleUsed || launchResult.rewardChoiceFailed || launchResult.oneStarExitPending) {
+                    return BattleSearchResult(
+                        started = true,
+                        autoBattleUsed = launchResult.autoBattleUsed,
+                        rewardChoiceFailed = launchResult.rewardChoiceFailed,
+                        oneStarExitPending = launchResult.oneStarExitPending
+                    )
                 }
                 break
             }
@@ -225,8 +239,14 @@ suspend fun searchOpponentsAndDeployTroops(battleNumber: Int = 1, battleTimes: I
                 }
 
                 battleStarted = true
-                if (tryAutoBattleOrDeploy(hasMainWorldTask)) {
-                    return BattleSearchResult(started = true, autoBattleUsed = true)
+                val launchResult = tryAutoBattleOrDeploy(hasMainWorldTask)
+                if (launchResult.autoBattleUsed || launchResult.rewardChoiceFailed || launchResult.oneStarExitPending) {
+                    return BattleSearchResult(
+                        started = true,
+                        autoBattleUsed = launchResult.autoBattleUsed,
+                        rewardChoiceFailed = launchResult.rewardChoiceFailed,
+                        oneStarExitPending = launchResult.oneStarExitPending
+                    )
                 }
                 break
             } else {
@@ -247,9 +267,13 @@ suspend fun searchOpponentsAndDeployTroops(battleNumber: Int = 1, battleTimes: I
  * enters the shared battle monitor before returning. Otherwise, falls back to the
  * standard troop deployment logic.
  */
-private suspend fun tryAutoBattleOrDeploy(hasMainWorldTask: Boolean): Boolean {
+private suspend fun tryAutoBattleOrDeploy(hasMainWorldTask: Boolean): BattleLaunchResult {
+    if (resolveBattleRewardChoiceIfVisible() == BattleRewardChoiceResult.Failed) {
+        return BattleLaunchResult(rewardChoiceFailed = true)
+    }
+
     val autoBattleEnabled = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.AUTO_BATTLE_CN.key)
-    // Auto-battle is CN-exclusive; skip detection for global version
+    // Auto-battle is CN-exclusive; skip detection for global version.
     if (autoBattleEnabled && InGameVars.currentGameVersion == GameVersion.CN) {
         val autoBtn = findMultiColorsUntil(
             schemas = listOf(MyColors.AutoBattleBtn, MyColors.AutoBattleBtn2),
@@ -260,18 +284,27 @@ private suspend fun tryAutoBattleOrDeploy(hasMainWorldTask: Boolean): Boolean {
             accountMessage("检测到自动战斗按钮，已点击启用")
             // Monitor the battle immediately so the search loop never returns before
             // the auto-battle session reaches its end condition or timeout.
-            monitorMainBaseBattle(
+            val monitorSucceeded = monitorMainBaseBattle(
                 startTime = System.currentTimeMillis(),
                 hasMainWorldTask = hasMainWorldTask,
-                keepGameOnTimeout = true
+                keepGameOnTimeout = true,
+                redeployAfterRewardChoice = false
             )
-            return true
+            return BattleLaunchResult(
+                autoBattleUsed = true,
+                rewardChoiceFailed = !monitorSucceeded
+            )
         }
         accountMessage("未检测到自动战斗按钮，使用原有下兵方式兜底")
     }
-    // Fallback: deploy troops honouring the configured deploy mode
-    deployTroopsByConfig()
-    return false
+
+    return when (deployTroopsByConfig(
+        handleBattleRewards = isBattleRewardChoiceHandlingEnabled()
+    )) {
+        MainBaseDeploymentResult.Completed -> BattleLaunchResult()
+        MainBaseDeploymentResult.RewardChoiceFailed -> BattleLaunchResult(rewardChoiceFailed = true)
+        MainBaseDeploymentResult.OneStarExit -> BattleLaunchResult(oneStarExitPending = true)
+    }
 }
 
 private suspend fun mainBaseBattleTutorial(): Boolean {
