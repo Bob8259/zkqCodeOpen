@@ -101,6 +101,10 @@ internal suspend fun monitorMainBaseBattle(
             break
         }
 
+        if (findMultiColors(schema = MyColors.MainBaseSelectReward) != null) {
+            TouchActions.tap(390, 350)
+        }
+
         // Show task disabled message once
         if (hasMainWorldTask && !taskDisableMessageShown) {
             val disabledFeatures = mutableListOf<String>()
