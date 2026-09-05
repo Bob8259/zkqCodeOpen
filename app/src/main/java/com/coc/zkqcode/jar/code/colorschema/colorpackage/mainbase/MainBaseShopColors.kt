@@ -17,6 +17,7 @@ interface IMainBaseShopColors {
     val ResearchPotionInShop: ColorSchema
     val ResourcePotionInShop: ColorSchema
     val ShopButton: ColorSchema
+    val ShopButton2: ColorSchema
     val OldVersion: ColorSchema
     val LeaguePageButton: ColorSchema
     val LeaguePageButton2: ColorSchema
@@ -64,6 +65,9 @@ object MainBaseShopColors : IMainBaseShopColors {
     )
     override val ShopButton = ColorSchema.parse(
         1138, 605, 1262, 697, "1B87C6", "13|0|2196DE,26|0|41669B,38|0|2EAFF9,51|0|4FD1FC,0|15|1DA8EF,13|15|335381,26|15|1C6494,38|15|50D4FF,51|15|3DD2FF", 0, 0.9, "商店按钮"
+    )
+    override val ShopButton2 = ColorSchema.parse(
+        1166, 606, 1231, 655, "25B9FF", "13|0|22B6FD,26|0|2C3031,39|0|354E68,52|0|C6C9BF,0|25|3ACDFE,13|25|334F78,26|25|25CBD3,39|25|3ED0FF,52|25|36D0FF", 0, 0.9, "商店按钮2"
     )
     override val OldVersion = ColorSchema.parse(
         55, 6, 171, 54, "9FFCFF", "0|6|26A5F3,9|8|43D1F5,16|-6|EEF4E6,32|-7|DDFAF6,40|-7|DDFAF6,45|-8|DFFCF7,56|-7|DDFAF6,45|19|7AC6AF,55|20|7BC5B0", 0, 0.9, "切换旧版商店"

@@ -447,7 +447,7 @@ suspend fun isInHomePage(countdownMessage: String? = null): Boolean {
     if (findMultiColorsUntil(schemas = listOf(MyColors.TrainTroops, MyColors.TrainTroops2, MyColors.TrainTroops3), duration = 10, byteBuffer = screenBuffer, increment = 1) == null) {
         return homePageCheckFailed("寻找练兵按钮中...")
     }
-    if (findMultiColors(byteBuffer = screenBuffer, schema = MyColors.ShopButton, increment = 1) == null) {
+    if (findMultiColorsUntil(schemas = listOf(MyColors.ShopButton, MyColors.ShopButton2), duration = 10, byteBuffer = screenBuffer, increment = 1) == null) {
         return homePageCheckFailed("寻找商店按钮中...")
     }
 
