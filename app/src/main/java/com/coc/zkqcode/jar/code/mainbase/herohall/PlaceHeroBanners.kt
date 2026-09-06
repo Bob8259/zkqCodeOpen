@@ -44,7 +44,12 @@ private suspend fun placeHeroBannerAction() {
         if (getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.CLAIM_HERO_HALL_REWARDS.key)) {
             TouchActions.tap(820, 105)
             repeat(4) {
-                TouchActions.tap(705, 270, delayTime = 100)//claim chests
+                for (tapX in 100..1150 step 100) {
+                    TouchActions.tap(tapX, 240, delayTime = 50)
+                }
+                for (tapX in 100..1150 step 100) {
+                    TouchActions.tap(tapX, 270, delayTime = 50)
+                }
                 TouchActions.tap(470, 455, delayTime = 200)
                 TouchActions.tap(690, 390, delayTime = 200)
             }
