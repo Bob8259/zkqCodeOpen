@@ -14,6 +14,7 @@ import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.mainbase.attack.mainBaseDeployTroops
+import com.coc.zkqcode.jar.code.mainbase.attack.resolveHomeRewardChoiceIfVisible
 import com.coc.zkqcode.jar.code.mainbase.others.zoomSmallMainBase
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
@@ -441,6 +442,10 @@ suspend fun isInHomePage(countdownMessage: String? = null): Boolean {
         accountMessage(if (countdownMessage == null) message else "$countdownMessage，$message")
         delayWithMultiplier(500)
         return false
+    }
+
+    if (resolveHomeRewardChoiceIfVisible()) {
+        return homePageCheckFailed("已选择资源奖励，等待主界面刷新")
     }
 
     // 2. Check for the training button presence

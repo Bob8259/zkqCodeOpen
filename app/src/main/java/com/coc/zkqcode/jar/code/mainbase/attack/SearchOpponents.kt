@@ -34,13 +34,11 @@ private const val DARK_ELIXIR_FULL_X_THRESHOLD = 1080
 data class BattleSearchResult(
     val started: Boolean,
     val autoBattleUsed: Boolean = false,
-    val rewardChoiceFailed: Boolean = false,
     val oneStarExitPending: Boolean = false
 )
 
 private data class BattleLaunchResult(
     val autoBattleUsed: Boolean = false,
-    val rewardChoiceFailed: Boolean = false,
     val oneStarExitPending: Boolean = false
 )
 
@@ -178,11 +176,10 @@ suspend fun searchOpponentsAndDeployTroops(battleNumber: Int = 1, battleTimes: I
             if (targetGold < 10 && targetElixir < 10 && targetDarkElixir < 10) {
                 battleStarted = true
                 val launchResult = tryAutoBattleOrDeploy(hasMainWorldTask)
-                if (launchResult.autoBattleUsed || launchResult.rewardChoiceFailed || launchResult.oneStarExitPending) {
+                if (launchResult.autoBattleUsed || launchResult.oneStarExitPending) {
                     return BattleSearchResult(
                         started = true,
                         autoBattleUsed = launchResult.autoBattleUsed,
-                        rewardChoiceFailed = launchResult.rewardChoiceFailed,
                         oneStarExitPending = launchResult.oneStarExitPending
                     )
                 }
@@ -240,11 +237,10 @@ suspend fun searchOpponentsAndDeployTroops(battleNumber: Int = 1, battleTimes: I
 
                 battleStarted = true
                 val launchResult = tryAutoBattleOrDeploy(hasMainWorldTask)
-                if (launchResult.autoBattleUsed || launchResult.rewardChoiceFailed || launchResult.oneStarExitPending) {
+                if (launchResult.autoBattleUsed || launchResult.oneStarExitPending) {
                     return BattleSearchResult(
                         started = true,
                         autoBattleUsed = launchResult.autoBattleUsed,
-                        rewardChoiceFailed = launchResult.rewardChoiceFailed,
                         oneStarExitPending = launchResult.oneStarExitPending
                     )
                 }
@@ -268,9 +264,7 @@ suspend fun searchOpponentsAndDeployTroops(battleNumber: Int = 1, battleTimes: I
  * standard troop deployment logic.
  */
 private suspend fun tryAutoBattleOrDeploy(hasMainWorldTask: Boolean): BattleLaunchResult {
-    if (resolveBattleRewardChoiceIfVisible() == BattleRewardChoiceResult.Failed) {
-        return BattleLaunchResult(rewardChoiceFailed = true)
-    }
+    resolveBattleRewardChoiceIfVisible()
 
     val autoBattleEnabled = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.AUTO_BATTLE_CN.key)
     // Auto-battle is CN-exclusive; skip detection for global version.
@@ -284,16 +278,13 @@ private suspend fun tryAutoBattleOrDeploy(hasMainWorldTask: Boolean): BattleLaun
             accountMessage("检测到自动战斗按钮，已点击启用")
             // Monitor the battle immediately so the search loop never returns before
             // the auto-battle session reaches its end condition or timeout.
-            val monitorSucceeded = monitorMainBaseBattle(
+            monitorMainBaseBattle(
                 startTime = System.currentTimeMillis(),
                 hasMainWorldTask = hasMainWorldTask,
                 keepGameOnTimeout = true,
                 redeployAfterRewardChoice = false
             )
-            return BattleLaunchResult(
-                autoBattleUsed = true,
-                rewardChoiceFailed = !monitorSucceeded
-            )
+            return BattleLaunchResult(autoBattleUsed = true)
         }
         accountMessage("未检测到自动战斗按钮，使用原有下兵方式兜底")
     }
@@ -302,7 +293,6 @@ private suspend fun tryAutoBattleOrDeploy(hasMainWorldTask: Boolean): BattleLaun
         handleBattleRewards = isBattleRewardChoiceHandlingEnabled()
     )) {
         MainBaseDeploymentResult.Completed -> BattleLaunchResult()
-        MainBaseDeploymentResult.RewardChoiceFailed -> BattleLaunchResult(rewardChoiceFailed = true)
         MainBaseDeploymentResult.OneStarExit -> BattleLaunchResult(oneStarExitPending = true)
     }
 }

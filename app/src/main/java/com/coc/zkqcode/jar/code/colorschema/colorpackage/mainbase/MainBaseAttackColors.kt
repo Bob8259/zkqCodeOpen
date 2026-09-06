@@ -90,6 +90,9 @@ interface IMainBaseAttackColors {
 
     /** Indicates that all three reward cards are fully rendered and can be clicked. */
     val BattleRewardChoiceReady: ColorSchema
+
+    /** Resource reward dialog that can block entry to the main village. */
+    val MainBaseHomeRewardChoiceDialog: ColorSchema
 }
 
 object MainBaseAttackColors : IMainBaseAttackColors {
@@ -360,5 +363,13 @@ object MainBaseAttackColors : IMainBaseAttackColors {
         "FFF3E3",
         "50|0|FFF3E3,100|0|FFF3E3,250|0|FFF3E3,300|0|FFF3E3,500|0|FFF3E3,550|0|FFF3E3,0|12|1B0B08,250|12|1B0B08,550|12|1B0B08",
         0, 0.9
+    )
+
+    // Resource reward dialog shown while entering the main village (1280x720).
+    override val MainBaseHomeRewardChoiceDialog = ColorSchema.parse(
+        450, 180, 840, 220,
+        "2D2DA3",
+        "20|0|2D2DA3,40|0|2C2CA2,60|0|2D2DA3,80|0|2C2CA2,100|0|2C2C9E,160|0|2A2A9C,180|0|2D2EA5,200|0|2D2EA5,240|0|2D2DA3,300|0|2D2DA3",
+        0, 0.9, "主世界资源奖励选择"
     )
 }

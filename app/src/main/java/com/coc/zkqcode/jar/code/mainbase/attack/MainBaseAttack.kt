@@ -56,10 +56,6 @@ suspend fun mainBaseAttack(battleNumber: Int = 1, battleTimes: Int? = null): Boo
         surrenderMainBaseBattle("检测到一星，关闭奖励弹窗后退出对战")
         return enterMainScreen()
     }
-    if (battleResult.rewardChoiceFailed) {
-        accountMessage("对战奖励弹窗未处理，停止当前账号流程")
-        return false
-    }
     if (!battleResult.started) return enterMainScreen()
     if (getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.SWITCH_ACCOUNT_AFTER_BATTLE.key)) return false
     val startTime = System.currentTimeMillis()
@@ -127,11 +123,6 @@ internal suspend fun monitorMainBaseBattle(
                     resolveBattleRewardChoiceIfVisible(continueDeployment = false)
                 }
                 when (rewardResult) {
-                    BattleRewardChoiceResult.Failed -> {
-                        accountMessage("一星后奖励弹窗未处理，停止当前账号流程")
-                        return false
-                    }
-
                     BattleRewardChoiceResult.Handled -> {
                         surrenderMainBaseBattle("检测到一星，关闭奖励弹窗后退出对战")
                         break
@@ -151,11 +142,6 @@ internal suspend fun monitorMainBaseBattle(
                     if (redeployAfterRewardChoice) {
                         when (deployTroopsByConfig(handleBattleRewards = true)) {
                             MainBaseDeploymentResult.Completed -> Unit
-                            MainBaseDeploymentResult.RewardChoiceFailed -> {
-                                accountMessage("奖励选择后的下兵失败，停止当前账号流程")
-                                return false
-                            }
-
                             MainBaseDeploymentResult.OneStarExit -> {
                                 surrenderMainBaseBattle("检测到一星，关闭奖励弹窗后退出对战")
                                 break
@@ -163,11 +149,6 @@ internal suspend fun monitorMainBaseBattle(
                         }
                     }
                     continue
-                }
-
-                BattleRewardChoiceResult.Failed -> {
-                    accountMessage("对战奖励弹窗未处理，停止当前账号流程")
-                    return false
                 }
 
                 BattleRewardChoiceResult.NotVisible -> Unit
@@ -260,6 +241,18 @@ internal suspend fun monitorMainBaseBattle(
 
         val endBattleButton = findMultiColors(schema = MyColors.EndBattle)
         if (endBattleButton == null) {
+            if (!isRestartGame) {
+                when (resolveBattleRewardChoiceIfVisible(
+                    continueDeployment = false,
+                    appearanceWaitMs = 2_000
+                )) {
+                    BattleRewardChoiceResult.Handled -> {
+                        accountMessage("战斗结算奖励已选择，准备回营")
+                    }
+
+                    BattleRewardChoiceResult.NotVisible -> Unit
+                }
+            }
             accountMessage("未找到放弃按钮，对战结束")
             delayWithMultiplier(1000)
             TouchActions.tap(640, 610, delayTime = 1500)

@@ -39,11 +39,9 @@ private const val MAX_CN_SPELL_BATCHES = 20
 
 enum class MainBaseDeploymentResult {
     Completed,
-    RewardChoiceFailed,
     OneStarExit
 }
 
-private class BattleRewardChoiceFailedException : IllegalStateException()
 private class BattleRewardChoiceOneStarException : IllegalStateException()
 
 private suspend fun shouldExitOnOneStarDuringDeployment(): Boolean {
@@ -59,14 +57,11 @@ private suspend fun handleBattleRewardChoiceAtCheckpoint(enabled: Boolean): Batt
     if (!enabled) return BattleRewardChoiceResult.NotVisible
 
     if (shouldExitOnOneStarDuringDeployment()) {
-        if (resolveBattleRewardChoiceIfVisible(continueDeployment = false) == BattleRewardChoiceResult.Failed) {
-            throw BattleRewardChoiceFailedException()
-        }
+        resolveBattleRewardChoiceIfVisible(continueDeployment = false)
         throw BattleRewardChoiceOneStarException()
     }
 
     val result = resolveBattleRewardChoiceIfVisible()
-    if (result == BattleRewardChoiceResult.Failed) throw BattleRewardChoiceFailedException()
     if (result == BattleRewardChoiceResult.Handled && shouldExitOnOneStarDuringDeployment()) {
         throw BattleRewardChoiceOneStarException()
     }
@@ -122,8 +117,6 @@ suspend fun deployTroopsByConfig(
         MainBaseDeploymentResult.Completed
     } catch (_: BattleRewardChoiceOneStarException) {
         MainBaseDeploymentResult.OneStarExit
-    } catch (_: BattleRewardChoiceFailedException) {
-        MainBaseDeploymentResult.RewardChoiceFailed
     }
 }
 
@@ -324,7 +317,6 @@ private suspend fun dragUntilDeployed(
                     }
 
                     BattleRewardChoiceResult.NotVisible -> Unit
-                    BattleRewardChoiceResult.Failed -> throw BattleRewardChoiceFailedException()
                 }
 
                 TouchActions.tap(resumedX, resumedY)
