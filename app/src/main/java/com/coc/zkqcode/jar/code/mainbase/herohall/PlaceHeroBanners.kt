@@ -11,6 +11,7 @@ import com.coc.zkqcode.jar.code.universal.buildings.upgrade.BuildButtonType
 import com.coc.zkqcode.jar.code.universal.buildings.upgrade.moveWithDelay
 import com.coc.zkqcode.jar.code.universal.buildings.upgrade.tryToFindBuildPosition
 import com.coc.zkqcode.jar.code.universal.clickRightBottom
+import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.smalltools.data.StorageKeys
 import com.coc.zkqcode.jar.code.universal.smalltools.data.checkMemoryFile
@@ -44,14 +45,19 @@ private suspend fun placeHeroBannerAction() {
         if (getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.CLAIM_HERO_HALL_REWARDS.key)) {
             TouchActions.tap(820, 105)
             repeat(4) {
-                for (tapX in 100..1150 step 100) {
-                    TouchActions.tap(tapX, 240, delayTime = 50)
-                }
-                for (tapX in 100..1150 step 100) {
-                    TouchActions.tap(tapX, 270, delayTime = 50)
+                TouchActions.tap(705, 270, delayTime = 100) // Claim chests
+                val claimReward = findMultiColors(
+                    schema = MyColors.ClaimHeroHallReward
+                )
+                if (claimReward != null) {
+                    TouchActions.tap(claimReward.x, claimReward.y, delayTime = 300)
+                TouchActions.tap(470, 455, delayTime = 200)
+                TouchActions.tap(690, 390, delayTime = 200)
+                TouchActions.tap(640, 530, delayTime = 200)
                 }
                 TouchActions.tap(470, 455, delayTime = 200)
                 TouchActions.tap(690, 390, delayTime = 200)
+                TouchActions.tap(640, 530, delayTime = 200)
             }
         }
         clickRightBottom(1)

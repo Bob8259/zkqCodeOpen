@@ -35,7 +35,7 @@ suspend fun collectBadgeEventRewards(): Boolean {
     )
     if (!checkMemoryFile(storageKey, 720)) {
         accountMessage("12小时内已检查过奖章活动奖励，跳过本次领取")
-        return true
+        //return true
     }
 
     accountMessage("准备领取奖章活动奖励")
@@ -52,8 +52,8 @@ suspend fun collectBadgeEventRewards(): Boolean {
         accountMessage("未检测到进入活动按钮")
         return enterMainScreen()
     }
-    accountMessage("检测到进入活动按钮，点击进入")
-    TouchActions.tap(enterButton.x, enterButton.y, delayTime = 1000)
+    accountMessage("检测到进入活动按钮{enterButton.x+80},{enterButton.y+50}，点击进入")
+    TouchActions.tap(enterButton.x+80, enterButton.y+50, delayTime = 1000)
 
     val continueButton = findMultiColorsUntil(listOf(MyColors.BadgeEventContinueButton), 1000)
     if (continueButton != null) {

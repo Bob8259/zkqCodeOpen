@@ -13,6 +13,7 @@ interface IMainBaseHeroHallColors {
     val PetShopIcon3: ColorSchema
     val RedExclamationMark: ColorSchema
     val PlaceBannerButton: ColorSchema
+    val ClaimHeroHallReward: ColorSchema
     val SmithOreIcon: ColorSchema
     val PetsIconInHeroHall: ColorSchema
     val PetsIconInHeroHall2: ColorSchema
@@ -86,6 +87,11 @@ object MainBaseHeroHallColors : IMainBaseHeroHallColors {
     // Button used to confirm hero banner placement
     override val PlaceBannerButton = ColorSchema.parse(
         627, 465, 775, 514, "7EE6B4", "29|0|7EE6B4,59|0|7EE6B4,89|0|7EE6B4,118|0|7EE6B4,0|25|3AD48B,29|25|3AD48B,59|25|3AD48B,89|25|3AD48B,118|25|3AD48B", 0, 0.9, "放置英雄战旗"
+    )
+
+    // Claim reward button shown after opening a Hero Hall chest
+    override val ClaimHeroHallReward = ColorSchema.parse(
+        46, 212, 1172, 272, "8EEABF", "0|5|8DEABE,3|5|8DEABE,8|3|8EEABF,12|5|8DEABE,14|16|77E4B0,14|21|3AD48B,12|26|3AD48B,-4|26|3AD48B,-14|24|3AD48B", 0, 0.9, "领取奖励"
     )
 
     // Smithy ore icon used to open equipment upgrades
