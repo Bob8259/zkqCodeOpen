@@ -13,6 +13,7 @@ interface IMainBaseTournamentColors {
     val ConfirmTournamentAttack: ColorSchema
     val WaitForTournament: ColorSchema
     val GreenSword: ColorSchema
+    val CompletedTournamentSword: ColorSchema
     val PreparingTournament: ColorSchema
     val PreparingTournament2: ColorSchema
     val TournamentNotAvailable: ColorSchema
@@ -50,6 +51,10 @@ object MainBaseTournamentColors : IMainBaseTournamentColors {
     // Green sword indicator
     override val GreenSword = ColorSchema.parse(
         491, 539, 542, 575, "15D85A", "3|-4|0DFFC6,9|-8|15CF5F,14|-13|15CF60,9|-14|30FFC2,6|-11|29FFB8,3|-7|22FFC4,2|-6|21FFC2,1|-2|10E15E,-2|-1|16D959", 0, 0.9, "绿色的剑"
+    )
+    // Completed tournament sword indicator
+    override val CompletedTournamentSword = ColorSchema.parse(
+        443, 500, 693, 581, "DDDDDD", "-2|3|A6A6A6,-5|5|A6A6A6,1|-4|DDDDDD,2|-4|DCDCDC,3|-4|DBDBDB,7|-7|C2C2C2,8|-7|999999,9|-7|989898,7|-5|999999", 0, 0.9, "排位赛完成的剑"
     )
     // Preparing tournament indicator
     override val PreparingTournament = ColorSchema.parse(

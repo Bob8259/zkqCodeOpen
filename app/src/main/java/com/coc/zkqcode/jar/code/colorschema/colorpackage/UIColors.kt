@@ -65,6 +65,7 @@ interface IUIColors {
     val TopRightClanWarInfo: ColorSchema
     val ContributionActivity: ColorSchema
     val CNCultivationAd: ColorSchema
+    val TencentQinglongAd: ColorSchema
 }
 
 object UIColors : IUIColors {
@@ -311,7 +312,12 @@ object UIColors : IUIColors {
         1198, 66, 1255, 121, "FFFFFF", "3|4|FFFFFF,-13|-9|8D8FF3,-7|-13|8D8FF3,16|-11|8D8FF3,19|9|2722F0,14|18|2520DE,-2|18|2520DE,-10|18|2520DE,-12|8|2722F0", 0, 0.9, "捐赠活动"
     )
 
-    // CN Cultivation (修仙) advertisement indicator
+    // Tencent Qinglong advertisement indicator
+    override val TencentQinglongAd = ColorSchema.parse(
+        1207, 18, 1261, 71, "FFFFFF", "0|3|FFFEFE,16|1|7C73FF,15|12|1412EB,-3|20|1D17CF,-17|9|1915ED,-16|-5|8E86FF,-6|-5|FFFFFF,-4|-1|FFFFFF,-4|6|F9F5F5", 0, 0.9, "腾讯青龙广告"
+    )
+
+    // CN Cultivation advertisement indicator
     override val CNCultivationAd = ColorSchema.parse(
         930, 126, 988, 186, "FFFFFF", "-12|2|7C75FF,-14|-10|948CFF,16|-10|968BFF,16|2|7C74FF,16|16|1313E4,0|19|1710DA,-12|19|1611D8,-5|9|F7F7F7,1|6|F6F6F6", 0, 0.9, "国服修仙广告"
     )
