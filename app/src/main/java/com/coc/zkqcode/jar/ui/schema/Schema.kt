@@ -66,6 +66,7 @@ object Schema {
     val MAIN_BASE_TROOPS_AND_SPELLS = MainBaseTroopsAndSpells
     val MAIN_BASE_PETS = MainBasePets
     val MAIN_BASE_EQUIPMENTS = MainBaseEquipments
+    val MAIN_BASE_EQUIPMENT_PRIORITIES = MainBaseEquipmentPriorities
     val MAIN_BASE_BUILDINGS = MainBaseBuildings
     val MAIN_BASE_BUILDING_PRIORITIES = MainBaseBuildingPriorities
 

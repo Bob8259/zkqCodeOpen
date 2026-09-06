@@ -322,8 +322,10 @@ object Strings {
     val upgradeScopeWear get() = if (LanguageManager.isChinese) "穿戴装备" else "Equipped"
     val upgradeScopeCustom get() = if (LanguageManager.isChinese) "指定装备" else "Custom"
 
-    val upgradeEquipmentsExplain get() = if (LanguageManager.isChinese) "装备列表中的设置不适用于已穿戴的装备。" else "The settings in the equipment list do not apply to equipped equipments."
+    val quickUpgradeEquipmentsExplain get() = if (LanguageManager.isChinese) "进入铁匠铺后直接识别装备列表。" else "Directly identifies equipment from the blacksmith list."
+    val upgradeEquipmentsByHeroExplain get() = if (LanguageManager.isChinese) "进入铁匠铺后逐个点击英雄，再识别该英雄的装备。" else "Selects each hero in the blacksmith, then identifies that hero's equipment."
     val upgradeEquipedEquipmentsExplain get() = if (LanguageManager.isChinese) "启用后，将自动升级当前已穿戴的装备。" else "When enabled, automatically upgrades currently equipped equipments."
+    val adjustMainBaseEquipmentPriority get() = if (LanguageManager.isChinese) "调整装备优先级" else "Adjust Equipment Priority"
 
     // Hero names for equipment grouping
     val barbarianKing get() = if (LanguageManager.isChinese) "野蛮人之王" else "Barbarian King"

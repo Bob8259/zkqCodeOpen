@@ -82,7 +82,8 @@ fun LazyListScope.mainBaseConfig(
     onToggleOther: () -> Unit,
     onNavigatePriority: (Int) -> Unit = {},
     onNavigateResearchPriority: (Int) -> Unit = {},
-    onNavigatePetPriority: (Int) -> Unit = {}
+    onNavigatePetPriority: (Int) -> Unit = {},
+    onNavigateEquipmentPriority: (Int) -> Unit = {}
 ) {
     // Banner — 通用设置
     item {
@@ -858,22 +859,50 @@ fun LazyListScope.mainBaseConfig(
                     onClick = { onNavigatePetPriority(index) }, text = Strings.adjustMainBasePetPriority, containerColor = AppColors.Teal
                 )
             }
-            // Equipment upgrade master switch with equipped-equipments toggle in the same row
-            FlowRow {
-                SettingSwitchIcon(
-                    key = "${MAIN_BASE_SETTINGS.UPGRADE_EQUIPMENTS.key}_c$index", explain = Strings.upgradeEquipmentsExplain
-                )
-                // Only visible when Upgrade Equipments is enabled
-                AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.UPGRADE_EQUIPMENTS.key}_c$index"]?.value == "1") {
+            val equipmentMasterKey = "${MAIN_BASE_SETTINGS.UPGRADE_EQUIPMENTS.key}_c$index"
+            val equippedEquipmentKey = "${MAIN_BASE_SETTINGS.UPGRADE_EQUIPED_EQUIPMENTS.key}_c$index"
+            val quickEquipmentKey = "${MAIN_BASE_SETTINGS.UPGRADE_EQUIPMENTS_QUICK.key}_c$index"
+            val heroEquipmentKey = "${MAIN_BASE_SETTINGS.UPGRADE_EQUIPMENTS_BY_HERO.key}_c$index"
+            val equipmentMasterEnabled = GlobalVars.configStates[equipmentMasterKey]?.value == "1"
+
+            SettingSwitchIcon(key = equipmentMasterKey)
+            AnimatedVisibility(visible = equipmentMasterEnabled) {
+                Column {
                     SettingSwitchIcon(
-                        key = "${MAIN_BASE_SETTINGS.UPGRADE_EQUIPED_EQUIPMENTS.key}_c$index", explain = Strings.upgradeEquipedEquipmentsExplain
+                        key = equippedEquipmentKey,
+                        explain = Strings.upgradeEquipedEquipmentsExplain,
+                        afterChange = { checked ->
+                            if (checked) GlobalVars.configStates[equipmentMasterKey]?.value = "1"
+                        }
+                    )
+                    Row {
+                        SettingSwitchIcon(
+                            key = quickEquipmentKey,
+                            explain = Strings.quickUpgradeEquipmentsExplain,
+                            afterChange = { checked ->
+                                if (checked) {
+                                    GlobalVars.configStates[equipmentMasterKey]?.value = "1"
+                                    GlobalVars.configStates[heroEquipmentKey]?.value = "0"
+                                }
+                            }
+                        )
+                        SettingSwitchIcon(
+                            key = heroEquipmentKey,
+                            explain = Strings.upgradeEquipmentsByHeroExplain,
+                            afterChange = { checked ->
+                                if (checked) {
+                                    GlobalVars.configStates[equipmentMasterKey]?.value = "1"
+                                    GlobalVars.configStates[quickEquipmentKey]?.value = "0"
+                                }
+                            }
+                        )
+                    }
+                    CustomButton(
+                        onClick = { onNavigateEquipmentPriority(index) },
+                        text = Strings.adjustMainBaseEquipmentPriority,
+                        containerColor = AppColors.Teal
                     )
                 }
-            }
-
-            // Custom equipment selection list visible only when master is on
-            AnimatedVisibility(visible = GlobalVars.configStates["${MAIN_BASE_SETTINGS.UPGRADE_EQUIPMENTS.key}_c$index"]?.value == "1") {
-                MainBaseEquipmentConfigs(index)
             }
         }
     }

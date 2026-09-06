@@ -23,8 +23,10 @@ import com.coc.zkqcode.jar.ui.schema.Schema
 
 suspend fun upgradeEquipmentsAndPets(): Boolean {
     val equipmentMasterOn = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.UPGRADE_EQUIPMENTS.key)
-    // Equipment upgrade is active when master is on; scope (0=wear, 1=custom, 2=all) is read inside upgradeEquipmentsAndPetsAction
-    var shouldUpgradeEquipments = equipmentMasterOn
+    val equippedEquipmentMode = equipmentMasterOn && getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.UPGRADE_EQUIPED_EQUIPMENTS.key)
+    val quickEquipmentMode = equipmentMasterOn && getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.UPGRADE_EQUIPMENTS_QUICK.key)
+    val heroEquipmentMode = equipmentMasterOn && getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.UPGRADE_EQUIPMENTS_BY_HERO.key)
+    var shouldUpgradeEquipments = equippedEquipmentMode || quickEquipmentMode || heroEquipmentMode
     var shouldUpgradePets = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.UPGRADE_PETS.key)
 
     // Equipments require TH8+, pets require TH14+

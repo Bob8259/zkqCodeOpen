@@ -74,7 +74,7 @@ import kotlinx.coroutines.launch
 fun HomeScreen(
     onSaveSuccess: () -> Unit = {}, onNavigatePriority: (Int) -> Unit = {}, onNavigateBuilderBasePriority: (Int) -> Unit = {},
     onNavigateResearchPriority: (Int) -> Unit = {}, onNavigatePetPriority: (Int) -> Unit = {},
-    onNavigateBuilderBaseResearchPriority: (Int) -> Unit = {}
+    onNavigateEquipmentPriority: (Int) -> Unit = {}, onNavigateBuilderBaseResearchPriority: (Int) -> Unit = {}
 ) {
 
     // Ensure all keys are initialized if not already (safeguard)
@@ -320,6 +320,7 @@ fun HomeScreen(
                                     onNavigateBuilderBasePriority = onNavigateBuilderBasePriority,
                                     onNavigateResearchPriority = onNavigateResearchPriority,
                                     onNavigatePetPriority = onNavigatePetPriority,
+                                    onNavigateEquipmentPriority = onNavigateEquipmentPriority,
                                     onNavigateBuilderBaseResearchPriority = onNavigateBuilderBaseResearchPriority,
                                     onScrollToBottom = scrollToBottom
                                 )

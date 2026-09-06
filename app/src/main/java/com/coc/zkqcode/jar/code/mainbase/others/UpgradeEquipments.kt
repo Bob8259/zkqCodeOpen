@@ -10,8 +10,10 @@ import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.smalltools.data.getBooleanConfigRuntime
+import com.coc.zkqcode.jar.code.universal.smalltools.data.getConfigRuntime
 import com.coc.zkqcode.jar.code.universal.smalltools.input.TouchActions
 import com.coc.zkqcode.jar.ui.schema.Schema
+import com.coc.zkqcode.jar.ui.schema.details.MainBaseEquipmentPriorities
 
 data class HeroEquipmentEntry(
     val heroKey: String, val displayName: String, val tapX: Int, val tapY: Int, val equipments: List<Pair<String, ColorSchema>>
@@ -88,7 +90,18 @@ private val HERO_ENTRIES = listOf(
 )
 
 
+private enum class EquipmentUpgradeMode {
+    QUICK,
+    BY_HERO
+}
+
 suspend fun upgradeEquipmentsAction() {
+    if (!getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.UPGRADE_EQUIPMENTS.key)) return
+
+    val mode = equipmentUpgradeMode()
+    val shouldUpgradeEquipped = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.UPGRADE_EQUIPED_EQUIPMENTS.key)
+    if (mode == null && !shouldUpgradeEquipped) return
+
     TouchActions.tap(685, 590, delayTime = STEP_DELAY)
 
     if (findMultiColorsUntil(schemas = listOf(MyColors.SmithOreIcon), duration = 2000) == null) {
@@ -97,26 +110,59 @@ suspend fun upgradeEquipmentsAction() {
         return
     }
     accountMessage("已进入铁匠铺")
-    if (getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.UPGRADE_EQUIPED_EQUIPMENTS.key)) {
+    if (shouldUpgradeEquipped) {
         val upgradeArrow = findMultiColorsUntil(listOf(MyColors.EquipmentUpgradeArrow), 1500)
         if (upgradeArrow != null) {
             accountMessage("已找到可升级的穿戴装备")
             TouchActions.tap(upgradeArrow.x - 20, upgradeArrow.y + 20)
-            TouchActions.tap(970, 610)//Upgrade
+            TouchActions.tap(970, 610)
             TouchActions.tap(970, 610)
             clickHeroHallBottom(3)
         }
     }
-    if (HERO_ENTRIES.any { hero -> hero.equipments.any { (key, _) -> getBooleanConfigRuntime(key) } }) {
-        // Detect and upgrade one enabled equipment on the current page, then swipe
-        // to the next page and perform the same detection again.
-        tryUpgradeEnabledEquipment()
-        TouchActions.swipe(1120, 510, -600, 510, delayAfter = 500)
-        tryUpgradeEnabledEquipment()
+
+    if (mode != null && HERO_ENTRIES.any { orderedEnabledEquipments(it).isNotEmpty() }) {
+        when (mode) {
+            EquipmentUpgradeMode.QUICK -> upgradeEquipmentsQuickly()
+            EquipmentUpgradeMode.BY_HERO -> upgradeEquipmentsByHero()
+        }
     }
     accountMessage("升级装备完成")
     backToHeroHall()
 }
+
+private fun equipmentUpgradeMode(): EquipmentUpgradeMode? {
+    val quickEnabled = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.UPGRADE_EQUIPMENTS_QUICK.key)
+    val heroEnabled = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.UPGRADE_EQUIPMENTS_BY_HERO.key)
+    return when {
+        heroEnabled -> EquipmentUpgradeMode.BY_HERO
+        quickEnabled -> EquipmentUpgradeMode.QUICK
+        else -> null
+    }
+}
+
+private suspend fun upgradeEquipmentsQuickly() {
+    tryUpgradeEnabledEquipment(HERO_ENTRIES)
+    TouchActions.swipe(1120, 510, -600, 510, delayAfter = 500)
+    tryUpgradeEnabledEquipment(HERO_ENTRIES)
+}
+
+private suspend fun upgradeEquipmentsByHero() {
+    HERO_ENTRIES.forEach { hero ->
+        if (orderedEnabledEquipments(hero).isEmpty()) return@forEach
+
+        accountMessage("按英雄升级装备：正在检测${hero.displayName}")
+        TouchActions.tap(hero.tapX, hero.tapY, delayTime = STEP_DELAY)
+        tryUpgradeEnabledEquipment(listOf(hero))
+    }
+}
+
+private fun orderedEnabledEquipments(hero: HeroEquipmentEntry): List<Pair<String, ColorSchema>> =
+    hero.equipments
+        .filter { (key, _) -> getBooleanConfigRuntime(key) }
+        .sortedBy { (key, _) ->
+            getConfigRuntime(MainBaseEquipmentPriorities.keyFor(key)).toIntOrNull() ?: Int.MAX_VALUE
+        }
 
 private suspend fun clearNewEquipments() {
     repeat(30) {
@@ -131,8 +177,8 @@ private suspend fun clearNewEquipments() {
 }
 
 /**
- * Scans the current page for the first enabled equipment that has an upgrade arrow
- * nearby, and upgrades it. Only one equipment is upgraded per call.
+ * Scans the current page for the highest-priority enabled equipment that has an
+ * upgrade arrow nearby, and upgrades it. Only one equipment is upgraded per call.
  *
  * For each enabled equipment, its color schema is searched on the captured screen.
  * When found at (x, y), the upgrade arrow ([MyColors.EquipmentUpgradeArrow]) is
@@ -140,13 +186,12 @@ private suspend fun clearNewEquipments() {
  * If the arrow is present, the equipment is tapped and the upgrade sequence is
  * performed, then the function returns immediately.
  */
-private suspend fun tryUpgradeEnabledEquipment() {
+private suspend fun tryUpgradeEnabledEquipment(heroes: List<HeroEquipmentEntry>) {
     clearNewEquipments()
     val screenBuffer = ScreenCaptureManager.captureScreenOrRestart<ScreenCaptureManager.CaptureResult>(asBitmap = false)
 
-    for (hero in HERO_ENTRIES) {
-        for ((key, colorSchema) in hero.equipments) {
-            if (!getBooleanConfigRuntime(key)) continue
+    for (hero in heroes) {
+        for ((key, colorSchema) in orderedEnabledEquipments(hero)) {
 
             val name = colorSchema.name ?: key
             val equipment = findMultiColors(schema = colorSchema, byteBuffer = screenBuffer, increment = 1)
@@ -170,7 +215,7 @@ private suspend fun tryUpgradeEnabledEquipment() {
             if (!upgradeable) continue
 
             TouchActions.tap(x, y)
-            TouchActions.tap(970, 610)//Upgrade
+            TouchActions.tap(970, 610)
             TouchActions.tap(970, 610)
             clickHeroHallBottom(2)
             return

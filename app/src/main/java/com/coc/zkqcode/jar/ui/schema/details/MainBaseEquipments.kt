@@ -122,3 +122,23 @@ object MainBaseEquipments {
         Pair("dragon_duke", dragonDukeEquipments)
     )
 }
+
+object MainBaseEquipmentPriorities {
+    private const val SUFFIX = "_equipment_priority"
+
+    fun keyFor(equipmentKey: String): String = "$equipmentKey$SUFFIX"
+
+    // Priority is scoped to a hero, so every hero starts at priority one.
+    val all = MainBaseEquipments.heroGroups.flatMap { (_, equipments) ->
+        equipments.mapIndexed { index, equipment ->
+            SettingDef(
+                key = keyFor(equipment.key),
+                displayName = equipment.displayName,
+                englishDisplayName = equipment.englishDisplayName,
+                defaultValue = index + 1,
+                category = "MAIN_BASE_EQUIPMENT_PRIORITIES",
+                isEpic = equipment.isEpic
+            )
+        }
+    }
+}
