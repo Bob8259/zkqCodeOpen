@@ -52,10 +52,6 @@ suspend fun mainBaseAttack(battleNumber: Int = 1, battleTimes: Int? = null): Boo
     if (!enterMainBase()) return false
     val battleResult = searchOpponentsAndDeployTroops(battleNumber, resolvedBattleTimes)
     lastBattleStarted = battleResult.started
-    if (battleResult.oneStarExitPending) {
-        surrenderMainBaseBattle("检测到一星，关闭奖励弹窗后退出对战")
-        return enterMainScreen()
-    }
     if (!battleResult.started) return enterMainScreen()
     if (getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.SWITCH_ACCOUNT_AFTER_BATTLE.key)) return false
     val startTime = System.currentTimeMillis()
@@ -71,15 +67,11 @@ suspend fun mainBaseAttack(battleNumber: Int = 1, battleTimes: Int? = null): Boo
         delayWithMultiplier(1000)
         runGame()
     } else if (!battleResult.autoBattleUsed) {
-        if (!monitorMainBaseBattle(
-                startTime = startTime,
-                hasMainWorldTask = hasMainWorldTask,
-                keepGameOnTimeout = false,
-                redeployAfterRewardChoice = true
-            )
-        ) {
-            return false
-        }
+        monitorMainBaseBattle(
+            startTime = startTime,
+            hasMainWorldTask = hasMainWorldTask,
+            keepGameOnTimeout = battleResult.autoBattleUsed
+        )
     }
     return enterMainScreen(restartAfterDeploy)
 }
@@ -91,11 +83,9 @@ internal suspend fun monitorMainBaseBattle(
     startTime: Long,
     hasMainWorldTask: Boolean,
     keepGameOnTimeout: Boolean,
-    redeployAfterRewardChoice: Boolean,
     maxDurationMs: Long = 3 * 60 * 1000L
-): Boolean {
+) {
     val exitOnOneStar = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.EXIT_ON_ONE_STAR_MAIN.key)
-    val isRestartGame = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.RESTART_GAME.key)
     val ocrExitEnabled = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.OCR_EXIT_ENABLED.key)
     val speedUpEnabled = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.BATTLE_SPEEDUP.key)
     val destructionOcrState = BattleDestructionOcrState()
@@ -109,50 +99,6 @@ internal suspend fun monitorMainBaseBattle(
         if (elapsed >= maxDurationMs) {
             if (!keepGameOnTimeout) killGame()
             break
-        }
-
-        if (exitOnOneStar && !hasMainWorldTask) {
-            val oneStarDetected = findMultiColors(schema = MyColors.MainBaseOneStar1) != null ||
-                findMultiColors(schema = MyColors.MainBaseOneStar2) != null ||
-                findMultiColors(schema = MyColors.MainBaseOneStar3) != null ||
-                findMultiColors(schema = MyColors.MainBaseOneStar4) != null
-            if (oneStarDetected) {
-                val rewardResult = if (isRestartGame) {
-                    BattleRewardChoiceResult.NotVisible
-                } else {
-                    resolveBattleRewardChoiceIfVisible(continueDeployment = false)
-                }
-                when (rewardResult) {
-                    BattleRewardChoiceResult.Handled -> {
-                        surrenderMainBaseBattle("检测到一星，关闭奖励弹窗后退出对战")
-                        break
-                    }
-
-                    BattleRewardChoiceResult.NotVisible -> {
-                        surrenderMainBaseBattle("检测到一星，退出对战")
-                        break
-                    }
-                }
-            }
-        }
-
-        if (!isRestartGame) {
-            when (resolveBattleRewardChoiceIfVisible()) {
-                BattleRewardChoiceResult.Handled -> {
-                    if (redeployAfterRewardChoice) {
-                        when (deployTroopsByConfig(handleBattleRewards = true)) {
-                            MainBaseDeploymentResult.Completed -> Unit
-                            MainBaseDeploymentResult.OneStarExit -> {
-                                surrenderMainBaseBattle("检测到一星，关闭奖励弹窗后退出对战")
-                                break
-                            }
-                        }
-                    }
-                    continue
-                }
-
-                BattleRewardChoiceResult.NotVisible -> Unit
-            }
         }
 
         // Show task disabled message once
@@ -239,20 +185,18 @@ internal suspend fun monitorMainBaseBattle(
             }
         }
 
+        // Detect 1-star result and exit immediately (disabled when has clan game task)
+        if (exitOnOneStar && !hasMainWorldTask) {
+            val oneStar1 = findMultiColors(schema = MyColors.MainBaseOneStar1)
+            val oneStar2 = findMultiColors(schema = MyColors.MainBaseOneStar2)
+            if (oneStar1 != null || oneStar2 != null) {
+                surrenderMainBaseBattle("检测到一星，退出对战")
+                break
+            }
+        }
+
         val endBattleButton = findMultiColors(schema = MyColors.EndBattle)
         if (endBattleButton == null) {
-            if (!isRestartGame) {
-                when (resolveBattleRewardChoiceIfVisible(
-                    continueDeployment = false,
-                    appearanceWaitMs = 2_000
-                )) {
-                    BattleRewardChoiceResult.Handled -> {
-                        accountMessage("战斗结算奖励已选择，准备回营")
-                    }
-
-                    BattleRewardChoiceResult.NotVisible -> Unit
-                }
-            }
             accountMessage("未找到放弃按钮，对战结束")
             delayWithMultiplier(1000)
             TouchActions.tap(640, 610, delayTime = 1500)
@@ -261,7 +205,6 @@ internal suspend fun monitorMainBaseBattle(
 
         delayWithMultiplier(500) // Poll every 500ms
     }
-    return true
 }
 
 private suspend fun getMainBaseBattleTimes(): Int {
@@ -276,7 +219,7 @@ private suspend fun getMainBaseBattleTimes(): Int {
 /** Surrender via EndBattle and return to camp (shared by one-star and OCR destruction-% exit). */
 private suspend fun surrenderMainBaseBattle(reason: String) {
     accountMessage(reason)
-    val endBattleBtn = findMultiColorsUntil(schemas = listOf(MyColors.EndBattle), duration = 1500)
+    val endBattleBtn = findMultiColors(schema = MyColors.EndBattle)
     if (endBattleBtn != null) {
         TouchActions.tap(endBattleBtn.x, endBattleBtn.y, delayTime = 200)
         val confirmBtn = findMultiColorsUntil(schemas = listOf(MyColors.MiddleGreenYes), duration = 1000)

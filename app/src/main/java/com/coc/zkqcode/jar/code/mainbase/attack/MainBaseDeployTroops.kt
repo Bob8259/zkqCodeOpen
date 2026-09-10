@@ -5,10 +5,8 @@ import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.fileactions.LogHelper
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
-import com.coc.zkqcode.jar.code.universal.smalltools.data.CLAN_GAME_TASK_BASE_MAIN_WORLD
 import com.coc.zkqcode.jar.code.universal.smalltools.data.getBooleanConfigRuntime
 import com.coc.zkqcode.jar.code.universal.smalltools.data.getConfigRuntime
-import com.coc.zkqcode.jar.code.universal.smalltools.data.readClanGameAcceptedTaskBase
 import com.coc.zkqcode.jar.ui.schema.Schema
 import com.coc.zkqcode.jar.code.universal.smalltools.input.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.ColorSchema
@@ -37,38 +35,7 @@ private const val DRAG_SWEEP_SLOW_MS = 3000
 private const val MAX_CN_DEPLOY_ROUNDS = 20
 private const val MAX_CN_SPELL_BATCHES = 20
 
-enum class MainBaseDeploymentResult {
-    Completed,
-    OneStarExit
-}
-
-private class BattleRewardChoiceOneStarException : IllegalStateException()
-
-private suspend fun shouldExitOnOneStarDuringDeployment(): Boolean {
-    if (!getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.EXIT_ON_ONE_STAR_MAIN.key)) return false
-    if (readClanGameAcceptedTaskBase() == CLAN_GAME_TASK_BASE_MAIN_WORLD) return false
-    return findMultiColors(schema = MyColors.MainBaseOneStar1) != null ||
-        findMultiColors(schema = MyColors.MainBaseOneStar2) != null ||
-        findMultiColors(schema = MyColors.MainBaseOneStar3) != null ||
-        findMultiColors(schema = MyColors.MainBaseOneStar4) != null
-}
-
-private suspend fun handleBattleRewardChoiceAtCheckpoint(enabled: Boolean): BattleRewardChoiceResult {
-    if (!enabled) return BattleRewardChoiceResult.NotVisible
-
-    if (shouldExitOnOneStarDuringDeployment()) {
-        resolveBattleRewardChoiceIfVisible(continueDeployment = false)
-        throw BattleRewardChoiceOneStarException()
-    }
-
-    val result = resolveBattleRewardChoiceIfVisible()
-    if (result == BattleRewardChoiceResult.Handled && shouldExitOnOneStarDuringDeployment()) {
-        throw BattleRewardChoiceOneStarException()
-    }
-    return result
-}
-
-suspend fun mainBaseDeployTroops(handleBattleRewards: Boolean = false) {
+suspend fun mainBaseDeployTroops() {
     // Record the start time of the battle
     zoomSmallMainBase(isForAttack = true)
 
@@ -81,20 +48,15 @@ suspend fun mainBaseDeployTroops(handleBattleRewards: Boolean = false) {
 
     // Upload a screenshot every 3 hours for monitoring
 //    uploadSearchScreenshot()
-    handleBattleRewardChoiceAtCheckpoint(handleBattleRewards)
-    if (deploySiegeMachines || deployReinforcements) {
-        deploySiegeMachineAndReinforcements(useReinforcements = deployReinforcements)
-        handleBattleRewardChoiceAtCheckpoint(handleBattleRewards)
-    }
+    if (deploySiegeMachines || deployReinforcements) deploySiegeMachineAndReinforcements(useReinforcements = deployReinforcements)
     repeat(3) {
-        handleBattleRewardChoiceAtCheckpoint(handleBattleRewards)
         // Deploy each troop type if detected in the deployment bar
-        deployIfPresent(handleBattleRewards, DRAG_SWEEP_MS, MyColors.DragonAtDeploymentBar, MyColors.DragonAtDeploymentBar2)
-        deployIfPresent(handleBattleRewards, DRAG_SWEEP_MS, MyColors.GiantAtDeploymentBar, MyColors.GiantAtDeploymentBar2)
-        deployIfPresent(handleBattleRewards, DRAG_SWEEP_SLOW_MS, MyColors.BarbarianAtDeploymentBar, MyColors.BarbarianAtDeploymentBar2)
-        deployIfPresent(handleBattleRewards, DRAG_SWEEP_SLOW_MS, MyColors.ArcherAtDeploymentBar, MyColors.ArcherAtDeploymentBar2, MyColors.ArcherAtDeploymentBar3, MyColors.ArcherAtDeploymentBar4)
-        if (deployHeroes) deployHeroes(handleBattleRewards)
-        deployOthers(useSpells = deploySpells, handleBattleRewards = handleBattleRewards)
+        deployIfPresent(DRAG_SWEEP_MS, MyColors.DragonAtDeploymentBar, MyColors.DragonAtDeploymentBar2)
+        deployIfPresent(DRAG_SWEEP_MS, MyColors.GiantAtDeploymentBar, MyColors.GiantAtDeploymentBar2)
+        deployIfPresent(DRAG_SWEEP_SLOW_MS, MyColors.BarbarianAtDeploymentBar, MyColors.BarbarianAtDeploymentBar2)
+        deployIfPresent(DRAG_SWEEP_SLOW_MS, MyColors.ArcherAtDeploymentBar, MyColors.ArcherAtDeploymentBar2, MyColors.ArcherAtDeploymentBar3, MyColors.ArcherAtDeploymentBar4)
+        if (deployHeroes) deployHeroes()
+        deployOthers(useSpells = deploySpells)
     }
 }
 
@@ -102,21 +64,13 @@ suspend fun mainBaseDeployTroops(handleBattleRewards: Boolean = false) {
  * Deploys troops honoring the configured deploy mode:
  * Mode "0" (default) = single-side deploy; otherwise 4-side deploy (四面下兵).
  */
-suspend fun deployTroopsByConfig(
-    handleBattleRewards: Boolean = false
-): MainBaseDeploymentResult {
-    return try {
-        handleBattleRewardChoiceAtCheckpoint(handleBattleRewards)
-        if (getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.MANUAL_TRAINING.key) &&
-            getConfigRuntime(Schema.MAIN_BASE_SETTINGS.DEPLOY_MODE.key) != "0"
-        ) {
-            cnMainBaseDeployTroops(handleBattleRewards)
-        } else {
-            mainBaseDeployTroops(handleBattleRewards)
-        }
-        MainBaseDeploymentResult.Completed
-    } catch (_: BattleRewardChoiceOneStarException) {
-        MainBaseDeploymentResult.OneStarExit
+suspend fun deployTroopsByConfig() {
+    if (getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.MANUAL_TRAINING.key) &&
+        getConfigRuntime(Schema.MAIN_BASE_SETTINGS.DEPLOY_MODE.key) != "0"
+    ) {
+        cnMainBaseDeployTroops()
+    } else {
+        mainBaseDeployTroops()
     }
 }
 
@@ -184,11 +138,10 @@ private suspend fun deployReinforcementsDirect() {
     TouchActions.tap(DRAG_START_X.toInt(), DRAG_START_Y.toInt(), delayTime = 100)
 }
 
-private suspend fun deployOthers(useSpells: Boolean = true, handleBattleRewards: Boolean = false) {
+private suspend fun deployOthers(useSpells: Boolean = true) {
     //Deploy other troops and spells
     LogHelper.showDebugInfo("Start to deploy others")
     repeat(15) {
-        handleBattleRewardChoiceAtCheckpoint(handleBattleRewards)
         val troops = findMultiColorsUntil(
             schemas = listOf(MyColors.TroopColorAtDeploymentBar, MyColors.TroopColorAtDeploymentBar2, MyColors.SuperTroopColorAtDeploymentBar, MyColors.SpecialTroopColorAtDeploymentBar), duration = 20
         )
@@ -209,12 +162,11 @@ private suspend fun deployOthers(useSpells: Boolean = true, handleBattleRewards:
 
             }
         }
-        handleBattleRewardChoiceAtCheckpoint(handleBattleRewards)
     }
     LogHelper.showDebugInfo("Finish deploying others")
 }
 
-private suspend fun deployHeroes(handleBattleRewards: Boolean = false) {
+private suspend fun deployHeroes() {
     // All 6 hero colour schemas to check in the deployment bar
     val heroes = listOf(
         MyColors.KingBarbarian,
@@ -235,7 +187,6 @@ private suspend fun deployHeroes(handleBattleRewards: Boolean = false) {
         MyColors.DragonDuke2
     )
     for (hero in heroes) {
-        handleBattleRewardChoiceAtCheckpoint(handleBattleRewards)
         // Take a fresh screenshot for each hero to get the latest state of the bar
         val screenBuffer = ScreenCaptureManager.captureScreenOrRestart<ScreenCaptureManager.CaptureResult>(asBitmap = false)
         val found = findMultiColors(schema = hero, byteBuffer = screenBuffer)
@@ -254,13 +205,12 @@ private suspend fun deployHeroes(handleBattleRewards: Boolean = false) {
  * Detects whether [schemas] are visible in the deployment bar and, if so,
  * deploys all units of that type via continuous back-and-forth dragging.
  */
-private suspend fun deployIfPresent(handleBattleRewards: Boolean, dragSweepMs: Int, vararg schemas: ColorSchema) {
-    handleBattleRewardChoiceAtCheckpoint(handleBattleRewards)
+private suspend fun deployIfPresent(dragSweepMs: Int, vararg schemas: ColorSchema) {
     val screenBuffer = ScreenCaptureManager.captureScreenOrRestart<ScreenCaptureManager.CaptureResult>(asBitmap = false)
     for (schema in schemas) {
         val troop = findMultiColors(schema = schema, byteBuffer = screenBuffer)
         if (troop != null) {
-            dragUntilDeployed(troop.x, troop.y, dragSweepMs, schemas, handleBattleRewards)
+            dragUntilDeployed(troop.x, troop.y, dragSweepMs, schemas)
             return
         }
     }
@@ -272,13 +222,7 @@ private suspend fun deployIfPresent(handleBattleRewards: Boolean, dragSweepMs: I
  * until [schemas] are no longer detected (all units deployed) or [DEPLOY_TIMEOUT_MS]
  * has elapsed for this troop.
  */
-private suspend fun dragUntilDeployed(
-    x: Int,
-    y: Int,
-    dragSweepMs: Int,
-    schemas: Array<out ColorSchema>,
-    handleBattleRewards: Boolean
-) {
+private suspend fun dragUntilDeployed(x: Int, y: Int, dragSweepMs: Int, schemas: Array<out ColorSchema>) {
     // Select the troop in the deployment bar
     TouchActions.tap(x, y)
     delayWithMultiplier(300)
@@ -286,7 +230,6 @@ private suspend fun dragUntilDeployed(
     val startTime = System.currentTimeMillis()
     // Hold the finger down; it will stay down for the entire drag loop
     TouchActions.touchDown(DRAG_START_X, DRAG_START_Y, 1)
-    var isFingerDown = true
     try {
         delayWithMultiplier(600)
         while (true) {
@@ -294,38 +237,6 @@ private suspend fun dragUntilDeployed(
             // Drag forward: deploy position
             TouchActions.moveSmoothly(DRAG_START_X, DRAG_START_Y, DRAG_END_X, DRAG_END_Y, currentDragSweepMs, 1)
             delayWithMultiplier(300)
-
-            if (handleBattleRewards && isBattleRewardChoiceVisible()) {
-                TouchActions.touchUp(1)
-                isFingerDown = false
-
-                var resumedX = x
-                var resumedY = y
-                when (handleBattleRewardChoiceAtCheckpoint(true)) {
-                    BattleRewardChoiceResult.Handled -> {
-                        var refreshedTroopFound = false
-                        for (schema in schemas) {
-                            val refreshedTroop = findMultiColors(schema = schema)
-                            if (refreshedTroop != null) {
-                                resumedX = refreshedTroop.x
-                                resumedY = refreshedTroop.y
-                                refreshedTroopFound = true
-                                break
-                            }
-                        }
-                        if (!refreshedTroopFound) break
-                    }
-
-                    BattleRewardChoiceResult.NotVisible -> Unit
-                }
-
-                TouchActions.tap(resumedX, resumedY)
-                delayWithMultiplier(300)
-                TouchActions.touchDown(DRAG_START_X, DRAG_START_Y, 1)
-                isFingerDown = true
-                delayWithMultiplier(600)
-                continue
-            }
 
             // Check whether the troop is still present in the deployment bar
             val elapsed = System.currentTimeMillis() - startTime
@@ -342,9 +253,7 @@ private suspend fun dragUntilDeployed(
     } finally {
         // Always release the finger, even if cancelled
         withContext(NonCancellable) {
-            if (isFingerDown) {
-                TouchActions.touchUp(1)
-            }
+            TouchActions.touchUp(1)
         }
     }
 }
@@ -409,11 +318,10 @@ private suspend fun cnHasAnyTroop(): Boolean {
     return cnTroopSchemas.any { findMultiColors(schema = it) != null }
 }
 
-private suspend fun cnDeploySpells(handleBattleRewards: Boolean = false) {
+private suspend fun cnDeploySpells() {
     if (!getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.DEPLOY_SPELLS_ENABLED.key)) return
 
     repeat(MAX_CN_SPELL_BATCHES) {
-        handleBattleRewardChoiceAtCheckpoint(handleBattleRewards)
         // Refresh the bar after each batch so depleted spells disappear from the next snapshot.
         val screenBuffer = ScreenCaptureManager.captureScreenOrRestart<ScreenCaptureManager.CaptureResult>(asBitmap = false)
         val spells = mutableListOf<Pair<Int, Int>>()
@@ -433,20 +341,13 @@ private suspend fun cnDeploySpells(handleBattleRewards: Boolean = false) {
             TouchActions.tap(520, 240, delayTime = 300)
             TouchActions.tap(465, 320, delayTime = 300)
             TouchActions.tap(370, 355, delayTime = 300)
-            if (handleBattleRewardChoiceAtCheckpoint(handleBattleRewards) == BattleRewardChoiceResult.Handled) return
         }
     }
 }
 
-private suspend fun cnDeployOneBatch(
-    finger1: DeployPath,
-    finger2: DeployPath,
-    customSweepMs: Int = DRAG_SWEEP_MS,
-    handleBattleRewards: Boolean = false
-) {
+private suspend fun cnDeployOneBatch(finger1: DeployPath, finger2: DeployPath, customSweepMs: Int = DRAG_SWEEP_MS) {
     // One screenshot creates the troop snapshot for this area. Each detected slot
     // receives one pass on both paths; do not wait for the slot to disappear.
-    handleBattleRewardChoiceAtCheckpoint(handleBattleRewards)
     val troops = cnScanBar()
     for (troop in troops) {
         TouchActions.tap(troop.x, troop.y, delayTime = 300)
@@ -460,16 +361,15 @@ private suspend fun cnDeployOneBatch(
         delayWithMultiplier(600)
         TouchActions.moveSmoothly(finger2.startX, finger2.startY, finger2.endX, finger2.endY, sweepMs, 1)
         TouchActions.touchUp(1)
-        if (handleBattleRewardChoiceAtCheckpoint(handleBattleRewards) == BattleRewardChoiceResult.Handled) return
     }
 
     // Step 2: deploy heroes (reuse international version)
     if (getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.DEPLOY_HEROES_ENABLED.key)) {
-        deployHeroes(handleBattleRewards)
+        deployHeroes()
     }
 
     // Step 3: deploy spells
-    cnDeploySpells(handleBattleRewards)
+    cnDeploySpells()
 }
 
 private suspend fun cnDeployClickOnPath(path: DeployPath, density: Int, clickDelayMs: Int) {
@@ -485,31 +385,22 @@ private suspend fun cnDeployClickOnPath(path: DeployPath, density: Int, clickDel
     }
 }
 
-private suspend fun cnDeployOneBatchClick(
-    finger1: DeployPath,
-    finger2: DeployPath,
-    density: Int,
-    clickDelayMs: Int,
-    handleBattleRewards: Boolean = false
-) {
-    handleBattleRewardChoiceAtCheckpoint(handleBattleRewards)
+private suspend fun cnDeployOneBatchClick(finger1: DeployPath, finger2: DeployPath, density: Int, clickDelayMs: Int) {
     val troops = cnScanBar()
     for (troop in troops) {
         TouchActions.tap(troop.x, troop.y, delayTime = 300)
         cnDeployClickOnPath(finger1, density, clickDelayMs)
         delayWithMultiplier(200)
         cnDeployClickOnPath(finger2, density, clickDelayMs)
-        if (handleBattleRewardChoiceAtCheckpoint(handleBattleRewards) == BattleRewardChoiceResult.Handled) return
     }
 
     if (getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.DEPLOY_HEROES_ENABLED.key)) {
-        deployHeroes(handleBattleRewards)
+        deployHeroes()
     }
-    cnDeploySpells(handleBattleRewards)
+    cnDeploySpells()
 }
 
-suspend fun cnMainBaseDeployTroops(handleBattleRewards: Boolean = false) {
-    handleBattleRewardChoiceAtCheckpoint(handleBattleRewards)
+suspend fun cnMainBaseDeployTroops() {
     zoomSmallMainBase(isForAttack = true)
 
     val deployMode = getConfigRuntime(Schema.MAIN_BASE_SETTINGS.DEPLOY_MODE.key)
@@ -522,24 +413,22 @@ suspend fun cnMainBaseDeployTroops(handleBattleRewards: Boolean = false) {
     if (cnDeploySiegeMachines || cnDeployReinforcements) deploySiegeMachineAndReinforcements(
         useReinforcements = cnDeployReinforcements
     )
-    handleBattleRewardChoiceAtCheckpoint(handleBattleRewards)
 
     val isClickMode = deployMode == "2"
 
     var isUpperHalf = true
     for (round in 1..MAX_CN_DEPLOY_ROUNDS) {
-        handleBattleRewardChoiceAtCheckpoint(handleBattleRewards)
         if (isUpperHalf) {
             if (isClickMode) {
-                cnDeployOneBatchClick(CN_P1_A, CN_P1_B, clickDensity, customSweepMs, handleBattleRewards)
+                cnDeployOneBatchClick(CN_P1_A, CN_P1_B, clickDensity, customSweepMs)
             } else {
-                cnDeployOneBatch(CN_P1_A, CN_P1_B, customSweepMs, handleBattleRewards)
+                cnDeployOneBatch(CN_P1_A, CN_P1_B, customSweepMs)
             }
         } else {
             if (isClickMode) {
-                cnDeployOneBatchClick(CN_P2_C, CN_P2_D, clickDensity, customSweepMs, handleBattleRewards)
+                cnDeployOneBatchClick(CN_P2_C, CN_P2_D, clickDensity, customSweepMs)
             } else {
-                cnDeployOneBatch(CN_P2_C, CN_P2_D, customSweepMs, handleBattleRewards)
+                cnDeployOneBatch(CN_P2_C, CN_P2_D, customSweepMs)
             }
         }
 
