@@ -100,6 +100,9 @@ internal suspend fun monitorMainBaseBattle(
             if (!keepGameOnTimeout) killGame()
             break
         }
+        if (findMultiColors(schema = MyColors.BattleRewardSelection) != null) {
+            TouchActions.tap(390, 340)
+        }
 
         // Show task disabled message once
         if (hasMainWorldTask && !taskDisableMessageShown) {
@@ -195,7 +198,7 @@ internal suspend fun monitorMainBaseBattle(
             }
         }
 
-        val endBattleButton = findMultiColors(schema = MyColors.EndBattle)
+        val endBattleButton = findMultiColorsUntil(schemas = listOf(MyColors.EndBattle, MyColors.EndBattle2), duration = 10)
         if (endBattleButton == null) {
             accountMessage("未找到放弃按钮，对战结束")
             delayWithMultiplier(1000)

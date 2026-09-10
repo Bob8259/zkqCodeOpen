@@ -32,6 +32,7 @@ interface IMainBaseAttackColors {
 
     // Battle and hero colors
     val EndBattle: ColorSchema
+    val EndBattle2: ColorSchema
     val KingBarbarian: ColorSchema
     val QueenArcher: ColorSchema
     val QueenArcher2: ColorSchema
@@ -75,6 +76,9 @@ interface IMainBaseAttackColors {
 
     /** Battle speed-up button (2x speed toggle, top-right corner during battle). */
     val BattleSpeedUp: ColorSchema
+
+    /** Battle reward selection prompt displayed during battle. */
+    val BattleRewardSelection: ColorSchema
 
     /** CN auto-battle button on the deploy/preparation screen. Placeholder — update actual colors when available. */
     val AutoBattleBtn: ColorSchema
@@ -168,6 +172,9 @@ object MainBaseAttackColors : IMainBaseAttackColors {
     // Battle and hero colors
     override val EndBattle = ColorSchema.parse(
         114, 526, 152, 556, "5F5DF4", "7|0|5F5DF4,15|0|5F5DF4,23|0|5F5DF4,30|0|5F5DF4,0|15|0E0DCE,7|15|0E0DCE,15|15|0E0DCE,23|15|0E0DCE,30|15|0E0DCE", 0, 0.9,
+    )
+    override val EndBattle2 = ColorSchema.parse(
+        8, 510, 170, 562, "322F7D", "17|0|322F7D,43|0|322F7D,66|0|322F7D,95|1|312F7D,94|23|070767,85|23|070767,76|23|070767,18|21|070767,10|21|070767", 0, 0.9,
     )
     override val KingBarbarian = ColorSchema.parse(
         0, 590, 1200, 720, "24388B", "8|0|5272BF,16|0|6284D8,23|0|729AEF,31|0|44A7EA,0|14|283A6C,8|14|213365,16|14|1D2E5C,23|14|1A2954,31|14|1F2D65", 0, 0.9, "野蛮人之王"
@@ -301,6 +308,11 @@ object MainBaseAttackColors : IMainBaseAttackColors {
     // Battle speed-up button (2x speed toggle, top-right corner)
     override val BattleSpeedUp = ColorSchema.parse(
         1193, 370, 1259, 447, "81F5DB", "13|0|81F5DA,26|0|81F5DA,39|0|81F5DA,52|0|81F5DB,0|39|2DC77E,13|39|2DC77E,26|39|2DC77E,39|39|2DC77E,52|39|2DC77E", 0, 0.9, "对战加速按钮"
+    )
+
+    // Battle reward selection prompt
+    override val BattleRewardSelection = ColorSchema.parse(
+        328, 72, 977, 167, "292997", "25|0|292997,61|0|292997,98|0|292997,114|2|292995,296|3|292994,316|3|292994,356|3|292994,383|7|282891,404|6|282891", 0, 0.9, "战斗奖励选择"
     )
 
     // CN auto-battle button on the deploy/preparation screen
