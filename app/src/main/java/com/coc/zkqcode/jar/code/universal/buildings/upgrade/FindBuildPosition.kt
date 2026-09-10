@@ -5,7 +5,11 @@ import com.coc.zkqcode.jar.code.universal.buildings.BaseType
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.jar.code.universal.smalltools.input.TouchActions
 import com.coc.zkqcode.jar.code.builderbase.upgrade.builderBaseFindBuildButton
+import com.coc.zkqcode.jar.code.mainbase.daily.mainBaseCheckTutorials
 import com.coc.zkqcode.jar.code.mainbase.upgrade.mainBaseFindBuildButton
+import com.coc.zkqcode.jar.code.universal.InGameVars
+import com.coc.zkqcode.jar.code.universal.smalltools.data.StorageKeys
+import com.coc.zkqcode.jar.code.universal.smalltools.data.writeMemory
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.withContext
 import kotlin.math.sqrt
@@ -50,7 +54,12 @@ suspend fun tryToFindBuildPosition(baseType: BaseType): Point? {
                 TouchActions.touchUp(1)
             }
         }
+    } else {
+        val storageKey = StorageKeys.withAccountNumber(StorageKeys.MAIN_BASE_CHECK_TUTORIALS, InGameVars.currentAccountNumber)
+        writeMemory(storageKey, "-1000000")//reset the time guard
+        mainBaseCheckTutorials()
     }
+
     return null
 }
 

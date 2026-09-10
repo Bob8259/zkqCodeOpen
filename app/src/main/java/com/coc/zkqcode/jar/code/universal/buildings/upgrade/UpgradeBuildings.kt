@@ -22,6 +22,8 @@ import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.smalltools.data.getBooleanConfigRuntime
 import com.coc.zkqcode.jar.code.universal.smalltools.data.getConfigRuntime
 import com.coc.zkqcode.jar.code.universal.InGameVars
+import com.coc.zkqcode.jar.code.universal.smalltools.lifecycle.killGame
+import com.coc.zkqcode.jar.code.universal.smalltools.lifecycle.runGame
 import com.coc.zkqcode.jar.ui.schema.Schema
 import kotlin.math.sqrt
 
@@ -122,8 +124,7 @@ suspend fun checkContinueBuild(currentBase: BaseType, isWallUpgrade: Boolean = f
     } else {
         Schema.MAIN_BASE_SETTINGS.SAVE_WORKER_BUILD_AFTER_WALL_FULL.key
     }
-    val shouldReleaseSavedWorker = getBooleanConfigRuntime(buildAfterWallFullKey) &&
-            currentBase in InGameVars.wallsCompleteBases
+    val shouldReleaseSavedWorker = getBooleanConfigRuntime(buildAfterWallFullKey) && currentBase in InGameVars.wallsCompleteBases
 
     val isNoWorkerAvailable = workerNumber.available == 0
     val isSavingLastWorker = !isWallUpgrade && workerNumber.available == 1 && getBooleanConfigRuntime(configKey) && !shouldReleaseSavedWorker
@@ -170,7 +171,8 @@ private suspend fun buildOneNewBuildings(currentBase: BaseType): Boolean {
         } else {
             // Handle standard building with retry logic
             for (i in 1..5) {
-                val currentTick = if (currentBase == BaseType.Main) mainBaseFindBuildButton(type = BuildButtonType.Tick, duration = 500) else builderBaseFindBuildButton(type = BuildButtonType.Tick, duration = 500)
+                val currentTick =
+                    if (currentBase == BaseType.Main) mainBaseFindBuildButton(type = BuildButtonType.Tick, duration = 500) else builderBaseFindBuildButton(type = BuildButtonType.Tick, duration = 500)
                 if (currentTick != null) {
                     accountMessage("点击第 $i 次绿色按钮：${currentTick.x}, ${currentTick.y}")
                     if (i > 1) zoomOrNot = true
@@ -206,6 +208,11 @@ private suspend fun buildOneNewBuildings(currentBase: BaseType): Boolean {
         }
         clickRightBottom(1)
         return true
+    } else {
+        accountMessage("尝试放置建筑失败，重启游戏")
+        killGame()
+        delayWithMultiplier(1000)
+        runGame()
     }
 
     return false
