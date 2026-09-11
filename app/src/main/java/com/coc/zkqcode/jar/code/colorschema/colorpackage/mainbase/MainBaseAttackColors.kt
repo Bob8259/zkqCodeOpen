@@ -312,7 +312,7 @@ object MainBaseAttackColors : IMainBaseAttackColors {
 
     // Battle reward selection prompt
     override val BattleRewardSelection = ColorSchema.parse(
-        328, 72, 977, 167, "292997", "25|0|292997,61|0|292997,98|0|292997,114|2|292995,296|3|292994,316|3|292994,356|3|292994,383|7|282891,404|6|282891", 0, 0.9, "战斗奖励选择"
+        328, 72, 977, 167, "292997", "25|0|292997,61|0|292997,98|0|292997,114|2|292995,296|3|292994,316|3|292994,356|3|292994,383|7|282891,404|6|282891", 0, 0.97, "战斗奖励选择"
     )
 
     // CN auto-battle button on the deploy/preparation screen

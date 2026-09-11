@@ -70,7 +70,7 @@ suspend fun mainBaseAttack(battleNumber: Int = 1, battleTimes: Int? = null): Boo
         monitorMainBaseBattle(
             startTime = startTime,
             hasMainWorldTask = hasMainWorldTask,
-            keepGameOnTimeout = battleResult.autoBattleUsed
+            keepGameOnTimeout = false
         )
     }
     return enterMainScreen(restartAfterDeploy)
@@ -101,7 +101,8 @@ internal suspend fun monitorMainBaseBattle(
             break
         }
         if (findMultiColors(schema = MyColors.BattleRewardSelection) != null) {
-            TouchActions.tap(390, 340)
+            delayWithMultiplier(1000)
+            TouchActions.tap(390, 340, delayTime = 2500)
         }
 
         // Show task disabled message once
@@ -122,12 +123,11 @@ internal suspend fun monitorMainBaseBattle(
         } else null
 
         // Battle speed-up: detect and click the 2x speed button (persistent, so click only once)
-        if (speedUpEnabled && !speedUpClicked && sharedBitmap != null) {
+        if (speedUpEnabled && !speedUpClicked) {
             val speedUpBtn = findMultiColors(schema = MyColors.BattleSpeedUp, bitmap = sharedBitmap)
             if (speedUpBtn != null) {
                 accountMessage("检测到加速按钮，坐标：${speedUpBtn.x}, ${speedUpBtn.y}")
                 TouchActions.tap(speedUpBtn.x, speedUpBtn.y)
-                accountMessage("对战已加速完成")
                 speedUpClicked = true
             }
         }
@@ -198,7 +198,7 @@ internal suspend fun monitorMainBaseBattle(
             }
         }
 
-        val endBattleButton = findMultiColorsUntil(schemas = listOf(MyColors.EndBattle, MyColors.EndBattle2), duration = 10)
+        val endBattleButton = findMultiColorsUntil(schemas = listOf(MyColors.EndBattle, MyColors.EndBattle2), duration = 100)
         if (endBattleButton == null) {
             accountMessage("未找到放弃按钮，对战结束")
             delayWithMultiplier(1000)
