@@ -275,6 +275,10 @@ object Strings {
     val searchSettings get() = if (LanguageManager.isChinese) "搜索设置..." else "Search settings..."
 
     // Explain Texts
+    val debugModeExplain get() = if (LanguageManager.isChinese)
+        "开启后运行调试代码，便于排查问题；关闭后按正常流程运行。"
+    else
+        "Runs debug code to help troubleshoot problems; when disabled, the normal flow is used."
     val disableRestartExplain get() = if (LanguageManager.isChinese) "勾选后，所有重启游戏的设定将失效，可能会导致卡界面。建议谨慎使用。" else "Disabling restart may cause stuck screens. Use with caution."
     val scheduledRestartExplain get() = if (LanguageManager.isChinese)
         "开启后，脚本运行指定分钟数后将自动重启设备。建议在云手机等远程设备上使用。"

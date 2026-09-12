@@ -402,6 +402,14 @@ fun LazyListScope.specialSettings(onOpenWebDavManager: () -> Unit = {}) {
             }
         }
     }
+    item {
+        SettingSection {
+            SettingSwitchIcon(
+                key = GLOBAL_SETTINGS.DEBUG_MODE.key,
+                explain = Strings.debugModeExplain
+            )
+        }
+    }
     legalDisclaimers()
     item {
         val context = LocalContext.current; val cr = rememberCoroutineScope()

@@ -1,7 +1,6 @@
 package com.coc.zkqcode.jar.code.mainbase.others
 
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
-import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
 import com.coc.zkqcode.jar.code.colorschema.ColorSchema
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.mainbase.herohall.backToHeroHall
@@ -180,7 +179,7 @@ private suspend fun clearNewEquipments() {
  * Scans the current page for the highest-priority enabled equipment that has an
  * upgrade arrow nearby, and upgrades it. Only one equipment is upgraded per call.
  *
- * For each enabled equipment, its color schema is searched on the captured screen.
+ * For each enabled equipment, its colour schema is searched on the captured screen.
  * When found at (x, y), the upgrade arrow ([MyColors.EquipmentUpgradeArrow]) is
  * searched in the sub-region (x+15, y-50) to (x+50, y-15) via [ColorSchema.rescope].
  * If the arrow is present, the equipment is tapped and the upgrade sequence is

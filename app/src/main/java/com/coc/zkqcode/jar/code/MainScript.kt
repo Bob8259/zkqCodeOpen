@@ -11,7 +11,7 @@ import com.coc.zkqcode.jar.code.auth.displayAds
 import com.coc.zkqcode.jar.code.auth.userAuth
 import com.coc.zkqcode.jar.code.builderbase.playBuilderBase
 import com.coc.zkqcode.jar.code.colorschema.MyColors
-import com.coc.zkqcode.jar.code.mainbase.clan.joinClan
+import com.coc.zkqcode.jar.code.mainbase.herohall.upgradeEquipmentsAndPets
 import com.coc.zkqcode.jar.code.mainbase.playMainBase
 import com.coc.zkqcode.jar.code.universal.GameVersion
 import com.coc.zkqcode.jar.code.universal.InGameVars
@@ -38,11 +38,9 @@ import com.coc.zkqcode.jar.ui.schema.Schema
 import com.coc.zkqcode.statehelper.AppMode
 import com.coc.zkqcode.statehelper.AppStateManager
 import kotlinx.coroutines.CompletableDeferred
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -87,10 +85,10 @@ suspend fun runMainScript() {
     var nextUpdateInterval = (3600_000L) + (Math.random() * 7200_000L).toLong()
     while (currentCoroutineContext().isActive) {
         if (InGameVars.qrLinkFlowActiveCount > 0) {
-            delay(1000)
+            delay(1000.milliseconds)
             continue
         }
-//        runTestCode()
+        runTestCode()
         runAccountStepBlock()
         // Check scheduled upgrade notifications every cycle (runs in background)
         checkScheduledUpgradeNotifications()
@@ -121,10 +119,15 @@ private fun finishDataNumberEntryOnlyRun() {
 }
 
 private suspend fun runTestCode() {
-    while (currentCoroutineContext().isActive) {
-        ShowMessage("测试代码开始")
-        findMultiColors(MyColors.DonationButton)
-        delay(2000.milliseconds)
+    if (GlobalVars.configStates[Schema.GLOBAL_SETTINGS.DEBUG_MODE.key]?.value == "1") {
+        while (
+            currentCoroutineContext().isActive &&
+            GlobalVars.configStates[Schema.GLOBAL_SETTINGS.DEBUG_MODE.key]?.value == "1"
+        ) {
+            ShowMessage("测试代码开始")
+            upgradeEquipmentsAndPets()
+            delay(2000.milliseconds)
+        }
     }
 }
 

@@ -39,6 +39,7 @@ object GlobalSettings {
     val AFTER_KICK_OPTION = SettingDef("after_kick_option", "顶号后选项", "After Kick", "1", "GLOBAL_SETTINGS")
     val DEVICE_REMARK = SettingDef("device_remark", "设备备注", "Device Remark", "", "GLOBAL_SETTINGS")
     val LOG_RETENTION_DAYS = SettingDef("log_retention_days", "日志保留天数", "Log Retention (days)", "3", "GLOBAL_SETTINGS")
+    val DEBUG_MODE = SettingDef("debug_mode", "调试模式", "Debug Mode", 0, "GLOBAL_SETTINGS")
     val RUNTIME_SCREENSHOT = SettingDef("runtime_screenshot", "运行时截图", "Runtime Screenshot", 0, "GLOBAL_SETTINGS")
     val LANGUAGE = SettingDef("language", "语言", "Language", "zh", "GLOBAL_SETTINGS")
 
@@ -172,6 +173,7 @@ object GlobalSettings {
         AFTER_KICK_OPTION,
         DEVICE_REMARK,
         LOG_RETENTION_DAYS,
+        DEBUG_MODE,
         RUNTIME_SCREENSHOT,
         LANGUAGE,
         PUSH_PROVIDER,
