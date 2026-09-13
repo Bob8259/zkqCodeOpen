@@ -42,7 +42,6 @@ suspend fun mainBaseDeployTroops() {
     // Read user-configurable deployment switches so that heroes, spells, siege machines
     // and clan-castle reinforcements can be toggled independently.
     val deployHeroes = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.DEPLOY_HEROES_ENABLED.key)
-    val deploySpells = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.DEPLOY_SPELLS_ENABLED.key)
     val deploySiegeMachines = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.DEPLOY_SIEGE_MACHINES_ENABLED.key)
     val deployReinforcements = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.DEPLOY_REINFORCEMENTS_ENABLED.key)
 
@@ -56,7 +55,7 @@ suspend fun mainBaseDeployTroops() {
         deployIfPresent(DRAG_SWEEP_SLOW_MS, MyColors.BarbarianAtDeploymentBar, MyColors.BarbarianAtDeploymentBar2)
         deployIfPresent(DRAG_SWEEP_SLOW_MS, MyColors.ArcherAtDeploymentBar, MyColors.ArcherAtDeploymentBar2, MyColors.ArcherAtDeploymentBar3, MyColors.ArcherAtDeploymentBar4)
         if (deployHeroes) deployHeroes()
-        deployOthers(useSpells = deploySpells)
+        deployOthers()
     }
 }
 
@@ -138,10 +137,11 @@ private suspend fun deployReinforcementsDirect() {
     TouchActions.tap(DRAG_START_X.toInt(), DRAG_START_Y.toInt(), delayTime = 100)
 }
 
-private suspend fun deployOthers(useSpells: Boolean = true) {
+internal suspend fun deployOthers(repetitionTime: Int = 15) {
     //Deploy other troops and spells
     LogHelper.showDebugInfo("Start to deploy others")
-    repeat(15) {
+    val useSpells = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.DEPLOY_SPELLS_ENABLED.key)
+    repeat(repetitionTime) {
         val troops = findMultiColorsUntil(
             schemas = listOf(MyColors.TroopColorAtDeploymentBar, MyColors.TroopColorAtDeploymentBar2, MyColors.SuperTroopColorAtDeploymentBar, MyColors.SpecialTroopColorAtDeploymentBar), duration = 20
         )

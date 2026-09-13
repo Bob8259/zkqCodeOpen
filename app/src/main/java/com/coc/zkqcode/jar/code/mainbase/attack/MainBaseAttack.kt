@@ -206,6 +206,8 @@ internal suspend fun monitorMainBaseBattle(
             break
         }
 
+        deployOthers(repetitionTime = 1)
+
         delayWithMultiplier(500) // Poll every 500ms
     }
 }
