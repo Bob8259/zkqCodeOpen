@@ -206,6 +206,7 @@ private suspend fun realAttack(mode: String, hasBuilderBaseTask: Boolean, battle
             TouchActions.tap(builderBaseEndBattle.x, builderBaseEndBattle.y, delayTime = 200)
             break
         }
+        
         val switchTroopButton = findMultiColorsUntil(schemas = listOf(MyColors.TroopsWithSkills, MyColors.TroopsWithOutSkills), duration = 200, byteBuffer = capturedScreen)
         if (switchTroopButton != null) {
             // Use shorter delay on first detection, normal delay afterward

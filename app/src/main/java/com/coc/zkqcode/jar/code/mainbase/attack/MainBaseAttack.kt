@@ -100,7 +100,7 @@ internal suspend fun monitorMainBaseBattle(
             if (!keepGameOnTimeout) killGame()
             break
         }
-        if (findMultiColors(schema = MyColors.BattleRewardSelection) != null) {
+        if (findMultiColors(schema = MyColors.BattleRewardSelection) != null || findMultiColors(schema = MyColors.BattleRewardSelection2) != null) {
             delayWithMultiplier(1000)
             TouchActions.tap(390, 340, delayTime = 2500)
         }

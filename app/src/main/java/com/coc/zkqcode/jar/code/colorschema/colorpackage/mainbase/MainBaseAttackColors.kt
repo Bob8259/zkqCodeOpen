@@ -80,6 +80,9 @@ interface IMainBaseAttackColors {
     /** Battle reward selection prompt displayed during battle. */
     val BattleRewardSelection: ColorSchema
 
+    /** Battle reward selection prompt displayed during battle variant 2. */
+    val BattleRewardSelection2: ColorSchema
+
     /** CN auto-battle button on the deploy/preparation screen. Placeholder — update actual colors when available. */
     val AutoBattleBtn: ColorSchema
 
@@ -313,6 +316,19 @@ object MainBaseAttackColors : IMainBaseAttackColors {
     // Battle reward selection prompt
     override val BattleRewardSelection = ColorSchema.parse(
         328, 72, 977, 167, "292997", "25|0|292997,61|0|292997,98|0|292997,114|2|292995,296|3|292994,316|3|292994,356|3|292994,383|7|282891,404|6|282891", 0, 0.97, "战斗奖励选择"
+    )
+
+    // Second battle reward selection prompt variant
+    override val BattleRewardSelection2 = ColorSchema.parse(
+        391,
+        163,
+        900,
+        237,
+        "2B2B9D",
+        "28|6|2B2C9B,50|6|2B2EA5,59|6|2B2EA5,52|11|292DA1,225|13|26268A,237|11|27278D,258|9|292992,304|11|28288E,311|9|282891",
+        0,
+        0.9,
+        "战斗奖励选择2"
     )
 
     // CN auto-battle button on the deploy/preparation screen

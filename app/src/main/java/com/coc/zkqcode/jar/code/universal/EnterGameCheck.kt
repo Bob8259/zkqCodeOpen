@@ -380,8 +380,8 @@ private suspend fun closeAdvertisements() {
             TouchActions.tap(946, 601, delayTime = 300)
         }
     }
-    if (findMultiColors(schema = MyColors.BattleRewardSelection) != null) {
-        TouchActions.tap(390, 340)
+    if (findMultiColors(schema = MyColors.BattleRewardSelection) != null || findMultiColors(schema = MyColors.BattleRewardSelection2) != null) {
+        TouchActions.tap(920, 365)
     }
     findMultiColorsUntil(byteBuffer = screenBuffer, schemas = listOf(MyColors.ReturnTask, MyColors.ReturnTask2, MyColors.ReturnTask3, MyColors.ReturnTask4), duration = 20, increment = 1)?.let {
         accountMessage("检测到回归教程")

@@ -36,7 +36,7 @@
             android:configChanges="orientation|screenSize|screenLayout"
             android:exported="true"
             android:launchMode="singleTask"
-            android:screenOrientation="portrait"
+            android:screenOrientation="fullSensor"
             android:theme="@style/Theme.ZKQcode.Splash">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
