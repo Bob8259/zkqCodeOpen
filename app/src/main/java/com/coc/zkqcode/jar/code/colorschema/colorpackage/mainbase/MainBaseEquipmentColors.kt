@@ -9,18 +9,26 @@ import com.coc.zkqcode.jar.code.colorschema.ColorSchema
 interface IMainBaseEquipmentColors {
     // Barbarian King equipments
     val BarbarianKingBarbarianPuppet: ColorSchema
+    val BarbarianKingBarbarianPuppetEquipped: ColorSchema
     val BarbarianKingRageVial: ColorSchema
+    val BarbarianKingRageVialEquipped: ColorSchema
     val BarbarianKingEarthquakeBoots: ColorSchema
+    val BarbarianKingEarthquakeBootsEquipped: ColorSchema
     val BarbarianKingVampstache: ColorSchema
     val BarbarianKingGiantGauntlet: ColorSchema
+    val BarbarianKingGiantGauntletEquipped: ColorSchema
     val BarbarianKingSpikyBall: ColorSchema
     val BarbarianKingSnakeBracelet: ColorSchema
+    val BarbarianKingSnakeBraceletEquipped: ColorSchema
     val BarbarianKingStickHorse: ColorSchema
 
     // Archer Queen equipments
     val ArcherQueenArcherPuppet: ColorSchema
+    val ArcherQueenArcherPuppetEquipped: ColorSchema
     val ArcherQueenInvisibilityVial: ColorSchema
+    val ArcherQueenInvisibilityVialEquipped: ColorSchema
     val ArcherQueenGiantArrow: ColorSchema
+    val ArcherQueenGiantArrowEquipped: ColorSchema
     val ArcherQueenHealerPuppet: ColorSchema
     val ArcherQueenFrozenArrow: ColorSchema
     val ArcherQueenMagicMirror: ColorSchema
@@ -29,7 +37,9 @@ interface IMainBaseEquipmentColors {
 
     // Minion Prince equipments
     val MinionPrinceHenchmenPuppet: ColorSchema
+    val MinionPrinceHenchmenPuppetEquipped: ColorSchema
     val MinionPrinceDarkOrb: ColorSchema
+    val MinionPrinceDarkOrbEquipped: ColorSchema
     val MinionPrinceMetalPants: ColorSchema
     val MinionPrinceNobleIron: ColorSchema
     val MinionPrinceDarkCrown: ColorSchema
@@ -70,11 +80,20 @@ object MainBaseEquipmentColors : IMainBaseEquipmentColors {
     override val BarbarianKingBarbarianPuppet = ColorSchema.parse(
         65, 275, 1235, 615, "9BD8FF", "-10|-1|7FBDF8,-12|-18|6C97DD,-2|-19|38CFFF,12|-11|A7E9FF,12|3|D8FFFF,16|13|495F79,14|21|40546C,7|23|374961,0|22|33435A", 0, 0.9, "野蛮人木偶"
     )
+    override val BarbarianKingBarbarianPuppetEquipped = ColorSchema.parse(
+        93, 512, 177, 595, "737C82", "17|0|618DB6,34|0|575F67,51|0|737C82,68|0|23D37B,0|41|737C82,17|41|737C82,34|41|7DDE4B,51|41|E6AA60,68|41|8D8B65", 0, 0.9, "野蛮人木偶（穿戴）"
+    )
     override val BarbarianKingRageVial = ColorSchema.parse(
         65, 275, 1235, 615, "FF43AD", "-18|-16|4B464F,-10|-22|54585D,1|-10|967F66,12|-1|D147C3,19|8|FF7FFF,17|16|FF5DFF,11|20|FF3D85,3|12|FF4087,-7|4|FF4C8B", 0, 0.9, "狂暴药水瓶"
     )
+    override val BarbarianKingRageVialEquipped = ColorSchema.parse(
+        99, 514, 170, 590, "524444", "14|0|74AADC,29|0|697176,43|0|737C82,57|0|23D37B,0|38|3F3E43,14|38|B345B3,29|38|504542,43|38|E66B9A,57|38|E659EA", 0, 0.9, "狂暴药水瓶（穿戴）"
+    )
     override val BarbarianKingEarthquakeBoots = ColorSchema.parse(
         65, 275, 1235, 615, "1465B5", "-20|-9|3FAEEB,-11|-19|7EE7FF,1|-3|17234A,20|-8|1159BD,12|9|38C5F2,11|14|1767A3,6|20|34BCED,-5|7|2197E1,-17|-9|4BBCF2", 0, 0.9, "地震金靴"
+    )
+    override val BarbarianKingEarthquakeBootsEquipped = ColorSchema.parse(
+        89, 416, 752, 599, "82D0E4", "4|32|399AD1,29|33|77DCEA,-9|33|334261,-9|23|2D3D70,30|-5|0D211B,34|-9|FFFFFF,33|-16|1DE891,36|-1|23D47B,2|19|6283A4", 0, 0.9, "地震金靴（穿戴）"
     )
     override val BarbarianKingVampstache = ColorSchema.parse(
         65, 275, 1235, 615, "FDDB6A", "-19|-8|5CD5FF,-9|-15|62C8FF,1|-18|7FE5F5,15|-12|6BCEFF,21|-7|6FDFFF,27|-1|4894DC,25|8|5698D1,16|16|4E9BFF,1|8|FFD54E", 0, 0.9, "嗜血胡须"
@@ -82,11 +101,17 @@ object MainBaseEquipmentColors : IMainBaseEquipmentColors {
     override val BarbarianKingGiantGauntlet = ColorSchema.parse(
         65, 275, 1235, 615, "1C4C8D", "6|8|1C6AB9,17|9|2B97D8,8|20|0D1449,-8|8|0E1B7C,-10|-1|0F27B9,-16|-10|12376E,2|-11|122B57,12|1|122243,23|7|2884C9", 0, 0.9, "巨型手套"
     )
+    override val BarbarianKingGiantGauntletEquipped = ColorSchema.parse(
+        182, 512, 264, 593, "6F7883", "17|0|45A6D1,33|0|305074,49|0|737C82,66|0|23D47B,0|41|737C82,17|41|737C82,33|41|404931,49|41|3B8DC3,66|41|737C82", 0, 0.9, "巨型手套（穿戴）"
+    )
     override val BarbarianKingSpikyBall = ColorSchema.parse(
         65, 275, 1235, 615, "ABAB77", "-19|4|363D28,-6|-8|BEBF8E,18|-11|E6EEDA,22|-3|74956E,19|9|49B9DE,16|12|43AFE1,22|16|2C75AD,11|22|56644C,3|24|4C5942", 0, 0.9, "尖刺足球"
     )
     override val BarbarianKingSnakeBracelet = ColorSchema.parse(
         65, 275, 1235, 615, "FF74E2", "9|0|FF6BD9,22|-7|4D9790,27|9|58B9F2,16|28|144B94,1|23|0E90D8,-22|-6|0E3C77,12|-20|277CB6,16|-16|1760A4,12|1|FF63D3", 0, 0.9, "灵蛇手镯"
+    )
+    override val BarbarianKingSnakeBraceletEquipped = ColorSchema.parse(
+        274, 431, 352, 507, "394866", "15|0|BFCA58,31|0|C8D865,47|0|2CB9DF,62|0|36753E,0|38|737C82,15|38|277DB7,31|38|2794C8,47|38|D0D67F,62|38|737C82", 0, 0.9, "灵蛇手镯（穿戴）"
     )
     override val BarbarianKingStickHorse = ColorSchema.parse(
         65, 275, 1235, 615, "C5D5F1", "-14|1|9C84E6,-7|-9|0D84FE,3|-16|CBDAF8,16|-17|10A9FC,19|-12|0D81E7,11|-6|C9D7F6,11|15|1D4F7F,15|21|225589,20|11|D33BBC", 0, 0.9, "木棍马驹"
@@ -96,11 +121,20 @@ object MainBaseEquipmentColors : IMainBaseEquipmentColors {
     override val ArcherQueenArcherPuppet = ColorSchema.parse(
         65, 275, 1235, 615, "3CB874", "-9|-8|77CAFC,-9|-19|FF6EFF,5|-23|FFA6FF,11|-6|70B5D9,15|-4|5696B7,14|12|44CA83,13|20|3CBA76,-5|20|258850,-1|13|238DDF", 0, 0.9, "弓箭手木偶"
     )
+    override val ArcherQueenArcherPuppetEquipped = ColorSchema.parse(
+        94, 425, 179, 510, "737C82", "17|0|DF6DEA,34|0|E691EA,51|0|20AB68,68|0|23D67D,0|43|737C82,17|43|737C81,34|43|3F9368,51|43|51B987,68|43|737C82", 0, 0.9, "弓箭手木偶（穿戴）"
+    )
     override val ArcherQueenInvisibilityVial = ColorSchema.parse(
         65, 275, 1235, 615, "D0DA7B", "-19|-8|313235,-17|-15|5F6565,-12|-23|5B91C2,-6|-21|4D5357,6|14|FFB955,16|11|FFFF82,12|13|FFBB53,-12|15|63FF2B,-15|10|4AAD2F", 0, 0.9, "隐形药水瓶"
     )
+    override val ArcherQueenInvisibilityVialEquipped = ColorSchema.parse(
+        185, 431, 264, 507, "90D6E4", "16|0|7DCDE4,32|0|2C3564,47|0|737C81,63|0|36753E,0|38|737C82,16|38|2D324F,32|38|2D5981,47|38|2D4C73,63|38|737C82", 0, 0.9, "隐形药水瓶（穿戴）"
+    )
     override val ArcherQueenGiantArrow = ColorSchema.parse(
         65, 275, 1235, 615, "3C5A8E", "5|-5|416298,9|-10|3B5788,15|-26|FFFFFF,22|-28|FFFFFF,25|-21|FFFFFF,16|-4|F4B84E,-11|-5|F8BA53,-12|-5|F4B64F,17|10|FFD54B", 0, 0.9, "巨型箭矢"
+    )
+    override val ArcherQueenGiantArrowEquipped = ColorSchema.parse(
+        184, 430, 265, 506, "737C82", "16|0|737C82,33|0|808A8D,49|0|E6E8EA,65|0|36753E,0|38|737C82,16|38|878F97,33|38|737C82,49|38|737C82,65|38|737C82", 0, 0.9, "巨型箭矢（穿戴）"
     )
     override val ArcherQueenHealerPuppet = ColorSchema.parse(
         65, 275, 1235, 615, "22E6FF", "-13|-8|3A72B7,1|-13|4782CC,21|-22|9EFCFF,14|-10|6CB7FF,13|-2|2BECFF,12|8|27EBFF,12|14|25E6FF,3|16|1CCBFF,-5|16|16BEFF", 0, 0.9, "天使木偶"
@@ -122,8 +156,14 @@ object MainBaseEquipmentColors : IMainBaseEquipmentColors {
     override val MinionPrinceHenchmenPuppet = ColorSchema.parse(
         65, 275, 1235, 615, "DDC310", "12|6|FFEE28,14|13|EED51C,3|17|B6950E,-12|9|555555,-19|-15|937E65,-13|-23|A29C91,-1|-27|F5B44E,10|-17|F9B755,23|-14|626262", 0, 0.9, "护卫玩偶"
     )
+    override val MinionPrinceHenchmenPuppetEquipped = ColorSchema.parse(
+        96, 431, 175, 507, "E0E15E", "16|0|C7C4BF,32|0|9A9897,47|0|737C82,63|0|36753E,0|38|737C82,16|38|737C82,32|38|81682C,47|38|A1852B,63|38|737C82", 0, 0.9, "护卫玩偶（穿戴）"
+    )
     override val MinionPrinceDarkOrb = ColorSchema.parse(
         65, 275, 1235, 615, "593955", "-10|0|FFDBFF,-19|-6|684464,-9|-20|BE2DB7,2|-15|7F437B,15|-11|7B436C,19|1|3F2533,14|7|181116,11|22|FDF22B,14|20|FDF52E", 0, 0.9, "暗黑魔球"
+    )
+    override val MinionPrinceDarkOrbEquipped = ColorSchema.parse(
+        95, 514, 172, 593, "737C82", "15|0|5A3856,31|0|9A3899,46|0|775375,61|0|36753E,0|39|737C82,15|39|988D52,31|39|4B4937,46|39|E0E296,61|39|737C82", 0, 0.9, "暗黑魔球（穿戴）"
     )
     override val MinionPrinceMetalPants = ColorSchema.parse(
         65, 275, 1235, 615, "415F88", "-12|1|9B886A,-6|-16|4C4231,10|-13|95CCD8,25|-12|71A1C8,19|-13|8CC9D9,21|-7|FBFBEF,22|4|CECFB7,24|13|AAAA90,28|18|908D75", 0, 0.9, "铁甲短裤"

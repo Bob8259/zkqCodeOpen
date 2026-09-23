@@ -85,7 +85,20 @@ private val HERO_ENTRIES = listOf(
             Pair(Schema.MAIN_BASE_EQUIPMENTS.DRAGON_DUKE_LIGHTNING_FANG.key, MyColors.DragonDukeElectroFangs),
             Pair(Schema.MAIN_BASE_EQUIPMENTS.DRAGON_DUKE_ROCKET_PACK.key, MyColors.DragonDukeRocketBackpack),
         )
-    ),
+    )
+)
+
+private val EQUIPPED_EQUIPMENT_SCHEMAS = mapOf(
+    Schema.MAIN_BASE_EQUIPMENTS.BARBARIAN_KING_PUPPET.key to MyColors.BarbarianKingBarbarianPuppetEquipped,
+    Schema.MAIN_BASE_EQUIPMENTS.BARBARIAN_KING_RAGE_VIAL.key to MyColors.BarbarianKingRageVialEquipped,
+    Schema.MAIN_BASE_EQUIPMENTS.BARBARIAN_KING_EARTHQUAKE_BOOTS.key to MyColors.BarbarianKingEarthquakeBootsEquipped,
+    Schema.MAIN_BASE_EQUIPMENTS.BARBARIAN_KING_GIANT_GAUNTLET.key to MyColors.BarbarianKingGiantGauntletEquipped,
+    Schema.MAIN_BASE_EQUIPMENTS.BARBARIAN_KING_SNAKE_BRACELET.key to MyColors.BarbarianKingSnakeBraceletEquipped,
+    Schema.MAIN_BASE_EQUIPMENTS.ARCHER_QUEEN_PUPPET.key to MyColors.ArcherQueenArcherPuppetEquipped,
+    Schema.MAIN_BASE_EQUIPMENTS.ARCHER_QUEEN_CLOAK.key to MyColors.ArcherQueenInvisibilityVialEquipped,
+    Schema.MAIN_BASE_EQUIPMENTS.ARCHER_QUEEN_GIANT_ARROW.key to MyColors.ArcherQueenGiantArrowEquipped,
+    Schema.MAIN_BASE_EQUIPMENTS.MINION_PRINCE_GUARDIAN_PUPPET.key to MyColors.MinionPrinceHenchmenPuppetEquipped,
+    Schema.MAIN_BASE_EQUIPMENTS.MINION_PRINCE_DARK_ORB.key to MyColors.MinionPrinceDarkOrbEquipped
 )
 
 
@@ -109,15 +122,8 @@ suspend fun upgradeEquipmentsAction() {
         return
     }
     accountMessage("已进入铁匠铺")
-    if (shouldUpgradeEquipped) {
-        val upgradeArrow = findMultiColorsUntil(listOf(MyColors.EquipmentUpgradeArrow), 1500)
-        if (upgradeArrow != null) {
-            accountMessage("已找到可升级的穿戴装备")
-            TouchActions.tap(upgradeArrow.x - 20, upgradeArrow.y + 20)
-            TouchActions.tap(970, 610)
-            TouchActions.tap(970, 610)
-            clickHeroHallBottom(3)
-        }
+    if (shouldUpgradeEquipped && mode != EquipmentUpgradeMode.BY_HERO) {
+        upgradeEquippedEquipmentsQuickly()
     }
 
     if (mode != null && HERO_ENTRIES.any { orderedEnabledEquipments(it).isNotEmpty() }) {
@@ -147,13 +153,30 @@ private suspend fun upgradeEquipmentsQuickly() {
 }
 
 private suspend fun upgradeEquipmentsByHero() {
-    HERO_ENTRIES.forEach { hero ->
-        if (orderedEnabledEquipments(hero).isEmpty()) return@forEach
+    val strictPriority = getBooleanConfigRuntime(
+        Schema.MAIN_BASE_SETTINGS.UPGRADE_EQUIPMENTS_STRICT_PRIORITY.key
+    )
+    for (hero in HERO_ENTRIES) {
+        if (orderedEnabledEquipments(hero).isEmpty()) continue
 
         accountMessage("按英雄升级装备：正在检测${hero.displayName}")
         TouchActions.tap(hero.tapX, hero.tapY, delayTime = STEP_DELAY)
-        tryUpgradeEnabledEquipment(listOf(hero))
+        val upgraded = tryUpgradeEnabledEquipment(
+            heroes = listOf(hero),
+            ignoreUpgradeArrow = true,
+            strictPriority = strictPriority
+        )
+        if (!upgraded && strictPriority) {
+            accountMessage("严格优先级：${hero.displayName}最高优先级装备未找到，跳过后续装备升级")
+            return
+        }
     }
+}
+
+private suspend fun upgradeEquippedEquipmentsQuickly() {
+    tryUpgradeEquippedEquipment(HERO_ENTRIES)
+    TouchActions.swipe(1120, 510, -600, 510, delayAfter = 500)
+    tryUpgradeEquippedEquipment(HERO_ENTRIES)
 }
 
 private fun orderedEnabledEquipments(hero: HeroEquipmentEntry): List<Pair<String, ColorSchema>> =
@@ -175,48 +198,95 @@ private suspend fun clearNewEquipments() {
     }
 }
 
+private suspend fun performEquipmentUpgrade(x: Int, y: Int) {
+    TouchActions.tap(x, y)
+    TouchActions.tap(970, 610)
+    TouchActions.tap(970, 610)
+    clickHeroHallBottom(2)
+}
+
 /**
- * Scans the current page for the highest-priority enabled equipment that has an
- * upgrade arrow nearby, and upgrades it. Only one equipment is upgraded per call.
+ * Scans enabled equipment in configured order and upgrades the first usable item.
  *
- * For each enabled equipment, its colour schema is searched on the captured screen.
- * When found at (x, y), the upgrade arrow ([MyColors.EquipmentUpgradeArrow]) is
- * searched in the sub-region (x+15, y-50) to (x+50, y-15) via [ColorSchema.rescope].
- * If the arrow is present, the equipment is tapped and the upgrade sequence is
- * performed, then the function returns immediately.
+ * The normal and equipped colour schemas identify the same equipment. When
+ * [ignoreUpgradeArrow] is true, a matched equipment is upgraded directly; this
+ * is used by hero mode. Quick mode keeps the upgrade-arrow check.
+ *
+ * When [strictPriority] is true, failure to match the current highest-priority
+ * equipment stops the scan instead of falling through to lower priorities.
  */
-private suspend fun tryUpgradeEnabledEquipment(heroes: List<HeroEquipmentEntry>) {
+private suspend fun tryUpgradeEnabledEquipment(
+    heroes: List<HeroEquipmentEntry>,
+    ignoreUpgradeArrow: Boolean = false,
+    strictPriority: Boolean = false
+): Boolean {
     clearNewEquipments()
-    val screenBuffer = ScreenCaptureManager.captureScreenOrRestart<ScreenCaptureManager.CaptureResult>(asBitmap = false)
+    val screenBuffer = ScreenCaptureManager.captureScreenOrRestart<ScreenCaptureManager.CaptureResult>(
+        asBitmap = false,
+        errorMessage = "tryUpgradeEnabledEquipment: Screen Capture Failed."
+    )
 
     for (hero in heroes) {
         for ((key, colorSchema) in orderedEnabledEquipments(hero)) {
-
             val name = colorSchema.name ?: key
-            val equipment = findMultiColors(schema = colorSchema, byteBuffer = screenBuffer, increment = 1)
+            val equippedEquipment = EQUIPPED_EQUIPMENT_SCHEMAS[key]?.let { schema ->
+                findMultiColors(schema = schema, byteBuffer = screenBuffer, increment = 1)
+            }
+            val equipment = equippedEquipment
+                ?: findMultiColors(schema = colorSchema, byteBuffer = screenBuffer, increment = 1)
 
             if (equipment == null) {
                 accountMessage("装备$name 找到状态:未找到,是否可升级:否")
+                if (strictPriority) return false
                 continue
             }
 
-            val x = equipment.x
-            val y = equipment.y
-            // Narrow the upgrade-arrow search to the small area near the equipment icon
-            val arrowSchema = ColorSchema.rescope(
-                MyColors.EquipmentUpgradeArrow, x + 15, y - 50, x + 50, y - 15
-            )
+            if (ignoreUpgradeArrow) {
+                accountMessage("装备$name 已找到，按英雄优先级直接执行升级")
+                performEquipmentUpgrade(equipment.x, equipment.y)
+                return true
+            }
 
-            val arrow = findMultiColors(schema = arrowSchema, byteBuffer = screenBuffer, increment = 1)
-            val upgradeable = arrow != null
+            val arrowSchema = ColorSchema.rescope(
+                MyColors.EquipmentUpgradeArrow, equipment.x + 15, equipment.y - 50, equipment.x + 50, equipment.y - 15
+            )
+            val upgradeable = findMultiColors(schema = arrowSchema, byteBuffer = screenBuffer, increment = 1) != null
             accountMessage("装备$name 找到状态:已找到,是否可升级:${if (upgradeable) "是" else "否"}")
 
-            if (!upgradeable) continue
+            if (!upgradeable) {
+                if (strictPriority) return false
+                continue
+            }
 
-            TouchActions.tap(x, y)
-            TouchActions.tap(970, 610)
-            TouchActions.tap(970, 610)
-            clickHeroHallBottom(2)
+            performEquipmentUpgrade(equipment.x, equipment.y)
+            return true
+        }
+    }
+    return false
+}
+
+private suspend fun tryUpgradeEquippedEquipment(heroes: List<HeroEquipmentEntry>) {
+    clearNewEquipments()
+    val screenBuffer = ScreenCaptureManager.captureScreenOrRestart<ScreenCaptureManager.CaptureResult>(
+        asBitmap = false,
+        errorMessage = "tryUpgradeEquippedEquipment: Screen Capture Failed."
+    )
+
+    for (hero in heroes) {
+        for ((key, colorSchema) in orderedEnabledEquipments(hero)) {
+            val equippedEquipment = EQUIPPED_EQUIPMENT_SCHEMAS[key]?.let { schema ->
+                findMultiColors(schema = schema, byteBuffer = screenBuffer, increment = 1)
+            }
+            val equipment = equippedEquipment
+                ?: findMultiColors(schema = colorSchema, byteBuffer = screenBuffer, increment = 1)
+                ?: continue
+            val arrowSchema = ColorSchema.rescope(
+                MyColors.EquipmentUpgradeArrow, equipment.x + 15, equipment.y - 50, equipment.x + 50, equipment.y - 15
+            )
+            if (findMultiColors(schema = arrowSchema, byteBuffer = screenBuffer, increment = 1) == null) continue
+
+            accountMessage("已找到可升级的穿戴装备：${colorSchema.name ?: key}")
+            performEquipmentUpgrade(equipment.x, equipment.y)
             return
         }
     }

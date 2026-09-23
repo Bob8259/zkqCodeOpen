@@ -179,6 +179,7 @@ object MainBaseSettings {
     val UPGRADE_EQUIPED_EQUIPMENTS = SettingDef("upgrade_equiped_equipments", "升级已穿戴装备", "Upgrade Equipped Equipments", 0, "MAIN_BASE_SETTINGS")
     val UPGRADE_EQUIPMENTS_QUICK = SettingDef("upgrade_equipments_quick", "快速升级装备", "Quick Equipment Upgrade", 1, "MAIN_BASE_SETTINGS")
     val UPGRADE_EQUIPMENTS_BY_HERO = SettingDef("upgrade_equipments_by_hero", "按英雄升级装备", "Upgrade Equipment by Hero", 0, "MAIN_BASE_SETTINGS")
+    val UPGRADE_EQUIPMENTS_STRICT_PRIORITY = SettingDef("upgrade_equipments_strict_priority", "严格遵循装备优先级", "Strict Equipment Priority", 0, "MAIN_BASE_SETTINGS")
 
     val REMOVE_OBSTACLES = SettingDef("remove_obstacles", "移除障碍物", "Remove Obstacles", 0, "MAIN_BASE_SETTINGS")
     val CONTINUOUS_REMOVE_OBSTACLES = SettingDef("continuous_remove_obstacles", "连续移除障碍物", "Continuous Removal", 0, "MAIN_BASE_SETTINGS")
@@ -338,6 +339,7 @@ object MainBaseSettings {
         UPGRADE_EQUIPED_EQUIPMENTS,
         UPGRADE_EQUIPMENTS_QUICK,
         UPGRADE_EQUIPMENTS_BY_HERO,
+        UPGRADE_EQUIPMENTS_STRICT_PRIORITY,
         REMOVE_OBSTACLES,
         CONTINUOUS_REMOVE_OBSTACLES,
         REMOVE_OBSTACLES_ENHANCEMENT,

@@ -329,6 +329,10 @@ object Strings {
     val quickUpgradeEquipmentsExplain get() = if (LanguageManager.isChinese) "进入铁匠铺后直接识别装备列表。" else "Directly identifies equipment from the blacksmith list."
     val upgradeEquipmentsByHeroExplain get() = if (LanguageManager.isChinese) "进入铁匠铺后逐个点击英雄，再识别该英雄的装备。" else "Selects each hero in the blacksmith, then identifies that hero's equipment."
     val upgradeEquipedEquipmentsExplain get() = if (LanguageManager.isChinese) "启用后，将自动升级当前已穿戴的装备。" else "When enabled, automatically upgrades currently equipped equipments."
+    val strictEquipmentPriorityExplain get() = if (LanguageManager.isChinese)
+        "仅按英雄升级装备模式生效。开启后，当前英雄最高优先级装备未找到时停止后续装备升级；关闭后按优先级依次查找，升级首个找到的装备。"
+    else
+        "Applies only to Upgrade Equipment by Hero. When enabled, stop remaining equipment upgrades if the hero's highest-priority equipment is not found. When disabled, search in priority order and upgrade the first match."
     val adjustMainBaseEquipmentPriority get() = if (LanguageManager.isChinese) "调整装备优先级" else "Adjust Equipment Priority"
 
     // Hero names for equipment grouping
