@@ -170,6 +170,7 @@ private suspend fun deployHeroes() {
     // All 6 hero colour schemas to check in the deployment bar
     val heroes = listOf(
         MyColors.KingBarbarian,
+        MyColors.KingBarbarian2,
         MyColors.QueenArcher,
         MyColors.QueenArcher2,
         MyColors.QueenArcher3,
