@@ -24,7 +24,6 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -41,7 +40,6 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.coc.zkqcode.core.data.database.GlobalVars
@@ -91,10 +89,6 @@ private data class AccountCellColors(val bg: Color, val border: Color, val text:
 private fun accountCellColors(isSelected: Boolean) = AccountCellColors(
     bg = if (isSelected) AppColors.Primary else AppColors.Primary.copy(alpha = 0.10f), border = if (isSelected) AppColors.Primary else AppColors.PrimaryLight, text = if (isSelected) Color.White else AppColors.TextPrimary
 )
-
-private fun stepBasedAutoSize(
-    maxFontSize: TextUnit, minFontSize: TextUnit = 5.sp
-) = TextAutoSize.StepBased(minFontSize = minFontSize, maxFontSize = maxFontSize, stepSize = 1.sp)
 
 @Composable
 fun RandomScheduling() {
@@ -354,15 +348,11 @@ private fun AccountGroupSelector(accountsKey: String) {
                         ) {
                             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                                 Text(
-                                    text = id.toString(), color = colors.text, style = MaterialTheme.typography.labelMedium, maxLines = 1, autoSize = stepBasedAutoSize(
-                                        maxFontSize = MaterialTheme.typography.labelMedium.fontSize, minFontSize = 6.sp
-                                    )
+                                    text = id.toString(), color = colors.text, style = MaterialTheme.typography.labelMedium, maxLines = 1
                                 )
                                 if (versionLabel.isNotEmpty()) {
                                     Text(
-                                        text = versionLabel, color = colors.text, style = MaterialTheme.typography.labelSmall, maxLines = 1, autoSize = stepBasedAutoSize(
-                                            MaterialTheme.typography.labelSmall.fontSize
-                                        )
+                                        text = versionLabel, color = colors.text, style = MaterialTheme.typography.labelSmall, maxLines = 1
                                     )
                                 }
                             }
