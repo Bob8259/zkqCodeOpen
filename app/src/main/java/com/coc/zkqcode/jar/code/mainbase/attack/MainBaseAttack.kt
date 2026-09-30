@@ -53,7 +53,11 @@ suspend fun mainBaseAttack(battleNumber: Int = 1, battleTimes: Int? = null): Boo
     val battleResult = searchOpponentsAndDeployTroops(battleNumber, resolvedBattleTimes)
     lastBattleStarted = battleResult.started
     if (!battleResult.started) return enterMainScreen()
-    if (getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.SWITCH_ACCOUNT_AFTER_BATTLE.key)) return false
+    if (getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.SWITCH_ACCOUNT_AFTER_BATTLE.key)) {
+        accountMessage("已勾选对战后直接切号，即将切换账号")
+        delayWithMultiplier(1000)
+        return false
+    }
     val startTime = System.currentTimeMillis()
     val isRestartGame = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.RESTART_GAME.key)
     val hasMainWorldTask = readClanGameAcceptedTaskBase() == CLAN_GAME_TASK_BASE_MAIN_WORLD
@@ -68,9 +72,7 @@ suspend fun mainBaseAttack(battleNumber: Int = 1, battleTimes: Int? = null): Boo
         runGame()
     } else if (!battleResult.autoBattleUsed) {
         monitorMainBaseBattle(
-            startTime = startTime,
-            hasMainWorldTask = hasMainWorldTask,
-            keepGameOnTimeout = false
+            startTime = startTime, hasMainWorldTask = hasMainWorldTask, keepGameOnTimeout = false
         )
     }
     return enterMainScreen(restartAfterDeploy)
@@ -80,10 +82,7 @@ suspend fun mainBaseAttack(battleNumber: Int = 1, battleTimes: Int? = null): Boo
  * Polls a started battle until it ends or reaches the monitoring timeout.
  */
 internal suspend fun monitorMainBaseBattle(
-    startTime: Long,
-    hasMainWorldTask: Boolean,
-    keepGameOnTimeout: Boolean,
-    maxDurationMs: Long = 3 * 60 * 1000L
+    startTime: Long, hasMainWorldTask: Boolean, keepGameOnTimeout: Boolean, maxDurationMs: Long = 3 * 60 * 1000L
 ) {
     val exitOnOneStar = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.EXIT_ON_ONE_STAR_MAIN.key)
     val ocrExitEnabled = getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.OCR_EXIT_ENABLED.key)
@@ -135,10 +134,7 @@ internal suspend fun monitorMainBaseBattle(
         // OCR destruction-% exit detection (only when enabled and no task)
         if (ocrExitEnabled && !hasMainWorldTask) {
             val (_, ocrResult) = checkBattleDestructionOcrExit(
-                destructionOcrState,
-                resourceState = resourceOcrState,
-                bitmap = sharedBitmap,
-                onStatusUpdate = { status ->
+                destructionOcrState, resourceState = resourceOcrState, bitmap = sharedBitmap, onStatusUpdate = { status ->
                     val percentSeconds = status.percentRemainingMs / 1000.0
                     val resourceSeconds = status.resourceRemainingMs?.let { it / 1000.0 }
                     val statusText = buildString {
@@ -156,8 +152,7 @@ internal suspend fun monitorMainBaseBattle(
                         }
                     }
                     accountMessage(statusText)
-                }
-            )
+                })
             when (ocrResult) {
                 BattleDestructionOcrExitResult.ExitTargetMet -> {
                     surrenderMainBaseBattle("破坏百分比已达目标，退出对战")
@@ -184,7 +179,8 @@ internal suspend fun monitorMainBaseBattle(
                     break
                 }
 
-                BattleDestructionOcrExitResult.Continue -> { /* keep polling */ }
+                BattleDestructionOcrExitResult.Continue -> { /* keep polling */
+                }
             }
         }
 
