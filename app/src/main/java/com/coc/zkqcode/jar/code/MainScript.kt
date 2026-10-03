@@ -22,6 +22,7 @@ import com.coc.zkqcode.jar.code.universal.create.batchCreateAccounts
 import com.coc.zkqcode.jar.code.universal.ctrl.ZkqWsClient
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.preCheck
+import com.coc.zkqcode.jar.code.universal.recognizer.recognizeResources
 import com.coc.zkqcode.jar.code.universal.smalltools.checkScheduledUpgradeNotifications
 import com.coc.zkqcode.jar.code.universal.smalltools.checkUpgradeTimers
 import com.coc.zkqcode.jar.code.universal.smalltools.data.StorageKeys
@@ -125,7 +126,7 @@ private suspend fun runTestCode() {
             GlobalVars.configStates[Schema.GLOBAL_SETTINGS.DEBUG_MODE.key]?.value == "1"
         ) {
             ShowMessage("测试代码开始")
-            upgradeEquipmentsAndPets()
+            ShowMessage(recognizeResources(true).toString())
             delay(2000.milliseconds)
         }
     }
