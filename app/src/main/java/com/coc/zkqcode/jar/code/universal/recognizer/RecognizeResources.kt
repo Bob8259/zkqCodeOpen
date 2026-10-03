@@ -37,10 +37,11 @@ suspend fun recognizeResourcesOrNull(isOpponent: Boolean = false, bitmap: Bitmap
     } else {
         listOf(990, 20, 1270, 190)
     }
-    val preProcess = !isOpponent
     val results = TextRecognizer.recognize(
-        startX, startY, endX, endY, useChinese = false, applyPreprocess = preProcess,
-        threshold = 240, screenBuffer = bitmap
+        startX, startY, endX, endY, useChinese = false, applyPreprocess = true,
+        threshold = if (isOpponent) 150 else 240,
+        invertBinarization = true,
+        screenBuffer = bitmap
     )
 
     if (results.isEmpty()) return null

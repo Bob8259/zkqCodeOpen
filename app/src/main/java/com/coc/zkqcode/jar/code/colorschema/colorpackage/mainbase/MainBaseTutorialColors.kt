@@ -14,6 +14,7 @@ interface IMainBaseTutorial {
     val TutorialShop: ColorSchema
     val ShopInnerArrow: ColorSchema
     val ShopInnerArrow2: ColorSchema
+    val ShopInnerArrow3: ColorSchema
     val TutorialBuildClick: ColorSchema
     val TutorialGoblinAttack: ColorSchema
     val VillagerAttack: ColorSchema
@@ -61,6 +62,9 @@ object MainBaseTutorial : IMainBaseTutorial {
     )
     override val ShopInnerArrow2 = ColorSchema.parse(
         27, 264, 1236, 400, "00A3FD", "15|-21|20B3FF,30|-15|29BEFF,40|-8|2AB1FF,18|0|06A5FF,3|7|00A8FD,14|18|00A4FC,20|22|01A0FF,0|28|05ACFF,-8|9|01AAFE", 0, 0.9, "商店内部箭头2"
+    )
+    override val ShopInnerArrow3 = ColorSchema.parse(
+        20, 264, 1270, 397, "45DBF3", "-7|-7|4ADFF3,7|-10|1BB3F9,13|-18|0FA7FA,27|-17|1DBAFD,36|-3|17ABFD,34|0|11A3FB,15|4|22BDF6,18|17|3CD3F5,24|24|3CD1F5", 0, 0.9, "商店内部箭头3"
     )
     override val TutorialBuildClick = ColorSchema.parse(
         121, 60, 1155, 611, "FEFEFE", "3|5|FEFEFE,9|-2|FEFEFE,13|-8|FDFDFE,27|-2|2AF8A3,23|8|16BE4B,19|15|14B645,13|21|15BF53,-2|22|16C358,-14|15|14B645", 0, 0.93, "教程建造绿色箭头"
