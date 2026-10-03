@@ -33,7 +33,7 @@ suspend fun recognizeResources(isOpponent: Boolean = false, bitmap: Bitmap? = nu
 suspend fun recognizeResourcesOrNull(isOpponent: Boolean = false, bitmap: Bitmap? = null): Resources? {
     // Select crop area based on target
     val (startX, startY, endX, endY) = if (isOpponent) {
-        listOf(50, 98, 293, 209)
+        listOf(50, 80, 200, 210)
     } else {
         listOf(990, 20, 1270, 190)
     }

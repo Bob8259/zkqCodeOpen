@@ -40,6 +40,7 @@ object StorageKeys {
     const val CLAN_GAME_REWARD_CLAIMED_PERIOD = "ClanGameRewardClaimedPeriod"
     const val CLAIM_BADGE_EVENT_REWARDS = "ClaimBadgeEventRewards"
     const val CLAIM_PASS_REWARDS = "ClaimPassRewards"
+    const val CLAIM_VILLAGER_COMMISSIONS = "ClaimVillagerCommissions"
     const val LEAGUE_DONATION = "LeagueDonation"
 
     // Per-account keys for dynamic adjustment resource thresholds

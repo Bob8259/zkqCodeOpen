@@ -28,6 +28,7 @@ import com.coc.zkqcode.jar.code.mainbase.daily.checkNormalShop
 import com.coc.zkqcode.jar.code.mainbase.daily.collectBadgeEventRewards
 import com.coc.zkqcode.jar.code.mainbase.daily.collectClanCastleResources
 import com.coc.zkqcode.jar.code.mainbase.daily.collectPassRewards
+import com.coc.zkqcode.jar.code.mainbase.daily.collectVillagerCommission
 import com.coc.zkqcode.jar.code.mainbase.daily.mainBaseCheckTutorials
 import com.coc.zkqcode.jar.code.mainbase.daily.mainBaseCollectResources
 import com.coc.zkqcode.jar.code.mainbase.daily.mainBaseRemoveObstacles
@@ -42,6 +43,7 @@ import com.coc.zkqcode.jar.code.universal.smalltools.lifecycle.enterMainBase
 suspend fun playMainBase(): Boolean {
     if (!enterMainBase()) return false
     if (!mainBaseCollectResources()) return false
+    if (!collectVillagerCommission()) return false
     if (!checkItemsToBePlaced()) return false
     if (!mainBaseCheckTutorials()) return false
     if (!checkRandomSchedule()) return false

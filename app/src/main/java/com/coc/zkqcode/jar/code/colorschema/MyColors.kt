@@ -71,8 +71,14 @@ object MyColors : IUIColors by UIColors, IFeatureColors by FeatureColors, IClanG
     IMainBaseTraining by MainBaseTraining, IBuilderBaseResourcesColors by BuilderBaseResourcesColors, IBuilderBaseObstaclesRemovalColors by BuilderBaseObstaclesRemovalColors,
     IBuilderBaseTrainingColors by BuilderBaseTrainingColors, IBuilderBaseGearUpColors by BuilderBaseGearUpColors, IBuilderBaseUpgradeColors by BuilderBaseUpgradeColors,
     IBuilderBaseClockTowerColors by BuilderBaseClockTowerColors, IBuilderBaseResearchColors by BuilderBaseResearchColors, IBuilderBaseAttackColors by BuilderBaseAttackColors,
-    IUniversalUpgradeColors by UniversalUpgradeColors, IMainBaseUpgradeColors by MainBaseUpgradeColors, IMainBaseResearchColors by MainBaseResearchColors, IMainBaseResourcesColors by MainBaseResourcesColors,
-    IClanCapitalTutorialColors by ClanCapitalTutorialColors, IMainBaseAttackColors by MainBaseAttackColors, IMainBaseClanColors by MainBaseClanColors, IMainBaseClanWarColors by MainBaseClanWarColors,
-    IMainBaseHelperColors by MainBaseHelperColors, IMainBaseHeroHallColors by MainBaseHeroHallColors, IMainBaseEquipmentColors by MainBaseEquipmentColors, IMainBaseSmallTutorialColors by MainBaseSmallTutorialColors,
-    IMainBaseMagicItemColors by MainBaseMagicItemColors, IClanCapitalColors by ClanCapitalColors, IMainBaseShopColors by MainBaseShopColors, IMainBaseTournamentColors by MainBaseTournamentColors,
-    IMainBasePassRewardColors by MainBasePassRewardColors, IGameUpdateColors by GameUpdateColors, IEventColors by EventColors
+    IUniversalUpgradeColors by UniversalUpgradeColors, IMainBaseUpgradeColors by MainBaseUpgradeColors, IMainBaseResearchColors by MainBaseResearchColors,
+    IMainBaseResourcesColors by MainBaseResourcesColors, IClanCapitalTutorialColors by ClanCapitalTutorialColors, IMainBaseAttackColors by MainBaseAttackColors,
+    IMainBaseClanColors by MainBaseClanColors, IMainBaseClanWarColors by MainBaseClanWarColors, IMainBaseHelperColors by MainBaseHelperColors, IMainBaseHeroHallColors by MainBaseHeroHallColors,
+    IMainBaseEquipmentColors by MainBaseEquipmentColors, IMainBaseSmallTutorialColors by MainBaseSmallTutorialColors, IMainBaseMagicItemColors by MainBaseMagicItemColors,
+    IClanCapitalColors by ClanCapitalColors, IMainBaseShopColors by MainBaseShopColors, IMainBaseTournamentColors by MainBaseTournamentColors, IMainBasePassRewardColors by MainBasePassRewardColors,
+    IGameUpdateColors by GameUpdateColors, IEventColors by EventColors {
+
+    val FinishCommission = ColorSchema.parse(
+        1093, 96, 1250, 695, "92FFEB", "12|0|92FFEB,34|0|92FFEB,62|0|92FFEB,84|0|92FFEB,96|34|2CC97A,20|34|2CC97A,17|34|2CC97A,100|1|91FFEA,5|29|2CCA7B", 0, 0.9, "搞定按钮"
+    )
+}

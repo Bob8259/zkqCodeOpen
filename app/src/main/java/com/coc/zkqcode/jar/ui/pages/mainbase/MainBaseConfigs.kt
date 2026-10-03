@@ -1002,6 +1002,7 @@ fun LazyListScope.mainBaseConfig(
                 SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.CLAIM_FREE_SHOP_REWARDS.key}_c$index")
                 SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.CLAIM_HERO_HALL_REWARDS.key}_c$index")
                 SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.CLAIM_PASS_REWARDS.key}_c$index")
+                SettingSwitchIcon(key = "${MAIN_BASE_SETTINGS.CLAIM_VILLAGER_COMMISSIONS.key}_c$index")
             }
         }
     }
