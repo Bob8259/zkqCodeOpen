@@ -864,50 +864,59 @@ fun LazyListScope.mainBaseConfig(
             val quickEquipmentKey = "${MAIN_BASE_SETTINGS.UPGRADE_EQUIPMENTS_QUICK.key}_c$index"
             val heroEquipmentKey = "${MAIN_BASE_SETTINGS.UPGRADE_EQUIPMENTS_BY_HERO.key}_c$index"
             val strictPriorityKey = "${MAIN_BASE_SETTINGS.UPGRADE_EQUIPMENTS_STRICT_PRIORITY.key}_c$index"
-            SettingSwitchIcon(key = equipmentMasterKey)
-            Column {
-                SettingSwitchIcon(
-                    key = equippedEquipmentKey,
-                    explain = Strings.upgradeEquipedEquipmentsExplain,
-                    afterChange = { checked ->
-                        if (checked) GlobalVars.configStates[equipmentMasterKey]?.value = "1"
+            SettingSwitchIcon(key = equipmentMasterKey, afterChange = { checked ->
+                if (!checked) {
+                    GlobalVars.configStates[equippedEquipmentKey]?.value = "0"
+                    GlobalVars.configStates[quickEquipmentKey]?.value = "0"
+                    GlobalVars.configStates[heroEquipmentKey]?.value = "0"
+                    GlobalVars.configStates[strictPriorityKey]?.value = "0"
+                }
+            })
+            AnimatedVisibility(visible = GlobalVars.configStates[equipmentMasterKey]?.value == "1") {
+                Column {
+                    SettingSwitchIcon(
+                        key = equippedEquipmentKey,
+                        explain = Strings.upgradeEquipedEquipmentsExplain,
+                        afterChange = { checked ->
+                            if (checked) GlobalVars.configStates[equipmentMasterKey]?.value = "1"
+                        }
+                    )
+                    Row {
+                        SettingSwitchIcon(
+                            key = quickEquipmentKey,
+                            explain = Strings.quickUpgradeEquipmentsExplain,
+                            afterChange = { checked ->
+                                if (checked) {
+                                    GlobalVars.configStates[equipmentMasterKey]?.value = "1"
+                                    GlobalVars.configStates[heroEquipmentKey]?.value = "0"
+                                }
+                            }
+                        )
+                        SettingSwitchIcon(
+                            key = heroEquipmentKey,
+                            explain = Strings.upgradeEquipmentsByHeroExplain,
+                            afterChange = { checked ->
+                                if (checked) {
+                                    GlobalVars.configStates[equipmentMasterKey]?.value = "1"
+                                    GlobalVars.configStates[quickEquipmentKey]?.value = "0"
+                                }
+                            }
+                        )
                     }
-                )
-                Row {
-                    SettingSwitchIcon(
-                        key = quickEquipmentKey,
-                        explain = Strings.quickUpgradeEquipmentsExplain,
-                        afterChange = { checked ->
-                            if (checked) {
-                                GlobalVars.configStates[equipmentMasterKey]?.value = "1"
-                                GlobalVars.configStates[heroEquipmentKey]?.value = "0"
-                            }
-                        }
-                    )
-                    SettingSwitchIcon(
-                        key = heroEquipmentKey,
-                        explain = Strings.upgradeEquipmentsByHeroExplain,
-                        afterChange = { checked ->
-                            if (checked) {
-                                GlobalVars.configStates[equipmentMasterKey]?.value = "1"
-                                GlobalVars.configStates[quickEquipmentKey]?.value = "0"
-                            }
-                        }
+                    AnimatedVisibility(
+                        visible = GlobalVars.configStates[heroEquipmentKey]?.value == "1"
+                    ) {
+                        SettingSwitchIcon(
+                            key = strictPriorityKey,
+                            explain = Strings.strictEquipmentPriorityExplain
+                        )
+                    }
+                    CustomButton(
+                        onClick = { onNavigateEquipmentPriority(index) },
+                        text = Strings.adjustMainBaseEquipmentPriority,
+                        containerColor = AppColors.Teal
                     )
                 }
-                AnimatedVisibility(
-                    visible = GlobalVars.configStates[heroEquipmentKey]?.value == "1"
-                ) {
-                    SettingSwitchIcon(
-                        key = strictPriorityKey,
-                        explain = Strings.strictEquipmentPriorityExplain
-                    )
-                }
-                CustomButton(
-                    onClick = { onNavigateEquipmentPriority(index) },
-                    text = Strings.adjustMainBaseEquipmentPriority,
-                    containerColor = AppColors.Teal
-                )
             }
         }
     }

@@ -23,6 +23,7 @@ object StorageKeys {
     const val USE_MAGIC_ITEMS = "UseMagicItems"
     const val USE_HELPERS = "UseHelpers"
     const val UPGRADE_EQUIPMENTS = "UpgradeEquipments"
+    const val GEAR_UP_BUILDINGS = "GearUpBuildings"
     const val CHECK_SHOP = "CheckShop"
     const val CHECK_LEAGUE_SHOP = "CheckLeagueShop"
     const val CLAN_CAPITAL_TRAIN_TROOPS = "ClanCapitalTrainTroops"
