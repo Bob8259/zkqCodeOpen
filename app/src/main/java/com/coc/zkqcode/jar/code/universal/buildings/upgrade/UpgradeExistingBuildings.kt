@@ -358,7 +358,7 @@ private suspend fun upgradeHero(): LoopAction {
 private suspend fun upgradeBuilding(building: String, currentBase: BaseType, attempt: Int): LoopAction {
     tapGoldBar()
     // Check for the upgrade action (Hammer icon)
-    val hammer = findMultiColorsUntil(schemas = listOf(MyColors.UpgradeHammer), duration = 1000) ?: return LoopAction.Break
+    val hammer = findMultiColorsUntil(schemas = listOf(MyColors.UpgradeHammer, MyColors.UpgradeHammer2), duration = 1000) ?: return LoopAction.Break
     // Sometimes the ML Kit might wrongly find a building that is already being upgraded. So we need to break.
 
     TouchActions.tap(hammer.x, hammer.y)

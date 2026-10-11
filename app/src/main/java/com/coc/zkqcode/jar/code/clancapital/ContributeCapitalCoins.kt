@@ -61,7 +61,9 @@ suspend fun contributeCapitalCoins(): Boolean {
         }
 
         // Try contributing at the district building list
-        TouchActions.tap(490, 15)
+
+//        TouchActions.tap(490, 15)
+        TouchActions.tap(537, 75)
         if (tryContributeAtBuildingList()) {
             writeMemory(storageKey, (System.currentTimeMillis() / 60_000).toString())
             return enterMainScreen()

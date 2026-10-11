@@ -8,6 +8,7 @@ interface IBuilderBaseUpgradeColors {
     val InnerShopArrow: ColorSchema
     val BuilderBaseWallInShop: ColorSchema
     val UpgradeHammer: ColorSchema
+    val UpgradeHammer2: ColorSchema
     val BuilderBaseInsufficientResources: ColorSchema
     val BuilderBaseWorker: ColorSchema
     val BuilderBaseWorker2: ColorSchema
@@ -24,6 +25,9 @@ object BuilderBaseUpgradeColors : IBuilderBaseUpgradeColors {
     )
     override val UpgradeHammer = ColorSchema.parse(
         146, 499, 1154, 626, "E6E6F3", "11|-8|DEDFEF,12|2|476ECD,18|7|5582F0,21|9|5A82EF,25|10|4F74D5,30|14|5F87F0,38|18|5C7EE3,-4|10|CFDCE7,-2|1|D3D3DE", 0, 0.9, "升级锤子"
+    )
+    override val UpgradeHammer2 = ColorSchema.parse(
+        156, 493, 1127, 638, "DAC9C5", "3|2|EFEFF7,6|5|F0E7F1,6|10|BF9882,12|10|FFFEFF,12|15|CFA388,17|15|E6D8D8,17|22|C09A82,31|30|294A79,33|33|284A75", 0, 0.9, "大本营武器剑"
     )
     override val BuilderBaseInsufficientResources = ColorSchema.parse(
         560, 520, 1083, 676, "7F88FF", "1|0|7F88FF,2|0|7F88FF,3|0|7F88FF,3|1|7F88FF,2|1|7F88FF,0|1|7F88FF,0|1|7F88FF,0|2|7F88FF,1|2|7F88FF", 0, 0.97, "夜世界升级资源不足"
