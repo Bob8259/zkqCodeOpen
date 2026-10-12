@@ -19,6 +19,7 @@ interface IMainBaseClanColors {
     val DonateNormalTroops: ColorSchema
     val DonateSpells: ColorSchema
     val DonateSword: ColorSchema
+    val DonateSword2: ColorSchema
     val DonateHumanFigure: ColorSchema
     val PreviousDonation: ColorSchema
     val RequestReinforcement: ColorSchema
@@ -114,6 +115,11 @@ object MainBaseClanColors : IMainBaseClanColors {
     // Donate sword icon in donation dialogue
     override val DonateSword = ColorSchema.parse(
         0, 0, 0, 0, "EFE2DF", "-2|-2|AF8870,-4|-4|B08971,-1|1|C1977B,2|4|C9B3AA,4|7|D6C5C4,5|10|2D79A8,6|12|1A3C68,7|14|1D3E68,9|16|317398", 0, 0.9, "捐赠的剑"
+    )
+
+    // Donate sword icon in donation dialogue (variant 2)
+    override val DonateSword2 = ColorSchema.parse(
+        0, 0, 0, 0, "B5917C", "2|1|E7E3EF,2|4|BA9175,3|6|C1967F,5|8|CFB5AD,6|10|BE9C88,8|12|A0B4C1,9|13|5F97B6,9|15|183C6B,10|18|1C4A74", 0, 0.9, "捐赠的剑2"
     )
 
     // Donate human figure icon in donation dialogue

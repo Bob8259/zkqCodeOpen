@@ -57,12 +57,12 @@ suspend fun donateToClan(): Boolean {
             // Tap the clan chat icon to open the chat panel
             TouchActions.tap(clanChat.x, clanChat.y)
             if (InGameVars.currentGameVersion == GameVersion.CN) {
-                TouchActions.tap(523, 239, delayTime = 200)
-                TouchActions.tap(152, 88, delayTime = 200)
+                TouchActions.tap(520, 240, delayTime = 200)
+                TouchActions.tap(150, 90, delayTime = 200)
             } else {
                 TouchActions.tap(750, 200, delayTime = 300)//Global version chat area
             }
-            TouchActions.tap(40, 608)//Goto bottom
+            TouchActions.tap(40, 610)//Goto bottom
             continue
         }
         val iUnderstandButton = findMultiColors(schema = MyColors.IUnderstand, byteBuffer = screenBuffer, increment = 1)
@@ -179,6 +179,11 @@ suspend fun donateToClan(): Boolean {
         val donationSearchStartY = 70
         val donationSearchEndY = 630
         val donationSliceHeight = 60
+        val donationRequestIconSchemas = listOf(
+            MyColors.DonateSword,
+            MyColors.DonateSword2,
+            MyColors.DonateHumanFigure
+        )
         val donationButton = run {
             var found: android.graphics.Point? = null
             outer@ for (sliceStartY in donationSearchStartY..donationSearchEndY step donationSliceHeight) {
@@ -216,23 +221,16 @@ suspend fun donateToClan(): Boolean {
                             val regionY1 = candidate.y - 15
                             val regionX2 = candidate.x
                             val regionY2 = candidate.y + 40
-                            val swordCheckSchema = ColorSchema.rescope(
-                                MyColors.DonateSword,
-                                x1 = regionX1, y1 = regionY1, x2 = regionX2, y2 = regionY2
-                            )
-                            val swordIcon = findMultiColors(schema = swordCheckSchema, byteBuffer = screenBuffer, increment = 1)
-                            if (swordIcon != null) {
-                                found = candidate
-                                break@outer
-                            }
-                            val humanFigureCheckSchema = ColorSchema.rescope(
-                                MyColors.DonateHumanFigure,
-                                x1 = regionX1, y1 = regionY1, x2 = regionX2, y2 = regionY2
-                            )
-                            val humanFigureIcon = findMultiColors(schema = humanFigureCheckSchema, byteBuffer = screenBuffer, increment = 1)
-                            if (humanFigureIcon != null) {
-                                found = candidate
-                                break@outer
+                            for (schema in donationRequestIconSchemas) {
+                                val iconSchema = ColorSchema.rescope(
+                                    schema,
+                                    x1 = regionX1, y1 = regionY1, x2 = regionX2, y2 = regionY2
+                                )
+                                val iconPoint = findMultiColors(schema = iconSchema, byteBuffer = screenBuffer, increment = 1)
+                                if (iconPoint != null) {
+                                    found = candidate
+                                    break@outer
+                                }
                             }
                         }
                     }
