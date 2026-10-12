@@ -4,16 +4,15 @@ package com.coc.zkqcode.jar.code.mainbase.attack
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.fileactions.LogHelper
-import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
-import com.coc.zkqcode.jar.code.universal.smalltools.data.getBooleanConfigRuntime
-import com.coc.zkqcode.jar.code.universal.smalltools.data.getConfigRuntime
-import com.coc.zkqcode.jar.ui.schema.Schema
-import com.coc.zkqcode.jar.code.universal.smalltools.input.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.ColorSchema
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.mainbase.others.zoomSmallMainBase
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
+import com.coc.zkqcode.jar.code.universal.smalltools.data.getBooleanConfigRuntime
+import com.coc.zkqcode.jar.code.universal.smalltools.data.getConfigRuntime
+import com.coc.zkqcode.jar.code.universal.smalltools.input.TouchActions
+import com.coc.zkqcode.jar.ui.schema.Schema
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.withContext
 import kotlin.random.Random
@@ -60,7 +59,7 @@ suspend fun mainBaseDeployTroops() {
 }
 
 /**
- * Deploys troops honoring the configured deploy mode:
+ * Deploys troops honouring the configured deploy mode:
  * Mode "0" (default) = single-side deploy; otherwise 4-side deploy (四面下兵).
  */
 suspend fun deployTroopsByConfig() {
@@ -116,7 +115,7 @@ private suspend fun deploySiegeMachineAndReinforcements(useReinforcements: Boole
  *
  * If a dedicated CC-icon colour schema is added later, replace the position-based
  * click below with a colour-detected one by adding a new ColorSchema in the
- * color-package files and using it here via findMultiColors.
+ * colour-package files and using it here via findMultiColors.
  */
 private suspend fun deployReinforcementsDirect() {
     // Try detecting the CC icon under the special troop colour schema first.
@@ -298,8 +297,7 @@ private suspend fun cnScanBar(): List<DetectedTroop> {
         var searchX1 = schema.x1
         while (searchX1 < schema.x2) {
             val narrowed = ColorSchema.rescope(schema, searchX1, schema.y1, schema.x2, schema.y2)
-            val found = findMultiColors(schema = narrowed, byteBuffer = screenBuffer)
-            if (found == null) break
+            val found = findMultiColors(schema = narrowed, byteBuffer = screenBuffer) ?: break
             results.add(DetectedTroop(found.x, found.y, listOf(schema), DRAG_SWEEP_MS))
             searchX1 = found.x + 40
         }
@@ -353,9 +351,9 @@ private suspend fun cnDeployOneBatch(finger1: DeployPath, finger2: DeployPath, c
     // One screenshot creates the troop snapshot for this area. Each detected slot
     // receives one pass on both paths; do not wait for the slot to disappear.
     val troops = cnScanBar()
-    for (troop in troops) {
-        TouchActions.tap(troop.x, troop.y, delayTime = 300)
-        val sweepMs = (if (customSweepMs > 0) customSweepMs else troop.dragSweepMs) + Random.nextInt(-500, 500)
+    for ((x, y, _, dragSweepMs) in troops) {
+        TouchActions.tap(x, y, delayTime = 300)
+        val sweepMs = (if (customSweepMs > 0) customSweepMs else dragSweepMs) + Random.nextInt(-500, 500)
         TouchActions.touchDown(finger1.startX, finger1.startY, 1)
         delayWithMultiplier(600)
         TouchActions.moveSmoothly(finger1.startX, finger1.startY, finger1.endX, finger1.endY, sweepMs, 1)
@@ -391,8 +389,8 @@ private suspend fun cnDeployClickOnPath(path: DeployPath, density: Int, clickDel
 
 private suspend fun cnDeployOneBatchClick(finger1: DeployPath, finger2: DeployPath, density: Int, clickDelayMs: Int) {
     val troops = cnScanBar()
-    for (troop in troops) {
-        TouchActions.tap(troop.x, troop.y, delayTime = 300)
+    for ((x, y) in troops) {
+        TouchActions.tap(x, y, delayTime = 300)
         cnDeployClickOnPath(finger1, density, clickDelayMs)
         delayWithMultiplier(200)
         cnDeployClickOnPath(finger2, density, clickDelayMs)
