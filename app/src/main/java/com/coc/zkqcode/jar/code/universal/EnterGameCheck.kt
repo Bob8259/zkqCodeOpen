@@ -446,6 +446,13 @@ suspend fun isInHomePage(countdownMessage: String? = null): Boolean {
         return false
     }
 
+    // Check for trophy and building hammer first; if both are found, confirm home page
+    if (findMultiColors(byteBuffer = screenBuffer, schema = MyColors.Trophy, increment = 1) != null &&
+        findMultiColors(byteBuffer = screenBuffer, schema = MyColors.BuildingHammer, increment = 1) != null
+    ) {
+        return true
+    }
+
     // 2. Check for the training button presence
     if (findMultiColorsUntil(schemas = listOf(MyColors.TrainTroops, MyColors.TrainTroops2, MyColors.TrainTroops3), duration = 10, byteBuffer = screenBuffer, increment = 1) == null) {
         return homePageCheckFailed("寻找练兵按钮中...")

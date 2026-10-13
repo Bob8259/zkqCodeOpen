@@ -71,7 +71,7 @@ suspend fun enterBuilderBase(isCheck: Boolean): Boolean {
     while (System.currentTimeMillis() - loopStart < 60_000L) {
         val remaining = (60_000L - (System.currentTimeMillis() - loopStart)) / 1000.0
         // 1. Check for Builder Base success indicator
-        if (findMultiColorsUntil(schemas = listOf(MyColors.BuilderBaseWorker, MyColors.BuilderBaseWorker2, MyColors.BuilderBaseWorker3), duration = 200) != null) {
+        if (findMultiColorsUntil(schemas = listOf(MyColors.BuilderBaseWorker, MyColors.BuilderBaseWorker2, MyColors.BuilderBaseWorker3, MyColors.NewBuilderBaseWorker), duration = 200) != null) {
             accountMessage("已进入夜世界")
             return true
         }
@@ -95,7 +95,7 @@ suspend fun enterBuilderBase(isCheck: Boolean): Boolean {
                 // Polling loop for state transition (0.5s window)
                 while (System.currentTimeMillis() - loopStartTime < checkDuration) {
                     // 1. Check for Builder Base success indicator
-                    if (findMultiColorsUntil(schemas = listOf(MyColors.BuilderBaseWorker, MyColors.BuilderBaseWorker2, MyColors.BuilderBaseWorker3), duration = 200) != null) {
+                    if (findMultiColorsUntil(schemas = listOf(MyColors.BuilderBaseWorker, MyColors.BuilderBaseWorker2, MyColors.BuilderBaseWorker3, MyColors.NewBuilderBaseWorker), duration = 200) != null) {
                         accountMessage("已进入夜世界")
                         return true
                     }

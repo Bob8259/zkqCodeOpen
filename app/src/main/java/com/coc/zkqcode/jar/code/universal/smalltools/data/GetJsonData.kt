@@ -64,8 +64,9 @@ private const val BB_RAGED_BARBARIAN_DATA_ID = 4000031   // 狂暴野蛮人
     if (!getBooleanConfigRuntime(Schema.MAIN_BASE_SETTINGS.SMART_DECISION.key) && !InGameVars.speedSixBuilderEnabled) return true
     accountMessage("准备读取账号数据，请稍后")
     if (InGameVars.currentGameVersion != GameVersion.CN) {
-        TouchActions.tap(1230, 520)//settings
-        TouchActions.tap(630, 610)//more settings
+        TouchActions.tap(70, 80)//TownHall icon
+        TouchActions.tap(1010, 60)//settings
+        TouchActions.tap(640, 635)//more settings
         TouchActions.swipe(630, 500, 630, -1500, delayAfter = 400)
         TouchActions.tap(910, 450)//copy
     } else {

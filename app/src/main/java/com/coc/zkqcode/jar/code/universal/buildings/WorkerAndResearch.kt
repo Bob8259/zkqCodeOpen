@@ -3,14 +3,19 @@ package com.coc.zkqcode.jar.code.universal.buildings
 import android.graphics.Bitmap
 import com.coc.zkqcode.core.system.screencapture.ScreenCaptureManager
 import com.coc.zkqcode.core.util.basic.waitForPlay
+import com.coc.zkqcode.core.util.fileactions.LogHelper.showDebugInfo
 import com.coc.zkqcode.jar.code.colorschema.ColorSchema
 import com.coc.zkqcode.jar.code.colorschema.MyColors
+import com.coc.zkqcode.jar.code.universal.GameVersion
+import com.coc.zkqcode.jar.code.universal.InGameVars
 import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.recognizer.RecognizedText
 import com.coc.zkqcode.jar.code.universal.recognizer.TextRecognizer
 import com.coc.zkqcode.jar.code.universal.recognizer.cleanOcrDigits
+import java.io.File
+import java.io.FileOutputStream
 
 /**
  * Data class representing the worker information (available/total).
@@ -23,7 +28,7 @@ enum class BaseType {
 
 /**
  * Unified worker and research detection logic for both Main Base and Builder Base.
- * Dispatches on [BaseType] to handle base-specific differences (color schemas, goblin checks, messages).
+ * Dispatches on [BaseType] to handle base-specific differences (colour schemas, goblin checks, messages).
  */
 object WorkerAndResearch {
 
@@ -33,7 +38,58 @@ object WorkerAndResearch {
      */
     suspend fun detectWorkerNumber(baseType: BaseType): WorkerInfo {
         // Must double-check to wait for a little bit, otherwise the detection will fail.
-        // MainBase-only: goblin worker pre-check
+        if (InGameVars.currentGameVersion == GameVersion.GLOBAL) {
+            val startX = 1060
+            val startY = 542
+            val endX = 1195
+            val endY = 580
+
+            val screenBuffer = ScreenCaptureManager.captureScreenOrRestart<Bitmap>(asBitmap = true)
+            val cropWidth = endX - startX
+            val cropHeight = endY - startY
+            if (startX + cropWidth <= screenBuffer.width && startY + cropHeight <= screenBuffer.height) {
+                val croppedBitmap = Bitmap.createBitmap(screenBuffer, startX, startY, cropWidth, cropHeight)
+                val colorFiltered = TextRecognizer.applyColorFilter(
+                    croppedBitmap,
+                    minRedChannelValue = 100,
+                    minGreenChannelValue = 170,
+                    minBlueChannelValue = 70
+                )
+                val preprocessed = TextRecognizer.preprocess(colorFiltered, threshold = 235, invertBinarization = true)
+
+                ScreenCaptureManager.getContext()?.let { context ->
+                    try {
+                        val file = File(context.filesDir, "test.png")
+                        FileOutputStream(file).use { out ->
+                            preprocessed.compress(Bitmap.CompressFormat.PNG, 100, out)
+                        }
+                        showDebugInfo("Image saved to: ${file.absolutePath}")
+                    } catch (e: Exception) {
+                        showDebugInfo("Failed to save image: ${e.message}")
+                    }
+                }
+
+                val oneSchema = ColorSchema.rescope(MyColors.BinaryOne3, 0, 0, cropWidth, cropHeight)
+                if (findMultiColors(bitmap = preprocessed, schema = oneSchema) != null) {
+                    return WorkerInfo(1, 2)
+                }
+            }
+
+            val results = TextRecognizer.recognize(
+                startX = startX,
+                startY = startY,
+                endX = endX,
+                endY = endY,
+                threshold = 235,
+                useChinese = false,
+                saveImage = true,
+                applyPreprocess = true
+            )
+
+            val combinedText = results.sortedBy { it.position?.left ?: 0 }.joinToString("") { it.text }
+
+            return parseWorkerInfo(combinedText)
+        }
         if (baseType == BaseType.Main && (findMultiColors(schema = MyColors.GoblinWorker) != null || findMultiColors(schema = MyColors.GoblinWorker2) != null)) {
             return WorkerInfo(0, 6)
         }

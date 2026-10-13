@@ -7,6 +7,7 @@ import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.basic.waitForPlay
 import com.coc.zkqcode.core.util.fileactions.LogHelper
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
+import com.coc.zkqcode.core.util.fileactions.LogHelper.showDebugInfo
 import com.coc.zkqcode.jar.code.auth.displayAds
 import com.coc.zkqcode.jar.code.auth.userAuth
 import com.coc.zkqcode.jar.code.builderbase.playBuilderBase
@@ -16,13 +17,15 @@ import com.coc.zkqcode.jar.code.mainbase.playMainBase
 import com.coc.zkqcode.jar.code.universal.GameVersion
 import com.coc.zkqcode.jar.code.universal.InGameVars
 import com.coc.zkqcode.jar.code.universal.accountMessage
+import com.coc.zkqcode.jar.code.universal.buildings.BaseType
+import com.coc.zkqcode.jar.code.universal.buildings.WorkerAndResearch
 import com.coc.zkqcode.jar.code.universal.cloud.checkCloudExpiry
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.create.batchCreateAccounts
 import com.coc.zkqcode.jar.code.universal.ctrl.ZkqWsClient
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.preCheck
-import com.coc.zkqcode.jar.code.universal.recognizer.recognizeResources
+import com.coc.zkqcode.jar.code.universal.recognizer.TextRecognizer
 import com.coc.zkqcode.jar.code.universal.smalltools.checkScheduledUpgradeNotifications
 import com.coc.zkqcode.jar.code.universal.smalltools.checkUpgradeTimers
 import com.coc.zkqcode.jar.code.universal.smalltools.data.StorageKeys
@@ -89,7 +92,7 @@ suspend fun runMainScript() {
             delay(1000.milliseconds)
             continue
         }
-        runTestCode()
+       runTestCode()
         runAccountStepBlock()
         // Check scheduled upgrade notifications every cycle (runs in background)
         checkScheduledUpgradeNotifications()
@@ -126,7 +129,7 @@ private suspend fun runTestCode() {
             GlobalVars.configStates[Schema.GLOBAL_SETTINGS.DEBUG_MODE.key]?.value == "1"
         ) {
             ShowMessage("测试代码开始")
-            ShowMessage(recognizeResources(true).toString())
+            ShowMessage(WorkerAndResearch.detectWorkerNumber(BaseType.Main).toString())
             delay(2000.milliseconds)
         }
     }
@@ -221,7 +224,8 @@ private fun resolveGameVersion(isBatchCreate: Boolean): GameVersion {
         GameVersion.GLOBAL
     } else {
         GameVersion.fromId(
-            getConfigOrStop("${Schema.ACCOUNT_SETTINGS.GAME_VERSION.key}${InGameVars.currentAccountNumber}").toIntOrNull() ?: logAndRestart("${Schema.ACCOUNT_SETTINGS.GAME_VERSION.displayName} 必须是数字，请检查配置")
+            getConfigOrStop("${Schema.ACCOUNT_SETTINGS.GAME_VERSION.key}${InGameVars.currentAccountNumber}").toIntOrNull()
+                ?: logAndRestart("${Schema.ACCOUNT_SETTINGS.GAME_VERSION.displayName} 必须是数字，请检查配置")
         )
     }
 }

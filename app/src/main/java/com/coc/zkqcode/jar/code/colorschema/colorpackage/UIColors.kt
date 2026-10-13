@@ -66,6 +66,8 @@ interface IUIColors {
     val ContributionActivity: ColorSchema
     val CNCultivationAd: ColorSchema
     val TencentQinglongAd: ColorSchema
+    val Trophy: ColorSchema
+    val BuildingHammer: ColorSchema
 }
 
 object UIColors : IUIColors {
@@ -320,5 +322,30 @@ object UIColors : IUIColors {
     // CN Cultivation advertisement indicator
     override val CNCultivationAd = ColorSchema.parse(
         930, 126, 988, 186, "FFFFFF", "-12|2|7C75FF,-14|-10|948CFF,16|-10|968BFF,16|2|7C74FF,16|16|1313E4,0|19|1710DA,-12|19|1611D8,-5|9|F7F7F7,1|6|F6F6F6", 0, 0.9, "国服修仙广告"
+    )
+    // Trophy indicator
+    override val Trophy = ColorSchema.parse(
+        6,
+        151,
+        105,
+        234,
+        "94BACE",
+        "0|-2|94BBCE,0|0|94BACE,0|3|94BACD,0|6|94B9CD,0|7|94B8CD,1|8|94B8CC,1|9|94B8CC,1|11|94B7CC,1|13|94B7CC",
+        0,
+        0.9,
+        "奖杯"
+    )
+
+    // Building hammer indicator
+    override val BuildingHammer = ColorSchema.parse(
+        1143,
+        587,
+        1250,
+        642,
+        "0EC8FB",
+        "21|0|0D171A,43|0|A37161,64|0|12CBFF,85|0|0EC8FB,0|27|3AE6FF,21|27|E0CDB9,43|27|814448,64|27|4BF4FF,85|27|35E2FF",
+        0,
+        0.9,
+        "建造大锤子"
     )
 }
