@@ -48,12 +48,10 @@ suspend fun enterMainBase(): Boolean {
             }
         }
         for (x in 1000..1050 step 50) {
-            for (y in 250..330 step 50) {
+            for (y in 250..300 step 50) {
                 TouchActions.tap(x, y, isJitter = false, delayTime = 50)
             }
         }
-        TouchActions.tap(1160, 325)//two extra clicks
-        TouchActions.tap(1160, 370)
         if (!enterMainScreen()) return false
 
     }

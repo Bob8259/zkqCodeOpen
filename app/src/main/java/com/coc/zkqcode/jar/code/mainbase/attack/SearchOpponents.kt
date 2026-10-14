@@ -127,8 +127,7 @@ suspend fun searchOpponentsAndDeployTroops(battleNumber: Int = 1, battleTimes: I
     var battleStarted = false
     val battleStartTime = System.currentTimeMillis()
     while (System.currentTimeMillis() - battleStartTime < SEARCH_TIMEOUT_MS) {
-        val battleIcon = findMultiColorsUntil(schemas = listOf(MyColors.TrainTroops), duration = 500)
-        if (battleIcon != null) {
+        if (enterMainScreen()) {
             TouchActions.tap(80, 630)
         }
         // Detect attack cooldown screen; abort search so mainBaseAttack() can skip battle logic

@@ -12,6 +12,8 @@ interface IMainBaseUpgradeColors {
     val MainBaseWorker3: ColorSchema
     val MainBaseWorker4: ColorSchema
     val MainBaseWorker5: ColorSchema
+    val MainBaseWorker6: ColorSchema
+    val NewMainBaseWorker: ColorSchema get() = MainBaseWorker6
     val MainBaseLightningWorker: ColorSchema
     val MainBaseLightningWorker2: ColorSchema
     val GoblinWorker: ColorSchema
@@ -45,6 +47,16 @@ object MainBaseUpgradeColors : IMainBaseUpgradeColors {
     override val MainBaseWorker5 = ColorSchema.parse(
         450, 10, 850, 80, "6888D5", "6|0|728DE0,12|0|748DE6,18|0|7CA6E9,24|0|637ACA,0|9|8F97A8,6|9|BAC3D2,12|9|CAD4E1,18|9|A3ACBD,24|9|22242D", 0, 0.9,
     )
+    override val MainBaseWorker6 = ColorSchema.parse(
+        1141,
+        504,
+        1188,
+        554,
+        "7087E6",
+        "-6|0|8DAEEE,-6|-5|5B66A0,-1|-7|9BCAFA,9|-7|3767CC,9|1|7A94E2,9|4|4F5688,6|5|A5ACBF,1|5|D6E0EC,-4|6|AFB8C6",
+        0,
+        0.9,
+    )
     override val MainBaseLightningWorker = ColorSchema.parse(
         450, 10, 850, 80, "D2E0FE", "7|0|7489D9,13|0|5073DF,19|0|BBD1FF,26|0|BCD0FE,0|8|A9BACF,7|8|50668A,13|8|495881,19|8|496386,26|8|A2B6C1", 0, 0.9,
     )
@@ -57,7 +69,7 @@ object MainBaseUpgradeColors : IMainBaseUpgradeColors {
     override val GoblinWorker2 = ColorSchema.parse(
         450, 10, 850, 80, "5FA5E8", "4|9|41B4A3,-5|10|43BCCD,-14|6|328F8A,-14|-1|1D6871,-10|-6|53D6C1,-2|-6|53EFE2,8|-10|34A990,2|-14|4CFBE3,8|-1|54DDDE", 0, 0.9, "哥布林工人2"
     )
-    override val MainBaseWorkerSchemas = listOf(MainBaseWorker, MainBaseWorker2, MainBaseWorker3, MainBaseWorker4, MainBaseWorker5, MainBaseLightningWorker, MainBaseLightningWorker2)
+    override val MainBaseWorkerSchemas = listOf(MainBaseWorker, MainBaseWorker2, MainBaseWorker3, MainBaseWorker4, MainBaseWorker5, MainBaseWorker6, MainBaseLightningWorker, MainBaseLightningWorker2)
     override val smallElixirUpgradeIcon = ColorSchema.parse(
         1, 1, 1270, 710, "FF60FF", "-2|1|FF2DEB,-3|2|FF41D2,-1|3|FF22D3,0|5|DF21B2,2|5|F221C2,2|4|FF22D9,3|4|FF23DD,3|3|FF26EC,3|2|FF39FF", 0, 0.9
     )

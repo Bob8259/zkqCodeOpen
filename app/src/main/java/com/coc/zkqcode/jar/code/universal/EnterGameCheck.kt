@@ -1,7 +1,5 @@
 package com.coc.zkqcode.jar.code.universal
 
-import com.coc.zkqcode.jar.code.universal.smalltools.qrlink.QrFlowCoroutineContext
-
 import android.graphics.Bitmap
 import android.graphics.Point
 import android.os.Environment
@@ -52,7 +50,7 @@ private val accountPushLocked = mutableSetOf<Int>()
 suspend fun enterMainScreen(isDoubleCheck: Boolean = false): Boolean {
     // 1. Initialize the start time
     val startTime = System.currentTimeMillis()
-   
+
     // Change resolution to 720x1280 / DPI 320 at runtime if enabled
     if (getStaticConfig(Schema.GLOBAL_SETTINGS.CHANGE_RESOLUTION_RUNTIME.key) == "1") {
         RunShell.runNoOutput("wm size 720x1280", checkIsPlaying = false)
@@ -68,25 +66,25 @@ suspend fun enterMainScreen(isDoubleCheck: Boolean = false): Boolean {
     GlobalVars.absorbEdge = 0
     while (System.currentTimeMillis() - startTime < timeoutMillis) {
         // 3. Insert your logic to check if the main screen is actually visible
+        if (isInHomePage(countdownMessage())) {
+            if (!isDoubleCheck) {
+                accountMessage("已进入主界面")
+                // Unlock push for this account on successful enter
+                accountPushLocked.remove(InGameVars.currentAccountNumber)
+                return true
+            }
+            if (InGameVars.currentGameVersion == GameVersion.CN) delayWithMultiplier(1200)
+            else delayWithMultiplier(500)
+            if (isInHomePage(countdownMessage())) {
+                // Unlock push for this account on successful enter
+                accountPushLocked.remove(InGameVars.currentAccountNumber)
+                return true
+            }
+        }
+
         if (!isGameAtFront()) {
             runGame()
         } else {
-            if (isInHomePage(countdownMessage())) {
-                if (!isDoubleCheck) {
-                    accountMessage("已进入主界面")
-                    // Unlock push for this account on successful enter
-                    accountPushLocked.remove(InGameVars.currentAccountNumber)
-                    return true
-                }
-                if (InGameVars.currentGameVersion == GameVersion.CN) delayWithMultiplier(1200)
-                else delayWithMultiplier(500)
-                if (isInHomePage(countdownMessage())) {
-                    // Unlock push for this account on successful enter
-                    accountPushLocked.remove(InGameVars.currentAccountNumber)
-                    return true
-                }
-            }
-
             closeAdvertisements()
             // After 15s, also dismiss clan league popups
             if (System.currentTimeMillis() - startTime > 15_000L) closeClanLeaguePopups()
@@ -119,7 +117,7 @@ private const val PUSH_COOLDOWN_MINUTES = 120
 
 /**
  * Sends a kick/entry-fail push with per-account cooldown.
- * Shared by timeout exit and reconnect-dialog failure paths.
+ * Shared by timeout exit and reconnect-dialogue failure paths.
  */
 private suspend fun sendGameEntryFailNotification(timeoutSeconds: Int) {
     val kickNotify = GlobalVars.configStates[Schema.GLOBAL_SETTINGS.SERVERCHAN_KICK_NOTIFY.key]?.value == "1"
@@ -204,7 +202,8 @@ private suspend fun closeClanLeaguePopups() {
 }
 
 private fun getCNGameUpdateMaxWaitMillis(): Int {
-    val maxWaitMinutes = getStaticConfig(Schema.GLOBAL_SETTINGS.MAX_DOWNLOAD_WAITING_TIME.key).toDoubleOrNull() ?: logAndRestart("${Schema.GLOBAL_SETTINGS.MAX_DOWNLOAD_WAITING_TIME.displayName} 必须是数字，请检查配置")
+    val maxWaitMinutes =
+        getStaticConfig(Schema.GLOBAL_SETTINGS.MAX_DOWNLOAD_WAITING_TIME.key).toDoubleOrNull() ?: logAndRestart("${Schema.GLOBAL_SETTINGS.MAX_DOWNLOAD_WAITING_TIME.displayName} 必须是数字，请检查配置")
     if (maxWaitMinutes <= 0.0) {
         logAndRestart("${Schema.GLOBAL_SETTINGS.MAX_DOWNLOAD_WAITING_TIME.displayName} 必须大于0，请检查配置")
     }
@@ -257,13 +256,13 @@ private suspend fun updateCNGame(maxWaitMillis: Int) {
 
         // Check if any update interface element is still visible
         val stillUpdating = findMultiColors(MyColors.CNGameUpdate) != null ||
-            findMultiColors(MyColors.CNGameUpdate2) != null ||
-            updatingHit
+                findMultiColors(MyColors.CNGameUpdate2) != null ||
+                updatingHit
         if (!stillUpdating) break
     }
 
     val needEnhanced = (timedOut || noUpdatingBreak) &&
-        getStaticConfig(Schema.GLOBAL_SETTINGS.ENHANCED_CN_UPDATE.key) == "1"
+            getStaticConfig(Schema.GLOBAL_SETTINGS.ENHANCED_CN_UPDATE.key) == "1"
     if (needEnhanced) {
         accountMessage(if (noUpdatingBreak) "未检测到更新中界面，直接开始增强更新流程" else "等待超时，开始增强更新流程")
         val channelIdx = getStaticConfig(Schema.GLOBAL_SETTINGS.ENHANCED_CN_UPDATE_SOURCE.key).toIntOrNull() ?: 1
@@ -463,11 +462,15 @@ suspend fun isInHomePage(countdownMessage: String? = null): Boolean {
 
     // 3. Check for any of the worker icons (Main base, Goblin workers, or Builder base)
     val workerSchemas =
-        MyColors.MainBaseWorkerSchemas + listOf(MyColors.GoblinWorker, MyColors.GoblinWorker2, MyColors.GoblinResearcher, MyColors.BuilderBaseWorker, MyColors.BuilderBaseWorker2, MyColors.BuilderBaseWorker3)
+        MyColors.MainBaseWorkerSchemas + listOf(
+            MyColors.GoblinWorker,
+            MyColors.GoblinWorker2,
+            MyColors.GoblinResearcher,
+            MyColors.BuilderBaseWorker,
+            MyColors.BuilderBaseWorker2,
+            MyColors.BuilderBaseWorker3
+        )
 
     val hasWorker = workerSchemas.any { findMultiColors(byteBuffer = screenBuffer, schema = it, increment = 1) != null }
-    if (!hasWorker) {
-        return homePageCheckFailed("寻找工人按钮中...")
-    }
-    return true
+    return hasWorker || homePageCheckFailed("寻找工人按钮中...")
 }

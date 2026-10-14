@@ -8,6 +8,7 @@ interface IBuilderBaseAttackColors {
     val BuilderBaseGold: ColorSchema
     val BuilderBaseExiler: ColorSchema
     val AttackNow: ColorSchema
+    val AttackNow2: ColorSchema
     val TrainTroopsWarning: ColorSchema
     val CancelAttackSearch: ColorSchema
     val ExitBattleButton: ColorSchema
@@ -36,6 +37,16 @@ object BuilderBaseAttackColors : IBuilderBaseAttackColors {
     )
     override val AttackNow = ColorSchema.parse(
         825, 431, 1075, 518, "86E9BA", "29|1|85E8B9,64|0|86E9BA,120|-2|89E9BC,158|-5|8CEABE,14|51|3AD48B,54|46|3AD48B,91|51|3AD48B,158|53|3AD38B,188|46|3AD48B", 0, 0.9, "夜世界立即进攻"
+    )
+    override val AttackNow2 = ColorSchema.parse(
+        22,
+        576,
+        151,
+        699,
+        "968278",
+        "9|5|90796E,16|17|5C87AA,21|26|3B607D,26|12|3C5C78,40|5|9E8B81,47|19|937E72,54|48|3BE0FF,57|40|47ECFF,-14|40|4CEFFF",
+        0,
+        0.9,
     )
     override val TrainTroopsWarning = ColorSchema.parse(
         491, 198, 596, 216, "2021FE", "1|0|2122FE,5|0|2122FE,9|0|2021FE,9|3|3335F6,6|3|3335F6,3|3|292AFC,1|3|3435F6,0|3|3335F6,-1|3|3335F6", 0, 0.95, "练兵警告"

@@ -41,10 +41,10 @@ suspend fun checkNormalShop(): Boolean {
         accountMessage("已进入商店")
         checkShopLoop()
         TouchActions.tap(200, 240)
-        TouchActions.swipe(750, 300, 750, 2000, delayAfter = 300)
+        TouchActions.swipe(750, 300, 750, 6000, delayAfter = 300)
         checkShopLoop()
         TouchActions.tap(200, 300)
-        TouchActions.swipe(750, 300, 750, 2000, delayAfter = 300)
+        TouchActions.swipe(750, 300, 750, 6000, delayAfter = 300)
         checkShopLoop()
     }
     // Record current time so we don't check again within 2 days

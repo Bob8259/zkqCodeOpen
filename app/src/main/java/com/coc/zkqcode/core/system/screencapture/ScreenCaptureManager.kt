@@ -91,8 +91,6 @@ object ScreenCaptureManager {
 
     fun getContext(): Context? = appContext
 
-    fun getLastCaptureSource(): String = lastCaptureSource
-
     private fun updateMetrics() {
         val context = appContext ?: return
         val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
@@ -174,7 +172,7 @@ object ScreenCaptureManager {
 
     /**
      * Complete reset - Clear all content including cached credentials.
-     * Use this when you want to force a new permission request dialog.
+     * Use this when you want to force a new permission request dialogue.
      */
     private fun reset() {
         try {
@@ -224,10 +222,6 @@ object ScreenCaptureManager {
 
             // Old frames are the wrong size after rotation/rebind
             invalidateFrameCache()
-
-            LogHelper.showDebugInfo(
-                "rebindVirtualDisplayToNewSize: resized to ${screenWidth}x${screenHeight} dpi=$screenDensity"
-            )
             true
         } catch (e: Exception) {
             LogHelper.showDebugInfo("rebindVirtualDisplayToNewSize failed: ${e.message}")
@@ -274,10 +268,6 @@ object ScreenCaptureManager {
         if (!sizeChanged) {
             return true
         }
-
-        LogHelper.showDebugInfo(
-            "ensureVirtualDisplay: Size changed ${reader?.width}x${reader?.height} -> ${screenWidth}x${screenHeight}"
-        )
 
         // Preferred path on all API levels: resize + rebind surface (no second createVirtualDisplay)
         if (rebindVirtualDisplayToNewSize()) {

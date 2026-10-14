@@ -26,6 +26,7 @@ import com.coc.zkqcode.jar.code.universal.ctrl.ZkqWsClient
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.preCheck
 import com.coc.zkqcode.jar.code.universal.recognizer.TextRecognizer
+import com.coc.zkqcode.jar.code.universal.remove.enterEditMode
 import com.coc.zkqcode.jar.code.universal.smalltools.checkScheduledUpgradeNotifications
 import com.coc.zkqcode.jar.code.universal.smalltools.checkUpgradeTimers
 import com.coc.zkqcode.jar.code.universal.smalltools.data.StorageKeys
@@ -92,7 +93,7 @@ suspend fun runMainScript() {
             delay(1000.milliseconds)
             continue
         }
-       runTestCode()
+//        runTestCode()
         runAccountStepBlock()
         // Check scheduled upgrade notifications every cycle (runs in background)
         checkScheduledUpgradeNotifications()
@@ -129,7 +130,7 @@ private suspend fun runTestCode() {
             GlobalVars.configStates[Schema.GLOBAL_SETTINGS.DEBUG_MODE.key]?.value == "1"
         ) {
             ShowMessage("测试代码开始")
-            ShowMessage(WorkerAndResearch.detectWorkerNumber(BaseType.Main).toString())
+            enterEditMode()
             delay(2000.milliseconds)
         }
     }

@@ -167,7 +167,7 @@ private suspend fun realAttack(mode: String, hasBuilderBaseTask: Boolean, battle
             TouchActions.tap(builderBaseStarBonus.x + 10, builderBaseStarBonus.y + 10, delayTime = 200)
             continue
         }
-        val attackNow = findMultiColors(byteBuffer = capturedScreen, schema = MyColors.AttackNow)
+        val attackNow = findMultiColorsUntil(schemas = listOf(MyColors.AttackNow, MyColors.AttackNow2), duration = 50)
         if (attackNow != null) {
             TouchActions.tap(attackNow.x, attackNow.y, delayTime = 200)
             val warning = findMultiColorsUntil(schemas = listOf(MyColors.TrainTroopsWarning), duration = 500)
@@ -258,8 +258,7 @@ private suspend fun realAttack(mode: String, hasBuilderBaseTask: Boolean, battle
         }
         delayWithMultiplier(600)
     }
-    if (!enterMainScreen()) return false
-    return enterBuilderBase(false)
+    return enterMainScreen() && enterBuilderBase(false)
 }
 
 private suspend fun deployAndExit() {

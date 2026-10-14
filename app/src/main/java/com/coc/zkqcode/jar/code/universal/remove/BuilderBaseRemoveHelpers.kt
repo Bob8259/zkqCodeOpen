@@ -1,18 +1,20 @@
 ﻿package com.coc.zkqcode.jar.code.universal.remove
 
-import com.coc.zkqcode.core.util.basic.ShowMessage
-import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
-import com.coc.zkqcode.jar.code.universal.smalltools.input.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.MyColors
-import com.coc.zkqcode.jar.code.universal.aidetection.tiledAiDetect
 import com.coc.zkqcode.jar.code.universal.GameVersion
 import com.coc.zkqcode.jar.code.universal.InGameVars
+import com.coc.zkqcode.jar.code.universal.accountMessage
+import com.coc.zkqcode.jar.code.universal.aidetection.tiledAiDetect
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
+import com.coc.zkqcode.jar.code.universal.smalltools.input.TouchActions
 import com.coc.zkqcode.jar.code.universal.smalltools.lifecycle.checkReconnections
 
 suspend fun enterEditMode(): Boolean {
     // Select the initial schema based on the game package version
+    if (InGameVars.currentGameVersion == GameVersion.GLOBAL) {
+        TouchActions.tap(1185, 630)//build
+    }
     val initialSchema = if (InGameVars.currentGameVersion == GameVersion.CN) {
         MyColors.CNEditBaseButton
     } else {
