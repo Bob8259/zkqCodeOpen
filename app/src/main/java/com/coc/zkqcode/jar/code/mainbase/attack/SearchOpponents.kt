@@ -2,6 +2,7 @@ package com.coc.zkqcode.jar.code.mainbase.attack
 
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
 import com.coc.zkqcode.core.util.fileactions.LogHelper.logAndRestart
+import com.coc.zkqcode.core.util.fileactions.LogHelper.showDebugInfo
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.GameVersion
 import com.coc.zkqcode.jar.code.universal.InGameVars
@@ -9,6 +10,7 @@ import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
+import com.coc.zkqcode.jar.code.universal.isInHomePage
 import com.coc.zkqcode.jar.code.universal.recognizer.recognizeResources
 import com.coc.zkqcode.jar.code.universal.smalltools.data.CLAN_GAME_TASK_BASE_MAIN_WORLD
 import com.coc.zkqcode.jar.code.universal.smalltools.data.StorageKeys
@@ -127,7 +129,7 @@ suspend fun searchOpponentsAndDeployTroops(battleNumber: Int = 1, battleTimes: I
     var battleStarted = false
     val battleStartTime = System.currentTimeMillis()
     while (System.currentTimeMillis() - battleStartTime < SEARCH_TIMEOUT_MS) {
-        if (enterMainScreen()) {
+        if (isInHomePage()) {
             TouchActions.tap(80, 630)
         }
         // Detect attack cooldown screen; abort search so mainBaseAttack() can skip battle logic
@@ -157,6 +159,7 @@ suspend fun searchOpponentsAndDeployTroops(battleNumber: Int = 1, battleTimes: I
         }
         val insufficientGold = findMultiColors(schema = MyColors.InsufficientGold)
         if (insufficientGold != null) {
+            showDebugInfo("Search opponents loop break: insufficient gold (金币不足)")
             break
         }
 
@@ -171,6 +174,7 @@ suspend fun searchOpponentsAndDeployTroops(battleNumber: Int = 1, battleTimes: I
                 if (tryAutoBattleOrDeploy(hasMainWorldTask)) {
                     return BattleSearchResult(started = true, autoBattleUsed = true)
                 }
+                showDebugInfo("Search opponents loop break: fast path attack (目标资源均小于10直接进攻)")
                 break
             }
 
@@ -227,6 +231,7 @@ suspend fun searchOpponentsAndDeployTroops(battleNumber: Int = 1, battleTimes: I
                 if (tryAutoBattleOrDeploy(hasMainWorldTask)) {
                     return BattleSearchResult(started = true, autoBattleUsed = true)
                 }
+                showDebugInfo("Search opponents loop break: resource criteria met (满足资源要求进攻)")
                 break
             } else {
                 TouchActions.tap(nextOpponent.x, nextOpponent.y, delayTime = 2000)

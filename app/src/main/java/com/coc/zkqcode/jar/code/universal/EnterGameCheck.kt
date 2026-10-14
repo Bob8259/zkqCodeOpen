@@ -440,7 +440,8 @@ suspend fun isInHomePage(countdownMessage: String? = null): Boolean {
     val screenBuffer = ScreenCaptureManager.captureScreenOrRestart<ScreenCaptureManager.CaptureResult>(asBitmap = false)
 
     suspend fun homePageCheckFailed(message: String): Boolean {
-        accountMessage(if (countdownMessage == null) message else "$countdownMessage，$message")
+        if (countdownMessage != null)
+            accountMessage("$countdownMessage，$message")
         delayWithMultiplier(500)
         return false
     }
