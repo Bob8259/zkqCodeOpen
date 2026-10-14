@@ -59,17 +59,10 @@ object AllTutorials {
         lastConfirmOcrTime = currentTime
 
         val screenBitmap = ScreenCaptureManager.captureScreenOrRestart<Bitmap>(
-            asBitmap = true,
-            errorMessage = "Tutorial confirm OCR: failed to capture screen"
+            asBitmap = true, errorMessage = "Tutorial confirm OCR: failed to capture screen"
         )
         val recognizedTexts = TextRecognizer.recognize(
-            startX = 0,
-            startY = 0,
-            endX = screenBitmap.width,
-            endY = screenBitmap.height,
-            useChinese = true,
-            applyPreprocess = false,
-            screenBuffer = screenBitmap
+            startX = 0, startY = 0, endX = screenBitmap.width, endY = screenBitmap.height, useChinese = true, applyPreprocess = false, screenBuffer = screenBitmap
         )
         recognizedTexts.forEach { recognizedText ->
             if (!recognizedText.text.replace(" ", "").contains(CONFIRM_TEXT)) return@forEach
@@ -90,8 +83,7 @@ object AllTutorials {
         )
 
         val screenBuffer = ScreenCaptureManager.captureScreenOrRestart<ScreenCaptureManager.CaptureResult>(
-            asBitmap = false,
-            errorMessage = "failed to take screenshot at close checkIsInTutorial"
+            asBitmap = false, errorMessage = "failed to take screenshot at close checkIsInTutorial"
         )
         // Iterate through schemas and find the first match to retrieve its coordinates
         val point = targetSchemas.firstNotNullOfOrNull { schema ->
@@ -99,9 +91,11 @@ object AllTutorials {
         }
         // If a point is found, it means a tutorial element is on screen
         if (point != null) {
-            if (times < 10) {
-                // New logic: Perform a direct tap if times is less than 10
+            if (times < 3) {
+                // New logic: Perform a direct tap if times is less than 5
                 TouchActions.tap(point.x, point.y)
+            } else if (times < 6) {
+                TouchActions.tap(1195, 630)//Tap worker, skip new update worker message
             } else {
                 // Existing logic: Trigger the complex tutorial sequence if times is 10 or more
                 allBaseTutorial()

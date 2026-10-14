@@ -68,6 +68,7 @@ interface IUIColors {
     val TencentQinglongAd: ColorSchema
     val Trophy: ColorSchema
     val BuildingHammer: ColorSchema
+    val NewUpgradeList: ColorSchema
 }
 
 object UIColors : IUIColors {
@@ -347,5 +348,17 @@ object UIColors : IUIColors {
         0,
         0.9,
         "建造大锤子"
+    )
+
+    override val NewUpgradeList = ColorSchema.parse(
+        1239,
+        5,
+        1275,
+        46,
+        "FFFFFF",
+        "-1|-3|FFFFFF,3|-3|FFFFFF,11|-3|8780FF,11|9|1611E0,-10|7|1C17EC,-10|2|1B16ED,-10|-3|8880FF,-2|-4|FFFFFF,-2|3|FAF6F6",
+        0,
+        0.9,
+        "新升级列表"
     )
 }

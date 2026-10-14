@@ -353,7 +353,8 @@ private suspend fun closeAdvertisements() {
         MyColors.TopRightClanWarInfo,
         MyColors.ContributionActivity,
         MyColors.CNCultivationAd,
-        MyColors.TencentQinglongAd
+        MyColors.TencentQinglongAd,
+        MyColors.NewUpgradeList
     )
 
     // 3. Iterate through schemas
