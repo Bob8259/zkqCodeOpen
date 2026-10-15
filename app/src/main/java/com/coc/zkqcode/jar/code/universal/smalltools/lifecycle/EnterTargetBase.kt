@@ -5,6 +5,7 @@ import com.coc.zkqcode.jar.code.builderbase.others.zoomSmallBuilderBase
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.mainbase.others.zoomSmallMainBase
 import com.coc.zkqcode.jar.code.universal.InGameVars
+import com.coc.zkqcode.jar.code.universal.GameVersion
 import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.jar.code.universal.buildings.BaseType
 import com.coc.zkqcode.jar.code.universal.buildings.upgrade.checkContinueBuild
@@ -24,8 +25,18 @@ import kotlin.time.Duration.Companion.milliseconds
 suspend fun enterMainBase(): Boolean {
     val loopStart = System.currentTimeMillis()
     clickRightBottom(1)
+    val mainBaseWorkerSchemas = MyColors.MainBaseWorkerSchemas + listOf(
+        MyColors.GoblinWorker,
+        MyColors.GoblinWorker2,
+        MyColors.GoblinResearcher
+    )
+    val mainBaseEntrySchemas = if (InGameVars.currentGameVersion == GameVersion.GLOBAL) {
+        mainBaseWorkerSchemas + MyColors.TrainTroopsGlobal
+    } else {
+        mainBaseWorkerSchemas
+    }
     while (System.currentTimeMillis() - loopStart < 60_000L) {
-        val workers = findMultiColorsUntil(schemas = MyColors.MainBaseWorkerSchemas + listOf(MyColors.GoblinWorker, MyColors.GoblinWorker2, MyColors.GoblinResearcher), duration = 200)
+        val workers = findMultiColorsUntil(schemas = mainBaseEntrySchemas, duration = 200)
         if (workers != null) {
             accountMessage("已进入主世界")
             clickRightBottom(1)

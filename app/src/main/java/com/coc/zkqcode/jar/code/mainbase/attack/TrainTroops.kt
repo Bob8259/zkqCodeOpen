@@ -1,4 +1,4 @@
-﻿package com.coc.zkqcode.jar.code.mainbase.attack
+package com.coc.zkqcode.jar.code.mainbase.attack
 
 import com.coc.zkqcode.core.data.database.GlobalVars
 import com.coc.zkqcode.core.util.basic.delayWithMultiplier
@@ -9,6 +9,7 @@ import com.coc.zkqcode.jar.code.universal.smalltools.input.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.jar.code.universal.InGameVars
+import com.coc.zkqcode.jar.code.universal.GameVersion
 import com.coc.zkqcode.jar.code.universal.enterMainScreen
 import com.coc.zkqcode.jar.code.universal.smalltools.data.StorageKeys
 import com.coc.zkqcode.jar.code.universal.smalltools.data.checkMemoryFile
@@ -88,7 +89,9 @@ suspend fun mainBaseTrainTroops(): Boolean {
         accountMessage("自动配兵模式：开始训练部队")
         // --- Auto training path (original flow) ---
         // Open training menu
-        var point = findMultiColorsUntil(schemas = listOf(MyColors.TrainTroops), duration = 1500)
+        val isGlobalGame = InGameVars.currentGameVersion == GameVersion.GLOBAL
+        val trainButtonSchema = if (isGlobalGame) MyColors.TrainTroopsGlobal else MyColors.TrainTroops
+        var point = findMultiColorsUntil(schemas = listOf(trainButtonSchema), duration = 1500)
         if (point != null) {
             TouchActions.tap(point.x, point.y)
         } else {
@@ -97,15 +100,41 @@ suspend fun mainBaseTrainTroops(): Boolean {
             return enterMainScreen()
         }
 
-        // Verify training page
-        point = findMultiColorsUntil(schemas = listOf(MyColors.AttackInTrainingPage, MyColors.AttackInTrainingPage2, MyColors.AttackInTrainingPage3), duration = 1500)
-        if (point == null) {
-            accountMessage("未找到训练标志")
-            GlobalVars.absorbEdge = 0
-            repeat(2) {
-                TouchActions.tap(70, 220)
+        if (isGlobalGame) {
+            // The global version opens the army editor before troop queues can be managed.
+            point = findMultiColorsUntil(schemas = listOf(MyColors.EditArmyButton), duration = 1500)
+            if (point == null) {
+                accountMessage("未找到编辑军队按钮")
+                GlobalVars.absorbEdge = 0
+                return enterMainScreen()
             }
-            return enterMainScreen()
+            accountMessage("打开编辑军队")
+            TouchActions.tap(point.x, point.y, delayTime = 800)
+
+            // Verify the global army training page after tapping Edit Army.
+            point = findMultiColorsUntil(schemas = listOf(MyColors.TrainingPageGlobal), duration = 1500)
+            if (point == null) {
+                accountMessage("未找到训练页面标志")
+                GlobalVars.absorbEdge = 0
+                repeat(2) {
+                    TouchActions.tap(70, 220)
+                }
+                return enterMainScreen()
+            }
+        } else {
+            // Keep the original training-page check for the CN version.
+            point = findMultiColorsUntil(
+                schemas = listOf(MyColors.AttackInTrainingPage, MyColors.AttackInTrainingPage2, MyColors.AttackInTrainingPage3),
+                duration = 1500
+            )
+            if (point == null) {
+                accountMessage("未找到训练标志")
+                GlobalVars.absorbEdge = 0
+                repeat(2) {
+                    TouchActions.tap(70, 220)
+                }
+                return enterMainScreen()
+            }
         }
 
         // Clean Queue 1

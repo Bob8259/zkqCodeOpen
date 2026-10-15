@@ -7,6 +7,8 @@ import com.coc.zkqcode.jar.code.colorschema.ColorSchema
 
 interface IMainBaseTraining {
     val TrainingPage: ColorSchema
+    val TrainingPageGlobal: ColorSchema
+    val EditArmyButton: ColorSchema
     val AttackInTrainingPage: ColorSchema
     val AttackInTrainingPage2: ColorSchema
     val AttackInTrainingPage3: ColorSchema
@@ -38,6 +40,12 @@ interface IMainBaseTraining {
 object MainBaseTraining : IMainBaseTraining {
     override val TrainingPage = ColorSchema.parse(
         4, 448, 19, 695, "5E6973", "-3|16|5D6871,-2|37|5E6872,-1|57|606A75,-1|68|5F6A73,1|84|606C76,2|99|5F6974,1|129|5D6971,0|147|5C6871,1|171|57626B", 0, 0.9, "训练部队页面"
+    )
+    override val TrainingPageGlobal = ColorSchema.parse(
+        1066, 619, 1248, 666, "94F2C5", "37|0|94F2C5,73|0|94F2C5,109|0|94F2C5,146|0|94F2C5,0|23|42DB93,99|19|42DC93,133|26|40D48D,109|23|42DB93,146|23|42DB93", 0, 0.9, "训练部队页面"
+    )
+    override val EditArmyButton = ColorSchema.parse(
+        61, 659, 240, 709, "8AEABD", "-16|0|8AEABC,20|0|8BEABD,55|0|8AEABD,91|0|8AEABC,2|29|39D289,-16|25|3AD48B,20|25|3AD48B,55|25|3AD48B,91|25|3AD48B", 0, 0.9, "编辑军队"
     )
     override val AttackInTrainingPage = ColorSchema.parse(
         1009, 615, 1252, 665, "7084A2", "13|-1|6F83A1,50|-2|6E82A0,80|-5|6D809E,110|-5|6D809E,125|1|7184A2,125|6|768AA8,125|20|8298B6,112|26|859BB9,26|22|8399B7", 0, 0.9, "训练部队内进攻"
