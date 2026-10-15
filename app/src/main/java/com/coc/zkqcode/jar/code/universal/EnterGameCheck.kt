@@ -354,7 +354,8 @@ private suspend fun closeAdvertisements() {
         MyColors.ContributionActivity,
         MyColors.CNCultivationAd,
         MyColors.TencentQinglongAd,
-        MyColors.NewUpgradeList
+        MyColors.NewUpgradeList,
+        MyColors.TencentOrangeCross
     )
 
     // 3. Iterate through schemas

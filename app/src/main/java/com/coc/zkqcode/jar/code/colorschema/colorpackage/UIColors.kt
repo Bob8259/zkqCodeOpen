@@ -69,6 +69,7 @@ interface IUIColors {
     val Trophy: ColorSchema
     val BuildingHammer: ColorSchema
     val NewUpgradeList: ColorSchema
+    val TencentOrangeCross: ColorSchema
 }
 
 object UIColors : IUIColors {
@@ -360,5 +361,17 @@ object UIColors : IUIColors {
         0,
         0.9,
         "新升级列表"
+    )
+
+    override val TencentOrangeCross = ColorSchema.parse(
+        965,
+        135,
+        1010,
+        177,
+        "1397FF",
+        "-6|-2|1397FF,-3|0|1298FF,-3|4|1397FF,-5|8|1396FF,5|8|0493FF,5|-6|1397FF,5|-5|1199FF,3|8|0E97FF,1|6|1298FF",
+        0,
+        0.9,
+        "腾讯橙色叉叉"
     )
 }
