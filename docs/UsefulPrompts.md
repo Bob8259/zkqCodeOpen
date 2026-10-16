@@ -15,7 +15,7 @@ Help me commit and push my code to both | `origin` | https://github.com/Bob8259/
 
 Help me read the oldest open pull request of https://github.com/Bob8259/zkqCode-collaborate.git and list the changes under app/src/main/java/com/coc/zkqcode/jar except suspend fun displayAds(). First find the oldest open PR using `gh pr list --repo Bob8259/zkqCode-collaborate --json number,title,createdAt --jq "sort_by(.createdAt) | .[0]"`, then view its diff using `gh pr diff <PR_NUMBER> --repo Bob8259/zkqCode-collaborate`. Create a new .md file to list the changes. Remember, you should compare the diffs with my local code. List changes only (including changed files, and code); do not modify any files.
 
-OK. Now, merge the changes to my local code manually according to the plan, and close this PR (mark as merged), delete the plan and intermediate artifacts (if any) after merging.
+OK. Now, merge the changes to my local code manually according to the plan, and close this PR (with a comment marking as merged), delete the plan and intermediate artifacts (if any) after merging.
 
 Help me modify this file to add a time guard. I want to perform the operation once per day using memory file at app\src\main\java\com\coc\zkqcode\jar\code\universal\smalltools\data\Memory.kt
 
