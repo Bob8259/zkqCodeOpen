@@ -14,6 +14,7 @@ import com.coc.zkqcode.jar.code.mainbase.others.zoomSmallMainBase
 import com.coc.zkqcode.jar.code.mainbase.upgrade.mainBaseFindBuildButton
 import com.coc.zkqcode.jar.code.universal.buildings.BaseType
 import com.coc.zkqcode.jar.code.universal.buildings.WorkerAndResearch
+import com.coc.zkqcode.jar.code.universal.buildings.findMainBaseBuildingUpgradeEntry
 import com.coc.zkqcode.jar.code.universal.buildings.getBuildingNames
 import com.coc.zkqcode.jar.code.universal.buildings.iterateBuilderBaseBuildingUpgradeList
 import com.coc.zkqcode.jar.code.universal.clickRightBottom
@@ -47,7 +48,7 @@ suspend fun upgradeBuildings(currentBase: BaseType): Boolean {
     if (checkContinueBuild(currentBase)) {
         val worker = when (currentBase) {
             BaseType.Builder -> findMultiColorsUntil(schemas = listOf(MyColors.BuilderBaseWorker, MyColors.BuilderBaseWorker2, MyColors.BuilderBaseWorker3), duration = 1000)
-            BaseType.Main -> findMultiColorsUntil(schemas = MyColors.MainBaseWorkerSchemas, duration = 1000)
+            BaseType.Main -> findMainBaseBuildingUpgradeEntry()
         }
         if (worker != null) {
             TouchActions.tap(worker.x, worker.y)

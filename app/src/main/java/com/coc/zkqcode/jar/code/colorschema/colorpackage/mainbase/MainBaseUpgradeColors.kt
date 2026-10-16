@@ -13,6 +13,7 @@ interface IMainBaseUpgradeColors {
     val MainBaseWorker4: ColorSchema
     val MainBaseWorker5: ColorSchema
     val MainBaseWorker6: ColorSchema
+    val MainBaseBuildingUpgradeEntryGlobal: ColorSchema
     val NewMainBaseWorker: ColorSchema get() = MainBaseWorker6
     val MainBaseLightningWorker: ColorSchema
     val MainBaseLightningWorker2: ColorSchema
@@ -56,6 +57,9 @@ object MainBaseUpgradeColors : IMainBaseUpgradeColors {
         "-6|0|8DAEEE,-6|-5|5B66A0,-1|-7|9BCAFA,9|-7|3767CC,9|1|7A94E2,9|4|4F5688,6|5|A5ACBF,1|5|D6E0EC,-4|6|AFB8C6",
         0,
         0.9,
+    )
+    override val MainBaseBuildingUpgradeEntryGlobal = ColorSchema.parse(
+        1133, 579, 1259, 701, "10C7FD", "25|0|E2D2BD,50|0|EFE2D3,75|0|1FD4FF,100|0|0FC7FC,0|61|11BAFE,25|61|21C8FF,50|61|29CEFF,75|61|21C8FF,100|61|10BAFD", 0, 0.9,
     )
     override val MainBaseLightningWorker = ColorSchema.parse(
         450, 10, 850, 80, "D2E0FE", "7|0|7489D9,13|0|5073DF,19|0|BBD1FF,26|0|BCD0FE,0|8|A9BACF,7|8|50668A,13|8|495881,19|8|496386,26|8|A2B6C1", 0, 0.9,

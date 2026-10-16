@@ -9,6 +9,7 @@ import com.coc.zkqcode.jar.code.mainbase.upgrade.mainBaseFindBuildButton
 import com.coc.zkqcode.jar.code.universal.InGameVars
 import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.jar.code.universal.buildings.BaseType
+import com.coc.zkqcode.jar.code.universal.buildings.findMainBaseBuildingUpgradeEntry
 import com.coc.zkqcode.jar.code.universal.buildings.iterateBuilderBaseBuildingUpgradeList
 import com.coc.zkqcode.jar.code.universal.buildings.tapGoldBar
 import com.coc.zkqcode.jar.code.universal.buildings.walls.calculateResourcesPercentage
@@ -110,7 +111,7 @@ suspend fun upgradeAllExistingBuildings(buildings: List<String>, currentBase: Ba
             // Locate the worker icon
             val worker = if (currentBase == BaseType.Builder) findMultiColorsUntil(
                 schemas = listOf(MyColors.BuilderBaseWorker, MyColors.BuilderBaseWorker2, MyColors.BuilderBaseWorker3), duration = 1000
-            ) else findMultiColorsUntil(schemas = MyColors.MainBaseWorkerSchemas, duration = 1000)
+            ) else findMainBaseBuildingUpgradeEntry()
 
             // Pre-condition check: if it cannot continue building or worker not found, skip to next
             // Pass skipOrdering as isWallUpgrade so the saved worker is available for wall upgrades

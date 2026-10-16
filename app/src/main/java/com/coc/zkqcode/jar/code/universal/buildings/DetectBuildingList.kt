@@ -9,6 +9,8 @@ import com.coc.zkqcode.jar.code.colorschema.ColorSchema
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColors
+import com.coc.zkqcode.jar.code.universal.GameVersion
+import com.coc.zkqcode.jar.code.universal.InGameVars
 import com.coc.zkqcode.jar.code.universal.recognizer.RecognizedText
 import com.coc.zkqcode.jar.code.universal.recognizer.TextRecognizer
 import com.coc.zkqcode.jar.code.universal.smalltools.data.getBooleanConfigRuntime
@@ -20,7 +22,7 @@ import java.io.FileOutputStream
 /**
  * Detects building names from the screen.
  *
- * Scans the area (480, 100) to (900, 530) for Chinese text (building names).
+ * Scans the building-list area for Chinese text (building names).
  *
  * @param excludeNewBuildings If true, new buildings (新-prefixed) are excluded from the result.
  * @param excludeGearUpBuildings If true, gear-up buildings (改装-prefixed) are excluded; if false, returns only the first gear-up building.
@@ -28,10 +30,11 @@ import java.io.FileOutputStream
  */
 suspend fun detectBuildingList(baseType: BaseType, excludeNewBuildings: Boolean = false, excludeGearUpBuildings: Boolean = true): BuildingDetectionResult {
     val candidateBuildings = getBuildingNames(baseType)
-    val startX = 400
-    val startY = 100
-    val endX = 900
-    val endY = 560
+    val (startX, startY, endX, endY) = if (InGameVars.currentGameVersion == GameVersion.GLOBAL) {
+        listOf(992, 46, 1140, 640)
+    } else {
+        listOf(400, 100, 900, 560)
+    }
 
     // Recognize text in the specified area after removing the bright green marker noise.
     val results = recognizeBuildingListWithGreenMask(startX, startY, endX, endY, threshold = 130)

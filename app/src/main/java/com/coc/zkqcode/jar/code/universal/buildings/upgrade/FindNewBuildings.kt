@@ -1,9 +1,10 @@
-﻿package com.coc.zkqcode.jar.code.universal.buildings.upgrade
+package com.coc.zkqcode.jar.code.universal.buildings.upgrade
 
 import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.jar.code.universal.smalltools.input.TouchActions
 import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.buildings.BaseType
+import com.coc.zkqcode.jar.code.universal.buildings.findMainBaseBuildingUpgradeEntry
 import com.coc.zkqcode.jar.code.universal.buildings.iterateBuilderBaseBuildingUpgradeList
 import com.coc.zkqcode.jar.code.universal.colors.findMultiColorsUntil
 
@@ -13,7 +14,7 @@ suspend fun builderBaseFindNewBuildings(currentBase: BaseType): Boolean {
             findMultiColorsUntil(schemas = listOf(MyColors.BuilderBaseWorker, MyColors.BuilderBaseWorker2, MyColors.BuilderBaseWorker3), duration = 1000)
 
         BaseType.Main ->
-            findMultiColorsUntil(schemas = MyColors.MainBaseWorkerSchemas, duration = 1000)
+            findMainBaseBuildingUpgradeEntry()
     }
     if (worker != null) {
         TouchActions.tap(worker.x, worker.y)

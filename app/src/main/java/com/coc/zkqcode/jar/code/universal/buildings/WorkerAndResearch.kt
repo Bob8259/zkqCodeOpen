@@ -26,6 +26,16 @@ enum class BaseType {
     Builder, Main
 }
 
+fun mainBaseBuildingUpgradeEntrySchemas() = if (InGameVars.currentGameVersion == GameVersion.GLOBAL) {
+    listOf(MyColors.MainBaseBuildingUpgradeEntryGlobal)
+} else {
+    MyColors.MainBaseWorkerSchemas
+}
+
+suspend fun findMainBaseBuildingUpgradeEntry() = findMultiColorsUntil(
+    schemas = mainBaseBuildingUpgradeEntrySchemas(), duration = 1000
+)
+
 /**
  * Unified worker and research detection logic for both Main Base and Builder Base.
  * Dispatches on [BaseType] to handle base-specific differences (colour schemas, goblin checks, messages).
@@ -39,10 +49,10 @@ object WorkerAndResearch {
     suspend fun detectWorkerNumber(baseType: BaseType): WorkerInfo {
         // Must double-check to wait for a little bit, otherwise the detection will fail.
         if (InGameVars.currentGameVersion == GameVersion.GLOBAL) {
-            val startX = 1060
-            val startY = 542
-            val endX = 1195
-            val endY = 580
+            val startX = 1186
+            val startY = 531
+            val endX = 1247
+            val endY = 572
 
             val screenBuffer = ScreenCaptureManager.captureScreenOrRestart<Bitmap>(asBitmap = true)
             val cropWidth = endX - startX

@@ -472,7 +472,11 @@ suspend fun isInHomePage(countdownMessage: String? = null): Boolean {
             MyColors.BuilderBaseWorker,
             MyColors.BuilderBaseWorker2,
             MyColors.BuilderBaseWorker3
-        )
+        ) + if (InGameVars.currentGameVersion == GameVersion.GLOBAL) {
+            listOf(MyColors.MainBaseBuildingUpgradeEntryGlobal)
+        } else {
+            emptyList()
+        }
 
     val hasWorker = workerSchemas.any { findMultiColors(byteBuffer = screenBuffer, schema = it, increment = 1) != null }
     return hasWorker || homePageCheckFailed("寻找工人按钮中...")

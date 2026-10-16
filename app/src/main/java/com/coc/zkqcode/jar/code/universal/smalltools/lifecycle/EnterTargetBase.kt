@@ -31,7 +31,7 @@ suspend fun enterMainBase(): Boolean {
         MyColors.GoblinResearcher
     )
     val mainBaseEntrySchemas = if (InGameVars.currentGameVersion == GameVersion.GLOBAL) {
-        mainBaseWorkerSchemas + MyColors.TrainTroopsGlobal
+        mainBaseWorkerSchemas + MyColors.TrainTroopsGlobal + MyColors.MainBaseBuildingUpgradeEntryGlobal
     } else {
         mainBaseWorkerSchemas
     }

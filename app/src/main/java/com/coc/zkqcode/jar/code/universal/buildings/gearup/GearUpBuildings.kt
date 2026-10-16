@@ -5,6 +5,7 @@ import com.coc.zkqcode.jar.code.colorschema.MyColors
 import com.coc.zkqcode.jar.code.universal.InGameVars
 import com.coc.zkqcode.jar.code.universal.accountMessage
 import com.coc.zkqcode.jar.code.universal.buildings.BaseType
+import com.coc.zkqcode.jar.code.universal.buildings.findMainBaseBuildingUpgradeEntry
 import com.coc.zkqcode.jar.code.universal.buildings.iterateBuilderBaseBuildingUpgradeList
 import com.coc.zkqcode.jar.code.universal.buildings.tapGoldBar
 import com.coc.zkqcode.jar.code.universal.buildings.upgrade.checkContinueBuild
@@ -51,9 +52,7 @@ private suspend fun upgradeGearUpBuildings(): Boolean {
     }
     if (!enterMainBase()) return true
 
-    val worker = findMultiColorsUntil(
-        schemas = MyColors.MainBaseWorkerSchemas, duration = 1000
-    )
+    val worker = findMainBaseBuildingUpgradeEntry()
 
     if (worker == null) {
         accountMessage("未找到工人")
